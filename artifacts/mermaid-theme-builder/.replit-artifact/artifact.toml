@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Mermaid Theme Builder"
+version = "1.0.0"
+id = "artifacts/mermaid-theme-builder"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 18624
+
+[services.development]
+run = "pnpm --filter @workspace/mermaid-theme-builder run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/mermaid-theme-builder", "run", "build" ]
+publicDir = "artifacts/mermaid-theme-builder/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "18624"
+BASE_PATH = "/"
