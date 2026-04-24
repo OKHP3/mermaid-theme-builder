@@ -1,7 +1,19 @@
-import { useState, useCallback, useMemo, useEffect } from "react";
-import { BUILTIN_PALETTES, type Palette, type ThemeColor } from "@/lib/palettes";
+import { useState, useCallback, useMemo } from "react";
+import {
+  BUILTIN_PALETTES,
+  BRAND_PALETTES,
+  UTILITY_PALETTES,
+  type Palette,
+  type ThemeColor,
+  getEffectiveThemeName,
+} from "@/lib/palettes";
 import { detectDiagram } from "@/lib/detector";
-import { generateThemedCode, generateMarkdownExport, generatePromptScaffold } from "@/lib/themeEngine";
+import {
+  generateThemedCode,
+  generateMarkdownExport,
+  generatePromptScaffold,
+  type ExportOptions,
+} from "@/lib/themeEngine";
 import { MermaidPreview } from "@/components/MermaidPreview";
 import { ColorSwatch } from "@/components/ColorSwatch";
 import { WarningBanner } from "@/components/WarningBanner";
@@ -21,13 +33,16 @@ type ExportType = "code" | "markdown" | "prompt";
 
 export function ThemeBuilder() {
   const [inputCode, setInputCode] = useState(SAMPLE_CODE);
-  const [selectedPaletteId, setSelectedPaletteId] = useState(BUILTIN_PALETTES[0].id);
+  const [selectedPaletteId, setSelectedPaletteId] = useState(BRAND_PALETTES[0].id);
   const [customColors, setCustomColors] = useState<Record<string, ThemeColor[]>>({});
   const [activeTab, setActiveTab] = useState<Tab>("input");
   const [copiedType, setCopiedType] = useState<ExportType | null>(null);
+  const [includeMetaComments, setIncludeMetaComments] = useState(true);
+  const [includeBadge, setIncludeBadge] = useState(false);
+  const [customThemeName, setCustomThemeName] = useState("");
 
   const selectedPalette = useMemo((): Palette => {
-    const base = BUILTIN_PALETTES.find((p) => p.id === selectedPaletteId) ?? BUILTIN_PALETTES[0];
+    const base = BUILTIN_PALETTES.find((p) => p.id === selectedPaletteId) ?? BRAND_PALETTES[0];
     const overrides = customColors[selectedPaletteId];
     if (!overrides) return base;
     return {
@@ -39,14 +54,36 @@ export function ThemeBuilder() {
     };
   }, [selectedPaletteId, customColors]);
 
+  const hasCustomizations = Boolean(customColors[selectedPaletteId]);
+
   const detection = useMemo(() => detectDiagram(inputCode), [inputCode]);
 
+  const effectiveThemeName = useMemo(
+    () => getEffectiveThemeName(selectedPalette, customThemeName, hasCustomizations),
+    [selectedPalette, customThemeName, hasCustomizations],
+  );
+
+  const exportOptions = useMemo((): ExportOptions => ({
+    palette: selectedPalette,
+    diagramFamily: detection.family,
+    includeMetaComments,
+    includeBadge,
+    customThemeName: effectiveThemeName !== selectedPalette.name ? effectiveThemeName : undefined,
+  }), [selectedPalette, detection.family, includeMetaComments, includeBadge, effectiveThemeName]);
+
+  const previewOptions = useMemo((): ExportOptions => ({
+    ...exportOptions,
+    includeBadge: false,
+  }), [exportOptions]);
+
   const themedCode = useMemo(
-    () =>
-      inputCode.trim()
-        ? generateThemedCode(inputCode, { palette: selectedPalette, diagramFamily: detection.family })
-        : "",
-    [inputCode, selectedPalette, detection.family],
+    () => inputCode.trim() ? generateThemedCode(inputCode, previewOptions) : "",
+    [inputCode, previewOptions],
+  );
+
+  const exportCode = useMemo(
+    () => inputCode.trim() ? generateThemedCode(inputCode, exportOptions) : "",
+    [inputCode, exportOptions],
   );
 
   const handleColorChange = useCallback(
@@ -67,14 +104,20 @@ export function ThemeBuilder() {
       delete next[selectedPaletteId];
       return next;
     });
+    setCustomThemeName("");
   }, [selectedPaletteId]);
+
+  const handleSelectPalette = useCallback((id: string) => {
+    setSelectedPaletteId(id);
+    setCustomThemeName("");
+  }, []);
 
   const copyToClipboard = useCallback(
     async (type: ExportType) => {
       let text = "";
-      if (type === "code") text = themedCode;
-      else if (type === "markdown") text = generateMarkdownExport(themedCode, selectedPalette.name);
-      else if (type === "prompt") text = generatePromptScaffold(selectedPalette, detection.family);
+      if (type === "code") text = exportCode;
+      else if (type === "markdown") text = generateMarkdownExport(exportCode, selectedPalette, exportOptions);
+      else if (type === "prompt") text = generatePromptScaffold(selectedPalette, exportOptions);
 
       try {
         await navigator.clipboard.writeText(text);
@@ -91,10 +134,8 @@ export function ThemeBuilder() {
         setTimeout(() => setCopiedType(null), 2000);
       }
     },
-    [themedCode, selectedPalette, detection.family],
+    [exportCode, selectedPalette, exportOptions],
   );
-
-  const hasCustomizations = Boolean(customColors[selectedPaletteId]);
 
   const previewCode = activeTab === "output" ? themedCode : inputCode;
 
@@ -120,48 +161,46 @@ export function ThemeBuilder() {
               {detection.label}
             </span>
           )}
-          <span className="hidden sm:block">v0.1 — local only</span>
+          <span className="hidden sm:block">v0.1 · local only</span>
         </div>
       </header>
 
       <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
         <aside className="lg:w-72 xl:w-80 border-b lg:border-b-0 lg:border-r border-border bg-card/40 flex flex-col overflow-y-auto">
+
           <div className="p-4 border-b border-border">
-            <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Theme Palette</h2>
-            <div className="grid grid-cols-2 gap-2">
-              {BUILTIN_PALETTES.map((p) => (
-                <button
+            <SectionLabel label="Brand Presets" badge="OKHP3" />
+            <div className="grid grid-cols-1 gap-1.5 mt-2">
+              {BRAND_PALETTES.map((p) => (
+                <BrandPaletteCard
                   key={p.id}
-                  onClick={() => setSelectedPaletteId(p.id)}
-                  className={`relative text-left rounded-lg border p-2.5 transition-all text-xs ${
-                    selectedPaletteId === p.id
-                      ? "border-primary bg-primary/8 ring-1 ring-primary/30"
-                      : "border-border bg-card hover:border-primary/40 hover:bg-muted/50"
-                  }`}
-                >
-                  <div className="flex gap-1 mb-1.5">
-                    {p.colors.slice(0, 4).map((c) => (
-                      <div
-                        key={c.key}
-                        className="w-4 h-4 rounded-full border border-white/20"
-                        style={{ backgroundColor: c.value }}
-                      />
-                    ))}
-                  </div>
-                  <p className="font-semibold text-foreground leading-tight">{p.name}</p>
-                  {customColors[p.id] && (
-                    <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-primary" />
-                  )}
-                </button>
+                  palette={p}
+                  selected={selectedPaletteId === p.id}
+                  customized={Boolean(customColors[p.id])}
+                  onClick={() => handleSelectPalette(p.id)}
+                />
               ))}
             </div>
           </div>
 
-          <div className="p-4 flex-1">
-            <div className="flex items-center justify-between mb-2">
-              <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Color Editor
-              </h2>
+          <div className="p-4 border-b border-border">
+            <SectionLabel label="Theme Presets" />
+            <div className="grid grid-cols-2 gap-1.5 mt-2">
+              {UTILITY_PALETTES.map((p) => (
+                <UtilityPaletteCard
+                  key={p.id}
+                  palette={p}
+                  selected={selectedPaletteId === p.id}
+                  customized={Boolean(customColors[p.id])}
+                  onClick={() => handleSelectPalette(p.id)}
+                />
+              ))}
+            </div>
+          </div>
+
+          <div className="p-4 border-b border-border flex-1">
+            <div className="flex items-center justify-between mb-1">
+              <SectionLabel label="Color Editor" />
               {hasCustomizations && (
                 <button
                   onClick={handleResetPalette}
@@ -171,17 +210,92 @@ export function ThemeBuilder() {
                 </button>
               )}
             </div>
-            <p className="text-xs text-muted-foreground mb-3">{selectedPalette.description}</p>
+            <p className="text-xs text-muted-foreground mb-2">{selectedPalette.description}</p>
             <div className="space-y-0.5">
               {selectedPalette.colors.map((color) => (
                 <ColorSwatch
                   key={color.key}
-                  color={
-                    customColors[selectedPaletteId]?.find((c) => c.key === color.key) ?? color
-                  }
+                  color={customColors[selectedPaletteId]?.find((c) => c.key === color.key) ?? color}
                   onChange={handleColorChange}
                 />
               ))}
+            </div>
+          </div>
+
+          {selectedPalette.themeIntent && (
+            <div className="p-4 border-b border-border">
+              <SectionLabel label="Theme Details" />
+              <div className="mt-2 space-y-1.5 text-xs">
+                <div className="flex gap-1.5">
+                  <span className="text-muted-foreground w-14 shrink-0">Name</span>
+                  <span className="text-foreground font-medium">{selectedPalette.name}</span>
+                </div>
+                {selectedPalette.brandFamily && (
+                  <div className="flex gap-1.5">
+                    <span className="text-muted-foreground w-14 shrink-0">Brand</span>
+                    <span className="text-foreground">OKHP3 Ecosystem</span>
+                  </div>
+                )}
+                <div className="flex gap-1.5">
+                  <span className="text-muted-foreground w-14 shrink-0">For</span>
+                  <span className="text-foreground leading-snug">{selectedPalette.themeIntent}</span>
+                </div>
+                <div className="flex gap-1.5">
+                  <span className="text-muted-foreground w-14 shrink-0">Version</span>
+                  <span className="text-foreground font-mono">{selectedPalette.version}</span>
+                </div>
+                {selectedPalette.sourceUrls?.[0] && (
+                  <div className="flex gap-1.5">
+                    <span className="text-muted-foreground w-14 shrink-0">Source</span>
+                    <a
+                      href={selectedPalette.sourceUrls[0]}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline truncate"
+                    >
+                      {selectedPalette.sourceUrls[0].replace("https://", "")}
+                    </a>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          <div className="p-4">
+            <SectionLabel label="Export Settings" />
+            <div className="mt-2 space-y-3">
+              <Toggle
+                id="meta-comments"
+                checked={includeMetaComments}
+                onChange={setIncludeMetaComments}
+                label="Metadata comments"
+                hint="Adds %% theme info to exports"
+              />
+              <Toggle
+                id="attr-badge"
+                checked={includeBadge}
+                onChange={setIncludeBadge}
+                label="Attribution badge"
+                hint={detection.family !== "flowchart" && detection.family !== "unknown" ? "Flowchart diagrams only" : "Adds a small linked badge node"}
+                disabled={!["flowchart", "unknown"].includes(detection.family)}
+              />
+              <div>
+                <label className="text-xs font-medium text-foreground block mb-1">
+                  {hasCustomizations ? "Custom theme name" : "Theme name (optional)"}
+                </label>
+                <input
+                  type="text"
+                  value={customThemeName}
+                  onChange={(e) => setCustomThemeName(e.target.value)}
+                  placeholder={hasCustomizations ? `Custom — based on ${selectedPalette.name}` : selectedPalette.name}
+                  className="w-full text-xs bg-background border border-border rounded-md px-2.5 py-1.5 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50"
+                />
+                {(hasCustomizations || customThemeName.trim()) && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Exports will use: <span className="text-foreground font-medium">{effectiveThemeName}</span>
+                  </p>
+                )}
+              </div>
             </div>
           </div>
         </aside>
@@ -233,14 +347,16 @@ export function ThemeBuilder() {
                       </button>
                     ))}
                   </div>
+                  {activeTab === "output" && effectiveThemeName && (
+                    <span className="text-xs text-muted-foreground hidden sm:block truncate">
+                      {effectiveThemeName}
+                    </span>
+                  )}
                 </div>
               </div>
 
               <div className="flex-1 overflow-auto p-4 bg-muted/20">
-                <MermaidPreview
-                  code={previewCode}
-                  className="min-h-[280px]"
-                />
+                <MermaidPreview code={previewCode} className="min-h-[280px]" />
               </div>
             </div>
           </div>
@@ -253,7 +369,7 @@ export function ThemeBuilder() {
             <CopyButton
               label="Styled Code"
               copied={copiedType === "code"}
-              disabled={!themedCode}
+              disabled={!exportCode}
               onClick={() => copyToClipboard("code")}
               icon={
                 <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5">
@@ -265,7 +381,7 @@ export function ThemeBuilder() {
             <CopyButton
               label="Markdown"
               copied={copiedType === "markdown"}
-              disabled={!themedCode}
+              disabled={!exportCode}
               onClick={() => copyToClipboard("markdown")}
               icon={
                 <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5">
@@ -276,7 +392,7 @@ export function ThemeBuilder() {
             <CopyButton
               label="Prompt Scaffold"
               copied={copiedType === "prompt"}
-              disabled={!themedCode}
+              disabled={!exportCode}
               onClick={() => copyToClipboard("prompt")}
               icon={
                 <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5">
@@ -285,7 +401,7 @@ export function ThemeBuilder() {
               }
             />
 
-            {themedCode && (
+            {exportCode && (
               <div className="ml-auto hidden sm:flex items-center gap-1.5 text-xs text-muted-foreground">
                 <span className="w-2 h-2 rounded-full bg-emerald-400" />
                 Theme ready
@@ -293,6 +409,145 @@ export function ThemeBuilder() {
             )}
           </div>
         </main>
+      </div>
+    </div>
+  );
+}
+
+function SectionLabel({ label, badge }: { label: string; badge?: string }) {
+  return (
+    <div className="flex items-center gap-1.5">
+      <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{label}</h2>
+      {badge && (
+        <span className="text-[9px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+          {badge}
+        </span>
+      )}
+    </div>
+  );
+}
+
+function BrandPaletteCard({
+  palette,
+  selected,
+  customized,
+  onClick,
+}: {
+  palette: Palette;
+  selected: boolean;
+  customized: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`relative w-full text-left rounded-lg border p-2.5 transition-all ${
+        selected
+          ? "border-primary bg-primary/8 ring-1 ring-primary/30"
+          : "border-border bg-card hover:border-primary/40 hover:bg-muted/50"
+      }`}
+    >
+      <div className="flex items-center justify-between">
+        <div className="flex gap-1 shrink-0">
+          {palette.colors.slice(0, 5).map((c) => (
+            <div
+              key={c.key}
+              className="w-3.5 h-3.5 rounded-full border border-white/20 shrink-0"
+              style={{ backgroundColor: c.value }}
+            />
+          ))}
+        </div>
+        {customized && (
+          <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+        )}
+      </div>
+      <div className="mt-1.5">
+        <p className="text-xs font-semibold text-foreground leading-none">{palette.name}</p>
+        {palette.themeIntent && (
+          <p className="text-[10px] text-muted-foreground mt-0.5 leading-tight line-clamp-1">
+            {palette.themeIntent.split(",")[0]}
+          </p>
+        )}
+      </div>
+    </button>
+  );
+}
+
+function UtilityPaletteCard({
+  palette,
+  selected,
+  customized,
+  onClick,
+}: {
+  palette: Palette;
+  selected: boolean;
+  customized: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`relative text-left rounded-lg border p-2.5 transition-all text-xs ${
+        selected
+          ? "border-primary bg-primary/8 ring-1 ring-primary/30"
+          : "border-border bg-card hover:border-primary/40 hover:bg-muted/50"
+      }`}
+    >
+      <div className="flex gap-1 mb-1.5">
+        {palette.colors.slice(0, 4).map((c) => (
+          <div
+            key={c.key}
+            className="w-4 h-4 rounded-full border border-white/20"
+            style={{ backgroundColor: c.value }}
+          />
+        ))}
+      </div>
+      <p className="font-semibold text-foreground leading-tight">{palette.name}</p>
+      {customized && (
+        <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-primary" />
+      )}
+    </button>
+  );
+}
+
+function Toggle({
+  id,
+  checked,
+  onChange,
+  label,
+  hint,
+  disabled,
+}: {
+  id: string;
+  checked: boolean;
+  onChange: (v: boolean) => void;
+  label: string;
+  hint?: string;
+  disabled?: boolean;
+}) {
+  return (
+    <div className={`flex items-start gap-2 ${disabled ? "opacity-50" : ""}`}>
+      <button
+        id={id}
+        role="switch"
+        aria-checked={checked}
+        onClick={() => !disabled && onChange(!checked)}
+        disabled={disabled}
+        className={`relative inline-flex h-4 w-7 shrink-0 items-center rounded-full transition-colors mt-0.5 ${
+          checked && !disabled ? "bg-primary" : "bg-muted-foreground/30"
+        }`}
+      >
+        <span
+          className={`inline-block h-3 w-3 rounded-full bg-white shadow transition-transform ${
+            checked ? "translate-x-3.5" : "translate-x-0.5"
+          }`}
+        />
+      </button>
+      <div className="flex-1 min-w-0">
+        <label htmlFor={id} className="text-xs font-medium text-foreground cursor-pointer">
+          {label}
+        </label>
+        {hint && <p className="text-[10px] text-muted-foreground leading-tight">{hint}</p>}
       </div>
     </div>
   );

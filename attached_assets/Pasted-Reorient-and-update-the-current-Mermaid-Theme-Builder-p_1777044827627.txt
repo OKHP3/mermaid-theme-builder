@@ -1,0 +1,363 @@
+Reorient and update the current Mermaid Theme Builder project:
+
+Repository:
+https://github.com/OKHP3/mermaid-theme-builder
+
+Primary planning source:
+https://www.notion.so/overkillhill/Mermaid-Theme-Builder-Master-Build-Plan-v0-1-7bc611bd57454d9185fadccdae11a93f
+
+Brand alignment sources:
+1. OverKill Hill P³
+   - Website: https://overkillhill.com
+   - HTML: https://github.com/OKHP3/OverKill-Hill/blob/main/index.html
+   - CSS: https://github.com/OKHP3/OverKill-Hill/blob/main/assets/css/theme.css
+
+2. AskJamie
+   - Website: https://askjamie.bot
+   - HTML: https://github.com/OKHP3/AskJamie/blob/main/index.html
+   - CSS: https://github.com/OKHP3/AskJamie/blob/main/assets/css/theme.css
+
+3. Glee-fully Personalizable Tools
+   - Website: https://glee-fully.tools
+   - HTML: https://github.com/OKHP3/Glee-fullyTools/blob/main/index.html
+   - CSS: https://github.com/OKHP3/Glee-fullyTools/blob/main/assets/css/theme.css
+
+MISSION
+
+Update Mermaid Theme Builder so its supported built-in themes and brand presets are directly aligned with the three public brand ecosystems above:
+
+- OverKill Hill P³
+- AskJamie
+- Glee-fully Personalizable Tools
+
+The purpose is not merely to add three color palettes. The purpose is to make Mermaid Theme Builder capable of generating reusable Mermaid visual governance artifacts that reflect each brand’s look, feel, typography, tone, color system, and diagram-use posture.
+
+Keep the product thesis intact:
+
+Mermaid Theme Builder is a static, browser-based visual governance utility for Mermaid diagrams. It helps users define a theme once, apply it to existing Mermaid code, preview the styled result, copy/export the result, and generate reusable prompt scaffolds so LLMs stop hallucinating diagram styles.
+
+STRICT CONSTRAINTS
+
+Do not add:
+- backend
+- login
+- database
+- AI API calls
+- payment
+- file upload
+- user accounts
+- cloud storage
+
+Do not fork Mermaid.
+Do not copy Mermaid source into this repo.
+Continue using Mermaid as an npm dependency.
+
+Keep the app local-only. User Mermaid input must remain in the browser.
+
+Do not turn this into a Mermaid.ai clone.
+
+OBJECTIVE 1 — AUDIT CURRENT BRAND SOURCES
+
+Inspect the three referenced brand sites and their GitHub HTML/CSS sources.
+
+For each brand, extract or infer:
+
+- primary color
+- secondary color
+- accent color
+- background color
+- panel/card color
+- text color
+- muted text color
+- border color
+- warning/alert color if present
+- font-family / typography posture
+- design tone
+- use case posture
+
+Create a short internal summary for each brand in documentation.
+
+Do not guess wildly. If a value is not obvious, use a conservative derived value and document it as inferred.
+
+OBJECTIVE 2 — CREATE BRAND PALETTES
+
+Add three first-class built-in Mermaid Theme Builder palettes:
+
+1. `overkill-hill`
+   Display name: `OverKill Hill P³`
+   Theme intent:
+   - precise
+   - structured
+   - technical
+   - executive-readable
+   - dark/serious or high-contrast if supported by source brand
+   - suitable for architecture, systems, strategy, and AI tooling diagrams
+
+2. `askjamie`
+   Display name: `AskJamie`
+   Theme intent:
+   - approachable
+   - helpful
+   - friendly AI helpdesk
+   - clear, accessible, trustworthy
+   - suitable for support flows, helpdesk diagrams, explainers, and user-facing AI workflow diagrams
+
+3. `glee-fully`
+   Display name: `Glee-fully`
+   Theme intent:
+   - warm
+   - playful
+   - approachable
+   - light, friendly, non-technical
+   - suitable for life-organization, personal productivity, family-friendly, and consumer-facing diagrams
+
+Preserve existing palettes unless they are broken. Existing palettes may remain as generic examples, but the three brand palettes above should become first-class presets.
+
+If BFS Light and Neutral Enterprise are not already present, add them as non-public/enterprise example presets or “utility presets” if appropriate, but the main requested brand alignment is the three public OKHP3 ecosystem brands.
+
+OBJECTIVE 3 — BRAND PALETTE SCHEMA
+
+Ensure each palette supports metadata, not just colors.
+
+Each palette object should include fields equivalent to:
+
+- id
+- displayName
+- brandFamily
+- description
+- themeIntent
+- sourceUrls
+- createdWith
+- createdAt
+- updatedAt
+- version
+- fontFamily
+- fontSize
+- colors
+  - background
+  - panel
+  - primary
+  - secondary
+  - tertiary
+  - accent
+  - edge
+  - border
+  - boundary
+  - text
+  - textMuted
+  - alert
+- attribution
+  - enabledByDefault
+  - label
+  - url
+  - themeName
+  - toolName
+  - toolVersion
+
+The app should not break if older palettes lack new metadata. Add safe defaults.
+
+OBJECTIVE 4 — ATTRIBUTION / THEME FOOTNOTE SUPPORT
+
+Add optional theme attribution support.
+
+There should be two attribution layers:
+
+Layer 1 — Source metadata comments:
+Always available and preferably enabled by default in exports.
+
+Generated Mermaid should be able to include source comments like:
+
+%% Created with Mermaid Theme Builder
+%% Tool: https://overkillhill.com/projects/mermaid-theme-builder/
+%% Theme: OverKill Hill P³
+%% Theme Version: 0.1.0
+%% Created: ISO_TIMESTAMP
+%% Theme ID: overkill-hill
+
+Layer 2 — Visible attribution badge:
+Optional, default ON if reasonable, user-toggleable.
+
+For flowchart-style diagrams only, add a small visible badge node when enabled.
+
+The badge should say something concise, such as:
+Created with Mermaid Theme Builder · Theme: OverKill Hill P³
+
+The badge should be styled discreetly using the selected theme’s muted/border colors.
+
+If Mermaid click-link syntax is safe for the diagram type, make the badge link to:
+https://overkillhill.com/projects/mermaid-theme-builder/
+
+If the diagram type does not safely support a visible linked badge, fall back to metadata comments only.
+
+Do not corrupt the diagram layout. Attribution is best-effort and must be optional.
+
+Add UI controls:
+- Include metadata comments: on/off
+- Include visible attribution badge: on/off
+- Theme name/title field for custom user-created themes
+- Theme version field or generated version default
+- Theme created/updated timestamp display or metadata
+
+OBJECTIVE 5 — THEME NAME / CUSTOM THEME METADATA
+
+Allow the user to name a custom theme.
+
+When a user edits a palette, the app should support:
+- custom theme name
+- optional description
+- updated timestamp
+- generated theme ID / slug
+- export metadata
+
+When exporting Markdown bootstrap or prompt scaffold, include the theme name and metadata.
+
+If the theme is one of the built-in themes, preserve the official built-in display name and ID.
+
+If the theme is customized, label it as:
+Custom theme based on [Base Theme Name]
+
+OBJECTIVE 6 — PROMPT SCAFFOLD EXPORT UPDATE
+
+Update prompt scaffold export so it carries brand identity clearly.
+
+The generated prompt scaffold should tell the LLM:
+
+- use the selected brand theme
+- do not invent new colors
+- preserve the provided theme variables/class definitions
+- include metadata comments if enabled
+- include visible attribution badge only if enabled and safe
+- apply the theme consistently across Mermaid diagrams
+
+For built-in themes, include brand-specific usage guidance.
+
+Example:
+For OverKill Hill P³:
+Use for technical, architecture, systems, AI tooling, strategy, and executive-facing diagrams.
+
+For AskJamie:
+Use for support, helpdesk, guidance, explainers, and user-assistance workflows.
+
+For Glee-fully:
+Use for friendly, approachable, warm, consumer-facing, and personal-organization diagrams.
+
+OBJECTIVE 7 — MARKDOWN BOOTSTRAP EXPORT UPDATE
+
+Update Markdown bootstrap export to include:
+
+- theme name
+- theme ID
+- version
+- source brand
+- source URLs
+- generated date
+- usage instructions
+- Mermaid init/frontmatter block
+- classDef guidance where applicable
+- attribution settings
+- recommended diagram families
+- warnings about renderer support
+- non-affiliation disclaimer
+
+OBJECTIVE 8 — UI / UX UPDATES
+
+Update the UI so the theme selector clearly distinguishes:
+
+Brand Presets:
+- OverKill Hill P³
+- AskJamie
+- Glee-fully
+
+Utility / Example Presets:
+- BFS Light, if present
+- Neutral Enterprise, if present
+- any existing generic palettes
+
+The theme details panel should display:
+
+- theme name
+- brand family
+- theme intent
+- source/inspiration
+- version
+- attribution settings
+- short description
+
+Do not make the UI cluttered. Keep it clear and professional.
+
+OBJECTIVE 9 — DOCUMENTATION UPDATES
+
+Update or create documentation:
+
+- README.md
+- docs/BRAND_PRESETS.md
+- docs/THEME_METADATA.md
+- docs/ATTRIBUTION.md
+- docs/ROADMAP.md if needed
+
+README should explain that the tool now includes first-party OKHP3 ecosystem brand presets:
+
+- OverKill Hill P³
+- AskJamie
+- Glee-fully
+
+Also include:
+- Not affiliated with Mermaid, Mermaid Chart, or Mermaid.ai
+- Brand presets are based on OKHP3-owned public brand surfaces
+- All transformations remain local in the browser
+- The tool remains a static site
+
+OBJECTIVE 10 — TEST / ACCEPTANCE CRITERIA
+
+After implementation, verify:
+
+1. App builds successfully.
+2. Existing paste → theme → preview → copy workflow still works.
+3. Each of the three brand palettes appears in the theme selector.
+4. Each brand palette changes Mermaid theme output meaningfully.
+5. Markdown bootstrap export includes brand metadata.
+6. Prompt scaffold export includes brand-specific guidance.
+7. Source metadata comments can be toggled.
+8. Visible attribution badge can be toggled.
+9. Visible attribution badge is only applied to safe diagram families.
+10. User can name a custom theme.
+11. Custom theme export includes custom name and timestamp metadata.
+12. No backend, login, payment, file upload, AI API calls, or external storage was added.
+13. User Mermaid code remains local.
+14. Mermaid rendering still works with Mermaid dependency.
+15. Documentation is updated.
+
+IMPORTANT IMPLEMENTATION GUIDANCE
+
+This is a reorientation and maturity pass, not a feature explosion.
+
+Preserve the existing working app.
+
+Prefer small, clean changes:
+- palette schema extension
+- brand preset additions
+- export metadata additions
+- attribution toggles
+- documentation updates
+
+Do not rewrite the entire application unless necessary.
+
+If the current repo structure is Replit-oriented, do not attempt a full repo restructuring in this pass unless it is required. Focus on brand alignment and theme metadata.
+
+At the end, provide:
+- summary of changes
+- files changed
+- brand palettes added
+- attribution behavior
+- remaining gaps
+- recommended next milestone
+
+FINAL GOAL
+
+Mermaid Theme Builder should now feel like an OKHP3 ecosystem tool that can generate brand-aligned Mermaid themes for:
+
+- OverKill Hill P³
+- AskJamie
+- Glee-fully
+
+while still preserving the broader public utility value of a reusable Mermaid theming and prompt-scaffold tool.
