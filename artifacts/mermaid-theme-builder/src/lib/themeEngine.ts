@@ -192,6 +192,107 @@ Do NOT use this theme for:
   return guidanceMap[palette.id] ?? "";
 }
 
+/** Build a YAML frontmatter block (Mermaid v10.5+ format).
+ *  Returns the full ---...--- block as a string.
+ */
+function buildFrontmatter(palette: Palette): string {
+  const vars = buildThemeVars(palette);
+  const themeLines = Object.entries(vars)
+    .map(([k, v]) => `    ${k}: "${v}"`)
+    .join("\n");
+
+  return `---
+config:
+  theme: base
+  themeVariables:
+${themeLines}
+---`;
+}
+
+/** Build a 16-entry semantic classDef library from palette hex values.
+ *
+ *  Classes are derived entirely from the palette's own color tokens —
+ *  no BFS or third-party brand values are ever used here.
+ *
+ *  The "redDash" class uses a fixed deep-red (#3b0e0e / #b91c1c) that is
+ *  an accessibility/warning marker, NOT a brand color.
+ */
+function buildClassDefLibrary(palette: Palette): string {
+  const c = (key: string, fallback: string) =>
+    palette.colors.find((cl) => cl.key === key)?.value ?? fallback;
+
+  const primary        = c("primaryColor",       "#111827");
+  const primaryText    = c("primaryTextColor",    "#f0f0f0");
+  const primaryBorder  = c("primaryBorderColor",  "#888888");
+  const secondary      = c("secondaryColor",      "#1f2937");
+  const tertiary       = c("tertiaryColor",       "#374151");
+  const background     = c("background",          "#ffffff");
+  const mainBkg        = c("mainBkg",             "#1e2330");
+  const nodeBorder     = c("nodeBorder",          "#888888");
+  const clusterBkg     = c("clusterBkg",          "#111827");
+  const titleColor     = c("titleColor",          "#e0e0e0");
+  const lineColor      = c("lineColor",           "#888888");
+
+  const classes = [
+    { name: "primary",     fill: primary,    stroke: primaryBorder, color: primaryText,  extra: "" },
+    { name: "secondary",   fill: secondary,  stroke: primaryBorder, color: primaryText,  extra: "" },
+    { name: "tertiary",    fill: tertiary,   stroke: nodeBorder,    color: primaryText,  extra: "" },
+    { name: "platform",    fill: mainBkg,    stroke: lineColor,     color: primaryText,  extra: "" },
+    { name: "boundary",    fill: clusterBkg, stroke: lineColor,     color: titleColor,   extra: "stroke-dasharray:5" },
+    { name: "actor",       fill: primary,    stroke: primaryBorder, color: primaryText,  extra: "font-weight:bold" },
+    { name: "gate",        fill: primaryBorder, stroke: nodeBorder, color: background,   extra: "" },
+    { name: "control",     fill: tertiary,   stroke: nodeBorder,    color: primaryText,  extra: "" },
+    { name: "log",         fill: secondary,  stroke: lineColor,     color: primaryText,  extra: "font-style:italic" },
+    { name: "question",    fill: mainBkg,    stroke: lineColor,     color: titleColor,   extra: "stroke-dasharray:3" },
+    { name: "accent",      fill: lineColor,  stroke: nodeBorder,    color: background,   extra: "" },
+    { name: "deepBlue",    fill: primary,    stroke: nodeBorder,    color: primaryText,  extra: "stroke-width:2px" },
+    { name: "slate",       fill: background, stroke: lineColor,     color: primary,      extra: "" },
+    { name: "scope",       fill: clusterBkg, stroke: primaryBorder, color: titleColor,   extra: "stroke-width:2px" },
+    { name: "outOfScope",  fill: background, stroke: nodeBorder,    color: primaryText,  extra: "stroke-dasharray:8,opacity:0.6" },
+    { name: "redDash",     fill: "#3b0e0e",  stroke: "#b91c1c",     color: "#fecaca",    extra: "stroke-dasharray:4" },
+  ];
+
+  return classes
+    .map(({ name, fill, stroke, color, extra }) => {
+      const style = [`fill:${fill}`, `stroke:${stroke}`, `color:${color}`, extra].filter(Boolean).join(",");
+      return `    classDef ${name} ${style}`;
+    })
+    .join("\n");
+}
+
+/** Build 6-tier subgraph style patterns for the given palette. */
+function buildSubgraphTiers(palette: Palette): string {
+  const c = (key: string, fallback: string) =>
+    palette.colors.find((cl) => cl.key === key)?.value ?? fallback;
+
+  const primary      = c("primaryColor",      "#111827");
+  const secondary    = c("secondaryColor",    "#1f2937");
+  const tertiary     = c("tertiaryColor",     "#374151");
+  const clusterBkg   = c("clusterBkg",        "#111827");
+  const background   = c("background",        "#ffffff");
+  const lineColor    = c("lineColor",         "#888888");
+  const primaryBorder = c("primaryBorderColor", "#888888");
+  const titleColor   = c("titleColor",        "#e0e0e0");
+
+  return `    %% Tier 1 — Primary system boundary (most prominent)
+    style SubgraphName fill:${primary},stroke:${primaryBorder},color:${titleColor}
+
+    %% Tier 2 — Secondary system or service grouping
+    style SubgraphName fill:${secondary},stroke:${lineColor},color:${titleColor}
+
+    %% Tier 3 — Tertiary context or supporting group
+    style SubgraphName fill:${tertiary},stroke:${lineColor},color:${titleColor}
+
+    %% Tier 4 — Cluster / infrastructure boundary
+    style SubgraphName fill:${clusterBkg},stroke:${lineColor},color:${titleColor},stroke-dasharray:5
+
+    %% Tier 5 — Out-of-scope / external system
+    style SubgraphName fill:${background},stroke:${lineColor},color:${primary},stroke-dasharray:8,opacity:0.7
+
+    %% Tier 6 — Annotation / note boundary (no fill)
+    style SubgraphName fill:transparent,stroke:${lineColor},color:${titleColor},stroke-dasharray:2`;
+}
+
 export function generatePromptScaffold(palette: Palette, options: ExportOptions): string {
   const { diagramFamily, customThemeName } = options;
   const themeName = customThemeName?.trim() || palette.name;
@@ -204,10 +305,11 @@ export function generatePromptScaffold(palette: Palette, options: ExportOptions)
     .map((c) => `  - ${c.label}: \`${c.value}\``)
     .join("\n");
 
-  const initBlock = `%%{init: {"theme": "base", "themeVariables": {${palette.colors
-    .filter((c) => c.key !== "fontFamily")
-    .map((c) => `"${c.key}": "${c.value}"`)
-    .join(", ")}}}}%%`;
+  const initBlock = buildInitDirective(palette);
+  const frontmatterBlock = buildFrontmatter(palette);
+  const classDefBlock = buildClassDefLibrary(palette);
+  const subgraphBlock = buildSubgraphTiers(palette);
+  const brandGuidance = getBrandGuidance(palette);
 
   const metaBlock = `%% Theme: ${themeName}
 %% Theme ID: ${palette.id}
@@ -215,11 +317,19 @@ export function generatePromptScaffold(palette: Palette, options: ExportOptions)
 %% Personal OverKill Hill P³ project by Jamie Hill — overkillhill.com
 %% Not affiliated with Builders FirstSource, Mermaid, Mermaid Chart, or Mermaid.ai`;
 
-  const brandGuidance = getBrandGuidance(palette);
-
   const sourceNote = palette.sourceUrls?.length
     ? `\n**Source:** ${palette.sourceUrls[0]}`
     : "";
+
+  const diagramTypeExample =
+    diagramFamily === "flowchart" || diagramFamily === "unknown"
+      ? `flowchart TD
+    A[Start] --> B[Process]
+    B:::primary --> C{Decision}:::gate
+    C -->|Yes| D[End]:::accent
+    C -->|No| B`
+      : `${diagramFamily}
+    %% Your diagram here`;
 
   return `# Mermaid Diagram Prompt Scaffold — ${themeName}
 
@@ -230,27 +340,95 @@ export function generatePromptScaffold(palette: Palette, options: ExportOptions)
 
 ---
 
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- PART 1 — THREAD OPENER                                             -->
+<!-- Paste this entire section as your first message in a new AI thread -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+
 ## Instructions for AI
 
-When generating ${familyName} diagrams, apply the following visual theme exactly as specified. Do not invent new colors, do not add extra CSS overrides, and do not change the init directive.
+When generating ${familyName} diagrams, apply the following visual theme exactly as specified. Do not invent new colors, do not add extra CSS overrides, and do not change the theme directive.
 ${brandGuidance}
 
 ---
 
-## Required: %%{init}%% directive
+## Required: Theme directive
 
-Add this directive at the VERY TOP of EVERY diagram — before the diagram type keyword.
+Choose ONE of the two formats below based on your renderer. Never use both in the same diagram.
+
+### Format A — \`%%{init}%%\` directive (universal, Mermaid v9+)
+
+> Use this for: Microsoft Loop, Notion, older renderers, or anywhere YAML frontmatter is not supported.
 
 \`\`\`
 ${initBlock}
 \`\`\`
 
+### Format B — YAML frontmatter (preferred, Mermaid v10.5+)
+
+> Use this for: Mermaid Live Editor, VS Code with Mermaid extension, GitHub (where supported). This format is the current Mermaid standard and deprecates \`%%{init}%%\`.
+
+\`\`\`
+${frontmatterBlock}
+\`\`\`
+
+---
+
 ## Required: Metadata comments
 
-Add these comment lines immediately after the \`%%{init}%%\` directive:
+Add these comment lines immediately after the theme directive:
 
 \`\`\`
 ${metaBlock}
+\`\`\`
+
+---
+
+## Semantic classDef library
+
+This is the complete styling vocabulary for this theme. Apply these classDef classes to nodes using \`:::className\` syntax. Do NOT add any other fill, stroke, or color values — use only these classes.
+
+\`\`\`mermaid
+${initBlock}
+flowchart TD
+${classDefBlock}
+
+    %% Usage example: NodeLabel:::primary
+    %% Apply a class to a node: A[My Node]:::secondary
+    %% Apply to a decision node: B{Choice}:::gate
+\`\`\`
+
+### Class reference table
+
+| Class | Role | When to use |
+|-------|------|-------------|
+| \`primary\` | Main action / primary entity | Core nodes, key steps, subject of the diagram |
+| \`secondary\` | Supporting / related entity | Adjacent systems, related processes |
+| \`tertiary\` | Background / context | Passive nodes, reference items |
+| \`platform\` | Platform / infrastructure | Hosting layer, operating environment |
+| \`boundary\` | System boundary (dashed) | External system boundaries, context limits |
+| \`actor\` | Person / user / role | Human actors, teams, personas |
+| \`gate\` | Decision / gateway | Diamond decision nodes, routing logic |
+| \`control\` | Control / management | Orchestrators, managers, approval nodes |
+| \`log\` | Log / audit / record (italic) | Audit trails, event logs, history |
+| \`question\` | Open question / TBD (dashed) | Unknowns, pending decisions, assumptions |
+| \`accent\` | Highlighted / key result | Outcomes, final states, primary outputs |
+| \`deepBlue\` | Deep emphasis / dark primary | Stressed primary nodes, thick border variant |
+| \`slate\` | Neutral / muted | Low-priority nodes, supporting details |
+| \`scope\` | In-scope boundary | Items explicitly in scope |
+| \`outOfScope\` | Out-of-scope (faded, dashed) | Explicitly excluded items |
+| \`redDash\` | Warning / error / blocker | Error states, blockers, known failures |
+
+---
+
+## Subgraph tier patterns
+
+Use \`style SubgraphName ...\` statements to apply visual hierarchy to subgraphs. Replace \`SubgraphName\` with the actual subgraph ID.
+
+\`\`\`mermaid
+${initBlock}
+flowchart TD
+${subgraphBlock}
 \`\`\`
 
 ---
@@ -270,14 +448,16 @@ ${colorLines}
 
 ## Rules
 
-1. ALWAYS start the diagram with the \`%%{init:...}%%\` directive above — no exceptions.
-2. Add the metadata comment block immediately after the init directive.
+1. ALWAYS start the diagram with the theme directive (Format A or Format B above) — no exceptions.
+2. Add the metadata comment block immediately after the theme directive.
 3. Use \`${diagramFamily === "unknown" ? "flowchart TD" : diagramFamily === "flowchart" ? "flowchart TD" : diagramFamily}\` as the diagram type unless the user specifies otherwise.
 4. Keep node labels concise (under 60 characters each).
-5. Do NOT add extra CSS or styling overrides — the init directive handles all visual styling.
-6. Sub-graphs and clusters inherit the theme automatically — use them freely.
-7. Do NOT change any color values — reproduce them exactly as shown above.
-8. If the diagram type changes, preserve the exact same \`%%{init}%%\` directive.
+5. Style nodes using ONLY the classDef classes defined above — apply with \`:::className\` syntax.
+6. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values on individual nodes — use classDef classes instead.
+7. Do NOT change any color values — reproduce them exactly as shown.
+8. Use subgraph tier styles for visual hierarchy — never leave subgraphs unstyled.
+9. If the diagram type changes, preserve the exact same theme directive.
+10. If the diagram type does not support classDef (e.g. sequenceDiagram, erDiagram), omit classDef statements entirely — the theme directive handles all styling.
 
 ---
 
@@ -286,17 +466,73 @@ ${colorLines}
 \`\`\`mermaid
 ${initBlock}
 ${metaBlock}
-${diagramFamily === "flowchart" || diagramFamily === "unknown" ? `flowchart TD
-    A[Start] --> B[Process]
-    B --> C{Decision}
-    C -->|Yes| D[End]
-    C -->|No| B` : `${diagramFamily}
-    %% Your diagram here`}
+${diagramTypeExample}
 \`\`\`
 
 ---
 
-*Generated by [Mermaid Theme Builder](${TOOL_URL}) — paste this scaffold into your AI prompt to maintain visual consistency across all diagrams.*
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- PART 2 — UPDATE PROMPT (style drift prevention)                    -->
+<!-- Use this when continuing a diagram thread and style has drifted    -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+
+## Update Prompt — paste this when style has drifted
+
+> Copy the block below into your AI thread when you notice the diagram is missing its theme directive, using wrong colors, or has lost classDef classes.
+
+---
+
+**[UPDATE — Restore theme contract]**
+
+The diagram above has drifted from the required visual theme. Please regenerate it in full with the following corrections applied:
+
+1. Restore the theme directive at the very top (use Format A or B from the original scaffold — do not omit it).
+2. Restore the metadata comment block immediately after the directive.
+3. Re-apply all node classes using the classDef vocabulary from the original scaffold. Do not add any inline color values.
+4. Do not change any logic, labels, or relationships — only restore the visual styling contract.
+5. Output the complete diagram from top to bottom — do not abbreviate or use "..." placeholders.
+
+Theme contract reference:
+- Theme: **${themeName}** (\`${palette.id}\`)
+- Primary node color: \`${palette.colors.find((c) => c.key === "primaryColor")?.value ?? "n/a"}\`
+- Border color: \`${palette.colors.find((c) => c.key === "primaryBorderColor")?.value ?? "n/a"}\`
+- Accent / line color: \`${palette.colors.find((c) => c.key === "lineColor")?.value ?? "n/a"}\`
+- Font: \`${palette.colors.find((c) => c.key === "fontFamily")?.value ?? "system-ui, sans-serif"}\`
+
+---
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- PART 3 — REPAIR PROMPT (parse error recovery)                      -->
+<!-- Use this when Mermaid throws a parse or render error               -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+
+## Repair Prompt — paste this when the diagram has a parse error
+
+> Copy the block below and fill in the \`[PASTE ERROR HERE]\` section with the actual error text from your renderer.
+
+---
+
+**[REPAIR — Fix parse error without changing theme]**
+
+The diagram below is failing to render with the following error:
+
+\`\`\`
+[PASTE ERROR HERE]
+\`\`\`
+
+Please repair the diagram so it renders correctly. Rules for this repair:
+
+1. Fix only the syntax or structural issue causing the parse error.
+2. Do NOT change the theme directive (\`%%{init}%%\` or YAML frontmatter), metadata comments, or any classDef statements.
+3. Do NOT change any color values or add inline styling.
+4. Do NOT restructure the diagram logic unless the structure itself is the cause of the error.
+5. Output the complete repaired diagram from top to bottom — do not abbreviate.
+
+If the error is caused by an unsupported feature for this diagram type, note the limitation and propose the minimal change needed to fix it while preserving as much of the original intent as possible.
+
+---
+
+*Generated by [Mermaid Theme Builder](${TOOL_URL}) — paste PART 1 into your AI thread to maintain visual consistency. Use PART 2 to restore drift. Use PART 3 to fix parse errors.*  
 *Mermaid Theme Builder is a personal [OverKill Hill P³](https://overkillhill.com) project by Jamie Hill. Not affiliated with Builders FirstSource, Mermaid, Mermaid Chart, or Mermaid.ai.*
 `;
 }

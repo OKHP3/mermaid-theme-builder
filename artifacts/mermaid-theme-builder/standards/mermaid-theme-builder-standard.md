@@ -161,9 +161,13 @@ Must include:
 ### 6.3 Prompt Scaffold export
 
 Must include:
-- Required `%%{init}%%` block
+- Required `%%{init}%%` block (Format A — universal, Mermaid v9+)
+- YAML frontmatter block (Format B — preferred, Mermaid v10.5+), clearly labeled with renderer guidance
+- Semantic classDef library (16 classes derived from palette hex values, no BFS or third-party brand values)
+- Subgraph tier patterns (6 tiers mapped to palette colors)
 - Style preservation rules for the LLM
 - Brand context (when using OKHP3 palettes)
+- Three prompt templates: Thread Opener, Update (drift recovery), Repair (parse error recovery)
 
 ### 6.4 Attribution badge
 
@@ -174,9 +178,56 @@ Must include:
 
 ---
 
-## 7. UI standard
+## 7. Styling vocabulary standard
 
-### 7.1 Capability note
+### 7.1 Semantic classDef library
+
+All Prompt Scaffold exports must include the following 16 semantic classDef classes, derived from the active palette's own hex values. No BFS or third-party brand values may appear in any class. The `redDash` class uses a fixed deep-red as an accessibility/warning marker (not a brand color).
+
+| Class | Role | Fill source | Notes |
+|-------|------|-------------|-------|
+| `primary` | Main action / primary entity | `primaryColor` | Default for key nodes |
+| `secondary` | Supporting / related entity | `secondaryColor` | Adjacent systems, related processes |
+| `tertiary` | Background / context | `tertiaryColor` | Passive nodes, reference items |
+| `platform` | Platform / infrastructure | `mainBkg` | Hosting layer, operating environment |
+| `boundary` | System boundary | `clusterBkg` | Dashed stroke; external system limits |
+| `actor` | Person / user / role | `primaryColor` | Bold font weight |
+| `gate` | Decision / gateway | `primaryBorderColor` (fill) | Accent-fill with background text |
+| `control` | Control / management | `tertiaryColor` | Orchestrators, approval nodes |
+| `log` | Log / audit / record | `secondaryColor` | Italic font style |
+| `question` | Open question / TBD | `mainBkg` | Dashed stroke; pending decisions |
+| `accent` | Highlighted / key result | `lineColor` (fill) | Inverted — background-color text |
+| `deepBlue` | Deep emphasis | `primaryColor` | 2px stroke width variant |
+| `slate` | Neutral / muted | `background` | Low-priority, supporting details |
+| `scope` | In-scope boundary | `clusterBkg` | 2px `primaryBorderColor` stroke |
+| `outOfScope` | Out-of-scope (faded) | `background` | Dashed stroke, 0.6 opacity |
+| `redDash` | Warning / error / blocker | `#3b0e0e` (fixed) | Fixed semantic color — not a palette value |
+
+### 7.2 Subgraph tier patterns
+
+All Prompt Scaffold exports must include the following 6-tier subgraph `style` patterns. Replace `SubgraphName` with the actual subgraph identifier in usage.
+
+| Tier | Purpose | Fill source |
+|------|---------|-------------|
+| Tier 1 | Primary system boundary (most prominent) | `primaryColor` fill, `primaryBorderColor` stroke |
+| Tier 2 | Secondary system or service grouping | `secondaryColor` fill, `lineColor` stroke |
+| Tier 3 | Tertiary context or supporting group | `tertiaryColor` fill, `lineColor` stroke |
+| Tier 4 | Cluster / infrastructure boundary | `clusterBkg` fill, dashed `lineColor` stroke |
+| Tier 5 | Out-of-scope / external system | `background` fill, dashed stroke, 0.7 opacity |
+| Tier 6 | Annotation / note boundary | Transparent fill, dashed `lineColor` stroke |
+
+### 7.3 classDef usage rules
+
+- Nodes are styled exclusively via `:::className` syntax — never via inline `fill:`, `stroke:`, or `color:` attributes on individual nodes
+- classDef blocks are always placed before any node definitions in the diagram
+- Diagram types that do not support classDef (e.g. `sequenceDiagram`, `erDiagram`, `gantt`) must not include classDef statements
+- The `redDash` class must only be used for genuinely problematic states — not decorative use
+
+---
+
+## 8. UI standard
+
+### 8.1 Capability note
 
 A blue `CapabilityNote` component must appear when:
 - `detection.capability !== null`
@@ -185,23 +236,23 @@ A blue `CapabilityNote` component must appear when:
 
 It must NOT appear for flowchart diagrams or unknown input.
 
-### 7.2 Warning banner
+### 8.2 Warning banner
 
 A yellow `WarningBanner` must appear when `detection.warnings.length > 0`.
 
-### 7.3 Header chip
+### 8.3 Header chip
 
 The detected diagram type label must be visible in the app header whenever a recognized diagram type is detected.
 
-### 7.4 Export buttons
+### 8.4 Export buttons
 
 All three export buttons (Styled Code, Markdown, Prompt Scaffold) must be accessible for all detected diagram types including those with limited theming.
 
 ---
 
-## 8. Documentation standard
+## 9. Documentation standard
 
-### 8.1 Required docs
+### 9.1 Required docs
 
 The following must always be current:
 - `README.md`
@@ -210,17 +261,17 @@ The following must always be current:
 - `docs/MERMAID_CAPABILITY_REGISTRY.md`
 - `docs/RELEASE_CHECKLIST.md`
 
-### 8.2 Disclaimer requirement
+### 9.2 Disclaimer requirement
 
 All major docs must include the canonical disclaimer.
 
-### 8.3 Version references
+### 9.3 Version references
 
 When referencing a Mermaid version in docs, always state it as "verified against Mermaid vX.Y.Z" rather than implying it is universally current.
 
 ---
 
-## 9. Testing standard
+## 10. Testing standard
 
 Before any release:
 
@@ -231,7 +282,7 @@ Before any release:
 
 ---
 
-## 10. Versioning standard
+## 11. Versioning standard
 
 - App version is tracked in `package.json`
 - `TOOL_VERSION` in `src/lib/themeEngine.ts` must match `package.json` version
