@@ -1,0 +1,3989 @@
+/* OverKill Hill P³ – 2025 Industrial Blueprint Theme
+   Shared layout + motion for OverKill Hill, Ask Jamie (subsite), and sibling sites.
+*/
+
+/* ===== ROOT TOKENS ======================================================= */
+
+:root {
+  /* Core palette – OverKill Hill P³ industrial stripe family */
+  --okh-teal: #1c3a34;
+  --okh-olive: #676a2c;
+  --okh-ochre: #a06e28;
+  --okh-rust: #5b3a27;
+  --okh-espresso: #2a2320;
+  --okh-orange: #c46a2c; /* rust-orange text accent */
+  --okh-amber: #e6a03c;
+  --okh-paper: #f6f2ee;
+  --okh-gray: #6b7280;
+
+  /* Mapped design tokens (OKH default) */
+  --color-bg: var(--okh-espresso);
+  --color-surface: #111827;
+  --color-surface-soft: #181f26;
+  --color-fg: #e5e7eb;
+  --color-muted: var(--okh-gray);
+  --color-accent: var(--okh-orange);
+  --color-border-subtle: rgba(249, 250, 251, 0.08);
+  /* Mermaid theming – OverKill Hill (default) */
+  --mermaid-primary-color: #111827;
+  --mermaid-primary-text-color: #e5e7eb;
+  --mermaid-primary-border-color: #c46a2c;
+  --mermaid-line-color: #c46a2c;
+  --mermaid-secondary-color: #181f26;
+  --mermaid-tertiary-color: #1c3a34;
+  --mermaid-cluster-bg: #0d1117;
+  --mermaid-edge-label-bg: #181f26;
+
+  /* Typography – OverKill Hill default */
+  --font-heading: "Alfa Slab One", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  --font-body: "DM Sans", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+
+  /* Layout */
+  --max-width: 1120px;
+  --radius-md: 0.75rem;
+  --radius-lg: 1.25rem;
+
+  /* Motion */
+  --shadow-soft: 0 18px 40px rgba(0, 0, 0, 0.5);
+}
+
+/* Optional light theme toggle */
+:root[data-theme="light"] {
+  --color-bg: #eff2f5;
+  --color-surface: #f6f2ee;       /* warm paper — cards/panels */
+  --color-surface-soft: #f0ebe5;  /* slightly richer paper for soft insets */
+  --color-fg: #0f172a;
+  --color-muted: #4b5563;
+  --color-border-subtle: rgba(15, 23, 42, 0.08);
+  --color-accent: var(--okh-orange);
+}
+
+/* ── Body background: JS sets data-theme on <html>, not <body> ────────── */
+html[data-theme="dark"] body {
+  background: radial-gradient(circle at top, #1f2933, #020617);
+}
+
+html[data-theme="light"] body {
+  background: radial-gradient(circle at top, #e5e8ed, #eff2f5);
+}
+
+/* ── Light mode: elements with hardcoded dark backgrounds ──────────────
+   The nav, footer, hero cards, and a few other components are intentionally
+   dark at all times (brand identity). In light mode their var(--color-*)
+   text tokens switch to dark values, which would make them illegible.
+   These overrides keep those surfaces readable without altering the layout.
+   ─────────────────────────────────────────────────────────────────────── */
+
+/* Nav links — nav header stays dark; restore light text */
+html[data-theme="light"] .primary-nav a {
+  color: rgba(229, 231, 235, 0.68);
+}
+html[data-theme="light"] .primary-nav a[aria-current="page"],
+html[data-theme="light"] .primary-nav a.is-current {
+  color: var(--okh-orange);
+}
+
+/* Desktop dropdown — gets var(--color-surface) bg (white in light mode);
+   ensure the link text is dark enough to read on white */
+html[data-theme="light"] .primary-nav .submenu a {
+  color: #1c3a34;
+}
+
+/* Mobile nav — hardcoded dark; restore readable link color */
+@media (max-width: 768px) {
+  html[data-theme="light"] body:not(.glee-main):not(.askjamie-main) .primary-nav a {
+    color: rgba(229, 231, 235, 0.75);
+  }
+}
+
+/* Hero eyebrow — uses var(--color-muted) inside the always-dark hero stripe area */
+html[data-theme="light"] .hero-eyebrow {
+  color: rgba(229, 231, 235, 0.6);
+}
+
+/* "Active Build Zone" card — dark bg, keep text light */
+html[data-theme="light"] body:not(.glee-main):not(.askjamie-main) .site-status {
+  color: #e5e7eb;
+}
+
+/* Hero-forge-card ("What happens at the Hill?") — hardcoded dark gradient bg */
+html[data-theme="light"] .hero-forge-card {
+  color: #e5e7eb;
+}
+
+/* "Projects from the forge" dark strip — remove separation in light mode */
+html[data-theme="light"] .stripe-bg {
+  background: none;
+  border-top: none;
+  border-bottom: none;
+}
+
+/* Projects page: hero has no dark-band background, so restore readable text in light mode */
+html[data-theme="light"] .projects-main .hero {
+  color: var(--color-fg);
+}
+
+/* ── Card link hover: orange in both light and dark mode ──────────────── */
+.card a:hover,
+.card a:focus-visible {
+  color: var(--okh-orange);
+  text-decoration-color: var(--okh-orange);
+}
+
+/* Footer — hardcoded #020617 bg; keep all footer text readable */
+html[data-theme="light"] .site-footer {
+  color: rgba(229, 231, 235, 0.75);
+}
+html[data-theme="light"] .footer-column a {
+  color: rgba(229, 231, 235, 0.6);
+}
+html[data-theme="light"] .footer-column a:hover {
+  color: var(--okh-orange);
+}
+html[data-theme="light"] .footer-bottom {
+  color: rgba(229, 231, 235, 0.45);
+}
+
+
+/* ===== RESET & BASE ====================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: radial-gradient(circle at top, #1c3a34, #020617);
+  color: var(--color-fg);
+  font-family: var(--font-body);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Branded focus ring for keyboard users */
+a:focus-visible,
+button:focus-visible,
+.nav-toggle:focus-visible,
+.btn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-heading);
+  margin: 0 0 0.75rem;
+}
+
+p {
+  margin: 0 0 1rem;
+}
+
+ul {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+button {
+  font-family: inherit;
+}
+
+/* ===== UTILS & LAYOUT ==================================================== */
+
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* Global vertical rhythm + gentle side breathing room
+   for all major sections across all brands */
+.content-section {
+  padding-block: 4rem;      /* top / bottom */
+  padding-inline: min(2.5rem, 4vw);       /* left / right */
+}
+
+/* Subtle divider between stacked sections */
+.content-section + .content-section {
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+@media (min-width: 900px) {
+  .content-section {
+    padding-block: 4.5rem;  /* keep the slightly taller desktop spacing */
+  }
+}
+
+.grid {
+  display: grid;
+  gap: 1.75rem;
+}
+
+/* ===== UTILS & LAYOUT ==================================================== */
+
+.grid {
+  display: grid;
+  gap: 1.75rem;
+}
+
+/* Define .grid-3 once.  Use a smaller minimum size so a column can shrink on phones. */
+.grid-3 {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
+}
+
+/* Collapse to a single column sooner (tablet + phone). */
+@media (max-width: 1024px) {
+  .grid-3 {
+    grid-template-columns: 1fr;
+  }
+
+  /* Disable reveal-on-scroll on smaller widths so content isn’t hidden */
+  .reveal-on-scroll {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* Make mini diagrams more flexible on narrow screens */
+@media (max-width: 768px) {
+  .glee-mermaid-shell--mini .mermaid {
+    min-height: 8rem;
+    overflow-x: auto;
+  }
+}
+
+/* Cards */
+.card {
+  background: var(--color-surface-soft);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-subtle);
+  padding: 1.5rem 1.75rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.card-actions {
+  display: flex;
+  gap: 0.75rem;      /* space between buttons */
+  flex-wrap: wrap;   /* lets them wrap on tiny screens if needed */
+}
+
+/* override any full‑width button styles inside cards */
+.card-actions .btn {
+  width: auto;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card h3 {
+  margin-bottom: 0.5rem;
+}
+
+.card p:last-child {
+  margin-bottom: 0;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.7rem 1.4rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease,
+    background 0.15s ease, border-color 0.15s ease;
+  text-decoration: none;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.7rem 1.4rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease,
+    background 0.15s ease, border-color 0.15s ease;
+  text-decoration: none;
+  background: linear-gradient(135deg, #c46a2c, #e6a03c);
+  color: #0f172a;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+  text-decoration: none;
+}
+
+.btn-quiet {
+  background: transparent;
+  border-color: var(--color-border-subtle);
+  color: var(--color-muted);
+}
+
+.btn-quiet:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+/* Screen-reader-only text (for buttons like the mobile nav toggle) */
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* Hide the visual brand wordmark next to the favicon in the header */
+.site-header .logo .brand { 
+  /* EITHER hide completely... */
+  /* display: none; */
+
+  /* ...OR keep for screen readers only (recommended) */
+  /* replace the rule above with: */
+  position: absolute;
+  left: -9999px;
+}
+
+/* Skip link */
+.skip-link {
+  position: absolute;
+  left: -999px;
+  top: 0;
+  padding: 0.5rem 1rem;
+  background: #111827;
+  color: #f9fafb;
+  z-index: 999;
+}
+
+.skip-link:focus {
+  left: 1rem;
+  top: 1rem;
+}
+
+/* ===== HEADER & NAV ====================================================== */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: radial-gradient(circle at top, #1f2933, #020617);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+  backdrop-filter: blur(18px);
+}
+
+.site-header .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 3.75rem;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.logo img {
+  border-radius: 0.8rem;
+}
+
+.primary-nav ul {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin: 0;
+  padding: 0;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.primary-nav a {
+  color: var(--color-muted);
+  text-decoration: none;
+  position: relative;
+}
+
+.primary-nav a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -0.2rem;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #ff7a00, #ffb347);
+  transition: width 0.2s ease;
+}
+
+/* Current / active nav link */
+.primary-nav a[aria-current="page"],
+.primary-nav a.is-current {
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+.primary-nav a[aria-current="page"]::after,
+.primary-nav a.is-current::after {
+  width: 100%;
+}
+
+.primary-nav a:hover::after {
+  width: 100%;
+}
+
+/* ========== Primary nav: About submenu (shared pattern) ========== */
+
+/* Parent list item for dropdown */
+.primary-nav .has-submenu {
+  position: relative;
+}
+
+/* Base (mobile / stacked) submenu styles */
+.primary-nav .has-submenu > .submenu {
+  list-style: none;
+  margin: 0.25rem 0 0;
+  padding-left: 1.25rem; /* indent under About on mobile */
+  display: block;        /* visible when nav is stacked */
+}
+
+/* Ensure nested UL doesn't inherit flex row layout */
+.primary-nav .has-submenu > .submenu {
+  display: block;
+}
+
+.primary-nav .has-submenu > .submenu li {
+  margin: 0; /* rely on link padding for touch targets */
+}
+
+.primary-nav .has-submenu > .submenu a {
+  display: block;
+  padding: 0.25rem 0;
+}
+
+/* Desktop dropdown behaviour */
+@media (min-width: 768px) {
+  .primary-nav .has-submenu > .submenu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 0;
+    padding: 0.5rem 0.75rem;
+    min-width: 12rem;
+    border-radius: 0 0 4px 4px;
+
+    /* Adjust these to match each site's header bg/shadow */
+    background-color: #ffffff;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+
+    display: none;  /* hidden by default on larger screens */
+    z-index: 20;
+  }
+
+  .primary-nav .has-submenu:hover > .submenu,
+  .primary-nav .has-submenu:focus-within > .submenu {
+    display: block;
+  }
+
+  /* Simple caret on the About parent */
+  .primary-nav .has-submenu > a::after {
+    content: "▾";
+    font-size: 0.7em;
+    margin-left: 0.25em;
+  }
+
+  .primary-nav .has-submenu > .submenu li + li a {
+    margin-top: 0.15rem;
+  }
+}
+
+/* Submenu (desktop default: hidden, appears on hover/focus) */
+.primary-nav .submenu {
+  list-style: none;
+  margin: 0;
+  padding: 0.5rem 0;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 11rem;
+  background-color: var(--color-surface, #ffffff);
+  border-radius: 0 0 4px 4px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  display: none;
+  z-index: 1000;
+}
+
+.primary-nav .submenu li {
+  margin: 0;
+}
+
+.primary-nav .submenu a {
+  display: block;
+  padding: 0.35rem 1rem;
+  white-space: nowrap;
+}
+
+/* Show submenu when the parent is hovered or focused (desktop / keyboard) */
+.primary-nav .has-submenu:hover > .submenu,
+.primary-nav .has-submenu:focus-within > .submenu {
+  display: block;
+}
+
+/* --- Mobile: keep submenu expanded & inline --- */
+/* Adjust breakpoint to match your existing nav breakpoint if needed */
+@media (max-width: 768px) {
+  .primary-nav .has-submenu {
+    position: static;
+  }
+
+  .primary-nav .submenu {
+    position: static;
+    display: block;           /* always visible when the main nav is open */
+    box-shadow: none;
+    background: transparent;
+    padding: 0.25rem 0 0.5rem 0;
+  }
+
+  .primary-nav .submenu a {
+    padding-left: 1.5rem;     /* simple visual indent under "About" */
+    font-size: 0.95em;        /* optional: slightly smaller to read as secondary */
+  }
+}
+
+/* ===== HEADINGS VARIANTS ================================================= */
+
+/* Global OKH headings: adjust weight and letter-spacing */
+body:not(.glee-main):not(.askjamie-main) h1,
+body:not(.glee-main):not(.askjamie-main) h2,
+body:not(.glee-main):not(.askjamie-main) h3 {
+  font-family: "Alfa Slab One", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  font-weight: 400;            /* Reduce weight from 700 to 400 */
+  letter-spacing: 0.05em;      /* Increase letter-spacing for clarity */
+}
+
+/* For Home hero title (“Precision · Protocol · Promptcraft”) */
+body:not(.glee-main):not(.askjamie-main) .hero h1 {
+  font-size: clamp(2.4rem, 3.6vw, 3.0rem);  /* Slightly smaller for readability */
+  letter-spacing: 0.08em;     /* Further breathing room between letters */
+  line-height: 1.08;          /* Reduce line height slightly */
+}
+
+/* For the “What happens at the Hill?” section */
+body:not(.glee-main):not(.askjamie-main) .hero-forge-card h3 {
+  font-size: clamp(1.2rem, 2.1vw, 1.6rem);  /* Size tuned for this secondary heading */
+  font-weight: 600;
+  letter-spacing: 0.06em;      /* Consistent letter-spacing */
+}
+
+/* Projects page header */
+body:not(.glee-main):not(.askjamie-main) .projects-hero h1 {
+  font-size: clamp(2.2rem, 3.2vw, 2.7rem);  /* Smaller than hero but still impactful */
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+
+/* Card titles (in Projects section) */
+body:not(.glee-main):not(.askjamie-main) .project-card h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;   /* Lighter weight */
+}
+
+/* ===== PRE‑OPENING / ACTIVE BUILD NOTE =============================== */
+
+.site-status {
+  margin-top: 1rem;
+  margin-bottom: 1.25rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.9rem;
+  border: 1px dashed var(--color-border-subtle);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.site-status-eyebrow {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  margin: 0 0 0.25rem;
+  opacity: 0.9;
+}
+
+.site-status-body {
+  margin: 0;
+}
+
+/* Brand-specific tints */
+.askjamie-main .site-status {
+  background: #fdfbf7;
+  border-color: #d7d7d7;
+}
+
+.glee-main .site-status {
+  background: #fffafa;
+  border-color: #ffd8d2;
+}
+
+body:not(.glee-main):not(.askjamie-main) .site-status {
+  background: rgba(15, 23, 42, 0.9);
+  border-color: rgba(148, 163, 184, 0.6);
+}
+
+.site-specials {
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+  padding: 0.5rem 1rem;
+  margin-block: 0.75rem;
+  border-radius: 999px; /* or small radius if you prefer */
+  font-size: 0.9rem;
+}
+
+.site-specials-label {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.site-specials-link {
+  text-decoration: underline;
+}
+
+.site-specials--jamie { /* muted, mid-century */
+  background: #e4f0ee;
+}
+
+.site-specials--glee { /* bright & playful */
+  background: #ffe8a8;
+}
+
+.site-specials--okh { /* forge / industrial */
+  background: #1c2127;
+  color: #f4f7fa;
+}
+
+/* ===== "LATEST MILESTONE" HIGHLIGHT SECTION ========================= */
+
+.latest-block .section-header p {
+  max-width: 40rem;
+}
+
+.latest-card {
+  max-width: none;
+}
+
+/* Let the 'Newest addition' card stretch to the full container width on Glee */
+.glee-main .latest-block .latest-card {
+  max-width: none;   /* remove the 38rem cap */
+  width: 100%;       /* occupy the full width of the container */
+}
+
+/* Pill label for newest addition */
+.latest-pill {
+  display: inline-block;
+  margin-bottom: 0.4rem;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+}
+
+/* Brand-specific pills */
+.askjamie-main .latest-pill {
+  background: #e1ecef;
+  color: #2d6f7e;
+}
+
+.glee-main .latest-pill {
+  background: #ffe7e0;
+  color: #d94f63;
+}
+
+body:not(.glee-main):not(.askjamie-main) .latest-pill {
+  background: #111827;
+  color: #f9fafb;
+}
+
+/* === Newest Addition Image Zone ======================= */
+.latest-image {
+  margin: 1rem 0 1.25rem;
+  text-align: center;
+}
+
+.latest-image img {
+  border-radius: 1rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  max-width: 100%;
+  height: auto;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.latest-image img:hover {
+  transform: scale(1.03);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.22);
+}
+
+@media (min-width: 768px) {
+  .latest-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 1fr);
+    align-items: center;
+    gap: 2rem;
+  }
+
+  .latest-image {
+    margin: 0;
+  }
+}
+
+/* Make the image link and submenu feel like one unit */
+.latest-image-link {
+  display: inline-block;
+}
+
+.latest-submenu {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.latest-submenu-link {
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+.latest-submenu-link:hover,
+.latest-submenu-link:focus-visible {
+  text-decoration: none;
+}
+
+/* ===== BRAND HEADER VARIANTS ============================================ */
+
+/* Ask Jamie + Glee share the light, paper header instead of OKH blueprint */
+
+.askjamie-main .site-header,
+.glee-main .site-header {
+  background: #f6f2ee;
+  border-bottom: 1px solid #d7d7d7;
+  box-shadow: none;
+}
+
+.glee-main .site-header {
+  border-bottom-color: #ffdcd2;
+}
+
+.askjamie-main .site-header .primary-nav a,
+.glee-main .site-header .primary-nav a {
+  color: #6b6b6b;
+}
+
+.glee-main .site-header .primary-nav a {
+  color: #6b5e57;
+}
+
+.askjamie-main .primary-nav a {
+  color: #2e2b29;
+}
+
+.askjamie-main .site-header .primary-nav a::after {
+  background: linear-gradient(90deg, #2d6f7e, #3c8ea1);
+}
+
+.askjamie-main .primary-nav a[aria-current="page"],
+.askjamie-main .primary-nav a.is-current {
+  color: #2d6f7e; /* AskJamie teal */
+}
+
+.glee-main .site-header .primary-nav a::after {
+  background: linear-gradient(90deg, #d35b2d, #f3b932);
+}
+
+.glee-main .primary-nav a[aria-current="page"],
+.glee-main .primary-nav a.is-current {
+  color: #d35b2d; /* Glee rust */
+}
+
+/* Glee/AskJamie mobile toggle styling */
+.askjamie-main .nav-toggle,
+.glee-main .nav-toggle {
+  padding: 0.4rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  background: rgba(246, 242, 238, 0.98); /* paper tone */
+}
+
+.askjamie-main .nav-toggle .bar,
+.glee-main .nav-toggle .bar {
+  background: #2e2b29; /* Glee/AskJamie dark bar */
+}
+
+.askjamie-main .site-header.scrolled,
+.glee-main .site-header.scrolled {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.16);
+}
+
+/* Mobile nav toggle */
+.nav-toggle {
+  display: none;
+  background: none;
+  border: none;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+}
+
+/* three-bar hamburger */
+.nav-toggle .bar {
+  display: block;
+  width: 26px;
+  height: 3px;
+  border-radius: 999px;
+  background: #e5e7eb;
+  margin: 4px 0;
+}
+
+/* Header scrolled state */
+.site-header.scrolled {
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7);
+}
+
+/* Responsive nav */
+@media (max-width: 768px) {
+  .primary-nav {
+    position: fixed;
+    inset: 3.75rem 0 auto 0;
+    background: #020617; /* default: OverKill blueprint */
+    transform: translateY(-120%);
+    transition: transform 0.2s ease;
+  }
+
+  /* Brand-specific mobile menu backgrounds */
+  body.askjamie-main .primary-nav,
+  body.glee-main .primary-nav {
+    background: #f6f2ee;                 /* paper tone */
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+  }
+
+  /* Make sure link color stays readable on the light background */
+  body.askjamie-main .primary-nav a,
+  body.glee-main .primary-nav a {
+    color: #2e2b29;
+  }
+
+  .site-header.nav-open .primary-nav {
+    transform: translateY(0);
+  }
+
+  .primary-nav ul {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem 1.5rem 1.5rem;
+  }
+
+  .nav-toggle {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* Theme toggle button (small icon in header) */
+.theme-toggle {
+  margin-left: 0.75rem;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  background: rgba(15, 23, 42, 0.7);
+  color: #f9fafb;
+  font-size: 0.9rem;
+  padding: 0.25rem 0.6rem;
+  cursor: pointer;
+}
+
+/* ===== HERO – BLUEPRINT FORGE =========================================== */
+
+.hero {
+  position: relative;
+  min-height: 72vh;
+  display: flex;
+  align-items: center;
+  color: #f9fafb;
+  overflow: hidden;
+}
+
+.hero-inner {
+  position: relative;
+  z-index: 1;
+  padding: 4rem 0 3rem;
+}
+
+.hero-grid {
+  display: grid;
+  gap: 2.5rem;
+}
+
+@media (min-width: 900px) {
+  .hero-grid {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    align-items: center;
+  }
+}
+
+.hero-eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.8rem;
+  color: var(--color-muted);
+  margin-bottom: 0.7rem;
+}
+
+.hero h1 {
+  font-size: clamp(2.4rem, 4vw, 3.2rem);
+  margin-bottom: 0.6rem;
+}
+
+.hero-subline {
+  font-size: 1.05rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: #9ca3af;
+  margin-bottom: 1.5rem;
+}
+
+.hero-tagline {
+  max-width: 32rem;
+  color: #e5e7eb;
+  margin-bottom: 1.75rem;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.hero-forge-card {
+  background: radial-gradient(circle at top left, #1f2933, #020617);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  padding: 1.4rem 1.5rem;
+  box-shadow: var(--shadow-soft);
+  font-size: 0.95rem;
+}
+
+/* Blueprint animated background */
+.hero-blueprint-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.hero-blueprint-bg::before,
+.hero-blueprint-bg::after {
+  content: "";
+  position: absolute;
+  inset: -20%;
+  background-image: repeating-linear-gradient(
+      0deg,
+      rgba(148, 163, 184, 0.14),
+      rgba(148, 163, 184, 0.14) 1px,
+      transparent 1px,
+      transparent 18px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(148, 163, 184, 0.09),
+      rgba(148, 163, 184, 0.09) 1px,
+      transparent 1px,
+      transparent 18px
+    );
+  opacity: 0.65;
+  mix-blend-mode: screen;
+  animation: blueprintShift 20s linear infinite;
+}
+
+.hero-blueprint-bg::after {
+  opacity: 0.4;
+  filter: blur(1px);
+}
+
+/* 20-second loop animation */
+@keyframes blueprintShift {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(-40px, -30px, 0);
+  }
+  100% {
+    transform: translate3d(-80px, -60px, 0);
+  }
+}
+
+.hero-side {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.hero-visual {
+  max-width: 320px;
+  margin-left: auto;
+}
+
+.hero-illustration {
+  border-radius: 1rem;
+  box-shadow: var(--shadow-soft);
+}
+
+@media (max-width: 899px) {
+  .hero-visual {
+    max-width: 260px;
+    margin: 0 auto 1.5rem;
+  }
+}
+
+/* ===================================================================== */
+/* BRAND SIGNATURE STRIPES – HORIZONTAL DRIFT                            */
+/* ===================================================================== */
+
+.brand-stripes {
+  position: absolute;
+  inset: -12% 0;              /* bleed a bit above/below */
+  z-index: -2;                /* behind glow/paper + content */
+  pointer-events: none;
+  opacity: 0.75;
+  background-size: 200% 100%; /* wider than screen so we can pan horizontally */
+  animation: stripeDrift 60s linear infinite;
+}
+
+/* OverKill Hill P³ – industrial stripe stack */
+.brand-stripes--okh {
+  background-image: linear-gradient(
+    to bottom,
+    #1c3a34 0%,
+    #1c3a34 20%,
+    #676a2c 20%,
+    #676a2c 40%,
+    #a06e28 40%,
+    #a06e28 60%,
+    #5b3a27 60%,
+    #5b3a27 80%,
+    #2a2320 80%,
+    #2a2320 100%
+  );
+}
+
+/* Glee-fully – retro rainbow spectrum */
+.brand-stripes--glee {
+  background-image: linear-gradient(
+    to bottom,
+    #f6f2ee 0%,
+    #f6f2ee 14%,
+    #f3b932 14%,
+    #f3b932 28%,
+    #d35b2d 28%,
+    #d35b2d 42%,
+    #9e3b2e 42%,
+    #9e3b2e 56%,
+    #2d6f7e 56%,
+    #2d6f7e 70%,
+    #0d2b3a 70%,
+    #0d2b3a 100%
+  );
+}
+
+/* (Optional) Ask Jamie – light, subtle echo of OverKill stripes */
+.brand-stripes--jamie {
+  background-image: linear-gradient(
+    to bottom,
+    #f6f2ee 0%,
+    #f6f2ee 20%,
+    #e1ecef 20%,
+    #e1ecef 40%,
+    #d9dfd1 40%,
+    #d9dfd1 60%,
+    #f2d7b1 60%,
+    #f2d7b1 80%,
+    #f6f2ee 80%,
+    #f6f2ee 100%
+  );
+  opacity: 0.6;
+}
+
+/* Slow horizontal drift */
+@keyframes stripeDrift {
+  0% {
+    background-position: 0% 0;
+  }
+  50% {
+    background-position: -50% 0;
+  }
+  100% {
+    background-position: 0% 0;
+  }
+}
+
+/* Respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .brand-stripes {
+    animation: none;
+    background-position: 0 0;
+  }
+}
+
+/* ===== SECTION STYLES ==================================================== */
+
+.section-header {
+  margin-bottom: 2.5rem;
+}
+
+.section-header p {
+  color: var(--color-muted);
+  max-width: 36rem;
+}
+
+/* Striped / alternate background */
+.stripe-bg {
+  background: radial-gradient(circle at top, #020617, #020617);
+  border-top: 1px solid rgba(148, 163, 184, 0.22);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.22);
+}
+
+/* Two-column layout */
+.two-column {
+  display: grid;
+  gap: 2rem;
+}
+
+@media (min-width: 900px) {
+  .two-column {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  }
+}
+
+.feature-list {
+  list-style: none;
+  padding: 0;
+}
+
+.feature-list li {
+  margin-bottom: 0.75rem;
+}
+
+/* Manifesto */
+.manifesto-blockquote {
+  border-left: 4px solid var(--color-accent);
+  padding-left: 1.25rem;
+  margin: 0 0 1.75rem;
+  font-size: 1.05rem;
+}
+
+/* Projects cards */
+.project-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* About */
+.about-grid {
+  display: grid;
+  gap: 2rem;
+}
+
+@media (min-width: 900px) {
+  .about-grid {
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  }
+}
+
+/* CTA section */
+.contact-cta {
+  text-align: center;
+  padding: 4rem 0 4.5rem;
+}
+
+.contact-cta p {
+  max-width: 40rem;
+  margin: 0 auto 1.5rem;
+}
+
+/* ===== FOOTER ============================================================ */
+
+.site-footer {
+  border-top: 1px solid rgba(148, 163, 184, 0.25);
+  background: #020617;
+  margin-top: 3rem;
+  padding-top: 2.5rem;
+}
+
+.footer-grid {
+  display: grid;
+  gap: 1.75rem;
+}
+
+@media (min-width: 900px) {
+  .footer-grid {
+    grid-template-columns: 2fr 1.2fr 1.2fr;
+  }
+}
+
+.footer-column h3,
+.footer-column h4 {
+  margin-bottom: 0.75rem;
+}
+
+.footer-column ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-column li {
+  margin-bottom: 0.4rem;
+}
+
+.footer-column a {
+  color: var(--color-muted);
+}
+
+.footer-column a:hover {
+  color: var(--color-accent);
+}
+
+.footer-bottom {
+  border-top: 1px solid rgba(107, 114, 128, 0.45);
+  margin-top: 2rem;
+  padding: 0.9rem 0;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--color-muted);
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ===== SCROLL REVEAL ===================================================== */
+
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.reveal-on-scroll.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Chat mock layout – shared structure, brand-specific colors layered on top */
+.chat-mock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.chat-bubble {
+  max-width: 34rem;
+  padding: 0.85rem 1rem;
+  border-radius: 0.9rem;
+  border: 1px solid var(--color-border-subtle);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.chat-bubble.user {
+  align-self: flex-start;
+}
+
+.chat-bubble.assistant {
+  align-self: flex-end;
+}
+
+
+/* 
+Custom styles for the under‑construction page
+We copy the grid and layout from the AskJamie system pages but namespace
+them with our own classes. This avoids carrying over AskJamie names while
+preserving the same responsive hero structure and alignment. The classes
+defined here work together with the shared theme to create a two‑column
+hero on desktop that stacks neatly on smaller screens.  Visual alignment
+for the image and copy mirrors the original design while using the
+OverKill Hill industrial stripes.
+*/
+.under-construction-hero {
+  position: relative;
+  padding: 4rem 0 3.25rem;
+}
+.under-construction-hero-grid {
+  display: grid;
+  gap: 2.5rem;
+  align-items: center;
+}
+@media (min-width: 900px) {
+  .under-construction-hero-grid {
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  }
+}
+.under-construction-hero-copy {
+  max-width: 38rem;
+  padding: 0 2rem 0 2.75rem;
+}
+@media (max-width: 768px) {
+  .under-construction-hero-copy {
+    padding: 0 1.75rem;
+  }
+}
+.under-construction-hero-visual {
+  display: flex;
+  justify-content: center;
+}
+@media (min-width: 900px) {
+  .under-construction-hero-visual {
+    justify-content: flex-end;
+  }
+}
+
+
+/*     Custom 404 styling
+
+The generic hero styles in the base theme assume a relatively small
+illustration on the right. To properly showcase the wide mechanical
+sentinel artwork used on this error page, we override two rules:
+
+- `.hero-visual` on the #404 section gets centered with a top margin.
+- `.hero-illustration` within that section can grow up to 1120px wide on
+  large screens while still scaling responsively.
+*/
+/* Increase the width of the hero illustration on the 404 page and center it */
+
+#404 .hero-visual {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+}
+#404 .hero-illustration {
+  display: block;
+  max-width: min(100%, 1120px);
+  height: auto;
+}
+
+/* ===================================================================== */
+/* GLOBAL MERMAID – DEFAULT OVERKILL HILL P³                             */
+/* ===================================================================== */
+
+/* Base container; used everywhere unless a subsite override applies */
+.mermaid {
+  max-width: 100%;
+  display: block;
+  overflow: hidden;
+}
+
+/* Hide raw Mermaid code while the library processes it — prevents
+   long un-wrapped text lines from blowing out page width on load */
+.mermaid:not([data-processed="true"]) {
+  visibility: hidden;
+  min-height: 6rem;
+}
+
+/* Once processed, SVG is safe to show */
+.mermaid[data-processed="true"] {
+  visibility: visible;
+  overflow: visible;
+}
+
+/* Default OKH P³ look (body without askjamie-main / glee-main) */
+body:not(.askjamie-main):not(.glee-main) .mermaid svg {
+  width: 100%;
+  height: auto;
+}
+
+/* Nodes */
+body:not(.askjamie-main):not(.glee-main) .mermaid .node rect,
+body:not(.askjamie-main):not(.glee-main) .mermaid .node circle {
+  rx: 6px;
+  ry: 6px;
+  fill: var(--color-surface-soft);
+  stroke: var(--color-accent);
+  stroke-width: 1.5px;
+}
+
+/* Labels */
+body:not(.askjamie-main):not(.glee-main) .mermaid .label text {
+  fill: var(--color-fg);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+}
+
+/* Edges */
+body:not(.askjamie-main):not(.glee-main) .mermaid .edgePath path {
+  stroke: rgba(148, 163, 184, 0.85);  /* slate rail */
+  stroke-width: 1.5px;
+}
+
+/* Clusters / grouped sections */
+body:not(.askjamie-main):not(.glee-main) .mermaid .cluster rect {
+  fill: #020617;
+  stroke: rgba(148, 163, 184, 0.75);
+}
+
+/* Clickable affordance – applies to all brands */
+.mermaid a {
+  cursor: pointer;
+}
+
+/* Default OKH tooltip styling */
+body:not(.askjamie-main):not(.glee-main) .mermaidTooltip {
+  background-color: #020617;
+  color: #e5e7eb;
+  border-radius: 999px;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.75rem;
+  border: 1px solid rgba(148, 163, 184, 0.8);
+}
+
+/* ===================================================================== */
+/* ASK JAMIE SUBSITE – MID-CENTURY PAPER + TEAL                          */
+/* ===================================================================== */
+
+.askjamie-main {
+  /* Palette + tokens */
+  --color-bg: #f6f2ee;           /* paper base */
+  --color-surface: #fdfbf7;
+  --color-surface-soft: #f6f2ee;
+  --color-fg: #2e2b29;
+  --color-muted: #6b6b6b;
+  --color-accent: #2d6f7e;
+  --color-border-subtle: #d7d7d7;
+  
+  /* Mermaid theming – AskJamie (teal + paper) */
+  --mermaid-primary-color: #fdfbf7;
+  --mermaid-primary-text-color: #2e2b29;
+  --mermaid-primary-border-color: #2d6f7e;
+  --mermaid-line-color: #2d6f7e;
+  --mermaid-secondary-color: #f6f2ee;
+  --mermaid-tertiary-color: #e1ecef;
+  --mermaid-cluster-bg: #f9f7f3;
+  --mermaid-edge-label-bg: #f6f2ee;
+
+  --font-heading: "Baloo 2", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  --font-body: "Open Sans", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  --font-accent: "Kalam", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-body);
+}
+
+/* Neutralize dark blueprint vibe inside AskJamie */
+.askjamie-main .hero {
+  background: none;
+  color: #2e2b29;
+}
+
+/* Brand stripes behind the hero */
+.askjamie-main .brand-stripes--jamie {
+  background-image: linear-gradient(
+    to bottom,
+    /* deep teal */ #007c84 0%,
+    #007c84 20%,
+    /* aqua */ #76b2ba 20%,
+    #76b2ba 40%,
+    /* cream */ #f5ead9 40%,
+    #f5ead9 60%,
+    /* warm beige */ #d5ba9a 60%,
+    #d5ba9a 80%,
+    /* mocha */ #69584c 80%,
+    #69584c 100%
+  );
+  opacity: 0.8;
+}
+
+/* Stripe background sections (e.g. “Where Jamie fits”) */
+.askjamie-main .stripe-bg {
+  background: #f7f3ee;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+/* Hero paper card */
+.askjamie-hero {
+  position: relative;
+  padding: 4rem 0 3.25rem;
+}
+
+.askjamie-hero-visual {
+  display: flex;
+  justify-content: center;
+}
+
+@media (min-width: 900px) {
+  .askjamie-hero-visual {
+    justify-content: flex-end;
+  }
+}
+
+.askjamie-paper {
+  position: absolute;
+  inset: 8% 2% 0 2%;/* ~80% width, reveals a little stripe on each side */
+  background: #f6f2ee;
+  background-image: radial-gradient(
+      circle at 0 0,
+      rgba(0, 0, 0, 0.05),
+      transparent 55%
+    ),
+    radial-gradient(
+      circle at 100% 100%,
+      rgba(0, 0, 0, 0.04),
+      transparent 55%
+    );
+  transform: rotate(-2deg);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.askjamie-hero-inner {
+  position: relative;
+  z-index: 1;
+}
+
+.askjamie-hero-grid {
+  display: grid;
+  gap: 2.5rem;
+  align-items: center;
+}
+
+@media (min-width: 900px) {
+  .askjamie-hero-grid {
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  }
+}
+
+/* Keep the hero content comfortably inside the paper */
+.askjamie-hero-copy {
+  max-width: 38rem;         /* prevents the text from running too wide */
+  padding: 0 2rem 0 2.75rem; /* extra left padding to pull logo/text onto the paper */
+}
+
+/* On smaller screens, use slightly softer padding so it doesn't feel cramped */
+@media (max-width: 768px) {
+  .askjamie-hero-copy {
+    padding: 0 1.75rem;
+  }
+}
+
+/* === AskJamie system pages (404, under-construction, etc.) ============ */
+
+/* Stacked hero variant with one big illustration */
+.askjamie-hero.askjamie-hero--system .askjamie-hero-inner {
+  text-align: center;
+}
+
+.askjamie-hero-visual--full {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+}
+
+/* Wide illustration (404 / error) */
+.askjamie-system-hero-img {
+  display: block;
+  max-width: min(100%, 1120px);
+  height: auto;
+}
+
+/* Under-construction layout: single-column with large art */
+.askjamie-hero--under-construction .askjamie-hero-grid {
+  grid-template-columns: minmax(0, 1fr);
+  text-align: center;
+  justify-items: center;
+}
+
+.askjamie-hero--under-construction .askjamie-hero-copy {
+  max-width: 40rem;
+  margin: 0 auto 2rem;
+}
+
+.askjamie-hero--under-construction .askjamie-hero-visual {
+  justify-content: center;
+}
+
+/* Large hero image inside the angled paper card */
+.askjamie-under-image {
+  display: block;
+  max-width: min(100%, 960px);
+  height: auto;
+  border-radius: 1.25rem;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+}
+
+/* Hero copy */
+.askjamie-hero-copy .eyebrow {
+  font-size: 0.85rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase; /* overridden by .askjamie-main .eyebrow below */
+  color: #3c8ea1;
+  margin-bottom: 0.5rem;
+}
+
+.askjamie-hero-copy h1 {
+  font-size: clamp(2.2rem, 4vw, 2.8rem);
+  font-family: "Baloo 2", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+}
+
+.askjamie-hero-copy .hero-subtitle {
+  font-size: 1.02rem;
+  color: #4b5563;
+  margin-bottom: 0.75rem;
+}
+
+.askjamie-hero-copy .hero-tagline {
+  color: #6b6b6b;
+  margin-bottom: 1.6rem;
+}
+
+/* Avatar */
+.askjamie-avatar {
+  max-width: 260px;
+  width: 100%;
+  height: auto;
+  margin: 0 auto;
+  filter: none;
+}
+
+/* Large under‑construction hero art */
+.askjamie-under-img {
+  display: block;
+  width: 100%;
+  max-width: 960px;
+  height: auto;
+}
+
+/* Cards and buttons tuned for Jamie palette */
+.askjamie-main .card {
+  background: #fdfbf7;
+  border-color: #d7d7d7;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+}
+
+.askjamie-main .btn-primary {
+  background: linear-gradient(135deg, #2d6f7e, #3c8ea1);
+  color: #f9fafb;
+  box-shadow: 0 10px 24px rgba(45, 111, 126, 0.45);
+}
+
+.askjamie-main .btn-primary:hover {
+  box-shadow: 0 14px 30px rgba(45, 111, 126, 0.6);
+}
+
+.askjamie-main .btn-quiet {
+  border-color: #d7d7d7;
+  color: #4b5563;
+}
+
+.askjamie-main .btn-quiet:hover {
+  border-color: #2d6f7e;
+  color: #2d6f7e;
+}
+
+/* Chat bubbles */
+.askjamie-main .chat-bubble.user {
+  background: #ffffff;
+  border-color: #d7d7d7;
+}
+
+.askjamie-main .chat-bubble.assistant {
+  background: #2d6f7e;
+  color: #f9fafb;
+}
+
+.askjamie-main .chat-bubble.assistant.secondary {
+  background: #fdfbf7;
+  color: #2e2b29;
+  border-color: #3c8ea1;
+}
+
+/* Accent typography (Kalam) */
+.askjamie-main .eyebrow,
+.askjamie-main .hero-subtitle,
+.askjamie-main .manifesto-blockquote,
+.askjamie-main .note,
+.askjamie-main .h-accent {
+  font-family: var(--font-accent);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
+/* Eyebrow: mid‑century, non‑shouty */
+.askjamie-main .eyebrow {
+  text-transform: none;      /* overrides the uppercase version above */
+  font-size: 0.95rem;
+  color: #3c8ea1;
+}
+/* AskJamie: logo + text breadcrumb for inner-page heroes */
+.askjamie-main .askjamie-breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: #3c8ea1; /* same teal accent */
+  margin-bottom: 0.75rem;
+}
+
+.askjamie-main .askjamie-breadcrumb .breadcrumb-separator {
+  opacity: 0.8;
+}
+
+.askjamie-main .askjamie-breadcrumb .breadcrumb-label {
+  white-space: nowrap;
+}
+
+/* Smaller, inline logo for breadcrumb (doesn't affect main hero logo) */
+.askjamie-main .askjamie-logo--crumb {
+  margin-bottom: 0; /* override hero logo spacing */
+}
+
+.askjamie-main .askjamie-logo--crumb img {
+  max-width: 7.5rem; /* ~120px – scaled-down mark */
+  height: auto;
+  display: block;
+}
+
+/* Smaller headings (h4–h6) */
+.askjamie-main h4,
+.askjamie-main h5,
+.askjamie-main h6 {
+  font-family: var(--font-heading);
+  color: var(--color-accent);
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+/* Footer – soften OverKill’s dark footer just for AskJamie */
+.askjamie-main .site-footer {
+  background: #f7f3ee;
+  color: var(--color-muted);
+  border-top: 1px solid #e0d9d2;
+  padding-top: 2.5rem;
+}
+
+.askjamie-main .footer-column h3,
+.askjamie-main .footer-column h4 {
+  color: var(--color-heading);
+}
+
+.askjamie-main .site-footer a {
+  color: var(--color-accent);
+}
+
+.askjamie-main .footer-bottom {
+  background: #f7f3ee;
+  color: var(--color-muted);
+}
+
+/* Expand the hero paper card edge-to-edge on AskJamie. Without this override
+   a 5% horizontal inset exposes the colorful stripes on either side of the
+   paper, which is distracting. Setting the inset to zero on the left and
+   right allows the paper to fully cover the stripes. */
+.askjamie-main .askjamie-paper {
+  /* Provide lateral margins so the paper fills ~80% of the width. This reveals
+     a small amount of the stripe background while keeping the new colors. */
+  inset: 6% 10% 0 10%;
+}
+
+/* AskJamie logo in hero: constrain width and add breathing room below the logo. */
+.askjamie-main .askjamie-logo {
+  display: inline-block;
+  margin-bottom: 1rem;
+}
+.askjamie-main .askjamie-logo img {
+  max-width: 12rem;
+  height: auto;
+}
+
+/* ===================================================================== */
+/* GLEE-FULLY PERSONALIZABLE TOOLS – RETRO JOYFUL MERMAID                */
+/* ===================================================================== */ 
+.glee-mermaid-shell {
+  margin: 0;
+  width: 100%;
+  max-width: 620px;
+  background: var(--color-surface);
+  border-radius: 1.5rem;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.14);
+  overflow: hidden;
+}
+
+.glee-mermaid-shell--mini {
+  margin-top: 1rem;
+  width: 100%;
+  max-width: 100%;
+}
+
+.glee-mermaid-shell .mermaid {
+  width: 100%;
+  min-height: 22rem;
+  padding: 1.25rem 1.5rem;
+  border-radius: 1.5rem;
+  background: var(--color-surface);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.14);
+  overflow-x: auto;  /* allows wide diagrams to scroll on mobile */
+} 
+
+.glee-mermaid-shell--mini .mermaid {
+  width: 100%;
+  min-height: 12rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 1rem;
+  background: var(--color-surface);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.14);
+  overflow-x: auto; /* scroll on mobile if needed */
+}
+
+@media (max-width: 640px) {
+  .glee-mermaid-shell .mermaid {
+    min-height: 18rem;
+    padding: 1rem;
+  }
+
+  .glee-mermaid-shell--mini .mermaid {
+    min-height: 10rem;
+    padding: 0.6rem 0.75rem;
+  }
+}
+
+/* Text + base styles for ANY Mermaid diagram on Glee-Fully pages */
+.glee-main .mermaid {
+  font-family: var(--font-body);
+  color: var(--color-fg);
+}
+/* SVG sizing */
+.glee-main .mermaid svg {
+  width: 100%;
+  height: auto;
+} 
+/* Nodes – rounded joyful shapes with coral borders */
+.glee-main .mermaid .node rect,
+.glee-main .mermaid .node circle {
+  rx: 14px;
+  ry: 14px;
+  fill: var(--color-surface);          /* #fffdfa */
+  stroke: var(--color-accent);         /* #d94f63 */
+  stroke-width: 1.5px;
+} 
+/* Labels */
+.glee-main .mermaid .label text {
+  fill: var(--color-fg);               /* #2e2b29 */
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+}
+/* Edges – playful coral connectors */
+.glee-main .mermaid .edgePath path {
+  stroke: #f3a6b0;
+  stroke-width: 1.5px;
+} 
+/* Clusters / groups – pale joyful panels */
+.glee-main .mermaid .cluster rect {
+  fill: #fff7f1;
+  stroke: #f3a6b0;
+}   
+/* Tooltips – coral pills */
+.glee-main .mermaidTooltip {
+  background-color: #d94f63;
+  color: #fffdfa;
+  border-radius: 999px;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.75rem;
+  border: 1px solid #a63749;
+}
+
+/* ===================================================================== */
+/* AskJamie – Mermaid layout + mid‑century teal skin                     */
+/* ===================================================================== */
+
+/* Universe hero: make the Mermaid diagram fill the angled paper card */
+.askjamie-hero--universe .askjamie-hero-visual {
+  align-items: stretch;
+}
+
+.askjamie-mermaid-shell {
+  margin: 0;
+  width: 100%;
+  max-width: 960px;
+}
+
+/* The block Mermaid replaces with an SVG in the hero */
+.askjamie-mermaid-shell .mermaid {
+  width: 100%;
+  min-height: 22rem;
+  padding: 1.25rem 1.5rem;
+  border-radius: 18px;
+  background: var(--color-surface);         /* uses AskJamie surface token */
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+}
+
+@media (max-width: 640px) {
+  .askjamie-mermaid-shell .mermaid {
+    min-height: 18rem;
+    padding: 1rem;
+  }
+}
+
+/* Text + base styles for ANY Mermaid diagram on AskJamie pages */
+.askjamie-main .mermaid {
+  font-family: var(--font-body);
+  color: var(--color-fg);
+}
+
+/* SVG sizing */
+.askjamie-main .mermaid svg {
+  width: 100%;
+  height: auto;
+}
+
+/* Nodes – rounded paper cards with teal borders */
+.askjamie-main .mermaid .node rect,
+.askjamie-main .mermaid .node circle {
+  rx: 14px;
+  ry: 14px;
+  fill: var(--color-surface);          /* #fdfbf7 */
+  stroke: var(--color-accent);         /* #2d6f7e */
+  stroke-width: 1.5px;
+}
+
+/* Labels */
+.askjamie-main .mermaid .label text {
+  fill: var(--color-fg);               /* #2e2b29 */
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+}
+
+/* Edges – warm beige connectors */
+.askjamie-main .mermaid .edgePath path {
+  stroke: #d5ba9a;
+  stroke-width: 1.5px;
+}
+
+/* Clusters / groups – pale paper panels */
+.askjamie-main .mermaid .cluster rect {
+  fill: #f5ead9;
+  stroke: #d5ba9a;
+}
+
+/* Tooltips – teal pills */
+.askjamie-main .mermaidTooltip {
+  background-color: #2d6f7e;
+  color: #fdfbf7;
+  border-radius: 999px;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.75rem;
+  border: 1px solid #1c4d59;
+}
+
+
+/* ===================================================================== */
+/* 🌈 GLEE-FULLY PERSONALIZABLE TOOLS – RETRO JOYFUL OVERLAY             */
+/* ===================================================================== */
+
+.glee-main {
+  --color-bg: #f6f2ee;        /* Cream */
+  --color-surface: #fffdfa;
+  --color-surface-soft: #fff7f1;
+  --color-fg: #2e2b29;        /* Charcoal */
+  --color-muted: #6b5e57;
+  --color-accent: #d94f63;    /* Coral */
+  --color-accent-2: #2d6f7e;  /* Teal */
+
+  /* Mermaid theming – Glee-fully (coral + cream) */
+  --mermaid-primary-color: #fffdfa;
+  --mermaid-primary-text-color: #2e2b29;
+  --mermaid-primary-border-color: #d94f63;
+  --mermaid-line-color: #d94f63;
+  --mermaid-secondary-color: #f6f2ee;
+  --mermaid-tertiary-color: #e5d9ce;
+  --mermaid-cluster-bg: #fffcf9;
+  --mermaid-edge-label-bg: #fff7f1;
+
+  font-family: "Open Sans", system-ui, -apple-system, BlinkMacSystemFont,
+    sans-serif;
+  color: var(--color-fg);
+  background: var(--color-bg);
+}
+
+/* Glee-fully: lighten striped sections so they feel like paper, not blueprint */
+.glee-main .stripe-bg {
+  background: #fff7f1; /* warm paper */
+  border-top: 1px solid rgba(0, 0, 0, 0.04);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+/* ===== Glee-fully hero layering ===================================== */
+
+/* Base hero */
+.glee-hero {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Full-width stripe banner behind everything */
+.glee-hero-stripes {
+  position: absolute;
+  inset: 0;
+  background: url("/assets/img/Glee-fullyTools%20Background%20Wide%201536.png") center/cover no-repeat;
+  z-index: -2;
+}
+
+.glee-hero .hero-inner {
+  position: relative;
+  z-index: 0;          /* content & paper sit above stripes */
+  padding-top: 3.5rem;
+  padding-bottom: 3.25rem;
+}
+
+/* Two-column layout for hero */
+.glee-hero .hero-grid {
+  display: grid;
+  gap: 2.5rem;
+  align-items: center;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+}
+
+/* Tilted paper card */
+.glee-hero-card {
+  position: relative;
+  max-width: 36rem;
+  padding: 2.4rem 2.6rem 2.2rem;
+  z-index: 1;
+}
+
+/* The actual paper panel behind the text */
+.glee-hero-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #fff7f1;  /* warm paper */
+  border-radius: 1.6rem;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.26);
+  transform: rotate(-2.5deg);
+  transform-origin: center center;
+  z-index: -1;
+}
+
+/* Make sure text sits above the pseudo-element */
+.glee-hero-card > * {
+  position: relative;
+}
+
+/* Butterfly image sizing */
+.glee-hero-img {
+  width: clamp(260px, 36vw, 520px);
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+/* Responsive tweaks */
+@media (max-width: 1024px) {
+  .glee-hero .hero-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .glee-hero-card {
+    margin-bottom: 1.75rem;
+  }
+
+  .glee-hero-card::before {
+    transform: rotate(-1.5deg);
+  }
+}
+
+@media (max-width: 640px) {
+  .glee-hero .hero-inner {
+    padding-top: 2.5rem;
+    padding-bottom: 3rem;
+  }
+
+  .glee-hero-card {
+    padding: 1.9rem 1.8rem 1.8rem;
+  }
+
+  .glee-hero-card::before {
+    border-radius: 1.2rem;
+  }
+
+  .glee-hero-img {
+    width: clamp(220px, 70vw, 420px);
+    margin-inline: auto;
+  }
+}
+
+/* Glee hero sits on light, not blueprint */
+.glee-main .hero {
+  background: none;
+  color: var(--color-fg);
+}
+
+.glee-main .hero-tagline {
+  color: var(--color-muted);
+}
+
+/* container padding can stay as-is, but ensure a bit of top space */
+.glee-hero .hero-inner {
+  padding-top: 3.5rem;
+  padding-bottom: 3rem;
+}
+
+.glee-hero-card {
+  position: relative;
+  max-width: 36rem;
+  padding: 2.4rem 2.6rem 2.2rem;
+}
+
+/* Rotated paper background behind the content, but text stays straight */
+.glee-hero-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #fffaf5;
+  border-radius: 1.6rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.24);
+  transform: rotate(-2.5deg);
+  transform-origin: center center;
+  z-index: -1;
+}
+
+.glee-hero-card p,
+.glee-hero-card h1 {
+  position: relative;
+}
+
+@media (max-width: 1024px) {
+  .glee-hero .hero-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .glee-hero-card {
+    margin-bottom: 1.5rem;
+  }
+
+  .glee-hero-card::before {
+    transform: rotate(-1.5deg);
+  }
+}
+
+/* Constrain hero image size across breakpoints */
+.glee-hero-img {
+  /* Never let it explode, never let it shrink to silly */
+  width: clamp(260px, 36vw, 520px);
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+/* Tighten hero grid proportions on wide screens */
+.hero-grid {
+  display: grid;
+  gap: 2.5rem;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+}
+
+/* Collapse to single column sooner to avoid the mid-range “oversize” state */
+@media (max-width: 1024px) {
+  .hero-grid {
+    grid-template-columns: 1fr;
+  }
+  .glee-hero-img {
+    /* Keep it friendly when stacked */
+    width: clamp(240px, 60vw, 520px);
+    margin: 1rem auto 0;
+  }
+}
+
+/* Guard for the specific awkward band (common offender: ~820–980px) */
+@media (min-width: 820px) and (max-width: 980px) {
+  .glee-hero-img {
+    width: clamp(260px, 32vw, 480px);
+  }
+}
+
+/* If you had any transforms for flair, disable them at mid widths */
+@media (min-width: 820px) and (max-width: 980px) {
+  .glee-hero-img {
+    transform: none;
+  }
+}
+
+/* ===== ABOUT PAGE HERO – PAPER EFFECT ============================== */
+/* Target only the About page by looking at the nav state.
+   Requires modern browsers that support :has(), which all current
+   evergreen browsers do. */
+
+body.glee-main:has(.primary-nav a[aria-current="page"][href*="about"]) 
+  .hero.glee-hero {
+  padding-block: clamp(3.5rem, 6vw, 4.75rem) clamp(3rem, 4vw, 4rem);
+}
+
+/* Make sure the inner container can host the card */
+body.glee-main:has(.primary-nav a[aria-current="page"][href*="about"]) 
+  .hero.glee-hero .hero-inner {
+  position: relative;
+}
+
+/* Align the hero layout */
+body.glee-main:has(.primary-nav a[aria-current="page"][href*="about"]) 
+  .hero.glee-hero .hero-grid {
+  display: grid;
+  gap: clamp(2rem, 4vw, 3rem);
+  align-items: center;
+}
+
+@media (min-width: 900px) {
+  body.glee-main:has(.primary-nav a[aria-current="page"][href*="about"]) 
+    .hero.glee-hero .hero-grid {
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  }
+}
+
+/* Turn the first column (the copy) into a “paper” card */
+body.glee-main:has(.primary-nav a[aria-current="page"][href*="about"]) 
+  .hero.glee-hero .hero-grid > div:first-child {
+  position: relative;
+  max-width: 40rem;
+  padding: clamp(2rem, 3vw, 2.6rem);
+  border-radius: 1.6rem;
+}
+
+/* The angled paper behind the text */
+body.glee-main:has(.primary-nav a[aria-current="page"][href*="about"]) 
+  .hero.glee-hero .hero-grid > div:first-child::before {
+  content: "";
+  position: absolute;
+  inset: -0.6rem -0.9rem -1.0rem -1.2rem;
+  background: #fff7f1;              /* same warm paper tone */
+  border-radius: 1.6rem;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.26);
+  transform: rotate(-2.5deg);
+  transform-origin: center center;
+  z-index: -1;
+}
+
+/* Keep the text nicely readable on the card */
+body.glee-main:has(.primary-nav a[aria-current="page"][href*="about"]) 
+  .hero.glee-hero h1 {
+  margin-bottom: 0.75rem;
+}
+
+body.glee-main:has(.primary-nav a[aria-current="page"][href*="about"]) 
+  .hero.glee-hero .hero-tagline {
+  color: #6b5e57; /* softer Glee body color */
+}
+
+/* ===== CONTACT PAGE HERO – PAPER EFFECT ============================== */
+/* Contact hero: tilted paper + retro stripes */
+
+body.glee-main:has(.primary-nav a[aria-current="page"][href*="contact"])
+  main > .content-section:first-of-type {
+  position: relative;
+  padding-block: clamp(3.5rem, 6vw, 4.75rem) clamp(3rem, 4vw, 4rem);
+  margin-top: 0;
+  overflow: hidden;
+}
+
+/* Use only the contact-specific paper stripes, not the extra brand-stripes div */
+body.glee-main:has(.primary-nav a[aria-current="page"][href*="contact"])
+  main > .content-section:first-of-type .brand-stripes {
+  display: none;
+}
+
+/* Retro stripe backdrop behind the paper card */
+body.glee-main:has(.primary-nav a[aria-current="page"][href*="contact"])
+  main > .content-section:first-of-type::before {
+  content: "";
+  position: absolute;
+  inset: -12% 0;
+  z-index: -3;
+  pointer-events: none;
+  background-image: linear-gradient(
+    to bottom,
+    #f6f2ee 0%,
+    #f6f2ee 14%,
+    #f3b932 14%,
+    #f3b932 28%,
+    #d35b2d 28%,
+    #d35b2d 42%,
+    #9e3b2e 42%,
+    #9e3b2e 56%,
+    #2d6f7e 56%,
+    #2d6f7e 70%,
+    #0d2b3a 70%,
+    #0d2b3a 100%
+  );
+  opacity: 0.75;                 /* match other Glee stripe sections */
+  background-size: 200% 100%;    /* enable gentle horizontal drift */
+  animation: stripeDrift 60s linear infinite;
+}
+
+/* Angled paper layer behind the header + lane cards */
+body.glee-main:has(.primary-nav a[aria-current="page"][href*="contact"])
+  main > .content-section:first-of-type::after {
+  content: "";
+  position: absolute;
+  inset: 1.5rem 1rem 2.25rem 1rem; /* mobile / tablet: nearly full width */
+  z-index: -2;
+  pointer-events: none;
+  background: #fff7f1;
+  border-radius: 1.6rem;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.26);
+  transform: rotate(-2.5deg);
+  transform-origin: center center;
+}
+
+/* Extra breathing room at the bottom of the hero copy */
+body.glee-main:has(.primary-nav a[aria-current="page"][href*="contact"])
+  main > .content-section:first-of-type .section-header {
+  margin-bottom: 2.25rem;
+}
+
+/* Desktop tweaks: paper at ~80% width + content centered on top of it,
+   and the two “lanes” side‑by‑side as columns. */
+@media (min-width: 900px) {
+  body.glee-main:has(.primary-nav a[aria-current="page"][href*="contact"])
+    main > .content-section:first-of-type::after {
+    inset: 1.5rem 10% 2.5rem 10%; /* ~80% width, centered */
+  }
+
+  body.glee-main:has(.primary-nav a[aria-current="page"][href*="contact"])
+    main > .content-section:first-of-type .section-header,
+  body.glee-main:has(.primary-nav a[aria-current="page"][href*="contact"])
+    main > .content-section:first-of-type .grid {
+    max-width: 80%;
+    margin-inline: auto;          /* keep content sitting on the paper */
+  }
+
+  body.glee-main:has(.primary-nav a[aria-current="page"][href*="contact"])
+    main > .content-section:first-of-type .grid.grid-2 {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: stretch;         /* both cards grow to same height */
+  }
+}
+
+/* Small screens: soften the tilt & keep it edge‑to‑edge */
+@media (max-width: 768px) {
+  body.glee-main:has(.primary-nav a[aria-current="page"][href*="contact"])
+    main > .content-section:first-of-type::after {
+    inset: 1.25rem 0.5rem 2rem 0.5rem;
+    border-radius: 1.2rem;
+    transform: rotate(-1.6deg);
+  }
+}
+
+/* ===== LEGAL PAGE HERO – PAPER EFFECT ============================== */
+/* Target the Legal page by its meta description so we don't need
+   to touch the HTML or nav. */
+
+html:has(
+  head > meta[name="description"][content^="Legal notice and usage disclaimer"]
+)
+  body.glee-main
+  main
+  > .content-section:first-of-type {
+  position: relative;
+  padding-block: clamp(3.5rem, 6vw, 4.75rem) clamp(3rem, 4vw, 4rem);
+  margin-top: 0;
+  overflow: hidden;
+}
+
+/* Retro stripe backdrop (same spectrum as Contact) */
+html:has(
+  head > meta[name="description"][content^="Legal notice and usage disclaimer"]
+)
+  body.glee-main
+  main
+  > .content-section:first-of-type::before {
+  content: "";
+  position: absolute;
+  inset: -12% 0;
+  z-index: -3;
+  pointer-events: none;
+  background-image: linear-gradient(
+    to bottom,
+    #f6f2ee 0%,
+    #f6f2ee 14%,
+    #f3b932 14%,
+    #f3b932 28%,
+    #d35b2d 28%,
+    #d35b2d 42%,
+    #9e3b2e 42%,
+    #9e3b2e 56%,
+    #2d6f7e 56%,
+    #2d6f7e 70%,
+    #0d2b3a 70%,
+    #0d2b3a 100%
+  );
+}
+
+/* Tilted paper card behind the full legal section */
+html:has(
+  head > meta[name="description"][content^="Legal notice and usage disclaimer"]
+)
+  body.glee-main
+  main
+  > .content-section:first-of-type::after {
+  content: "";
+  position: absolute;
+  inset: 1.5rem 1rem 2.25rem 1rem; /* mobile/tablet */
+  z-index: -2;
+  pointer-events: none;
+  background: #fff7f1;
+  border-radius: 1.6rem;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.26);
+  transform: rotate(-2.5deg);
+  transform-origin: center center;
+}
+
+/* Keep the content sitting nicely inside the paper on desktop */
+@media (min-width: 900px) {
+  html:has(
+    head > meta[name="description"][content^="Legal notice and usage disclaimer"]
+  )
+    body.glee-main
+    main
+    > .content-section:first-of-type::after {
+    inset: 1.5rem 10% 2.5rem 10%; /* ~80% width, centered */
+  }
+
+  html:has(
+    head > meta[name="description"][content^="Legal notice and usage disclaimer"]
+  )
+    body.glee-main
+    main
+    > .content-section:first-of-type
+    .section-header,
+  html:has(
+    head > meta[name="description"][content^="Legal notice and usage disclaimer"]
+  )
+    body.glee-main
+    main
+    > .content-section:first-of-type
+    > section {
+    max-width: 80%;
+    margin-inline: auto;
+  }
+}
+
+/* Softer tilt + tighter paper on small screens */
+@media (max-width: 768px) {
+  html:has(
+    head > meta[name="description"][content^="Legal notice and usage disclaimer"]
+  )
+    body.glee-main
+    main
+    > .content-section:first-of-type::after {
+    inset: 1.25rem 0.5rem 2rem 0.5rem;
+    border-radius: 1.2rem;
+    transform: rotate(-1.6deg);
+  }
+}
+
+/* ===== Glee-fully general styles =================================== */
+/* Headers */
+.glee-main h1,
+.glee-main h2,
+.glee-main h3 {
+  font-family: "Fredoka", "Poppins", sans-serif;
+  color: var(--color-accent-2);
+}
+
+/* Buttons */
+.glee-main .btn-primary {
+  background: linear-gradient(135deg, #d94f63, #d35b2d); /* coral → orange */
+  color: #2e2b29;
+  box-shadow: 0 10px 22px rgba(217, 79, 99, 0.4);
+}
+
+.glee-main .btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 34px rgba(217, 79, 99, 0.55);
+}
+
+.glee-main .btn-quiet {
+  border-color: #ffd8d2;
+  color: var(--color-accent);
+}
+
+/* Glee Glow animation (kept, but tuned warmer) */
+.glee-glow {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    120deg,
+    rgba(243, 185, 50, 0.3),
+    rgba(211, 91, 45, 0.25),
+    rgba(60, 142, 161, 0.28)
+  );
+  background-size: 200% 200%;
+  animation: gleeSweep 18s linear infinite;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+@keyframes gleeSweep {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Cards */
+.glee-main .card {
+  background: #ffffff;
+  border-color: #ffe7e0;
+  box-shadow: 0 8px 20px rgba(255, 195, 160, 0.25);
+}
+
+/* Footer */
+.glee-main .site-footer {
+  background: #fff7f1;
+  color: var(--color-muted);
+  border-top: 1px solid #ffdcd2;
+}
+
+/* ===================================================================== */
+/* Shared secondary button variant + Glee-specific accent styling        */
+/* ===================================================================== */
+
+/* Secondary button – quiet, low-contrast CTA aligned with .btn-quiet */
+.btn-secondary {
+  background: transparent;
+  border-color: var(--color-border-subtle);
+  color: var(--color-muted);
+}
+
+.btn-secondary:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+/* Glee: secondary button picks up coral accent and soft border */
+.glee-main .btn-secondary {
+  border-color: #ffd8d2;
+  color: var(--color-accent);
+}
+
+/* ===== ARTICLE-SPECIFIC STYLES ========================================== */
+/* "The First Diagram Is Usually a Liar" article layout and components */
+
+/* ── Article reading layout ──────────────────────────────────────────── */
+.article-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+}
+
+@media (min-width: 1024px) {
+  .article-layout {
+    grid-template-columns: minmax(0, 2.4fr) minmax(240px, 1fr);
+    gap: 3rem;
+    align-items: start;
+  }
+}
+
+/* ── Article hero ────────────────────────────────────────────────────── */
+.article-hero {
+  padding: 3.5rem 0 2rem;
+  border-bottom: 1px solid var(--color-border-subtle);
+  margin-bottom: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.article-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.15) 0%,
+    rgba(0, 0, 0, 0.48) 35%,
+    rgba(0, 0, 0, 0.60) 70%,
+    rgba(0, 0, 0, 0.65) 100%
+  );
+}
+
+.article-hero .container {
+  position: relative;
+  z-index: 1;
+}
+
+.article-hero .brand-stripes {
+  z-index: 0;
+}
+
+.article-eyebrow {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--okh-orange);
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.article-eyebrow-sep {
+  color: var(--color-border-subtle);
+  opacity: 0.6;
+}
+
+.article-hero h1 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.1;
+  margin-bottom: 1rem;
+  letter-spacing: 0.03em;
+}
+
+.article-hero h1 em {
+  font-style: italic;
+  color: var(--okh-amber);
+}
+
+.article-subtitle {
+  font-size: 1.1rem;
+  color: var(--color-muted);
+  max-width: 42rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.article-hero .article-subtitle {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.article-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  font-size: 0.85rem;
+  color: var(--color-muted);
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.article-hero .article-meta {
+  color: rgba(255, 255, 255, 0.6);
+  border-top-color: rgba(255, 255, 255, 0.15);
+}
+
+.article-meta-author {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: var(--color-fg);
+}
+
+.article-meta-author img {
+  border-radius: 50%;
+}
+
+.article-meta-dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--color-muted);
+  opacity: 0.5;
+}
+
+/* ── Article body ────────────────────────────────────────────────────── */
+.article-body {
+  padding: 2.5rem 0 3rem;
+  max-width: 68ch;
+}
+
+.article-body p {
+  font-size: 1.05rem;
+  line-height: 1.8;
+  margin-bottom: 1.4rem;
+  color: rgba(229, 231, 235, 0.88);
+}
+
+.article-body h2 {
+  font-size: clamp(1.3rem, 2.2vw, 1.6rem);
+  margin-top: 2.5rem;
+  margin-bottom: 0.75rem;
+  color: rgba(229, 231, 235, 0.96);
+  letter-spacing: 0.04em;
+}
+
+.article-body h3 {
+  font-size: 1.1rem;
+  margin-top: 2rem;
+  margin-bottom: 0.5rem;
+  color: var(--okh-amber);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-family: var(--font-body);
+  font-weight: 600;
+}
+
+.article-body strong {
+  color: var(--okh-orange);
+  font-weight: 600;
+}
+
+.article-body em {
+  color: var(--okh-amber);
+  font-style: italic;
+}
+
+.article-body hr {
+  border: none;
+  border-top: 1px solid var(--color-border-subtle);
+  margin: 2.5rem 0;
+}
+
+/* ── Pull quote ────────────────────────────────────────────────────── */
+.pull-quote {
+  border-left: 3px solid var(--okh-orange);
+  padding: 0.75rem 1.25rem;
+  margin: 2rem 0;
+  background: rgba(196, 106, 44, 0.06);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+
+.pull-quote p {
+  font-size: 1.15rem !important;
+  font-style: italic;
+  color: var(--color-fg) !important;
+  margin-bottom: 0 !important;
+  line-height: 1.6 !important;
+}
+
+/* ── ROY formula callout ────────────────────────────────────────────── */
+.formula-block {
+  background: var(--color-surface-soft);
+  border: 1px solid var(--color-border-subtle);
+  border-left: 3px solid var(--okh-amber);
+  border-radius: var(--radius-md);
+  padding: 1.25rem 1.5rem;
+  margin: 2rem 0;
+  text-align: center;
+}
+
+.formula-block .formula-label {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--okh-amber);
+  margin-bottom: 0.5rem;
+}
+
+.formula-block .formula-text {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--color-fg);
+  font-family: var(--font-body);
+  margin: 0;
+}
+
+.formula-block .formula-sub {
+  font-size: 0.88rem;
+  color: var(--color-muted);
+  margin-top: 0.35rem;
+}
+
+/* ── Diagram section ────────────────────────────────────────────────── */
+.diagram-section {
+  margin: 2.5rem 0;
+}
+
+.diagram-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.diagram-label {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--okh-orange);
+  font-weight: 600;
+}
+
+.diagram-links {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.diagram-links a {
+  font-size: 0.82rem;
+  color: var(--color-muted);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 0.15s;
+}
+
+.diagram-links a:hover {
+  color: var(--okh-amber);
+}
+
+.diagram-shell {
+  background: var(--color-surface-soft);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  overflow-x: auto;
+}
+
+.diagram-caption {
+  font-size: 0.82rem;
+  color: var(--color-muted);
+  margin-top: 0.6rem;
+  font-style: italic;
+}
+
+/* ── Council callout card ────────────────────────────────────────────── */
+.council-card {
+  background: var(--color-surface-soft);
+  border: 1px solid var(--color-border-subtle);
+  border-top: 3px solid var(--okh-teal);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem 1.75rem;
+  margin: 2.5rem 0;
+}
+
+.council-card-eyebrow {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--okh-orange);
+  margin-bottom: 0.5rem;
+}
+
+.council-card h3 {
+  font-size: 1rem;
+  margin-bottom: 0.6rem;
+  color: var(--color-fg);
+  font-family: var(--font-body) !important;
+  font-weight: 600 !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+
+.council-card p {
+  font-size: 0.92rem;
+  color: var(--color-muted);
+  margin-bottom: 0;
+  line-height: 1.6;
+}
+
+.council-members {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.council-pill {
+  font-size: 0.78rem;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-border-subtle);
+  color: var(--color-muted);
+  background: transparent;
+}
+
+.council-pill.winner {
+  border-color: var(--okh-amber);
+  color: var(--okh-amber);
+}
+
+/* ── Sidebar ────────────────────────────────────────────────────────── */
+.article-sidebar {
+  padding-top: 2.5rem;
+}
+
+.sidebar-widget {
+  background: var(--color-surface-soft);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  padding: 1.25rem 1.4rem;
+  margin-bottom: 1.25rem;
+}
+
+.sidebar-widget h4 {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--okh-orange);
+  margin-bottom: 0.75rem;
+  font-family: var(--font-body);
+  font-weight: 600;
+}
+
+.sidebar-widget p {
+  font-size: 0.88rem;
+  color: var(--color-muted);
+  margin-bottom: 0.6rem;
+  line-height: 1.5;
+}
+
+.sidebar-widget p:last-child {
+  margin-bottom: 0;
+}
+
+.sidebar-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-links li {
+  margin-bottom: 0.35rem;
+  font-size: 0.88rem;
+}
+
+.sidebar-links a {
+  color: var(--color-muted);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.sidebar-links a:hover {
+  color: var(--okh-amber);
+}
+
+.series-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(196, 106, 44, 0.12);
+  border: 1px solid rgba(196, 106, 44, 0.3);
+  color: var(--okh-orange);
+  margin-bottom: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* ── Article footer ────────────────────────────────────────────────── */
+.article-footer-cta {
+  background: var(--color-surface-soft);
+  border: 1px solid var(--color-border-subtle);
+  border-top: 3px solid var(--okh-orange);
+  border-radius: var(--radius-lg);
+  padding: 2rem 2.25rem;
+  margin-top: 3rem;
+  display: grid;
+  gap: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .article-footer-cta {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+  }
+}
+
+.article-footer-cta h3 {
+  font-size: 1rem;
+  margin-bottom: 0.3rem;
+  color: var(--color-fg);
+  font-family: var(--font-body) !important;
+  font-weight: 600 !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+
+.article-footer-cta p {
+  font-size: 0.9rem;
+  color: var(--color-muted);
+  margin: 0;
+}
+
+.article-footer-cta .cta-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: fit-content;
+}
+
+/* ── Protoform notice ────────────────────────────────────────────────── */
+.protoform-notice {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  background: rgba(230, 160, 60, 0.06);
+  border: 1px dashed rgba(230, 160, 60, 0.35);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.25rem;
+  margin: 2rem 0;
+  font-size: 0.88rem;
+  color: var(--color-muted);
+  line-height: 1.55;
+}
+
+.protoform-notice-icon {
+  font-size: 1rem;
+  margin-top: 0.1rem;
+  flex-shrink: 0;
+}
+
+/* ── Breadcrumb ────────────────────────────────────────────────────── */
+.article-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  color: var(--color-muted);
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.article-breadcrumb a {
+  color: var(--color-muted);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.article-breadcrumb a:hover {
+  color: var(--okh-amber);
+}
+
+.article-breadcrumb .sep {
+  opacity: 0.4;
+}
+
+.article-hero .article-breadcrumb,
+.article-hero .article-breadcrumb a {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.article-hero .article-breadcrumb a:hover {
+  color: var(--okh-amber);
+}
+
+.article-hero .article-meta-author {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.article-hero .article-meta-dot {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+/* ── Progress bar (reading) ────────────────────────────────────────── */
+.reading-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--okh-orange), var(--okh-amber));
+  z-index: 100;
+  width: 0%;
+  transition: width 0.1s linear;
+}
+
+/* ── v1.0 additions ──────────────────────────────────────────────────– */
+.bullet-list {
+  padding-left: 1.2rem;
+  margin: 0 0 1.4rem;
+}
+
+.bullet-list li {
+  margin-bottom: 0.45rem;
+  color: #d1d5db;
+}
+
+.artifact-stack {
+  display: grid;
+  gap: 1rem;
+  margin: 1.5rem 0 0;
+}
+
+.artifact-card {
+  background: var(--color-surface-soft);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  padding: 1.15rem 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.artifact-stack .artifact-card {
+  margin-bottom: 0;
+}
+
+.artifact-card h3 {
+  font-size: 1rem;
+  margin-top: 0;
+  margin-bottom: 0.35rem;
+  color: var(--color-fg);
+  font-family: var(--font-body);
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.artifact-card p:last-child {
+  margin-bottom: 0;
+}
+
+.code-drop {
+  margin-top: 0.9rem;
+  background: rgba(2, 6, 23, 0.42);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.code-drop summary {
+  cursor: pointer;
+  padding: 0.8rem 1rem;
+  font-size: 0.83rem;
+  font-weight: 600;
+  color: var(--okh-amber);
+  list-style: none;
+}
+
+.code-drop summary::-webkit-details-marker {
+  display: none;
+}
+
+.code-drop pre {
+  margin: 0;
+  padding: 1rem 1.1rem 1.15rem;
+  overflow-x: auto;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: #d1d5db;
+}
+
+.code-drop code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, monospace;
+}
+
+.artifact-copy {
+  white-space: pre-wrap;
+  font-size: 0.92rem;
+  line-height: 1.65;
+  color: #d1d5db;
+  margin: 0;
+}
+
+.small-note {
+  font-size: 0.84rem;
+  color: var(--color-muted);
+  font-style: italic;
+}
+
+.scorecard {
+  display: grid;
+  gap: 0.75rem;
+  margin: 1.5rem 0;
+}
+
+.scorecard-item {
+  border-left: 3px solid var(--okh-orange);
+  padding-left: 0.9rem;
+}
+
+.scorecard-item strong {
+  display: block;
+  margin-bottom: 0.15rem;
+}
+
+.toc-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.toc-list li {
+  margin-bottom: 0.35rem;
+  font-size: 0.88rem;
+}
+
+.toc-list a {
+  color: var(--color-muted);
+  text-decoration: none;
+}
+
+.toc-list a:hover {
+  color: var(--okh-amber);
+}
+
+:root[data-theme="light"] .artifact-card,
+:root[data-theme="light"] .code-drop {
+  background: #f8fafc;
+}
+
+:root[data-theme="light"] .artifact-copy,
+:root[data-theme="light"] .code-drop pre,
+:root[data-theme="light"] .bullet-list li {
+  color: #0f172a;
+}
+}
+
+/* ============================================================
+   Glee-fully under-construction overlay
+   - Used on toolbox pages that are live-but-not-finished
+   ============================================================ */
+
+.construction-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: rgba(46, 43, 41, 0.78);          /* warm Glee-tinted scrim */
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+/* When dismissed (class added by JS), fade it out and kill interactivity */
+body.construction-dismissed .construction-overlay,
+.construction-overlay[hidden] {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Card that holds the art + copy */
+.construction-overlay__card {
+  max-width: min(960px, 100%);
+  width: 100%;
+  text-align: center;
+  background: #fff7f1;                  /* Glee paper */
+  border-radius: 1.5rem;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.35);
+  padding: 1.75rem 1.75rem 1.5rem;
+  pointer-events: auto;                 /* let the button be clickable */
+}
+
+/* Hero art */
+.construction-overlay__image {
+  display: block;
+  width: min(100%, 720px);
+  margin: 0 auto 1.1rem;
+}
+
+/* Text under the image */
+.construction-overlay__copy {
+  margin: 0 0 1.3rem;
+  font-size: 0.95rem;
+  color: var(--color-muted);
+}
+
+/* Button row */
+.construction-overlay__actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+/* Non-blocking "ghost" mode: overlay is visual only, clicks go through */
+.construction-overlay--ghost {
+  pointer-events: none;
+  background: rgba(46, 43, 41, 0.45);
+}
+
+.construction-overlay--ghost .construction-overlay__card {
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+  pointer-events: none; /* make sure the image doesn't capture clicks either */
+}
+
+/* Tighten things on small screens */
+@media (max-width: 640px) {
+  .construction-overlay {
+    padding: 1rem;
+  }
+
+  .construction-overlay__card {
+    padding: 1.25rem 1.1rem 1.1rem;
+    border-radius: 1.1rem;
+  }
+
+  .construction-overlay__copy {
+    font-size: 0.9rem;
+    text-align: left;
+  }
+}
+
+
+/* ===================================================================== */
+/* Glee‑fully – Mermaid layout + retro‑joyful skin                      */
+/* ===================================================================== */
+
+/* Base typography for Mermaid on Glee pages */
+.glee-main .mermaid {
+  font-family: var(--font-body);
+  color: var(--color-fg);
+}
+
+/* SVG sizing */
+.glee-main .mermaid svg {
+  width: 100%;
+  height: auto;
+}
+
+/* Nodes – pill‑like cards on warm paper */
+.glee-main .mermaid .node rect,
+.glee-main .mermaid .node circle {
+  rx: 18px;
+  ry: 18px;
+  fill: var(--color-surface);        /* #fffdfa */
+  stroke: var(--color-accent);       /* coral */
+  stroke-width: 1.6px;
+}
+
+/* Labels */
+.glee-main .mermaid .label text {
+  fill: var(--color-fg);             /* charcoal */
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+}
+
+/* Edges – soft coral connectors */
+.glee-main .mermaid .edgePath path {
+  stroke: rgba(217, 79, 99, 0.85);
+  stroke-width: 1.6px;
+}
+
+/* Clusters – pale peach group boxes */
+.glee-main .mermaid .cluster rect {
+  fill: #fff0ea;
+  stroke: #ffd1c4;
+}
+
+/* Tooltips – coral pills */
+.glee-main .mermaidTooltip {
+  background-color: #d94f63;
+  color: #fffdfa;
+  border-radius: 999px;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.75rem;
+  border: 1px solid #b83f50;
+}
+
+/* ===== Ko‑fi support section ========================================= */
+
+.ko-fi-section {
+  background: #fffdfa;
+}
+
+.ko-fi-section .two-column {
+  align-items: stretch;
+  gap: 2.25rem;
+}
+
+.ko-fi-copy p:last-child {
+  margin-bottom: 0;
+}
+
+.ko-fi-highlight {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.9rem;
+}
+
+.ko-fi-highlight p {
+  margin-bottom: 0.25rem;
+}
+
+.ko-fi-highlight .btn-primary {
+  align-self: flex-start;
+}
+
+@media (max-width: 768px) {
+  .ko-fi-highlight {
+    margin-top: 1.5rem;
+  }
+}
+
+/* =========================================================
+   GPT Hero Card (reusable pattern)
+   - Base: .gpt-hero + .gpt-hero__card + slots
+   - Brand theme via modifier, e.g. .gpt-hero--bfs
+   ========================================================= */
+
+.gpt-hero {
+  padding: clamp(2.75rem, 5vw, 3.75rem) 0 2.5rem;
+}
+
+/* Card layout: text on left, image/badge on right */
+.gpt-hero__card {
+  --gpt-hero-border: #f58f24;
+  --gpt-hero-bg: #04291f;
+  --gpt-hero-badge-bg: #00345a;
+  --gpt-hero-cta-bg: #f58f24;
+  --gpt-hero-cta-bg-hover: #ffac3d;
+
+  border-radius: 18px;
+  border: 3px solid var(--gpt-hero-border);
+  background: var(--gpt-hero-bg);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+  padding: clamp(1.75rem, 3vw, 2.5rem);
+  display: grid;
+  grid-template-columns: minmax(0, 2.1fr) minmax(240px, 1fr);
+  gap: clamp(1.75rem, 4vw, 3rem);
+  align-items: center;
+}
+
+@media (max-width: 900px) {
+  .gpt-hero__card {
+    grid-template-columns: 1fr;
+  }
+}
+
+.gpt-hero__main {
+  max-width: 48rem;
+}
+
+.gpt-hero__eyebrow {
+  font-size: 0.9rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin: 0 0 0.75rem;
+  opacity: 0.9;
+}
+
+.gpt-hero__title {
+  font-size: clamp(2.4rem, 3vw, 3.1rem);
+  line-height: 1.1;
+  margin: 0 0 1rem;
+}
+
+.gpt-hero__subtitle {
+  font-size: 1.05rem;
+  line-height: 1.5;
+  margin: 0 0 1rem;
+}
+
+.gpt-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 1.75rem 0 0.75rem;
+}
+
+.gpt-hero__note {
+  font-size: 0.85rem;
+  opacity: 0.85;
+  margin-top: 0.25rem;
+}
+
+/* Right-hand badge (icon + orange strip) */
+
+.gpt-hero__side {
+  display: flex;
+  justify-content: center;
+}
+
+.gpt-hero__badge {
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--gpt-hero-badge-bg);
+  max-width: 260px;
+  width: 100%;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65);
+}
+
+.gpt-hero__badge img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Orange strip CTA over the bottom of the icon */
+.gpt-hero__badge-cta {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 0.7rem 0.9rem;
+  background: var(--gpt-hero-cta-bg);
+  color: #111;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-align: center;
+  text-decoration: none;
+}
+
+.gpt-hero__badge-cta:hover,
+.gpt-hero__badge-cta:focus-visible {
+  background: var(--gpt-hero-cta-bg-hover);
+}
+
+/* Brand-specific tuning: BFS variant */
+
+.gpt-hero--bfs .gpt-hero__card {
+  --gpt-hero-border: #f7a236;       /* BFS/OKH orange */
+  --gpt-hero-bg: #02241b;           /* dark green background */
+  --gpt-hero-badge-bg: #003b66;     /* deep BFS blue */
+  --gpt-hero-cta-bg: #f7a236;
+  --gpt-hero-cta-bg-hover: #ffb955;
+}
+
+
+/* ----------------------------------------
+   BFS Framing Intelligent Futures hero
+   ---------------------------------------- */
+
+.bfs-hero {
+  padding: 3.5rem 0 2.5rem;
+}
+
+.bfs-hero-card {
+  border-radius: 18px;
+  border: 3px solid #f58f24;           /* OKH-ish orange accent */
+  background: #04291f;                 /* deep green; adjust if needed */
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+  padding: 2.5rem 2.75rem;
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
+  gap: 2.75rem;
+  align-items: center;
+}
+
+@media (max-width: 900px) {
+  .bfs-hero-card {
+    grid-template-columns: 1fr;
+    padding: 1.75rem 1.75rem 2rem;
+  }
+}
+
+.bfs-hero-main {
+  max-width: 48rem;
+}
+
+.bfs-hero-eyebrow {
+  font-size: 0.9rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin: 0 0 0.75rem;
+  opacity: 0.9;
+}
+
+.bfs-hero-title {
+  font-size: clamp(2.4rem, 2.9vw, 3.1rem);
+  line-height: 1.1;
+  margin: 0 0 1rem;
+}
+
+.bfs-hero-subtitle {
+  font-size: 1.05rem;
+  line-height: 1.5;
+  margin: 0 0 1rem;
+}
+
+.bfs-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 1.75rem 0 0.75rem;
+}
+
+.bfs-hero-note {
+  font-size: 0.85rem;
+  opacity: 0.85;
+  margin-top: 0.25rem;
+}
+
+.bfs-hero-side {
+  display: flex;
+  justify-content: center;
+}
+
+.bfs-hero-badge {
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #00345a;                 /* dark BFS blue behind icon */
+  max-width: 260px;
+  width: 100%;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65);
+}
+
+.bfs-hero-badge img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.bfs-hero-badge-cta {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  padding: 0.7rem 0.9rem;
+  background: #f58f24;
+  color: #111;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-align: center;
+  text-decoration: none;
+}
+
+.bfs-hero-badge-cta:hover,
+.bfs-hero-badge-cta:focus-visible {
+  background: #ffac3d;
+}
+.bfs-hero-badge-cta:active {
+  background: #e67e1f;
+}
+
+/* ----------------------------------------
+   End of BFS Framing Intelligent Futures
+   ---------------------------------------- */
+
+/* ----------------------------------------
+   Sidebar: Widget description text
+   Reusable muted descriptor paragraph inside any sidebar widget.
+   ---------------------------------------- */
+.sidebar-widget-desc {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+}
+
+/* ----------------------------------------
+   Sidebar: Council Snapshot table
+   Reusable for any multi-member council widget.
+   ---------------------------------------- */
+.council-table {
+  width: 100%;
+  font-size: 0.82rem;
+  border-collapse: collapse;
+  margin-top: 0.5rem;
+}
+
+.council-table td {
+  padding: 0.2rem 0;
+  vertical-align: top;
+}
+
+.council-table .council-name {
+  color: #e5e7eb;
+  font-weight: 600;
+  white-space: nowrap;
+  padding-right: 0.5rem;
+}
+
+.council-table .council-role {
+  color: #6b7280;
+  font-size: 0.8rem;
+  text-align: right;
+}
+
+/* ----------------------------------------
+   Sidebar: Diagram section labels
+   Reusable sub-heading for grouped sidebar link lists.
+   ---------------------------------------- */
+.sidebar-section-label {
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: #e5e7eb;
+  margin: 9.6px 0 0.3rem;
+}
+
+/* ----------------------------------------
+   Sidebar: Diagram link group spacing
+   Adds bottom gap between grouped sidebar-links lists.
+   ---------------------------------------- */
+.sidebar-links.sidebar-links--group {
+  margin-bottom: 0.75rem;
+}
+
+/* ----------------------------------------
+   Sidebar: Round-winner diagram entry
+   Amber left border + amber text — marks the selected
+   diagram without using the word "winner".
+   ---------------------------------------- */
+.sidebar-diagram-selected {
+  padding-left: 0;
+}
+
+.sidebar-diagram-selected a {
+  color: var(--okh-amber);
+  text-decoration: none;
+}
+
+/* ----------------------------------------
+   Sidebar: Non-winner diagram entry link
+   Muted gray — sits below the amber winner entries.
+   ---------------------------------------- */
+.sidebar-links .sidebar-diagram-entry {
+  font-size: 14px;
+  color: #6b7280;
+  padding: 0.1rem 0;
+  margin-left: 1rem;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.sidebar-links .sidebar-diagram-entry:hover,
+.sidebar-links .sidebar-diagram-entry:focus-visible {
+  color: #9ca3af;
+  border-color: #9ca3af;
+}
+
+/* ----------------------------------------
+   Sidebar: Tool link
+   Muted gray link with border — for utility/tool entries
+   below the main diagram lists.
+   ---------------------------------------- */
+.sidebar-links .sidebar-tool-link {
+  font-size: 14px;
+  color: #FF3670;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.sidebar-links .sidebar-tool-link:hover,
+.sidebar-links .sidebar-tool-link:focus-visible {
+  color: #ff6b95;
+}
+
+/* ----------------------------------------
+   End of Council / Diagram sidebar utilities
+   ---------------------------------------- */
+
+/* ----------------------------------------
+   Mermaid: isolate diagram labels from page colour inheritance.
+   Prevents --color-fg (near-white) leaking into HTML foreignObject
+   labels on light-themed diagrams.
+   ---------------------------------------- */
+.mermaid foreignObject,
+.mermaid foreignObject div,
+.mermaid foreignObject p,
+.mermaid foreignObject span {
+  color: initial;
+}
+
+/* ===== ARTICLE: FIRST DIAGRAM IS A LIAR — extracted from inline styles === */
+
+/* Hero section — removes default content-section bottom padding */
+.article-hero.content-section {
+  padding-bottom: 0;
+}
+
+/* Article body wrapper section — compressed top padding */
+.article-body-section {
+  padding-top: 2rem;
+}
+
+/* Amber text utility (version live badge, amber links) */
+.text-amber {
+  color: var(--okh-amber);
+}
+
+/* Amber inline link */
+.link-amber {
+  color: var(--okh-amber);
+  text-decoration: underline;
+}
+
+/* Diagram static PNG fallback (D-08) */
+.diagram-static-img {
+  display: block;
+  max-width: 100%;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+
+/* Live-render <details> toggle inside .diagram-shell */
+.diagram-live-render {
+  margin-bottom: 0;
+}
+
+.diagram-live-render > summary {
+  font-size: 0.82rem;
+  color: var(--color-muted);
+  cursor: pointer;
+  margin-bottom: 0.5rem;
+  list-style: none;
+}
+
+.diagram-live-render > summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Prompts section: h3 subtitle beneath h2 */
+.section-subtitle {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 1rem;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--color-muted);
+  margin-top: -0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Compact council-card variant (fairness note inline in prompts section) */
+.council-card--compact {
+  margin: 2rem 0;
+}
+
+/* Council fairness-note paragraphs */
+.council-note {
+  font-size: 0.9rem;
+  color: var(--color-muted);
+  margin-bottom: 0.6rem;
+  line-height: 1.6;
+}
+
+.council-note:last-of-type {
+  margin-bottom: 0;
+}
+
+/* Prompt meta note — small italic text below each prompt card */
+.prompt-note {
+  font-size: 0.85rem;
+  color: var(--color-muted);
+  margin-top: 0.6rem;
+  margin-bottom: 0;
+}
+
+/* Inline CTA link button block (LinkedIn article link) */
+.btn-block-top {
+  display: inline-block;
+  margin-top: 0.5rem;
+}
+
+/* Repo CTA paragraph below the prompts section */
+.article-repo-cta {
+  font-size: 0.9rem;
+  color: var(--color-muted);
+  margin-top: 1rem;
+}
+
+.article-repo-cta .link-amber {
+  text-decoration: none;
+  color: var(--okh-amber);
+}
+
+.article-repo-cta .link-amber:hover {
+  text-decoration: underline;
+}
+
+/* Sidebar footnote (D-10 V2pro / Mermaid AI disclosure) */
+.sidebar-footnote {
+  font-size: 0.78rem;
+  color: var(--color-muted);
+  margin-top: 0.6rem;
+  line-height: 1.5;
+}
+
+/* Footer built-with bar */
+.footer-built-with {
+  font-size: 0.8rem;
+  color: var(--color-muted);
+  white-space: nowrap;
+  padding-left: 1rem;
+}
+
+.footer-built-with a {
+  color: #FF3C00;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.footer-copyright {
+  margin: 0;
+  text-align: center;
+}
+
+/* ── Light-mode article body overrides (was inline <style> in article head) */
+html[data-theme="light"] .article-body p {
+  color: #1e293b;
+}
+
+html[data-theme="light"] .article-body h2 {
+  color: #0f172a;
+}
+
+/* ── TOC widget: GPU-layer hint for smooth animation */
+@media (min-width: 1024px) {
+  #toc-widget {
+    will-change: transform;
+  }
+}

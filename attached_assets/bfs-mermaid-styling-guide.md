@@ -1,0 +1,195 @@
+# BFS Mermaid Styling Guide — Extracted from Reference Diagrams
+
+## Master Color Palette
+
+Consolidated from three reference diagrams. All hex values validated against BFS Brand Guidelines references embedded in the source diagrams.
+
+### Core Brand Colors
+
+| Name | Hex | Role |
+|------|-----|------|
+| Builders Blue | `#00205B` | Primary brand anchor — borders, text on light fills, subgraph strokes |
+| Medium Blue | `#003087` | Secondary brand — strokes on lighter blue fills, subgraph strokes |
+| Deep Blue | `#002F86` | Canvas variant of Medium Blue — edge lines, cluster borders, title text |
+| Accent Blue | `#307FE2` / `#2F7FE1` | Emphasis / highlight nodes (used sparingly) |
+| Electric Blue stroke | `#1F6FCF` | Paired stroke for Accent Blue fills |
+
+### Support Colors
+
+| Name | Hex | Role |
+|------|-----|------|
+| Support Blue Medium | `#B3C1DB` | UI element fills, Joule UI fills, secondary node backgrounds |
+| Support Blue Light | `#D6E5F9` | WalkMe fills, AI runtime fills, tertiary node backgrounds |
+| Support Gray Light | `#D0D0CE` | BFS-owned context fills, subgraph backgrounds, boundary nodes |
+| Panel Gray | `#F2F2F2` | Cluster/subgraph interior background (lighter than canvas) |
+| Canvas Gray | `#E7E6E6` | Overall diagram background / canvas |
+
+### Neutral / Chrome
+
+| Name | Hex | Role |
+|------|-----|------|
+| White | `#FFFFFF` | Platform nodes, gate/control nodes, actor nodes, edge label backgrounds |
+| Border Gray | `#A7A8A9` / `#A7A7A8` | Gate borders, control borders, log node borders, dashed strokes |
+| Medium Gray | `#75787B` | Boundary node strokes, identity plane strokes, audit subgraph strokes |
+| Slate | `#515151` | Dark fill for database / infrastructure nodes |
+| Slate Stroke | `#3A3A3A` | Paired stroke for slate fills |
+| Text Gray | `#4D4D4D` | Primary body text, node labels on light backgrounds |
+| Dark Text | `#333333` | General text color (used in themeVariables and comp class) |
+
+### Accent / Signal
+
+| Name | Hex | Role |
+|------|-----|------|
+| BFS Red | `#C8102E` | Out-of-scope markers, external API stubs, warning/exclusion signals |
+| Red Stroke | `#9F0D24` | Paired stroke for BFS Red fills |
+
+---
+
+## Typography
+
+| Property | Value |
+|----------|-------|
+| Font Family | `Segoe UI, Arial, Helvetica, sans-serif` (alternate: `Segoe UI, Calibri, Arial, sans-serif`) |
+| Font Size | `14px` (default) |
+
+---
+
+## classDef Library
+
+Extracted and normalized from all three diagrams. Organized by semantic role, not by specific SAP module — making them reusable across any diagram subject.
+
+### Structural / Contextual
+
+```
+classDef primary     fill:#D0D0CE,stroke:#00205B,stroke-width:1.5px,color:#4D4D4D
+classDef secondary   fill:#B3C1DB,stroke:#00205B,stroke-width:1.5px,color:#00205B
+classDef tertiary    fill:#D6E5F9,stroke:#003087,stroke-width:1.5px,color:#00205B
+classDef platform    fill:#FFFFFF,stroke:#00205B,stroke-width:1.5px,color:#4D4D4D
+classDef boundary    fill:#D0D0CE,stroke:#75787B,stroke-width:1.5px,color:#4D4D4D
+```
+
+### Actors / Entry Points
+
+```
+classDef actor       fill:#FFFFFF,stroke:#00205B,stroke-width:1.5px,color:#00205B
+```
+
+### Gates / Controls / Logs (Light Chrome)
+
+```
+classDef gate        fill:#FFFFFF,stroke:#A7A8A9,stroke-width:1px,stroke-dasharray:4 3,color:#4D4D4D
+classDef control     fill:#FFFFFF,stroke:#A7A8A9,stroke-width:1px,color:#4D4D4D
+classDef log         fill:#FFFFFF,stroke:#A7A8A9,stroke-width:1px,color:#4D4D4D
+classDef question    fill:#FFFFFF,stroke:#00205B,stroke-width:1px,stroke-dasharray:6 4,color:#00205B
+```
+
+### Emphasis / Highlight
+
+```
+classDef accent      fill:#2F7FE1,stroke:#1F6FCF,stroke-width:1.4px,color:#FFFFFF
+classDef deepBlue    fill:#002F86,stroke:#002F86,stroke-width:1.4px,color:#FFFFFF
+classDef slate       fill:#515151,stroke:#3A3A3A,stroke-width:1.4px,color:#FFFFFF
+classDef dbStrong    stroke-width:1.8px
+```
+
+### Scope / Signal
+
+```
+classDef scope       fill:#D6E5F9,stroke:#00205B,stroke-width:2px,color:#00205B
+classDef outOfScope  fill:#FFFFFF,stroke:#C8102E,stroke-width:2px,color:#C8102E
+classDef redDash     fill:#C8102E,stroke:#9F0D24,stroke-dasharray:3 2,stroke-width:1.5px,color:#FFFFFF
+```
+
+---
+
+## Subgraph Styling Patterns
+
+Subgraphs are styled inline via `style` statements. Three tiers observed:
+
+### Tier 1 — Major context boundary (BFS-owned, BTP boundary)
+```
+style SUBGRAPH_ID fill:#D0D0CE,stroke:#00205B,stroke-width:2px,color:#4D4D4D
+```
+
+### Tier 2 — System tenant / platform boundary (SuccessFactors, WalkMe plane)
+```
+style SUBGRAPH_ID fill:#B3C1DB,stroke:#00205B,stroke-width:2px,color:#00205B
+```
+or for lighter-weight system groups:
+```
+style SUBGRAPH_ID fill:#D6E5F9,stroke:#003087,stroke-width:2px,color:#00205B
+```
+
+### Tier 3 — Interior grouping / sub-compartment
+```
+style SUBGRAPH_ID fill:#D0D0CE,stroke:#75787B,stroke-width:2px,color:#4D4D4D
+```
+or for chrome/neutral groups (gates, open questions):
+```
+style SUBGRAPH_ID fill:#FFFFFF,stroke:#A7A8A9,stroke-width:2px,color:#4D4D4D
+```
+
+### Tier 4 — Environment panels (Dev/QA/Prod pattern)
+```
+style SUBGRAPH_ID fill:#F2F2F2,stroke:#002F86,stroke-width:1.5px,color:#002F86
+```
+
+---
+
+## Edge / Link Styling
+
+| Pattern | Usage |
+|---------|-------|
+| Solid arrow `-->` | Primary flow, data movement, control signals |
+| Dotted arrow `-.->` | Optional paths, provisioning, log export, boundary anchors |
+| Labeled solid `-->\|Label\|` | Named relationships (SSO, API, Route, etc.) |
+| Labeled dotted `-. "Label" .->` | Guidance flows, tour paths, optional overlays |
+| `linkStyle default stroke:#002F86,stroke-width:1.3px` | Brand-default edge color when using init directive |
+
+---
+
+## themeVariables Block (for init directive or YAML frontmatter)
+
+Extracted from the second reference diagram (the canvas-styled environment diagram):
+
+### As YAML Frontmatter
+```
+---
+config:
+  theme: base
+  look: classic
+  themeVariables:
+    background: "#E7E6E6"
+    fontFamily: "Segoe UI, Arial, Helvetica, sans-serif"
+    fontSize: "14px"
+    textColor: "#333333"
+    lineColor: "#002F86"
+    clusterBorder: "#002F86"
+    titleColor: "#002F86"
+    primaryColor: "#FFFFFF"
+    primaryBorderColor: "#A7A7A8"
+    primaryTextColor: "#333333"
+    edgeLabelBackground: "#FFFFFF"
+    tertiaryColor: "#E7E6E6"
+    clusterBkg: "#F2F2F2"
+---
+```
+
+### As Init Directive
+```
+%%{init: {"theme":"base","themeVariables":{"background":"#E7E6E6","fontFamily":"Segoe UI, Arial, Helvetica, sans-serif","fontSize":"14px","textColor":"#333333","lineColor":"#002F86","clusterBorder":"#002F86","titleColor":"#002F86","primaryColor":"#FFFFFF","primaryBorderColor":"#A7A7A8","primaryTextColor":"#333333","edgeLabelBackground":"#FFFFFF","tertiaryColor":"#E7E6E6","clusterBkg":"#F2F2F2"}}}%%
+```
+
+---
+
+## Design Principles (observed from source diagrams)
+
+1. **White is the default node fill** — content nodes start white, colored fills are applied via classDef to signal semantic meaning
+2. **Blue depth signals ownership** — deeper blue = more SAP/platform; lighter blue = more guidance/overlay; gray = BFS-owned
+3. **Dashed strokes signal conditionality** — gates use dash patterns; out-of-scope uses solid red; open questions use wider dash
+4. **Subgraphs carry fill, nodes carry meaning** — subgraph backgrounds create zones; individual node classDefs create the taxonomy within zones
+5. **Red is reserved for exclusion/warning** — never decorative; only out-of-scope markers or external boundary signals
+6. **Stroke width creates hierarchy** — 1px for chrome/support elements, 1.4–1.5px for standard nodes, 1.8–2px for emphasis/scope boundaries
+7. **Text color follows background** — white text on dark fills (#00205B, #002F86, #515151, #C8102E); dark text (#4D4D4D, #00205B, #333333) on light fills
+8. **Edge labels get white backgrounds** — ensures readability over any crossing path
+9. **Canvas/background is warm gray, not white** — `#E7E6E6` creates visual separation between diagram and page

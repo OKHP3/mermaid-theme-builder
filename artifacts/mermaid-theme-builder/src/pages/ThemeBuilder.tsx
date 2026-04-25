@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import {
   BUILTIN_PALETTES,
   BRAND_PALETTES,
@@ -18,22 +18,13 @@ import { MermaidPreview } from "@/components/MermaidPreview";
 import { ColorSwatch } from "@/components/ColorSwatch";
 import { WarningBanner } from "@/components/WarningBanner";
 import { CapabilityNote } from "@/components/CapabilityNote";
-
-const SAMPLE_CODE = `flowchart TD
-    A[User Request] --> B{Validate Input}
-    B -->|Valid| C[Process Request]
-    B -->|Invalid| D[Return Error]
-    C --> E[Fetch Data]
-    E --> F{Data Found?}
-    F -->|Yes| G[Format Response]
-    F -->|No| H[Return 404]
-    G --> I[Send Response]`;
+import { BRAND_EXAMPLES, GENERIC_EXAMPLE } from "@/data/examples";
 
 type Tab = "input" | "output";
 type ExportType = "code" | "markdown" | "prompt";
 
 export function ThemeBuilder() {
-  const [inputCode, setInputCode] = useState(SAMPLE_CODE);
+  const [inputCode, setInputCode] = useState(GENERIC_EXAMPLE);
   const [selectedPaletteId, setSelectedPaletteId] = useState(BRAND_PALETTES[0].id);
   const [customColors, setCustomColors] = useState<Record<string, ThemeColor[]>>({});
   const [activeTab, setActiveTab] = useState<Tab>("input");
@@ -309,12 +300,10 @@ export function ThemeBuilder() {
                   <div className="w-2 h-2 rounded-full bg-amber-400" />
                   <span className="text-xs font-medium text-foreground">Input</span>
                 </div>
-                <button
-                  onClick={() => setInputCode(SAMPLE_CODE)}
-                  className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Load example
-                </button>
+                <LoadExampleMenu
+                  paletteId={selectedPaletteId}
+                  onLoad={setInputCode}
+                />
               </div>
               <textarea
                 value={inputCode}
@@ -602,5 +591,75 @@ function CopyButton({
       )}
       {copied ? "Copied!" : label}
     </button>
+  );
+}
+
+function LoadExampleMenu({
+  paletteId,
+  onLoad,
+}: {
+  paletteId: string;
+  onLoad: (code: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const brandExamples = BRAND_EXAMPLES[paletteId];
+
+  useEffect(() => {
+    if (!open) return;
+    function handleOutside(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleOutside);
+    return () => document.removeEventListener("mousedown", handleOutside);
+  }, [open]);
+
+  if (!brandExamples) {
+    return (
+      <button
+        onClick={() => onLoad(GENERIC_EXAMPLE)}
+        className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+      >
+        Load example
+      </button>
+    );
+  }
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+        aria-haspopup="true"
+        aria-expanded={open}
+      >
+        Load example
+        <svg
+          viewBox="0 0 12 12"
+          fill="currentColor"
+          className={`w-2.5 h-2.5 transition-transform ${open ? "rotate-180" : ""}`}
+        >
+          <path d="M6 8L1 3h10L6 8z" />
+        </svg>
+      </button>
+      {open && (
+        <div className="absolute right-0 top-full mt-1 z-30 bg-card border border-border rounded-md shadow-md py-1 min-w-[110px]">
+          <button
+            onClick={() => { onLoad(brandExamples.flowchart); setOpen(false); }}
+            className="w-full text-left px-3 py-1.5 text-xs text-foreground hover:bg-muted transition-colors"
+          >
+            Flowchart
+          </button>
+          <button
+            onClick={() => { onLoad(brandExamples.sequence); setOpen(false); }}
+            className="w-full text-left px-3 py-1.5 text-xs text-foreground hover:bg-muted transition-colors"
+          >
+            Sequence
+          </button>
+        </div>
+      )}
+    </div>
   );
 }
