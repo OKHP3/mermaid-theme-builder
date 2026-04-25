@@ -366,7 +366,7 @@ export function ThemeBuilder() {
               A personal <a href="https://overkillhill.com" target="_blank" rel="noopener noreferrer" className="hover:text-muted-foreground transition-colors">OverKill Hill P³</a> project by Jamie Hill
             </span>
             <span className="text-[10px] text-muted-foreground/40 leading-none">
-              Not associated with any employer · Not affiliated with Mermaid, Mermaid Chart, or Mermaid.ai
+              Not affiliated with Builders FirstSource, Mermaid, Mermaid Chart, or Mermaid.ai
             </span>
           </div>
 
