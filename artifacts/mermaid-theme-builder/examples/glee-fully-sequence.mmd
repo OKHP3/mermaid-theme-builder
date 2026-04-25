@@ -1,0 +1,34 @@
+%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#1c3a34", "primaryTextColor": "#f6f2ee", "primaryBorderColor": "#2d6a4f", "lineColor": "#e6a03c", "secondaryColor": "#52b788", "tertiaryColor": "#d8f3e6", "background": "#f4fdf7", "mainBkg": "#d8f3e6", "nodeBorder": "#2d6a4f", "clusterBkg": "#e8f7ef", "titleColor": "#1c3a34", "edgeLabelBackground": "#f4fdf7", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+%% Theme: Glee-fully
+%% Theme ID: glee-fully
+%% Tool: https://overkillhill.com/projects/mermaid-theme-builder/
+%% Personal OverKill Hill P³ project by Jamie Hill — overkillhill.com
+%% Not affiliated with Builders FirstSource, Mermaid, Mermaid Chart, or Mermaid.ai
+sequenceDiagram
+    participant Me as Me
+    participant App as Planner App
+    participant Cal as Calendar
+    participant Shop as Shopping List
+
+    Me->>App: Open weekly planner
+    activate App
+    App->>Cal: Load this week's events
+    Cal-->>App: Events loaded
+
+    App-->>Me: Here's your week overview
+
+    Me->>App: Plan meals for the week
+    activate App
+
+    loop For each day
+        App-->>Me: Suggest a meal
+        Me->>App: Approve or swap
+    end
+
+    App->>Shop: Generate shopping list
+    Shop-->>App: List ready
+    App-->>Me: Your shopping list is ready!
+    deactivate App
+
+    Me->>Shop: Check off items while shopping
+    Shop-->>Me: All done — enjoy your week!

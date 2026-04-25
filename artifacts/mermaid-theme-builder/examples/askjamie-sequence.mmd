@@ -1,0 +1,35 @@
+%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#5b3a27", "primaryTextColor": "#f6f2ee", "primaryBorderColor": "#c46a2c", "lineColor": "#a06e28", "secondaryColor": "#676a2c", "tertiaryColor": "#e6a03c", "background": "#f6f2ee", "mainBkg": "#eff2f5", "nodeBorder": "#a06e28", "clusterBkg": "#f0ebe5", "titleColor": "#2a2320", "edgeLabelBackground": "#f6f2ee", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+%% Theme: AskJamie
+%% Theme ID: askjamie
+%% Tool: https://overkillhill.com/projects/mermaid-theme-builder/
+%% Personal OverKill Hill P³ project by Jamie Hill — overkillhill.com
+%% Not affiliated with Builders FirstSource, Mermaid, Mermaid Chart, or Mermaid.ai
+sequenceDiagram
+    participant U as User
+    participant A as AskJamie
+    participant K as Knowledge Base
+    participant H as Human Agent
+
+    U->>A: Ask a question
+    activate A
+    A->>K: Search for answer
+    activate K
+
+    alt Answer found
+        K-->>A: Matched article
+        deactivate K
+        A-->>U: Here's what I found
+        U->>A: Was this helpful?
+        A-->>U: Great! Ticket closed.
+    else No match found
+        K-->>A: No match
+        deactivate K
+        A->>H: Escalate ticket
+        activate H
+        H-->>U: Hi! I can help you with that.
+        H-->>A: Resolved — update KB
+        deactivate H
+        A-->>U: Your ticket has been resolved.
+    end
+
+    deactivate A

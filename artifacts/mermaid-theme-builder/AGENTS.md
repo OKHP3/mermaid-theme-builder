@@ -118,11 +118,21 @@ artifacts/mermaid-theme-builder/
 │   ├── THEME_METADATA.md
 │   ├── ROADMAP.md
 │   ├── MERMAID_CAPABILITY_REGISTRY.md
+│   ├── MERMAID_THEMING_REFERENCE.md  # full themeVariables table + renderer compat
+│   ├── LEGAL.md                      # color copyright + brand policy analysis
 │   ├── PRODUCT_BRIEF.md
 │   ├── DEPLOYMENT.md
 │   └── RELEASE_CHECKLIST.md
+├── examples/
+│   ├── overkill-hill-flowchart.mmd   # OverKill Hill P³ flowchart example
+│   ├── overkill-hill-sequence.mmd    # OverKill Hill P³ sequence example
+│   ├── askjamie-flowchart.mmd        # AskJamie flowchart example
+│   ├── askjamie-sequence.mmd         # AskJamie sequence example
+│   ├── glee-fully-flowchart.mmd      # Glee-fully flowchart example
+│   └── glee-fully-sequence.mmd       # Glee-fully sequence example
 ├── standards/
 │   ├── render-safety-checklist.md
 │   └── mermaid-theme-builder-standard.md
+├── LICENSE                           # MIT License — Jamie Hill / OverKill Hill P³
 └── AGENTS.md
 ```

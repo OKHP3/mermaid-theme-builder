@@ -1,0 +1,48 @@
+%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#1c3a34", "primaryTextColor": "#f6f2ee", "primaryBorderColor": "#2d6a4f", "lineColor": "#e6a03c", "secondaryColor": "#52b788", "tertiaryColor": "#d8f3e6", "background": "#f4fdf7", "mainBkg": "#d8f3e6", "nodeBorder": "#2d6a4f", "clusterBkg": "#e8f7ef", "titleColor": "#1c3a34", "edgeLabelBackground": "#f4fdf7", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+%% Theme: Glee-fully
+%% Theme ID: glee-fully
+%% Tool: https://overkillhill.com/projects/mermaid-theme-builder/
+%% Personal OverKill Hill P³ project by Jamie Hill — overkillhill.com
+%% Not affiliated with Builders FirstSource, Mermaid, Mermaid Chart, or Mermaid.ai
+flowchart TD
+    classDef primary fill:#1c3a34,stroke:#2d6a4f,color:#f6f2ee
+    classDef secondary fill:#52b788,stroke:#2d6a4f,color:#1c3a34
+    classDef tertiary fill:#d8f3e6,stroke:#2d6a4f,color:#1c3a34
+    classDef gate fill:#e6a03c,stroke:#2d6a4f,color:#1c3a34,font-weight:bold
+    classDef accent fill:#2d6a4f,stroke:#1c3a34,color:#f6f2ee
+
+    subgraph Morning [Morning Routine]
+        A([Wake up]):::primary
+        B[Drink water]:::secondary
+        C{Workout today?}:::gate
+        D[30-min workout]:::accent
+        E[Stretch 10 min]:::tertiary
+    end
+
+    subgraph Planning [Daily Planning]
+        F[Review today's goals]:::primary
+        G{Goals clear?}:::gate
+        H[Clarify one goal]:::secondary
+        I[Write top 3 tasks]:::accent
+    end
+
+    subgraph Focus [Focus Block]
+        J[Work on task 1]:::primary
+        K{Done in session?}:::gate
+        L[Take a break]:::tertiary
+        M([Start next task]):::secondary
+    end
+
+    A --> B --> C
+    C -->|Yes| D --> F
+    C -->|No| E --> F
+    F --> G
+    G -->|Yes| I
+    G -->|No| H --> G
+    I --> J --> K
+    K -->|Yes| M
+    K -->|No| L --> J
+
+    style Morning fill:#e8f7ef,stroke:#2d6a4f,color:#1c3a34
+    style Planning fill:#e8f7ef,stroke:#2d6a4f,color:#1c3a34
+    style Focus fill:#e8f7ef,stroke:#2d6a4f,color:#1c3a34

@@ -1,0 +1,32 @@
+%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "tertiaryColor": "#1c3a34", "background": "#0d1117", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#e6a03c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+%% Theme: OverKill Hill P³
+%% Theme ID: overkill-hill
+%% Tool: https://overkillhill.com/projects/mermaid-theme-builder/
+%% Personal OverKill Hill P³ project by Jamie Hill — overkillhill.com
+%% Not affiliated with Builders FirstSource, Mermaid, Mermaid Chart, or Mermaid.ai
+sequenceDiagram
+    participant U as User
+    participant O as Orchestrator
+    participant P as Planner
+    participant E as Executor
+    participant S as Store
+
+    U->>O: Submit task
+    activate O
+    O->>P: Plan task
+    activate P
+    P-->>O: Execution plan
+    deactivate P
+
+    loop For each step
+        O->>E: Execute step
+        activate E
+        E->>S: Read context
+        S-->>E: Context data
+        E-->>O: Step result
+        deactivate E
+    end
+
+    O->>S: Persist final output
+    O-->>U: Task complete
+    deactivate O

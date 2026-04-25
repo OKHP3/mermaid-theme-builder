@@ -1,0 +1,46 @@
+%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#5b3a27", "primaryTextColor": "#f6f2ee", "primaryBorderColor": "#c46a2c", "lineColor": "#a06e28", "secondaryColor": "#676a2c", "tertiaryColor": "#e6a03c", "background": "#f6f2ee", "mainBkg": "#eff2f5", "nodeBorder": "#a06e28", "clusterBkg": "#f0ebe5", "titleColor": "#2a2320", "edgeLabelBackground": "#f6f2ee", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+%% Theme: AskJamie
+%% Theme ID: askjamie
+%% Tool: https://overkillhill.com/projects/mermaid-theme-builder/
+%% Personal OverKill Hill P³ project by Jamie Hill — overkillhill.com
+%% Not affiliated with Builders FirstSource, Mermaid, Mermaid Chart, or Mermaid.ai
+flowchart TD
+    classDef primary fill:#5b3a27,stroke:#c46a2c,color:#f6f2ee
+    classDef gate fill:#c46a2c,stroke:#a06e28,color:#f6f2ee
+    classDef secondary fill:#676a2c,stroke:#a06e28,color:#f6f2ee
+    classDef accent fill:#e6a03c,stroke:#a06e28,color:#2a2320
+    classDef outOfScope fill:#f6f2ee,stroke:#a06e28,color:#5b3a27,stroke-dasharray:5
+
+    subgraph Intake [Request Intake]
+        A([User submits question]):::primary
+        B{Is question clear?}:::gate
+        C[Ask for clarification]:::secondary
+    end
+
+    subgraph Resolution [Resolution Path]
+        D{Found in knowledge base?}:::gate
+        E[Return answer]:::accent
+        F[Escalate to human agent]:::primary
+    end
+
+    subgraph Followup [Follow-up]
+        G{Was it helpful?}:::gate
+        H[Close ticket]:::accent
+        I[Reopen with feedback]:::secondary
+    end
+
+    A --> B
+    B -->|Yes| D
+    B -->|No| C
+    C --> B
+    D -->|Yes| E
+    D -->|No| F
+    E --> G
+    F --> G
+    G -->|Yes| H
+    G -->|No| I
+    I --> D
+
+    style Intake fill:#f0ebe5,stroke:#c46a2c,color:#2a2320
+    style Resolution fill:#f0ebe5,stroke:#a06e28,color:#2a2320
+    style Followup fill:#f0ebe5,stroke:#a06e28,color:#2a2320

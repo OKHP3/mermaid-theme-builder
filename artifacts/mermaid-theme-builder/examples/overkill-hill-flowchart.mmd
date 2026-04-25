@@ -1,0 +1,51 @@
+%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "tertiaryColor": "#1c3a34", "background": "#0d1117", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#e6a03c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+%% Theme: OverKill Hill P³
+%% Theme ID: overkill-hill
+%% Tool: https://overkillhill.com/projects/mermaid-theme-builder/
+%% Personal OverKill Hill P³ project by Jamie Hill — overkillhill.com
+%% Not affiliated with Builders FirstSource, Mermaid, Mermaid Chart, or Mermaid.ai
+flowchart TD
+    classDef primary fill:#111827,stroke:#c46a2c,color:#e5e7eb
+    classDef secondary fill:#181f26,stroke:#c46a2c,color:#e5e7eb
+    classDef gate fill:#c46a2c,stroke:#c46a2c,color:#0d1117
+    classDef accent fill:#c46a2c,stroke:#c46a2c,color:#0d1117
+    classDef platform fill:#111827,stroke:#c46a2c,color:#e6a03c,stroke-width:2px
+
+    subgraph Client [Client Layer]
+        A([User / API Consumer]):::platform
+    end
+
+    subgraph Gateway [API Gateway]
+        B{Auth Check}:::gate
+        C[Rate Limiter]:::secondary
+    end
+
+    subgraph Services [Service Layer]
+        D[Request Router]:::primary
+        E[Service A]:::primary
+        F[Service B]:::primary
+    end
+
+    subgraph Data [Data Layer]
+        G[(Primary Store)]:::secondary
+        H[(Cache)]:::secondary
+    end
+
+    I([Response]):::accent
+
+    A -->|Request| B
+    B -->|Valid| C
+    B -->|Invalid| I
+    C -->|Allowed| D
+    C -->|Throttled| I
+    D --> E
+    D --> F
+    E --> G
+    F --> H
+    G --> I
+    H --> I
+
+    style Client fill:#0d1117,stroke:#c46a2c,color:#e6a03c
+    style Gateway fill:#0d1117,stroke:#c46a2c,color:#e6a03c
+    style Services fill:#0d1117,stroke:#c46a2c,color:#e6a03c
+    style Data fill:#0d1117,stroke:#c46a2c,color:#e6a03c
