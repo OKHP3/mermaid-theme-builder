@@ -63,6 +63,16 @@ Run the following manual test scenarios:
 - [ ] Glee-fully preset loads and renders visually
 - [ ] Each utility preset (Ocean Depth, Forest Sage, Slate Ember, Violet Mist) loads correctly
 
+### Test F2 — Example library
+- [ ] "Load example ▾" dropdown opens for all brand and utility palettes
+- [ ] Brand palettes: Flowchart and Sequence options load correct palette-matched examples
+- [ ] Utility palettes: Generic option loads the basic flowchart sample
+- [ ] All palettes: "Rube Goldberg Showcase" option appears below a separator
+- [ ] Loading Showcase: YAML frontmatter warning appears in the input pane
+- [ ] Loading Showcase: "Advanced" badge is visible on the menu item
+- [ ] Applying a theme to the Showcase strips the YAML frontmatter and renders the flowchart with the selected palette's %%{init}%% applied
+- [ ] Showcase renders or fails gracefully with an actionable Mermaid error
+
 ### Test F — Original vs Themed preview
 - [ ] "Original" tab shows unstyled Mermaid diagram
 - [ ] "Themed" tab shows diagram with applied theme colors

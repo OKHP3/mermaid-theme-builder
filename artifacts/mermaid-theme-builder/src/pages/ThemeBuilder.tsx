@@ -18,7 +18,7 @@ import { MermaidPreview } from "@/components/MermaidPreview";
 import { ColorSwatch } from "@/components/ColorSwatch";
 import { WarningBanner } from "@/components/WarningBanner";
 import { CapabilityNote } from "@/components/CapabilityNote";
-import { BRAND_EXAMPLES, GENERIC_EXAMPLE } from "@/data/examples";
+import { BRAND_EXAMPLES, GENERIC_EXAMPLE, SHOWCASE_EXAMPLE, SHOWCASE_META } from "@/data/examples";
 
 type Tab = "input" | "output";
 type ExportType = "code" | "markdown" | "prompt";
@@ -49,6 +49,11 @@ export function ThemeBuilder() {
   const hasCustomizations = Boolean(customColors[selectedPaletteId]);
 
   const detection = useMemo(() => detectDiagram(inputCode), [inputCode]);
+
+  const isShowcase = useMemo(() => {
+    const fm = inputCode.trim().match(/^---\s*\n([\s\S]*?)\n---/);
+    return fm != null && /layout\s*:\s*elk/.test(fm[1]);
+  }, [inputCode]);
 
   const effectiveThemeName = useMemo(
     () => getEffectiveThemeName(selectedPalette, customThemeName, hasCustomizations),
@@ -312,11 +317,12 @@ export function ThemeBuilder() {
                 placeholder="Paste your Mermaid diagram code here..."
                 spellCheck={false}
               />
-              {(detection.warnings.length > 0 || (detection.capability && detection.capability.styleStrategy !== "full" && detection.capability.notes)) && (
+              {(detection.warnings.length > 0 || isShowcase || (detection.capability && detection.capability.styleStrategy !== "full" && detection.capability.notes)) && (
                 <div className="p-3 border-t border-border space-y-2">
                   {detection.warnings.length > 0 && (
                     <WarningBanner warnings={detection.warnings} />
                   )}
+                  {isShowcase && <ShowcaseCompatibilityNote />}
                   {detection.capability && detection.capability.styleStrategy !== "full" && detection.capability.notes && (
                     <CapabilityNote capability={detection.capability} />
                   )}
@@ -616,17 +622,6 @@ function LoadExampleMenu({
     return () => document.removeEventListener("mousedown", handleOutside);
   }, [open]);
 
-  if (!brandExamples) {
-    return (
-      <button
-        onClick={() => onLoad(GENERIC_EXAMPLE)}
-        className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-      >
-        Load example
-      </button>
-    );
-  }
-
   return (
     <div ref={ref} className="relative">
       <button
@@ -645,21 +640,55 @@ function LoadExampleMenu({
         </svg>
       </button>
       {open && (
-        <div className="absolute right-0 top-full mt-1 z-30 bg-card border border-border rounded-md shadow-md py-1 min-w-[110px]">
+        <div className="absolute right-0 top-full mt-1 z-30 bg-card border border-border rounded-md shadow-md py-1 min-w-[140px]">
+          {brandExamples ? (
+            <>
+              <button
+                onClick={() => { onLoad(brandExamples.flowchart); setOpen(false); }}
+                className="w-full text-left px-3 py-1.5 text-xs text-foreground hover:bg-muted transition-colors"
+              >
+                Flowchart
+              </button>
+              <button
+                onClick={() => { onLoad(brandExamples.sequence); setOpen(false); }}
+                className="w-full text-left px-3 py-1.5 text-xs text-foreground hover:bg-muted transition-colors"
+              >
+                Sequence
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={() => { onLoad(GENERIC_EXAMPLE); setOpen(false); }}
+              className="w-full text-left px-3 py-1.5 text-xs text-foreground hover:bg-muted transition-colors"
+            >
+              Generic
+            </button>
+          )}
+          <div className="my-1 border-t border-border" />
           <button
-            onClick={() => { onLoad(brandExamples.flowchart); setOpen(false); }}
+            onClick={() => { onLoad(SHOWCASE_EXAMPLE); setOpen(false); }}
             className="w-full text-left px-3 py-1.5 text-xs text-foreground hover:bg-muted transition-colors"
           >
-            Flowchart
-          </button>
-          <button
-            onClick={() => { onLoad(brandExamples.sequence); setOpen(false); }}
-            className="w-full text-left px-3 py-1.5 text-xs text-foreground hover:bg-muted transition-colors"
-          >
-            Sequence
+            <span className="font-medium">{SHOWCASE_META.title.replace("OverKill ", "")}</span>
+            <span className="ml-1.5 text-[9px] font-semibold uppercase tracking-wide px-1 py-px rounded bg-amber-500/15 text-amber-600 dark:text-amber-400">
+              Advanced
+            </span>
           </button>
         </div>
       )}
+    </div>
+  );
+}
+
+function ShowcaseCompatibilityNote() {
+  return (
+    <div className="flex gap-2 rounded-md border border-amber-400/30 bg-amber-400/8 px-3 py-2 text-xs text-amber-700 dark:text-amber-400">
+      <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 shrink-0 mt-px">
+        <path fillRule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+      </svg>
+      <span>
+        <strong className="font-semibold">Showcase diagram</strong> — Uses ELK layout, clickable nodes, and a rich classDef library. The YAML frontmatter config will be stripped and replaced by the selected palette on export. Some renderers may downgrade layout, ignore links, or render differently depending on Mermaid version and security settings.
+      </span>
     </div>
   );
 }

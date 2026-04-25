@@ -18,11 +18,17 @@
 
 ---
 
-## v0.2.0 — Persistence + Usability
+## v0.2.0 — Examples + Persistence
 
-**Status:** Planned
+**Status:** In progress
 
-**Goals:** Make custom themes and session work survive a browser reload.
+**Goals:** Make the app useful from first open. Add example library. Make custom themes survive a browser reload.
+
+### Examples (shipped in v0.2-alpha)
+- [x] Brand-matched example library (flowchart + sequence per OKHP3 palette)
+- [x] "OverKill Rube Goldberg Showcase" — advanced stress-test flowchart with ELK layout, semantic classDefs, clickable nodes, and attribution
+- [x] YAML frontmatter detection and strip-on-export
+- [x] Showcase compatibility warning in UI
 
 ### Palette / Theme
 - [ ] localStorage persistence for custom color edits and custom theme names

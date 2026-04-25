@@ -25,6 +25,7 @@ export function detectDiagram(code: string): DetectionResult {
   }
 
   const hasThemeInit = /%%\s*\{.*?init.*?\}.*?%%/s.test(trimmed);
+  const hasYamlFrontmatter = /^---\s*\n[\s\S]*?\n---/.test(trimmed);
 
   let family: DiagramFamily = "unknown";
   let label = "Unknown";
@@ -45,6 +46,10 @@ export function detectDiagram(code: string): DetectionResult {
 
   if (hasThemeInit) {
     warnings.push("Existing %%{init:...}%% directive detected — applying this theme will replace it.");
+  }
+
+  if (hasYamlFrontmatter) {
+    warnings.push("YAML frontmatter detected — config directives (layout, theme) will be replaced when this palette theme is applied.");
   }
 
   const hasUnsupportedChars = /[\u0000-\u001F]/.test(trimmed.replace(/\n/g, ""));

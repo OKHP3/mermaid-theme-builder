@@ -244,3 +244,159 @@ export const GENERIC_EXAMPLE = `flowchart TD
     F -->|Yes| G[Format Response]
     F -->|No| H[Return 404]
     G --> I[Send Response]`;
+
+export const SHOWCASE_EXAMPLE = `---
+config:
+  layout: elk
+  theme: redux-dark
+---
+flowchart LR
+START["Random Thought Enters the Machine"]:::origin
+SPARK["Spark"]:::hot
+LEDGER["Notes, Threads, Prompts"]:::doc
+COUNCIL["Council of AIs: useful or just shiny?"]:::council
+DECIDE{"Worth Overdoing?"}:::decision
+
+START ==> SPARK
+SPARK --> LEDGER
+LEDGER --> COUNCIL
+COUNCIL --> DECIDE
+
+DECIDE -->|"No, park it"| GRAVEYARD["Idea Graveyard"]:::muted
+GRAVEYARD -."ferments".-> SPARK
+DECIDE -->|"Yes, overdo it"| THESIS["Name the Pain"]:::okh
+
+subgraph SG1["1. Sequence Engine: Context Distillation"]
+direction TB
+  S1A(("Input")):::sequence
+  S1B["Voice Riff"]:::sequence
+  S1C["Messy Transcript"]:::doc
+  S1D["Extract Claims"]:::sequence
+  S1E["Reusable Thesis Card"]:::artifact
+  S1A --> S1B --> S1C --> S1D --> S1E
+end
+
+subgraph SG2["2. Timeline Forge: Maybe to Momentum"]
+direction TB
+  T0(("T+0")):::timeline
+  T1["T+2 Name Product"]:::timeline
+  T2["T+6 Debate Scope"]:::timeline
+  T3["T+9 PRD Packet"]:::timeline
+  T4(("T+12 Prototype")):::artifact
+  T0 --> T1 --> T2 --> T3 --> T4
+end
+
+subgraph SG3["3. Brand Gravity Well"]
+direction TB
+  M0(("Personal Ecosystem")):::brand
+  M1["OverKill Hill P3"]:::okh
+  M2["AskJamie"]:::askjamie
+  M3["Glee-fully"]:::glee
+  M4["No employer bleed."]:::warning
+  M0 --> M1
+  M0 --> M2
+  M0 --> M3
+  M0 --> M4
+end
+
+subgraph SG4["4. Theme Builder Runtime"]
+direction TB
+  A1["Paste Mermaid"]:::input
+  A2[("Palette Store")]:::data
+  A3{"Theme Engine"}:::engine
+  A4["Live Preview"]:::preview
+  A5["Copy / Export"]:::output
+  A1 --> A3
+  A2 --> A3
+  A3 --> A4
+  A3 --> A5
+end
+
+subgraph SG5["5. Apply, Repair, Repeat"]
+direction TB
+  P1["Bland Diagram"]:::raw
+  P2["Detect Family"]:::process
+  P3{"Strong Support?"}:::decision
+  P4["Full Theme"]:::success
+  P5["Generic Only"]:::caution
+  P6(("Styled Artifact")):::artifact
+  P1 --> P2 --> P3
+  P3 -->|"High"| P4 --> P6
+  P3 -->|"Beta"| P5 --> P6
+end
+
+subgraph SG6["6. Governance: Safety and Attribution"]
+direction TB
+  G1{"Render Safety Scan"}:::govern
+  G2[("Theme Metadata")]:::data
+  G3["Source Comments: ON"]:::note
+  G4["Export Bootstrap"]:::artifact
+  G1 --> G2
+  G2 --> G3
+  G2 --> G4
+end
+
+THESIS --> SG1
+SG1 --> SG2
+SG2 --> SG3
+SG3 --> SG4
+SG4 --> SG5
+SG5 --> SG6
+
+SG6 ==> SHIP(("Ship it. Then sharpen it.")):::ship
+
+OKH_LINK["overkillhill.com"]:::okhLink
+GLEE_LINK["glee-fully.tools"]:::gleeLink
+ASK_LINK["askjamie.bot"]:::askLink
+
+SHIP --> OKH_LINK
+SHIP --> GLEE_LINK
+SHIP --> ASK_LINK
+
+FOOTNOTE["Mermaid Theme Builder | OKH Protocol Dark | v0.2-alpha"]:::credit
+SHIP -.-> FOOTNOTE
+
+click OKH_LINK "https://overkillhill.com" _blank
+click GLEE_LINK "https://glee-fully.tools" _blank
+click ASK_LINK "https://askjamie.bot" _blank
+click FOOTNOTE "https://overkillhill.com/projects/mermaid-theme-builder/" _blank
+
+classDef origin fill:#0F172A,stroke:#38BDF8,stroke-width:3px,color:#F8FAFC
+classDef hot fill:#7F1D1D,stroke:#F97316,stroke-width:2px,color:#FFF7ED
+classDef doc fill:#1E293B,stroke:#93C5FD,stroke-width:1.5px,color:#DBEAFE
+classDef council fill:#312E81,stroke:#818CF8,stroke-width:2px,color:#E0E7FF
+classDef decision fill:#422006,stroke:#FBBF24,stroke-width:2px,color:#FEF3C7
+classDef muted fill:#27272A,stroke:#71717A,stroke-width:1px,color:#A1A1AA
+classDef okh fill:#581C87,stroke:#A78BFA,stroke-width:2px,color:#EDE9FE
+classDef sequence fill:#14532D,stroke:#4ADE80,stroke-width:1.5px,color:#DCFCE7
+classDef artifact fill:#4C1D95,stroke:#C084FC,stroke-width:2px,color:#F3E8FF
+classDef timeline fill:#172554,stroke:#60A5FA,stroke-width:1.5px,color:#DBEAFE
+classDef brand fill:#7C2D12,stroke:#FB923C,stroke-width:2px,color:#FED7AA
+classDef askjamie fill:#065F46,stroke:#34D399,stroke-width:2px,color:#D1FAE5
+classDef glee fill:#831843,stroke:#F472B6,stroke-width:2px,color:#FCE7F3
+classDef warning fill:#713F12,stroke:#FBBF24,stroke-width:2px,color:#FEF3C7
+classDef input fill:#1E3A8A,stroke:#60A5FA,stroke-width:1.5px,color:#DBEAFE
+classDef data fill:#134E4A,stroke:#5EEAD4,stroke-width:1.5px,color:#CCFBF1
+classDef engine fill:#701A75,stroke:#D946EF,stroke-width:2px,color:#FAE8FF
+classDef preview fill:#6D28D9,stroke:#A78BFA,stroke-width:1.5px,color:#EDE9FE
+classDef output fill:#0C4A6E,stroke:#38BDF8,stroke-width:1.5px,color:#E0F2FE
+classDef raw fill:#374151,stroke:#9CA3AF,stroke-width:1px,color:#E5E7EB
+classDef process fill:#064E3B,stroke:#34D399,stroke-width:1.5px,color:#D1FAE5
+classDef success fill:#065F46,stroke:#10B981,stroke-width:2px,color:#D1FAE5
+classDef caution fill:#92400E,stroke:#F59E0B,stroke-width:1.5px,color:#FEF3C7
+classDef govern fill:#1E1B4B,stroke:#818CF8,stroke-width:2px,color:#E0E7FF
+classDef note fill:#3F3F46,stroke:#A1A1AA,stroke-width:1px,color:#E4E4E7
+classDef ship fill:#1E3A8A,stroke:#3B82F6,stroke-width:3px,color:#DBEAFE
+classDef okhLink fill:#581C87,stroke:#A78BFA,stroke-width:2px,color:#EDE9FE
+classDef gleeLink fill:#831843,stroke:#F472B6,stroke-width:2px,color:#FCE7F3
+classDef askLink fill:#065F46,stroke:#34D399,stroke-width:2px,color:#D1FAE5
+classDef credit fill:#18181B,stroke:#52525B,stroke-width:1px,color:#71717A`;
+
+export const SHOWCASE_META = {
+  title: "OverKill Rube Goldberg Showcase",
+  description:
+    "A deliberately complex sample diagram that demonstrates subgraphs, semantic classes, clickable nodes, attribution, and dark-mode theming.",
+  tags: ["Showcase", "Advanced", "Stress test", "Flowchart", "ELK layout", "Clickable links"],
+  warning:
+    "Uses ELK layout, clickable nodes, and a rich classDef library. Some renderers may downgrade layout, ignore links, or render differently depending on Mermaid version and security settings.",
+} as const;

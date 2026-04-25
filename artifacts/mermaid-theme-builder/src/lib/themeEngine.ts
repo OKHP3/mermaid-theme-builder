@@ -41,12 +41,14 @@ function buildInitDirective(palette: Palette): string {
 function buildMetaComments(palette: Palette, themeName: string): string {
   const now = new Date().toISOString();
   const lines = [
-    `%% Created with: ${TOOL_VERSION ? `Mermaid Theme Builder v${TOOL_VERSION}` : "Mermaid Theme Builder"}`,
-    `%% Tool: ${TOOL_URL}`,
     `%% Theme: ${themeName}`,
     `%% Theme ID: ${palette.id}`,
     `%% Theme Version: ${palette.version}`,
-    `%% Generated: ${now}`,
+    `%% Created with: Mermaid Theme Builder by OverKill Hill P³`,
+    `%% Tool URL: ${TOOL_URL}`,
+    `%% Tool Version: ${TOOL_VERSION}`,
+    `%% Theme Created: ${now}`,
+    `%% Theme Updated: ${now}`,
   ];
   if (palette.isBrandPreset && palette.sourceUrls?.[0]) {
     lines.push(`%% Brand source: ${palette.sourceUrls[0]}`);
@@ -83,6 +85,7 @@ export function generateThemedCode(originalCode: string, options: ExportOptions)
   const themeName = customThemeName?.trim() || palette.name;
 
   const strippedCode = originalCode
+    .replace(/^---\s*\n[\s\S]*?\n---\s*\n?/, "")
     .replace(/%%\s*\{.*?\}.*?%%\s*\n?/gs, "")
     .replace(/\n\s*_mtb_attr\[.*?\]\n?/g, "")
     .replace(/\n\s*style _mtb_attr.*\n?/g, "")

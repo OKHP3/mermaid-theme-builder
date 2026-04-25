@@ -135,7 +135,24 @@ This checklist covers known Mermaid rendering pitfalls and how Mermaid Theme Bui
 
 ---
 
-## 10. Metadata comment injection
+## 10. YAML frontmatter conflicts
+
+**Risk:** User pasted code contains a YAML `---` frontmatter block with `config:` settings (layout, theme, etc.). Applying a palette theme injects a `%%{init}%%` directive that conflicts with or overrides the frontmatter, potentially in unpredictable ways depending on Mermaid version.
+
+**Current mitigation:**
+- `detector.ts` detects YAML frontmatter via regex and adds a warning
+- `generateThemedCode` strips the YAML frontmatter block before applying the palette theme
+- The "Showcase" sample (which uses ELK layout frontmatter) displays an explicit compatibility note in the UI
+
+**Checklist:**
+- [ ] Warning shown when input starts with `---\n`
+- [ ] YAML frontmatter is fully stripped in exported code
+- [ ] Stripped code renders without leftover `---` lines
+- [ ] Showcase compatibility note appears when `layout: elk` is detected in frontmatter
+
+---
+
+## 11. Metadata comment injection
 
 **Risk:** Metadata comment lines inject characters that break the Mermaid parser.
 

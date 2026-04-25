@@ -13,6 +13,8 @@ Everything runs in your browser. Your diagram code never leaves the page.
 - **Paste and theme** — Paste any Mermaid diagram code and apply a visual theme in one click
 - **25 diagram types detected** — Flowchart, sequence, class, ER, Gantt, pie, git graph, mindmap, and more (with per-type theme support notes)
 - **7 built-in palettes** — 3 first-party OKHP3 brand presets + 4 utility/example presets
+- **Brand example library** — Load palette-matched flowchart and sequence examples for each OKHP3 brand preset
+- **Showcase sample** — "OverKill Rube Goldberg Showcase" — a complex stress-test flowchart demonstrating subgraphs, semantic classes, clickable nodes, ELK layout, and attribution
 - **Live preview** — Compare Original and Themed output side by side
 - **Three export formats:**
   - **Styled Code** — `%%{init}%%`-prefixed Mermaid code ready to paste
@@ -20,7 +22,7 @@ Everything runs in your browser. Your diagram code never leaves the page.
   - **Prompt Scaffold** — Structured prompt for LLMs to maintain consistent styling
 - **Attribution controls** — Toggle metadata comments and optional attribution badge
 - **Custom theme naming** — Name and version your custom themes
-- **Render-safety warnings** — Flags existing init directives, non-printable characters, and long labels
+- **Render-safety warnings** — Flags existing init directives, YAML frontmatter, non-printable characters, and long labels
 
 ---
 
@@ -75,13 +77,15 @@ A structured prompt for AI assistants (ChatGPT, Claude, Gemini, etc.) that inclu
 When **Metadata comments** is enabled, generated Mermaid code includes:
 
 ```
-%% Created with: Mermaid Theme Builder v0.1.0
-%% Tool: https://overkillhill.com/projects/mermaid-theme-builder/
 %% Theme: OverKill Hill P³
 %% Theme ID: overkill-hill
 %% Theme Version: 0.1.0
-%% Generated: 2026-01-01T00:00:00.000Z
-%% Not affiliated with Mermaid, Mermaid Chart, or Mermaid.ai
+%% Created with: Mermaid Theme Builder by OverKill Hill P³
+%% Tool URL: https://overkillhill.com/projects/mermaid-theme-builder/
+%% Tool Version: 0.1.0
+%% Theme Created: 2026-01-01T00:00:00.000Z
+%% Theme Updated: 2026-01-01T00:00:00.000Z
+%% Not affiliated with Builders FirstSource, Mermaid, Mermaid Chart, or Mermaid.ai
 ```
 
 When **Attribution badge** is enabled (flowchart diagrams only), a small linked badge node is added to the diagram.
