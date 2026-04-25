@@ -14,6 +14,8 @@ const TOOL_VERSION = "0.1.0";
 
 const BADGE_SAFE_FAMILIES: DiagramFamily[] = ["flowchart", "sequenceDiagram", "stateDiagram", "classDiagram"];
 
+const CLASSDEF_CAPABLE_FAMILIES: DiagramFamily[] = ["flowchart", "classDiagram", "stateDiagram", "block"];
+
 function buildThemeVars(palette: Palette): Record<string, string> {
   const vars: Record<string, string> = {};
   for (const color of palette.colors) {
@@ -202,6 +204,7 @@ function buildFrontmatter(palette: Palette): string {
     .join("\n");
 
   return `---
+# Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported
 config:
   theme: base
   themeVariables:
@@ -299,6 +302,7 @@ export function generatePromptScaffold(palette: Palette, options: ExportOptions)
   const isCustom = !!customThemeName?.trim() && customThemeName.trim() !== palette.name;
   const displayLabel = isCustom ? `Custom — based on ${palette.name}` : palette.name;
   const familyName = diagramFamily === "unknown" ? "Mermaid" : diagramFamily;
+  const supportsClassDef = CLASSDEF_CAPABLE_FAMILIES.includes(diagramFamily);
 
   const colorLines = palette.colors
     .filter((c) => !["fontFamily", "edgeLabelBackground"].includes(c.key))
@@ -478,7 +482,7 @@ ${diagramTypeExample}
 
 ## Update Prompt — paste this when style has drifted
 
-> Copy the block below into your AI thread when you notice the diagram is missing its theme directive, using wrong colors, or has lost classDef classes.
+> Copy the block below into your AI thread when you notice the diagram is missing its theme directive or using wrong colors${supportsClassDef ? ", or has lost classDef classes" : ""}.
 
 ---
 
@@ -488,9 +492,13 @@ The diagram above has drifted from the required visual theme. Please regenerate 
 
 1. Restore the theme directive at the very top (use Format A or B from the original scaffold — do not omit it).
 2. Restore the metadata comment block immediately after the directive.
-3. Re-apply all node classes using the classDef vocabulary from the original scaffold. Do not add any inline color values.
+${supportsClassDef
+  ? `3. Re-apply all node classes using the classDef vocabulary from the original scaffold (:::className syntax). Do not add any inline fill, stroke, or color values.
 4. Do not change any logic, labels, or relationships — only restore the visual styling contract.
-5. Output the complete diagram from top to bottom — do not abbreviate or use "..." placeholders.
+5. Output the complete diagram from top to bottom — do not abbreviate or use "..." placeholders.`
+  : `3. Do not add classDef statements — this diagram type (${familyName}) does not support them. The theme directive handles all styling.
+4. Do not change any logic, labels, or relationships — only restore the visual styling contract.
+5. Output the complete diagram from top to bottom — do not abbreviate or use "..." placeholders.`}
 
 Theme contract reference:
 - Theme: **${themeName}** (\`${palette.id}\`)
