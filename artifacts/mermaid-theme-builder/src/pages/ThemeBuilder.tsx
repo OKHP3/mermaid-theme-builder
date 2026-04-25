@@ -24,8 +24,8 @@ type Tab = "input" | "output";
 type ExportType = "code" | "markdown" | "prompt";
 
 export function ThemeBuilder() {
-  const [inputCode, setInputCode] = useState(GENERIC_EXAMPLE);
   const [selectedPaletteId, setSelectedPaletteId] = useState(BRAND_PALETTES[0].id);
+  const [inputCode, setInputCode] = useState(BRAND_EXAMPLES[BRAND_PALETTES[0].id]?.flowchart ?? GENERIC_EXAMPLE);
   const [customColors, setCustomColors] = useState<Record<string, ThemeColor[]>>({});
   const [activeTab, setActiveTab] = useState<Tab>("input");
   const [copiedType, setCopiedType] = useState<ExportType | null>(null);
