@@ -1,0 +1,199 @@
+# The Legal Status of Corporate Color Palettes, Brand Colors, and Visual Identity Elements
+
+## Executive Summary
+
+A free, open‑source web tool can almost certainly ship pre‑built color palettes whose hex values match those used by major corporations, *provided* the tool does not (a) use the company's name, logo, typeface, or other trademark as the preset's identifier, (b) imply sponsorship or endorsement, or (c) generate output whose overall "look and feel" is likely to confuse consumers about the source of the output. The risk is **not** in the hex codes themselves — color values, lists of facts, and short labels are not copyrightable, and isolated colors are only trademarkable in a narrow industry context after acquired secondary meaning. The risk lies almost entirely in **trademark/trade dress likelihood‑of‑confusion analysis** and in **how the palettes are labeled and marketed**, not in the numbers. This report walks through each issue.
+
+---
+
+## 1. Can Individual Colors or Hex Codes Be Copyrighted?
+
+No. U.S. copyright protects "original works of authorship" fixed in a tangible medium (17 U.S.C. § 102), and the U.S. Copyright Office's Circular 33 explicitly lists categories of subject matter that are *not* protected, including "ideas, methods, and systems," "names, titles, and short phrases," "typeface, fonts, and lettering," and "familiar symbols and designs" ([U.S. Copyright Office, Circular 33](https://www.copyright.gov/circs/circ33.pdf)). A six‑character hex code such as `#0071CE` is a numeric fact — a coordinate in the sRGB color space — and facts are uncopyrightable under *Feist Publications v. Rural Telephone Service*, 499 U.S. 340 (1991).
+
+A color, by itself, is also not a "work of authorship." As one practitioner summarizes the consensus view: "Color schemes do not qualify for copyright protection. A color scheme is not a 'work of authorship'" ([Quora — answer by IP attorney](https://www.quora.com/Can-a-color-scheme-be-trademarked-or-copyrighted)). The Copyright Office will not register typeface designs or "mere variations of typographic ornamentation," let alone bare RGB triples ([Copyright Office, Circular 33](https://www.copyright.gov/circs/circ33.pdf)).
+
+The only copyright that can attach in this neighborhood is to:
+- A **brand‑guidelines document** as a literary/graphic work (the prose, layout, photography, and original diagrams), and
+- A **font program file** (TTF/OTF), which is protectable as software even though the typeface design it produces is not ([*Adobe Systems v. Southern Software*](https://typographyforlawyers.com/the-copyright-status-of-fonts.html); 37 C.F.R. § 202.1(e)).
+
+Neither extends to the underlying hex values. (See Section 10 below.)
+
+---
+
+## 2. Can a Color Palette Be Protected Under Trademark or Trade Dress?
+
+**Yes — but only under specific circumstances.** Two Supreme Court cases are foundational:
+
+- ***Qualitex Co. v. Jacobson Products Co.***, 514 U.S. 159 (1995). The Court held unanimously that the Lanham Act permits registration of a single color as a trademark, *provided* the color (i) has acquired "secondary meaning" — i.e., consumers identify it with a single source — and (ii) is not "functional" (does not put competitors at a non‑reputational disadvantage) ([Justia — Qualitex 514 U.S. 159](https://supreme.justia.com/cases/federal/us/514/159/); [Cornell LII opinion](https://www.law.cornell.edu/supct/html/93-1577.ZO.html)).
+
+- ***Two Pesos, Inc. v. Taco Cabana, Inc.***, 505 U.S. 763 (1992). The Court held that "trade dress" — the "total image and overall appearance" of a product or service, including "size, shape, color or color combinations, texture, [or] graphics" — is protectable under § 43(a) of the Lanham Act if it is non‑functional and either inherently distinctive or has secondary meaning ([Justia/9th Cir. Model Jury Instructions §15.3](https://www.ce9.uscourts.gov/jury-instructions/node/229); [Cornell student case summary](https://courses2.cit.cornell.edu/sociallaw/student_projects/Tradedresspage2.html)).
+
+Two important refinements followed:
+- ***Wal‑Mart Stores, Inc. v. Samara Bros.***, 529 U.S. 205 (2000): product‑*design* trade dress can never be inherently distinctive and always requires secondary meaning ([Univ. of Houston course materials](https://www.law.uh.edu/faculty/gvetter/classes/TrademarksSpring2016/TrademarksSpring2016_Module2_SlideSetC(OH34to44).pdf)).
+- ***In re Forney Industries***, 955 F.3d 940 (Fed. Cir. 2020): a multicolor *packaging* mark can be inherently distinctive without being applied to a defined shape ([Cooley — Forney summary](https://www.cooley.com/news/insight/2020/2020-04-10-federal-circuit-rules-multicolor-designs-on-packaging-eligible-for-protection)).
+- ***TrafFix Devices, Inc. v. Marketing Displays, Inc.***, 532 U.S. 23 (2001): functional features cannot be protected as trade dress regardless of secondary meaning ([PatentPC summary](https://patentpc.com/blog/famous-trade-dress-cases-that-changed-the-game-for-brand-owners)).
+
+Critically for a tool author, **trademark/trade dress rights are class‑limited**: they exist only as against use that is likely to cause consumer confusion *as to source* in a related field of goods or services. UPS owns "Pullman Brown" for shipping vehicles and uniforms; Tiffany owns its "robin's‑egg blue" for jewelry boxes; Home Depot owns orange for big‑box hardware retail ([Trademark Angel — color trademarks](https://trademarkangel.com/trademark-color-alone/)). None of these owners can stop a diagramming tool, an unrelated SaaS product, or a presentation deck from rendering pixels in the same RGB triple. As one trademark practitioner puts it, "Ford can't sue HP for using a similar shade of blue, because they are not selling competing products" ([Digital Synopsis](https://digitalsynopsis.com/design/trademarked-colors/)).
+
+---
+
+## 3. Are There Precedents Where Companies Sued Over Use of Their Brand Color Combinations in Third‑Party Tools, Templates, or Software?
+
+There is **no reported U.S. case** in which a company has successfully sued the maker of a *general‑purpose design or productivity tool* (color picker, palette gallery, theme generator, diagramming tool, presentation software) for shipping a preset that merely reproduces the company's brand hex codes. The closest analogues all involve trade‑dress claims against **competing products** or **end users who deployed the colors in commerce in a confusing way**:
+
+- ***Two Pesos v. Taco Cabana*** (1992): rival Mexican‑themed restaurant chains; copying of "festive and vivid color scheme using top border paint and neon stripes" plus décor was actionable trade dress infringement ([Cornell summary](https://courses2.cit.cornell.edu/sociallaw/student_projects/Tradedresspage2.html)).
+- ***Christian Louboutin S.A. v. Yves Saint Laurent America, Inc.***, 696 F.3d 206 (2d Cir. 2012): Louboutin's red‑sole mark held valid only when the red sole *contrasts* with the upper of the shoe ([PatentPC](https://patentpc.com/blog/famous-trade-dress-cases-that-changed-the-game-for-brand-owners)).
+- ***CTB, Inc. v. Hog Slat, Inc.*** (4th Cir. 2020): trade‑dress claim over the red‑and‑gray color scheme of poultry feeders failed because the colors were functional (attracted chickens) ([Mondaq](https://www.mondaq.com/unitedstates/trademark/927026/no-trade-dress-protection-for-functional-shape-and-color-scheme)).
+- College‑sports uniform color‑combination disputes — discussed in commentary but largely settled rather than litigated to verdict ([Lexology — color schemes in college sports uniforms](https://www.lexology.com/library/detail.aspx?g=ecc35dba-37d5-4a93-b766-463f7be62a0b)).
+
+The common thread: liability has historically required a *competitor* using the colors *in a context likely to confuse consumers about origin*. A standalone palette in a tool — disclaimed and not affixed to a competing good — is a poor fit for any of these fact patterns. That is presumably why dozens of long‑running palette aggregators (BrandColors.net, brandpalettes.com, brandcolorcode.com, SchemeColor) have operated openly for over a decade without notable infringement judgments against them.
+
+---
+
+## 4. Naming "Walmart's Colors" vs. Shipping the Same Hex Values Without Naming the Company
+
+This is the core distinction for risk management. The hex values themselves are unprotectable facts (Sections 1–2). The legal exposure attaches almost entirely to **the use of the company's name, word mark, or logo as the label or selling feature** of the preset. That use is governed by the **trademark fair‑use doctrines**:
+
+- **Nominative fair use** (originating in *New Kids on the Block v. News America Publishing*, 971 F.2d 302 (9th Cir. 1992)) permits a third party to refer to a trademark holder by name when (1) the product or service in question is not readily identifiable without using the trademark, (2) only so much of the mark is used as is reasonably necessary, and (3) the use does not suggest sponsorship or endorsement ([INTA fact sheet](https://www.inta.org/fact-sheets/fair-use-of-trademarks-intended-for-a-non-legal-audience/); [Wikipedia summary](https://en.wikipedia.org/wiki/Nominative_use); [Harrigan IP analysis](https://harriganip.com/blog/nominative-fair-use-trademark-law/)).
+- **Classic (descriptive) fair use** (*KP Permanent Make‑up, Inc. v. Lasting Impression I, Inc.*, 543 U.S. 111 (2004)) permits use of a term in its ordinary descriptive sense ([Fish & Richardson commentary](https://www.fr.com/uploads/770)).
+
+Practical implications:
+
+| Approach | Trademark Risk | Trade Dress Risk |
+|---|---|---|
+| **Preset named "Walmart Blue & Yellow"**, with the Walmart word mark in the UI | Moderate. Likely defensible as **nominative fair use** (you must call the company by name to identify its colors), but only if you (a) use only the word mark in plain text — no logo, no stylized "spark" symbol, no trade dress, (b) include a disclaimer of affiliation/endorsement, and (c) avoid implying the tool is "for Walmart" or partnered with Walmart ([Harrigan IP analysis of *Yelp* and *Xfinity Mobile* nominative‑use failures](https://harriganip.com/blog/nominative-fair-use-trademark-law/)). | Low if the preset is just two color swatches with no Walmart logo/typeface mimicry. |
+| **Same colors, neutrally named** ("Big‑Box Retail," "Royal Yellow," "Cobalt + Gold") | Very low. No trademark is "used" at all in the trademark‑law sense. | Low — same as above. |
+| **Preset named "Walmart"** but with no disclaimer, prominent placement, or with the Walmart logo | Higher. Likely fails nominative fair use's third prong (suggests sponsorship/endorsement) ([Harrigan IP](https://harriganip.com/blog/nominative-fair-use-trademark-law/)). | Same as above. |
+
+The rule of thumb is the one articulated by trademark counsel: "You can say the name, but using the stylized logo, color scheme, or slogan may go too far" ([Harrigan IP](https://harriganip.com/blog/nominative-fair-use-trademark-law/)). For pre‑built presets in a generative tool, naming the brand is *probably* nominative fair use, but the safer path — by a wide margin — is to ship the colors under generic descriptive names.
+
+---
+
+## 5. Why Microsoft, Google, Canva, and Figma Use Generic Theme Names ("Ocean," "Forest," "Slate")
+
+This is **both a legal and a practical decision**, in roughly that order:
+
+1. **Avoiding even colorable trademark exposure.** Even if shipping a "Walmart" preset would likely qualify as nominative fair use, the cost of being right in litigation vastly exceeds the cost of avoiding the dispute. Microsoft, Adobe, and Google ship hundreds of thousands of templates worldwide; each branded preset multiplies cease‑and‑desist surface area. Generic names eliminate the question entirely.
+
+2. **Avoiding implied endorsement / partnership claims.** Tools that ship a "Coca‑Cola" theme could face Lanham Act § 43(a) false‑association claims — the same theory used in *Xfinity Mobile v. Globalgurutech LLC*, 2024 U.S. Dist. LEXIS 155310, where a third‑party repair shop's nominative‑fair‑use defense failed because the branding "created a false impression of affiliation" ([Harrigan IP](https://harriganip.com/blog/nominative-fair-use-trademark-law/)).
+
+3. **Brand guideline contractual obligations.** Major brands' guideline documents typically include explicit language prohibiting third‑party reproduction. Meta's brand policy, for example, states: "You may not use or register, or otherwise claim rights in any Meta trademark," and prohibits use that is "confusingly similar to or dilutive of Meta's trademarks" ([Meta brand guidelines, quoted in TheLaw.com discussion](https://www.thelaw.com/threads/are-color-combinations-protected-by-copyright-or-trademark.83471/)). A platform vendor that ships a "Facebook theme" would invite a takedown demand even if it would ultimately win in court.
+
+4. **Internationalization.** Many countries (notably in the EU) recognize broader trade‑dress and unfair‑competition rights than the U.S., and some recognize copyright in typeface designs that the U.S. does not ([Wikipedia — typeface IP protection](https://en.wikipedia.org/wiki/Intellectual_property_protection_of_typefaces)). A globally distributed product faces a more conservative compliance baseline.
+
+5. **Licensing deals and stock content.** Stock asset libraries (e.g., those Microsoft and Google license from third parties) carry contractual restrictions on third‑party trademarks. Coolors's own license, for instance, prohibits using its palettes in ways that "infringe upon any third‑party copyrights, trade names, trademarks, [or] service marks" ([Coolors license](https://coolors.co/license)).
+
+So: it is primarily a risk‑management decision, with brand‑guideline contracts and brand‑safety considerations reinforcing it.
+
+---
+
+## 6. How Coolors, Adobe Color, BrandColors, and SchemeColor Handle Exposure
+
+These tools are useful comparables because they openly display brand palettes without (apparently) attracting infringement suits. Their strategies cluster around four approaches:
+
+1. **Disclaim trademark association explicitly.** SchemeColor's terms state: "Brand/company logos and flag images have been taken from Wikipedia. Names used for colors or color schemes or gradients DO NOT reflect our views in any manner. They are simple placeholders and nothing more… Use of logo/images/photographs or similar copyright material is done under fair usage. Any infringement by SchemeColor.com is purely unintentional" ([SchemeColor TOS](https://www.schemecolor.com/terms)).
+
+2. **Frame the content as educational/reference.** SchemeColor describes itself as "for education purpose only" ([SchemeColor TOS](https://www.schemecolor.com/terms)). Reference and educational use receives a more sympathetic fair‑use analysis (and, for trademarks, falls comfortably within nominative fair use's purpose prong).
+
+3. **Display only the hex values, not the logo or trade dress.** Even palette aggregators that name the brand typically show only swatches and codes, not the company's logos, photography, packaging, or stylized wordmark. This keeps the use within the "only so much of the mark as is reasonably necessary" prong of nominative fair use ([INTA](https://www.inta.org/fact-sheets/fair-use-of-trademarks-intended-for-a-non-legal-audience/)).
+
+4. **Push contractual liability to the user.** Coolors's license expressly forbids users from deploying its palettes "in any manner that infringes upon any third‑party copyrights, trade names, trademarks, [or] service marks" ([Coolors license](https://coolors.co/license)). This shifts downstream misuse onto the user without changing what Coolors itself displays.
+
+Adobe Color and Adobe Express let users build and save their own brand color themes but, notably, Adobe does not itself ship pre‑labeled "Walmart" or "Coca‑Cola" presets — it provides the *tooling* and lets users assemble brand kits themselves ([Adobe Express help](https://helpx.adobe.com/express/web/brands-libraries-projects/create-manage-brands/color-theme-brand.html)). This is the most conservative posture of all and matches the Microsoft/Google approach.
+
+---
+
+## 7. Reference Content vs. Selectable Preset That Generates Output
+
+There is a real, though qualitative, legal difference. Both can be lawful, but the analysis differs:
+
+- **Reference / educational display** ("Walmart's brand colors are #0071CE and #FFC220"). This is essentially a **statement of fact** about a third party. Facts are uncopyrightable, and the use is **classic nominative fair use**: you cannot describe Walmart's colors without saying "Walmart." Combined with a disclaimer, this is the lowest‑risk presentation.
+
+- **Selectable preset that styles user output.** Here the colors are no longer being *described* — they are being *deployed* by the user to render a Mermaid diagram, slide, email, etc. The legal questions shift from copyright/fair use to **(a) whether the *user's* output creates a likelihood of confusion as to source** (a § 43(a) Lanham Act question that would target the user, not the tool) and **(b) whether the *tool's* labeling and marketing of the preset implies affiliation with the brand** (which would target the tool). The tool's exposure is highest if it markets the preset by trademark name, and lowest if it ships the same hex values under a generic name.
+
+Critically, in the U.S., **contributory trademark infringement** by a tool maker generally requires that the tool maker (i) intentionally induce infringement, or (ii) continue to supply the means with knowledge of specific infringing use (*Inwood Laboratories v. Ives Laboratories*, 456 U.S. 844 (1982)). A general‑purpose color tool that doesn't induce confusing use is far from this standard.
+
+---
+
+## 8. Trade Dress Risk When Output Resembles a Company's Documentation Style
+
+Trade‑dress liability in this scenario is **theoretically possible but unlikely in most realistic uses**, and the risk falls primarily on the *user*, not the tool author. The Two Pesos test requires (1) non‑functionality, (2) distinctiveness (inherent or acquired), and (3) likelihood of confusion ([9th Cir. Model Jury Instructions §15.3](https://www.ce9.uscourts.gov/jury-instructions/node/229); [Cooley analysis](https://www.cooley.com/news/insight/2020/2020-04-10-federal-circuit-rules-multicolor-designs-on-packaging-eligible-for-protection)).
+
+Two reasons this is a difficult claim against a Mermaid diagram styled in, say, Walmart blue/yellow:
+
+1. **Color schemes alone, especially two‑ or three‑color combinations of common hues, will struggle to satisfy the secondary‑meaning and non‑functionality prongs in a software‑documentation context.** Most major brand palettes have not been used in technical‑diagram trade dress in a way that would create source‑identifying secondary meaning for *that medium*. The "total image" doctrine looks at the whole presentation — typography, layout, logos, iconography — not just RGB values ([UpCounsel — trade dress overview](https://www.upcounsel.com/trade-dress)).
+
+2. **Likelihood of confusion is the linchpin.** A Mermaid flowchart in a private internal document, in a blog post critiquing the company, or in fan/parody work is unlikely to confuse a reasonable consumer about source. Confusion risk rises sharply if the user (a) reproduces logos, distinctive typefaces, *and* the color scheme together; (b) publishes the output in a commercial context resembling official communications; or (c) markets goods or services adjacent to the brand owner's industry.
+
+The author of an open‑source tool can document this risk to users (e.g., "Brand‑aligned themes are intended for personal, internal, or clearly attributed use; do not produce documents that imitate official corporate publications") and shift residual liability via the license, but cannot eliminate the possibility of misuse.
+
+---
+
+## 9. Safest Approach for an Open‑Source Tool
+
+Combining the above, a defensible product design has the following elements:
+
+1. **Use generic, descriptive preset names** — "Big‑Box Retail Blue/Yellow," "Espresso Green," "Carbonated Red," "Forest," "Slate." This eliminates the trademark "use in commerce" question entirely. This is the path Microsoft, Google, and Canva chose, and it is the cheapest insurance available.
+
+2. **If brand‑name presets are desired,** confine the trademark to a plain‑text label, exclude all logos / wordmark stylization / proprietary typefaces, and add a clear, prominent disclaimer such as: "Color values are public facts about how the named companies present themselves. [Tool] is not affiliated with, endorsed by, or sponsored by any of the named companies. All trademarks are the property of their respective owners." This mirrors SchemeColor's posture ([SchemeColor TOS](https://www.schemecolor.com/terms)) and tracks the three‑factor *New Kids* nominative‑fair‑use test ([INTA](https://www.inta.org/fact-sheets/fair-use-of-trademarks-intended-for-a-non-legal-audience/)).
+
+3. **Do not bundle proprietary fonts** — only system fonts, open‑source fonts under permissive licenses (SIL Open Font License, Apache 2.0), or web‑linked Google Fonts. While typefaces themselves are not copyrightable in the U.S. ([U.S. Copyright Office, Circular 33](https://www.copyright.gov/circs/circ33.pdf); 37 C.F.R. § 202.1(e); *Eltra Corp. v. Ringer*, 579 F.2d 294 (4th Cir. 1978)), font *files* are protectable as software ([*Adobe Systems v. Southern Software*](https://typographyforlawyers.com/the-copyright-status-of-fonts.html); [Quarles & Brady analysis](https://www.quarles.com/newsroom/publications/protecting-the-product-typefaces-and-fonts)), and unauthorized distribution of vendor font files is a real source of infringement claims and "copyright troll" demand letters ([Alcohol Law Advisor](https://www.alcohollawadvisor.com/2023/10/the-fine-print-avoiding-ip-pitfalls-in-unlicensed-fonts/)).
+
+4. **Do not ship logos, stylized wordmarks, or distinctive iconography** alongside the color presets, even if the brand name is used.
+
+5. **License terms that prohibit user misuse** — language modeled on Coolors's prohibition on user output that "infringes upon any third‑party copyrights, trade names, trademarks, service marks" ([Coolors license](https://coolors.co/license)) — both shapes user behavior and provides evidence of good‑faith intent if a dispute arises.
+
+6. **Document the source of the hex values from publicly disclosed brand‑guideline pages**, not by extracting them from copyrighted images via reverse‑engineering of confidential materials. Public brand pages (e.g., open press kits) are the ordinary source, and using them for factual reference falls comfortably within fair use and nominative use.
+
+7. **Consider a "blank slate" default** with brand‑aligned presets opt‑in or behind a documentation section labeled "Examples of brand‑style theming," which frames the feature as illustrative/educational rather than as a marketing claim of association.
+
+A combination of (1) and (5) — generic names plus a downstream‑use restriction — gives the cleanest legal posture and is essentially the position taken by every major commercial tool in the category.
+
+---
+
+## 10. Are Brand Guidelines Documents Copyrighted, and Can the Hex Values Be Extracted?
+
+**Yes, brand‑guideline documents are copyrightable** as compiled literary/graphic works. They typically contain original prose ("our voice is warm but authoritative"), original photography, original layout, and original illustrations, all of which are protectable subject matter under 17 U.S.C. § 102.
+
+**However, the underlying hex values, RGB triples, Pantone numbers, and font names are facts and short labels, neither of which copyright protects.** Under *Feist Publications v. Rural Telephone Service*, 499 U.S. 340 (1991), facts and even compilations of facts that lack creative selection or arrangement are uncopyrightable; only the original expressive elements of a compilation receive protection. The Copyright Office's Circular 33 confirms that "names, titles, and short phrases" — and a hex code is shorter than most titles — are not subject to copyright ([U.S. Copyright Office, Circular 33](https://www.copyright.gov/circs/circ33.pdf)).
+
+The practical consequence: a tool author can lawfully **read** a brand‑guideline PDF, **extract** the listed hex values, and **redistribute them as facts** in a tool, so long as the tool does not reproduce the document's original prose, photography, layout, or stylistic illustrations. This is precisely how aggregators such as BrandColors.net, brandpalettes.com, and SchemeColor operate — and why none of them appear to have been successfully sued for the *content* of their listings (as opposed to disputes about logos or images that they sometimes also display).
+
+A separate caveat: brand guidelines often contain *contractual* terms restricting reuse (e.g., "Use of these guidelines is limited to authorized partners"). If a tool author **agrees** to those terms — for example, by signing a partner agreement or clicking through a license — contract law may impose obligations that copyright law would not. The author should obtain hex values from publicly available, no‑click‑through pages where possible.
+
+---
+
+## 11. International Considerations
+
+For a U.S.‑based author distributing a free open‑source tool globally, the U.S. analysis above is generally the most permissive baseline. Material differences elsewhere:
+
+- **Typeface design copyright.** Germany, the U.K., France, and other EU jurisdictions recognize copyright (or *sui generis* design rights) in typeface designs themselves, which the U.S. does not ([Wikipedia — typeface IP protection](https://en.wikipedia.org/wiki/Intellectual_property_protection_of_typefaces)). This is irrelevant to color presets but reinforces the recommendation against bundling proprietary fonts.
+
+- **EU color trademarks.** The European Court of Justice in *Libertel Groep BV v. Benelux‑Merkenbureau*, Case C‑104/01 (2003), permits color trademarks where the color is graphically representable and has acquired distinctiveness — substantively similar to *Qualitex* but with stricter representation requirements ([AIPLA discussion](https://www.aipla.org/list/innovate-articles/from-black-white-to-technicolor-to-rgb-cmyk-should-the-uspto-implement-rgb-cmyk-color-codes-in-the-uspto-application-process)).
+
+- **Unfair‑competition / passing‑off doctrines.** The U.K. tort of passing off and many continental "unfair commercial practices" regimes can reach color‑scheme imitation that confuses consumers, even absent registered trademark rights. The functional analysis is similar to U.S. trade dress.
+
+- **Dilution.** EU and many national trademark statutes recognize anti‑dilution protection for "marks with a reputation" that may be slightly broader than U.S. dilution doctrine under 15 U.S.C. § 1125(c).
+
+None of these materially change the conclusion: shipping hex values under generic names is low‑risk worldwide; shipping them under brand names with disclaimers is moderate‑risk and largely defensible; shipping logos or distinctive trade dress alongside is substantially riskier.
+
+---
+
+## Summary Table
+
+| Element | Copyrightable? | Trademark/Trade Dress Risk to Tool? |
+|---|---|---|
+| Hex code (e.g., `#0071CE`) | No (fact) | None standing alone |
+| List of hex codes (palette) | No (factual compilation, *Feist*) | None standing alone |
+| Color palette named "Walmart" in tool UI | No | Low–moderate; defensible as nominative fair use; eliminate by generic naming |
+| Color palette + Walmart logo in tool UI | Logo is © | Materially higher; logo use is rarely "necessary" under nominative fair use |
+| Typeface design (visual letterforms) | **No** in U.S. (37 C.F.R. § 202.1(e)) | Trademark possible only with strong secondary meaning |
+| Font program file (TTF/OTF) | **Yes** (software) | N/A — copyright issue |
+| Brand‑guideline document text/layout/photos | Yes | N/A |
+| Output document that imitates official corporate documentation | Depends | Risk is on the *user*, not the tool, absent active inducement |
+
+## Bottom Line for the Open‑Source Tool
+
+Shipping pre‑built palettes with the same hex values as major corporate brands is **legally permissible in the U.S.**, because (a) hex values and color combinations are not copyrightable, (b) trademark/trade‑dress rights in color extend only to confusingly similar use in *related industries*, which a generic diagramming or theming tool is not, and (c) where the brand name is used, nominative fair use (*New Kids on the Block*) provides a robust defense provided no logo/trade dress is reproduced and no endorsement is implied. The reason commercial tools nonetheless prefer generic names is **risk avoidance**, not legal prohibition. The single highest‑leverage decision the tool author can make to minimize exposure is to ship the colors under **descriptive, non‑brand names** (with the brand name optionally appearing in documentation as an illustrative reference, accompanied by a disclaimer of affiliation). This achieves the user benefit ("look, you can theme like a major retailer") while moving the tool out of the trademark dispute zone entirely.
+
+*This report is informational only and is not legal advice. Specific implementation choices — particularly any plan to use third‑party trademarks in the tool's UI or marketing — should be reviewed by a qualified trademark attorney.*

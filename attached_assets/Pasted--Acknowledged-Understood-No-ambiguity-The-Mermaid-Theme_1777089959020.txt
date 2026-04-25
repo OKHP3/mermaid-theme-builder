@@ -1,0 +1,100 @@
+**Acknowledged. Understood. No ambiguity.**
+
+The Mermaid Theme Builder is an OverKill Hill (Jamie Hill, personal) project. It has zero association with Builders FirstSource (BFS). BFS brand assets, palettes, color tokens, classDef names, subgraph tier patterns, and any reference to BFS enterprise architecture work have no place in this project's deliverables, documentation, presets, or marketing materials.
+
+The BFS material in this thread was the *origin story* -- it was the problem space where you first encountered the inconsistent-diagram pain point. But the product that emerged is brand-agnostic. It helps any user create their own visual identity for Mermaid diagrams. The BFS palette is your employer's intellectual property and should not ship as a built-in preset or reference example.
+
+Let me now scan the current payloads across all surfaces for BFS contamination.
+
+**Deviations found:**
+
+| Surface | Location | BFS Reference | Severity |
+|---------|----------|--------------|----------|
+| **Claude thread outputs** | `bfs-mermaid-design-system-v1.md` | Entire document branded "BFS Mermaid Design System" | High -- do not commit to repo |
+| **Claude thread outputs** | `bfs-mermaid-standard-final.md` | Titled "BFS Mermaid Diagram Standard," BFS palette throughout | High -- do not commit to repo |
+| **Claude thread outputs** | `bfs-mermaid-prompt-kit-unified.md` | BFS palette and BFS class names throughout | High -- do not commit to repo |
+| **Claude thread outputs** | `bfs-mermaid-styling-guide.md` | BFS palette extraction | High -- do not commit to repo |
+| **Claude thread outputs** | `mermaid-style-builder-positioning.md` | References "BFS diagrams" and "BFS brand rules" in design principles | Medium -- needs scrubbing before use |
+| **Claude thread outputs** | `PRD.md` | References "BFS Light" as a preset name | Low -- rename preset to something generic |
+| **Claude thread outputs** | `BUILD_SPEC.md` | Contains "BFS Light" preset with all BFS hex values | Medium -- replace with a generic enterprise palette |
+| **Claude thread outputs** | `README.md` | Lists "BFS Light" as a preset | Low -- rename |
+| **Claude thread outputs** | React wireframe `.jsx` | Contains "BFS Light" preset with BFS hex values | Medium -- rename and reframe |
+| **Notion** | Master Build Plan page | Clean. No BFS references found. | None |
+| **GitHub repo** | README mentions Ocean Depth, Forest Sage, Slate Ember, Violet Mist | Clean. No BFS references. | None |
+| **GitHub repo** | Source code (couldn't inspect fully) | Unknown -- needs manual verification | Verify |
+
+The GitHub repo and Notion are already clean. The contamination is entirely in the Claude thread outputs (the files I produced earlier in this conversation). Those files were working documents created while we were still operating in the BFS context. They should not be committed to the repo as-is.
+
+Here are your three remediation prompts:
+
+---
+
+**Prompt 1: For Notion**
+
+Paste this as a comment or directive on the Master Build Plan page:
+
+```
+SCOPE DIRECTIVE (permanent)
+
+This project — Mermaid Theme Builder — is exclusively an OverKill Hill (Jamie Hill, personal) product. It has no association with Builders FirstSource (BFS) or any employer.
+
+Rules:
+- No BFS brand colors, palettes, or hex values may appear in any preset, example, or documentation.
+- No references to BFS, Builders FirstSource, or enterprise employer context in any user-facing content.
+- Built-in presets must use original, non-employer palette names (e.g., Ocean Depth, Forest Sage, Slate Ember, Violet Mist, or new OverKill Hill-branded palettes).
+- The OverKill Hill palette (derived from overkillhill.com CSS tokens) is acceptable as a preset.
+- The Glee-fully palette (derived from glee-fully.tools CSS tokens) is acceptable as a preset.
+- The AskJamie palette (derived from askjamie.bot CSS tokens) is acceptable as a preset.
+- Any "enterprise" or "corporate" preset must use generic, original hex values — not values extracted from any employer's brand guidelines.
+- Example diagrams must use generic, non-employer content.
+- This directive applies to all sub-pages, the workboard, the repo seed pack, and any exported artifacts.
+```
+
+---
+
+**Prompt 2: For Replit**
+
+Paste this into your Replit chat at the start of any build session:
+
+```
+IMPORTANT CONTEXT — read before making any changes:
+
+This project (Mermaid Theme Builder) is a personal project by Jamie Hill under the OverKill Hill brand. It is NOT associated with any employer, including Builders FirstSource (BFS).
+
+If you encounter any references to "BFS," "Builders FirstSource," "BFS Light," "BFS brand," "Builders Blue (#00205B)," or any palette described as employer-derived in any file, prompt, or context document:
+- Do NOT include those references in the codebase.
+- Do NOT use BFS hex values (#00205B, #003087, #002F86, #B3C1DB, #D6E5F9, #D0D0CE, #C8102E) as preset values.
+- Replace any BFS-named preset with a generic, original palette.
+- Flag the reference to me so I can confirm removal.
+
+Acceptable presets are the ones already in the codebase (Ocean Depth, Forest Sage, Slate Ember, Violet Mist) plus any palettes derived from overkillhill.com, glee-fully.tools, or askjamie.bot.
+
+This separation is non-negotiable. Do not infer otherwise from any uploaded context documents.
+```
+
+---
+
+**Prompt 3: For GitHub Copilot**
+
+Add this to the repo's `AGENTS.md` or `.github/copilot-instructions.md`:
+
+```
+## Brand Separation Directive
+
+This project is a personal open-source tool by Jamie Hill (OverKill Hill / OKHP3).
+It is NOT affiliated with any employer, including Builders FirstSource (BFS).
+
+When generating code, documentation, comments, or examples for this repository:
+- Never reference BFS, Builders FirstSource, or any employer brand.
+- Never use hex values from employer brand guidelines as preset colors.
+- Never use "BFS Light" or similar employer-derived preset names.
+- All preset palettes must be original compositions or derived from the author's personal web properties (overkillhill.com, glee-fully.tools, askjamie.bot).
+- Example diagrams must use generic, non-employer content (e.g., generic architecture, sample workflows, placeholder systems).
+- The OverKill Hill brand identity (teal #1C3A34, olive, ochre, rust, amber #E6A03C, dark surface #111827) is the author's personal brand and IS acceptable.
+
+This directive is permanent and applies to all contributions, generated code, and documentation in this repository.
+```
+
+---
+
+The Claude thread artifacts (`bfs-mermaid-*.md` files) should be treated as internal working documents that informed the design but should not be committed to the repo without first stripping all BFS references and replacing the BFS palette with generic or OverKill Hill-branded equivalents. The design system document's *structure* (25 diagram types, 40+ shapes, semantic classDef taxonomy) is valuable and should be rebranded and committed. The hex values need to change.

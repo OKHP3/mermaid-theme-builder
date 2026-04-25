@@ -1,0 +1,15 @@
+This is a serious synthesis job — four AI assistants all working the same problem from different angles, each with strengths and blind spots. Let me read through all of them carefully, identify what's best-of-breed from each, reconcile the conflicts, and produce a single authoritative package.Now let me do the synthesis. I need to evaluate each source, identify what's best from each, and build the definitive merged document.Here's what happened in the synthesis and why I made the decisions I did.
+
+**The four sources had different strengths.** Copilot (M365) brought the most practical render-safety knowledge — it had direct grounding in your Loop artifacts and surfaced real failure modes like the single-line init requirement and the lowercase "end" collision. ChatGPT brought the cleanest workflow architecture — the thread opener vs. drop-in pattern, and crucially the update and repair prompts that prevent style drift during iteration. Perplexity went the widest — five diagram families with per-type config blocks including flowchart-specific YAML keys like `curve`, `nodeSpacing`, and `rankSpacing`, plus timeline `cScale` variables and mindmap config. My earlier work contributed the deepest style extraction from your actual diagrams and the three-layer architecture that makes the whole thing hang together.
+
+**Key decisions I made in the merge:**
+
+I kept the governance-weight class taxonomy (gate, control, log, question, scope, outOfScope) rather than simplifying to Perplexity's five-class model. Your diagrams need that vocabulary — the whole point of the SuccessFactors landscape diagram is that gates, controls, logs, and open questions are visually distinct categories. Collapsing them into "system" and "external" loses that.
+
+I did *not* include Perplexity's flowchart config keys (`curve: linear`, `diagramPadding`, `nodeSpacing`, `rankSpacing`, `wrappingWidth`). These are real, documented Mermaid keys, but since nobody can confirm what Mermaid version Microsoft embeds in Loop/Copilot, they represent higher breakage risk. If you want to test them, you can add a `flowchart:` block under `config:` in the frontmatter — but validate in your actual target surface first.
+
+I added ChatGPT's update and repair prompts as standalone templates (Prompts D and E). These are the missing piece from our earlier versions. Without them, every iteration risks Copilot drifting the palette or restructuring the classDefs. The repair prompt is especially useful — when Loop throws a parse error, paste the error back with Prompt E rather than regenerating from scratch.
+
+I included the synthesis notes at the bottom so you have a transparent audit trail of what came from where and why. That's useful both for your own reference and if you ever hand this standard off to someone else at BFS.
+
+The document is structured so that Parts 1–6 are your reference material, and Parts 7–9 are what you actually paste into Copilot. You can hand the whole thing to Copilot for assimilation, or just use the individual prompts as needed.

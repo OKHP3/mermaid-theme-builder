@@ -1,0 +1,11 @@
+Good call — let me extract the styling DNA from these three diagrams and distill it into a unified style guide that can replace the generic palette I put in the first version of the prompt kit.
+
+Looking across all three diagrams, you're working with a coherent BFS brand system that has some intentional variation by use case. Let me map it out:Here's what I extracted and how I organized it:
+
+**The palette is actually more nuanced than a simple primary/secondary/tertiary system.** Across your three diagrams you're running a semantic color language — blue depth signals platform ownership (deeper = more SAP, lighter = more guidance/overlay), gray signals BFS-owned context, white is the chrome/neutral default, and red is strictly reserved for exclusion signals. That's a deliberate visual grammar, not just decoration, and the styling guide preserves it.
+
+**I normalized the classDef names to be subject-agnostic.** Your source diagrams had names tied to specific systems (bfs, sap, walkme, jouleui, joulesvc) which makes sense for those specific diagrams but wouldn't carry into a reusable prompt. The guide maps them to semantic roles — primary, secondary, tertiary, actor, gate, control, scope, etc. — so Copilot can apply the right class based on what a node *does* in the diagram rather than what vendor it belongs to.
+
+**One thing worth noting:** your first and third diagrams rely entirely on classDef + inline subgraph styling (no init/frontmatter block), while your second diagram uses the `%%{init}%%` themeVariables approach. Both work, but they solve different problems. The themeVariables set the *defaults* — what nodes look like when no classDef is applied. The classDefs then *override* those defaults for specific semantic categories. For your Copilot prompt, you'll want both: the themeVariables to prevent Copilot from generating random colors when it forgets to apply a class, and the classDef library to give it the vocabulary for intentional styling.
+
+Want me to now merge this styling guide back into the reusable prompt kit from earlier — replacing the generic palette with your actual BFS system?
