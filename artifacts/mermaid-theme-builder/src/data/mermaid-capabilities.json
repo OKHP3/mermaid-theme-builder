@@ -1,0 +1,204 @@
+{
+  "reviewedMermaidVersion": "11.14.0",
+  "reviewedDate": "2025-04-25",
+  "diagramTypes": [
+    {
+      "id": "flowchart",
+      "aliases": ["flowchart", "graph"],
+      "status": "stable",
+      "styleSupport": "high",
+      "supportsThemeVariables": true,
+      "supportsClassDef": true,
+      "supportsLinkStyle": true,
+      "supportsClickableNodes": true,
+      "notes": "Full theme variable support. classDef and linkStyle both work. Click handlers supported (securityLevel: loose required for external links)."
+    },
+    {
+      "id": "sequenceDiagram",
+      "aliases": ["sequenceDiagram"],
+      "status": "stable",
+      "styleSupport": "medium",
+      "supportsThemeVariables": true,
+      "supportsClassDef": false,
+      "supportsLinkStyle": false,
+      "supportsClickableNodes": false,
+      "notes": "Theme variables apply to actors and backgrounds. classDef and linkStyle are not supported. No clickable nodes."
+    },
+    {
+      "id": "classDiagram",
+      "aliases": ["classDiagram"],
+      "status": "stable",
+      "styleSupport": "medium",
+      "supportsThemeVariables": true,
+      "supportsClassDef": false,
+      "supportsLinkStyle": false,
+      "supportsClickableNodes": false,
+      "notes": "Theme variables apply to class boxes and relationships. No classDef or linkStyle support."
+    },
+    {
+      "id": "stateDiagram",
+      "aliases": ["stateDiagram", "stateDiagram-v2"],
+      "status": "stable",
+      "styleSupport": "medium",
+      "supportsThemeVariables": true,
+      "supportsClassDef": false,
+      "supportsLinkStyle": false,
+      "supportsClickableNodes": false,
+      "notes": "Theme variables apply. stateDiagram-v2 is preferred. No classDef or linkStyle."
+    },
+    {
+      "id": "erDiagram",
+      "aliases": ["erDiagram"],
+      "status": "stable",
+      "styleSupport": "medium",
+      "supportsThemeVariables": true,
+      "supportsClassDef": false,
+      "supportsLinkStyle": false,
+      "supportsClickableNodes": false,
+      "notes": "Theme variables apply to entity boxes and relationship lines. No classDef or linkStyle."
+    },
+    {
+      "id": "gantt",
+      "aliases": ["gantt"],
+      "status": "stable",
+      "styleSupport": "generic-theme-only",
+      "supportsThemeVariables": true,
+      "supportsClassDef": false,
+      "supportsLinkStyle": false,
+      "supportsClickableNodes": false,
+      "notes": "Only generic theme variables (background, primary) apply. Section and task colors are limited. No classDef, linkStyle, or clickable nodes."
+    },
+    {
+      "id": "pie",
+      "aliases": ["pie"],
+      "status": "stable",
+      "styleSupport": "generic-theme-only",
+      "supportsThemeVariables": true,
+      "supportsClassDef": false,
+      "supportsLinkStyle": false,
+      "supportsClickableNodes": false,
+      "notes": "Only background and primary theme variables are applied. Pie slice colors cycle through a fixed internal palette. No classDef or linkStyle."
+    },
+    {
+      "id": "gitGraph",
+      "aliases": ["gitGraph"],
+      "status": "stable",
+      "styleSupport": "generic-theme-only",
+      "supportsThemeVariables": true,
+      "supportsClassDef": false,
+      "supportsLinkStyle": false,
+      "supportsClickableNodes": false,
+      "notes": "Branch colors are managed by Mermaid internally. Generic theme variables (background, primary) apply. No classDef or linkStyle."
+    },
+    {
+      "id": "mindmap",
+      "aliases": ["mindmap"],
+      "status": "stable",
+      "styleSupport": "generic-theme-only",
+      "supportsThemeVariables": true,
+      "supportsClassDef": false,
+      "supportsLinkStyle": false,
+      "supportsClickableNodes": false,
+      "notes": "Node colors cycle automatically. Only background and primary theme variables have visible effect. No classDef or linkStyle."
+    },
+    {
+      "id": "timeline",
+      "aliases": ["timeline"],
+      "status": "stable",
+      "styleSupport": "generic-theme-only",
+      "supportsThemeVariables": true,
+      "supportsClassDef": false,
+      "supportsLinkStyle": false,
+      "supportsClickableNodes": false,
+      "notes": "Section fill colors cycle and are not individually themeable via variables. Only background and primary have visible effect."
+    },
+    {
+      "id": "quadrantChart",
+      "aliases": ["quadrantChart"],
+      "status": "stable",
+      "styleSupport": "medium",
+      "supportsThemeVariables": true,
+      "supportsClassDef": false,
+      "supportsLinkStyle": false,
+      "supportsClickableNodes": false,
+      "notes": "Primary and background theme variables apply. No classDef or linkStyle."
+    },
+    {
+      "id": "journey",
+      "aliases": ["journey"],
+      "status": "stable",
+      "styleSupport": "generic-theme-only",
+      "supportsThemeVariables": true,
+      "supportsClassDef": false,
+      "supportsLinkStyle": false,
+      "supportsClickableNodes": false,
+      "notes": "Section and task fill colors are internally managed. Only background and primary theme variables have visible effect."
+    },
+    {
+      "id": "block",
+      "aliases": ["block-beta"],
+      "status": "beta",
+      "styleSupport": "medium",
+      "supportsThemeVariables": true,
+      "supportsClassDef": true,
+      "supportsLinkStyle": false,
+      "supportsClickableNodes": false,
+      "notes": "Beta diagram type. Theme variables apply. classDef is supported for block styling. API may change in future Mermaid versions."
+    },
+    {
+      "id": "sankey",
+      "aliases": ["sankey-beta"],
+      "status": "beta",
+      "styleSupport": "generic-theme-only",
+      "supportsThemeVariables": true,
+      "supportsClassDef": false,
+      "supportsLinkStyle": false,
+      "supportsClickableNodes": false,
+      "notes": "Beta diagram type. Node and link colors are derived from Mermaid's internal cycle. Only background theme variable has visible effect. API may change."
+    },
+    {
+      "id": "xychart",
+      "aliases": ["xychart-beta"],
+      "status": "beta",
+      "styleSupport": "medium",
+      "supportsThemeVariables": true,
+      "supportsClassDef": false,
+      "supportsLinkStyle": false,
+      "supportsClickableNodes": false,
+      "notes": "Beta diagram type. Primary and background theme variables apply to axes and bars. No classDef or linkStyle. API may change."
+    },
+    {
+      "id": "venn",
+      "aliases": ["venn-beta"],
+      "status": "experimental",
+      "styleSupport": "unsupported",
+      "supportsThemeVariables": false,
+      "supportsClassDef": false,
+      "supportsLinkStyle": false,
+      "supportsClickableNodes": false,
+      "notes": "Experimental diagram type. Theme variables have no reliable effect. API is unstable and subject to breaking changes."
+    },
+    {
+      "id": "ishikawa",
+      "aliases": ["ishikawa-beta"],
+      "status": "experimental",
+      "styleSupport": "unsupported",
+      "supportsThemeVariables": false,
+      "supportsClassDef": false,
+      "supportsLinkStyle": false,
+      "supportsClickableNodes": false,
+      "notes": "Experimental diagram type. Theme variables have no reliable effect. API is unstable and subject to breaking changes."
+    },
+    {
+      "id": "wardley",
+      "aliases": ["wardley-beta"],
+      "status": "experimental",
+      "styleSupport": "unsupported",
+      "supportsThemeVariables": false,
+      "supportsClassDef": false,
+      "supportsLinkStyle": false,
+      "supportsClickableNodes": false,
+      "notes": "Experimental diagram type. Theme variables have no reliable effect. API is unstable and subject to breaking changes."
+    }
+  ]
+}

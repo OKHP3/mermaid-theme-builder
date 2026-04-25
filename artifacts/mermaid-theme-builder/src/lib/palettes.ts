@@ -8,10 +8,126 @@ export interface Palette {
   id: string;
   name: string;
   description: string;
+  /** Attribution note shown when the palette derives from a public brand CSS */
+  attribution?: string;
   colors: ThemeColor[];
 }
 
+// ── OKH Ecosystem Palettes ────────────────────────────────────────────────────
+// Derived from public OverKill Hill P³ site CSS (overkillhill.com / github.com/OKHP3/OverKill-Hill)
+// CSS tokens: --okh-teal #1c3a34, --okh-orange #c46a2c, --okh-amber #e6a03c,
+//             --okh-paper #f6f2ee, --okh-espresso #2a2320, DM Sans font family.
+
+// ── Generic Palettes ─────────────────────────────────────────────────────────
+// Original palettes not derived from any brand.
+
 export const BUILTIN_PALETTES: Palette[] = [
+  // ── OKH Ecosystem ──────────────────────────────────────────────────────────
+  {
+    id: "okh-light",
+    name: "OKH Light",
+    description: "OverKill Hill P³ light palette — warm paper tones, teal nodes, rust-orange accents",
+    attribution: "Derived from OverKill Hill P³ public site CSS (overkillhill.com). Token sources: --okh-teal, --okh-orange, --okh-paper, data-theme=light tokens.",
+    colors: [
+      { key: "primaryColor", label: "Primary (nodes)", value: "#1c3a34" },
+      { key: "primaryTextColor", label: "Primary text", value: "#ffffff" },
+      { key: "primaryBorderColor", label: "Primary border", value: "#c46a2c" },
+      { key: "lineColor", label: "Lines & arrows", value: "#c46a2c" },
+      { key: "secondaryColor", label: "Secondary nodes", value: "#e6a03c" },
+      { key: "tertiaryColor", label: "Tertiary nodes", value: "#f6f2ee" },
+      { key: "background", label: "Background", value: "#eff2f5" },
+      { key: "mainBkg", label: "Main background", value: "#f0ebe5" },
+      { key: "nodeBorder", label: "Node border", value: "#c46a2c" },
+      { key: "clusterBkg", label: "Cluster background", value: "#f6f2ee" },
+      { key: "titleColor", label: "Title color", value: "#0f172a" },
+      { key: "edgeLabelBackground", label: "Edge label bg", value: "#f6f2ee" },
+      { key: "fontFamily", label: "Font family", value: "DM Sans, system-ui, sans-serif" },
+    ],
+  },
+  {
+    id: "okh-protocol",
+    name: "OKH Protocol",
+    description: "OverKill Hill P³ dark palette — espresso background, rust-orange edges, industrial blueprint feel",
+    attribution: "Derived from OverKill Hill P³ public site CSS (overkillhill.com). Token sources: --mermaid-* variables, --okh-espresso, data-theme=dark tokens.",
+    colors: [
+      { key: "primaryColor", label: "Primary (nodes)", value: "#111827" },
+      { key: "primaryTextColor", label: "Primary text", value: "#e5e7eb" },
+      { key: "primaryBorderColor", label: "Primary border", value: "#c46a2c" },
+      { key: "lineColor", label: "Lines & arrows", value: "#c46a2c" },
+      { key: "secondaryColor", label: "Secondary nodes", value: "#181f26" },
+      { key: "tertiaryColor", label: "Tertiary nodes", value: "#1c3a34" },
+      { key: "background", label: "Background", value: "#2a2320" },
+      { key: "mainBkg", label: "Main background", value: "#111827" },
+      { key: "nodeBorder", label: "Node border", value: "#c46a2c" },
+      { key: "clusterBkg", label: "Cluster background", value: "#0d1117" },
+      { key: "titleColor", label: "Title color", value: "#e6a03c" },
+      { key: "edgeLabelBackground", label: "Edge label bg", value: "#181f26" },
+      { key: "fontFamily", label: "Font family", value: "DM Sans, system-ui, sans-serif" },
+    ],
+  },
+  {
+    id: "askjamie-friendly",
+    name: "AskJamie Friendly",
+    description: "Clean, approachable light palette — calm blues with OKH orange accents, great for how-to and process diagrams",
+    attribution: "Derived from AskJamie (askjamie.bot) public site CSS (github.com/OKHP3/AskJamie). Light-mode surface and accent tokens.",
+    colors: [
+      { key: "primaryColor", label: "Primary (nodes)", value: "#1d4ed8" },
+      { key: "primaryTextColor", label: "Primary text", value: "#ffffff" },
+      { key: "primaryBorderColor", label: "Primary border", value: "#c46a2c" },
+      { key: "lineColor", label: "Lines & arrows", value: "#3b82f6" },
+      { key: "secondaryColor", label: "Secondary nodes", value: "#93c5fd" },
+      { key: "tertiaryColor", label: "Tertiary nodes", value: "#eff6ff" },
+      { key: "background", label: "Background", value: "#f9fafb" },
+      { key: "mainBkg", label: "Main background", value: "#eff6ff" },
+      { key: "nodeBorder", label: "Node border", value: "#2563eb" },
+      { key: "clusterBkg", label: "Cluster background", value: "#eff6ff" },
+      { key: "titleColor", label: "Title color", value: "#1e3a5f" },
+      { key: "edgeLabelBackground", label: "Edge label bg", value: "#f9fafb" },
+      { key: "fontFamily", label: "Font family", value: "DM Sans, system-ui, sans-serif" },
+    ],
+  },
+  {
+    id: "gleefully-bright",
+    name: "Glee-fully Bright",
+    description: "Bright amber-gold palette — energetic, warm, ideal for tool flows and quick reference diagrams",
+    attribution: "Derived from Glee-fully Tools (glee-fully.tools) public site CSS (github.com/OKHP3/Glee-fullyTools). OKH amber accent family.",
+    colors: [
+      { key: "primaryColor", label: "Primary (nodes)", value: "#d97706" },
+      { key: "primaryTextColor", label: "Primary text", value: "#ffffff" },
+      { key: "primaryBorderColor", label: "Primary border", value: "#f59e0b" },
+      { key: "lineColor", label: "Lines & arrows", value: "#f59e0b" },
+      { key: "secondaryColor", label: "Secondary nodes", value: "#fcd34d" },
+      { key: "tertiaryColor", label: "Tertiary nodes", value: "#fef3c7" },
+      { key: "background", label: "Background", value: "#fffbeb" },
+      { key: "mainBkg", label: "Main background", value: "#fef3c7" },
+      { key: "nodeBorder", label: "Node border", value: "#d97706" },
+      { key: "clusterBkg", label: "Cluster background", value: "#fef3c7" },
+      { key: "titleColor", label: "Title color", value: "#78350f" },
+      { key: "edgeLabelBackground", label: "Edge label bg", value: "#fffbeb" },
+      { key: "fontFamily", label: "Font family", value: "DM Sans, system-ui, sans-serif" },
+    ],
+  },
+  // ── Generic Palettes ────────────────────────────────────────────────────────
+  {
+    id: "neutral-enterprise",
+    name: "Neutral Enterprise",
+    description: "Clean gray-on-white palette — neutral, professional, works in any corporate or technical context",
+    colors: [
+      { key: "primaryColor", label: "Primary (nodes)", value: "#374151" },
+      { key: "primaryTextColor", label: "Primary text", value: "#ffffff" },
+      { key: "primaryBorderColor", label: "Primary border", value: "#6b7280" },
+      { key: "lineColor", label: "Lines & arrows", value: "#6b7280" },
+      { key: "secondaryColor", label: "Secondary nodes", value: "#9ca3af" },
+      { key: "tertiaryColor", label: "Tertiary nodes", value: "#f3f4f6" },
+      { key: "background", label: "Background", value: "#f9fafb" },
+      { key: "mainBkg", label: "Main background", value: "#f3f4f6" },
+      { key: "nodeBorder", label: "Node border", value: "#374151" },
+      { key: "clusterBkg", label: "Cluster background", value: "#f3f4f6" },
+      { key: "titleColor", label: "Title color", value: "#111827" },
+      { key: "edgeLabelBackground", label: "Edge label bg", value: "#f9fafb" },
+      { key: "fontFamily", label: "Font family", value: "Inter, system-ui, sans-serif" },
+    ],
+  },
   {
     id: "ocean-depth",
     name: "Ocean Depth",

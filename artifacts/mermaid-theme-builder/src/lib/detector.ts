@@ -1,3 +1,8 @@
+import capabilitiesData from "@/data/mermaid-capabilities.json";
+
+export type StyleSupport = "high" | "medium" | "generic-theme-only" | "unsupported" | "unknown";
+export type DiagramStatus = "stable" | "beta" | "experimental" | "unknown";
+
 export type DiagramFamily =
   | "flowchart"
   | "sequenceDiagram"
@@ -14,17 +19,33 @@ export type DiagramFamily =
   | "block"
   | "sankey"
   | "xychart"
+  | "venn"
+  | "ishikawa"
+  | "wardley"
   | "unknown";
+
+export interface DiagramCapability {
+  id: string;
+  status: DiagramStatus;
+  styleSupport: StyleSupport;
+  supportsThemeVariables: boolean;
+  supportsClassDef: boolean;
+  supportsLinkStyle: boolean;
+  supportsClickableNodes: boolean;
+  notes: string;
+}
 
 export interface DetectionResult {
   family: DiagramFamily;
   label: string;
   hasThemeInit: boolean;
   warnings: string[];
+  capability: DiagramCapability | null;
+  reviewedMermaidVersion: string;
 }
 
 const DIAGRAM_PATTERNS: Array<{ pattern: RegExp; family: DiagramFamily; label: string }> = [
-  { pattern: /^\s*(flowchart|graph)\s+(TD|TB|BT|LR|RL|LR)\b/im, family: "flowchart", label: "Flowchart" },
+  { pattern: /^\s*(flowchart|graph)\s+(TD|TB|BT|LR|RL)\b/im, family: "flowchart", label: "Flowchart" },
   { pattern: /^\s*sequenceDiagram\b/im, family: "sequenceDiagram", label: "Sequence Diagram" },
   { pattern: /^\s*classDiagram\b/im, family: "classDiagram", label: "Class Diagram" },
   { pattern: /^\s*stateDiagram(-v2)?\b/im, family: "stateDiagram", label: "State Diagram" },
@@ -39,14 +60,49 @@ const DIAGRAM_PATTERNS: Array<{ pattern: RegExp; family: DiagramFamily; label: s
   { pattern: /^\s*block-beta\b/im, family: "block", label: "Block Diagram" },
   { pattern: /^\s*sankey-beta\b/im, family: "sankey", label: "Sankey Diagram" },
   { pattern: /^\s*xychart-beta\b/im, family: "xychart", label: "XY Chart" },
+  { pattern: /^\s*venn-beta\b/im, family: "venn", label: "Venn Diagram" },
+  { pattern: /^\s*ishikawa-beta\b/im, family: "ishikawa", label: "Ishikawa Diagram" },
+  { pattern: /^\s*wardley-beta\b/im, family: "wardley", label: "Wardley Map" },
 ];
+
+/** Look up capability metadata from the registry by diagram family id. */
+function lookupCapability(family: DiagramFamily): DiagramCapability | null {
+  if (family === "unknown") return null;
+  const entry = capabilitiesData.diagramTypes.find(
+    (d) =>
+      d.id === family ||
+      d.aliases.includes(family) ||
+      // handle alias patterns like "sankey-beta" matching family "sankey"
+      d.aliases.some((a) => a.replace(/-beta$/, "") === family),
+  );
+  if (!entry) return null;
+  return {
+    id: entry.id,
+    status: entry.status as DiagramStatus,
+    styleSupport: entry.styleSupport as StyleSupport,
+    supportsThemeVariables: entry.supportsThemeVariables,
+    supportsClassDef: entry.supportsClassDef,
+    supportsLinkStyle: entry.supportsLinkStyle,
+    supportsClickableNodes: entry.supportsClickableNodes,
+    notes: entry.notes,
+  };
+}
+
+export const REVIEWED_MERMAID_VERSION = capabilitiesData.reviewedMermaidVersion;
 
 export function detectDiagram(code: string): DetectionResult {
   const warnings: string[] = [];
   const trimmed = code.trim();
 
   if (!trimmed) {
-    return { family: "unknown", label: "Unknown", hasThemeInit: false, warnings: [] };
+    return {
+      family: "unknown",
+      label: "Unknown",
+      hasThemeInit: false,
+      warnings: [],
+      capability: null,
+      reviewedMermaidVersion: REVIEWED_MERMAID_VERSION,
+    };
   }
 
   const hasThemeInit = /%%\s*\{.*?init.*?\}.*?%%/s.test(trimmed);
@@ -62,8 +118,30 @@ export function detectDiagram(code: string): DetectionResult {
     }
   }
 
+  const capability = lookupCapability(family);
+
   if (family === "unknown") {
     warnings.push("Could not detect diagram type. Paste a valid Mermaid diagram to enable theming.");
+  } else if (capability) {
+    if (capability.status === "experimental") {
+      warnings.push(
+        `${label} is an experimental diagram type. Theme variable support is unreliable and the API may change in future Mermaid versions.`,
+      );
+    } else if (capability.status === "beta") {
+      warnings.push(
+        `${label} is a beta diagram type. The API may change in future Mermaid versions.`,
+      );
+    }
+
+    if (capability.styleSupport === "unsupported") {
+      warnings.push(
+        `Theme variables have no reliable effect on ${label}. The init directive will be added but visual theming is not supported.`,
+      );
+    } else if (capability.styleSupport === "generic-theme-only") {
+      warnings.push(
+        `${label} only responds to generic theme variables (background, primary). Per-element color control is limited.`,
+      );
+    }
   }
 
   if (hasThemeInit) {
@@ -80,5 +158,5 @@ export function detectDiagram(code: string): DetectionResult {
     warnings.push("One or more labels exceed 200 characters — long labels may cause layout issues.");
   }
 
-  return { family, label, hasThemeInit, warnings };
+  return { family, label, hasThemeInit, warnings, capability, reviewedMermaidVersion: REVIEWED_MERMAID_VERSION };
 }
