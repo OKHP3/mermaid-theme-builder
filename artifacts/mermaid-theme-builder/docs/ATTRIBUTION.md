@@ -94,12 +94,17 @@ The **Prompt Scaffold** export closes with:
 
 ---
 
-## Non-affiliation disclaimer
+## About this project
 
-This tool is not affiliated with, endorsed by, or connected to:
+Mermaid Theme Builder is a **personal project by Jamie Hill** ([OverKill Hill P³](https://overkillhill.com)).
 
+It is not associated with, endorsed by, or connected to:
+
+- **Builders FirstSource, BFS, or any employer or employer-owned brand, system, or design resource**
 - [Mermaid.js](https://mermaid.js.org/) — the open-source diagramming library this tool renders with
 - [Mermaid Chart](https://www.mermaidchart.com/) — the commercial platform by the Mermaid maintainers
 - [Mermaid.ai](https://www.mermaid.ai/) — a separate AI-powered diagramming product
+
+All brand presets (OverKill Hill P³, AskJamie, Glee-fully) are based exclusively on OKHP3-owned personal brand surfaces. No employer-derived colors, themes, or design systems are present.
 
 Mermaid Theme Builder uses the Mermaid npm package as a runtime dependency. It does not fork or copy Mermaid source code.

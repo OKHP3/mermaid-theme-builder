@@ -361,6 +361,15 @@ export function ThemeBuilder() {
             </div>
           </div>
 
+          <div className="border-t border-border bg-card/30 px-4 py-1.5 hidden sm:flex items-center justify-between gap-2">
+            <span className="text-[10px] text-muted-foreground/60 leading-none">
+              A personal <a href="https://overkillhill.com" target="_blank" rel="noopener noreferrer" className="hover:text-muted-foreground transition-colors">OverKill Hill P³</a> project by Jamie Hill
+            </span>
+            <span className="text-[10px] text-muted-foreground/40 leading-none">
+              Not associated with any employer · Not affiliated with Mermaid, Mermaid Chart, or Mermaid.ai
+            </span>
+          </div>
+
           <div className="border-t border-border bg-card/40 p-3 flex flex-wrap items-center gap-2">
             <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mr-1 hidden sm:block">
               Export

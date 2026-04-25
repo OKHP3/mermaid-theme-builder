@@ -119,11 +119,18 @@ See [docs/THEME_METADATA.md](docs/THEME_METADATA.md) for full schema documentati
 
 ---
 
-## Not affiliated
+## About this project
 
-This tool is not affiliated with, endorsed by, or connected to [Mermaid](https://mermaid.js.org/), [Mermaid Chart](https://www.mermaidchart.com/), or [Mermaid.ai](https://www.mermaid.ai/).
+Mermaid Theme Builder is a **personal project by Jamie Hill** ([OverKill Hill P³](https://overkillhill.com)).
 
-Brand presets are based on OKHP3-owned public brand surfaces. All color values are sourced from publicly available CSS on GitHub.
+It is not associated with, endorsed by, or connected to:
+
+- Builders FirstSource, BFS, or any employer or employer-owned brand, system, or design resource
+- [Mermaid](https://mermaid.js.org/) — the open-source diagramming library this tool renders with
+- [Mermaid Chart](https://www.mermaidchart.com/) — the commercial platform by the Mermaid maintainers
+- [Mermaid.ai](https://www.mermaid.ai/) — a separate AI-powered diagramming product
+
+Brand presets are based exclusively on OKHP3-owned public brand surfaces (OverKill Hill P³, AskJamie, Glee-fully). All color values are sourced from publicly available CSS on GitHub. No employer-derived colors, themes, or design systems are included.
 
 ---
 
@@ -136,4 +143,4 @@ Brand presets are based on OKHP3-owned public brand surfaces. All color values a
 
 ---
 
-*Part of the [OverKill Hill P³](https://overkillhill.com) tooling ecosystem.*
+*A personal [OverKill Hill P³](https://overkillhill.com) project by Jamie Hill. Not associated with any employer or employer-owned brand.*
