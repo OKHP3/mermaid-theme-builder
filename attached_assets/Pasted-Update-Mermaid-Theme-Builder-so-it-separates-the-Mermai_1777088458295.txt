@@ -1,0 +1,56 @@
+Update Mermaid Theme Builder so it separates the Mermaid rendering dependency from the app’s diagram capability registry.
+
+Current state:
+- The app depends on mermaid ^11.14.0.
+- The detector currently hard-codes a limited set of diagram types.
+- Mermaid 11.14.0 includes newer diagram support such as wardley-beta, and related docs/releases reference treeView-beta and other beta diagram families.
+- The app should not pretend it knows every supported diagram unless the capability registry includes it.
+
+Tasks:
+1. Add `src/data/mermaid-capabilities.ts` or `.json`.
+2. Include a `mermaidVersionVerified` field set to `11.14.0`.
+3. Move all diagram-family detection patterns into this registry.
+4. Add missing current Mermaid diagram declarations:
+   - flowchart / graph
+   - sequenceDiagram
+   - classDiagram
+   - stateDiagram / stateDiagram-v2
+   - erDiagram
+   - gantt
+   - pie
+   - gitGraph
+   - mindmap
+   - timeline
+   - quadrantChart
+   - journey
+   - requirementDiagram
+   - c4Diagram
+   - architecture-beta
+   - block-beta
+   - sankey-beta
+   - xychart-beta
+   - packet-beta
+   - kanban
+   - treemap-beta
+   - venn-beta
+   - ishikawa-beta
+   - wardley-beta
+   - treeView-beta
+5. For each diagram type, define:
+   - displayName
+   - declarations
+   - stability: stable | beta | experimental | unknown
+   - styleStrategy
+   - supportsClassDef
+   - supportsLinkStyle
+   - supportsSubgraphStyle
+   - notes
+6. Update `detector.ts` to read from the registry.
+7. Add a visible UI note when a diagram type is supported by Mermaid but has limited styling support in Mermaid Theme Builder.
+8. Add a docs page: `docs/MERMAID_CAPABILITY_REGISTRY.md`.
+9. Add a maintenance checklist explaining that Mermaid releases must be checked and the registry updated when new diagram types or styling capabilities are announced.
+10. Do not auto-pull Mermaid latest at runtime.
+11. Keep npm dependency management through package.json and future Dependabot PRs.
+
+Goal:
+The app should render using Mermaid as a dependency, but maintain its own explicit capability registry so users understand what the Theme Builder knows how to style safely.

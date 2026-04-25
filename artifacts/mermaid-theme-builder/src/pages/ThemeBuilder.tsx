@@ -17,6 +17,7 @@ import {
 import { MermaidPreview } from "@/components/MermaidPreview";
 import { ColorSwatch } from "@/components/ColorSwatch";
 import { WarningBanner } from "@/components/WarningBanner";
+import { CapabilityNote } from "@/components/CapabilityNote";
 
 const SAMPLE_CODE = `flowchart TD
     A[User Request] --> B{Validate Input}
@@ -322,9 +323,14 @@ export function ThemeBuilder() {
                 placeholder="Paste your Mermaid diagram code here..."
                 spellCheck={false}
               />
-              {detection.warnings.length > 0 && (
-                <div className="p-3 border-t border-border">
-                  <WarningBanner warnings={detection.warnings} />
+              {(detection.warnings.length > 0 || (detection.capability && detection.capability.styleStrategy !== "full" && detection.capability.notes)) && (
+                <div className="p-3 border-t border-border space-y-2">
+                  {detection.warnings.length > 0 && (
+                    <WarningBanner warnings={detection.warnings} />
+                  )}
+                  {detection.capability && detection.capability.styleStrategy !== "full" && detection.capability.notes && (
+                    <CapabilityNote capability={detection.capability} />
+                  )}
                 </div>
               )}
             </div>
