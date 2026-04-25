@@ -11,7 +11,7 @@ Everything runs in your browser. Your diagram code never leaves the page.
 ## Features
 
 - **Paste and theme** — Paste any Mermaid diagram code and apply a visual theme in one click
-- **15 diagram families detected** — Flowchart, sequence, class, ER, Gantt, pie, git graph, mindmap, and more
+- **25 diagram types detected** — Flowchart, sequence, class, ER, Gantt, pie, git graph, mindmap, and more (with per-type theme support notes)
 - **7 built-in palettes** — 3 first-party OKHP3 brand presets + 4 utility/example presets
 - **Live preview** — Compare Original and Themed output side by side
 - **Three export formats:**
