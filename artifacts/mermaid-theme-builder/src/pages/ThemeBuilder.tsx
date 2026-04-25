@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useEffect } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { BUILTIN_PALETTES, type Palette, type ThemeColor } from "@/lib/palettes";
 import { detectDiagram } from "@/lib/detector";
 import { generateThemedCode, generateMarkdownExport, generatePromptScaffold } from "@/lib/themeEngine";
@@ -19,12 +19,28 @@ const SAMPLE_CODE = `flowchart TD
 type Tab = "input" | "output";
 type ExportType = "code" | "markdown" | "prompt";
 
+const STYLE_SUPPORT_LABELS: Record<string, { label: string; color: string }> = {
+  high: { label: "Full Theme Support", color: "text-emerald-600 dark:text-emerald-400" },
+  medium: { label: "Partial Theme Support", color: "text-amber-600 dark:text-amber-400" },
+  "generic-theme-only": { label: "Generic Theme Only", color: "text-amber-600 dark:text-amber-400" },
+  unsupported: { label: "Theme Unsupported", color: "text-red-500 dark:text-red-400" },
+  unknown: { label: "Support Unknown", color: "text-muted-foreground" },
+};
+
+const STATUS_LABELS: Record<string, { label: string; color: string }> = {
+  stable: { label: "Stable", color: "text-emerald-600 dark:text-emerald-400" },
+  beta: { label: "Beta", color: "text-amber-600 dark:text-amber-400" },
+  experimental: { label: "Experimental", color: "text-red-500 dark:text-red-400" },
+  unknown: { label: "Unknown", color: "text-muted-foreground" },
+};
+
 export function ThemeBuilder() {
   const [inputCode, setInputCode] = useState(SAMPLE_CODE);
   const [selectedPaletteId, setSelectedPaletteId] = useState(BUILTIN_PALETTES[0].id);
   const [customColors, setCustomColors] = useState<Record<string, ThemeColor[]>>({});
   const [activeTab, setActiveTab] = useState<Tab>("input");
   const [copiedType, setCopiedType] = useState<ExportType | null>(null);
+  const [includeMetadata, setIncludeMetadata] = useState(true);
 
   const selectedPalette = useMemo((): Palette => {
     const base = BUILTIN_PALETTES.find((p) => p.id === selectedPaletteId) ?? BUILTIN_PALETTES[0];
@@ -44,9 +60,13 @@ export function ThemeBuilder() {
   const themedCode = useMemo(
     () =>
       inputCode.trim()
-        ? generateThemedCode(inputCode, { palette: selectedPalette, diagramFamily: detection.family })
+        ? generateThemedCode(inputCode, {
+            palette: selectedPalette,
+            diagramFamily: detection.family,
+            includeMetadata,
+          })
         : "",
-    [inputCode, selectedPalette, detection.family],
+    [inputCode, selectedPalette, detection.family, includeMetadata],
   );
 
   const handleColorChange = useCallback(
@@ -73,8 +93,10 @@ export function ThemeBuilder() {
     async (type: ExportType) => {
       let text = "";
       if (type === "code") text = themedCode;
-      else if (type === "markdown") text = generateMarkdownExport(themedCode, selectedPalette.name);
-      else if (type === "prompt") text = generatePromptScaffold(selectedPalette, detection.family);
+      else if (type === "markdown")
+        text = generateMarkdownExport(themedCode, selectedPalette.name, includeMetadata);
+      else if (type === "prompt")
+        text = generatePromptScaffold(selectedPalette, detection.family, includeMetadata);
 
       try {
         await navigator.clipboard.writeText(text);
@@ -91,12 +113,14 @@ export function ThemeBuilder() {
         setTimeout(() => setCopiedType(null), 2000);
       }
     },
-    [themedCode, selectedPalette, detection.family],
+    [themedCode, selectedPalette, detection.family, includeMetadata],
   );
 
   const hasCustomizations = Boolean(customColors[selectedPaletteId]);
-
   const previewCode = activeTab === "output" ? themedCode : inputCode;
+  const cap = detection.capability;
+  const styleSupport = cap?.styleSupport ?? "unknown";
+  const diagramStatus = cap?.status ?? "unknown";
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -114,13 +138,28 @@ export function ThemeBuilder() {
             <p className="text-xs text-muted-foreground mt-0.5 hidden sm:block">Visual theme control for AI-generated diagrams</p>
           </div>
         </div>
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+        <div className="flex items-center gap-2 text-xs text-muted-foreground flex-wrap justify-end">
           {detection.family !== "unknown" && (
             <span className="px-2 py-1 rounded-full bg-primary/10 text-primary font-medium">
               {detection.label}
             </span>
           )}
-          <span className="hidden sm:block">v0.1 — local only</span>
+          {cap && (
+            <>
+              <span className={`hidden md:block ${STYLE_SUPPORT_LABELS[styleSupport]?.color ?? ""}`}>
+                {STYLE_SUPPORT_LABELS[styleSupport]?.label}
+              </span>
+              {diagramStatus !== "stable" && (
+                <span className={`px-2 py-0.5 rounded-full border text-xs font-medium ${STATUS_LABELS[diagramStatus]?.color ?? ""}`}>
+                  {STATUS_LABELS[diagramStatus]?.label}
+                </span>
+              )}
+            </>
+          )}
+          <span className="hidden sm:block opacity-50">
+            Mermaid {detection.reviewedMermaidVersion}
+          </span>
+          <span className="hidden sm:block">v0.2 — local only</span>
         </div>
       </header>
 
@@ -149,6 +188,9 @@ export function ThemeBuilder() {
                     ))}
                   </div>
                   <p className="font-semibold text-foreground leading-tight">{p.name}</p>
+                  {p.attribution && (
+                    <p className="text-[10px] text-muted-foreground leading-tight mt-0.5 opacity-70">OKH</p>
+                  )}
                   {customColors[p.id] && (
                     <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-primary" />
                   )}
@@ -172,6 +214,11 @@ export function ThemeBuilder() {
               )}
             </div>
             <p className="text-xs text-muted-foreground mb-3">{selectedPalette.description}</p>
+            {selectedPalette.attribution && (
+              <p className="text-[10px] text-muted-foreground mb-3 italic opacity-70">
+                {selectedPalette.attribution}
+              </p>
+            )}
             <div className="space-y-0.5">
               {selectedPalette.colors.map((color) => (
                 <ColorSwatch
@@ -183,6 +230,18 @@ export function ThemeBuilder() {
                 />
               ))}
             </div>
+          </div>
+
+          <div className="p-4 border-t border-border">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={includeMetadata}
+                onChange={(e) => setIncludeMetadata(e.target.checked)}
+                className="rounded border-border"
+              />
+              <span className="text-xs text-muted-foreground">Include metadata comments</span>
+            </label>
           </div>
         </aside>
 
@@ -234,6 +293,11 @@ export function ThemeBuilder() {
                     ))}
                   </div>
                 </div>
+                {cap && styleSupport !== "high" && (
+                  <span className={`text-[10px] hidden sm:block ${STYLE_SUPPORT_LABELS[styleSupport]?.color ?? ""}`}>
+                    {STYLE_SUPPORT_LABELS[styleSupport]?.label}
+                  </span>
+                )}
               </div>
 
               <div className="flex-1 overflow-auto p-4 bg-muted/20">
