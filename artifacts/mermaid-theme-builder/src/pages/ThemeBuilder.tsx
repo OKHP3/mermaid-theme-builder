@@ -18,9 +18,11 @@ import { MermaidPreview } from "@/components/MermaidPreview";
 import { ColorSwatch } from "@/components/ColorSwatch";
 import { WarningBanner } from "@/components/WarningBanner";
 import { CapabilityNote } from "@/components/CapabilityNote";
+import { ClassBrowser } from "@/components/ClassBrowser";
+import { getClassDefs } from "@/lib/themeEngine";
 import { BRAND_EXAMPLES, GENERIC_EXAMPLE, SHOWCASE_EXAMPLE, SHOWCASE_META } from "@/data/examples";
 
-type Tab = "input" | "output";
+type Tab = "input" | "output" | "classes";
 type ExportType = "code" | "markdown" | "prompt";
 
 export function ThemeBuilder() {
@@ -135,6 +137,8 @@ export function ThemeBuilder() {
   );
 
   const previewCode = activeTab === "output" ? themedCode : inputCode;
+
+  const classDefs = useMemo(() => getClassDefs(selectedPalette), [selectedPalette]);
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -334,17 +338,17 @@ export function ThemeBuilder() {
               <div className="px-4 py-2.5 border-b border-border flex items-center gap-2 bg-card/30">
                 <div className="flex items-center gap-2 flex-1">
                   <div className="flex items-center gap-1.5 p-0.5 rounded-md bg-muted">
-                    {(["input", "output"] as Tab[]).map((t) => (
+                    {(["input", "output", "classes"] as Tab[]).map((t) => (
                       <button
                         key={t}
                         onClick={() => setActiveTab(t)}
-                        className={`px-2.5 py-0.5 rounded text-xs font-medium transition-all capitalize ${
+                        className={`px-2.5 py-0.5 rounded text-xs font-medium transition-all ${
                           activeTab === t
                             ? "bg-card text-foreground shadow-xs"
                             : "text-muted-foreground hover:text-foreground"
                         }`}
                       >
-                        {t === "input" ? "Original" : "Themed"}
+                        {t === "input" ? "Original" : t === "output" ? "Themed" : "Classes"}
                       </button>
                     ))}
                   </div>
@@ -353,12 +357,21 @@ export function ThemeBuilder() {
                       {effectiveThemeName}
                     </span>
                   )}
+                  {activeTab === "classes" && (
+                    <span className="text-xs text-muted-foreground hidden sm:block">
+                      16 classDef styles
+                    </span>
+                  )}
                 </div>
               </div>
 
-              <div className="flex-1 overflow-auto p-4 bg-muted/20">
-                <MermaidPreview code={previewCode} className="min-h-[280px]" />
-              </div>
+              {activeTab === "classes" ? (
+                <ClassBrowser classDefs={classDefs} />
+              ) : (
+                <div className="flex-1 overflow-auto p-4 bg-muted/20">
+                  <MermaidPreview code={previewCode} className="min-h-[280px]" />
+                </div>
+              )}
             </div>
           </div>
 

@@ -217,13 +217,32 @@ ${themeLines}
 
 /** Build a 16-entry semantic classDef library from palette hex values.
  *
- *  Classes are derived entirely from the palette's own color tokens —
- *  no BFS or third-party brand values are ever used here.
- *
- *  The "redDash" class uses a fixed deep-red (#3b0e0e / #b91c1c) that is
- *  an accessibility/warning marker, NOT a brand color.
+ *  Delegates to getClassDefs() as the single source of truth so the rendered
+ *  class browser and the exported classDef text always stay in sync.
  */
 function buildClassDefLibrary(palette: Palette): string {
+  return getClassDefs(palette)
+    .map(({ name, fill, stroke, color, extra }) => {
+      const style = [`fill:${fill}`, `stroke:${stroke}`, `color:${color}`, extra].filter(Boolean).join(",");
+      return `    classDef ${name} ${style}`;
+    })
+    .join("\n");
+}
+
+export interface ClassDef {
+  name: string;
+  fill: string;
+  stroke: string;
+  color: string;
+  extra: string;
+  description: string;
+}
+
+/**
+ * Returns all 16 semantic class definitions for the given palette as structured objects.
+ * Useful for building UI previews or custom renderers.
+ */
+export function getClassDefs(palette: Palette): ClassDef[] {
   const c = (key: string, fallback: string) =>
     palette.colors.find((cl) => cl.key === key)?.value ?? fallback;
 
@@ -239,31 +258,24 @@ function buildClassDefLibrary(palette: Palette): string {
   const titleColor     = c("titleColor",          "#e0e0e0");
   const lineColor      = c("lineColor",           "#888888");
 
-  const classes = [
-    { name: "primary",     fill: primary,    stroke: primaryBorder, color: primaryText,  extra: "" },
-    { name: "secondary",   fill: secondary,  stroke: primaryBorder, color: primaryText,  extra: "" },
-    { name: "tertiary",    fill: tertiary,   stroke: nodeBorder,    color: primaryText,  extra: "" },
-    { name: "platform",    fill: mainBkg,    stroke: lineColor,     color: primaryText,  extra: "" },
-    { name: "boundary",    fill: clusterBkg, stroke: lineColor,     color: titleColor,   extra: "stroke-dasharray:5" },
-    { name: "actor",       fill: primary,    stroke: primaryBorder, color: primaryText,  extra: "font-weight:bold" },
-    { name: "gate",        fill: primaryBorder, stroke: nodeBorder, color: background,   extra: "" },
-    { name: "control",     fill: tertiary,   stroke: nodeBorder,    color: primaryText,  extra: "" },
-    { name: "log",         fill: secondary,  stroke: lineColor,     color: primaryText,  extra: "font-style:italic" },
-    { name: "question",    fill: mainBkg,    stroke: lineColor,     color: titleColor,   extra: "stroke-dasharray:3" },
-    { name: "accent",      fill: lineColor,  stroke: nodeBorder,    color: background,   extra: "" },
-    { name: "deepBlue",    fill: primary,    stroke: nodeBorder,    color: primaryText,  extra: "stroke-width:2px" },
-    { name: "slate",       fill: background, stroke: lineColor,     color: primary,      extra: "" },
-    { name: "scope",       fill: clusterBkg, stroke: primaryBorder, color: titleColor,   extra: "stroke-width:2px" },
-    { name: "outOfScope",  fill: background, stroke: nodeBorder,    color: primaryText,  extra: "stroke-dasharray:8,opacity:0.6" },
-    { name: "redDash",     fill: "#3b0e0e",  stroke: "#b91c1c",     color: "#fecaca",    extra: "stroke-dasharray:4" },
+  return [
+    { name: "primary",    fill: primary,       stroke: primaryBorder, color: primaryText, extra: "",                          description: "Main action / entity" },
+    { name: "secondary",  fill: secondary,     stroke: primaryBorder, color: primaryText, extra: "",                          description: "Supporting entity" },
+    { name: "tertiary",   fill: tertiary,      stroke: nodeBorder,    color: primaryText, extra: "",                          description: "Background / context" },
+    { name: "platform",   fill: mainBkg,       stroke: lineColor,     color: primaryText, extra: "",                          description: "Infrastructure layer" },
+    { name: "boundary",   fill: clusterBkg,    stroke: lineColor,     color: titleColor,  extra: "stroke-dasharray:5",        description: "System limits" },
+    { name: "actor",      fill: primary,       stroke: primaryBorder, color: primaryText, extra: "font-weight:bold",          description: "Human roles" },
+    { name: "gate",       fill: primaryBorder, stroke: nodeBorder,    color: background,  extra: "",                          description: "Decision / gateway" },
+    { name: "control",    fill: tertiary,      stroke: nodeBorder,    color: primaryText, extra: "",                          description: "Management / orchestration" },
+    { name: "log",        fill: secondary,     stroke: lineColor,     color: primaryText, extra: "font-style:italic",         description: "Audit records" },
+    { name: "question",   fill: mainBkg,       stroke: lineColor,     color: titleColor,  extra: "stroke-dasharray:3",        description: "Unknowns / TBD" },
+    { name: "accent",     fill: lineColor,     stroke: nodeBorder,    color: background,  extra: "",                          description: "Highlighted results" },
+    { name: "deepBlue",   fill: primary,       stroke: nodeBorder,    color: primaryText, extra: "stroke-width:2px",          description: "Emphasis variant" },
+    { name: "slate",      fill: background,    stroke: lineColor,     color: primary,     extra: "",                          description: "Neutral / muted details" },
+    { name: "scope",      fill: clusterBkg,    stroke: primaryBorder, color: titleColor,  extra: "stroke-width:2px",          description: "Items in scope" },
+    { name: "outOfScope", fill: background,    stroke: nodeBorder,    color: primaryText, extra: "stroke-dasharray:8,opacity:0.6", description: "Excluded items" },
+    { name: "redDash",    fill: "#3b0e0e",     stroke: "#b91c1c",     color: "#fecaca",   extra: "stroke-dasharray:4",        description: "Warning / error" },
   ];
-
-  return classes
-    .map(({ name, fill, stroke, color, extra }) => {
-      const style = [`fill:${fill}`, `stroke:${stroke}`, `color:${color}`, extra].filter(Boolean).join(",");
-      return `    classDef ${name} ${style}`;
-    })
-    .join("\n");
 }
 
 /** Build 6-tier subgraph style patterns for the given palette. */
