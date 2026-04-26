@@ -113,6 +113,16 @@ export function ThemeBuilder() {
   const handleSelectPalette = useCallback((id: string) => {
     setSelectedPaletteId(id);
     setCustomThemeName("");
+
+    const isBrandPalette = BRAND_PALETTES.some((p) => p.id === id);
+    if (isBrandPalette && BRAND_EXAMPLES[id]) {
+      const knownExamples = new Set<string>([
+        GENERIC_EXAMPLE,
+        SHOWCASE_EXAMPLE,
+        ...Object.values(BRAND_EXAMPLES).flatMap(({ flowchart, sequence }) => [flowchart, sequence]),
+      ]);
+      setInputCode((current) => knownExamples.has(current) ? BRAND_EXAMPLES[id].flowchart : current);
+    }
   }, []);
 
   const writeToClipboard = useCallback(async (text: string) => {
