@@ -121,7 +121,7 @@ export function ThemeBuilder() {
         SHOWCASE_EXAMPLE,
         ...Object.values(BRAND_EXAMPLES).flatMap(({ flowchart, sequence }) => [flowchart, sequence]),
       ]);
-      setInputCode((current) => knownExamples.has(current) ? BRAND_EXAMPLES[id].flowchart : current);
+      setInputCode((current) => (current.trim() === "" || knownExamples.has(current)) ? BRAND_EXAMPLES[id].flowchart : current);
     }
   }, []);
 
