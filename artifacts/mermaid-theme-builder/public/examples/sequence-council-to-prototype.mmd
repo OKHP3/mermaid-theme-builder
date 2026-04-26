@@ -1,0 +1,44 @@
+sequenceDiagram
+%% OverKill Hill P3 — Council to Prototype
+%% Tool: Mermaid Theme Builder | https://overkillhill.com/projects/mermaid-theme-builder/
+
+    participant J as Jamie
+    participant C as Claude
+    participant G as ChatGPT
+    participant P as Perplexity
+    participant N as Notion
+    participant R as Replit
+
+    J->>C: Raw idea — is this worth overdoing?
+    C-->>J: Analysis + framing + risks
+
+    J->>G: Rapid concept sketch — name and positioning
+    G-->>J: Name variants + tagline options
+
+    J->>P: Prior art search — does this already exist?
+    P-->>J: Source review + gap analysis
+
+    Note over J,P: AI Council synthesis complete
+
+    J->>N: Write PRD — scope, firewall, acceptance criteria
+    N-->>J: Living document stored
+
+    J->>C: Review PRD — what is missing?
+    C-->>J: Gaps flagged + FR/NFR additions suggested
+    J->>N: Update PRD with council feedback
+
+    J->>R: Build prototype from PRD
+    R-->>J: First working build
+
+    loop Iteration
+        J->>R: Fix + refine
+        R-->>J: Updated prototype
+    end
+
+    J->>C: Review prototype — brand firewall clean?
+    C-->>J: Firewall check passed. No BFS references.
+
+    J->>R: Deploy to GitHub Pages
+    R-->>J: Live URL confirmed
+
+    Note over J,R: Shipped. Then sharpened.
