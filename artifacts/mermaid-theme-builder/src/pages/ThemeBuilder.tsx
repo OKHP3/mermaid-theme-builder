@@ -25,6 +25,7 @@ import { ClassBrowser } from "@/components/ClassBrowser";
 import { DiagramInventory } from "@/components/DiagramInventory";
 import { getClassDefs } from "@/lib/themeEngine";
 import { BRAND_EXAMPLES, GENERIC_EXAMPLE, SHOWCASE_EXAMPLE, SHOWCASE_META } from "@/data/examples";
+import { EXAMPLE_GROUPS } from "@/data/example-library";
 import { SUPPORT_STATUS_LABELS, SUPPORT_STATUS_STYLES, THEME_CONFIDENCE_LABELS, THEME_CONFIDENCE_STYLES } from "@/data/mermaid-capabilities";
 
 type Tab = "input" | "output" | "classes";
@@ -123,6 +124,7 @@ export function ThemeBuilder() {
         GENERIC_EXAMPLE,
         SHOWCASE_EXAMPLE,
         ...Object.values(BRAND_EXAMPLES).flatMap(({ flowchart, sequence }) => [flowchart, sequence]),
+        ...EXAMPLE_GROUPS.flatMap((g) => g.entries.map((e) => e.content)),
       ]);
       setInputCode((current) => (current.trim() === "" || knownExamples.has(current)) ? BRAND_EXAMPLES[id].flowchart : current);
     }
@@ -694,6 +696,11 @@ function LoadExampleMenu({
     return () => document.removeEventListener("mousedown", handleOutside);
   }, [open]);
 
+  function load(code: string) {
+    onLoad(code);
+    setOpen(false);
+  }
+
   return (
     <div ref={ref} className="relative">
       <button
@@ -712,15 +719,18 @@ function LoadExampleMenu({
         </svg>
       </button>
       {open && (
-        <div className="absolute right-0 top-full mt-1 z-30 bg-card border border-border rounded-md shadow-md py-1 min-w-[140px]">
-          {brandExamples ? (
+        <div className="absolute right-0 top-full mt-1 z-30 bg-card border border-border rounded-md shadow-lg py-1 min-w-[210px] max-h-[420px] overflow-y-auto">
+          {brandExamples && (
             <>
+              <p className="px-3 pt-1.5 pb-0.5 text-[9px] font-bold uppercase tracking-widest text-muted-foreground/70">
+                Brand Examples
+              </p>
               <button
                 data-testid="load-example-flowchart"
-                onClick={() => { onLoad(brandExamples.flowchart); setOpen(false); }}
+                onClick={() => load(brandExamples.flowchart)}
                 className="w-full text-left px-3 py-1.5 text-xs text-foreground hover:bg-muted transition-colors flex items-center gap-2"
               >
-                <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-3 h-3 shrink-0 opacity-60">
+                <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-3 h-3 shrink-0 opacity-50">
                   <rect x="1" y="1" width="4" height="3" rx="0.5" />
                   <rect x="9" y="5" width="4" height="3" rx="0.5" />
                   <rect x="1" y="9" width="4" height="3" rx="0.5" />
@@ -730,10 +740,10 @@ function LoadExampleMenu({
               </button>
               <button
                 data-testid="load-example-sequence"
-                onClick={() => { onLoad(brandExamples.sequence); setOpen(false); }}
+                onClick={() => load(brandExamples.sequence)}
                 className="w-full text-left px-3 py-1.5 text-xs text-foreground hover:bg-muted transition-colors flex items-center gap-2"
               >
-                <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-3 h-3 shrink-0 opacity-60">
+                <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-3 h-3 shrink-0 opacity-50">
                   <line x1="2" y1="1" x2="2" y2="13" strokeLinecap="round" />
                   <line x1="12" y1="1" x2="12" y2="13" strokeLinecap="round" />
                   <path d="M2 4h10" strokeLinecap="round" />
@@ -744,24 +754,43 @@ function LoadExampleMenu({
                 </svg>
                 Sequence
               </button>
+              <div className="my-1 border-t border-border" />
             </>
-          ) : (
-            <button
-              data-testid="load-example-generic"
-              onClick={() => { onLoad(GENERIC_EXAMPLE); setOpen(false); }}
-              className="w-full text-left px-3 py-1.5 text-xs text-foreground hover:bg-muted transition-colors"
-            >
-              Simple Example
-            </button>
           )}
+
+          {EXAMPLE_GROUPS.map((group, gi) => (
+            <div key={group.category}>
+              {gi > 0 && <div className="my-1 border-t border-border/60" />}
+              <p className="px-3 pt-1.5 pb-0.5 text-[9px] font-bold uppercase tracking-widest text-muted-foreground/70">
+                {group.label}
+              </p>
+              {group.entries.map((entry) => (
+                <button
+                  key={entry.id}
+                  data-testid={`load-example-${entry.id}`}
+                  onClick={() => load(entry.content)}
+                  className="w-full text-left px-3 py-1.5 text-xs text-foreground hover:bg-muted transition-colors flex items-center justify-between gap-2"
+                >
+                  <span>{entry.label}</span>
+                  {entry.badge && (
+                    <span className="text-[9px] font-semibold uppercase tracking-wide px-1 py-px rounded bg-sky-500/15 text-sky-600 dark:text-sky-400 shrink-0">
+                      {entry.badge}
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+          ))}
+
           <div className="my-1 border-t border-border" />
           <button
-            onClick={() => { onLoad(SHOWCASE_EXAMPLE); setOpen(false); }}
-            className="w-full text-left px-3 py-1.5 text-xs text-foreground hover:bg-muted transition-colors"
+            data-testid="load-example-showcase"
+            onClick={() => load(SHOWCASE_EXAMPLE)}
+            className="w-full text-left px-3 py-1.5 text-xs text-foreground hover:bg-muted transition-colors flex items-center gap-1.5"
           >
             <span className="font-medium">{SHOWCASE_META.title.replace("OverKill ", "")}</span>
-            <span className="ml-1.5 text-[9px] font-semibold uppercase tracking-wide px-1 py-px rounded bg-amber-500/15 text-amber-600 dark:text-amber-400">
-              Advanced
+            <span className="text-[9px] font-semibold uppercase tracking-wide px-1 py-px rounded bg-amber-500/15 text-amber-600 dark:text-amber-400">
+              Showcase
             </span>
           </button>
         </div>
