@@ -38,7 +38,7 @@ export function ThemeBuilder() {
   const [copiedType, setCopiedType] = useState<ExportType | null>(null);
   const [showScaffoldModal, setShowScaffoldModal] = useState(false);
   const [includeMetaComments, setIncludeMetaComments] = useState(true);
-  const [includeBadge, setIncludeBadge] = useState(false);
+  const [includeBadge, setIncludeBadge] = useState(true);
   const [customThemeName, setCustomThemeName] = useState("");
   const [showInventory, setShowInventory] = useState(false);
 
@@ -237,7 +237,7 @@ export function ThemeBuilder() {
 
           <div className="p-4 border-b border-border">
             <SectionLabel label="Theme Presets" />
-            <div className="grid grid-cols-2 gap-1.5 mt-2">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1.5 mt-2">
               {UTILITY_PALETTES.map((p) => (
                 <UtilityPaletteCard
                   key={p.id}
@@ -327,8 +327,8 @@ export function ThemeBuilder() {
                 id="attr-badge"
                 checked={includeBadge}
                 onChange={setIncludeBadge}
-                label="Attribution badge"
-                hint={detection.family !== "flowchart" && detection.family !== "unknown" ? "Flowchart diagrams only" : "Adds a small linked badge node"}
+                label="Include attribution"
+                hint={detection.family !== "flowchart" && detection.family !== "unknown" ? "Flowchart diagrams only" : "Adds a small linked watermark node"}
                 disabled={!["flowchart", "unknown"].includes(detection.family)}
               />
               <div>
@@ -426,14 +426,16 @@ export function ThemeBuilder() {
             </div>
           </div>
 
-          <div className="border-t border-border bg-card/30 px-4 py-1.5 hidden sm:flex items-center justify-between gap-2">
-            <span className="text-[10px] text-muted-foreground/60 leading-none">
-              A personal <a href="https://overkillhill.com" target="_blank" rel="noopener noreferrer" className="hover:text-muted-foreground transition-colors">OverKill Hill P³</a> project by Jamie Hill
+          <footer className="border-t border-border bg-card/20 px-4 py-2 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
+            <span>
+              Mermaid Theme Builder is not affiliated with Mermaid, Mermaid Chart, or Mermaid.ai.
+              A personal <a href="https://overkillhill.com" target="_blank" rel="noopener" className="underline hover:text-foreground">OverKill Hill P³</a> project.
             </span>
-            <span className="text-[10px] text-muted-foreground/40 leading-none">
-              Not affiliated with Builders FirstSource, Mermaid, Mermaid Chart, or Mermaid.ai
+            <span className="flex items-center gap-3">
+              <a href="https://github.com/OKHP3/mermaid-theme-builder" target="_blank" rel="noopener" className="underline hover:text-foreground">GitHub</a>
+              <a href="https://overkillhill.com/projects/mermaid-theme-builder/" target="_blank" rel="noopener" className="underline hover:text-foreground">Project Page</a>
             </span>
-          </div>
+          </footer>
 
           <div className="border-t border-border bg-card/40 p-3 flex flex-wrap items-center gap-2">
             <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mr-1 hidden sm:block">
@@ -749,7 +751,7 @@ function LoadExampleMenu({
               onClick={() => { onLoad(GENERIC_EXAMPLE); setOpen(false); }}
               className="w-full text-left px-3 py-1.5 text-xs text-foreground hover:bg-muted transition-colors"
             >
-              Generic
+              Simple Example
             </button>
           )}
           <div className="my-1 border-t border-border" />

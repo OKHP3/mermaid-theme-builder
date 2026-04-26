@@ -1,155 +1,36 @@
 # Mermaid Theme Builder
 
-**A static, browser-based visual governance utility for Mermaid diagrams.**
+**Define your brand. Style your diagrams. Stop fighting with LLM outputs.**
 
-Mermaid Theme Builder helps you define a visual theme once, apply it to existing Mermaid code, preview the styled result, copy or export the result, and generate reusable prompt scaffolds — so LLMs stop hallucinating diagram styles.
+Mermaid Theme Builder is a browser-based visual governance tool for Mermaid diagrams. Paste any Mermaid diagram, apply a theme, preview it live, and export styled code, markdown bootstraps, or AI prompt scaffolds.
 
-Everything runs in your browser. Your diagram code never leaves the page.
-
----
+Built for enterprise architects, technical writers, and AI power users who generate Mermaid diagrams through Claude, ChatGPT, Copilot, Gemini, or Mermaid.ai.
 
 ## Features
 
-- **Paste and theme** — Paste any Mermaid diagram code and apply a visual theme in one click
-- **27 diagram types detected** — Flowchart, sequence, class, ER, Gantt, pie, git graph, ZenUML, radar, mindmap, and more
-- **Diagram Inventory** — Full capability registry: support status, theme confidence, notation compliance, warnings, and example metadata for every tracked diagram type plus 10 capability gap entries
-- **7 built-in palettes** — 3 first-party OKHP3 brand presets + 4 utility/example presets
-- **Brand example library** — Load palette-matched flowchart and sequence examples for each OKHP3 brand preset
-- **Showcase sample** — "OverKill Rube Goldberg Showcase" — a complex stress-test flowchart demonstrating subgraphs, semantic classes, clickable nodes, ELK layout, and attribution
-- **Live preview** — Compare Original and Themed output side by side
-- **Three export formats:**
-  - **Styled Code** — `%%{init}%%`-prefixed Mermaid code ready to paste
-  - **Markdown Bootstrap** — Rich Markdown block with usage instructions and metadata
-  - **Prompt Scaffold** — Structured prompt for LLMs to maintain consistent styling
-- **Attribution controls** — Toggle metadata comments and optional attribution badge
-- **Custom theme naming** — Name and version your custom themes
-- **Render-safety warnings** — Flags existing init directives, YAML frontmatter, non-printable characters, and long labels
-
----
-
-## OKHP3 Ecosystem Brand Presets
-
-Mermaid Theme Builder includes three first-class brand presets from the [OverKill Hill P³](https://overkillhill.com) ecosystem.
-
-| Palette | Site | Best for |
-|---|---|---|
-| **OverKill Hill P³** | [overkillhill.com](https://overkillhill.com) | Technical, architectural, systems, strategy, executive-facing |
-| **AskJamie** | [askjamie.bot](https://askjamie.bot) | Support flows, helpdesk, explainers, user-assistance workflows |
-| **Glee-fully** | [glee-fully.tools](https://glee-fully.tools) | Personal productivity, consumer-facing, approachable explainers |
-
-See [docs/BRAND_PRESETS.md](docs/BRAND_PRESETS.md) for full color specifications and usage guidance.
-
----
+- Paste Mermaid code, auto-detect diagram family (15 types)
+- 7 built-in palettes: Ocean Depth, Forest Sage, Slate Ember, Violet Mist, OverKill Hill P3, Glee-fully, AskJamie
+- Two-way live color editor with instant preview
+- Three export modes: Styled Code, Markdown Bootstrap, Prompt Scaffold
+- Render-safety warnings (existing init directives, non-printable chars, long labels)
+- Optional theme attribution watermark with clickable link
+- 100% client-side. No backend, no login, no data leaves your browser.
 
 ## Quick Start
 
-1. Open the app
-2. Paste your Mermaid diagram in the **Input** pane
-3. Select a theme from **Brand Presets** or **Theme Presets**
-4. Click **Themed** in the preview pane to see the result
-5. Use **Export** buttons to copy the styled code, Markdown, or Prompt Scaffold
-
-**Not sure what diagram type you're working with?** Click **Inventory** in the header to open the full Diagram Inventory — a searchable, filterable reference of all 27 Mermaid families and 10 capability gaps, with support status, theme confidence, notation compliance, and honest warnings for each.
-
-When you paste a diagram, the app auto-detects the type and shows **Support Status** (Native / Partial / etc.) and **Theme Confidence** (High / Medium / etc.) badges directly in the header.
-
----
-
-## Export Formats
-
-### Styled Code
-Copies the `%%{init}%%`-prefixed Mermaid code. Paste directly into any Mermaid renderer that supports the `base` theme.
-
-### Markdown Bootstrap
-A complete Markdown document with:
-- Theme name, ID, version, and generated date
-- Fenced Mermaid code block
-- Usage instructions and renderer warnings
-- Attribution and non-affiliation disclaimer
-
-### Prompt Scaffold
-A structured prompt for AI assistants (ChatGPT, Claude, Gemini, etc.) that includes:
-- Required `%%{init}%%` directive
-- Metadata comment block
-- Brand-specific usage guidance
-- Rules to prevent style hallucination
-- Example output structure
-
----
-
-## Attribution
-
-When **Metadata comments** is enabled, generated Mermaid code includes:
-
-```
-%% Theme: OverKill Hill P³
-%% Theme ID: overkill-hill
-%% Theme Version: 0.1.0
-%% Created with: Mermaid Theme Builder by OverKill Hill P³
-%% Tool URL: https://overkillhill.com/projects/mermaid-theme-builder/
-%% Tool Version: 0.1.0
-%% Theme Created: 2026-01-01T00:00:00.000Z
-%% Theme Updated: 2026-01-01T00:00:00.000Z
-%% Not affiliated with Builders FirstSource, Mermaid, Mermaid Chart, or Mermaid.ai
+```bash
+pnpm install
+pnpm --filter @workspace/mermaid-theme-builder dev
 ```
 
-When **Attribution badge** is enabled (flowchart diagrams only), a small linked badge node is added to the diagram.
+## Supported Diagram Types
 
-See [docs/ATTRIBUTION.md](docs/ATTRIBUTION.md) for details.
+Flowchart, Sequence, Class, State, ER, Gantt, Pie, Git Graph, Mindmap, Timeline, Quadrant, User Journey, Block, Sankey, XY Chart.
 
----
+## License
 
-## Theme Metadata Schema
+MIT
 
-Each palette includes:
-- `id` — canonical slug
-- `name` — display name
-- `brandFamily` — `"okhp3"` for ecosystem presets, absent for generic palettes
-- `isBrandPreset` — boolean flag
-- `description` — short description
-- `themeIntent` — intended diagram use cases
-- `sourceUrls` — brand source URLs
-- `version` — semantic version string
-- `colors` — 13 Mermaid theme variable key/value pairs
-- `attribution` — default attribution metadata
+## Disclaimer
 
-See [docs/THEME_METADATA.md](docs/THEME_METADATA.md) for full schema documentation.
-
----
-
-## Constraints
-
-- **No backend** — fully static, client-side only
-- **No login or user accounts**
-- **No AI API calls**
-- **No payment or cloud storage**
-- **No file upload**
-- **No fork of Mermaid** — uses Mermaid.js as an npm dependency
-
----
-
-## About this project
-
-Mermaid Theme Builder is a personal [OverKill Hill P³](https://overkillhill.com) project by Jamie Hill.
-
-It is not affiliated with:
-
-- Builders FirstSource or any third-party corporate brand
-- [Mermaid](https://mermaid.js.org/) — the open-source diagramming library this tool renders with
-- [Mermaid Chart](https://www.mermaidchart.com/) — the commercial platform by the Mermaid maintainers
-- [Mermaid.ai](https://www.mermaid.ai/) — a separate AI-powered diagramming product
-
-All built-in brand presets are sourced from OKHP3-owned public brand surfaces (OverKill Hill P³, AskJamie, Glee-fully). All color values are derived from publicly available CSS on GitHub.
-
----
-
-## Stack
-
-- React 18 + Vite + TypeScript
-- Tailwind CSS v4
-- Mermaid.js v11 (npm dependency — not forked)
-- No backend, no database, no auth
-
----
-
-*Mermaid Theme Builder is a personal [OverKill Hill P³](https://overkillhill.com) project by Jamie Hill. Not affiliated with Builders FirstSource, Mermaid, Mermaid Chart, or Mermaid.ai.*
+Mermaid Theme Builder is a personal OverKill Hill P3 project by Jamie Hill. It is not affiliated with Builders FirstSource, BFS, Mermaid, Mermaid Chart, or Mermaid.ai.

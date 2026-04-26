@@ -1,3 +1,4 @@
+// Diagram patterns aligned to mermaid v11.14.0 — update when new types ship
 import {
   DIAGRAM_CAPABILITIES,
   getCapabilityById,

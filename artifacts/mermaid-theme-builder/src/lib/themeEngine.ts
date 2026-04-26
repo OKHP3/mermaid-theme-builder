@@ -1,6 +1,12 @@
 import type { Palette } from "./palettes";
 import type { DiagramFamily } from "./detector";
 
+export interface WatermarkOptions {
+  enabled: boolean;
+  themeName: string;
+  toolUrl?: string;
+}
+
 export interface ExportOptions {
   palette: Palette;
   diagramFamily: DiagramFamily;
@@ -61,20 +67,17 @@ function buildMetaComments(palette: Palette, themeName: string): string {
 function buildBadgeNode(palette: Palette, themeName: string, diagramFamily: DiagramFamily): string {
   if (!BADGE_SAFE_FAMILIES.includes(diagramFamily)) return "";
 
-  const borderColor = palette.colors.find((c) => c.key === "primaryBorderColor")?.value ?? "#888";
-  const bgColor = palette.colors.find((c) => c.key === "secondaryColor")?.value ?? "#333";
-  const textColor = palette.colors.find((c) => c.key === "primaryTextColor")?.value ?? "#fff";
-
-  const label = `Themed with Mermaid Theme Builder · ${themeName}`;
-  const nodeId = "_mtb_attr";
+  const nodeId = "MTB_ATTR";
+  const label = `Styled with ${themeName} via Mermaid Theme Builder`;
 
   const lines = [
-    `    ${nodeId}["${label}"]`,
-    `    style ${nodeId} fill:${bgColor},stroke:${borderColor},color:${textColor},font-size:9px,opacity:0.7`,
+    `    ${nodeId}(["${label}"])`,
+    `    classDef mtb_watermark fill:none,stroke:#888,stroke-width:1px,color:#888,font-size:10px`,
+    `    class ${nodeId} mtb_watermark`,
   ];
 
   if (diagramFamily === "flowchart") {
-    lines.push(`    click ${nodeId} href "${TOOL_URL}" _blank`);
+    lines.push(`    click ${nodeId} "${TOOL_URL}" _blank`);
   }
 
   return lines.join("\n");
@@ -90,6 +93,10 @@ export function generateThemedCode(originalCode: string, options: ExportOptions)
     .replace(/\n\s*_mtb_attr\[.*?\]\n?/g, "")
     .replace(/\n\s*style _mtb_attr.*\n?/g, "")
     .replace(/\n\s*click _mtb_attr.*\n?/g, "")
+    .replace(/\n\s*MTB_ATTR\(.*?\)\n?/g, "")
+    .replace(/\n\s*classDef mtb_watermark.*\n?/g, "")
+    .replace(/\n\s*class MTB_ATTR.*\n?/g, "")
+    .replace(/\n\s*click MTB_ATTR.*\n?/g, "")
     .trimStart();
 
   const initDirective = buildInitDirective(palette);

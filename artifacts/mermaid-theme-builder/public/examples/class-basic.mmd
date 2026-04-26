@@ -1,0 +1,18 @@
+classDiagram
+    class ThemeEngine {
+        +Palette palette
+        +generateCode(input)
+        +applyTheme(code, palette)
+    }
+    class Palette {
+        +String id
+        +String name
+        +ThemeColor[] colors
+    }
+    class ThemeColor {
+        +String key
+        +String label
+        +String value
+    }
+    ThemeEngine --> Palette
+    Palette --> ThemeColor
