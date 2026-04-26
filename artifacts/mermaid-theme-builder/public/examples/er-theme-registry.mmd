@@ -1,0 +1,53 @@
+erDiagram
+    PALETTE ||--o{ THEME_COLOR : contains
+    PALETTE {
+        string id PK
+        string name
+        string description
+        string fontFamily
+        datetime createdAt
+        datetime updatedAt
+    }
+
+    THEME_COLOR {
+        string key PK
+        string paletteId FK
+        string label
+        string hexValue
+        int sortOrder
+    }
+
+    USER_SESSION ||--o{ EXPORT_EVENT : generates
+    USER_SESSION {
+        string sessionId PK
+        string activePaletteId FK
+        boolean watermarkEnabled
+        string customThemeName
+        datetime startedAt
+    }
+
+    EXPORT_EVENT {
+        string exportId PK
+        string sessionId FK
+        string exportType
+        string diagramFamily
+        datetime exportedAt
+    }
+
+    DIAGRAM_FAMILY ||--o{ THEME_VARIABLE : supports
+    DIAGRAM_FAMILY {
+        string familyId PK
+        string label
+        string mermaidKey
+        string supportLevel
+    }
+
+    THEME_VARIABLE {
+        string variableKey PK
+        string familyId FK
+        string defaultValue
+        string description
+    }
+
+    PALETTE ||--o{ USER_SESSION : "active in"
+    DIAGRAM_FAMILY ||--o{ EXPORT_EVENT : "detected in"
