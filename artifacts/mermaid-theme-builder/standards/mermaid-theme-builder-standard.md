@@ -96,9 +96,11 @@ Generic utility palettes (Ocean Depth, Forest Sage, etc.) must be:
 ### 4.1 Registry authority
 
 `src/data/mermaid-capabilities.ts` is the single source of truth for:
-- Which diagram families exist
-- How each detects its declaration keyword
-- What level of theming each supports
+- Which diagram families exist (`DiagramFamily` union type)
+- How each detects its declaration keyword (`declarations` RegExp)
+- What level of theming each supports (`styleStrategy`, `themeConfidence`)
+- What support status each family has (`supportStatus`)
+- Which capability gaps are tracked (`CAPABILITY_GAPS`)
 
 No other file may hardcode diagram type lists or assume theming support without reading from this registry.
 
@@ -107,13 +109,35 @@ No other file may hardcode diagram type lists or assume theming support without 
 - `styleStrategy` values must accurately reflect what Mermaid's themeVariables actually control, tested against `MERMAID_VERSION_VERIFIED`
 - Do not mark any diagram type as `"full"` unless all standard themeVariables apply reliably
 - `stability` values must reflect Mermaid's own stability designation for the diagram type
+- `themeConfidence` values must reflect actual rendering test results, not aspirational ratings
 - `notes` must accurately describe the specific limitations
+- `warning` must be actionable and honest — do not omit warnings to make the tool seem more capable
 
-### 4.3 Version governance
+### 4.3 Gap entry standard
+
+- `CAPABILITY_GAPS` entries represent diagram notations that are **not natively supported** in Mermaid
+- Tracking a gap entry is not a claim that the app implements the notation
+- Gap entries must include an honest `warning` field explaining the limitation
+- Gap entries may reference an `approximatedBy` diagram family if a Mermaid approximation exists
+- Gap entries must set `exampleFile: null` and `examplePending: true` until a verified example is documented
+- **Do not add gap entries for Mermaid-native families** even if their theming is limited
+
+### 4.4 Version governance
 
 - `MERMAID_VERSION_VERIFIED` must match the Mermaid version in `package.json`
+- `DEPENDENCY_GOVERNANCE.lastCapabilityRegistryUpdate` must be updated on every registry change
 - The registry must be reviewed after every Mermaid dependency upgrade
 - See `docs/MERMAID_CAPABILITY_REGISTRY.md` for the update process
+
+### 4.5 Scope restrictions
+
+The capability registry must never include:
+- Custom BPMN parser implementations or grammar
+- Custom ArchiMate or SysML grammars
+- Any Mermaid replacement or fork behavior
+- Server-side rendering integrations
+- AI-generated diagram content
+- Employer-related workflows or schema (BFS, Builders FirstSource, or similar)
 
 ---
 

@@ -18,6 +18,23 @@
 
 ---
 
+## v0.2.0-alpha — Capability Registry ✅ Complete
+
+**Status:** Shipped
+
+- **Diagram Inventory** — full-screen registry panel accessible from app header
+- **27 Mermaid families** tracked with Support Status, Theme Confidence, Notation Compliance, description, best-used-for, warning, and example file
+- **10 capability gap entries** — BPMN 2.0, ArchiMate, SysML, VSM, Service Blueprint, OKR Alignment, DFD, Decision Tree, Org Chart, Threat Model DFD
+- **ZenUML and Radar** added to detection engine and capability registry
+- **OverKill Mermaid Example Pack** — 27-entry example metadata registry (pending file delivery)
+- **Richer detection badges** — Support Status + Theme Confidence shown in app header on detect
+- **Richer CapabilityNote** — warning field + support/confidence badges in inline notes
+- Filter tabs: All / Native / Beta+Partial / Experimental / Gaps
+- Search across diagram name, ID, description, and best-used-for
+- Honest gap taxonomy: tracking != implementing unsupported notations
+
+---
+
 ## v0.2.0 — Examples + Persistence
 
 **Status:** In progress

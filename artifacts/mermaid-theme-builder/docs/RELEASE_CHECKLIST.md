@@ -19,8 +19,10 @@ Use this checklist before tagging and deploying any release.
 - [ ] `pnpm-lock.yaml` is up to date (run `pnpm install` to confirm)
 - [ ] `MERMAID_VERSION_VERIFIED` in `src/data/mermaid-capabilities.ts` matches installed Mermaid version
 - [ ] Capability registry reviewed against Mermaid release notes for this version
-- [ ] Any new or promoted diagram types added to the registry
+- [ ] Any new or promoted diagram types added to `DIAGRAM_CAPABILITIES` and to `DiagramFamily` union
+- [ ] `CAPABILITY_GAPS` reviewed — no gap entries have moved to native support
 - [ ] `docs/MERMAID_CAPABILITY_REGISTRY.md` table updated to match
+- [ ] `DEPENDENCY_GOVERNANCE.lastCapabilityRegistryUpdate` date updated
 
 ---
 
@@ -43,7 +45,9 @@ Run the following manual test scenarios:
 ### Test B — Sequence diagram (partial support)
 - [ ] Paste a `sequenceDiagram`
 - [ ] Header chip shows "Sequence Diagram"
-- [ ] Blue capability note appears with "Partial theme support" and "Stable" badge
+- [ ] Header shows "Native" and "Medium" badges
+- [ ] Blue capability note appears with "Partial theme support", "Stable", "Native", and "Theme: Medium" badges
+- [ ] Warning text: "Supported natively, but styling surface is narrower than flowchart..."
 - [ ] Attribution badge toggle is disabled
 
 ### Test C — Gantt (limited support)
@@ -56,6 +60,28 @@ Run the following manual test scenarios:
 - [ ] Yellow warning: "Could not detect diagram type"
 - [ ] No blue capability note
 - [ ] Export buttons remain accessible
+
+### Test G — Diagram Inventory
+- [ ] Click "Inventory" button in header
+- [ ] Full-screen inventory panel opens
+- [ ] Shows "27 Mermaid families · 10 gaps tracked" in header
+- [ ] "All" tab shows both Mermaid Families and Capability Gaps sections
+- [ ] "Native" tab shows only native support entries
+- [ ] "Gaps & Unsupported" tab shows only CAPABILITY_GAPS entries
+- [ ] "Beta / Partial" tab shows beta/partial entries (Sankey, XY Chart, etc.)
+- [ ] "Experimental" tab shows experimental entries (Treemap, Venn, etc.)
+- [ ] Search for "bpmn" returns BPMN 2.0 gap entry
+- [ ] Search for "flowchart" returns flowchart entry
+- [ ] Warning triangle button expands a warning popover
+- [ ] Close / Back to Builder button dismisses the overlay
+- [ ] Flowchart shows "Native" status and "High" confidence
+- [ ] BPMN 2.0 shows "Gap" status and "N/A" confidence
+- [ ] Org Chart shows "Emulatable" status and "Approx. via flowchart" label
+
+### Test H — ZenUML detection
+- [ ] Paste `zenuml\n  title Test\n  A.method()`
+- [ ] Header chip shows "ZenUML"
+- [ ] Support badge shows "Native"
 
 ### Test E — Brand presets
 - [ ] OverKill Hill P³ preset loads and renders visually

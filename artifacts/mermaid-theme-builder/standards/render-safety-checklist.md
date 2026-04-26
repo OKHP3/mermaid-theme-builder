@@ -115,8 +115,45 @@ This checklist covers known Mermaid rendering pitfalls and how Mermaid Theme Bui
 
 **Checklist:**
 - [ ] `MERMAID_VERSION_VERIFIED` matches the Mermaid version in `package.json`
+- [ ] `DEPENDENCY_GOVERNANCE.lastCapabilityRegistryUpdate` updated after registry changes
 - [ ] New diagram types in the Mermaid release added to registry
-- [ ] Promoted (beta → stable) types have their `stability` updated
+- [ ] Promoted (beta → stable) types have their `stability` and `supportStatus` updated
+- [ ] `themeConfidence` re-evaluated for any type whose renderer changed
+
+---
+
+## 12. Capability registry gap overclaiming
+
+**Risk:** A gap entry in `CAPABILITY_GAPS` is interpreted as a claim that the app implements that notation (e.g., BPMN 2.0). This could mislead users or imply features that don't exist.
+
+**Current mitigation:**
+- Gap entries are displayed in a separate "Capability Gaps" section in the Diagram Inventory
+- The inventory footer includes an explicit disclaimer: "Mermaid Theme Builder does not implement unsupported formal notations. Gaps are tracked for honest reference only."
+- All gap entries have `supportStatus` of `"gap"`, `"emulatable"`, or `"external"` — never `"native"` or `"partial"`
+- Gap entries carry an explicit `warning` field describing the limitation
+- `exampleFile: null` and `examplePending: true` on all gap entries (until a verified approximation is documented)
+
+**Checklist:**
+- [ ] No gap entry has `supportStatus: "native"` or `"partial"`
+- [ ] Every gap entry has a non-empty `warning` field
+- [ ] Inventory UI clearly separates "Mermaid Families" from "Capability Gaps"
+- [ ] Inventory footer disclaimer is present and accurate
+- [ ] No gap entry's `approximatedBy` field points to a family that doesn't exist in `DIAGRAM_CAPABILITIES`
+
+---
+
+## 13. Detection false positives for new diagram types
+
+**Risk:** New diagram types (ZenUML, Radar, Wardley, TreeView) use declaration keywords that could false-match other content if the regex is too broad.
+
+**Current mitigation:**
+- All declaration regexes use `\b` word boundaries and `^` line anchors with `im` flags
+- Regex patterns are tested in the context of realistic Mermaid input
+
+**Checklist:**
+- [ ] Each new diagram type declaration regex uses `^\s*<keyword>\b` with `im` flags
+- [ ] No declaration regex matches on arbitrary word boundaries within a longer block
+- [ ] Detection order in `DIAGRAM_CAPABILITIES` places more specific patterns before general ones
 
 ---
 

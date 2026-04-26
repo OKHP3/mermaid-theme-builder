@@ -11,7 +11,8 @@ Everything runs in your browser. Your diagram code never leaves the page.
 ## Features
 
 - **Paste and theme** — Paste any Mermaid diagram code and apply a visual theme in one click
-- **25 diagram types detected** — Flowchart, sequence, class, ER, Gantt, pie, git graph, mindmap, and more (with per-type theme support notes)
+- **27 diagram types detected** — Flowchart, sequence, class, ER, Gantt, pie, git graph, ZenUML, radar, mindmap, and more
+- **Diagram Inventory** — Full capability registry: support status, theme confidence, notation compliance, warnings, and example metadata for every tracked diagram type plus 10 capability gap entries
 - **7 built-in palettes** — 3 first-party OKHP3 brand presets + 4 utility/example presets
 - **Brand example library** — Load palette-matched flowchart and sequence examples for each OKHP3 brand preset
 - **Showcase sample** — "OverKill Rube Goldberg Showcase" — a complex stress-test flowchart demonstrating subgraphs, semantic classes, clickable nodes, ELK layout, and attribution
@@ -47,6 +48,10 @@ See [docs/BRAND_PRESETS.md](docs/BRAND_PRESETS.md) for full color specifications
 3. Select a theme from **Brand Presets** or **Theme Presets**
 4. Click **Themed** in the preview pane to see the result
 5. Use **Export** buttons to copy the styled code, Markdown, or Prompt Scaffold
+
+**Not sure what diagram type you're working with?** Click **Inventory** in the header to open the full Diagram Inventory — a searchable, filterable reference of all 27 Mermaid families and 10 capability gaps, with support status, theme confidence, notation compliance, and honest warnings for each.
+
+When you paste a diagram, the app auto-detects the type and shows **Support Status** (Native / Partial / etc.) and **Theme Confidence** (High / Medium / etc.) badges directly in the header.
 
 ---
 

@@ -72,9 +72,31 @@ paste Mermaid → detect diagram family → select/edit theme → themed preview
 
 ---
 
-## Diagram support
+## Diagram Inventory / Capability Registry
 
-The app includes a capability registry covering 25 Mermaid diagram types. Not all support the same level of theming:
+Mermaid Theme Builder includes a full Diagram Inventory accessible from the header. The registry answers four questions for every tracked diagram type:
+
+1. **Does Mermaid support it?** — Support Status: Native, Partial, Emulatable, Gap, or External
+2. **How safely can Theme Builder theme it?** — Theme Confidence: High, Medium, Generic Only, Low, or N/A
+3. **Is the notation formally compliant?** — Notation Compliance: Mermaid-native, Approximation only, Not supported, or External tool recommended
+4. **What example should I start from?** — Each entry links to the OverKill Mermaid Example Pack
+
+### Mermaid families tracked (27)
+Flowchart, Sequence, Class, State, ER, Journey, Gantt, Pie, Quadrant, Requirement, Git Graph, C4, Mindmap, Timeline, ZenUML, Sankey, XY Chart, Block, Packet, Kanban, Architecture, Radar, Treemap, Venn, Ishikawa, Wardley, Tree View.
+
+### Capability gaps tracked (10)
+BPMN 2.0, ArchiMate, SysML, Value Stream Map, Service Blueprint, OKR Alignment Map, Data Flow Diagram, Decision Tree, Org Chart, Threat Model DFD.
+
+Gaps are tracked for honest reference only. **Mermaid Theme Builder does not implement unsupported formal notations.** BPMN 2.0 is a high-leverage gap but outside V1 implementation scope. Full new Mermaid diagram type creation is a separate upstream contribution lane.
+
+### Taxonomy vs. capability
+
+Tracking a gap entry in the registry does not mean the tool implements that notation. It means:
+- The notation is relevant to the target audience
+- Users deserve an honest warning when they attempt to approximate it in Mermaid
+- An example placeholder is reserved for when a credible approximation is documented
+
+### Style strategy summary
 
 | Strategy | Meaning |
 |---|---|
@@ -82,7 +104,7 @@ The app includes a capability registry covering 25 Mermaid diagram types. Not al
 | **Partial** | Most apply; some colors are managed internally |
 | **Limited** | Background/text apply; diagram-specific colors do not |
 
-When a diagram type has limited or partial support, a blue info note appears below the input area.
+When a diagram type has limited or partial support, a blue info note appears below the input area with Support Status and Theme Confidence badges.
 
 ---
 

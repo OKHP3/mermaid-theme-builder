@@ -22,8 +22,10 @@ import { ColorSwatch } from "@/components/ColorSwatch";
 import { WarningBanner } from "@/components/WarningBanner";
 import { CapabilityNote } from "@/components/CapabilityNote";
 import { ClassBrowser } from "@/components/ClassBrowser";
+import { DiagramInventory } from "@/components/DiagramInventory";
 import { getClassDefs } from "@/lib/themeEngine";
 import { BRAND_EXAMPLES, GENERIC_EXAMPLE, SHOWCASE_EXAMPLE, SHOWCASE_META } from "@/data/examples";
+import { SUPPORT_STATUS_LABELS, SUPPORT_STATUS_STYLES, THEME_CONFIDENCE_LABELS, THEME_CONFIDENCE_STYLES } from "@/data/mermaid-capabilities";
 
 type Tab = "input" | "output" | "classes";
 type ExportType = "code" | "markdown" | "prompt";
@@ -38,6 +40,7 @@ export function ThemeBuilder() {
   const [includeMetaComments, setIncludeMetaComments] = useState(true);
   const [includeBadge, setIncludeBadge] = useState(false);
   const [customThemeName, setCustomThemeName] = useState("");
+  const [showInventory, setShowInventory] = useState(false);
 
   const selectedPalette = useMemo((): Palette => {
     const base = BUILTIN_PALETTES.find((p) => p.id === selectedPaletteId) ?? BRAND_PALETTES[0];
@@ -181,14 +184,38 @@ export function ThemeBuilder() {
           </div>
         </div>
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          {detection.family !== "unknown" && (
-            <span className="px-2 py-1 rounded-full bg-primary/10 text-primary font-medium">
-              {detection.label}
-            </span>
+          {detection.family !== "unknown" && detection.capability && (
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="px-2 py-1 rounded-full bg-primary/10 text-primary font-medium">
+                {detection.label}
+              </span>
+              <span
+                className={`hidden sm:inline-flex items-center text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded-full border ${SUPPORT_STATUS_STYLES[detection.capability.supportStatus]}`}
+              >
+                {SUPPORT_STATUS_LABELS[detection.capability.supportStatus]}
+              </span>
+              <span
+                className={`hidden md:inline-flex items-center text-[10px] font-medium px-1.5 py-0.5 rounded ${THEME_CONFIDENCE_STYLES[detection.capability.themeConfidence]}`}
+              >
+                {THEME_CONFIDENCE_LABELS[detection.capability.themeConfidence]}
+              </span>
+            </div>
           )}
-          <span className="hidden sm:block">v0.1 · local only</span>
+          <button
+            onClick={() => setShowInventory(true)}
+            className="hidden sm:flex items-center gap-1 px-2 py-1 rounded-md border border-border hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+            title="Open Diagram Inventory"
+          >
+            <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5">
+              <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" />
+            </svg>
+            <span className="text-xs">Inventory</span>
+          </button>
+          <span className="hidden lg:block text-muted-foreground/60">v0.1 · local only</span>
         </div>
       </header>
+
+      {showInventory && <DiagramInventory onClose={() => setShowInventory(false)} />}
 
       <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
         <aside className="lg:w-72 xl:w-80 border-b lg:border-b-0 lg:border-r border-border bg-card/40 flex flex-col overflow-y-auto">
@@ -345,13 +372,13 @@ export function ThemeBuilder() {
                 placeholder="Paste your Mermaid diagram code here..."
                 spellCheck={false}
               />
-              {(detection.warnings.length > 0 || isShowcase || (detection.capability && detection.capability.styleStrategy !== "full" && detection.capability.notes)) && (
+              {(detection.warnings.length > 0 || isShowcase || (detection.capability && detection.capability.styleStrategy !== "full" && (detection.capability.notes || detection.capability.warning))) && (
                 <div className="p-3 border-t border-border space-y-2">
                   {detection.warnings.length > 0 && (
                     <WarningBanner warnings={detection.warnings} />
                   )}
                   {isShowcase && <ShowcaseCompatibilityNote />}
-                  {detection.capability && detection.capability.styleStrategy !== "full" && detection.capability.notes && (
+                  {detection.capability && detection.capability.styleStrategy !== "full" && (detection.capability.notes || detection.capability.warning) && (
                     <CapabilityNote capability={detection.capability} />
                   )}
                 </div>
