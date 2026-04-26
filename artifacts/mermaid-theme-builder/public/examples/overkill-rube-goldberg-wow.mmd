@@ -1,0 +1,167 @@
+%%{init: {"theme":"base","securityLevel":"loose","flowchart":{"curve":"basis","htmlLabels":true},"themeVariables":{"background":"#0B1020","fontFamily":"Segoe UI, Arial, Helvetica, sans-serif","primaryColor":"#111827","primaryTextColor":"#F9FAFB","primaryBorderColor":"#60A5FA","lineColor":"#60A5FA","secondaryColor":"#1F2937","tertiaryColor":"#312E81","clusterBkg":"#111827","clusterBorder":"#60A5FA","edgeLabelBackground":"#0B1020","textColor":"#F9FAFB"}}}%%
+flowchart LR
+%% Theme: OKH Protocol Dark
+%% Created with: Mermaid Theme Builder by OverKill Hill P3
+%% Tool: https://overkillhill.com/projects/mermaid-theme-builder/
+
+START@{ shape: stadium, label: "Random Thought Enters the Machine" }:::origin
+SPARK@{ shape: bolt, label: "Spark" }:::hot
+LEDGER@{ shape: docs, label: "Notes, Threads, Prompts" }:::doc
+COUNCIL@{ shape: braces, label: "Council of AIs: useful or just shiny?" }:::council
+DECIDE@{ shape: diamond, label: "Worth Overdoing?" }:::decision
+
+START e_start@==> SPARK
+SPARK e_collect@--> LEDGER
+LEDGER e_interrogate@--> COUNCIL
+COUNCIL e_decide@--> DECIDE
+
+DECIDE -- "No, park it" --> GRAVEYARD@{ shape: bow-rect, label: "Idea Graveyard" }:::muted
+GRAVEYARD -. "ferments" .-> SPARK
+DECIDE -- "Yes, overdo it" --> THESIS@{ shape: hex, label: "Name the Pain" }:::okh
+
+subgraph SG1["1. Sequence Engine: Context Distillation"]
+direction TB
+  S1A@{ shape: circle, label: "Input" }:::sequence
+  S1B@{ shape: stadium, label: "Voice Riff" }:::sequence
+  S1C@{ shape: doc, label: "Messy Transcript" }:::doc
+  S1D@{ shape: div-rect, label: "Extract Claims" }:::sequence
+  S1E@{ shape: notch-rect, label: "Reusable Thesis Card" }:::artifact
+  S1A --> S1B --> S1C --> S1D --> S1E
+end
+
+subgraph SG2["2. Timeline Forge: Maybe to Momentum"]
+direction TB
+  T0@{ shape: sm-circ, label: "T+0" }:::timeline
+  T1@{ shape: flag, label: "T+2 Name Product" }:::timeline
+  T2@{ shape: hourglass, label: "T+6 Debate Scope" }:::timeline
+  T3@{ shape: doc, label: "T+9 PRD Packet" }:::timeline
+  T4@{ shape: framed-circle, label: "T+12 Prototype" }:::artifact
+  T0 --> T1 --> T2 --> T3 --> T4
+end
+
+subgraph SG3["3. Brand Gravity Well"]
+direction TB
+  M0@{ shape: dbl-circ, label: "Personal Ecosystem" }:::brand
+  M1@{ shape: curv-trap, label: "OverKill Hill P3" }:::okh
+  M2@{ shape: stadium, label: "AskJamie" }:::askjamie
+  M3@{ shape: stadium, label: "Glee-fully" }:::glee
+  M4@{ shape: comment, label: "No BFS. No employer bleed." }:::warning
+  M0 --> M1
+  M0 --> M2
+  M0 --> M3
+  M0 --> M4
+end
+
+subgraph SG4["4. Theme Builder Runtime"]
+direction TB
+  A1@{ shape: lean-r, label: "Paste Mermaid" }:::input
+  A2@{ shape: cyl, label: "Palette Store" }:::data
+  A3@{ shape: hex, label: "Theme Engine" }:::engine
+  A4@{ shape: curv-trap, label: "Live Preview" }:::preview
+  A5@{ shape: lean-l, label: "Copy / Export" }:::output
+  A1 --> A3
+  A2 --> A3
+  A3 --> A4
+  A3 --> A5
+end
+
+subgraph SG5["5. Apply, Repair, Repeat"]
+direction TB
+  P1@{ shape: lean-r, label: "Bland Diagram" }:::raw
+  P2@{ shape: trap-t, label: "Detect Family" }:::process
+  P3@{ shape: diamond, label: "Strong Support?" }:::decision
+  P4@{ shape: tag-rect, label: "Full Theme" }:::success
+  P5@{ shape: notch-rect, label: "Generic Only" }:::caution
+  P6@{ shape: dbl-circ, label: "Styled Artifact" }:::artifact
+  P1 --> P2 --> P3
+  P3 -- "High" --> P4 --> P6
+  P3 -- "Beta" --> P5 --> P6
+end
+
+subgraph SG6["6. Governance: Safety and Attribution"]
+direction TB
+  G1@{ shape: hex, label: "Render Safety Scan" }:::govern
+  G2@{ shape: cyl, label: "Theme Metadata" }:::data
+  G3@{ shape: comment, label: "Source Comments: ON" }:::note
+  G4@{ shape: flag, label: "Export Bootstrap" }:::artifact
+  G1 --> G2
+  G2 --> G3
+  G2 --> G4
+end
+
+THESIS e_s1@--> SG1
+SG1 e_s2@--> SG2
+SG2 e_s3@--> SG3
+SG3 e_s4@--> SG4
+SG4 e_s5@--> SG5
+SG5 e_s6@--> SG6
+
+SG6 e_ship@==> SHIP@{ shape: dbl-circ, label: "Ship it. Then sharpen it." }:::ship
+
+OKH_LINK@{ shape: curv-trap, label: "overkillhill.com" }:::okhLink
+GLEE_LINK@{ shape: curv-trap, label: "glee-fully.tools" }:::gleeLink
+ASK_LINK@{ shape: curv-trap, label: "askjamie.bot" }:::askLink
+
+SHIP --> OKH_LINK
+SHIP --> GLEE_LINK
+SHIP --> ASK_LINK
+
+FOOTNOTE@{ shape: text, label: "Mermaid Theme Builder | OKH Protocol Dark | v0.2-alpha" }:::credit
+SHIP -.-> FOOTNOTE
+
+click OKH_LINK "https://overkillhill.com" _blank
+click GLEE_LINK "https://glee-fully.tools" _blank
+click ASK_LINK "https://askjamie.bot" _blank
+click FOOTNOTE "https://overkillhill.com/projects/mermaid-theme-builder/" _blank
+
+e_start@{ animation: fast }
+e_collect@{ animation: slow }
+e_interrogate@{ animation: slow }
+e_decide@{ animation: fast }
+e_s1@{ animation: fast }
+e_s2@{ animation: fast }
+e_s3@{ animation: fast }
+e_s4@{ animation: fast }
+e_s5@{ animation: fast }
+e_s6@{ animation: fast }
+e_ship@{ animation: fast }
+
+classDef origin fill:#0F172A,stroke:#38BDF8,stroke-width:3px,color:#F8FAFC
+classDef hot fill:#7F1D1D,stroke:#F97316,stroke-width:2px,color:#FFF7ED
+classDef doc fill:#1E293B,stroke:#93C5FD,stroke-width:1.5px,color:#DBEAFE
+classDef council fill:#312E81,stroke:#A78BFA,stroke-width:2px,color:#F5F3FF
+classDef decision fill:#422006,stroke:#FACC15,stroke-width:2px,color:#FEFCE8
+classDef muted fill:#27272A,stroke:#71717A,stroke-width:1.5px,color:#D4D4D8
+classDef okh fill:#111827,stroke:#60A5FA,stroke-width:2.5px,color:#EFF6FF
+classDef sequence fill:#0C4A6E,stroke:#38BDF8,stroke-width:1.5px,color:#E0F2FE
+classDef timeline fill:#064E3B,stroke:#34D399,stroke-width:1.5px,color:#ECFDF5
+classDef brand fill:#312E81,stroke:#C4B5FD,stroke-width:2.5px,color:#F5F3FF
+classDef askjamie fill:#1E3A8A,stroke:#93C5FD,stroke-width:2px,color:#EFF6FF
+classDef glee fill:#365314,stroke:#BEF264,stroke-width:2px,color:#F7FEE7
+classDef warning fill:#7F1D1D,stroke:#FCA5A5,stroke-width:2px,color:#FEF2F2
+classDef note fill:#1F2937,stroke:#D1D5DB,stroke-width:1.2px,color:#F9FAFB
+classDef input fill:#083344,stroke:#67E8F9,stroke-width:1.5px,color:#ECFEFF
+classDef data fill:#172554,stroke:#60A5FA,stroke-width:1.5px,color:#EFF6FF
+classDef engine fill:#581C87,stroke:#D8B4FE,stroke-width:2.5px,color:#FAF5FF
+classDef preview fill:#064E3B,stroke:#6EE7B7,stroke-width:2px,color:#ECFDF5
+classDef output fill:#713F12,stroke:#FDE68A,stroke-width:2px,color:#FFFBEB
+classDef raw fill:#3F3F46,stroke:#A1A1AA,stroke-width:1.5px,color:#F4F4F5
+classDef process fill:#1E40AF,stroke:#BFDBFE,stroke-width:1.5px,color:#EFF6FF
+classDef success fill:#14532D,stroke:#86EFAC,stroke-width:2px,color:#F0FDF4
+classDef caution fill:#78350F,stroke:#FBBF24,stroke-width:2px,color:#FFFBEB
+classDef artifact fill:#164E63,stroke:#67E8F9,stroke-width:2.5px,color:#ECFEFF
+classDef govern fill:#312E81,stroke:#A78BFA,stroke-width:2px,color:#F5F3FF
+classDef ship fill:#020617,stroke:#FACC15,stroke-width:4px,color:#FEFCE8
+classDef okhLink fill:#0F172A,stroke:#60A5FA,stroke-width:3px,color:#DBEAFE
+classDef gleeLink fill:#365314,stroke:#BEF264,stroke-width:3px,color:#F7FEE7
+classDef askLink fill:#1E3A8A,stroke:#93C5FD,stroke-width:3px,color:#EFF6FF
+classDef credit fill:#111827,stroke:#64748B,stroke-width:1px,color:#CBD5E1
+
+style SG1 fill:#082F49,stroke:#38BDF8,stroke-width:2px,color:#E0F2FE
+style SG2 fill:#052E2B,stroke:#34D399,stroke-width:2px,color:#ECFDF5
+style SG3 fill:#1E1B4B,stroke:#A78BFA,stroke-width:2px,color:#F5F3FF
+style SG4 fill:#111827,stroke:#60A5FA,stroke-width:2px,color:#EFF6FF
+style SG5 fill:#1C1917,stroke:#FBBF24,stroke-width:2px,color:#FFFBEB
+style SG6 fill:#18181B,stroke:#D1D5DB,stroke-width:2px,color:#F9FAFB
+
+linkStyle default stroke:#60A5FA,stroke-width:1.7px
