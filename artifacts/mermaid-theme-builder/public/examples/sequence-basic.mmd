@@ -1,0 +1,8 @@
+sequenceDiagram
+    participant U as User
+    participant S as System
+    participant D as Database
+    U->>S: Submit Request
+    S->>D: Query Data
+    D-->>S: Return Results
+    S-->>U: Display Response
