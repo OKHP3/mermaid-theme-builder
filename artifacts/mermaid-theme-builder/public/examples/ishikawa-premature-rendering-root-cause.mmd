@@ -1,0 +1,29 @@
+%%{init: {"theme": "base"} }%%
+fishbone
+    title Why does a Mermaid diagram render incorrectly?
+    accTitle: Root cause analysis - premature or incorrect rendering
+    section Syntax
+        Missing init block : Syntax
+        Wrong diagram keyword : Syntax
+        Fences not stripped : Syntax
+        Unsupported node shape : Syntax
+    section Renderer
+        Mermaid version mismatch : Renderer
+        Beta diagram family : Renderer
+        Security level too strict : Renderer
+        ELK layout unavailable : Renderer
+    section Theme
+        Theme variables not injected : Theme
+        Wrong family transform applied : Theme
+        classDef overridden by global : Theme
+        Init block duplicated : Theme
+    section Environment
+        CDN load failure : Environment
+        Stale browser cache : Environment
+        Wrong securityLevel setting : Environment
+        Renderer not initialized : Environment
+    section User Workflow
+        Pasted with outer code fences : Workflow
+        Wrong palette for diagram type : Workflow
+        Applied generic theme to beta diagram : Workflow
+        Ignored renderer warning : Workflow

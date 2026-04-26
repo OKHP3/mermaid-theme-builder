@@ -22,6 +22,60 @@ const FLOWCHART_BASIC = `flowchart TD
     C --> E[End]
     D --> E`;
 
+const FLOWCHART_OKH_OPERATING_SYSTEM = `flowchart TD
+    IDEA([Random Thought])
+    QUALIFY{Worth the Overdo?}
+    PARK[[Idea Graveyard]]
+    PAIN{{Name the Pain}}
+
+    IDEA --> QUALIFY
+    QUALIFY -- "No" --> PARK
+    PARK -. "ferments" .-> IDEA
+    QUALIFY -- "Yes" --> PAIN
+
+    subgraph COUNCIL["AI Council Review"]
+    direction LR
+      CLAUDE[Claude: logic + depth]
+      CHATGPT[ChatGPT: speed + breadth]
+      PERPLEXITY[Perplexity: source validation]
+      NOTION[/Notion: institutional memory/]
+      CLAUDE --> NOTION
+      CHATGPT --> NOTION
+      PERPLEXITY --> NOTION
+    end
+
+    subgraph BUILD["Build Loop"]
+    direction LR
+      PRD[PRD in Notion]
+      REPLIT([Replit prototype])
+      ITERATE{Good enough?}
+      FIX[Fix and iterate]
+      PRD --> REPLIT --> ITERATE
+      ITERATE -- "No" --> FIX --> REPLIT
+    end
+
+    subgraph SHIP["Ship + Govern"]
+    direction LR
+      FIREWALL{{Brand firewall scan}}
+      GITHUB[(GitHub repo)]
+      PAGES([GitHub Pages])
+      ARTICLE[LinkedIn article]
+      FIREWALL --> GITHUB --> PAGES
+      GITHUB --> ARTICLE
+    end
+
+    PAIN --> COUNCIL
+    COUNCIL --> BUILD
+    ITERATE -- "Yes" --> SHIP
+
+    OKH(overkillhill.com)
+    ASK(askjamie.bot)
+    GLEE(glee-fully.tools)
+
+    SHIP --> OKH
+    SHIP --> ASK
+    SHIP --> GLEE`;
+
 const SEQUENCE_BASIC = `sequenceDiagram
     participant U as User
     participant S as System
@@ -30,6 +84,48 @@ const SEQUENCE_BASIC = `sequenceDiagram
     S->>D: Query Data
     D-->>S: Return Results
     S-->>U: Display Response`;
+
+const SEQUENCE_COUNCIL_TO_PROTOTYPE = `sequenceDiagram
+    participant J as Jamie
+    participant C as Claude
+    participant G as ChatGPT
+    participant P as Perplexity
+    participant N as Notion
+    participant R as Replit
+
+    J->>C: Raw idea — is this worth overdoing?
+    C-->>J: Analysis + framing + risks
+
+    J->>G: Rapid concept sketch — name and positioning
+    G-->>J: Name variants + tagline options
+
+    J->>P: Prior art search — does this already exist?
+    P-->>J: Source review + gap analysis
+
+    Note over J,P: AI Council synthesis complete
+
+    J->>N: Write PRD — scope, firewall, acceptance criteria
+    N-->>J: Living document stored
+
+    J->>C: Review PRD — what is missing?
+    C-->>J: Gaps flagged + suggestions added
+    J->>N: Update PRD with council feedback
+
+    J->>R: Build prototype from PRD
+    R-->>J: First working build
+
+    loop Iteration
+        J->>R: Fix + refine
+        R-->>J: Updated prototype
+    end
+
+    J->>C: Review prototype — brand firewall clean?
+    C-->>J: Firewall check passed. No BFS references.
+
+    J->>R: Deploy to GitHub Pages
+    R-->>J: Live URL confirmed
+
+    Note over J,R: Shipped. Then sharpened.`;
 
 const CLASS_BASIC = `classDiagram
     class ThemeEngine {
@@ -411,7 +507,7 @@ const GITGRAPH_REPO_EVOLUTION = `gitGraph
     checkout main
     merge v20-composer id: "release: v2.0"`;
 
-const MINDMAP_ECOSYSTEM = `mindmap
+const MINDMAP_OKH_SYSTEM = `mindmap
   root((OverKill Hill P3))
     Precision
       Mermaid Theme Builder
@@ -450,6 +546,36 @@ const MINDMAP_ECOSYSTEM = `mindmap
         First Diagram Is a Liar
         OKRs Are Invisible`;
 
+const ISHIKAWA_PREMATURE_RENDERING = `%%{init: {"theme": "base"} }%%
+fishbone
+    title Why does a Mermaid diagram render incorrectly?
+    accTitle: Root cause analysis - premature or incorrect rendering
+    section Syntax
+        Missing init block : Syntax
+        Wrong diagram keyword : Syntax
+        Fences not stripped : Syntax
+        Unsupported node shape : Syntax
+    section Renderer
+        Mermaid version mismatch : Renderer
+        Beta diagram family : Renderer
+        Security level too strict : Renderer
+        ELK layout unavailable : Renderer
+    section Theme
+        Theme variables not injected : Theme
+        Wrong family transform applied : Theme
+        classDef overridden by global : Theme
+        Init block duplicated : Theme
+    section Environment
+        CDN load failure : Environment
+        Stale browser cache : Environment
+        Wrong securityLevel setting : Environment
+        Renderer not initialized : Environment
+    section User Workflow
+        Pasted with outer code fences : Workflow
+        Wrong palette for diagram type : Workflow
+        Applied generic theme to beta diagram : Workflow
+        Ignored renderer warning : Workflow`;
+
 export const EXAMPLE_CATALOG: ExampleEntry[] = [
   {
     id: "flowchart-basic",
@@ -459,11 +585,25 @@ export const EXAMPLE_CATALOG: ExampleEntry[] = [
     content: FLOWCHART_BASIC,
   },
   {
+    id: "flowchart-overkill-operating-system",
+    label: "Flowchart — OKH operating system",
+    family: "flowchart",
+    category: "flow",
+    content: FLOWCHART_OKH_OPERATING_SYSTEM,
+  },
+  {
     id: "sequence-basic",
     label: "Sequence",
     family: "sequence",
     category: "flow",
     content: SEQUENCE_BASIC,
+  },
+  {
+    id: "sequence-council-to-prototype",
+    label: "Sequence — council to prototype",
+    family: "sequence",
+    category: "flow",
+    content: SEQUENCE_COUNCIL_TO_PROTOTYPE,
   },
   {
     id: "class-basic",
@@ -530,21 +670,21 @@ export const EXAMPLE_CATALOG: ExampleEntry[] = [
     content: GANTT_BASIC,
   },
   {
-    id: "gantt-roadmap",
+    id: "gantt-mermaid-theme-builder-roadmap",
     label: "Gantt — roadmap",
     family: "gantt",
     category: "data-viz",
     content: GANTT_ROADMAP,
   },
   {
-    id: "timeline-project-history",
+    id: "timeline-overkill-theme-builder-history",
     label: "Timeline",
     family: "timeline",
     category: "timeline",
     content: TIMELINE_PROJECT_HISTORY,
   },
   {
-    id: "journey-idea-to-ship",
+    id: "journey-idea-to-shipped-tool",
     label: "User journey",
     family: "journey",
     category: "timeline",
@@ -558,11 +698,19 @@ export const EXAMPLE_CATALOG: ExampleEntry[] = [
     content: GITGRAPH_REPO_EVOLUTION,
   },
   {
-    id: "mindmap-ecosystem",
-    label: "Mindmap",
+    id: "mindmap-overkill-hill-system",
+    label: "Mindmap — OKH system",
     family: "mindmap",
     category: "specialty",
-    content: MINDMAP_ECOSYSTEM,
+    content: MINDMAP_OKH_SYSTEM,
+  },
+  {
+    id: "ishikawa-premature-rendering-root-cause",
+    label: "Ishikawa — rendering root cause",
+    family: "fishbone",
+    category: "specialty",
+    content: ISHIKAWA_PREMATURE_RENDERING,
+    badge: "Beta",
   },
 ];
 

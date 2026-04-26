@@ -1,0 +1,67 @@
+flowchart TD
+%% OverKill Hill P3 — Operating System
+%% Tool: Mermaid Theme Builder | https://overkillhill.com/projects/mermaid-theme-builder/
+
+IDEA([Random Thought])
+QUALIFY{Worth the Overdo?}
+PARK[[Idea Graveyard]]
+PAIN{{Name the Pain}}
+
+IDEA --> QUALIFY
+QUALIFY -- "No" --> PARK
+PARK -. "ferments" .-> IDEA
+QUALIFY -- "Yes" --> PAIN
+
+subgraph COUNCIL["AI Council Review"]
+direction LR
+  CLAUDE[Claude: logic + depth]
+  CHATGPT[ChatGPT: speed + breadth]
+  PERPLEXITY[Perplexity: source validation]
+  NOTION[/Notion: institutional memory/]
+  CLAUDE --> NOTION
+  CHATGPT --> NOTION
+  PERPLEXITY --> NOTION
+end
+
+subgraph BUILD["Build Loop"]
+direction LR
+  PRD[PRD in Notion]
+  REPLIT([Replit prototype])
+  ITERATE{Good enough?}
+  FIX[Fix and iterate]
+  PRD --> REPLIT --> ITERATE
+  ITERATE -- "No" --> FIX --> REPLIT
+end
+
+subgraph SHIP["Ship + Govern"]
+direction LR
+  FIREWALL{{Brand firewall scan}}
+  GITHUB[(GitHub repo)]
+  PAGES([GitHub Pages])
+  ARTICLE[LinkedIn article]
+  FIREWALL --> GITHUB --> PAGES
+  GITHUB --> ARTICLE
+end
+
+PAIN --> COUNCIL
+COUNCIL --> BUILD
+ITERATE -- "Yes" --> SHIP
+
+OKH(overkillhill.com)
+ASK(askjamie.bot)
+GLEE(glee-fully.tools)
+
+SHIP --> OKH
+SHIP --> ASK
+SHIP --> GLEE
+
+classDef default fill:#1E293B,stroke:#60A5FA,stroke-width:1.5px,color:#F9FAFB
+classDef decision fill:#422006,stroke:#FACC15,stroke-width:2px,color:#FEFCE8
+classDef okh fill:#111827,stroke:#60A5FA,stroke-width:2.5px,color:#EFF6FF
+classDef muted fill:#27272A,stroke:#71717A,stroke-width:1.5px,color:#D4D4D8
+classDef brand fill:#312E81,stroke:#C4B5FD,stroke-width:2px,color:#F5F3FF
+
+class QUALIFY,ITERATE decision
+class PAIN,FIREWALL okh
+class PARK muted
+class OKH,ASK,GLEE brand

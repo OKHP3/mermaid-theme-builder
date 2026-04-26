@@ -31,7 +31,10 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 - Detection shows Support Status (Native/Partial/etc.) + Theme Confidence (High/Medium/etc.) badges in header
 - CapabilityNote shows warning field + support/confidence/stability badges inline
 - `CAPABILITY_GAPS` array: BPMN 2.0, ArchiMate, SysML, VSM, Service Blueprint, OKR, DFD, Decision Tree, Org Chart, Threat Model DFD
-- OverKill Mermaid Example Pack: 27-entry metadata registry (example files pending delivery)
+- **Example Library**: 21 inline examples in `example-library.ts`, grouped into 5 categories (Flow, Structure, Data, Timeline, Specialty)
+- **New OKH examples**: flowchart-overkill-operating-system, sequence-council-to-prototype, ishikawa-premature-rendering-root-cause (fishbone, beta)
+- OverKill Mermaid Example Pack: 27-entry metadata registry; 14 of 27 files now exist in `public/examples/`; remaining 13 marked `pending: true`
+- Canonical showcase file: `public/examples/overkill-rube-goldberg-showcase.mmd` (classic Mermaid node syntax, ELK layout, 6 subgraphs)
 - **3 first-party OKHP3 brand presets**: OverKill Hill P³, AskJamie, Glee-fully (palettes.ts)
 - **4 utility/example presets**: Ocean Depth, Forest Sage, Slate Ember, Violet Mist
 - UI splits palette picker into Brand Presets (with OKHP3 badge) and Theme Presets sections

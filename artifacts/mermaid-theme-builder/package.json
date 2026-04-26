@@ -33,6 +33,10 @@
     "vite": "catalog:"
   },
   "dependencies": {
+    "@radix-ui/react-dialog": "^1.1.15",
+    "@radix-ui/react-label": "^2.1.8",
+    "@radix-ui/react-separator": "^1.1.8",
+    "@radix-ui/react-toggle": "^1.1.10",
     "mermaid": "^11.14.0"
   }
 }

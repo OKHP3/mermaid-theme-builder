@@ -24,7 +24,7 @@ export const EXAMPLE_PACK: ExamplePackEntry[] = [
     title: "OverKill Operating System",
     description:
       "Full flowchart of the OverKill Hill P³ ideation-to-ship operating system, including AI council stages, brand gravity well, and governance layers.",
-    pending: true,
+    pending: false,
   },
   {
     filename: "sequence-council-to-prototype.mmd",
@@ -33,7 +33,7 @@ export const EXAMPLE_PACK: ExamplePackEntry[] = [
     title: "Council to Prototype",
     description:
       "Sequence diagram showing the OKH council-of-AIs review flow from raw idea submission through prototype approval.",
-    pending: true,
+    pending: false,
   },
   {
     filename: "class-theme-builder-domain-model.mmd",
@@ -51,7 +51,7 @@ export const EXAMPLE_PACK: ExamplePackEntry[] = [
     title: "Theme Lifecycle",
     description:
       "State diagram showing the lifecycle of a theme from creation through customization, export, and archival.",
-    pending: true,
+    pending: false,
   },
   {
     filename: "er-theme-registry.mmd",
@@ -60,7 +60,7 @@ export const EXAMPLE_PACK: ExamplePackEntry[] = [
     title: "Theme Registry",
     description:
       "ER diagram of the conceptual theme registry schema: palette, capability entry, example entry, and their relationships.",
-    pending: true,
+    pending: false,
   },
   {
     filename: "journey-idea-to-shipped-tool.mmd",
@@ -69,7 +69,7 @@ export const EXAMPLE_PACK: ExamplePackEntry[] = [
     title: "Idea to Shipped Tool",
     description:
       "User journey map tracing the OKH product flow from raw idea through AI council, build, and public ship.",
-    pending: true,
+    pending: false,
   },
   {
     filename: "gantt-mermaid-theme-builder-roadmap.mmd",
@@ -78,7 +78,7 @@ export const EXAMPLE_PACK: ExamplePackEntry[] = [
     title: "Mermaid Theme Builder Roadmap",
     description:
       "Gantt chart of the Mermaid Theme Builder development roadmap covering v0.1 through v1.0 milestones.",
-    pending: true,
+    pending: false,
   },
   {
     filename: "pie-effort-allocation.mmd",
@@ -114,7 +114,7 @@ export const EXAMPLE_PACK: ExamplePackEntry[] = [
     title: "Repo Evolution",
     description:
       "Git graph showing the branch history and merge strategy of the mermaid-theme-builder repository from init to v0.2-alpha.",
-    pending: true,
+    pending: false,
   },
   {
     filename: "c4-context-overkill-ecosystem.mmd",
@@ -132,7 +132,7 @@ export const EXAMPLE_PACK: ExamplePackEntry[] = [
     title: "OverKill Hill System",
     description:
       "Mindmap of the full OKH product system, toolchain, and brand ecosystem decomposed into branches.",
-    pending: true,
+    pending: false,
   },
   {
     filename: "timeline-overkill-theme-builder-history.mmd",
@@ -141,7 +141,7 @@ export const EXAMPLE_PACK: ExamplePackEntry[] = [
     title: "Theme Builder History",
     description:
       "Chronological timeline of Mermaid Theme Builder milestones from concept through v0.2-alpha.",
-    pending: true,
+    pending: false,
   },
   {
     filename: "zenuml-council-prototype-flow.mmd",
@@ -240,7 +240,7 @@ export const EXAMPLE_PACK: ExamplePackEntry[] = [
     title: "Premature Rendering Root Cause",
     description:
       "Ishikawa fishbone diagram analyzing root causes of premature diagram rendering in AI-assisted workflows.",
-    pending: true,
+    pending: false,
   },
   {
     filename: "treeview-example-index.mmd",
