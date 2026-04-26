@@ -657,20 +657,38 @@ function LoadExampleMenu({
           {brandExamples ? (
             <>
               <button
+                data-testid="load-example-flowchart"
                 onClick={() => { onLoad(brandExamples.flowchart); setOpen(false); }}
-                className="w-full text-left px-3 py-1.5 text-xs text-foreground hover:bg-muted transition-colors"
+                className="w-full text-left px-3 py-1.5 text-xs text-foreground hover:bg-muted transition-colors flex items-center gap-2"
               >
+                <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-3 h-3 shrink-0 opacity-60">
+                  <rect x="1" y="1" width="4" height="3" rx="0.5" />
+                  <rect x="9" y="5" width="4" height="3" rx="0.5" />
+                  <rect x="1" y="9" width="4" height="3" rx="0.5" />
+                  <path d="M5 2.5h2.5V6.5H9M5 10.5h2.5V6.5" strokeLinecap="round" />
+                </svg>
                 Flowchart
               </button>
               <button
+                data-testid="load-example-sequence"
                 onClick={() => { onLoad(brandExamples.sequence); setOpen(false); }}
-                className="w-full text-left px-3 py-1.5 text-xs text-foreground hover:bg-muted transition-colors"
+                className="w-full text-left px-3 py-1.5 text-xs text-foreground hover:bg-muted transition-colors flex items-center gap-2"
               >
+                <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-3 h-3 shrink-0 opacity-60">
+                  <line x1="2" y1="1" x2="2" y2="13" strokeLinecap="round" />
+                  <line x1="12" y1="1" x2="12" y2="13" strokeLinecap="round" />
+                  <path d="M2 4h10" strokeLinecap="round" />
+                  <path d="M12 7H2" strokeLinecap="round" />
+                  <path d="M2 10h10" strokeLinecap="round" />
+                  <path d="M10 3l2 1-2 1" fill="currentColor" stroke="none" />
+                  <path d="M4 9l-2 1 2 1" fill="currentColor" stroke="none" />
+                </svg>
                 Sequence
               </button>
             </>
           ) : (
             <button
+              data-testid="load-example-generic"
               onClick={() => { onLoad(GENERIC_EXAMPLE); setOpen(false); }}
               className="w-full text-left px-3 py-1.5 text-xs text-foreground hover:bg-muted transition-colors"
             >

@@ -51,7 +51,7 @@ const OVERKILL_HILL_FLOWCHART = `flowchart TD
     style Services fill:#0d1117,stroke:#c46a2c,color:#e6a03c
     style Data fill:#0d1117,stroke:#c46a2c,color:#e6a03c`;
 
-const OVERKILL_HILL_SEQUENCE = `sequenceDiagram
+export const OVERKILL_HILL_SEQUENCE = `sequenceDiagram
     participant U as User
     participant O as Orchestrator
     participant P as Planner
@@ -119,7 +119,7 @@ const ASKJAMIE_FLOWCHART = `flowchart TD
     style Resolution fill:#f0ebe5,stroke:#a06e28,color:#2a2320
     style Followup fill:#f0ebe5,stroke:#a06e28,color:#2a2320`;
 
-const ASKJAMIE_SEQUENCE = `sequenceDiagram
+export const ASKJAMIE_SEQUENCE = `sequenceDiagram
     participant U as User
     participant A as AskJamie
     participant K as Knowledge Base
@@ -192,7 +192,7 @@ const GLEE_FULLY_FLOWCHART = `flowchart TD
     style Planning fill:#e8f7ef,stroke:#2d6a4f,color:#1c3a34
     style Focus fill:#e8f7ef,stroke:#2d6a4f,color:#1c3a34`;
 
-const GLEE_FULLY_SEQUENCE = `sequenceDiagram
+export const GLEE_FULLY_SEQUENCE = `sequenceDiagram
     participant Me as Me
     participant App as Planner App
     participant Cal as Calendar
