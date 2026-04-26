@@ -1,0 +1,54 @@
+classDiagram
+    class ThemeEngine {
+        +Palette activePalette
+        +WatermarkOptions watermark
+        +generateThemedCode(input, options) String
+        +generateMarkdownExport(code, name) String
+        +generatePromptScaffold(palette, family) String
+    }
+
+    class Palette {
+        +String id
+        +String name
+        +String description
+        +ThemeColor[] colors
+        +clone() Palette
+    }
+
+    class ThemeColor {
+        +String key
+        +String label
+        +String value
+        +isHex() Boolean
+    }
+
+    class DiagramDetector {
+        +detectFamily(code) DetectionResult
+        -matchPatterns(code) DiagramFamily
+    }
+
+    class DetectionResult {
+        +DiagramFamily family
+        +String label
+        +Boolean hasThemeInit
+        +String[] warnings
+    }
+
+    class WatermarkOptions {
+        +Boolean enabled
+        +String themeName
+        +String toolUrl
+    }
+
+    class PresetRegistry {
+        +Palette[] builtInPalettes
+        +getPalette(id) Palette
+        +listPalettes() Palette[]
+    }
+
+    ThemeEngine --> Palette : uses
+    ThemeEngine --> DiagramDetector : depends on
+    ThemeEngine --> WatermarkOptions : configured by
+    Palette *-- ThemeColor : contains
+    PresetRegistry o-- Palette : manages
+    DiagramDetector --> DetectionResult : produces

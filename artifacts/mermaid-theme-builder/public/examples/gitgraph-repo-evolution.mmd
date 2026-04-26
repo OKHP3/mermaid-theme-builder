@@ -1,0 +1,27 @@
+gitGraph
+    commit id: "init: repo scaffold"
+    commit id: "feat: core UI"
+    branch v02-alpha
+    checkout v02-alpha
+    commit id: "feat: brand presets"
+    commit id: "feat: showcase diagram"
+    commit id: "feat: watermark toggle"
+    commit id: "docs: LICENSE + AGENTS"
+    commit id: "ci: GitHub Pages"
+    checkout main
+    merge v02-alpha id: "release: v0.2-alpha"
+    branch v10-public
+    checkout v10-public
+    commit id: "feat: family themeVars"
+    commit id: "feat: example selector"
+    commit id: "feat: font dropdown"
+    commit id: "docs: design system"
+    checkout main
+    merge v10-public id: "release: v1.0"
+    branch v20-composer
+    checkout v20-composer
+    commit id: "feat: extract mode"
+    commit id: "feat: bidirectional bind"
+    commit id: "feat: diff view"
+    checkout main
+    merge v20-composer id: "release: v2.0"

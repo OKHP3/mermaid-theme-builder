@@ -1,0 +1,40 @@
+stateDiagram-v2
+    [*] --> Idle : App loads
+
+    state Idle {
+        [*] --> DefaultPreset
+        DefaultPreset --> PresetSelected : User picks palette
+    }
+
+    state Editing {
+        [*] --> ColorAdjustment
+        ColorAdjustment --> ColorAdjustment : Change color value
+        ColorAdjustment --> FontChange : Edit font family
+        FontChange --> ColorAdjustment : Back to colors
+    }
+
+    state Preview {
+        [*] --> Rendering
+        Rendering --> Rendered : Success
+        Rendering --> RenderError : Parse failure
+        RenderError --> Rendering : Code corrected
+    }
+
+    state Export {
+        [*] --> ChooseFormat
+        ChooseFormat --> StyledCode : Copy code
+        ChooseFormat --> Markdown : Export bootstrap
+        ChooseFormat --> PromptScaffold : Export scaffold
+    }
+
+    Idle --> Editing : Edit colors
+    Idle --> Preview : Paste diagram
+    Editing --> Preview : Preview updates live
+    Preview --> Export : User exports
+    Export --> Idle : Start over
+    Editing --> Idle : Reset palette
+
+    note right of Editing
+        All edits are local.
+        No data leaves the browser.
+    end note

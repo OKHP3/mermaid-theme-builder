@@ -1,0 +1,44 @@
+requirementDiagram
+
+    requirement brand_separation {
+        id: REQ-001
+        text: No BFS branding, colors, or references in any deliverable
+        risk: high
+        verifymethod: inspection
+    }
+
+    requirement static_only {
+        id: REQ-002
+        text: No backend, no login, no API calls, no data storage
+        risk: medium
+        verifymethod: test
+    }
+
+    requirement local_privacy {
+        id: REQ-003
+        text: All transforms happen client-side; no data leaves the browser
+        risk: medium
+        verifymethod: inspection
+    }
+
+    requirement mermaid_compat {
+        id: REQ-004
+        text: Generated output must render in Mermaid v11.x renderers
+        risk: medium
+        verifymethod: test
+    }
+
+    element scope_audit {
+        type: test
+        docref: AGENTS.md
+    }
+
+    element render_test {
+        type: test
+        docref: examples/*.mmd
+    }
+
+    scope_audit - verifies -> brand_separation
+    scope_audit - verifies -> static_only
+    scope_audit - verifies -> local_privacy
+    render_test - verifies -> mermaid_compat
