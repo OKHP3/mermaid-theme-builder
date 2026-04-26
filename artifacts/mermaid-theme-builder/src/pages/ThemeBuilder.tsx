@@ -213,7 +213,7 @@ export function ThemeBuilder() {
             </svg>
             <span className="text-xs">Inventory</span>
           </button>
-          <span className="hidden lg:block text-muted-foreground/60">v0.1 · local only</span>
+          <span className="hidden lg:block text-muted-foreground/60">v0.2-alpha</span>
         </div>
       </header>
 
