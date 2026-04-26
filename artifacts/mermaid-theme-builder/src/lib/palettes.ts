@@ -4,134 +4,40 @@ export interface ThemeColor {
   value: string;
 }
 
+export interface PaletteAttribution {
+  enabledByDefault: boolean;
+  label: string;
+  url: string;
+  themeName: string;
+  toolName: string;
+  toolVersion: string;
+}
+
 export interface Palette {
   id: string;
   name: string;
+  brandFamily?: "okhp3";
+  isBrandPreset?: boolean;
   description: string;
-  /** Attribution note shown when the palette derives from a public brand CSS */
-  attribution?: string;
+  themeIntent?: string;
+  sourceUrls?: string[];
+  version: string;
   colors: ThemeColor[];
+  attribution: PaletteAttribution;
 }
 
-// ── OKH Ecosystem Palettes ────────────────────────────────────────────────────
-// Derived from public OverKill Hill P³ site CSS (overkillhill.com / github.com/OKHP3/OverKill-Hill)
-// CSS tokens: --okh-teal #1c3a34, --okh-orange #c46a2c, --okh-amber #e6a03c,
-//             --okh-paper #f6f2ee, --okh-espresso #2a2320, DM Sans font family.
-
-// ── Generic Palettes ─────────────────────────────────────────────────────────
-// Original palettes not derived from any brand.
+const TOOL_ATTRIBUTION_BASE: Pick<PaletteAttribution, "toolName" | "toolVersion" | "url"> = {
+  toolName: "Mermaid Theme Builder",
+  toolVersion: "0.1.0",
+  url: "https://overkillhill.com/projects/mermaid-theme-builder/",
+};
 
 export const BUILTIN_PALETTES: Palette[] = [
-  // ── OKH Ecosystem ──────────────────────────────────────────────────────────
-  {
-    id: "okh-light",
-    name: "OKH Light",
-    description: "OverKill Hill P³ light palette — warm paper tones, teal nodes, rust-orange accents",
-    attribution: "Derived from OverKill Hill P³ public site CSS (overkillhill.com). Token sources: --okh-teal, --okh-orange, --okh-paper, data-theme=light tokens.",
-    colors: [
-      { key: "primaryColor", label: "Primary (nodes)", value: "#1c3a34" },
-      { key: "primaryTextColor", label: "Primary text", value: "#ffffff" },
-      { key: "primaryBorderColor", label: "Primary border", value: "#c46a2c" },
-      { key: "lineColor", label: "Lines & arrows", value: "#c46a2c" },
-      { key: "secondaryColor", label: "Secondary nodes", value: "#e6a03c" },
-      { key: "tertiaryColor", label: "Tertiary nodes", value: "#f6f2ee" },
-      { key: "background", label: "Background", value: "#eff2f5" },
-      { key: "mainBkg", label: "Main background", value: "#f0ebe5" },
-      { key: "nodeBorder", label: "Node border", value: "#c46a2c" },
-      { key: "clusterBkg", label: "Cluster background", value: "#f6f2ee" },
-      { key: "titleColor", label: "Title color", value: "#0f172a" },
-      { key: "edgeLabelBackground", label: "Edge label bg", value: "#f6f2ee" },
-      { key: "fontFamily", label: "Font family", value: "DM Sans, system-ui, sans-serif" },
-    ],
-  },
-  {
-    id: "okh-protocol",
-    name: "OKH Protocol",
-    description: "OverKill Hill P³ dark palette — espresso background, rust-orange edges, industrial blueprint feel",
-    attribution: "Derived from OverKill Hill P³ public site CSS (overkillhill.com). Token sources: --mermaid-* variables, --okh-espresso, data-theme=dark tokens.",
-    colors: [
-      { key: "primaryColor", label: "Primary (nodes)", value: "#111827" },
-      { key: "primaryTextColor", label: "Primary text", value: "#e5e7eb" },
-      { key: "primaryBorderColor", label: "Primary border", value: "#c46a2c" },
-      { key: "lineColor", label: "Lines & arrows", value: "#c46a2c" },
-      { key: "secondaryColor", label: "Secondary nodes", value: "#181f26" },
-      { key: "tertiaryColor", label: "Tertiary nodes", value: "#1c3a34" },
-      { key: "background", label: "Background", value: "#2a2320" },
-      { key: "mainBkg", label: "Main background", value: "#111827" },
-      { key: "nodeBorder", label: "Node border", value: "#c46a2c" },
-      { key: "clusterBkg", label: "Cluster background", value: "#0d1117" },
-      { key: "titleColor", label: "Title color", value: "#e6a03c" },
-      { key: "edgeLabelBackground", label: "Edge label bg", value: "#181f26" },
-      { key: "fontFamily", label: "Font family", value: "DM Sans, system-ui, sans-serif" },
-    ],
-  },
-  {
-    id: "askjamie-friendly",
-    name: "AskJamie Friendly",
-    description: "Clean, approachable light palette — calm blues with OKH orange accents, great for how-to and process diagrams",
-    attribution: "Derived from AskJamie (askjamie.bot) public site CSS (github.com/OKHP3/AskJamie). Light-mode surface and accent tokens.",
-    colors: [
-      { key: "primaryColor", label: "Primary (nodes)", value: "#1d4ed8" },
-      { key: "primaryTextColor", label: "Primary text", value: "#ffffff" },
-      { key: "primaryBorderColor", label: "Primary border", value: "#c46a2c" },
-      { key: "lineColor", label: "Lines & arrows", value: "#3b82f6" },
-      { key: "secondaryColor", label: "Secondary nodes", value: "#93c5fd" },
-      { key: "tertiaryColor", label: "Tertiary nodes", value: "#eff6ff" },
-      { key: "background", label: "Background", value: "#f9fafb" },
-      { key: "mainBkg", label: "Main background", value: "#eff6ff" },
-      { key: "nodeBorder", label: "Node border", value: "#2563eb" },
-      { key: "clusterBkg", label: "Cluster background", value: "#eff6ff" },
-      { key: "titleColor", label: "Title color", value: "#1e3a5f" },
-      { key: "edgeLabelBackground", label: "Edge label bg", value: "#f9fafb" },
-      { key: "fontFamily", label: "Font family", value: "DM Sans, system-ui, sans-serif" },
-    ],
-  },
-  {
-    id: "gleefully-bright",
-    name: "Glee-fully Bright",
-    description: "Bright amber-gold palette — energetic, warm, ideal for tool flows and quick reference diagrams",
-    attribution: "Derived from Glee-fully Tools (glee-fully.tools) public site CSS (github.com/OKHP3/Glee-fullyTools). OKH amber accent family.",
-    colors: [
-      { key: "primaryColor", label: "Primary (nodes)", value: "#d97706" },
-      { key: "primaryTextColor", label: "Primary text", value: "#ffffff" },
-      { key: "primaryBorderColor", label: "Primary border", value: "#f59e0b" },
-      { key: "lineColor", label: "Lines & arrows", value: "#f59e0b" },
-      { key: "secondaryColor", label: "Secondary nodes", value: "#fcd34d" },
-      { key: "tertiaryColor", label: "Tertiary nodes", value: "#fef3c7" },
-      { key: "background", label: "Background", value: "#fffbeb" },
-      { key: "mainBkg", label: "Main background", value: "#fef3c7" },
-      { key: "nodeBorder", label: "Node border", value: "#d97706" },
-      { key: "clusterBkg", label: "Cluster background", value: "#fef3c7" },
-      { key: "titleColor", label: "Title color", value: "#78350f" },
-      { key: "edgeLabelBackground", label: "Edge label bg", value: "#fffbeb" },
-      { key: "fontFamily", label: "Font family", value: "DM Sans, system-ui, sans-serif" },
-    ],
-  },
-  // ── Generic Palettes ────────────────────────────────────────────────────────
-  {
-    id: "neutral-enterprise",
-    name: "Neutral Enterprise",
-    description: "Clean gray-on-white palette — neutral, professional, works in any corporate or technical context",
-    colors: [
-      { key: "primaryColor", label: "Primary (nodes)", value: "#374151" },
-      { key: "primaryTextColor", label: "Primary text", value: "#ffffff" },
-      { key: "primaryBorderColor", label: "Primary border", value: "#6b7280" },
-      { key: "lineColor", label: "Lines & arrows", value: "#6b7280" },
-      { key: "secondaryColor", label: "Secondary nodes", value: "#9ca3af" },
-      { key: "tertiaryColor", label: "Tertiary nodes", value: "#f3f4f6" },
-      { key: "background", label: "Background", value: "#f9fafb" },
-      { key: "mainBkg", label: "Main background", value: "#f3f4f6" },
-      { key: "nodeBorder", label: "Node border", value: "#374151" },
-      { key: "clusterBkg", label: "Cluster background", value: "#f3f4f6" },
-      { key: "titleColor", label: "Title color", value: "#111827" },
-      { key: "edgeLabelBackground", label: "Edge label bg", value: "#f9fafb" },
-      { key: "fontFamily", label: "Font family", value: "Inter, system-ui, sans-serif" },
-    ],
-  },
   {
     id: "ocean-depth",
     name: "Ocean Depth",
     description: "Deep blues and teals — clean, professional, great for technical diagrams",
+    version: "0.1.0",
     colors: [
       { key: "primaryColor", label: "Primary (nodes)", value: "#1a4f8a" },
       { key: "primaryTextColor", label: "Primary text", value: "#ffffff" },
@@ -147,11 +53,18 @@ export const BUILTIN_PALETTES: Palette[] = [
       { key: "edgeLabelBackground", label: "Edge label bg", value: "#f0f9ff" },
       { key: "fontFamily", label: "Font family", value: "Inter, system-ui, sans-serif" },
     ],
+    attribution: {
+      ...TOOL_ATTRIBUTION_BASE,
+      enabledByDefault: true,
+      label: "Themed with Mermaid Theme Builder · Ocean Depth",
+      themeName: "Ocean Depth",
+    },
   },
   {
     id: "forest-sage",
     name: "Forest Sage",
     description: "Earthy greens and warm neutrals — approachable, calm, ideal for process flows",
+    version: "0.1.0",
     colors: [
       { key: "primaryColor", label: "Primary (nodes)", value: "#1a5c38" },
       { key: "primaryTextColor", label: "Primary text", value: "#ffffff" },
@@ -167,11 +80,18 @@ export const BUILTIN_PALETTES: Palette[] = [
       { key: "edgeLabelBackground", label: "Edge label bg", value: "#f4faf6" },
       { key: "fontFamily", label: "Font family", value: "Inter, system-ui, sans-serif" },
     ],
+    attribution: {
+      ...TOOL_ATTRIBUTION_BASE,
+      enabledByDefault: true,
+      label: "Themed with Mermaid Theme Builder · Forest Sage",
+      themeName: "Forest Sage",
+    },
   },
   {
     id: "slate-ember",
     name: "Slate Ember",
     description: "Dark grays with warm orange accents — high contrast, modern, striking for architecture diagrams",
+    version: "0.1.0",
     colors: [
       { key: "primaryColor", label: "Primary (nodes)", value: "#1e2330" },
       { key: "primaryTextColor", label: "Primary text", value: "#f8fafc" },
@@ -187,11 +107,18 @@ export const BUILTIN_PALETTES: Palette[] = [
       { key: "edgeLabelBackground", label: "Edge label bg", value: "#1e2330" },
       { key: "fontFamily", label: "Font family", value: "Inter, system-ui, sans-serif" },
     ],
+    attribution: {
+      ...TOOL_ATTRIBUTION_BASE,
+      enabledByDefault: true,
+      label: "Themed with Mermaid Theme Builder · Slate Ember",
+      themeName: "Slate Ember",
+    },
   },
   {
     id: "violet-mist",
     name: "Violet Mist",
     description: "Soft purples and lavenders — elegant, creative, great for product and UX flows",
+    version: "0.1.0",
     colors: [
       { key: "primaryColor", label: "Primary (nodes)", value: "#6d28d9" },
       { key: "primaryTextColor", label: "Primary text", value: "#ffffff" },
@@ -207,13 +134,137 @@ export const BUILTIN_PALETTES: Palette[] = [
       { key: "edgeLabelBackground", label: "Edge label bg", value: "#f5f3ff" },
       { key: "fontFamily", label: "Font family", value: "Inter, system-ui, sans-serif" },
     ],
+    attribution: {
+      ...TOOL_ATTRIBUTION_BASE,
+      enabledByDefault: true,
+      label: "Themed with Mermaid Theme Builder · Violet Mist",
+      themeName: "Violet Mist",
+    },
+  },
+  {
+    id: "overkill-hill",
+    name: "OverKill Hill P³",
+    brandFamily: "okhp3",
+    isBrandPreset: true,
+    description: "Industrial dark mode with teal and amber forge accents — bold, high-contrast, built for architecture diagrams",
+    themeIntent: "Technical, architectural, systems, AI tooling, strategy, and executive-facing diagrams",
+    sourceUrls: [
+      "https://overkillhill.com",
+      "https://github.com/OKHP3/OverKill-Hill/blob/main/assets/css/theme.css",
+    ],
+    version: "0.2.0",
+    colors: [
+      { key: "primaryColor", label: "Primary (nodes)", value: "#1C3A34" },
+      { key: "primaryTextColor", label: "Primary text", value: "#F6F2EE" },
+      { key: "primaryBorderColor", label: "Primary border", value: "#E6A03C" },
+      { key: "lineColor", label: "Lines & arrows", value: "#2D6F7E" },
+      { key: "secondaryColor", label: "Secondary nodes", value: "#2D6F7E" },
+      { key: "tertiaryColor", label: "Tertiary nodes", value: "#F6F2EE" },
+      { key: "background", label: "Background", value: "#111827" },
+      { key: "mainBkg", label: "Main background", value: "#1C3A34" },
+      { key: "nodeBorder", label: "Node border", value: "#E6A03C" },
+      { key: "clusterBkg", label: "Cluster background", value: "#161b22" },
+      { key: "titleColor", label: "Title color", value: "#E6A03C" },
+      { key: "edgeLabelBackground", label: "Edge label bg", value: "#111827" },
+      { key: "fontFamily", label: "Font family", value: "Impact, Inter, system-ui, sans-serif" },
+    ],
+    attribution: {
+      ...TOOL_ATTRIBUTION_BASE,
+      enabledByDefault: true,
+      label: "Themed with Mermaid Theme Builder · OverKill Hill P³",
+      themeName: "OverKill Hill P³",
+    },
+  },
+  {
+    id: "glee-fully",
+    name: "Glee-fully",
+    brandFamily: "okhp3",
+    isBrandPreset: true,
+    description: "Warm and playful with coral and cream — approachable, energetic, great for how-to flows and tutorials",
+    themeIntent: "Life-organization, personal productivity, family-friendly, consumer-facing, and approachable explainer diagrams",
+    sourceUrls: [
+      "https://glee-fully.tools",
+      "https://github.com/OKHP3/Glee-fullyTools/blob/main/assets/css/theme.css",
+    ],
+    version: "0.2.0",
+    colors: [
+      { key: "primaryColor", label: "Primary (nodes)", value: "#D94F63" },
+      { key: "primaryTextColor", label: "Primary text", value: "#FFFFFF" },
+      { key: "primaryBorderColor", label: "Primary border", value: "#B03A4D" },
+      { key: "lineColor", label: "Lines & arrows", value: "#2D6F7E" },
+      { key: "secondaryColor", label: "Secondary nodes", value: "#2D6F7E" },
+      { key: "tertiaryColor", label: "Tertiary nodes", value: "#F6F2EE" },
+      { key: "background", label: "Background", value: "#F6F2EE" },
+      { key: "mainBkg", label: "Main background", value: "#FDEAED" },
+      { key: "nodeBorder", label: "Node border", value: "#D94F63" },
+      { key: "clusterBkg", label: "Cluster background", value: "#FFF5F0" },
+      { key: "titleColor", label: "Title color", value: "#D94F63" },
+      { key: "edgeLabelBackground", label: "Edge label bg", value: "#F6F2EE" },
+      { key: "fontFamily", label: "Font family", value: "Trebuchet MS, Calibri, sans-serif" },
+    ],
+    attribution: {
+      ...TOOL_ATTRIBUTION_BASE,
+      enabledByDefault: true,
+      label: "Themed with Mermaid Theme Builder · Glee-fully",
+      themeName: "Glee-fully",
+    },
+  },
+  {
+    id: "askjamie",
+    name: "AskJamie",
+    brandFamily: "okhp3",
+    isBrandPreset: true,
+    description: "Calm mid-century tones with muted aquas and beige — clean, readable, ideal for guides and documentation",
+    themeIntent: "Support flows, helpdesk diagrams, explainers, user-assistance workflows, and friendly AI-generated step-by-step guides",
+    sourceUrls: [
+      "https://askjamie.bot",
+      "https://github.com/OKHP3/AskJamie/blob/main/assets/css/theme.css",
+    ],
+    version: "0.2.0",
+    colors: [
+      { key: "primaryColor", label: "Primary (nodes)", value: "#2D6F7E" },
+      { key: "primaryTextColor", label: "Primary text", value: "#FFFFFF" },
+      { key: "primaryBorderColor", label: "Primary border", value: "#1C5361" },
+      { key: "lineColor", label: "Lines & arrows", value: "#4A9BAD" },
+      { key: "secondaryColor", label: "Secondary nodes", value: "#8FBFC9" },
+      { key: "tertiaryColor", label: "Tertiary nodes", value: "#F6F2EE" },
+      { key: "background", label: "Background", value: "#F6F2EE" },
+      { key: "mainBkg", label: "Main background", value: "#E0EEEF" },
+      { key: "nodeBorder", label: "Node border", value: "#2D6F7E" },
+      { key: "clusterBkg", label: "Cluster background", value: "#EDE9E3" },
+      { key: "titleColor", label: "Title color", value: "#1C5361" },
+      { key: "edgeLabelBackground", label: "Edge label bg", value: "#F6F2EE" },
+      { key: "fontFamily", label: "Font family", value: "Georgia, Calibri, serif" },
+    ],
+    attribution: {
+      ...TOOL_ATTRIBUTION_BASE,
+      enabledByDefault: true,
+      label: "Themed with Mermaid Theme Builder · AskJamie",
+      themeName: "AskJamie",
+    },
   },
 ];
+
+export const BRAND_PALETTES = BUILTIN_PALETTES.filter((p) => p.isBrandPreset);
+export const UTILITY_PALETTES = BUILTIN_PALETTES.filter((p) => !p.isBrandPreset);
+
+export function getEffectiveThemeName(palette: Palette, customName: string, isCustomized: boolean): string {
+  if (customName.trim()) return customName.trim();
+  if (isCustomized) return `Custom — based on ${palette.name}`;
+  return palette.name;
+}
 
 export function createCustomPalette(base: Palette, overrides: Partial<ThemeColor>[] = []): Palette {
   const colors = base.colors.map((c) => {
     const override = overrides.find((o) => o.key === c.key);
     return override ? { ...c, ...override } : c;
   });
-  return { ...base, id: "custom", name: "Custom", description: "Your custom palette", colors };
+  return {
+    ...base,
+    id: "custom",
+    name: "Custom",
+    description: "Your custom palette",
+    isBrandPreset: false,
+    colors,
+  };
 }

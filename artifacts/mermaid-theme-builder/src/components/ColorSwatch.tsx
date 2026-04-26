@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import type { ThemeColor } from "@/lib/palettes";
 
 interface ColorSwatchProps {
@@ -9,7 +9,11 @@ interface ColorSwatchProps {
 export function ColorSwatch({ color, onChange }: ColorSwatchProps) {
   const [localValue, setLocalValue] = useState(color.value);
 
-  const isHexColor = /^#[0-9a-fA-F]{3,8}$/.test(color.value);
+  useEffect(() => {
+    setLocalValue(color.value);
+  }, [color.value]);
+
+  const isHexColor = /^#[0-9a-fA-F]{3,8}$/.test(localValue);
   const isFontValue = color.key === "fontFamily";
 
   const handleColorPicker = useCallback(
@@ -54,12 +58,12 @@ export function ColorSwatch({ color, onChange }: ColorSwatchProps) {
       <div className="relative w-7 h-7 shrink-0">
         <div
           className="absolute inset-0 rounded border border-border"
-          style={{ backgroundColor: isHexColor ? color.value : "#e5e7eb" }}
+          style={{ backgroundColor: isHexColor ? localValue : "#e5e7eb" }}
         />
         {isHexColor && (
           <input
             type="color"
-            value={color.value.length === 7 ? color.value : "#1a4f8a"}
+            value={localValue.length === 7 ? localValue : "#1a4f8a"}
             onChange={handleColorPicker}
             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer rounded"
             title={`Pick color for ${color.label}`}
