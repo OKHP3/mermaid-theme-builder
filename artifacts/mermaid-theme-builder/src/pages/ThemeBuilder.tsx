@@ -12,8 +12,11 @@ import {
   generateThemedCode,
   generateMarkdownExport,
   generatePromptScaffold,
+  generatePromptScaffoldWithFormat,
   type ExportOptions,
+  type ScaffoldFormat,
 } from "@/lib/themeEngine";
+import { PromptScaffoldModal } from "@/components/PromptScaffoldModal";
 import { MermaidPreview } from "@/components/MermaidPreview";
 import { ColorSwatch } from "@/components/ColorSwatch";
 import { WarningBanner } from "@/components/WarningBanner";
@@ -31,6 +34,7 @@ export function ThemeBuilder() {
   const [customColors, setCustomColors] = useState<Record<string, ThemeColor[]>>({});
   const [activeTab, setActiveTab] = useState<Tab>("input");
   const [copiedType, setCopiedType] = useState<ExportType | null>(null);
+  const [showScaffoldModal, setShowScaffoldModal] = useState(false);
   const [includeMetaComments, setIncludeMetaComments] = useState(true);
   const [includeBadge, setIncludeBadge] = useState(false);
   const [customThemeName, setCustomThemeName] = useState("");
@@ -111,6 +115,19 @@ export function ThemeBuilder() {
     setCustomThemeName("");
   }, []);
 
+  const writeToClipboard = useCallback(async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      const el = document.createElement("textarea");
+      el.value = text;
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand("copy");
+      document.body.removeChild(el);
+    }
+  }, []);
+
   const copyToClipboard = useCallback(
     async (type: ExportType) => {
       let text = "";
@@ -118,22 +135,19 @@ export function ThemeBuilder() {
       else if (type === "markdown") text = generateMarkdownExport(exportCode, selectedPalette, exportOptions);
       else if (type === "prompt") text = generatePromptScaffold(selectedPalette, exportOptions);
 
-      try {
-        await navigator.clipboard.writeText(text);
-        setCopiedType(type);
-        setTimeout(() => setCopiedType(null), 2000);
-      } catch {
-        const el = document.createElement("textarea");
-        el.value = text;
-        document.body.appendChild(el);
-        el.select();
-        document.execCommand("copy");
-        document.body.removeChild(el);
-        setCopiedType(type);
-        setTimeout(() => setCopiedType(null), 2000);
-      }
+      await writeToClipboard(text);
+      setCopiedType(type);
+      setTimeout(() => setCopiedType(null), 2000);
     },
-    [exportCode, selectedPalette, exportOptions],
+    [exportCode, selectedPalette, exportOptions, writeToClipboard],
+  );
+
+  const copyScaffoldWithFormat = useCallback(
+    async (format: ScaffoldFormat) => {
+      const text = generatePromptScaffoldWithFormat(selectedPalette, exportOptions, format);
+      await writeToClipboard(text);
+    },
+    [selectedPalette, exportOptions, writeToClipboard],
   );
 
   const previewCode = activeTab === "output" ? themedCode : inputCode;
@@ -414,9 +428,9 @@ export function ThemeBuilder() {
             />
             <CopyButton
               label="Prompt Scaffold"
-              copied={copiedType === "prompt"}
+              copied={false}
               disabled={!exportCode}
-              onClick={() => copyToClipboard("prompt")}
+              onClick={() => setShowScaffoldModal(true)}
               icon={
                 <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5">
                   <path fillRule="evenodd" d="M2 5a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm3.293 1.293a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 01-1.414-1.414L7.586 10 5.293 7.707a1 1 0 010-1.414zM11 12a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd" />
@@ -433,6 +447,12 @@ export function ThemeBuilder() {
           </div>
         </main>
       </div>
+
+      <PromptScaffoldModal
+        open={showScaffoldModal}
+        onClose={() => setShowScaffoldModal(false)}
+        onCopy={copyScaffoldWithFormat}
+      />
     </div>
   );
 }

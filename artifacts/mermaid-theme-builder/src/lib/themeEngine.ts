@@ -311,7 +311,9 @@ function buildSubgraphTiers(palette: Palette): string {
     style SubgraphName fill:transparent,stroke:${lineColor},color:${titleColor},stroke-dasharray:2`;
 }
 
-export function generatePromptScaffold(palette: Palette, options: ExportOptions): string {
+export type ScaffoldFormat = "formatA" | "formatB" | "both";
+
+function buildScaffold(palette: Palette, options: ExportOptions, scaffoldFormat: ScaffoldFormat): string {
   const { diagramFamily, customThemeName } = options;
   const themeName = customThemeName?.trim() || palette.name;
   const isCustom = !!customThemeName?.trim() && customThemeName.trim() !== palette.name;
@@ -329,6 +331,59 @@ export function generatePromptScaffold(palette: Palette, options: ExportOptions)
   const classDefBlock = buildClassDefLibrary(palette);
   const subgraphBlock = buildSubgraphTiers(palette);
   const brandGuidance = getBrandGuidance(palette);
+
+  const exampleDirective = scaffoldFormat === "formatB" ? frontmatterBlock : initBlock;
+
+  const themeDirectiveSection =
+    scaffoldFormat === "formatA"
+      ? `## Required: Theme directive
+
+Use the \`%%{init}%%\` directive (Format A) — compatible with Mermaid v9+, Microsoft Loop, Notion, and most renderers.
+
+\`\`\`
+${initBlock}
+\`\`\``
+      : scaffoldFormat === "formatB"
+      ? `## Required: Theme directive
+
+Use YAML frontmatter (Format B) — the preferred format for Mermaid v10.5+, Mermaid Live Editor, VS Code, and GitHub (where supported).
+
+\`\`\`
+${frontmatterBlock}
+\`\`\``
+      : `## Required: Theme directive
+
+Choose ONE of the two formats below based on your renderer. Never use both in the same diagram.
+
+### Format A — \`%%{init}%%\` directive (universal, Mermaid v9+)
+
+> Use this for: Microsoft Loop, Notion, older renderers, or anywhere YAML frontmatter is not supported.
+
+\`\`\`
+${initBlock}
+\`\`\`
+
+### Format B — YAML frontmatter (preferred, Mermaid v10.5+)
+
+> Use this for: Mermaid Live Editor, VS Code with Mermaid extension, GitHub (where supported). This format is the current Mermaid standard and deprecates \`%%{init}%%\`.
+
+\`\`\`
+${frontmatterBlock}
+\`\`\``;
+
+  const formatRuleText =
+    scaffoldFormat === "formatA"
+      ? "ALWAYS start the diagram with the `%%{init}%%` theme directive — no exceptions."
+      : scaffoldFormat === "formatB"
+      ? "ALWAYS start the diagram with the YAML frontmatter theme directive — no exceptions."
+      : "ALWAYS start the diagram with the theme directive (Format A or Format B above) — no exceptions.";
+
+  const updateRestoreText =
+    scaffoldFormat === "formatA"
+      ? "Restore the `%%{init}%%` theme directive at the very top (do not omit it)."
+      : scaffoldFormat === "formatB"
+      ? "Restore the YAML frontmatter theme directive at the very top (do not omit it)."
+      : "Restore the theme directive at the very top (use Format A or B from the original scaffold — do not omit it).";
 
   const metaBlock = `%% Theme: ${themeName}
 %% Theme ID: ${palette.id}
@@ -371,25 +426,7 @@ ${brandGuidance}
 
 ---
 
-## Required: Theme directive
-
-Choose ONE of the two formats below based on your renderer. Never use both in the same diagram.
-
-### Format A — \`%%{init}%%\` directive (universal, Mermaid v9+)
-
-> Use this for: Microsoft Loop, Notion, older renderers, or anywhere YAML frontmatter is not supported.
-
-\`\`\`
-${initBlock}
-\`\`\`
-
-### Format B — YAML frontmatter (preferred, Mermaid v10.5+)
-
-> Use this for: Mermaid Live Editor, VS Code with Mermaid extension, GitHub (where supported). This format is the current Mermaid standard and deprecates \`%%{init}%%\`.
-
-\`\`\`
-${frontmatterBlock}
-\`\`\`
+${themeDirectiveSection}
 
 ---
 
@@ -408,7 +445,7 @@ ${metaBlock}
 This is the complete styling vocabulary for this theme. Apply these classDef classes to nodes using \`:::className\` syntax. Do NOT add any other fill, stroke, or color values — use only these classes.
 
 \`\`\`mermaid
-${initBlock}
+${exampleDirective}
 flowchart TD
 ${classDefBlock}
 
@@ -445,7 +482,7 @@ ${classDefBlock}
 Use \`style SubgraphName ...\` statements to apply visual hierarchy to subgraphs. Replace \`SubgraphName\` with the actual subgraph ID.
 
 \`\`\`mermaid
-${initBlock}
+${exampleDirective}
 flowchart TD
 ${subgraphBlock}
 \`\`\`
@@ -467,7 +504,7 @@ ${colorLines}
 
 ## Rules
 
-1. ALWAYS start the diagram with the theme directive (Format A or Format B above) — no exceptions.
+1. ${formatRuleText}
 2. Add the metadata comment block immediately after the theme directive.
 3. Use \`${diagramFamily === "unknown" ? "flowchart TD" : diagramFamily === "flowchart" ? "flowchart TD" : diagramFamily}\` as the diagram type unless the user specifies otherwise.
 4. Keep node labels concise (under 60 characters each).
@@ -483,7 +520,7 @@ ${colorLines}
 ## Example output structure
 
 \`\`\`mermaid
-${initBlock}
+${exampleDirective}
 ${metaBlock}
 ${diagramTypeExample}
 \`\`\`
@@ -505,7 +542,7 @@ ${diagramTypeExample}
 
 The diagram above has drifted from the required visual theme. Please regenerate it in full with the following corrections applied:
 
-1. Restore the theme directive at the very top (use Format A or B from the original scaffold — do not omit it).
+1. ${updateRestoreText}
 2. Restore the metadata comment block immediately after the directive.
 ${supportsClassDef
   ? `3. Re-apply all node classes using the classDef vocabulary from the original scaffold (:::className syntax). Do not add any inline fill, stroke, or color values.
@@ -558,4 +595,18 @@ If the error is caused by an unsupported feature for this diagram type, note the
 *Generated by [Mermaid Theme Builder](${TOOL_URL}) — paste PART 1 into your AI thread to maintain visual consistency. Use PART 2 to restore drift. Use PART 3 to fix parse errors.*  
 *Mermaid Theme Builder is a personal [OverKill Hill P³](https://overkillhill.com) project by Jamie Hill. Not affiliated with Builders FirstSource, Mermaid, Mermaid Chart, or Mermaid.ai.*
 `;
+}
+
+/** Original public function — unchanged signature, always produces both formats. */
+export function generatePromptScaffold(palette: Palette, options: ExportOptions): string {
+  return buildScaffold(palette, options, "both");
+}
+
+/** Format-aware variant — UI calls this when the user has chosen a specific directive format. */
+export function generatePromptScaffoldWithFormat(
+  palette: Palette,
+  options: ExportOptions,
+  format: ScaffoldFormat,
+): string {
+  return buildScaffold(palette, options, format);
 }
