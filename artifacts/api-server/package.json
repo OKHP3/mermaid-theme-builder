@@ -17,7 +17,7 @@
     "drizzle-orm": "catalog:",
     "express": "^5",
     "pino": "^10",
-    "pino-http": "^10"
+    "pino-http": "^11"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.10",
