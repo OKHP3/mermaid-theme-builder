@@ -58,10 +58,6 @@ export default defineConfig({
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
   },
-  optimizeDeps: {
-    exclude: ["mermaid"],
-    include: ["dayjs"],
-  },
   server: {
     port,
     strictPort: true,
