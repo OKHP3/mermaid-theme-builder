@@ -1,0 +1,39 @@
+# Dependabot configuration for Mermaid Theme Builder
+# Mermaid Theme Builder is a personal OverKill Hill P³ project by Jamie Hill.
+#
+# Update policy:
+# - Dependabot opens PRs for npm and GitHub Actions dependency updates.
+# - CI runs typecheck and build on each PR.
+# - The Mermaid capability registry (src/data/mermaid-capabilities.json) must be
+#   reviewed and updated when mermaid itself is upgraded, before merging.
+# - All PRs require human review and merge.
+
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "npm"
+    commit-message:
+      prefix: "chore(deps)"
+    ignore:
+      # Mermaid major version upgrades require registry review — handle manually.
+      - dependency-name: "mermaid"
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "github-actions"
+    commit-message:
+      prefix: "chore(actions)"
