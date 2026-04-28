@@ -1,5 +1,5 @@
 kind = "web"
-previewPath = "/"
+previewPath = "/mermaid-theme-builder/"
 title = "Mermaid Theme Builder"
 version = "1.0.0"
 id = "artifacts/mermaid-theme-builder"
@@ -11,7 +11,7 @@ version = "1.0.0"
 
 [[services]]
 name = "web"
-paths = [ "/" ]
+paths = [ "/mermaid-theme-builder/" ]
 localPort = 18624
 
 [services.development]
@@ -28,4 +28,4 @@ to = "/index.html"
 
 [services.env]
 PORT = "18624"
-BASE_PATH = "/"
+BASE_PATH = "/mermaid-theme-builder/"
