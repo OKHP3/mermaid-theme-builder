@@ -60,6 +60,7 @@ export default defineConfig({
   },
   optimizeDeps: {
     exclude: ["mermaid"],
+    include: ["dayjs"],
   },
   server: {
     port,
