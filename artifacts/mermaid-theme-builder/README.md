@@ -6,6 +6,17 @@ Mermaid Theme Builder is a browser-based visual governance tool for Mermaid diag
 
 Built for enterprise architects, technical writers, and AI power users who generate Mermaid diagrams through Claude, ChatGPT, Copilot, Gemini, or Mermaid.ai.
 
+## Workflow Tabs (V0.3.1)
+
+The interface is organized into four focused tabs that share palette and code state:
+
+- **Apply** — paste Mermaid, apply a theme, preview, and copy/export. The default landing tab and core workflow.
+- **Compose** — design a reusable theme/bootstrap without needing diagram code. Hosts the full color editor and exports a Bootstrap Markdown or Prompt Scaffold to seed an LLM.
+- **Examples** — browse and load sample diagrams. Each example previews live with the current theme and can be loaded into Apply with one click.
+- **Reference** — inspect Mermaid support, capability warnings, theme confidence, notation compliance, and visual-language guidance. Hosts the Diagram Inventory and Class Library.
+
+Mobile uses a fixed bottom tab bar to keep navigation in thumb reach. The Apply tab on mobile stacks code, preview, and export actions vertically; the color editor opens as a full-screen drawer. See `docs/ux-restructure-assessment.md` for the full restructure rationale.
+
 ## Features
 
 - Paste Mermaid code, auto-detect diagram family (15 types)

@@ -6,6 +6,13 @@ import { detectDiagram } from "@/lib/detector";
 import { MermaidPreview } from "@/components/MermaidPreview";
 import { BRAND_EXAMPLES, SHOWCASE_EXAMPLE, SHOWCASE_META } from "@/data/examples";
 import { EXAMPLE_GROUPS } from "@/data/example-library";
+import {
+  SUPPORT_STATUS_LABELS,
+  SUPPORT_STATUS_STYLES,
+  THEME_CONFIDENCE_LABELS,
+  THEME_CONFIDENCE_STYLES,
+  NOTATION_COMPLIANCE_LABELS,
+} from "@/data/mermaid-capabilities";
 
 interface ExampleItem {
   id: string;
@@ -93,15 +100,20 @@ export function ExamplesTab({ selectedPalette, onLoadExample }: ExamplesTabProps
     [selectedId],
   );
 
-  const previewOptions = useMemo((): ExportOptions => {
-    const detection = detectDiagram(selectedExample?.content ?? "");
-    return {
+  const detection = useMemo(
+    () => detectDiagram(selectedExample?.content ?? ""),
+    [selectedExample],
+  );
+
+  const previewOptions = useMemo(
+    (): ExportOptions => ({
       palette: selectedPalette,
       diagramFamily: detection.family,
       includeMetaComments: false,
       includeBadge: false,
-    };
-  }, [selectedPalette, selectedExample]);
+    }),
+    [selectedPalette, detection],
+  );
 
   const themedPreviewCode = useMemo(
     () => (selectedExample ? generateThemedCode(selectedExample.content, previewOptions) : ""),
@@ -195,6 +207,26 @@ export function ExamplesTab({ selectedPalette, onLoadExample }: ExamplesTabProps
             </div>
             <span className="text-xs text-muted-foreground/60 shrink-0 ml-2">Themed preview</span>
           </div>
+          {selectedExample && detection.capability && (
+            <div className="flex-none border-b border-border bg-card/20 px-4 py-2 flex flex-wrap items-center gap-1.5">
+              <span className="text-[10px] text-muted-foreground/70 uppercase tracking-wider font-semibold mr-1">
+                {detection.label}
+              </span>
+              <span
+                className={`text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded-full border ${SUPPORT_STATUS_STYLES[detection.capability.supportStatus]}`}
+              >
+                {SUPPORT_STATUS_LABELS[detection.capability.supportStatus]}
+              </span>
+              <span
+                className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${THEME_CONFIDENCE_STYLES[detection.capability.themeConfidence]}`}
+              >
+                Theme: {THEME_CONFIDENCE_LABELS[detection.capability.themeConfidence]}
+              </span>
+              <span className="text-[10px] text-muted-foreground/80 px-1.5 py-0.5 rounded bg-muted/50 border border-border/50">
+                {NOTATION_COMPLIANCE_LABELS[detection.capability.notationCompliance]}
+              </span>
+            </div>
+          )}
           <div className="flex-1 overflow-auto p-4">
             {selectedExample ? (
               <MermaidPreview code={themedPreviewCode} className="w-full h-full" />
@@ -211,6 +243,15 @@ export function ExamplesTab({ selectedPalette, onLoadExample }: ExamplesTabProps
               </p>
             </div>
           )}
+          {selectedExample &&
+            selectedExample.id !== "showcase" &&
+            detection.capability?.warning && (
+              <div className="flex-none border-t border-border px-4 py-2 bg-amber-50/60 dark:bg-amber-950/20">
+                <p className="text-[11px] text-amber-700 dark:text-amber-400 leading-relaxed">
+                  {detection.capability.warning}
+                </p>
+              </div>
+            )}
         </div>
       </div>
 
