@@ -1,0 +1,234 @@
+# REPLIT: Mermaid Theme Builder — UX Restructuring to Tabbed Architecture
+
+## PROBLEM
+
+The current single-screen layout puts every feature on one page: palette selector, color editor, code input, live preview, capability browser, diagram inventory, prompt scaffold modal, and export buttons. This works minimally on a wide desktop but fails on mobile and creates cognitive overload on all screen sizes. There’s no workflow progression.
+
+## SOLUTION
+
+Break the single screen into 4 tabbed sub-screens. Each tab has one job.
+
+-----
+
+## TAB 1: APPLY (default tab, loads on open)
+
+This is the core workflow. Paste, theme, preview, copy. Nothing else.
+
+### Layout (desktop)
+
+```
+[Tab Bar: Apply* | Compose | Examples | Reference]
+┌─────────────────────────────────┬──────────────────────────────────┐
+│ PALETTE STRIP (horizontal,      │                                  │
+│ 7 presets as small swatch        │                                  │
+│ buttons, selected = highlighted) │    [Original] [Themed] toggle    │
+├─────────────────────────────────┤                                  │
+│                                 │                                  │
+│   Code Input Textarea           │   Live Mermaid Preview           │
+│   (paste Mermaid here)          │                                  │
+│                                 │                                  │
+│                                 │                                  │
+├─────────────────────────────────┴──────────────────────────────────┤
+│ [Edit Colors]   [Styled Code] [Markdown] [Prompt Scaffold]        │
+│  ^ opens slide-out panel                                          │
+│ Warnings (if any) shown inline above export bar                   │
+└───────────────────────────────────────────────────────────────────┘
+```
+
+### Layout (mobile)
+
+```
+[Tab Bar: Apply* | Compose | Examples | Reference]
+┌───────────────────────┐
+│ Palette strip          │  ← horizontal scroll, compact swatches
+├───────────────────────┤
+│ Code input (4 lines    │
+│ visible, expandable)   │
+├───────────────────────┤
+│ Live Preview           │  ← takes remaining vertical space
+│ (pinch to zoom)        │
+├───────────────────────┤
+│ [Edit] [Code] [MD] [AI]│ ← bottom action bar, fixed position
+└───────────────────────┘
+```
+
+### What moves OUT of Apply:
+
+- Color editor (13 color fields) → becomes a slide-out/modal triggered by “Edit Colors” button
+- ClassBrowser → moves to Reference tab
+- DiagramInventory → moves to Examples and Reference tabs
+- CapabilityNote → moves to Reference tab
+- Example selector → moves to Examples tab
+- Font family editor → moves to Compose tab
+
+-----
+
+## TAB 2: COMPOSE
+
+Pre-prompt mode. Define your visual identity, export a bootstrap or scaffold. No diagram input needed.
+
+### Layout
+
+```
+[Tab Bar: Apply | Compose* | Examples | Reference]
+┌──────────────────────┬────────────────────────────────────┐
+│ Palette Selector     │                                    │
+│ (same 7 presets)     │  PREVIEW: Shows a generic sample   │
+│                      │  flowchart with the selected       │
+│ Full Color Editor    │  theme applied (read-only)         │
+│ (all 13 fields,      │                                    │
+│ always visible here) │                                    │
+│                      │                                    │
+│ Font Family dropdown │                                    │
+│                      │                                    │
+│ Theme Name field     │                                    │
+│                      │                                    │
+│ Watermark toggle     │                                    │
+├──────────────────────┴────────────────────────────────────┤
+│ [Copy Bootstrap Markdown] [Copy Prompt Scaffold]          │
+│ "Paste this into your LLM before generating diagrams"     │
+└───────────────────────────────────────────────────────────┘
+```
+
+### Mobile
+
+Color editor takes the full screen. Preview is below the fold. Export buttons are fixed at bottom.
+
+-----
+
+## TAB 3: EXAMPLES
+
+Browse, preview, and load example diagrams.
+
+### Layout
+
+```
+[Tab Bar: Apply | Compose | Examples* | Reference]
+┌──────────────────────┬────────────────────────────────────┐
+│ Example List          │                                    │
+│ (grouped by type)     │  Preview of selected example       │
+│                      │  (rendered with current theme)      │
+│ ○ Flowchart Basic    │                                    │
+│ ○ Sequence Auth Flow │                                    │
+│ ○ Class Domain Model │                                    │
+│ ○ State Lifecycle    │                                    │
+│ ○ ER Registry        │                                    │
+│ ○ Gantt Roadmap      │                                    │
+│ ○ Mindmap Ecosystem  │                                    │
+│ ...                  │                                    │
+│                      │                                    │
+│ [Showcase]           │                                    │
+│  OverKill Rube       │                                    │
+│  Goldberg            │                                    │
+├──────────────────────┴────────────────────────────────────┤
+│ [Load into Apply Tab] [Copy Raw Code]                     │
+└───────────────────────────────────────────────────────────┘
+```
+
+### Behavior
+
+- Selecting an example shows its preview with the currently selected theme
+- “Load into Apply Tab” switches to Apply and pastes the example code
+- Examples grouped by diagram family with support-level badges (Native / Beta / Emulation)
+
+-----
+
+## TAB 4: REFERENCE
+
+Mermaid capability documentation. What exists, what doesn’t, what’s safe.
+
+### Layout
+
+```
+[Tab Bar: Apply | Compose | Examples | Reference*]
+┌───────────────────────────────────────────────────────────┐
+│ Mermaid Capability Registry                               │
+│                                                           │
+│ [Search / Filter by family]                               │
+│                                                           │
+│ ┌─ Diagram Families ─────────────────────────────────┐   │
+│ │ Flowchart          ● Native    15+ shape types     │   │
+│ │ Sequence Diagram   ● Native    fragments, notes    │   │
+│ │ Class Diagram      ● Native    relationships       │   │
+│ │ BPMN               ○ Gap       not supported       │   │
+│ │ Use Case           ○ Gap       not supported       │   │
+│ │ ...                                                │   │
+│ └────────────────────────────────────────────────────┘   │
+│                                                           │
+│ ClassBrowser (expandable per family)                      │
+│ CapabilityNote (contextual, per selected family)          │
+│                                                           │
+│ Theme confidence indicators per family                    │
+│ Link to Visual Language Diagram Taxonomy (Notion)         │
+└───────────────────────────────────────────────────────────┘
+```
+
+-----
+
+## IMPLEMENTATION APPROACH
+
+### Step 1: Create tab navigation
+
+Add a top-level tab bar component. Use React state (no router needed for V0.2).
+
+```tsx
+type AppTab = "apply" | "compose" | "examples" | "reference";
+const [activeTab, setActiveTab] = useState<AppTab>("apply");
+```
+
+### Step 2: Extract existing UI into tab-specific components
+
+- `ApplyTab.tsx` — current ThemeBuilder core (textarea, preview, export buttons) with sidebar removed
+- `ComposeTab.tsx` — color editor + font controls + bootstrap/scaffold export
+- `ExamplesTab.tsx` — example list + preview + “Load into Apply” action
+- `ReferenceTab.tsx` — ClassBrowser + CapabilityNote + DiagramInventory
+
+### Step 3: Share state across tabs
+
+Palette selection, custom color overrides, and the current diagram code are shared state.
+When the user selects a palette in Compose, it’s reflected in Apply. When they load an example
+in Examples, it pastes into Apply.
+
+```tsx
+// Shared state (lift to App.tsx or use React context)
+const [selectedPaletteId, setSelectedPaletteId] = useState(...)
+const [customColors, setCustomColors] = useState(...)
+const [inputCode, setInputCode] = useState(...)
+```
+
+### Step 4: Mobile-specific adjustments
+
+- Tab bar becomes a bottom navigation bar on mobile (fixed position)
+- Apply tab: code input collapses to 4 visible lines with expand button
+- Color editor opens as a full-screen modal, not inline
+- Preview gets pinch-to-zoom support
+- Export buttons become a fixed bottom action bar
+
+### Step 5: Keep the palette strip compact in Apply
+
+The palette selector in Apply tab should be a horizontal row of 7 small color-swatch circles (28px each), not the current 2-column card grid with descriptions. The full card grid with descriptions belongs in Compose.
+
+-----
+
+## WHAT NOT TO CHANGE
+
+- The theme engine (`themeEngine.ts`) — leave as is
+- The detector (`detector.ts`) — leave as is
+- The palette data (`palettes.ts`) — leave as is
+- The Mermaid preview component (`MermaidPreview.tsx`) — leave as is
+- The color swatch component (`ColorSwatch.tsx`) — leave as is, just relocate
+
+The restructuring is a layout change, not a logic change. No business logic needs to be rewritten. The components already exist. They need to be moved into the right containers.
+
+-----
+
+## SUCCESS CRITERIA
+
+- [ ] Apply tab shows ONLY: code input, palette strip, preview, export buttons
+- [ ] A first-time user on Apply can paste code and copy styled output in under 30 seconds
+- [ ] Mobile Apply tab is usable without horizontal scrolling
+- [ ] Color editor is not visible until explicitly requested
+- [ ] ClassBrowser and DiagramInventory are not visible in Apply
+- [ ] Examples tab can load any example into Apply with one click
+- [ ] Compose tab can generate a bootstrap/scaffold without pasting any diagram code
+- [ ] All four tabs share palette and code state

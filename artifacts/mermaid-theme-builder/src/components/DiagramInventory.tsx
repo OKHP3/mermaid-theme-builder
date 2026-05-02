@@ -200,10 +200,11 @@ function GapRow({ gap }: { gap: GapEntry }) {
 }
 
 interface DiagramInventoryProps {
-  onClose: () => void;
+  onClose?: () => void;
+  embedded?: boolean;
 }
 
-export function DiagramInventory({ onClose }: DiagramInventoryProps) {
+export function DiagramInventory({ onClose, embedded = false }: DiagramInventoryProps) {
   const [filter, setFilter] = useState<FilterTab>("all");
   const [search, setSearch] = useState("");
 
@@ -268,7 +269,7 @@ export function DiagramInventory({ onClose }: DiagramInventoryProps) {
   );
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-background overflow-hidden">
+    <div className={embedded ? "flex flex-col h-full overflow-hidden bg-background" : "fixed inset-0 z-50 flex flex-col bg-background overflow-hidden"}>
       <div className="border-b border-border bg-card/80 backdrop-blur px-4 md:px-6 py-3 flex items-center justify-between gap-4 shrink-0">
         <div className="flex items-center gap-3">
           <div className="w-7 h-7 rounded-md bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
@@ -294,15 +295,17 @@ export function DiagramInventory({ onClose }: DiagramInventoryProps) {
             placeholder="Search diagrams…"
             className="text-xs bg-background border border-border rounded-md px-2.5 py-1.5 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 w-40 sm:w-52"
           />
-          <button
-            onClick={onClose}
-            className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors px-2.5 py-1.5 rounded-md border border-border hover:bg-muted"
-          >
-            <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5">
-              <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
-            </svg>
-            <span className="hidden sm:inline">Back to Builder</span>
-          </button>
+          {!embedded && onClose && (
+            <button
+              onClick={onClose}
+              className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors px-2.5 py-1.5 rounded-md border border-border hover:bg-muted"
+            >
+              <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5">
+                <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+              </svg>
+              <span className="hidden sm:inline">Back to Builder</span>
+            </button>
+          )}
         </div>
       </div>
 
