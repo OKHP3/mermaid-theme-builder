@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useId } from "react";
+import { useCallback, useEffect, useRef, useState, useId } from "react";
 
 interface MermaidPreviewProps {
   code: string;
@@ -6,6 +6,9 @@ interface MermaidPreviewProps {
 }
 
 type MermaidType = typeof import("mermaid").default;
+
+const MIN_SCALE = 0.5;
+const MAX_SCALE = 4;
 
 let mermaidInstance: MermaidType | null = null;
 let initializationDone = false;
@@ -31,7 +34,50 @@ export function MermaidPreview({ code, className }: MermaidPreviewProps) {
   const [error, setError] = useState<string | null>(null);
   const [svgContent, setSvgContent] = useState<string>("");
   const [loading, setLoading] = useState(false);
+  const [scale, setScale] = useState(1);
+  const lastPinchDistance = useRef<number | null>(null);
+  const lastTapTime = useRef<number>(0);
   const uniqueId = useId().replace(/:/g, "");
+
+  useEffect(() => {
+    setScale(1);
+  }, [code]);
+
+  const onTouchStart = useCallback((e: React.TouchEvent<HTMLDivElement>) => {
+    if (e.touches.length === 2) {
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      lastPinchDistance.current = Math.hypot(dx, dy);
+    } else if (e.touches.length === 1) {
+      const now = Date.now();
+      if (now - lastTapTime.current < 300) {
+        setScale(1);
+        lastTapTime.current = 0;
+      } else {
+        lastTapTime.current = now;
+      }
+    }
+  }, []);
+
+  const onTouchMove = useCallback((e: React.TouchEvent<HTMLDivElement>) => {
+    if (e.touches.length === 2 && lastPinchDistance.current !== null) {
+      e.preventDefault();
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      const distance = Math.hypot(dx, dy);
+      const factor = distance / lastPinchDistance.current;
+      setScale((s) => Math.min(MAX_SCALE, Math.max(MIN_SCALE, s * factor)));
+      lastPinchDistance.current = distance;
+    }
+  }, []);
+
+  const onTouchEnd = useCallback(() => {
+    lastPinchDistance.current = null;
+  }, []);
+
+  const onDoubleClick = useCallback(() => {
+    setScale(1);
+  }, []);
 
   useEffect(() => {
     if (!code.trim()) {
@@ -108,8 +154,22 @@ export function MermaidPreview({ code, className }: MermaidPreviewProps) {
   return (
     <div
       ref={containerRef}
-      className={`flex items-center justify-center overflow-auto ${className ?? ""}`}
-      dangerouslySetInnerHTML={{ __html: svgContent }}
-    />
+      className={`overflow-auto select-none ${scale === 1 ? "flex items-center justify-center" : ""} ${className ?? ""}`}
+      style={{ touchAction: "pan-x pan-y" }}
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
+      onTouchCancel={onTouchEnd}
+      onDoubleClick={onDoubleClick}
+      title={scale !== 1 ? "Double-tap or double-click to reset zoom" : undefined}
+    >
+      <div
+        style={{
+          zoom: scale,
+          transition: lastPinchDistance.current !== null ? "none" : "zoom 0.15s ease-out",
+        }}
+        dangerouslySetInnerHTML={{ __html: svgContent }}
+      />
+    </div>
   );
 }

@@ -77,6 +77,7 @@ export function ApplyTab({
   const [showColorEditor, setShowColorEditor] = useState(false);
   const [copiedType, setCopiedType] = useState<ExportType | null>(null);
   const [showScaffoldModal, setShowScaffoldModal] = useState(false);
+  const [textareaExpanded, setTextareaExpanded] = useState(false);
 
   const detection = useMemo(() => detectDiagram(inputCode), [inputCode]);
 
@@ -111,8 +112,15 @@ export function ApplyTab({
 
   const warnings = useMemo(() => {
     const w: string[] = [];
-    if (detection.family !== "unknown" && detection.capability?.warning) {
-      w.push(detection.capability.warning);
+    const cap = detection.capability;
+    if (detection.family !== "unknown" && cap && cap.warning) {
+      const isPurelyPositive =
+        cap.supportStatus === "native" &&
+        cap.themeConfidence === "high" &&
+        cap.stability === "stable";
+      if (!isPurelyPositive) {
+        w.push(cap.warning);
+      }
     }
     return w;
   }, [detection]);
@@ -203,19 +211,53 @@ export function ApplyTab({
 
       <div className="flex-1 overflow-hidden flex flex-col md:flex-row min-h-0">
         <div className="flex flex-col w-full md:w-1/2 border-b md:border-b-0 md:border-r border-border min-h-0">
-          <div className="flex items-center justify-between px-3 py-1.5 border-b border-border bg-card/20 flex-none">
+          <div className="flex items-center justify-between px-3 py-1.5 border-b border-border bg-card/20 flex-none gap-2">
             <span className="text-xs font-medium text-muted-foreground">Diagram Code</span>
-            {detection.family !== "unknown" && (
-              <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[11px] font-medium">
-                {detection.label}
-              </span>
-            )}
+            <div className="flex items-center gap-1.5">
+              {detection.family !== "unknown" && (
+                <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[11px] font-medium">
+                  {detection.label}
+                </span>
+              )}
+              <button
+                type="button"
+                onClick={() => setTextareaExpanded((v) => !v)}
+                className="md:hidden text-[10px] font-medium text-muted-foreground hover:text-foreground px-1.5 py-0.5 rounded border border-border/60 hover:border-border transition-colors inline-flex items-center gap-1"
+                aria-label={textareaExpanded ? "Collapse code editor" : "Expand code editor"}
+              >
+                {textareaExpanded ? (
+                  <>
+                    <svg viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3">
+                      <path
+                        fillRule="evenodd"
+                        d="M5 9a.75.75 0 01.75-.75h8.5a.75.75 0 010 1.5h-8.5A.75.75 0 015 9z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    Collapse
+                  </>
+                ) : (
+                  <>
+                    <svg viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3">
+                      <path
+                        fillRule="evenodd"
+                        d="M10 5a.75.75 0 01.75.75v3.5h3.5a.75.75 0 010 1.5h-3.5v3.5a.75.75 0 01-1.5 0v-3.5h-3.5a.75.75 0 010-1.5h3.5v-3.5A.75.75 0 0110 5z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    Expand
+                  </>
+                )}
+              </button>
+            </div>
           </div>
           <textarea
             value={inputCode}
             onChange={(e) => onInputChange(e.target.value)}
             placeholder="Paste your Mermaid diagram here…"
-            className="flex-1 w-full p-3 bg-background text-foreground text-xs font-mono resize-none focus:outline-none placeholder:text-muted-foreground/50 min-h-[140px] md:min-h-0"
+            className={`flex-1 w-full p-3 bg-background text-foreground text-xs font-mono resize-none focus:outline-none placeholder:text-muted-foreground/50 md:min-h-0 transition-all ${
+              textareaExpanded ? "min-h-[60vh]" : "min-h-[88px]"
+            }`}
             spellCheck={false}
           />
         </div>

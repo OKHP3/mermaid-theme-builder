@@ -4,6 +4,7 @@ import { BRAND_PALETTES } from "@/lib/palettes";
 import { generateThemedCode, type ExportOptions } from "@/lib/themeEngine";
 import { detectDiagram } from "@/lib/detector";
 import { MermaidPreview } from "@/components/MermaidPreview";
+import { DiagramInventory } from "@/components/DiagramInventory";
 import { BRAND_EXAMPLES, SHOWCASE_EXAMPLE, SHOWCASE_META } from "@/data/examples";
 import { EXAMPLE_GROUPS } from "@/data/example-library";
 import {
@@ -94,6 +95,7 @@ export function ExamplesTab({ selectedPalette, onLoadExample }: ExamplesTabProps
   const [selectedId, setSelectedId] = useState(ALL_EXAMPLES[0]?.id ?? "");
   const [copiedRaw, setCopiedRaw] = useState(false);
   const [showMobilePreview, setShowMobilePreview] = useState(false);
+  const [showInventory, setShowInventory] = useState(false);
 
   const selectedExample = useMemo(
     () => ALL_EXAMPLES.find((e) => e.id === selectedId) ?? ALL_EXAMPLES[0],
@@ -142,6 +144,29 @@ export function ExamplesTab({ selectedPalette, onLoadExample }: ExamplesTabProps
             showMobilePreview ? "hidden md:flex" : "flex"
           }`}
         >
+          <div className="px-2 pt-2 pb-1 border-b border-border/50 bg-card/40">
+            <button
+              type="button"
+              onClick={() => setShowInventory(true)}
+              className="w-full flex items-center gap-2 px-2.5 py-2 rounded-md text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            >
+              <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5">
+                <path
+                  fillRule="evenodd"
+                  d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              <span className="flex-1 text-left font-medium">Browse all supported families</span>
+              <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 text-muted-foreground/60">
+                <path
+                  fillRule="evenodd"
+                  d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </button>
+          </div>
           {SECTIONS.map((section) => {
             const entries = ALL_EXAMPLES.filter((e) => e.section === section);
             return (
@@ -254,6 +279,40 @@ export function ExamplesTab({ selectedPalette, onLoadExample }: ExamplesTabProps
             )}
         </div>
       </div>
+
+      {showInventory && (
+        <>
+          <div
+            className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"
+            onClick={() => setShowInventory(false)}
+          />
+          <div className="fixed inset-x-0 bottom-0 top-12 md:top-16 z-50 bg-card border-t border-border shadow-2xl flex flex-col rounded-t-xl md:mx-8 md:rounded-xl">
+            <div className="flex-none flex items-center justify-between px-4 py-3 border-b border-border">
+              <div>
+                <p className="text-sm font-semibold text-foreground leading-none">
+                  Diagram Family Inventory
+                </p>
+                <p className="text-[11px] text-muted-foreground mt-1">
+                  Full Mermaid capability registry — support, theme confidence, notation compliance.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowInventory(false)}
+                className="p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+                aria-label="Close inventory"
+              >
+                <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+                  <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+                </svg>
+              </button>
+            </div>
+            <div className="flex-1 overflow-hidden">
+              <DiagramInventory embedded />
+            </div>
+          </div>
+        </>
+      )}
 
       <div className="flex-none border-t border-border bg-card/40 px-3 py-2.5 flex flex-wrap items-center gap-2">
         <button
