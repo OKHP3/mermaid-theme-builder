@@ -24,6 +24,56 @@ import {
   paletteToShareablePayload,
 } from "@/lib/persistence";
 
+const FONT_FAMILY_OPTIONS = [
+  { label: "Inter", value: "Inter, system-ui, sans-serif" },
+  { label: "Trebuchet MS", value: "Trebuchet MS, Calibri, sans-serif" },
+  { label: "Arial", value: "Arial, Helvetica, sans-serif" },
+  { label: "Calibri", value: "Calibri, Inter, sans-serif" },
+  { label: "Georgia", value: "Georgia, Cambria, serif" },
+  { label: "Courier New", value: "Courier New, monospace" },
+  { label: "system-ui", value: "system-ui, -apple-system, sans-serif" },
+];
+
+function FontFamilySelect({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  const isPreset = FONT_FAMILY_OPTIONS.some((o) => o.value === value);
+  const selectValue = isPreset ? value : "__custom__";
+  return (
+    <div className="space-y-1">
+      <select
+        value={selectValue}
+        onChange={(e) => {
+          const v = e.target.value;
+          if (v === "__custom__") return; // keep current custom value
+          onChange(v);
+        }}
+        className="w-full text-xs bg-background border border-border rounded-md px-2.5 py-1.5 text-foreground focus:outline-none focus:ring-1 focus:ring-primary/50"
+        aria-label="Font family preset"
+      >
+        {FONT_FAMILY_OPTIONS.map((o) => (
+          <option key={o.value} value={o.value}>
+            {o.label}
+          </option>
+        ))}
+        <option value="__custom__">Custom…</option>
+      </select>
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder="font-family value"
+        className="w-full text-[11px] font-mono bg-background border border-border rounded-md px-2 py-1 text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50"
+        aria-label="Custom font family value"
+      />
+    </div>
+  );
+}
+
 async function writeToClipboard(text: string) {
   try {
     await navigator.clipboard.writeText(text);
@@ -264,6 +314,17 @@ export function ComposeTab({
             Settings
           </p>
           <div className="space-y-3">
+            <div>
+              <label className="text-xs font-medium text-foreground block mb-1">Font family</label>
+              <FontFamilySelect
+                value={
+                  customColors[selectedPaletteId]?.find((c) => c.key === "fontFamily")?.value ??
+                  selectedPalette.colors.find((c) => c.key === "fontFamily")?.value ??
+                  "Inter, system-ui, sans-serif"
+                }
+                onChange={(v) => onColorChange("fontFamily", v)}
+              />
+            </div>
             <div>
               <label className="text-xs font-medium text-foreground block mb-1">Theme name</label>
               <input

@@ -120,7 +120,7 @@ const SEQUENCE_COUNCIL_TO_PROTOTYPE = `sequenceDiagram
     end
 
     J->>C: Review prototype — brand firewall clean?
-    C-->>J: Firewall check passed. No BFS references.
+    C-->>J: Firewall check passed. No employer-brand references.
 
     J->>R: Deploy to GitHub Pages
     R-->>J: Live URL confirmed
@@ -300,7 +300,7 @@ const REQUIREMENT_SCOPE_FIREWALL = `requirementDiagram
 
     requirement brand_separation {
         id: REQ-001
-        text: No BFS branding, colors, or references in any deliverable
+        text: No employer branding, colors, or references in any deliverable
         risk: high
         verifymethod: inspection
     }
@@ -710,6 +710,28 @@ export const EXAMPLE_CATALOG: ExampleEntry[] = [
     family: "fishbone",
     category: "specialty",
     content: ISHIKAWA_PREMATURE_RENDERING,
+    badge: "Beta",
+  },
+  {
+    id: "wardley-diagram-generation-value-chain",
+    label: "Wardley — diagram value chain",
+    family: "wardley",
+    category: "specialty",
+    content: `wardley-beta
+  title Diagram Generation Value Chain
+  anchor User Need [0.95, 0.50]
+  component AI Prompt [0.82, 0.65]
+  component Mermaid Code [0.65, 0.55]
+  component Styling [0.50, 0.30]
+  component Rendered Diagram [0.35, 0.70]
+  component Published Doc [0.20, 0.85]
+  User Need -> AI Prompt
+  AI Prompt -> Mermaid Code
+  Mermaid Code -> Styling
+  Styling -> Rendered Diagram
+  Rendered Diagram -> Published Doc
+  evolve Styling 0.65
+`,
     badge: "Beta",
   },
 ];

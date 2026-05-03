@@ -72,7 +72,7 @@ direction TB
   M1@{ shape: curv-trap, label: "OverKill Hill P3" }:::okh
   M2@{ shape: stadium, label: "AskJamie" }:::askjamie
   M3@{ shape: stadium, label: "Glee-fully" }:::glee
-  M4@{ shape: comment, label: "No BFS. No employer bleed." }:::warning
+  M4@{ shape: comment, label: "No employer-brand bleed." }:::warning
   M0 --> M1
   M0 --> M2
   M0 --> M3
@@ -556,7 +556,7 @@ Timeline showing the chronological milestones of the Mermaid Theme Builder proje
 timeline
     title Mermaid Theme Builder Project History
     section Origin
-        2026-04-01 : BFS Mermaid styling pain identified
+        2026-04-01 : Mermaid styling pain identified
                    : Three-layer architecture conceived
         2026-04-05 : Design system v1 drafted (25 diagram types)
                    : Prompt kit synthesized from 4 AI sources
@@ -674,7 +674,7 @@ requirementDiagram
 
     requirement brand_separation {
         id: REQ-001
-        text: No BFS branding, colors, or references in any deliverable
+        text: No employer branding, colors, or references in any deliverable
         risk: high
         verifymethod: inspection
     }

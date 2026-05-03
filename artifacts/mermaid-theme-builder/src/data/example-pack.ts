@@ -104,7 +104,7 @@ export const EXAMPLE_PACK: ExamplePackEntry[] = [
     category: "native",
     title: "Firewall and Scope",
     description:
-      "Requirement diagram documenting the OKH/BFS ownership firewall, scope constraints, and verification relationships.",
+      "Requirement diagram documenting the OverKill Hill ownership firewall, scope constraints, and verification relationships.",
     pending: true,
   },
   {
