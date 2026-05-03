@@ -4,6 +4,7 @@ import { BRAND_PALETTES } from "@/lib/palettes";
 import { generateThemedCode, type ExportOptions } from "@/lib/themeEngine";
 import { detectDiagram } from "@/lib/detector";
 import { MermaidPreview } from "@/components/MermaidPreview";
+import { MermaidReferral } from "@/components/MermaidReferral";
 import { DiagramInventory } from "@/components/DiagramInventory";
 import { BRAND_EXAMPLES, SHOWCASE_EXAMPLE, SHOWCASE_META } from "@/data/examples";
 import { EXAMPLE_GROUPS } from "@/data/example-library";
@@ -261,6 +262,11 @@ export function ExamplesTab({ selectedPalette, onLoadExample }: ExamplesTabProps
               </div>
             )}
           </div>
+          {selectedExample && (
+            <div className="flex-none border-t border-border px-4 py-1.5 bg-card/20">
+              <MermaidReferral variant="live" />
+            </div>
+          )}
           {selectedExample?.id === "showcase" && (
             <div className="flex-none border-t border-border px-4 py-2 bg-amber-50/60 dark:bg-amber-950/20">
               <p className="text-[11px] text-amber-700 dark:text-amber-400 leading-relaxed">
