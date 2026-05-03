@@ -393,7 +393,41 @@ export function ApplyTab({
         </div>
       )}
       <div className="flex-none border-b border-border bg-card/30 px-3 py-2 print-hide">
-        <div className="flex gap-1 overflow-x-auto pb-0.5 scrollbar-thin">
+        <div
+          role="radiogroup"
+          aria-label="Palette selector"
+          className="flex gap-1 overflow-x-auto pb-0.5 scrollbar-thin"
+          onKeyDown={(e) => {
+            // Arrow keys / Home / End navigate the palette tiles. We move
+            // selection (not just focus) so the preview updates immediately —
+            // matches the "radiogroup with roving tabindex" ARIA pattern.
+            const idx = allPalettes.findIndex((p) => p.id === selectedPaletteId);
+            if (idx < 0) return;
+            let nextIdx: number | null = null;
+            if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+              nextIdx = (idx + 1) % allPalettes.length;
+            } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+              nextIdx = (idx - 1 + allPalettes.length) % allPalettes.length;
+            } else if (e.key === "Home") {
+              nextIdx = 0;
+            } else if (e.key === "End") {
+              nextIdx = allPalettes.length - 1;
+            }
+            if (nextIdx !== null) {
+              e.preventDefault();
+              const next = allPalettes[nextIdx];
+              if (next) {
+                onSelectPalette(next.id);
+                // Roving focus to the newly-selected tile.
+                requestAnimationFrame(() => {
+                  const el = document.getElementById(`palette-tile-${next.id}`);
+                  el?.focus();
+                  el?.scrollIntoView({ block: "nearest", inline: "nearest" });
+                });
+              }
+            }
+          }}
+        >
           {allPalettes.map((p) => {
             const builtin = BUILTIN_PALETTES.find((b) => b.id === p.id);
             const baseColors = builtin?.colors ?? p.colors;
@@ -411,9 +445,13 @@ export function ApplyTab({
             return (
               <button
                 key={p.id}
+                id={`palette-tile-${p.id}`}
+                role="radio"
+                aria-checked={isSelected}
+                tabIndex={isSelected ? 0 : -1}
                 onClick={() => onSelectPalette(p.id)}
                 title={p.description}
-                className={`flex-none flex flex-col items-center gap-1 px-2 py-1.5 rounded-lg transition-all border ${
+                className={`flex-none flex flex-col items-center gap-1 px-2 py-1.5 rounded-lg transition-all border focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
                   isSelected
                     ? "border-primary/60 bg-primary/8 shadow-sm"
                     : "border-transparent hover:border-border hover:bg-muted/40"

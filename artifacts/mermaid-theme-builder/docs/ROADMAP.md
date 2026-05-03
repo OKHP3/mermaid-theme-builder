@@ -49,8 +49,8 @@
 
 ### Palette / Theme
 - [x] localStorage persistence for custom color edits and custom theme names
-- [ ] Export custom palette as a JSON file (`download .json`)
-- [ ] Import palette from JSON file
+- [x] Export custom palette as a JSON file (`download .json`)
+- [x] Import palette from JSON file
 
 ### Export
 - [ ] Preview all three export formats before copying (read-only code pane below the diagram)
@@ -112,7 +112,7 @@
 - [x] Proper `og:image` and social preview
 - [ ] Analytics (privacy-respecting, no cookies)
 - [ ] Accessibility audit (WCAG 2.1 AA)
-- [ ] Keyboard-navigable palette picker
+- [x] Keyboard-navigable palette picker
 - [x] `robots.txt` and sitemap
 
 ---
