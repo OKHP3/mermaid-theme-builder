@@ -80,7 +80,7 @@
 - [ ] 3–5 additional community palettes (not brand-locked)
 
 ### Export
-- [ ] Export all palettes as a JSON bundle
+- [x] Export all palettes as a JSON bundle
 - [x] Generate a static CSS custom-properties file (`:root { --mermaid-primary: ...; }`)
 
 ---
@@ -98,7 +98,7 @@
 
 ### Editor
 - [ ] Syntax-highlighted code editor (CodeMirror or Monaco micro-bundle)
-- [ ] Paste-and-auto-switch to diagram family if auto-detected
+- [x] Paste-and-auto-switch to diagram family if auto-detected
 
 ---
 

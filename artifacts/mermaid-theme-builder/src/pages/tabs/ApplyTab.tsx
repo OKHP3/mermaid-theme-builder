@@ -26,6 +26,7 @@ import {
   makeFilename,
   paletteToPortableJson,
   paletteToCssVariables,
+  palettesToBundleJson,
 } from "@/lib/exporters";
 import type { AppTab } from "@/App";
 
@@ -33,7 +34,7 @@ const SWATCH_INDICES = [0, 3, 4, 6];
 
 type PreviewMode = "original" | "themed" | "diff";
 type ExportType = "code" | "markdown" | "prompt";
-type DownloadType = "mermaid" | "svg" | "png" | "json" | "markdown" | "scaffold" | "css";
+type DownloadType = "mermaid" | "svg" | "png" | "json" | "markdown" | "scaffold" | "css" | "bundle";
 
 async function writeToClipboard(text: string) {
   try {
@@ -83,6 +84,7 @@ const DOWNLOAD_LABELS: Record<DownloadType, string> = {
   markdown: ".md",
   scaffold: ".txt",
   css: ".css",
+  bundle: ".bundle.json",
 };
 
 export function ApplyTab({
@@ -347,6 +349,13 @@ export function ApplyTab({
             "text/css;charset=utf-8",
           );
           onShowToast("Downloaded .css variables file.");
+        } else if (type === "bundle") {
+          downloadTextFile(
+            makeFilename("mermaid-theme-builder", "palettes", "bundle.json"),
+            palettesToBundleJson(allPalettes),
+            "application/json;charset=utf-8",
+          );
+          onShowToast(`Downloaded bundle of ${allPalettes.length} palettes.`);
         }
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
@@ -355,7 +364,7 @@ export function ApplyTab({
         setDownloadingType(null);
       }
     },
-    [downloadingType, exportCode, themedCode, selectedPalette, effectiveThemeName, onShowToast],
+    [downloadingType, exportCode, themedCode, selectedPalette, effectiveThemeName, allPalettes, exportOptions, onShowToast],
   );
 
   return (
@@ -687,7 +696,7 @@ export function ApplyTab({
               <>
                 <div className="fixed inset-0 z-30" onClick={() => setShowDownloadMenu(false)} />
                 <div className="absolute right-0 bottom-full mb-1 z-40 min-w-[180px] rounded-md border border-border bg-popover shadow-lg overflow-hidden">
-                  {(["mermaid", "markdown", "scaffold", "svg", "png", "json", "css"] as DownloadType[]).map((t) => (
+                  {(["mermaid", "markdown", "scaffold", "svg", "png", "json", "css", "bundle"] as DownloadType[]).map((t) => (
                     <button
                       key={t}
                       onClick={() => handleDownload(t)}
@@ -702,6 +711,7 @@ export function ApplyTab({
                         {t === "png" && "raster 2x"}
                         {t === "json" && "palette"}
                         {t === "css" && "variables"}
+                        {t === "bundle" && "all palettes"}
                       </span>
                     </button>
                   ))}

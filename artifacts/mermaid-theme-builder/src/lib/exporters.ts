@@ -140,6 +140,35 @@ export function paletteToCssVariables(palette: Palette): string {
 }
 
 /**
+ * Serialize a list of palettes to a portable JSON bundle for backup or
+ * cross-device migration. Each entry uses the same shape as
+ * `paletteToPortableJson`, wrapped under `palettes: [...]` with a top-level
+ * `type: "mtb-palette-bundle"` discriminator so a future import can tell a
+ * single-palette file apart from a bundle.
+ */
+export function palettesToBundleJson(palettes: Palette[]): string {
+  const payload = {
+    schemaVersion: 1,
+    type: "mtb-palette-bundle",
+    exportedAt: new Date().toISOString(),
+    count: palettes.length,
+    palettes: palettes.map((palette) => ({
+      schemaVersion: 1,
+      type: "mtb-palette",
+      id: palette.id,
+      name: palette.name,
+      description: palette.description,
+      themeIntent: palette.themeIntent,
+      version: palette.version,
+      isBrandPreset: palette.isBrandPreset,
+      colors: palette.colors,
+      sourceUrls: palette.sourceUrls,
+    })),
+  };
+  return JSON.stringify(payload, null, 2);
+}
+
+/**
  * Serialize a palette to a portable JSON string for import/export.
  */
 export function paletteToPortableJson(palette: Palette): string {
