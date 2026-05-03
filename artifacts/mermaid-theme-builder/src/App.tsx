@@ -388,6 +388,36 @@ function AppShell() {
     setCustomThemeName("");
   }, [selectedPaletteId]);
 
+  /** Reset a single swatch back to its base palette value. If clearing this
+   *  override leaves the palette with no remaining customizations, the
+   *  override entry is removed entirely so `hasCustomizations` flips false. */
+  const handleResetColor = useCallback(
+    (key: string) => {
+      setCustomColors((prev) => {
+        const base = allPalettes.find((p) => p.id === selectedPaletteId);
+        const overrides = prev[selectedPaletteId];
+        if (!base || !overrides) return prev;
+        const restored = overrides.map((c) => {
+          if (c.key !== key) return c;
+          const baseColor = base.colors.find((bc) => bc.key === key);
+          return baseColor ? { ...c, value: baseColor.value } : c;
+        });
+        const stillCustomized = restored.some((c) => {
+          const baseColor = base.colors.find((bc) => bc.key === c.key);
+          return baseColor ? baseColor.value !== c.value : false;
+        });
+        const next = { ...prev };
+        if (stillCustomized) {
+          next[selectedPaletteId] = restored;
+        } else {
+          delete next[selectedPaletteId];
+        }
+        return next;
+      });
+    },
+    [allPalettes, selectedPaletteId],
+  );
+
   const handleLoadExample = useCallback((code: string) => {
     setInputCode(code);
     setActiveTab("apply");
@@ -565,6 +595,7 @@ function AppShell() {
             customColors={customColors}
             onColorChange={handleColorChange}
             onResetPalette={handleResetPalette}
+            onResetColor={handleResetColor}
             hasCustomizations={hasCustomizations}
             inputCode={inputCode}
             onInputChange={setInputCode}

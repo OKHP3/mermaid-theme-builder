@@ -25,6 +25,7 @@ import {
   svgStringToPngBlob,
   makeFilename,
   paletteToPortableJson,
+  paletteToCssVariables,
 } from "@/lib/exporters";
 import type { AppTab } from "@/App";
 
@@ -32,7 +33,7 @@ const SWATCH_INDICES = [0, 3, 4, 6];
 
 type PreviewMode = "original" | "themed" | "diff";
 type ExportType = "code" | "markdown" | "prompt";
-type DownloadType = "mermaid" | "svg" | "png" | "json";
+type DownloadType = "mermaid" | "svg" | "png" | "json" | "markdown" | "scaffold" | "css";
 
 async function writeToClipboard(text: string) {
   try {
@@ -54,6 +55,7 @@ interface ApplyTabProps {
   customColors: Record<string, ThemeColor[]>;
   onColorChange: (key: string, value: string) => void;
   onResetPalette: () => void;
+  onResetColor: (key: string) => void;
   hasCustomizations: boolean;
   inputCode: string;
   onInputChange: (code: string) => void;
@@ -78,6 +80,9 @@ const DOWNLOAD_LABELS: Record<DownloadType, string> = {
   svg: ".svg",
   png: ".png",
   json: ".theme.json",
+  markdown: ".md",
+  scaffold: ".txt",
+  css: ".css",
 };
 
 export function ApplyTab({
@@ -87,6 +92,7 @@ export function ApplyTab({
   customColors,
   onColorChange,
   onResetPalette,
+  onResetColor,
   hasCustomizations,
   inputCode,
   onInputChange,
@@ -320,6 +326,27 @@ export function ApplyTab({
           const blob = await svgStringToPngBlob(svg, 2);
           downloadBlob(makeFilename(effectiveThemeName, "diagram", "png"), blob);
           onShowToast("Downloaded .png file.");
+        } else if (type === "markdown") {
+          downloadTextFile(
+            makeFilename(effectiveThemeName, "themed", "md"),
+            generateMarkdownExport(exportCode, selectedPalette, exportOptions),
+            "text/markdown;charset=utf-8",
+          );
+          onShowToast("Downloaded .md file.");
+        } else if (type === "scaffold") {
+          downloadTextFile(
+            makeFilename(effectiveThemeName, "scaffold", "txt"),
+            generatePromptScaffoldWithFormat(selectedPalette, exportOptions, "formatA"),
+            "text/plain;charset=utf-8",
+          );
+          onShowToast("Downloaded .txt scaffold file.");
+        } else if (type === "css") {
+          downloadTextFile(
+            makeFilename(effectiveThemeName, "theme", "css"),
+            paletteToCssVariables(selectedPalette),
+            "text/css;charset=utf-8",
+          );
+          onShowToast("Downloaded .css variables file.");
         }
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
@@ -558,7 +585,7 @@ export function ApplyTab({
               <MermaidPreview code={previewCode} className="w-full h-full" />
             )}
           </div>
-          <div className="flex-none border-t border-border px-3 py-1.5 bg-card/20">
+          <div className="flex-none border-t border-border px-3 py-1.5 bg-card/20 print-hide">
             <MermaidReferral variant="ai" />
           </div>
         </div>
@@ -622,7 +649,7 @@ export function ApplyTab({
               <>
                 <div className="fixed inset-0 z-30" onClick={() => setShowDownloadMenu(false)} />
                 <div className="absolute right-0 bottom-full mb-1 z-40 min-w-[180px] rounded-md border border-border bg-popover shadow-lg overflow-hidden">
-                  {(["mermaid", "svg", "png", "json"] as DownloadType[]).map((t) => (
+                  {(["mermaid", "markdown", "scaffold", "svg", "png", "json", "css"] as DownloadType[]).map((t) => (
                     <button
                       key={t}
                       onClick={() => handleDownload(t)}
@@ -631,9 +658,12 @@ export function ApplyTab({
                       <span className="font-medium text-foreground">{DOWNLOAD_LABELS[t]}</span>
                       <span className="text-[10px] text-muted-foreground">
                         {t === "mermaid" && "raw text"}
+                        {t === "markdown" && "bootstrap"}
+                        {t === "scaffold" && "prompt"}
                         {t === "svg" && "vector"}
                         {t === "png" && "raster 2x"}
                         {t === "json" && "palette"}
+                        {t === "css" && "variables"}
                       </span>
                     </button>
                   ))}
@@ -650,6 +680,7 @@ export function ApplyTab({
                 key={type}
                 onClick={() => handleCopy(type)}
                 disabled={disabled}
+                title={type === "code" ? "Copy themed Mermaid code (Ctrl+Shift+C)" : undefined}
                 className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-md border font-medium transition-all ${
                   copied
                     ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
@@ -723,15 +754,19 @@ export function ApplyTab({
                 {selectedPalette.description}
               </p>
               <div className="space-y-0.5">
-                {selectedPalette.colors.map((color) => (
-                  <ColorSwatch
-                    key={color.key}
-                    color={
-                      customColors[selectedPaletteId]?.find((c) => c.key === color.key) ?? color
-                    }
-                    onChange={onColorChange}
-                  />
-                ))}
+                {selectedPalette.colors.map((color) => {
+                  const override = customColors[selectedPaletteId]?.find((c) => c.key === color.key);
+                  const isOverridden = !!override && override.value !== color.value;
+                  return (
+                    <ColorSwatch
+                      key={color.key}
+                      color={override ?? color}
+                      onChange={onColorChange}
+                      isOverridden={isOverridden}
+                      onReset={onResetColor}
+                    />
+                  );
+                })}
               </div>
             </div>
             <div className="flex-none border-t border-border px-3 py-2">

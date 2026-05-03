@@ -48,14 +48,14 @@
 - [x] Showcase compatibility warning in UI
 
 ### Palette / Theme
-- [ ] localStorage persistence for custom color edits and custom theme names
+- [x] localStorage persistence for custom color edits and custom theme names
 - [ ] Export custom palette as a JSON file (`download .json`)
 - [ ] Import palette from JSON file
 
 ### Export
 - [ ] Preview all three export formats before copying (read-only code pane below the diagram)
-- [ ] Download as `.md` file (Markdown Bootstrap)
-- [ ] Download as `.txt` file (Prompt Scaffold)
+- [x] Download as `.md` file (Markdown Bootstrap)
+- [x] Download as `.txt` file (Prompt Scaffold)
 
 ### UI
 - [x] Dark/light mode toggle (independent of diagram theme)
@@ -64,7 +64,7 @@
 
 ### Palette
 - [ ] User-created palettes — save, rename, delete, reorder
-- [ ] Reset individual color (single swatch) without resetting all
+- [x] Reset individual color (single swatch) without resetting all
 
 ---
 
@@ -81,7 +81,7 @@
 
 ### Export
 - [ ] Export all palettes as a JSON bundle
-- [ ] Generate a static CSS custom-properties file (`:root { --mermaid-primary: ...; }`)
+- [x] Generate a static CSS custom-properties file (`:root { --mermaid-primary: ...; }`)
 
 ---
 
@@ -109,11 +109,11 @@
 **Goals:** Polish, publish, and make the site properly discoverable.
 
 - [ ] GitHub Pages deployment via CI (auto-publish on `main` merge)
-- [ ] Proper `og:image` and social preview
+- [x] Proper `og:image` and social preview
 - [ ] Analytics (privacy-respecting, no cookies)
 - [ ] Accessibility audit (WCAG 2.1 AA)
 - [ ] Keyboard-navigable palette picker
-- [ ] `robots.txt` and sitemap
+- [x] `robots.txt` and sitemap
 
 ---
 

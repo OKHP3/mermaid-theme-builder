@@ -115,6 +115,31 @@ export function makeFilename(themeName: string, suffix: string, ext: string): st
 }
 
 /**
+ * Serialize a palette to CSS custom properties (`:root { --token: value; }`).
+ *
+ * Variable names are derived from each color's `key` by lower-camel → kebab-case
+ * (e.g. `primaryColor` → `--mermaid-primary-color`). Hex/raw values are emitted
+ * verbatim; the human-readable label is included as a comment for reference.
+ *
+ * Note: this is a static stylesheet for design-system handoff, not a runtime
+ * Mermaid theme. Mermaid itself ignores CSS variables — use the JSON or
+ * `%%{init}%%` exports for diagram theming.
+ */
+export function paletteToCssVariables(palette: Palette): string {
+  const toKebab = (s: string): string =>
+    s.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
+  const lines: string[] = [];
+  lines.push(`/* ${palette.name} — ${palette.description} */`);
+  lines.push(`/* Static design tokens; not consumed by Mermaid at runtime. */`);
+  lines.push(":root {");
+  for (const c of palette.colors) {
+    lines.push(`  --mermaid-${toKebab(c.key)}: ${c.value}; /* ${c.label} */`);
+  }
+  lines.push("}");
+  return lines.join("\n") + "\n";
+}
+
+/**
  * Serialize a palette to a portable JSON string for import/export.
  */
 export function paletteToPortableJson(palette: Palette): string {

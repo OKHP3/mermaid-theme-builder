@@ -263,7 +263,7 @@ export function ExamplesTab({ selectedPalette, onLoadExample }: ExamplesTabProps
             )}
           </div>
           {selectedExample && (
-            <div className="flex-none border-t border-border px-4 py-1.5 bg-card/20">
+            <div className="flex-none border-t border-border px-4 py-1.5 bg-card/20 print-hide">
               <MermaidReferral variant="live" />
             </div>
           )}
