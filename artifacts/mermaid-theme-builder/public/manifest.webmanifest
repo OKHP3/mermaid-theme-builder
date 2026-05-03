@@ -1,0 +1,19 @@
+{
+  "name": "Mermaid Theme Builder",
+  "short_name": "MTB",
+  "description": "Style and govern Mermaid diagrams. Static, local-only utility by Jamie Hill (OverKill Hill P3).",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0e1018",
+  "theme_color": "#7c3aed",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "./favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -12,6 +12,7 @@ export interface PersistedState {
   customThemeName: string;
   inputCode: string;
   userPalettes: Palette[];
+  recentPaletteIds?: string[];
 }
 
 export const DEFAULT_PERSISTED_STATE: Omit<PersistedState, "selectedPaletteId" | "inputCode"> = {
@@ -21,6 +22,7 @@ export const DEFAULT_PERSISTED_STATE: Omit<PersistedState, "selectedPaletteId" |
   includeBadge: true,
   customThemeName: "",
   userPalettes: [],
+  recentPaletteIds: [],
 };
 
 function safeStorage(): Storage | null {

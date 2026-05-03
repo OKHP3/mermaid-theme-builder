@@ -1,7 +1,9 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import type { Palette, ThemeColor } from "@/lib/palettes";
 import { BUILTIN_PALETTES, BRAND_PALETTES, UTILITY_PALETTES } from "@/lib/palettes";
 import { detectDiagram } from "@/lib/detector";
+import { splitDiagrams } from "@/lib/diagramSplit";
+import { DiffView } from "@/components/DiffView";
 import {
   generateThemedCode,
   generateMarkdownExport,
@@ -27,7 +29,7 @@ import type { AppTab } from "@/App";
 
 const SWATCH_INDICES = [0, 3, 4, 6];
 
-type PreviewMode = "original" | "themed";
+type PreviewMode = "original" | "themed" | "diff";
 type ExportType = "code" | "markdown" | "prompt";
 type DownloadType = "mermaid" | "svg" | "png" | "json";
 
@@ -61,6 +63,7 @@ interface ApplyTabProps {
   onExtractTheme: (name?: string) => Palette | null;
   userPalettes: Palette[];
   onShowToast: (msg: string) => void;
+  recentPaletteIds: string[];
 }
 
 const EXPORT_LABELS: Record<ExportType, string> = {
@@ -93,6 +96,7 @@ export function ApplyTab({
   onExtractTheme,
   userPalettes,
   onShowToast,
+  recentPaletteIds,
 }: ApplyTabProps) {
   const [previewMode, setPreviewMode] = useState<PreviewMode>("themed");
   const [showColorEditor, setShowColorEditor] = useState(false);
@@ -101,8 +105,82 @@ export function ApplyTab({
   const [showScaffoldModal, setShowScaffoldModal] = useState(false);
   const [textareaExpanded, setTextareaExpanded] = useState(false);
   const [showDownloadMenu, setShowDownloadMenu] = useState(false);
+  const [activeDiagramIdx, setActiveDiagramIdx] = useState(0);
+  const colorEditorRef = useRef<HTMLDivElement>(null);
+  const colorEditorOpenerRef = useRef<HTMLButtonElement | null>(null);
 
-  const detection = useMemo(() => detectDiagram(inputCode), [inputCode]);
+  const diagrams = useMemo(() => splitDiagrams(inputCode), [inputCode]);
+  const isMultiDiagram = diagrams.length > 1;
+  const safeDiagramIdx = Math.min(activeDiagramIdx, diagrams.length - 1);
+  const activeDiagramCode = diagrams[safeDiagramIdx]?.content ?? inputCode;
+
+  useEffect(() => {
+    if (activeDiagramIdx >= diagrams.length) setActiveDiagramIdx(0);
+  }, [diagrams.length, activeDiagramIdx]);
+
+  // ESC closes the color editor / download menu when open.
+  useEffect(() => {
+    if (!showColorEditor && !showDownloadMenu) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        if (showColorEditor) setShowColorEditor(false);
+        if (showDownloadMenu) setShowDownloadMenu(false);
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [showColorEditor, showDownloadMenu]);
+
+  // Focus trap + initial focus + restore for the color editor dialog.
+  useEffect(() => {
+    if (!showColorEditor) return;
+    const dialog = colorEditorRef.current;
+    if (!dialog) return;
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    colorEditorOpenerRef.current = previouslyFocused instanceof HTMLButtonElement ? previouslyFocused : null;
+
+    const focusable = () =>
+      Array.from(
+        dialog.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        ),
+      ).filter((el) => !el.hasAttribute("aria-hidden"));
+
+    const list = focusable();
+    if (list.length) list[0].focus();
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Tab") return;
+      const items = focusable();
+      if (!items.length) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      const active = document.activeElement as HTMLElement | null;
+      if (e.shiftKey) {
+        if (active === first || !dialog.contains(active)) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else {
+        if (active === last || !dialog.contains(active)) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    };
+
+    dialog.addEventListener("keydown", onKey);
+    return () => {
+      dialog.removeEventListener("keydown", onKey);
+      try {
+        colorEditorOpenerRef.current?.focus();
+      } catch {
+        // ignore
+      }
+    };
+  }, [showColorEditor]);
+
+  const detection = useMemo(() => detectDiagram(activeDiagramCode), [activeDiagramCode]);
   const canExtract = useMemo(() => hasExtractableTheme(inputCode), [inputCode]);
   const isExtracted = isExtractedPaletteId(selectedPaletteId);
 
@@ -110,6 +188,12 @@ export function ApplyTab({
     () => [...BRAND_PALETTES, ...UTILITY_PALETTES, ...userPalettes],
     [userPalettes],
   );
+
+  const recentPalettes = useMemo(() => {
+    if (!recentPaletteIds.length) return [];
+    const lookup = new Map(allPalettes.map((p) => [p.id, p]));
+    return recentPaletteIds.map((id) => lookup.get(id)).filter((p): p is Palette => Boolean(p));
+  }, [recentPaletteIds, allPalettes]);
 
   const exportOptions = useMemo(
     (): ExportOptions => ({
@@ -129,16 +213,16 @@ export function ApplyTab({
   );
 
   const themedCode = useMemo(
-    () => (inputCode.trim() ? generateThemedCode(inputCode, previewOptions) : ""),
-    [inputCode, previewOptions],
+    () => (activeDiagramCode.trim() ? generateThemedCode(activeDiagramCode, previewOptions) : ""),
+    [activeDiagramCode, previewOptions],
   );
 
   const exportCode = useMemo(
-    () => (inputCode.trim() ? generateThemedCode(inputCode, exportOptions) : ""),
-    [inputCode, exportOptions],
+    () => (activeDiagramCode.trim() ? generateThemedCode(activeDiagramCode, exportOptions) : ""),
+    [activeDiagramCode, exportOptions],
   );
 
-  const previewCode = previewMode === "themed" ? themedCode : inputCode;
+  const previewCode = previewMode === "themed" ? themedCode : activeDiagramCode;
 
   const warnings = useMemo(() => {
     const w: string[] = [];
@@ -233,7 +317,39 @@ export function ApplyTab({
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
-      <div className="flex-none border-b border-border bg-card/30 px-3 py-2">
+      {recentPalettes.length > 1 && (
+        <div className="flex-none border-b border-border bg-muted/20 px-3 py-1.5 flex items-center gap-2 print-hide">
+          <span className="text-[10px] uppercase tracking-wide text-muted-foreground font-semibold shrink-0">
+            Recent
+          </span>
+          <div className="flex gap-1 overflow-x-auto scrollbar-thin">
+            {recentPalettes.map((p) => {
+              const isSelected = selectedPaletteId === p.id;
+              return (
+                <button
+                  key={p.id}
+                  type="button"
+                  onClick={() => onSelectPalette(p.id)}
+                  title={`Switch to ${p.name}`}
+                  className={`shrink-0 inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border text-[10px] font-medium transition-all ${
+                    isSelected
+                      ? "border-primary/50 bg-primary/10 text-primary"
+                      : "border-border bg-background hover:border-primary/40 hover:bg-muted text-muted-foreground"
+                  }`}
+                >
+                  <span
+                    className="w-2 h-2 rounded-full border border-black/10"
+                    style={{ backgroundColor: p.colors[3]?.value ?? p.colors[0]?.value ?? "#888" }}
+                    aria-hidden="true"
+                  />
+                  {p.name.length > 14 ? p.name.slice(0, 13) + "…" : p.name}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+      <div className="flex-none border-b border-border bg-card/30 px-3 py-2 print-hide">
         <div className="flex gap-1 overflow-x-auto pb-0.5 scrollbar-thin">
           {allPalettes.map((p) => {
             const builtin = BUILTIN_PALETTES.find((b) => b.id === p.id);
@@ -298,7 +414,7 @@ export function ApplyTab({
       </div>
 
       {canExtract && !isExtracted && (
-        <div className="flex-none border-b border-amber-500/30 bg-amber-500/8 px-3 py-2 flex items-center gap-3">
+        <div className="flex-none border-b border-amber-500/30 bg-amber-500/8 px-3 py-2 flex items-center gap-3 print-hide">
           <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0">
             <path
               fillRule="evenodd"
@@ -324,7 +440,7 @@ export function ApplyTab({
       )}
 
       <div className="flex-1 overflow-hidden flex flex-col md:flex-row min-h-0">
-        <div className="flex flex-col w-full md:w-1/2 border-b md:border-b-0 md:border-r border-border min-h-0">
+        <div className="flex flex-col w-full md:w-1/2 border-b md:border-b-0 md:border-r border-border min-h-0 print-hide">
           <div className="flex items-center justify-between px-3 py-1.5 border-b border-border bg-card/20 flex-none gap-2">
             <span className="text-xs font-medium text-muted-foreground">Diagram Code</span>
             <div className="flex items-center gap-1.5">
@@ -355,28 +471,81 @@ export function ApplyTab({
         </div>
 
         <div className="flex flex-col w-full md:w-1/2 min-h-[220px] md:min-h-0">
-          <div className="flex items-center gap-1 px-3 py-1.5 border-b border-border bg-card/20 flex-none">
-            {(["original", "themed"] as PreviewMode[]).map((mode) => (
-              <button
-                key={mode}
-                onClick={() => setPreviewMode(mode)}
-                className={`text-xs px-3 py-1 rounded-md font-medium transition-all capitalize ${
-                  previewMode === mode
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                }`}
-              >
-                {mode}
-              </button>
-            ))}
+          <div className="flex items-center gap-2 px-3 py-1.5 border-b border-border bg-card/20 flex-none flex-wrap print-hide">
+            <div className="flex items-center gap-1" role="tablist" aria-label="Preview mode">
+              {(["original", "themed", "diff"] as PreviewMode[]).map((mode) => {
+                const selected = previewMode === mode;
+                return (
+                  <button
+                    key={mode}
+                    role="tab"
+                    aria-selected={selected}
+                    tabIndex={selected ? 0 : -1}
+                    onClick={() => setPreviewMode(mode)}
+                    className={`text-xs px-3 py-1 rounded-md font-medium transition-all capitalize ${
+                      selected
+                        ? "bg-primary text-primary-foreground"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                    }`}
+                  >
+                    {mode}
+                  </button>
+                );
+              })}
+            </div>
+            {isMultiDiagram && (
+              <div className="flex items-center gap-1 ml-auto">
+                <span className="text-[10px] text-muted-foreground uppercase tracking-wide font-semibold mr-1">
+                  Diagram
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setActiveDiagramIdx((i) => Math.max(0, i - 1))}
+                  disabled={safeDiagramIdx === 0}
+                  className="p-1 rounded border border-border hover:bg-muted disabled:opacity-30 disabled:cursor-not-allowed"
+                  aria-label="Previous diagram"
+                >
+                  <svg viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3" aria-hidden="true">
+                    <path fillRule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clipRule="evenodd" />
+                  </svg>
+                </button>
+                <select
+                  value={safeDiagramIdx}
+                  onChange={(e) => setActiveDiagramIdx(Number(e.target.value))}
+                  className="text-[11px] px-2 py-0.5 rounded border border-border bg-background text-foreground"
+                  aria-label="Select diagram"
+                >
+                  {diagrams.map((d) => (
+                    <option key={d.index} value={d.index}>
+                      {d.label}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  onClick={() => setActiveDiagramIdx((i) => Math.min(diagrams.length - 1, i + 1))}
+                  disabled={safeDiagramIdx === diagrams.length - 1}
+                  className="p-1 rounded border border-border hover:bg-muted disabled:opacity-30 disabled:cursor-not-allowed"
+                  aria-label="Next diagram"
+                >
+                  <svg viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3" aria-hidden="true">
+                    <path fillRule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clipRule="evenodd" />
+                  </svg>
+                </button>
+              </div>
+            )}
           </div>
-          <div className="flex-1 overflow-auto p-3 md:p-4">
-            <MermaidPreview code={previewCode} className="w-full h-full" />
+          <div className="flex-1 overflow-auto p-3 md:p-4" data-print-only>
+            {previewMode === "diff" ? (
+              <DiffView oldText={activeDiagramCode} newText={themedCode} className="w-full h-full" />
+            ) : (
+              <MermaidPreview code={previewCode} className="w-full h-full" />
+            )}
           </div>
         </div>
       </div>
 
-      <div className="flex-none border-t border-border bg-card/40">
+      <div className="flex-none border-t border-border bg-card/40 print-hide">
         {warnings.length > 0 && (
           <div className="px-3 pt-2.5">
             <WarningBanner warnings={warnings} />
@@ -495,7 +664,13 @@ export function ApplyTab({
             className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"
             onClick={() => setShowColorEditor(false)}
           />
-          <div className="fixed right-0 top-0 z-50 h-full w-full md:w-80 bg-card border-l border-border flex flex-col shadow-2xl">
+          <div
+            ref={colorEditorRef}
+            className="fixed right-0 top-0 z-50 h-full w-full md:w-80 bg-card border-l border-border flex flex-col shadow-2xl print-hide"
+            role="dialog"
+            aria-modal="true"
+            aria-label={`Edit colors for ${selectedPalette.name}`}
+          >
             <div className="flex items-center justify-between px-4 py-3 border-b border-border flex-none">
               <div>
                 <p className="text-sm font-semibold text-foreground leading-none">

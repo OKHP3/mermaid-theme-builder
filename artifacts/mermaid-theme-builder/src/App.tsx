@@ -1,4 +1,5 @@
-import { Component, useState, useMemo, useCallback, useEffect, type ReactNode } from "react";
+import { Component, useState, useMemo, useCallback, useEffect, useRef, type ReactNode } from "react";
+import { useThemeMode, type ThemeMode } from "@/lib/themeMode";
 import {
   BUILTIN_PALETTES,
   BRAND_PALETTES,
@@ -195,6 +196,45 @@ function clearShareToken(): void {
   }
 }
 
+const RECENT_PALETTES_MAX = 5;
+
+function ThemeModeToggle({ mode, cycle }: { mode: ThemeMode; cycle: () => void }) {
+  const label =
+    mode === "system"
+      ? "System theme (click to switch to light)"
+      : mode === "light"
+      ? "Light theme (click to switch to dark)"
+      : "Dark theme (click to switch to system)";
+  return (
+    <button
+      type="button"
+      onClick={cycle}
+      aria-label={label}
+      title={label}
+      className="p-1.5 rounded-md border border-border/60 hover:border-border hover:bg-muted text-muted-foreground hover:text-foreground transition-colors print-hide"
+    >
+      {mode === "light" ? (
+        <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5" aria-hidden="true">
+          <path
+            fillRule="evenodd"
+            d="M10 2a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 0110 2zM10 15a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 0110 15zM3.75 9.25a.75.75 0 000 1.5h1.5a.75.75 0 000-1.5h-1.5zM15 9.25a.75.75 0 000 1.5h1.5a.75.75 0 000-1.5H15zM5.05 5.05a.75.75 0 011.06 0l1.06 1.06a.75.75 0 11-1.06 1.06L5.05 6.11a.75.75 0 010-1.06zM12.83 12.83a.75.75 0 011.06 0l1.06 1.06a.75.75 0 11-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zM5.05 14.95a.75.75 0 010-1.06l1.06-1.06a.75.75 0 111.06 1.06l-1.06 1.06a.75.75 0 01-1.06 0zM12.83 7.17a.75.75 0 010-1.06l1.06-1.06a.75.75 0 011.06 1.06L13.89 7.17a.75.75 0 01-1.06 0zM10 6a4 4 0 100 8 4 4 0 000-8z"
+            clipRule="evenodd"
+          />
+        </svg>
+      ) : mode === "dark" ? (
+        <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5" aria-hidden="true">
+          <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+        </svg>
+      ) : (
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" className="w-3.5 h-3.5" aria-hidden="true">
+          <rect x="2.5" y="4" width="15" height="11" rx="1.5" />
+          <path d="M7 18h6M10 15v3" strokeLinecap="round" />
+        </svg>
+      )}
+    </button>
+  );
+}
+
 function AppShell() {
   const [activeTab, setActiveTab] = useState<AppTab>("apply");
   const [hydrated, setHydrated] = useState(false);
@@ -208,6 +248,9 @@ function AppShell() {
   const [includeMetaComments, setIncludeMetaComments] = useState(true);
   const [includeBadge, setIncludeBadge] = useState(true);
   const [customThemeName, setCustomThemeName] = useState("");
+  const [recentPaletteIds, setRecentPaletteIds] = useState<string[]>([]);
+  const tabsRef = useRef<HTMLDivElement>(null);
+  const { mode: themeMode, cycle: cycleThemeMode } = useThemeMode();
 
   // Hydrate from URL share token (highest priority) or localStorage on mount.
   useEffect(() => {
@@ -244,6 +287,9 @@ function AppShell() {
       if (typeof persisted.includeBadge === "boolean") setIncludeBadge(persisted.includeBadge);
       if (typeof persisted.customThemeName === "string" && !didApplyShare) setCustomThemeName(persisted.customThemeName);
       if (typeof persisted.inputCode === "string" && persisted.inputCode.trim()) setInputCode(persisted.inputCode);
+      if (Array.isArray(persisted.recentPaletteIds)) {
+        setRecentPaletteIds(persisted.recentPaletteIds.filter((s): s is string => typeof s === "string").slice(0, RECENT_PALETTES_MAX));
+      }
     }
     setHydrated(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -261,8 +307,9 @@ function AppShell() {
       customThemeName,
       inputCode,
       userPalettes,
+      recentPaletteIds,
     });
-  }, [hydrated, selectedPaletteId, customColors, includeMetaComments, includeBadge, customThemeName, inputCode, userPalettes]);
+  }, [hydrated, selectedPaletteId, customColors, includeMetaComments, includeBadge, customThemeName, inputCode, userPalettes, recentPaletteIds]);
 
   // Auto-clear toast after 3.5s
   useEffect(() => {
@@ -296,6 +343,10 @@ function AppShell() {
   const handleSelectPalette = useCallback((id: string) => {
     setSelectedPaletteId(id);
     setCustomThemeName("");
+    setRecentPaletteIds((prev) => {
+      const next = [id, ...prev.filter((p) => p !== id)].slice(0, RECENT_PALETTES_MAX);
+      return next;
+    });
     const isBrandPalette = BRAND_PALETTES.some((p) => p.id === id);
     if (isBrandPalette && BRAND_EXAMPLES[id]) {
       const knownExamples = new Set<string>([
@@ -448,27 +499,64 @@ function AppShell() {
           <span className="text-[10px] px-2 py-1 rounded-full bg-muted text-muted-foreground hidden md:block">
             OKHP3 Personal Project
           </span>
+          <ThemeModeToggle mode={themeMode} cycle={cycleThemeMode} />
         </div>
       </header>
 
-      <nav className="hidden md:flex border-b border-border bg-card/40 px-4 shrink-0">
-        {TAB_CONFIG.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-1.5 px-4 py-2.5 text-xs font-medium border-b-2 transition-all ${
-              activeTab === tab.id
-                ? "border-primary text-primary"
-                : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
-            }`}
-          >
-            {tab.icon}
-            {tab.label}
-          </button>
-        ))}
+      <nav
+        ref={tabsRef}
+        className="hidden md:flex border-b border-border bg-card/40 px-4 shrink-0 print-hide"
+        role="tablist"
+        aria-label="Mermaid Theme Builder sections"
+        onKeyDown={(e) => {
+          if (e.key !== "ArrowLeft" && e.key !== "ArrowRight" && e.key !== "Home" && e.key !== "End") return;
+          e.preventDefault();
+          const idx = TAB_CONFIG.findIndex((t) => t.id === activeTab);
+          let next = idx;
+          if (e.key === "ArrowLeft") next = (idx - 1 + TAB_CONFIG.length) % TAB_CONFIG.length;
+          else if (e.key === "ArrowRight") next = (idx + 1) % TAB_CONFIG.length;
+          else if (e.key === "Home") next = 0;
+          else if (e.key === "End") next = TAB_CONFIG.length - 1;
+          const nextId = TAB_CONFIG[next].id;
+          setActiveTab(nextId);
+          requestAnimationFrame(() => {
+            const btn = tabsRef.current?.querySelector<HTMLButtonElement>(`[data-tab-id="${nextId}"]`);
+            btn?.focus();
+          });
+        }}
+      >
+        {TAB_CONFIG.map((tab) => {
+          const selected = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              data-tab-id={tab.id}
+              role="tab"
+              id={`tab-${tab.id}`}
+              aria-selected={selected}
+              aria-controls={`tabpanel-${tab.id}`}
+              tabIndex={selected ? 0 : -1}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-1.5 px-4 py-2.5 text-xs font-medium border-b-2 transition-all ${
+                selected
+                  ? "border-primary text-primary"
+                  : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
+              }`}
+            >
+              {tab.icon}
+              {tab.label}
+            </button>
+          );
+        })}
       </nav>
 
-      <main className="flex-1 overflow-hidden pb-14 md:pb-0 min-h-0">
+      <main
+        className="flex-1 overflow-hidden pb-14 md:pb-0 min-h-0"
+        role="tabpanel"
+        id={`tabpanel-${activeTab}`}
+        aria-labelledby={`tab-${activeTab}`}
+        tabIndex={-1}
+      >
         {activeTab === "apply" && (
           <ApplyTab
             selectedPalette={selectedPalette}
@@ -487,6 +575,7 @@ function AppShell() {
             onExtractTheme={handleExtractFromCode}
             userPalettes={userPalettes}
             onShowToast={showToast}
+            recentPaletteIds={recentPaletteIds}
           />
         )}
         {activeTab === "compose" && (
@@ -523,21 +612,30 @@ function AppShell() {
         )}
       </main>
 
-      <nav className="fixed bottom-0 left-0 right-0 flex md:hidden border-t border-border bg-card/95 backdrop-blur z-30 shrink-0">
-        {TAB_CONFIG.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`flex-1 flex flex-col items-center gap-1 py-2.5 text-[10px] font-medium transition-all ${
-              activeTab === tab.id
-                ? "text-primary"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            {tab.icon}
-            {tab.label}
-          </button>
-        ))}
+      <nav
+        className="fixed bottom-0 left-0 right-0 flex md:hidden border-t border-border bg-card/95 backdrop-blur z-30 shrink-0 print-hide"
+        role="tablist"
+        aria-label="Mermaid Theme Builder sections (mobile)"
+      >
+        {TAB_CONFIG.map((tab) => {
+          const selected = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              role="tab"
+              aria-selected={selected}
+              aria-controls={`tabpanel-${tab.id}`}
+              tabIndex={selected ? 0 : -1}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex-1 flex flex-col items-center gap-1 py-2.5 text-[10px] font-medium transition-all ${
+                selected ? "text-primary" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {tab.icon}
+              {tab.label}
+            </button>
+          );
+        })}
       </nav>
 
       {toast && (

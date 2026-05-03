@@ -271,3 +271,47 @@
     inset: -1px;
   }
 }
+
+/* Visible keyboard-focus outlines (a11y deep pass) */
+@layer base {
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+/* Print stylesheet — hide chrome, show only the rendered diagram. */
+@media print {
+  @page {
+    margin: 1cm;
+  }
+  html, body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  /* Hide all app chrome explicitly. */
+  header, nav, [data-print-hide], .print-hide,
+  [role="tablist"], [role="dialog"] {
+    display: none !important;
+  }
+  /* Reveal only the print container. */
+  [data-print-only] {
+    display: block !important;
+    position: static !important;
+    inset: auto !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+    background: #ffffff !important;
+  }
+  /* Force the Mermaid SVG to fit the page width. */
+  [data-print-only] svg {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+  main {
+    overflow: visible !important;
+    padding: 0 !important;
+  }
+}
