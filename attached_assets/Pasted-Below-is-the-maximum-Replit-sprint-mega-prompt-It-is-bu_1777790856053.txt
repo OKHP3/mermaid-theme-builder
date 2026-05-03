@@ -1,0 +1,630 @@
+Below is the maximum Replit sprint mega-prompt. It is built to exploit your six-hour free window without letting Replit wander into nonsense.
+
+I also stored a control page in Notion:
+
+Replit Six-Hour Free-Token Sprint — Maximum Build Directive
+https://www.notion.so/355812e0ced481218369ec52b420da70
+
+Use the prompt below directly in Replit.
+
+# REPLIT: Mermaid Theme Builder — Six-Hour Free-Token Maximum Build Sprint
+You are working on the existing Mermaid Theme Builder project.
+Repository:
+https://github.com/OKHP3/mermaid-theme-builder
+Live app:
+https://okhp3.github.io/mermaid-theme-builder/
+Primary Notion master plan:
+https://www.notion.so/overkillhill/Mermaid-Theme-Builder-Master-Build-Plan-v0-1-7bc611bd57454d9185fadccdae11a93f
+Important Notion support pages:
+https://www.notion.so/overkillhill/Visual-Language-Diagram-Taxonomy-Mermaid-Theme-Builder-34e812e0ced481fb9e31d0fe47562684
+https://www.notion.so/34e812e0ced481afbdd9cd1c29074b4a
+https://www.notion.so/34e812e0ced481189f62e33e65b962f5
+https://www.notion.so/354812e0ced481dc9e9ece07a734b27b
+https://www.notion.so/355812e0ced481218369ec52b420da70
+## SPRINT CONTEXT
+For the next several hours, Replit usage is free/unlimited. Use this window aggressively.
+This is not a tiny patch. This is a long-running, many-step, product-hardening sprint.
+The current app is live and functional, but it has reached the limit of the current layout and maturity. It has too many features exposed in one overloaded screen. It needs to mature from “successful public-alpha prototype” into a cleaner workflow-based utility.
+Current status:
+- GitHub Pages live deployment exists.
+- Theme builder works.
+- Brand presets exist.
+- Color editor exists.
+- Live Mermaid preview exists.
+- Diagram detection exists.
+- Capability registry exists.
+- Examples exist.
+- Prompt scaffold export exists.
+- Documentation exists.
+- The app is static and local-only.
+Current problem:
+The UI is trying to do everything in one window. It is cognitively overloaded on desktop and poor on mobile.
+Primary sprint objective:
+Use this free Replit window to make the product substantially more usable, mature, documented, tested, and publicly demoable.
+## ABSOLUTE SCOPE FIREWALL
+Mermaid Theme Builder is a personal Jamie Hill / OverKill Hill P³ project.
+It is not associated with Builders FirstSource, BFS, or any employer-owned work.
+Do not add, restore, or preserve:
+- Builders FirstSource
+- BFS
+- BFS Light
+- Builders Blue
+- employer workflows
+- employer screenshots
+- employer examples
+- employer brand palettes
+- employer strategy
+- employer system references
+- employer-owned IP
+If any existing code, docs, examples, comments, or generated output include employer-specific language, replace it with generic language such as:
+- employer branding
+- employer-owned work
+- corporate brand
+- protected brand system
+- internal enterprise example
+Do not add built-in themes named after or imitating real third-party companies such as:
+- Walmart
+- Starbucks
+- Apple
+- Microsoft
+- Target
+- Home Depot
+- any other corporate brand
+Built-in themes must remain either:
+- original generic palettes, or
+- personal OverKill Hill / AskJamie / Glee-fully ecosystem palettes.
+## PRODUCT SCOPE: DO NOT VIOLATE
+The product remains:
+- static
+- browser-based
+- local-only
+- no backend
+- no login
+- no payment
+- no database
+- no AI API calls
+- no file upload
+- no cloud storage
+- no analytics capture of pasted Mermaid content
+- no user accounts
+- no custom BPMN parser
+- no custom ArchiMate grammar
+- no custom SysML grammar
+- no Mermaid fork
+- no Mermaid.ai clone
+Mermaid Theme Builder styles and explains Mermaid-supported or Mermaid-emulatable diagrams. It does not become a competing diagram language.
+## REQUIRED WORKING METHOD
+Work in phases.
+Do not blindly start changing code without an assessment.
+At each major phase:
+1. Inspect current files.
+2. Identify intended changes.
+3. Make changes.
+4. Run build/tests/lint where available.
+5. Fix breakages.
+6. Commit changes with clear commit messages if the environment permits.
+7. Continue to next phase.
+The goal is to make as much high-value progress as possible inside the free-token window, while leaving the repo cleaner than you found it.
+## PHASE 0 — BASELINE ASSESSMENT AND SAFETY AUDIT
+Before making functional changes, create or update:
+docs/ux-restructure-assessment.md
+Include:
+1. Current maturity classification:
+   - Product maturity
+   - Technical maturity
+   - UX maturity
+   - Mobile maturity
+   - Information architecture maturity
+2. Current feature inventory:
+   - theme presets
+   - color editor
+   - live preview
+   - diagram detection
+   - capability registry
+   - example loading
+   - prompt scaffold export
+   - metadata/watermark behavior
+   - GitHub Pages deployment
+3. Known deficiencies:
+   - everything-window overload
+   - mobile usability failure
+   - desktop cognitive overload
+   - inventory/reference content crowding the primary task
+   - full color editor too prominent in default path
+   - examples not clearly separated from primary workflow
+   - export actions not clearly separated as an output step
+   - unclear first-time-user path
+4. Alignment with Notion:
+   - static browser utility
+   - visual governance
+   - diagram taxonomy vs capability registry
+   - no-backend/no-login/no-AI scope
+   - public GitHub Pages deployment
+   - personal project firewall
+5. Sprint plan:
+   - tabbed UI architecture
+   - mobile hardening
+   - example-library expansion
+   - registry/reference improvements
+   - docs/testing/deployment polish
+Also run a safety scan over repo text for forbidden terms:
+- Builders FirstSource
+- BFS
+- BFS Light
+- Builders Blue
+- Walmart
+- Starbucks
+- Apple Theme
+- Microsoft Theme
+- Target Theme
+- Home Depot Theme
+If found:
+- determine whether it is a prohibited reference or acceptable historical disclaimer,
+- remove or generalize prohibited references,
+- document cleanup in the assessment.
+## PHASE 1 — WORKFLOW-BASED TABBED UX ARCHITECTURE
+Replace the overloaded single-screen interface with four primary tabs:
+1. APPLY
+2. COMPOSE
+3. EXAMPLES
+4. REFERENCE
+Default tab:
+APPLY
+Use React state unless an existing routing pattern makes route-based tabs cleaner.
+Suggested state:
+type AppTab = "apply" | "compose" | "examples" | "reference";
+const [activeTab, setActiveTab] = useState<AppTab>("apply");
+All tabs must share app state:
+- selected palette
+- custom colors
+- font family
+- theme name
+- metadata comments enabled
+- watermark/attribution enabled
+- current Mermaid input code
+- detected diagram family
+- generated styled code
+- selected example
+- warnings
+Do not duplicate state in a way that causes divergence.
+### Tab 1: APPLY
+Purpose:
+Paste Mermaid, apply a theme, preview, copy/export.
+This is the default and simplest workflow.
+Desktop layout:
+- compact horizontal palette strip
+- code input textarea
+- live preview
+- original/themed toggle if already supported
+- short warnings
+- bottom action bar:
+  - Edit Colors
+  - Styled Code
+  - Markdown
+  - Prompt Scaffold
+Move OUT of Apply:
+- full color editor
+- full palette card grid
+- font editor
+- ClassBrowser
+- DiagramInventory
+- full CapabilityNote explanations
+- large example selector/gallery
+- documentation/reference content
+Apply should answer:
+“What happens when I paste Mermaid and apply a theme?”
+Color editor in Apply:
+- opened by Edit Colors button
+- slide-out panel on desktop
+- full-screen modal/drawer on mobile
+Mobile Apply:
+- no horizontal scrolling
+- compact palette strip
+- code input initially compact, about 4 visible lines, expandable if feasible
+- preview takes meaningful vertical space
+- bottom action bar fixed or sticky
+- no dense tables
+- no side-by-side layout
+### Tab 2: COMPOSE
+Purpose:
+Define visual identity and export reusable prompt/bootstrap scaffolds without needing diagram input.
+Compose should include:
+- full palette selector
+- full color editor
+- font controls
+- theme name
+- metadata/watermark toggles
+- generic sample preview
+- Copy Bootstrap Markdown
+- Copy Prompt Scaffold
+Compose answers:
+“What visual system should future Mermaid diagrams follow?”
+Mobile Compose:
+- single-column
+- color editor may take full screen
+- preview below editor
+- export buttons sticky/fixed if feasible
+### Tab 3: EXAMPLES
+Purpose:
+Browse, preview, and load examples.
+Examples should include:
+- grouped example list
+- support-level badges:
+  - Native
+  - Beta
+  - Emulation
+  - Showcase
+  - Gap / Unsupported
+- selected example preview using current theme
+- example metadata:
+  - diagram family
+  - support status
+  - theme confidence
+  - notation compliance
+  - warning/limitation
+- buttons:
+  - Load into Apply
+  - Copy Raw Code
+When Load into Apply is clicked:
+- set current Mermaid input to the example code
+- switch active tab to Apply
+- preserve selected palette/custom colors
+- rerun detection and preview
+Examples answers:
+“What example should I start from?”
+Mobile Examples:
+- card list
+- preview below selected card
+- no side-by-side panels
+### Tab 4: REFERENCE
+Purpose:
+Explain Mermaid support, capability registry, limitations, class browser, and visual-language taxonomy.
+Reference should include:
+- DiagramInventory
+- CapabilityNote
+- ClassBrowser
+- capability registry search/filter if feasible
+- support status explanation
+- theme confidence explanation
+- notation compliance explanation
+- BPMN warning
+- links to Notion taxonomy and GitHub repo
+Reference answers:
+“What does Mermaid support, what is safe to theme, and what should I not overclaim?”
+Move all dense reference content here.
+## PHASE 2 — MOBILE RESPONSIVE HARDENING
+Make the app genuinely usable on mobile.
+Mobile requirements:
+- no horizontal page scrolling
+- no desktop two-column layout
+- tab bar usable on small screens
+- Apply tab is simple and vertically stacked
+- compact palette strip scrolls horizontally inside its own area
+- color editor opens as modal/drawer/full-screen panel
+- action buttons are thumb-friendly
+- preview has usable height
+- inventory/reference uses cards or stacked layout
+- examples use cards
+- export actions do not disappear below unusable scroll depth
+- modals/drawers can be closed easily
+- textareas do not break layout
+- Mermaid preview container handles overflow gracefully
+Avoid:
+- nested scroll traps
+- dense tables on mobile
+- tiny buttons
+- side-by-side code/preview on mobile
+- fixed elements covering content
+- horizontal overflow
+Add responsive CSS/utility classes as needed.
+## PHASE 3 — EXAMPLE LIBRARY EXPANSION AND ORGANIZATION
+Audit the existing example library.
+Ensure the app has examples or placeholders for the key Mermaid families and the OverKill examples discussed in Notion.
+At minimum, examples should cover:
+- Flowchart
+- Sequence Diagram
+- Class Diagram
+- State Diagram
+- Entity Relationship Diagram
+- User Journey
+- Gantt
+- Pie
+- Quadrant Chart
+- Requirement Diagram
+- Git Graph
+- Mindmap
+- Timeline
+If already implemented, preserve and improve.
+If missing, add safe, compact examples.
+If the fuller OverKill example set exists, organize it.
+Suggested categories:
+- Native
+- Beta / renderer-dependent
+- Emulated
+- Showcase
+- Gap / Unsupported
+Important:
+Every example must be firewall-safe.
+No employer references.
+No third-party corporate brand examples.
+Example families to support or at least represent:
+- Flowchart
+- Sequence Diagram
+- Class Diagram
+- State Diagram
+- Entity Relationship Diagram
+- User Journey
+- Gantt
+- Pie
+- Quadrant Chart
+- Requirement Diagram
+- Git Graph
+- C4
+- Mindmap
+- Timeline
+- ZenUML
+- Sankey
+- XY Chart
+- Block Diagram
+- Packet Diagram
+- Kanban
+- Architecture
+- Radar
+- Treemap
+- Venn
+- Ishikawa / Fishbone
+- TreeView
+High-value gaps to represent in registry/reference, not necessarily render:
+- BPMN 2.0
+- ArchiMate
+- SysML
+- Value Stream Map
+- Service Blueprint
+- OKR Alignment Map
+- Data Flow Diagram
+- Decision Tree
+- Org Chart
+- Threat Model DFD
+For unsupported or emulated examples, include warning language.
+BPMN warning must remain:
+“Mermaid flowcharts can approximate BPMN-like visual flows, but they do not implement BPMN 2.0 semantics.”
+## PHASE 4 — CAPABILITY REGISTRY DEEPENING
+Expand or refine the capability registry so it supports the app’s Reference tab and detection notes.
+Each registry entry should ideally include:
+- id
+- displayName
+- mermaidSyntaxId
+- supportStatus:
+  - Native
+  - Partial
+  - Emulatable
+  - Gap
+  - External
+- themeConfidence:
+  - High
+  - Medium
+  - Generic Only
+  - Low
+  - Not Applicable
+- notationCompliance:
+  - Mermaid-native
+  - Approximation only
+  - Not supported
+  - External tool recommended
+- description
+- bestUsedFor
+- warning
+- exampleId or exampleFile
+- examplePriority
+- rendererRisk
+- reviewedMermaidVersion
+Improve detection-to-registry linkage:
+- detected type should show support status
+- detected type should show theme confidence
+- detected type should show warning if relevant
+- unknown type should gracefully fall back to generic theming, with warning
+Do not overclaim support.
+## PHASE 5 — EXPORT AND PROMPT SCAFFOLD POLISH
+Review current export outputs.
+Improve if needed:
+- Styled Mermaid Code
+- Markdown Bootstrap
+- Prompt Scaffold
+Prompt scaffold should be useful for:
+- ChatGPT
+- Claude
+- Copilot
+- Gemini
+- Perplexity
+- Mermaid.ai
+But do not add AI API calls.
+Exports should include:
+- theme name
+- theme ID
+- tool URL
+- tool version if available
+- Mermaid version reviewed if available
+- source metadata comments if enabled
+- disclaimer/warning when diagram family has limited support
+- style rules suitable for pasting before asking an LLM to generate diagrams
+Ensure copy buttons give clear success/failure feedback.
+## PHASE 6 — ACCESSIBILITY AND USABILITY POLISH
+Improve general usability.
+Check:
+- buttons have accessible labels
+- contrast is acceptable
+- tab order is reasonable
+- modals/drawers can close with visible controls
+- keyboard navigation is not obviously broken
+- selected tab is visually clear
+- selected palette is visually clear
+- warning messages are readable
+- error states are friendly
+- long code blocks do not break layout
+- preview errors are visible and actionable
+- mobile tap targets are reasonable
+Improve empty states:
+- no Mermaid pasted yet
+- unknown diagram type
+- preview render failure
+- no example selected
+- unsupported/gap registry entry
+- clipboard failure
+## PHASE 7 — DOCUMENTATION AND REPO ALIGNMENT
+Update docs to match the new product.
+At minimum update:
+- README.md
+- docs/PRODUCT_BRIEF.md, if present
+- docs/ROADMAP.md, if present
+- docs/RELEASE_CHECKLIST.md, if present
+- standards/render-safety-checklist.md, if present
+- docs/ux-restructure-assessment.md
+README should explain the four tabs:
+Apply:
+Paste Mermaid, apply theme, preview, copy/export.
+Compose:
+Design a reusable visual theme/bootstrap without needing diagram code.
+Examples:
+Browse, preview, and load sample diagrams.
+Reference:
+Inspect Mermaid support, capability warnings, theme confidence, and visual-language guidance.
+Add release note:
+V0.3.1 / V0.4 Six-Hour Replit Max-Build Sprint:
+- restructured overloaded alpha UI into workflow tabs
+- improved mobile usability
+- separated reference content from primary Apply workflow
+- expanded example and registry behavior
+- preserved static/local-only scope
+Docs must preserve:
+- personal OverKill Hill project
+- no employer affiliation
+- no Mermaid/Mermaid.ai affiliation
+- no third-party brand preset affiliation
+## PHASE 8 — TESTING AND BUILD VALIDATION
+Run whatever checks are available.
+At minimum:
+- install if needed
+- build
+- typecheck if available
+- lint if available
+- test if available
+Fix any breakage introduced by the sprint.
+If a check is unavailable, document that it is unavailable.
+Manual smoke test:
+1. Open local preview.
+2. Confirm Apply loads first.
+3. Paste simple flowchart.
+4. Select palette.
+5. Confirm preview renders.
+6. Edit colors from Apply modal/drawer.
+7. Confirm preview updates.
+8. Copy styled code.
+9. Switch to Compose.
+10. Confirm full editor exists.
+11. Export Bootstrap Markdown.
+12. Export Prompt Scaffold.
+13. Switch to Examples.
+14. Select example.
+15. Preview example.
+16. Load example into Apply.
+17. Confirm code appears in Apply.
+18. Switch to Reference.
+19. Confirm capability registry appears.
+20. Confirm BPMN warning appears.
+21. Resize to mobile.
+22. Confirm no horizontal scrolling.
+23. Confirm Apply is usable.
+24. Confirm Edit Colors modal/drawer works on mobile.
+25. Confirm export buttons are reachable.
+## PHASE 9 — DEPLOYMENT
+Ensure GitHub Pages workflow remains intact.
+If possible:
+- confirm pages workflow file exists
+- confirm build output path is correct
+- confirm base path is correct for /mermaid-theme-builder/
+- confirm latest changes are pushed
+- confirm live site updates
+Do not break:
+https://okhp3.github.io/mermaid-theme-builder/
+## PHASE 10 — FINAL REPORT
+At the end, provide a detailed final report.
+Required report:
+1. Current maturity after sprint:
+   - product maturity
+   - technical maturity
+   - UX maturity
+   - mobile maturity
+   - information architecture maturity
+2. Files added.
+3. Files changed.
+4. Major UI changes.
+5. Major registry/example changes.
+6. Export/scaffold changes.
+7. Documentation updates.
+8. Build/test results.
+9. GitHub Pages deployment status.
+10. Firewall scan results.
+11. Known limitations.
+12. Remaining recommended next steps.
+13. Commit SHA or list of commits.
+## SUCCESS CRITERIA
+The sprint is successful when:
+- App no longer feels like everything on one screen.
+- Apply tab shows only the core paste/theme/preview/export workflow.
+- First-time user can paste Mermaid and copy styled output in under 30 seconds.
+- Color editor is not visible by default in Apply.
+- ClassBrowser is not visible in Apply.
+- DiagramInventory is not visible in Apply.
+- CapabilityNote long explanation is not visible in Apply.
+- Examples are not crowding Apply.
+- Compose can generate bootstrap/scaffold without pasted diagram code.
+- Examples can preview and load diagrams into Apply.
+- Reference contains inventory, class browser, capability note, support/limitation guidance.
+- Tabs share palette and code state.
+- Mobile Apply tab works without horizontal scrolling.
+- Mobile color editor uses modal/drawer/full-screen behavior.
+- Desktop feels calmer and workflow-driven.
+- Existing exports still work.
+- GitHub Pages remains functional.
+- No employer references are introduced.
+- No third-party corporate theme presets are introduced.
+## STRATEGIC GUIDANCE
+Do not burn the free Replit window on tiny cosmetic tweaks first.
+Priority order:
+1. Tabbed architecture.
+2. Mobile usability.
+3. Example loading and example organization.
+4. Capability registry/reference usefulness.
+5. Export/prompt scaffold polish.
+6. Documentation and deployment validation.
+7. Accessibility and final polish.
+If time runs short, prioritize architecture and mobile over adding more examples.
+If something becomes risky, preserve working behavior and document the limitation rather than breaking deployment.
+## FINAL QUALITY BAR
+The app should mature from:
+“Look at everything this tool can do.”
+to:
+“Follow the workflow. Each step does one job.”
+The four intended mental models:
+Apply:
+Do the thing.
+Compose:
+Design the theme.
+Examples:
+Start from a known pattern.
+Reference:
+Understand what is safe, supported, approximate, or unsupported.
+Do not reduce capability.
+Reduce cognitive load.
+
+My recommendation
+
+Run the full prompt once. Do not keep interrupting Replit every few minutes unless it gets stuck or asks for direction.
+
+Your free-token goal should be:
+
+one long autonomous sprint
+one final report
+one deployable commit chain
+
+If it successfully completes the tab refactor, mobile hardening, docs update, and deployment validation, you will have moved from “working alpha” to a substantially more credible public utility.
