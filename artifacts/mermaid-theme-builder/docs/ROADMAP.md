@@ -58,8 +58,8 @@
 - [ ] Download as `.txt` file (Prompt Scaffold)
 
 ### UI
-- [ ] Dark/light mode toggle (independent of diagram theme)
-- [ ] Keyboard shortcut: `Ctrl+Shift+C` → copy Styled Code
+- [x] Dark/light mode toggle (independent of diagram theme)
+- [x] Keyboard shortcut: `Ctrl+Shift+C` → copy Styled Code
 - [ ] Diagram family override (manual selector when auto-detect is wrong)
 
 ### Palette
