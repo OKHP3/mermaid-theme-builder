@@ -83,8 +83,14 @@ export function splitDiagrams(code: string): SplitDiagram[] {
     }
     if (inFrontmatter) continue;
 
-    // Skip blank lines and pure comment lines for the "seen content" check.
-    if (!trimmed || trimmed.startsWith("%%")) continue;
+    // Skip blank lines for the "seen content" check. Comments DO count as
+    // content so a block of `%%` lines between two diagrams still triggers
+    // a fresh boundary on the next top-level keyword.
+    if (!trimmed) continue;
+    if (trimmed.startsWith("%%")) {
+      if (boundaries.length > 0) seenContentSinceLastBoundary = true;
+      continue;
+    }
 
     // Detect a top-level diagram declaration at indent 0.
     if (raw.length === trimmed.length && KEYWORD_RE.test(trimmed)) {

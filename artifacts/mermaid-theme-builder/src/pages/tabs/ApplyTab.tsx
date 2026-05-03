@@ -263,6 +263,21 @@ export function ApplyTab({
     [exportCode, selectedPalette, exportOptions],
   );
 
+  // Global keyboard shortcut: Ctrl/Cmd+Shift+C copies the Styled Code.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (!(e.ctrlKey || e.metaKey) || !e.shiftKey) return;
+      if (e.key !== "C" && e.key !== "c") return;
+      const target = e.target as HTMLElement | null;
+      const tag = target?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || target?.isContentEditable) return;
+      e.preventDefault();
+      void handleCopy("code");
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [handleCopy]);
+
   const handleScaffoldCopy = useCallback(
     async (format: ScaffoldFormat) => {
       const text = generatePromptScaffoldWithFormat(selectedPalette, exportOptions, format);
