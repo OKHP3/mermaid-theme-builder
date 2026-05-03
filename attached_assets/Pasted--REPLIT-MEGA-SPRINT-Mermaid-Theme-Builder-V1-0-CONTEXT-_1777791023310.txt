@@ -1,0 +1,887 @@
+# REPLIT MEGA SPRINT: Mermaid Theme Builder V1.0
+
+## CONTEXT
+
+You are working on the Mermaid Theme Builder, a browser-based visual governance tool for Mermaid diagrams. The app lives at `artifacts/mermaid-theme-builder/`. It is built with React + TypeScript + Vite + Tailwind CSS and uses Mermaid.js ^11.14.0. It deploys to GitHub Pages at okhp3.github.io/mermaid-theme-builder/.
+
+**Read AGENTS.md before you start.** It contains brand separation rules that are non-negotiable. Never use BFS/Builders FirstSource hex values (#00205B, #003087, #002F86, #B3C1DB, #D6E5F9, #D0D0CE, #C8102E). This is a personal OverKill Hill P3 project.
+
+This sprint is a comprehensive build-out covering every planned improvement. Execute each phase sequentially. Each phase should compile and render before moving to the next. Commit to GitHub after each phase completes successfully.
+
+-----
+
+## PHASE 1: UX RESTRUCTURING (4 Tabbed Sub-Screens)
+
+### Problem
+
+The current single-screen layout puts every feature on one page: palette selector, color editor, code input, preview, ClassBrowser, DiagramInventory, CapabilityNote, PromptScaffoldModal, and export buttons. This fails on mobile and creates cognitive overload on desktop. There is no workflow progression.
+
+### Solution
+
+Break the single screen into 4 tabbed sub-screens. Each tab has one job.
+
+### Task 1.1: Create Tab Navigation Component
+
+Create `TabNavigation.tsx`:
+
+```tsx
+type AppTab = "apply" | "compose" | "examples" | "reference";
+```
+
+Requirements:
+
+- Horizontal tab bar at top on desktop (>=768px)
+- Bottom navigation bar on mobile (<768px), fixed position
+- Active tab has clear visual indicator using the current theme’s accent color
+- Tab labels: “Apply” (default), “Compose”, “Examples”, “Reference”
+- Tab icons (use Lucide or inline SVGs): Apply = wand/magic, Compose = palette, Examples = grid/gallery, Reference = book/info
+- Smooth transitions between tabs (no page reload, React state only)
+- URL hash routing optional but nice to have (#apply, #compose, #examples, #reference)
+
+### Task 1.2: Create Apply Tab (Default)
+
+Create `ApplyTab.tsx`. This is the core workflow: paste, theme, preview, copy. Nothing else.
+
+**Desktop layout (>=1024px): side-by-side two-panel**
+
+```
+┌──────────────────────────────────────────────────────────┐
+│ Palette Strip: 7+ compact swatch circles (28px each)     │
+│ [OD] [FS] [SE] [VM] [OKH] [GF] [AJ] [+ Custom]         │
+├───────────────────────┬──────────────────────────────────┤
+│                       │                                  │
+│   Code Input          │   Live Preview                   │
+│   (monospace textarea │   (Mermaid rendered SVG)         │
+│    with line numbers) │                                  │
+│                       │   [Original] [Themed] toggle     │
+│                       │                                  │
+│   Warnings (if any)   │                                  │
+├───────────────────────┴──────────────────────────────────┤
+│ [Edit Colors]  │  [Styled Code] [Markdown] [Prompt] [SVG]│
+└──────────────────────────────────────────────────────────┘
+```
+
+**Tablet layout (768-1023px): stacked**
+Code input above, preview below. Palette strip stays horizontal.
+
+**Mobile layout (<768px):**
+
+```
+┌───────────────────────┐
+│ Palette strip (scroll)│
+├───────────────────────┤
+│ Code input (4 lines,  │
+│ tap to expand)        │
+├───────────────────────┤
+│ Live Preview          │
+│ (pinch to zoom)       │
+├───────────────────────┤
+│ [Edit] [Code] [MD][AI]│ ← fixed bottom bar
+└───────────────────────┘
+```
+
+Requirements:
+
+- Paste detection: auto-detect diagram type and show badge (e.g., “Flowchart detected”)
+- Palette strip: compact horizontal row of small color-swatch circles. NOT the current card grid. Selected palette has ring/glow indicator.
+- “Edit Colors” button opens a slide-out panel on desktop (right side, 320px), full-screen modal on mobile. Contains all 13 color fields. Close button returns to Apply.
+- Code textarea: monospace font, auto-resize up to 50% viewport height, syntax highlighting if feasible (optional stretch goal)
+- Preview panel: rendered Mermaid SVG. Show spinner while rendering. Show error message inline if Mermaid throws.
+- Original/Themed toggle: lets user compare before/after without re-pasting
+- Warnings strip: only visible if warnings exist (existing init directives detected, non-printable characters, excessively long labels)
+- Export buttons:
+  - “Styled Code” = copy styled Mermaid code with init directive to clipboard
+  - “Markdown” = copy markdown bootstrap block to clipboard
+  - “Prompt” = copy AI prompt scaffold to clipboard
+  - “SVG” = download the rendered SVG as a file (NEW feature)
+- Toast notification on copy (“Copied to clipboard!”)
+
+### Task 1.3: Create Compose Tab
+
+Create `ComposeTab.tsx`. Pre-prompt mode: define your visual identity, export bootstraps/scaffolds.
+
+**Layout:**
+
+```
+┌──────────────────────┬────────────────────────────────────┐
+│ Palette Selector     │                                    │
+│ (same 7+ presets,    │  PREVIEW: Generic sample flowchart │
+│  card style here)    │  with selected theme applied       │
+│                      │  (read-only, auto-generated)       │
+│ Full Color Editor    │                                    │
+│ (all 13 fields,      │                                    │
+│ always visible)      │                                    │
+│                      │                                    │
+│ Font Family dropdown │                                    │
+│ (Trebuchet MS,       │                                    │
+│  Arial, Calibri,     │                                    │
+│  Georgia, Courier,   │                                    │
+│  system-ui)          │                                    │
+│                      │                                    │
+│ Theme Name field     │                                    │
+│ (user-defined label) │                                    │
+│                      │                                    │
+│ Watermark toggle     │                                    │
+│ [ON/OFF]             │                                    │
+│ "Add attribution     │                                    │
+│  node to exported    │                                    │
+│  diagrams"           │                                    │
+├──────────────────────┴────────────────────────────────────┤
+│ [Copy Bootstrap Markdown] [Copy Prompt Scaffold]          │
+│ [Export Theme as JSON] [Import Theme JSON]                 │
+│                                                           │
+│ "Paste the bootstrap into your LLM before generating      │
+│  diagrams to enforce this visual standard."               │
+└───────────────────────────────────────────────────────────┘
+```
+
+Requirements:
+
+- Font family dropdown: provide 6-8 web-safe options. The selected font is included in the init directive’s `fontFamily` field and in exported scaffolds.
+- Theme name field: user types a label (e.g., “Acme Corp Standard”). Appears in exported markdown bootstrap header and prompt scaffold.
+- Watermark toggle: when ON, exported Mermaid code includes a small attribution node at the bottom of the diagram linking to the tool URL. Default ON.
+- The generic preview diagram should exercise multiple node shapes, edges, and a subgraph so the user can see how their theme looks across element types.
+- “Export Theme as JSON” button: exports the current palette + font + theme name as a downloadable `.json` file.
+- “Import Theme JSON” button: opens file picker, loads a previously exported theme JSON, populates all fields.
+- Mobile: color editor takes full screen. Preview below fold. Export buttons fixed at bottom.
+
+### Task 1.4: Create Examples Tab
+
+Create `ExamplesTab.tsx`. Browse, preview, and load example diagrams.
+
+**Layout:**
+
+```
+┌──────────────────────┬────────────────────────────────────┐
+│ Example List          │                                    │
+│ (grouped by family)   │  Preview of selected example       │
+│                      │  (rendered with current theme)      │
+│ ► Flowchart          │                                    │
+│   ○ Basic Process    │                                    │
+│   ○ Architecture     │                                    │
+│ ► Sequence           │                                    │
+│   ○ Auth Flow        │                                    │
+│ ► Class              │                                    │
+│   ○ Domain Model     │                                    │
+│ ► State              │                                    │
+│   ○ Theme Lifecycle  │                                    │
+│ ► ER                 │                                    │
+│   ○ Theme Registry   │                                    │
+│ ► Gantt              │                                    │
+│   ○ Project Roadmap  │                                    │
+│ ► Mindmap            │                                    │
+│   ○ Ecosystem        │                                    │
+│ ► Journey            │                                    │
+│   ○ Idea to Ship     │                                    │
+│ ► Pie                │                                    │
+│   ○ Effort Allocation│                                    │
+│ ► Timeline           │                                    │
+│   ○ Project History  │                                    │
+│ ► Showcase           │                                    │
+│   ○ Rube Goldberg    │                                    │
+│                      │                                    │
+│ Support badges:      │                                    │
+│ [Native] [Beta]      │                                    │
+│ [Emulation]          │                                    │
+├──────────────────────┴────────────────────────────────────┤
+│ [Load into Apply Tab] [Copy Raw Code] [View Source]       │
+└───────────────────────────────────────────────────────────┘
+```
+
+Requirements:
+
+- Example list grouped by Mermaid diagram family. Collapsible family groups.
+- Each example shows: name, badge (Native/Beta/Emulation), brief one-line description
+- Selecting an example renders it in the preview panel with the currently selected theme
+- “Load into Apply Tab” switches to Apply tab and pastes the example code into the input textarea
+- “Copy Raw Code” copies the unthemed original Mermaid source
+- “View Source” shows the raw .mmd code in a modal or expandable panel
+- Support-level badges: green for Native, yellow for Beta, orange for Emulation
+- Mobile: list is full-width, preview slides in from bottom as a sheet
+
+### Task 1.5: Create Reference Tab
+
+Create `ReferenceTab.tsx`. Mermaid capability documentation.
+
+**Layout:**
+
+```
+┌───────────────────────────────────────────────────────────┐
+│ Mermaid Capability Registry                               │
+│                                                           │
+│ [Search / Filter]                                         │
+│                                                           │
+│ ┌─ Diagram Families ─────────────────────────────────┐   │
+│ │ Flowchart          ● Native    15+ shape types     │   │
+│ │ Sequence Diagram   ● Native    fragments, notes    │   │
+│ │ Class Diagram      ● Native    relationships       │   │
+│ │ State Diagram      ● Native    v2, nested states   │   │
+│ │ ER Diagram         ● Native    cardinality         │   │
+│ │ Gantt Chart        ● Native    sections, deps      │   │
+│ │ Pie Chart          ● Native    percentages         │   │
+│ │ Git Graph          ● Native    branches, merges    │   │
+│ │ Mindmap            ● Native    hierarchical        │   │
+│ │ Timeline           ● Native    chronological       │   │
+│ │ Quadrant Chart     ● Native    2x2 matrix          │   │
+│ │ User Journey       ● Native    satisfaction score  │   │
+│ │ Block Diagram      ● Native    nested blocks       │   │
+│ │ Sankey             ● Native    flow quantities     │   │
+│ │ XY Chart           ● Native    bar/line charts     │   │
+│ │ Requirement        ● Native    traceability        │   │
+│ │ C4 Context         ● Native    system context      │   │
+│ │ C4 Container       ● Native    containers          │   │
+│ │ C4 Component       ● Native    components          │   │
+│ │ C4 Deployment      ● Native    deployment          │   │
+│ │ ZenUML             ● Native    sequence alt        │   │
+│ │ Packet             ● Native    network packets     │   │
+│ │ Architecture       ● Native    icons, groups       │   │
+│ │ Kanban             ● Native    board columns       │   │
+│ │ Wardley Map        ● Beta      strategy mapping    │   │
+│ │ ──────────────────────────────────────────────     │   │
+│ │ BPMN               ○ Gap       not supported       │   │
+│ │ Use Case           ○ Gap       not supported       │   │
+│ │ Org Chart          ○ Gap       emulatable          │   │
+│ │ Threat Model       ○ Gap       not supported       │   │
+│ └────────────────────────────────────────────────────┘   │
+│                                                           │
+│ ClassBrowser (expandable per family)                      │
+│ CapabilityNote (contextual warnings per family)           │
+│                                                           │
+│ Theme Confidence per family:                              │
+│ High | Medium | Generic Only | Low | N/A                  │
+│                                                           │
+│ Footer: "Mermaid Theme Builder themes what Mermaid        │
+│ supports. It does not implement new diagram grammars."    │
+└───────────────────────────────────────────────────────────┘
+```
+
+Requirements:
+
+- Move existing ClassBrowser, CapabilityNote, and DiagramInventory components here
+- Search/filter by family name or keyword
+- Expandable rows showing shape types, edge syntax, and styling hooks per family
+- Theme confidence indicators per family (High/Medium/Generic Only/Low/N/A)
+- Gap entries clearly marked with red/gray styling
+- Each family row links to the relevant Mermaid documentation URL
+- Mobile: simple accordion list
+
+### Task 1.6: Shared State Architecture
+
+Create a React context or Zustand store for cross-tab state:
+
+```tsx
+interface AppState {
+  // Tab navigation
+  activeTab: AppTab;
+  setActiveTab: (tab: AppTab) => void;
+
+  // Theme state (shared across Apply and Compose)
+  selectedPaletteId: string;
+  setSelectedPaletteId: (id: string) => void;
+  customColors: Record<string, string>;
+  setCustomColors: (colors: Record<string, string>) => void;
+  fontFamily: string;
+  setFontFamily: (font: string) => void;
+  themeName: string;
+  setThemeName: (name: string) => void;
+  watermarkEnabled: boolean;
+  setWatermarkEnabled: (enabled: boolean) => void;
+
+  // Diagram state (shared across Apply and Examples)
+  inputCode: string;
+  setInputCode: (code: string) => void;
+  detectedFamily: string | null;
+
+  // Color editor panel
+  colorEditorOpen: boolean;
+  setColorEditorOpen: (open: boolean) => void;
+}
+```
+
+Requirements:
+
+- When user selects a palette in Compose, it is reflected in Apply immediately
+- When user loads an example in Examples, it pastes into Apply and switches tabs
+- When user edits colors in the slide-out panel in Apply, the Compose tab reflects the change
+- No prop drilling. Use context or a state management library.
+
+-----
+
+## PHASE 2: FEATURE COMPLETION
+
+### Task 2.1: Wardley Map Detection
+
+Update `detector.ts` to detect `wardley-beta` diagrams. Wardley Maps shipped in Mermaid v11.14.0.
+
+Detection pattern: code starts with `wardley` keyword.
+
+Add to the detector’s family mapping:
+
+```ts
+{ pattern: /^\s*wardley/m, family: 'wardley', label: 'Wardley Map', confidence: 'beta' }
+```
+
+### Task 2.2: Theme Metadata Watermark
+
+When watermark is enabled (toggle in Compose tab, default ON), exported Mermaid code appends an attribution node:
+
+For flowcharts:
+
+```
+  MTB_WATERMARK["Theme: {themeName} | Mermaid Theme Builder"]
+  style MTB_WATERMARK fill:none,stroke:none,color:#999,font-size:10px
+  click MTB_WATERMARK "https://okhp3.github.io/mermaid-theme-builder/" _blank
+```
+
+For non-flowchart types that don’t support clickable nodes, add a comment:
+
+```
+%% Theme: {themeName} | Styled with Mermaid Theme Builder
+%% https://okhp3.github.io/mermaid-theme-builder/
+```
+
+### Task 2.3: Font Family Selector
+
+Add a dropdown in the Compose tab with these options:
+
+- Trebuchet MS (default)
+- Arial
+- Calibri
+- Georgia
+- Courier New
+- system-ui
+- Inter (if available)
+- Custom (text input)
+
+The selected font is injected into the init directive: `"fontFamily": "selectedFont"`.
+
+### Task 2.4: Family-Specific themeVariables
+
+Different Mermaid diagram types use different theme variable sets. Currently, the theme engine generates the same init block for all families. Improve this:
+
+**Flowchart variables:**
+primaryColor, primaryTextColor, primaryBorderColor, secondaryColor, secondaryTextColor, secondaryBorderColor, tertiaryColor, tertiaryTextColor, tertiaryBorderColor, lineColor, textColor, mainBkg, nodeBkg, nodeBorder, clusterBkg, clusterBorder, titleColor, edgeLabelBackground, nodeTextColor
+
+**Sequence diagram variables:**
+actorBkg, actorBorder, actorTextColor, actorLineColor, signalColor, signalTextColor, labelBoxBkgColor, labelBoxBorderColor, labelTextColor, loopTextColor, noteBkgColor, noteBorderColor, noteTextColor, activationBkgColor, activationBorderColor, sequenceNumberColor
+
+**Pie chart variables:**
+pie1, pie2, pie3, pie4, pie5, pie6, pie7, pie8, pieTitleTextSize, pieTitleTextColor, pieSectionTextSize, pieSectionTextColor, pieLegendTextSize, pieLegendTextColor, pieStrokeColor, pieStrokeWidth, pieOuterStrokeWidth, pieOuterStrokeColor, pieOpacity
+
+**State diagram variables:**
+labelColor, altBackground, compositeBackground, compositeBorder, compositeTitleBackground, innerEndBackground, transitionColor, transitionLabelColor, specialStateColor, errorBkgColor, errorTextColor
+
+**Timeline variables:**
+cScale0 through cScale11, cScaleLabel0 through cScaleLabel11
+
+When the detector identifies the diagram family, the theme engine should generate the appropriate variable set. For unknown or multiple families, use the flowchart set as default.
+
+### Task 2.5: SVG Export / Download
+
+Add a “Download SVG” button in the Apply tab export bar. When clicked:
+
+1. Get the rendered SVG element from the preview panel
+1. Clean up any Mermaid-internal attributes
+1. Wrap in proper XML declaration
+1. Trigger browser download as `{themeName}-{diagramFamily}.svg`
+
+### Task 2.6: Theme JSON Import/Export
+
+In the Compose tab:
+
+**Export:** Serialize the current theme state (palette colors, font, theme name, watermark setting) as a JSON file and trigger download.
+
+```json
+{
+  "version": "1.0",
+  "name": "My Corporate Theme",
+  "generator": "Mermaid Theme Builder",
+  "generatorUrl": "https://okhp3.github.io/mermaid-theme-builder/",
+  "palette": {
+    "primaryColor": "#1C3A34",
+    "primaryTextColor": "#FFFFFF",
+    "primaryBorderColor": "#2D6F7E",
+    "secondaryColor": "#E6A03C",
+    ...
+  },
+  "fontFamily": "Trebuchet MS",
+  "watermark": true
+}
+```
+
+**Import:** File picker accepts `.json` files. Parse and populate all theme fields. Validate schema before applying.
+
+### Task 2.7: Shareable Theme URLs
+
+Encode the current theme state into URL query parameters so users can share a themed diagram link:
+
+```
+https://okhp3.github.io/mermaid-theme-builder/#apply?palette=custom&primary=1C3A34&secondary=E6A03C&font=TrebuchetMS
+```
+
+Add a “Copy Share Link” button to the Apply tab export bar. Parse URL params on load to restore state.
+
+### Task 2.8: Diff View
+
+In the Apply tab, add a third toggle option alongside “Original” and “Themed”:
+
+**“Diff”** - Shows a side-by-side or inline diff of the original Mermaid code vs. the themed code. Highlight added init directives, classDef changes, and watermark additions in green. Use a simple diff algorithm (no heavy library needed).
+
+-----
+
+## PHASE 3: EXAMPLE LIBRARY
+
+### Task 3.1: Create All Example Diagram Files
+
+Create the following `.mmd` files in `public/examples/` (or embed them in `examples.ts` if the current architecture uses inline strings). Each diagram should be substantive enough to demonstrate the value of theming (not trivial 3-node examples).
+
+**Flowchart examples:**
+
+`flowchart-basic.mmd` - Basic requirements decision flow (10+ nodes, 2+ decision gates, 1 subgraph)
+
+`flowchart-architecture.mmd` - System architecture overview (3 subgraphs: frontend, backend, data layer; 15+ nodes)
+
+**Sequence diagram:**
+
+`sequence-auth-flow.mmd` - Authentication sequence with alt/else blocks, notes, and activation bars (6 participants, 15+ messages)
+
+**Class diagram:**
+
+`class-domain-model.mmd` - Theme Builder domain model with ThemeEngine, Palette, Detector, Exporter classes showing relationships and methods
+
+**State diagram:**
+
+`state-theme-lifecycle.mmd` - Theme lifecycle: Empty > Selecting > Customizing > Previewing > Exporting > Shared. Include nested states for Customizing (Colors, Fonts, Watermark).
+
+**ER diagram:**
+
+`er-theme-registry.mmd` - Theme registry: Palette, ColorField, DiagramFamily, Example, Export entities with cardinality
+
+**Gantt chart:**
+
+`gantt-project-roadmap.mmd` - Mermaid Theme Builder roadmap with V0.1, V0.2, V1.0 phases, parallel tasks, dependencies, milestones
+
+**Mindmap:**
+
+`mindmap-ecosystem.mmd` - OverKill Hill P3 ecosystem: overkillhill.com, glee-fully.tools, askjamie.bot, Mermaid Theme Builder, with sub-branches for features/purposes
+
+**User Journey:**
+
+`journey-idea-to-ship.mmd` - Journey map of building an open-source tool from idea to deployed product (Research, Design, Build, Deploy, Share phases with satisfaction scores)
+
+**Pie chart:**
+
+`pie-effort-allocation.mmd` - Effort allocation across Theme Builder components (Theme Engine, UI, Examples, Documentation, Testing)
+
+**Timeline:**
+
+`timeline-project-history.mmd` - Mermaid Theme Builder project timeline from conception (April 2026) through V1.0
+
+**Quadrant chart:**
+
+`quadrant-opportunity-map.mmd` - Diagram type opportunity matrix: x = Mermaid support level, y = user demand. Plot BPMN, Wardley, Use Case, Org Chart, etc.
+
+**Git Graph:**
+
+`gitgraph-repo-evolution.mmd` - Git branching history: main, feature/tabbed-ui, feature/examples, feature/wardley-detect
+
+**Sankey diagram:**
+
+`sankey-effort-to-output.mmd` - Effort flowing from Sources (Claude, ChatGPT, Copilot, Manual) through Tasks (Design, Code, Test, Docs) to Outputs (Theme Engine, UI, Examples)
+
+**Requirement diagram:**
+
+`requirement-scope-firewall.mmd` - Scope firewall requirements: what’s in-scope vs. out-of-scope for Theme Builder
+
+**XY Chart:**
+
+`xychart-clarity-velocity.mmd` - Clarity vs. velocity showing how theme consistency improves over iterations
+
+**Block diagram:**
+
+`block-product-modules.mmd` - Product module architecture: Theme Engine, Detector, Exporter, Preview, UI Shell
+
+**Kanban:**
+
+`kanban-public-alpha.mmd` - Public alpha board: Backlog, In Progress, Review, Done columns with actual tasks
+
+**Wardley Map (NEW):**
+
+`wardley-basic.mmd` - Simple Wardley Map showing the value chain of diagram generation: User Need > AI Prompt > Mermaid Code > Styling > Rendered Diagram > Published Doc
+
+```
+wardley-beta
+  title Diagram Generation Value Chain
+  anchor User Need [0.95, 0.50]
+  component AI Prompt [0.82, 0.65]
+  component Mermaid Code [0.65, 0.55]
+  component Styling [0.50, 0.30]
+  component Rendered Diagram [0.35, 0.70]
+  component Published Doc [0.20, 0.85]
+  User Need -> AI Prompt
+  AI Prompt -> Mermaid Code
+  Mermaid Code -> Styling
+  Styling -> Rendered Diagram
+  Rendered Diagram -> Published Doc
+  evolve Styling 0.65
+  note Theme Builder accelerates styling evolution [0.45, 0.25]
+```
+
+**Showcase:**
+
+`overkill-rube-goldberg-wow.mmd` - The existing merged Claude+ChatGPT showcase. Here is the validated Mermaid code:
+
+```
+flowchart LR
+    subgraph SIGNAL["Signal Layer"]
+        direction TB
+        NOISE["Noise<br/>(Raw Inputs)"]
+        FILTER{"Signal<br/>Filter"}
+        PATTERN["Pattern<br/>Match"]
+        NOISE --> FILTER
+        FILTER -->|"strong"| PATTERN
+        FILTER -->|"weak"| NOISE
+    end
+
+    subgraph COUNCIL["Council of AIs"]
+        direction TB
+        CLAUDE["Claude<br/>(Architect)"]
+        CHATGPT["ChatGPT<br/>(Generator)"]
+        PERPLEXITY["Perplexity<br/>(Researcher)"]
+        NOTION["Notion<br/>(Documentarian)"]
+        COPILOT["Copilot<br/>(Builder)"]
+        CLAUDE <-->|"synthesis"| CHATGPT
+        CLAUDE <-->|"validation"| PERPLEXITY
+        CLAUDE -->|"log"| NOTION
+        COPILOT -->|"commit"| CLAUDE
+    end
+
+    subgraph ENGINE["Theme Engine"]
+        direction TB
+        DETECT["Detect<br/>Family"]
+        PALETTE["Apply<br/>Palette"]
+        RENDER["Render<br/>Preview"]
+        EXPORT["Export<br/>Scaffold"]
+        DETECT --> PALETTE
+        PALETTE --> RENDER
+        RENDER --> EXPORT
+    end
+
+    subgraph DELIVERY["Delivery Pipeline"]
+        direction TB
+        REPLIT["Replit<br/>(Build)"]
+        GITHUB["GitHub<br/>(Source)"]
+        PAGES["GitHub<br/>Pages"]
+        REPLIT --> GITHUB
+        GITHUB --> PAGES
+    end
+
+    subgraph BRAND["Brand Ecosystem"]
+        direction TB
+        OKH["OverKill Hill<br/>P3"]
+        GLEEFULLY["Glee-fully<br/>.tools"]
+        ASKJAMIE["AskJamie<br/>.bot"]
+        OKH --- GLEEFULLY
+        OKH --- ASKJAMIE
+    end
+
+    subgraph AUDIENCE["Audience"]
+        direction TB
+        ARCHITECT["Enterprise<br/>Architect"]
+        WRITER["Technical<br/>Writer"]
+        ANALYST["Business<br/>Analyst"]
+        PROMPTER["Prompt<br/>Engineer"]
+    end
+
+    PATTERN --> CLAUDE
+    EXPORT --> REPLIT
+    PAGES --> ARCHITECT
+    PAGES --> WRITER
+    PAGES --> ANALYST
+    PAGES --> PROMPTER
+    OKH --> ENGINE
+    NOTION -->|"plan"| ENGINE
+
+    click OKH "https://overkillhill.com/" _blank
+    click GLEEFULLY "https://glee-fully.tools/" _blank
+    click ASKJAMIE "https://askjamie.bot/" _blank
+
+    classDef signal fill:#2D6F7E,stroke:#1C3A34,color:#FFFFFF
+    classDef council fill:#1C3A34,stroke:#E6A03C,color:#FFFFFF
+    classDef engine fill:#E6A03C,stroke:#1C3A34,color:#111827
+    classDef delivery fill:#4A9BAD,stroke:#2D6F7E,color:#FFFFFF
+    classDef brand fill:#D94F63,stroke:#1C3A34,color:#FFFFFF
+    classDef audience fill:#F6F2EE,stroke:#2D6F7E,color:#1C3A34
+
+    class NOISE,FILTER,PATTERN signal
+    class CLAUDE,CHATGPT,PERPLEXITY,NOTION,COPILOT council
+    class DETECT,PALETTE,RENDER,EXPORT engine
+    class REPLIT,GITHUB,PAGES delivery
+    class OKH,GLEEFULLY,ASKJAMIE brand
+    class ARCHITECT,WRITER,ANALYST,PROMPTER audience
+```
+
+### Task 3.2: Example Registry Data Structure
+
+Update `examples.ts` to include metadata for each example:
+
+```ts
+interface ExampleDiagram {
+  id: string;
+  name: string;
+  family: string;
+  supportLevel: 'native' | 'beta' | 'emulation';
+  description: string;
+  code: string;
+  tags: string[];
+}
+```
+
+Group examples by family in the UI. Include the support-level badge.
+
+-----
+
+## PHASE 4: MONOREPO CLEANUP
+
+### Task 4.1: Remove Unused Packages
+
+The monorepo has accumulated packages beyond what the Theme Builder needs. Audit and remove:
+
+- `api-server/` workspace if it exists (Theme Builder is 100% client-side)
+- `mockup-sandbox/` workspace if it exists
+- `db/` workspace if it exists
+- Any unused shadcn/ui components that are imported but never rendered
+
+### Task 4.2: Clean Up Dependencies
+
+In `artifacts/mermaid-theme-builder/package.json`:
+
+- Remove any unused dependencies
+- Ensure `mermaid` is pinned to `^11.14.0`
+- Remove any server-side or API dependencies
+- Audit devDependencies for unused tools
+
+### Task 4.3: Vite Configuration Audit
+
+Ensure `vite.config.ts`:
+
+- Sets `base: '/mermaid-theme-builder/'` for GitHub Pages
+- Outputs to `dist/public/` for the GitHub Actions workflow
+- Has proper tree-shaking enabled
+- Has no server-side configuration
+
+-----
+
+## PHASE 5: GOVERNANCE FILES
+
+### Task 5.1: Verify LICENSE Exists
+
+Check that `LICENSE` exists at repo root with MIT license, copyright “2026 Jamie Hill / OverKill Hill P3”. Create it if missing.
+
+### Task 5.2: Verify AGENTS.md Exists
+
+Check that `AGENTS.md` exists at repo root with brand separation directive. Create it if missing. Must include:
+
+- Brand separation rules (no BFS references)
+- Rejected hex values list
+- Acceptable brand presets with hex values
+- Technical context (stack, deploy target)
+
+### Task 5.3: Update README.md
+
+Replace the current 5-line README with a comprehensive version:
+
+- Project name and tagline
+- Feature list (7+ palettes, 4 tabs, 22+ diagram types detected)
+- Quick start instructions (pnpm install, pnpm dev)
+- Built-in palettes table (all 7+ with descriptions)
+- Supported diagram types list
+- Screenshots section (placeholder images for now)
+- License (MIT)
+- Disclaimer (not affiliated with BFS, Mermaid, or Mermaid Chart)
+- Links: live site, GitHub, project page
+
+### Task 5.4: Create docs/ Directory
+
+Create `docs/` at repo root with:
+
+- `ARCHITECTURE.md` - Technical architecture overview (component tree, state management, build pipeline)
+- `CONTRIBUTING.md` - Contribution guidelines (brand rules, PR process, code style)
+- `THEMING.md` - How the theme engine works (init directives, classDef, family-specific variables)
+
+-----
+
+## PHASE 6: POLISH & ACCESSIBILITY
+
+### Task 6.1: Dark Mode Support
+
+Add system-theme-aware dark mode:
+
+- Detect `prefers-color-scheme: dark` media query
+- Apply dark mode to the app shell (tab bar, panels, backgrounds)
+- The Mermaid preview always renders on a white/light background (diagrams don’t change)
+- Add a toggle in the tab bar or header to override system preference
+- Use CSS custom properties for all UI colors
+
+### Task 6.2: Loading States
+
+Add proper loading indicators:
+
+- Skeleton loader for the Mermaid preview while rendering
+- Spinner on the preview panel during theme application
+- Disabled state on export buttons while no diagram is loaded
+- Progress indicator during SVG download
+
+### Task 6.3: Error Handling
+
+Add error boundaries:
+
+- Mermaid parse errors shown inline in the preview panel with the error message and line number
+- Theme application errors caught and shown as warnings
+- Invalid JSON import errors shown in toast
+- Network errors (if any) caught gracefully
+
+### Task 6.4: Keyboard Navigation
+
+- Tab through all interactive elements in logical order
+- Enter/Space to activate buttons
+- Escape to close slide-out panels and modals
+- Ctrl/Cmd+C to copy from the code textarea
+- Ctrl/Cmd+Enter to apply theme (keyboard shortcut)
+
+### Task 6.5: ARIA Labels
+
+Add ARIA labels to:
+
+- Tab navigation buttons (role=“tablist”, role=“tab”, aria-selected)
+- Palette swatch buttons (aria-label=“Select {palette name} theme”)
+- Color input fields (aria-label=”{color field name}”)
+- Export buttons (aria-label=“Copy styled code to clipboard”)
+- Preview panel (role=“img”, aria-label=“Mermaid diagram preview”)
+
+### Task 6.6: Responsive Typography
+
+- Base font size: 16px
+- Code textarea: 14px monospace
+- Tab labels: 14px on desktop, 12px on mobile
+- Color field labels: 12px
+- Toast messages: 14px
+- Ensure all text is legible on mobile without zooming
+
+-----
+
+## PHASE 7: ADVANCED STRETCH GOALS
+
+Only attempt these after Phases 1-6 compile and deploy successfully.
+
+### Task 7.1: Multiple Diagram Preview
+
+In the Apply tab, if the pasted code contains multiple Mermaid diagrams separated by blank lines or fenced code blocks, render each one in a vertical stack. Each gets its own preview panel with the same theme applied.
+
+### Task 7.2: Paste from Clipboard Detection
+
+When the Apply tab is active and the user pastes content, auto-detect if it’s Mermaid code (starts with a known diagram keyword). If so, populate the textarea automatically. Show a toast: “Mermaid {family} detected!”
+
+### Task 7.3: Recent Themes History
+
+Store the last 5 applied themes in localStorage (palette + custom colors + font). Show a “Recent” section in the palette strip. Allows quick switching back to a previously used theme.
+
+### Task 7.4: Print Stylesheet
+
+Add a print stylesheet that:
+
+- Hides the tab bar, export buttons, and UI chrome
+- Shows only the rendered diagram at full width
+- Includes a small footer with “Styled with Mermaid Theme Builder” if watermark is enabled
+
+### Task 7.5: PWA Manifest
+
+Add a basic PWA manifest so the tool can be installed as a standalone app:
+
+- `manifest.json` with name, description, icons
+- Service worker for offline caching (cache the Mermaid library and app shell)
+- Start URL: the GitHub Pages URL
+
+### Task 7.6: Analytics-Free Usage Counter
+
+Add a simple counter in the footer showing “Diagrams themed: {count}” using localStorage. No external analytics. No tracking. Pure local counter for the user’s own reference.
+
+### Task 7.7: Tooltip System
+
+Add contextual tooltips on hover for:
+
+- Each color field in the editor (explain what it controls: “primaryColor controls the main node fill color in flowcharts”)
+- Each export button (explain the output format)
+- Each diagram family in the Reference tab (brief description)
+- Use native title attributes or a lightweight tooltip library
+
+### Task 7.8: Onboarding Flow
+
+For first-time visitors (detected via localStorage flag):
+
+- Show a brief 3-step overlay tutorial:
+1. “Paste your Mermaid code here”
+1. “Pick a theme from the palette strip”
+1. “Copy the styled code or download the SVG”
+- “Don’t show again” checkbox
+- Skip button
+
+-----
+
+## COMMIT STRATEGY
+
+After each phase:
+
+1. Verify the app compiles: `pnpm --filter @workspace/mermaid-theme-builder build`
+1. Verify it renders locally: `pnpm --filter @workspace/mermaid-theme-builder dev`
+1. Test on mobile viewport (Chrome DevTools responsive mode, 375px width)
+1. Commit with message format: `feat(phase-N): description`
+1. Push to GitHub. Let GitHub Actions deploy.
+
+Suggested commit messages:
+
+- `feat(phase-1): restructure UI into 4 tabbed sub-screens with shared state`
+- `feat(phase-2): add wardley detection, watermark, font selector, family variables, SVG export, theme JSON, share URLs, diff view`
+- `feat(phase-3): comprehensive example library with 20+ diagrams across all families`
+- `chore(phase-4): monorepo cleanup, remove unused packages and dependencies`
+- `docs(phase-5): add LICENSE, AGENTS.md, full README, architecture docs`
+- `feat(phase-6): dark mode, loading states, error boundaries, a11y, responsive type`
+- `feat(phase-7): stretch goals - multi-diagram, paste detect, history, PWA, onboarding`
+
+-----
+
+## BRAND RULES (NON-NEGOTIABLE)
+
+These rules apply to ALL code, comments, examples, and documentation in this project:
+
+1. This is a personal OverKill Hill P3 project by Jamie Hill
+1. NOT affiliated with Builders FirstSource, BFS, or any employer
+1. NEVER use these hex values: #00205B, #003087, #002F86, #B3C1DB, #D6E5F9, #D0D0CE, #C8102E
+1. NEVER reference BFS, Builders FirstSource, or employer branding
+1. Acceptable brand palettes: OverKill Hill P3, Glee-fully, AskJamie (hex values in AGENTS.md)
+1. Generic palette names only: Ocean Depth, Forest Sage, Slate Ember, Violet Mist
+1. Example diagrams use generic business scenarios, not employer-specific content
+1. Footer disclaimer required: “Not affiliated with Mermaid, Mermaid Chart, or Mermaid.ai”
+
+-----
+
+## SUCCESS CRITERIA
+
+When this sprint is complete, the Mermaid Theme Builder should:
+
+- [ ] Have 4 tabbed sub-screens (Apply, Compose, Examples, Reference)
+- [ ] Be fully usable on mobile (375px viewport) without horizontal scrolling
+- [ ] Detect 22+ Mermaid diagram families including wardley-beta
+- [ ] Have 7+ built-in palettes plus custom color editing
+- [ ] Support font family selection
+- [ ] Generate family-specific themeVariables
+- [ ] Export styled code, markdown bootstrap, prompt scaffold, SVG, and theme JSON
+- [ ] Import theme JSON files
+- [ ] Have 20+ example diagrams covering all native Mermaid families
+- [ ] Include the Rube Goldberg showcase diagram
+- [ ] Have dark mode support
+- [ ] Have proper error handling and loading states
+- [ ] Be accessible (keyboard nav, ARIA labels)
+- [ ] Have LICENSE, AGENTS.md, and comprehensive README
+- [ ] Deploy cleanly to GitHub Pages via Actions
+- [ ] Have zero references to BFS/Builders FirstSource anywhere in the codebase
