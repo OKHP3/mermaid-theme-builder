@@ -1,4 +1,4 @@
-import { Component, useState, useMemo, useCallback, type ReactNode } from "react";
+import { Component, useState, useMemo, useCallback, useEffect, type ReactNode } from "react";
 import {
   BUILTIN_PALETTES,
   BRAND_PALETTES,
@@ -12,6 +12,18 @@ import { ApplyTab } from "@/pages/tabs/ApplyTab";
 import { ComposeTab } from "@/pages/tabs/ComposeTab";
 import { ExamplesTab } from "@/pages/tabs/ExamplesTab";
 import { ReferenceTab } from "@/pages/tabs/ReferenceTab";
+import {
+  loadPersistedState,
+  savePersistedState,
+  decodeShareableTheme,
+  type ShareablePayload,
+} from "@/lib/persistence";
+import {
+  paletteFromExtracted,
+  makeExtractedPaletteId,
+  extractTheme,
+  hasExtractableTheme,
+} from "@/lib/extractor";
 
 export type AppTab = "apply" | "compose" | "examples" | "reference";
 
@@ -115,8 +127,79 @@ const TAB_CONFIG: {
   },
 ];
 
+function uniquePaletteId(prefix: string, taken: Set<string>): string {
+  let id = `${prefix}${Date.now().toString(36)}`;
+  let salt = 0;
+  while (taken.has(id)) {
+    salt++;
+    id = `${prefix}${Date.now().toString(36)}-${salt.toString(36)}`;
+  }
+  return id;
+}
+
+function buildPaletteFromShare(payload: ShareablePayload): Palette {
+  const name = payload.paletteName || "Shared theme";
+  const colors: ThemeColor[] = Object.entries(payload.themeVariables).map(([key, value]) => ({
+    key,
+    label: key,
+    value,
+  }));
+  // Merge with a sensible label set when keys overlap with the canonical palette schema.
+  const canonical = BRAND_PALETTES[0].colors;
+  const merged: ThemeColor[] = canonical.map((c) => {
+    const override = colors.find((o) => o.key === c.key);
+    return override ? { ...c, value: override.value } : c;
+  });
+  // Add any extra keys beyond the canonical set
+  for (const c of colors) {
+    if (!merged.find((m) => m.key === c.key)) merged.push(c);
+  }
+  return {
+    id: payload.paletteId && payload.paletteId.startsWith("shared-") ? payload.paletteId : `shared-${Date.now().toString(36)}`,
+    name,
+    description: "Theme loaded from a shared link.",
+    version: "0.0.0",
+    colors: merged,
+    attribution: {
+      enabledByDefault: true,
+      label: `Themed with Mermaid Theme Builder · ${name}`,
+      url: "https://overkillhill.com/projects/mermaid-theme-builder/",
+      themeName: name,
+      toolName: "Mermaid Theme Builder",
+      toolVersion: "0.3.0",
+    },
+  };
+}
+
+function readShareToken(): ShareablePayload | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const url = new URL(window.location.href);
+    const token = url.searchParams.get("theme");
+    if (!token) return null;
+    return decodeShareableTheme(token);
+  } catch {
+    return null;
+  }
+}
+
+function clearShareToken(): void {
+  if (typeof window === "undefined") return;
+  try {
+    const url = new URL(window.location.href);
+    if (!url.searchParams.has("theme")) return;
+    url.searchParams.delete("theme");
+    window.history.replaceState({}, "", url.toString());
+  } catch {
+    // ignore
+  }
+}
+
 function AppShell() {
   const [activeTab, setActiveTab] = useState<AppTab>("apply");
+  const [hydrated, setHydrated] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
+  const [userPalettes, setUserPalettes] = useState<Palette[]>([]);
   const [selectedPaletteId, setSelectedPaletteId] = useState(BRAND_PALETTES[0].id);
   const [customColors, setCustomColors] = useState<Record<string, ThemeColor[]>>({});
   const [inputCode, setInputCode] = useState(
@@ -126,8 +209,72 @@ function AppShell() {
   const [includeBadge, setIncludeBadge] = useState(true);
   const [customThemeName, setCustomThemeName] = useState("");
 
+  // Hydrate from URL share token (highest priority) or localStorage on mount.
+  useEffect(() => {
+    let didApplyShare = false;
+    const share = readShareToken();
+    if (share) {
+      const palette = buildPaletteFromShare(share);
+      const taken = new Set<string>(BUILTIN_PALETTES.map((p) => p.id));
+      if (taken.has(palette.id)) palette.id = uniquePaletteId("shared-", taken);
+      setUserPalettes((prev) => [...prev, palette]);
+      setSelectedPaletteId(palette.id);
+      if (share.customThemeName) setCustomThemeName(share.customThemeName);
+      setToast(`Loaded shared theme: ${palette.name}`);
+      clearShareToken();
+      didApplyShare = true;
+    }
+
+    const persisted = loadPersistedState();
+    if (persisted) {
+      if (Array.isArray(persisted.userPalettes)) setUserPalettes((prev) => {
+        // Dedupe by id; share-token palettes win over persisted duplicates.
+        const seen = new Set(prev.map((p) => p.id));
+        const merged = [...prev];
+        for (const p of persisted.userPalettes!) if (!seen.has(p.id)) merged.push(p);
+        return merged;
+      });
+      if (!didApplyShare && typeof persisted.selectedPaletteId === "string") {
+        setSelectedPaletteId(persisted.selectedPaletteId);
+      }
+      if (persisted.customColors && typeof persisted.customColors === "object") {
+        setCustomColors(persisted.customColors as Record<string, ThemeColor[]>);
+      }
+      if (typeof persisted.includeMetaComments === "boolean") setIncludeMetaComments(persisted.includeMetaComments);
+      if (typeof persisted.includeBadge === "boolean") setIncludeBadge(persisted.includeBadge);
+      if (typeof persisted.customThemeName === "string" && !didApplyShare) setCustomThemeName(persisted.customThemeName);
+      if (typeof persisted.inputCode === "string" && persisted.inputCode.trim()) setInputCode(persisted.inputCode);
+    }
+    setHydrated(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Auto-save to localStorage after hydration.
+  useEffect(() => {
+    if (!hydrated) return;
+    savePersistedState({
+      schemaVersion: 1,
+      selectedPaletteId,
+      customColors,
+      includeMetaComments,
+      includeBadge,
+      customThemeName,
+      inputCode,
+      userPalettes,
+    });
+  }, [hydrated, selectedPaletteId, customColors, includeMetaComments, includeBadge, customThemeName, inputCode, userPalettes]);
+
+  // Auto-clear toast after 3.5s
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(null), 3500);
+    return () => clearTimeout(t);
+  }, [toast]);
+
+  const allPalettes = useMemo<Palette[]>(() => [...BUILTIN_PALETTES, ...userPalettes], [userPalettes]);
+
   const selectedPalette = useMemo((): Palette => {
-    const base = BUILTIN_PALETTES.find((p) => p.id === selectedPaletteId) ?? BRAND_PALETTES[0];
+    const base = allPalettes.find((p) => p.id === selectedPaletteId) ?? BRAND_PALETTES[0];
     const overrides = customColors[selectedPaletteId];
     if (!overrides) return base;
     return {
@@ -137,7 +284,7 @@ function AppShell() {
         return override ?? c;
       }),
     };
-  }, [selectedPaletteId, customColors]);
+  }, [allPalettes, selectedPaletteId, customColors]);
 
   const hasCustomizations = Boolean(customColors[selectedPaletteId]);
 
@@ -171,13 +318,14 @@ function AppShell() {
   const handleColorChange = useCallback(
     (key: string, value: string) => {
       setCustomColors((prev) => {
-        const base = BUILTIN_PALETTES.find((p) => p.id === selectedPaletteId)!;
+        const base = allPalettes.find((p) => p.id === selectedPaletteId);
+        if (!base) return prev;
         const existing = prev[selectedPaletteId] ?? base.colors.map((c) => ({ ...c }));
         const updated = existing.map((c) => (c.key === key ? { ...c, value } : c));
         return { ...prev, [selectedPaletteId]: updated };
       });
     },
-    [selectedPaletteId],
+    [allPalettes, selectedPaletteId],
   );
 
   const handleResetPalette = useCallback(() => {
@@ -193,6 +341,87 @@ function AppShell() {
     setInputCode(code);
     setActiveTab("apply");
   }, []);
+
+  /** Theme B: extract theme from current input code into a new user palette. */
+  const handleExtractFromCode = useCallback(
+    (extractedName?: string): Palette | null => {
+      if (!hasExtractableTheme(inputCode)) {
+        setToast("No theme directive found in the diagram.");
+        return null;
+      }
+      const extracted = extractTheme(inputCode);
+      const palette = paletteFromExtracted(extracted, extractedName ?? "Extracted theme");
+      setUserPalettes((prev) => [...prev, palette]);
+      setSelectedPaletteId(palette.id);
+      setCustomThemeName("");
+      setToast(`Extracted ${Object.keys(extracted.themeVariables).length} theme variables.`);
+      return palette;
+    },
+    [inputCode],
+  );
+
+  /** Theme C: save the current effective palette (with edits) as a named user palette. */
+  const handleSavePalette = useCallback(
+    (name: string) => {
+      const trimmed = name.trim();
+      if (!trimmed) return;
+      const taken = new Set<string>([
+        ...BUILTIN_PALETTES.map((p) => p.id),
+        ...userPalettes.map((p) => p.id),
+      ]);
+      const id = uniquePaletteId("saved-", taken);
+      const palette: Palette = {
+        ...selectedPalette,
+        id,
+        name: trimmed,
+        description: `User-saved palette · derived from ${selectedPalette.name}`,
+        version: "0.0.0",
+        attribution: {
+          ...selectedPalette.attribution,
+          themeName: trimmed,
+          label: `Themed with Mermaid Theme Builder · ${trimmed}`,
+        },
+      };
+      setUserPalettes((prev) => [...prev, palette]);
+      setSelectedPaletteId(id);
+      setCustomThemeName("");
+      setToast(`Saved palette: ${trimmed}`);
+    },
+    [selectedPalette, userPalettes],
+  );
+
+  const handleImportPalette = useCallback((palette: Palette) => {
+    setUserPalettes((prev) => {
+      const taken = new Set<string>([
+        ...BUILTIN_PALETTES.map((p) => p.id),
+        ...prev.map((p) => p.id),
+      ]);
+      const safeId = taken.has(palette.id) || !palette.id
+        ? uniquePaletteId("imported-", taken)
+        : palette.id;
+      const safe: Palette = { ...palette, id: safeId };
+      // Defer selection until next tick so userPalettes update applies first.
+      queueMicrotask(() => {
+        setSelectedPaletteId(safeId);
+        setCustomThemeName("");
+        setToast(`Imported palette: ${safe.name}`);
+      });
+      return [...prev, safe];
+    });
+  }, []);
+
+  const handleDeleteUserPalette = useCallback((id: string) => {
+    setUserPalettes((prev) => prev.filter((p) => p.id !== id));
+    setCustomColors((prev) => {
+      const next = { ...prev };
+      delete next[id];
+      return next;
+    });
+    setSelectedPaletteId((current) => (current === id ? BRAND_PALETTES[0].id : current));
+    setToast("Palette removed.");
+  }, []);
+
+  const showToast = useCallback((msg: string) => setToast(msg), []);
 
   return (
     <div className="h-dvh bg-background flex flex-col overflow-hidden">
@@ -215,7 +444,7 @@ function AppShell() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[10px] text-muted-foreground/50 hidden lg:block">v0.2-alpha</span>
+          <span className="text-[10px] text-muted-foreground/50 hidden lg:block">v0.3-alpha</span>
           <span className="text-[10px] px-2 py-1 rounded-full bg-muted text-muted-foreground hidden md:block">
             OKHP3 Personal Project
           </span>
@@ -255,6 +484,9 @@ function AppShell() {
             includeBadge={includeBadge}
             effectiveThemeName={effectiveThemeName}
             onSwitchTab={setActiveTab}
+            onExtractTheme={handleExtractFromCode}
+            userPalettes={userPalettes}
+            onShowToast={showToast}
           />
         )}
         {activeTab === "compose" && (
@@ -273,6 +505,11 @@ function AppShell() {
             customThemeName={customThemeName}
             onCustomThemeNameChange={setCustomThemeName}
             effectiveThemeName={effectiveThemeName}
+            userPalettes={userPalettes}
+            onSavePalette={handleSavePalette}
+            onImportPalette={handleImportPalette}
+            onDeleteUserPalette={handleDeleteUserPalette}
+            onShowToast={showToast}
           />
         )}
         {activeTab === "examples" && (
@@ -302,6 +539,15 @@ function AppShell() {
           </button>
         ))}
       </nav>
+
+      {toast && (
+        <div
+          role="status"
+          className="fixed bottom-16 md:bottom-4 left-1/2 -translate-x-1/2 z-40 px-4 py-2 rounded-md bg-foreground/90 text-background text-xs font-medium shadow-lg backdrop-blur animate-in fade-in slide-in-from-bottom-2"
+        >
+          {toast}
+        </div>
+      )}
     </div>
   );
 }

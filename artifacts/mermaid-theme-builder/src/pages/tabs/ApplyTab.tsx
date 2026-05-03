@@ -14,12 +14,22 @@ import { ColorSwatch } from "@/components/ColorSwatch";
 import { WarningBanner } from "@/components/WarningBanner";
 import { CapabilityNote } from "@/components/CapabilityNote";
 import { PromptScaffoldModal } from "@/components/PromptScaffoldModal";
+import { hasExtractableTheme, isExtractedPaletteId } from "@/lib/extractor";
+import {
+  downloadTextFile,
+  downloadBlob,
+  renderToSvg,
+  svgStringToPngBlob,
+  makeFilename,
+  paletteToPortableJson,
+} from "@/lib/exporters";
 import type { AppTab } from "@/App";
 
 const SWATCH_INDICES = [0, 3, 4, 6];
 
 type PreviewMode = "original" | "themed";
 type ExportType = "code" | "markdown" | "prompt";
+type DownloadType = "mermaid" | "svg" | "png" | "json";
 
 async function writeToClipboard(text: string) {
   try {
@@ -48,14 +58,22 @@ interface ApplyTabProps {
   includeBadge: boolean;
   effectiveThemeName: string;
   onSwitchTab: (tab: AppTab) => void;
+  onExtractTheme: (name?: string) => Palette | null;
+  userPalettes: Palette[];
+  onShowToast: (msg: string) => void;
 }
-
-const ALL_PALETTES = [...BRAND_PALETTES, ...UTILITY_PALETTES];
 
 const EXPORT_LABELS: Record<ExportType, string> = {
   code: "Styled Code",
   markdown: "Markdown",
   prompt: "Prompt Scaffold",
+};
+
+const DOWNLOAD_LABELS: Record<DownloadType, string> = {
+  mermaid: ".mermaid",
+  svg: ".svg",
+  png: ".png",
+  json: ".theme.json",
 };
 
 export function ApplyTab({
@@ -72,14 +90,26 @@ export function ApplyTab({
   includeBadge,
   effectiveThemeName,
   onSwitchTab,
+  onExtractTheme,
+  userPalettes,
+  onShowToast,
 }: ApplyTabProps) {
   const [previewMode, setPreviewMode] = useState<PreviewMode>("themed");
   const [showColorEditor, setShowColorEditor] = useState(false);
   const [copiedType, setCopiedType] = useState<ExportType | null>(null);
+  const [downloadingType, setDownloadingType] = useState<DownloadType | null>(null);
   const [showScaffoldModal, setShowScaffoldModal] = useState(false);
   const [textareaExpanded, setTextareaExpanded] = useState(false);
+  const [showDownloadMenu, setShowDownloadMenu] = useState(false);
 
   const detection = useMemo(() => detectDiagram(inputCode), [inputCode]);
+  const canExtract = useMemo(() => hasExtractableTheme(inputCode), [inputCode]);
+  const isExtracted = isExtractedPaletteId(selectedPaletteId);
+
+  const allPalettes = useMemo(
+    () => [...BRAND_PALETTES, ...UTILITY_PALETTES, ...userPalettes],
+    [userPalettes],
+  );
 
   const exportOptions = useMemo(
     (): ExportOptions => ({
@@ -157,20 +187,68 @@ export function ApplyTab({
     [selectedPalette, exportOptions],
   );
 
+  const handleDownload = useCallback(
+    async (type: DownloadType) => {
+      if (downloadingType) return;
+      setShowDownloadMenu(false);
+      setDownloadingType(type);
+      try {
+        if (type === "mermaid") {
+          downloadTextFile(
+            makeFilename(effectiveThemeName, "themed", "mermaid"),
+            exportCode,
+            "text/plain;charset=utf-8",
+          );
+          onShowToast("Downloaded .mermaid file.");
+        } else if (type === "json") {
+          downloadTextFile(
+            makeFilename(effectiveThemeName, "theme", "json"),
+            paletteToPortableJson(selectedPalette),
+            "application/json;charset=utf-8",
+          );
+          onShowToast("Downloaded .theme.json file.");
+        } else if (type === "svg") {
+          const svg = await renderToSvg(themedCode);
+          downloadTextFile(
+            makeFilename(effectiveThemeName, "diagram", "svg"),
+            svg,
+            "image/svg+xml;charset=utf-8",
+          );
+          onShowToast("Downloaded .svg file.");
+        } else if (type === "png") {
+          const svg = await renderToSvg(themedCode);
+          const blob = await svgStringToPngBlob(svg, 2);
+          downloadBlob(makeFilename(effectiveThemeName, "diagram", "png"), blob);
+          onShowToast("Downloaded .png file.");
+        }
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        onShowToast(`Download failed: ${msg.slice(0, 80)}`);
+      } finally {
+        setDownloadingType(null);
+      }
+    },
+    [downloadingType, exportCode, themedCode, selectedPalette, effectiveThemeName, onShowToast],
+  );
+
   return (
     <div className="flex flex-col h-full overflow-hidden">
       <div className="flex-none border-b border-border bg-card/30 px-3 py-2">
         <div className="flex gap-1 overflow-x-auto pb-0.5 scrollbar-thin">
-          {ALL_PALETTES.map((p) => {
+          {allPalettes.map((p) => {
+            const builtin = BUILTIN_PALETTES.find((b) => b.id === p.id);
+            const baseColors = builtin?.colors ?? p.colors;
             const effectiveColors =
               customColors[p.id]
-                ? (BUILTIN_PALETTES.find((b) => b.id === p.id)?.colors ?? p.colors).map((c) => {
+                ? baseColors.map((c) => {
                     const override = customColors[p.id].find((o) => o.key === c.key);
                     return override ?? c;
                   })
                 : p.colors;
             const swatchColors = SWATCH_INDICES.map((i) => effectiveColors[i]?.value ?? "#888");
             const isSelected = selectedPaletteId === p.id;
+            const isUserExtracted = isExtractedPaletteId(p.id);
+            const isUserSaved = !builtin && !isUserExtracted;
             return (
               <button
                 key={p.id}
@@ -203,11 +281,47 @@ export function ApplyTab({
                     OKHP3
                   </span>
                 )}
+                {isUserExtracted && (
+                  <span className="text-[8px] leading-none px-1 py-0.5 rounded bg-amber-500/15 text-amber-700 dark:text-amber-400 font-semibold uppercase tracking-wide">
+                    Extracted
+                  </span>
+                )}
+                {isUserSaved && (
+                  <span className="text-[8px] leading-none px-1 py-0.5 rounded bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 font-semibold uppercase tracking-wide">
+                    Saved
+                  </span>
+                )}
               </button>
             );
           })}
         </div>
       </div>
+
+      {canExtract && !isExtracted && (
+        <div className="flex-none border-b border-amber-500/30 bg-amber-500/8 px-3 py-2 flex items-center gap-3">
+          <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0">
+            <path
+              fillRule="evenodd"
+              d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z"
+              clipRule="evenodd"
+            />
+          </svg>
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-medium text-amber-900 dark:text-amber-100">
+              This diagram has its own theme directive
+            </p>
+            <p className="text-[11px] text-amber-700 dark:text-amber-300/80 leading-tight">
+              Extract it into an editable palette to refine and re-export.
+            </p>
+          </div>
+          <button
+            onClick={() => onExtractTheme()}
+            className="text-xs px-3 py-1 rounded-md bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-amber-900 dark:text-amber-100 font-medium transition-colors"
+          >
+            Extract theme
+          </button>
+        </div>
+      )}
 
       <div className="flex-1 overflow-hidden flex flex-col md:flex-row min-h-0">
         <div className="flex flex-col w-full md:w-1/2 border-b md:border-b-0 md:border-r border-border min-h-0">
@@ -225,29 +339,7 @@ export function ApplyTab({
                 className="md:hidden text-[10px] font-medium text-muted-foreground hover:text-foreground px-1.5 py-0.5 rounded border border-border/60 hover:border-border transition-colors inline-flex items-center gap-1"
                 aria-label={textareaExpanded ? "Collapse code editor" : "Expand code editor"}
               >
-                {textareaExpanded ? (
-                  <>
-                    <svg viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3">
-                      <path
-                        fillRule="evenodd"
-                        d="M5 9a.75.75 0 01.75-.75h8.5a.75.75 0 010 1.5h-8.5A.75.75 0 015 9z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    Collapse
-                  </>
-                ) : (
-                  <>
-                    <svg viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3">
-                      <path
-                        fillRule="evenodd"
-                        d="M10 5a.75.75 0 01.75.75v3.5h3.5a.75.75 0 010 1.5h-3.5v3.5a.75.75 0 01-1.5 0v-3.5h-3.5a.75.75 0 010-1.5h3.5v-3.5A.75.75 0 0110 5z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    Expand
-                  </>
-                )}
+                {textareaExpanded ? "Collapse" : "Expand"}
               </button>
             </div>
           </div>
@@ -318,6 +410,49 @@ export function ApplyTab({
           </button>
 
           <div className="flex-1" />
+
+          <div className="relative">
+            <button
+              onClick={() => setShowDownloadMenu((v) => !v)}
+              disabled={!inputCode.trim() || !!downloadingType}
+              className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-md border border-border bg-background hover:bg-muted hover:border-primary/40 font-medium transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 text-muted-foreground">
+                <path d="M10.75 2.75a.75.75 0 00-1.5 0v8.614L6.295 8.235a.75.75 0 10-1.09 1.03l4.25 4.5a.75.75 0 001.09 0l4.25-4.5a.75.75 0 00-1.09-1.03l-2.955 3.129V2.75z" />
+                <path d="M3.5 12.75a.75.75 0 00-1.5 0v2.5A2.75 2.75 0 004.75 18h10.5A2.75 2.75 0 0018 15.25v-2.5a.75.75 0 00-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5z" />
+              </svg>
+              {downloadingType ? `Saving ${DOWNLOAD_LABELS[downloadingType]}…` : "Download"}
+              <svg viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3 text-muted-foreground">
+                <path
+                  fillRule="evenodd"
+                  d="M5.22 8.22a.75.75 0 011.06 0L10 11.94l3.72-3.72a.75.75 0 111.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 9.28a.75.75 0 010-1.06z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </button>
+            {showDownloadMenu && (
+              <>
+                <div className="fixed inset-0 z-30" onClick={() => setShowDownloadMenu(false)} />
+                <div className="absolute right-0 bottom-full mb-1 z-40 min-w-[180px] rounded-md border border-border bg-popover shadow-lg overflow-hidden">
+                  {(["mermaid", "svg", "png", "json"] as DownloadType[]).map((t) => (
+                    <button
+                      key={t}
+                      onClick={() => handleDownload(t)}
+                      className="w-full text-left px-3 py-2 text-xs hover:bg-muted transition-colors flex items-center justify-between"
+                    >
+                      <span className="font-medium text-foreground">{DOWNLOAD_LABELS[t]}</span>
+                      <span className="text-[10px] text-muted-foreground">
+                        {t === "mermaid" && "raw text"}
+                        {t === "svg" && "vector"}
+                        {t === "png" && "raster 2x"}
+                        {t === "json" && "palette"}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
 
           {(["code", "markdown", "prompt"] as ExportType[]).map((type) => {
             const copied = copiedType === type;

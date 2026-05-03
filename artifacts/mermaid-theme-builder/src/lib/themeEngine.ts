@@ -1,5 +1,6 @@
 import type { Palette } from "./palettes";
 import type { DiagramFamily } from "./detector";
+import { familyThemeOverlay } from "./familyTheming";
 
 export interface WatermarkOptions {
   enabled: boolean;
@@ -16,7 +17,7 @@ export interface ExportOptions {
 }
 
 const TOOL_URL = "https://overkillhill.com/projects/mermaid-theme-builder/";
-const TOOL_VERSION = "0.1.0";
+const TOOL_VERSION = "0.3.0";
 
 const BADGE_SAFE_FAMILIES: DiagramFamily[] = ["flowchart", "sequenceDiagram", "stateDiagram", "classDiagram"];
 
@@ -30,8 +31,11 @@ function buildThemeVars(palette: Palette): Record<string, string> {
   return vars;
 }
 
-function buildInitDirective(palette: Palette): string {
-  const vars = buildThemeVars(palette);
+function buildInitDirective(palette: Palette, family: DiagramFamily = "flowchart"): string {
+  const baseVars = buildThemeVars(palette);
+  const overlay = familyThemeOverlay(palette, family);
+  // Base palette tokens win over family-derived defaults so user edits propagate.
+  const vars = { ...overlay, ...baseVars };
 
   const varEntries = Object.entries(vars)
     .filter(([k]) => k !== "fontFamily")
@@ -99,7 +103,7 @@ export function generateThemedCode(originalCode: string, options: ExportOptions)
     .replace(/\n\s*click MTB_ATTR.*\n?/g, "")
     .trimStart();
 
-  const initDirective = buildInitDirective(palette);
+  const initDirective = buildInitDirective(palette, diagramFamily);
   const metaComments = includeMetaComments ? buildMetaComments(palette, themeName) : null;
   const badge = includeBadge ? buildBadgeNode(palette, themeName, diagramFamily) : null;
 
@@ -333,7 +337,7 @@ function buildScaffold(palette: Palette, options: ExportOptions, scaffoldFormat:
     .map((c) => `  - ${c.label}: \`${c.value}\``)
     .join("\n");
 
-  const initBlock = buildInitDirective(palette);
+  const initBlock = buildInitDirective(palette, diagramFamily);
   const frontmatterBlock = buildFrontmatter(palette);
   const classDefBlock = buildClassDefLibrary(palette);
   const subgraphBlock = buildSubgraphTiers(palette);

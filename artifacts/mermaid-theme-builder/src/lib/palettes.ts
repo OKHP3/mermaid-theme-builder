@@ -28,7 +28,7 @@ export interface Palette {
 
 const TOOL_ATTRIBUTION_BASE: Pick<PaletteAttribution, "toolName" | "toolVersion" | "url"> = {
   toolName: "Mermaid Theme Builder",
-  toolVersion: "0.1.0",
+  toolVersion: "0.3.0",
   url: "https://overkillhill.com/projects/mermaid-theme-builder/",
 };
 

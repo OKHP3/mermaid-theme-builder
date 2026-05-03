@@ -51,3 +51,17 @@
 - [ ] Update `toolVersion` in `themeEngine.ts` to match the release tag
 - [ ] Update `reviewedDate` in capability registry if Mermaid version changed
 - [ ] Announce on overkillhill.com if desired
+
+## v0.3-alpha sign-off
+
+- [x] All v0.3 roadmap items complete (see `docs/ROADMAP.md`)
+- [x] `TOOL_VERSION` in `src/lib/themeEngine.ts` bumped to `0.3.0`
+- [x] Header version label set to `v0.3-alpha`
+- [x] Theme extraction parser added (`src/lib/extractor.ts`) — handles YAML frontmatter and `%%{init}%%` directives
+- [x] Family-specific themeVariables (`src/lib/familyTheming.ts`) wired into `buildInitDirective`
+- [x] Persistence module (`src/lib/persistence.ts`) — localStorage + base64url share URLs
+- [x] File-download exporters (`src/lib/exporters.ts`) — `.mermaid`, `.svg`, `.png`, `.theme.json`
+- [x] CI workflow (`.github/workflows/ci.yml`) typechecks and builds on push/PR
+- [x] Pages deploy workflow (`.github/workflows/deploy-pages.yml`) builds with derived base path and uploads SPA artifact
+
+> Sign-off date: 2026-05-03 — Jamie Hill (OKHP3)

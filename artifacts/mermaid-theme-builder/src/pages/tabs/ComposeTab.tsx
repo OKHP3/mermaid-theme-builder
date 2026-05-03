@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useRef } from "react";
 import type { Palette, ThemeColor } from "@/lib/palettes";
 import { BRAND_PALETTES, UTILITY_PALETTES } from "@/lib/palettes";
 import {
@@ -12,6 +12,17 @@ import { MermaidPreview } from "@/components/MermaidPreview";
 import { ColorSwatch } from "@/components/ColorSwatch";
 import { PromptScaffoldModal } from "@/components/PromptScaffoldModal";
 import { GENERIC_EXAMPLE } from "@/data/examples";
+import { isExtractedPaletteId } from "@/lib/extractor";
+import {
+  paletteToPortableJson,
+  parsePortablePalette,
+  downloadTextFile,
+  makeFilename,
+} from "@/lib/exporters";
+import {
+  encodeShareableTheme,
+  paletteToShareablePayload,
+} from "@/lib/persistence";
 
 async function writeToClipboard(text: string) {
   try {
@@ -41,6 +52,11 @@ interface ComposeTabProps {
   customThemeName: string;
   onCustomThemeNameChange: (v: string) => void;
   effectiveThemeName: string;
+  userPalettes: Palette[];
+  onSavePalette: (name: string) => void;
+  onImportPalette: (palette: Palette) => void;
+  onDeleteUserPalette: (id: string) => void;
+  onShowToast: (msg: string) => void;
 }
 
 export function ComposeTab({
@@ -58,9 +74,18 @@ export function ComposeTab({
   customThemeName,
   onCustomThemeNameChange,
   effectiveThemeName,
+  userPalettes,
+  onSavePalette,
+  onImportPalette,
+  onDeleteUserPalette,
+  onShowToast,
 }: ComposeTabProps) {
   const [copiedBootstrap, setCopiedBootstrap] = useState(false);
+  const [copiedShare, setCopiedShare] = useState(false);
   const [showScaffoldModal, setShowScaffoldModal] = useState(false);
+  const [savePaletteName, setSavePaletteName] = useState("");
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const exportOptions = useMemo(
     (): ExportOptions => ({
@@ -94,7 +119,59 @@ export function ComposeTab({
     [selectedPalette, exportOptions],
   );
 
+  const handleCopyShareLink = useCallback(async () => {
+    const payload = paletteToShareablePayload(selectedPalette, customThemeName);
+    const token = encodeShareableTheme(payload);
+    const url = new URL(window.location.href);
+    url.searchParams.set("theme", token);
+    await writeToClipboard(url.toString());
+    setCopiedShare(true);
+    setTimeout(() => setCopiedShare(false), 2000);
+  }, [selectedPalette, customThemeName]);
+
+  const handleExportJson = useCallback(() => {
+    downloadTextFile(
+      makeFilename(effectiveThemeName, "theme", "json"),
+      paletteToPortableJson(selectedPalette),
+      "application/json;charset=utf-8",
+    );
+    onShowToast("Downloaded .theme.json file.");
+  }, [selectedPalette, effectiveThemeName, onShowToast]);
+
+  const handleImportClick = useCallback(() => {
+    fileInputRef.current?.click();
+  }, []);
+
+  const handleFileChosen = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      e.target.value = "";
+      if (!file) return;
+      try {
+        const text = await file.text();
+        const result = parsePortablePalette(text);
+        if (!result.ok) {
+          onShowToast(`Import failed: ${result.error}`);
+          return;
+        }
+        onImportPalette(result.palette);
+      } catch (err) {
+        onShowToast(`Import failed: ${err instanceof Error ? err.message : String(err)}`);
+      }
+    },
+    [onImportPalette, onShowToast],
+  );
+
+  const handleConfirmSave = useCallback(() => {
+    const trimmed = savePaletteName.trim();
+    if (!trimmed) return;
+    onSavePalette(trimmed);
+    setSavePaletteName("");
+    setShowSaveDialog(false);
+  }, [savePaletteName, onSavePalette]);
+
   const SWATCH_INDICES = [0, 3, 4];
+  const isCurrentUserPalette = userPalettes.some((p) => p.id === selectedPaletteId);
 
   return (
     <div className="flex flex-col md:flex-row h-full overflow-hidden">
@@ -108,62 +185,47 @@ export function ComposeTab({
               Brand Presets
             </p>
             {BRAND_PALETTES.map((p) => (
-              <button
+              <PaletteRow
                 key={p.id}
-                onClick={() => onSelectPalette(p.id)}
-                className={`w-full text-left px-2.5 py-2 rounded-md text-xs font-medium transition-all border ${
-                  selectedPaletteId === p.id
-                    ? "border-primary/60 bg-primary/8 text-primary"
-                    : "border-transparent text-muted-foreground hover:bg-muted hover:text-foreground"
-                }`}
-              >
-                <div className="flex items-center gap-2">
-                  <div className="flex gap-0.5">
-                    {SWATCH_INDICES.map((i) => (
-                      <span
-                        key={i}
-                        className="w-3.5 h-3.5 rounded-full border border-black/10"
-                        style={{ backgroundColor: p.colors[i]?.value ?? "#888" }}
-                      />
-                    ))}
-                  </div>
-                  <span className="flex-1">{p.name}</span>
-                  {customColors[p.id] && (
-                    <span className="text-[9px] text-primary/60 font-normal">customized</span>
-                  )}
-                </div>
-              </button>
+                palette={p}
+                selected={selectedPaletteId === p.id}
+                customized={Boolean(customColors[p.id])}
+                onSelect={() => onSelectPalette(p.id)}
+                swatchIndices={SWATCH_INDICES}
+              />
             ))}
             <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60 pt-2 pb-1">
               Utility Presets
             </p>
             {UTILITY_PALETTES.map((p) => (
-              <button
+              <PaletteRow
                 key={p.id}
-                onClick={() => onSelectPalette(p.id)}
-                className={`w-full text-left px-2.5 py-2 rounded-md text-xs font-medium transition-all border ${
-                  selectedPaletteId === p.id
-                    ? "border-primary/60 bg-primary/8 text-primary"
-                    : "border-transparent text-muted-foreground hover:bg-muted hover:text-foreground"
-                }`}
-              >
-                <div className="flex items-center gap-2">
-                  <div className="flex gap-0.5">
-                    {SWATCH_INDICES.map((i) => (
-                      <span
-                        key={i}
-                        className="w-3.5 h-3.5 rounded-full border border-black/10"
-                        style={{ backgroundColor: p.colors[i]?.value ?? "#888" }}
-                      />
-                    ))}
-                  </div>
-                  <span className="flex-1">{p.name}</span>
-                  {customColors[p.id] && (
-                    <span className="text-[9px] text-primary/60 font-normal">customized</span>
-                  )}
-                </div>
-              </button>
+                palette={p}
+                selected={selectedPaletteId === p.id}
+                customized={Boolean(customColors[p.id])}
+                onSelect={() => onSelectPalette(p.id)}
+                swatchIndices={SWATCH_INDICES}
+              />
             ))}
+            {userPalettes.length > 0 && (
+              <>
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60 pt-2 pb-1">
+                  My Palettes
+                </p>
+                {userPalettes.map((p) => (
+                  <PaletteRow
+                    key={p.id}
+                    palette={p}
+                    selected={selectedPaletteId === p.id}
+                    customized={Boolean(customColors[p.id])}
+                    onSelect={() => onSelectPalette(p.id)}
+                    swatchIndices={SWATCH_INDICES}
+                    onDelete={() => onDeleteUserPalette(p.id)}
+                    extraTag={isExtractedPaletteId(p.id) ? "Extracted" : "Saved"}
+                  />
+                ))}
+              </>
+            )}
           </div>
         </div>
 
@@ -238,6 +300,60 @@ export function ComposeTab({
           </div>
         </div>
 
+        <div className="p-3 border-b border-border">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1">
+            My Palettes
+          </p>
+          <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
+            Save the current colors as a named palette, share it via URL, or import/export JSON.
+          </p>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              onClick={() => setShowSaveDialog(true)}
+              className="text-xs px-2 py-1.5 rounded-md border border-border bg-background hover:bg-muted hover:border-primary/40 font-medium transition-all"
+            >
+              Save as palette
+            </button>
+            <button
+              onClick={handleCopyShareLink}
+              className={`text-xs px-2 py-1.5 rounded-md border font-medium transition-all ${
+                copiedShare
+                  ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                  : "border-border bg-background hover:bg-muted hover:border-primary/40"
+              }`}
+            >
+              {copiedShare ? "Link copied!" : "Copy share link"}
+            </button>
+            <button
+              onClick={handleExportJson}
+              className="text-xs px-2 py-1.5 rounded-md border border-border bg-background hover:bg-muted hover:border-primary/40 font-medium transition-all"
+            >
+              Export JSON
+            </button>
+            <button
+              onClick={handleImportClick}
+              className="text-xs px-2 py-1.5 rounded-md border border-border bg-background hover:bg-muted hover:border-primary/40 font-medium transition-all"
+            >
+              Import JSON
+            </button>
+          </div>
+          {isCurrentUserPalette && (
+            <button
+              onClick={() => onDeleteUserPalette(selectedPaletteId)}
+              className="w-full mt-2 text-xs px-2 py-1.5 rounded-md border border-destructive/30 text-destructive hover:bg-destructive/10 font-medium transition-all"
+            >
+              Delete this palette
+            </button>
+          )}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".json,application/json"
+            className="hidden"
+            onChange={handleFileChosen}
+          />
+        </div>
+
         <div className="p-3">
           <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1">
             Bootstrap Export
@@ -292,6 +408,114 @@ export function ComposeTab({
         onClose={() => setShowScaffoldModal(false)}
         onCopy={handleScaffoldCopy}
       />
+
+      {showSaveDialog && (
+        <>
+          <div
+            className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"
+            onClick={() => setShowSaveDialog(false)}
+          />
+          <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-sm bg-card border border-border rounded-lg shadow-2xl p-5">
+            <p className="text-sm font-semibold text-foreground mb-1">Save as new palette</p>
+            <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
+              Saves the current colors and theme name as a named palette in your local browser.
+            </p>
+            <input
+              type="text"
+              value={savePaletteName}
+              onChange={(e) => setSavePaletteName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleConfirmSave();
+                else if (e.key === "Escape") setShowSaveDialog(false);
+              }}
+              placeholder="My Custom Theme"
+              autoFocus
+              className="w-full text-sm bg-background border border-border rounded-md px-3 py-2 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/50 mb-4"
+            />
+            <div className="flex gap-2 justify-end">
+              <button
+                onClick={() => setShowSaveDialog(false)}
+                className="text-xs px-3 py-1.5 rounded-md border border-border text-muted-foreground hover:bg-muted transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmSave}
+                disabled={!savePaletteName.trim()}
+                className="text-xs px-3 py-1.5 rounded-md bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Save palette
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+interface PaletteRowProps {
+  palette: Palette;
+  selected: boolean;
+  customized: boolean;
+  onSelect: () => void;
+  swatchIndices: number[];
+  onDelete?: () => void;
+  extraTag?: string;
+}
+
+function PaletteRow({ palette, selected, customized, onSelect, swatchIndices, onDelete, extraTag }: PaletteRowProps) {
+  return (
+    <div
+      className={`group relative flex items-stretch rounded-md transition-all border ${
+        selected
+          ? "border-primary/60 bg-primary/8"
+          : "border-transparent hover:bg-muted"
+      }`}
+    >
+      <button
+        onClick={onSelect}
+        className={`flex-1 text-left px-2.5 py-2 text-xs font-medium ${
+          selected ? "text-primary" : "text-muted-foreground hover:text-foreground"
+        }`}
+      >
+        <div className="flex items-center gap-2">
+          <div className="flex gap-0.5">
+            {swatchIndices.map((i) => (
+              <span
+                key={i}
+                className="w-3.5 h-3.5 rounded-full border border-black/10"
+                style={{ backgroundColor: palette.colors[i]?.value ?? "#888" }}
+              />
+            ))}
+          </div>
+          <span className="flex-1 truncate">{palette.name}</span>
+          {extraTag && (
+            <span className="text-[9px] px-1 py-0.5 rounded bg-muted-foreground/15 text-muted-foreground font-semibold uppercase tracking-wide">
+              {extraTag}
+            </span>
+          )}
+          {customized && (
+            <span className="text-[9px] text-primary/60 font-normal">customized</span>
+          )}
+        </div>
+      </button>
+      {onDelete && (
+        <button
+          onClick={onDelete}
+          aria-label={`Delete ${palette.name}`}
+          className="opacity-0 group-hover:opacity-100 px-2 text-muted-foreground hover:text-destructive transition-all"
+          title="Delete palette"
+        >
+          <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5">
+            <path
+              fillRule="evenodd"
+              d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4z"
+              clipRule="evenodd"
+            />
+          </svg>
+        </button>
+      )}
     </div>
   );
 }
