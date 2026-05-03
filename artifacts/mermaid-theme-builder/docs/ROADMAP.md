@@ -60,7 +60,7 @@
 ### UI
 - [x] Dark/light mode toggle (independent of diagram theme)
 - [x] Keyboard shortcut: `Ctrl+Shift+C` → copy Styled Code
-- [ ] Diagram family override (manual selector when auto-detect is wrong)
+- [x] Diagram family override (manual selector when auto-detect is wrong)
 
 ### Palette
 - [ ] User-created palettes — save, rename, delete, reorder
@@ -75,8 +75,8 @@
 **Goals:** Grow the community palette library without adding backend.
 
 ### Palette
-- [ ] Share palette as a URL-encoded link (query string or hash fragment)
-- [ ] Import palette from URL
+- [x] Share palette as a URL-encoded link (query string or hash fragment)
+- [x] Import palette from URL
 - [ ] 3–5 additional community palettes (not brand-locked)
 
 ### Export
@@ -108,7 +108,7 @@
 
 **Goals:** Polish, publish, and make the site properly discoverable.
 
-- [ ] GitHub Pages deployment via CI (auto-publish on `main` merge)
+- [x] GitHub Pages deployment via CI (auto-publish on `main` merge)
 - [x] Proper `og:image` and social preview
 - [ ] Analytics (privacy-respecting, no cookies)
 - [ ] Accessibility audit (WCAG 2.1 AA)

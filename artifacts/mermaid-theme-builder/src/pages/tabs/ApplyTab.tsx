@@ -1,7 +1,8 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import type { Palette, ThemeColor } from "@/lib/palettes";
 import { BUILTIN_PALETTES, BRAND_PALETTES, UTILITY_PALETTES } from "@/lib/palettes";
-import { detectDiagram } from "@/lib/detector";
+import { detectDiagram, type DetectionResult } from "@/lib/detector";
+import { DIAGRAM_CAPABILITIES, getCapabilityById, type DiagramFamily } from "@/data/mermaid-capabilities";
 import { splitDiagrams } from "@/lib/diagramSplit";
 import { DiffView } from "@/components/DiffView";
 import {
@@ -115,6 +116,8 @@ export function ApplyTab({
   const [textareaExpanded, setTextareaExpanded] = useState(false);
   const [showDownloadMenu, setShowDownloadMenu] = useState(false);
   const [activeDiagramIdx, setActiveDiagramIdx] = useState(0);
+  const [familyOverride, setFamilyOverride] = useState<DiagramFamily | null>(null);
+  const [showFamilyMenu, setShowFamilyMenu] = useState(false);
   const colorEditorRef = useRef<HTMLDivElement>(null);
   const colorEditorOpenerRef = useRef<HTMLButtonElement | null>(null);
 
@@ -127,18 +130,19 @@ export function ApplyTab({
     if (activeDiagramIdx >= diagrams.length) setActiveDiagramIdx(0);
   }, [diagrams.length, activeDiagramIdx]);
 
-  // ESC closes the color editor / download menu when open.
+  // ESC closes the color editor / download menu / family menu when open.
   useEffect(() => {
-    if (!showColorEditor && !showDownloadMenu) return;
+    if (!showColorEditor && !showDownloadMenu && !showFamilyMenu) return;
     const handler = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         if (showColorEditor) setShowColorEditor(false);
         if (showDownloadMenu) setShowDownloadMenu(false);
+        if (showFamilyMenu) setShowFamilyMenu(false);
       }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [showColorEditor, showDownloadMenu]);
+  }, [showColorEditor, showDownloadMenu, showFamilyMenu]);
 
   // Focus trap + initial focus + restore for the color editor dialog.
   useEffect(() => {
@@ -190,6 +194,22 @@ export function ApplyTab({
   }, [showColorEditor]);
 
   const detection = useMemo(() => detectDiagram(activeDiagramCode), [activeDiagramCode]);
+
+  // Effective detection — applies the user's manual family override on top of
+  // auto-detection. Warnings/hasThemeInit always come from real detection (they
+  // describe the input code itself, not the family selection). The override
+  // swaps family/label/capability so downstream export options, capability
+  // notes, and the chip all reflect the user's choice.
+  const effectiveDetection = useMemo<DetectionResult>(() => {
+    if (!familyOverride) return detection;
+    const cap = getCapabilityById(familyOverride);
+    return {
+      ...detection,
+      family: familyOverride,
+      label: cap?.displayName ?? familyOverride,
+      capability: cap ?? null,
+    };
+  }, [detection, familyOverride]);
   const canExtract = useMemo(() => hasExtractableTheme(inputCode), [inputCode]);
   const isExtracted = isExtractedPaletteId(selectedPaletteId);
 
@@ -207,13 +227,13 @@ export function ApplyTab({
   const exportOptions = useMemo(
     (): ExportOptions => ({
       palette: selectedPalette,
-      diagramFamily: detection.family,
+      diagramFamily: effectiveDetection.family,
       includeMetaComments,
       includeBadge,
       customThemeName:
         effectiveThemeName !== selectedPalette.name ? effectiveThemeName : undefined,
     }),
-    [selectedPalette, detection.family, includeMetaComments, includeBadge, effectiveThemeName],
+    [selectedPalette, effectiveDetection.family, includeMetaComments, includeBadge, effectiveThemeName],
   );
 
   const previewOptions = useMemo(
@@ -235,8 +255,8 @@ export function ApplyTab({
 
   const warnings = useMemo(() => {
     const w: string[] = [];
-    const cap = detection.capability;
-    if (detection.family !== "unknown" && cap && cap.warning) {
+    const cap = effectiveDetection.capability;
+    if (effectiveDetection.family !== "unknown" && cap && cap.warning) {
       const isPurelyPositive =
         cap.supportStatus === "native" &&
         cap.themeConfidence === "high" &&
@@ -245,15 +265,20 @@ export function ApplyTab({
         w.push(cap.warning);
       }
     }
+    if (familyOverride && detection.family !== "unknown" && detection.family !== familyOverride) {
+      w.push(
+        `Manual family override active — auto-detect saw “${detection.label}”, you selected “${effectiveDetection.label}”. Clear the override from the family chip to restore auto-detect.`,
+      );
+    }
     return w;
-  }, [detection]);
+  }, [effectiveDetection, detection, familyOverride]);
 
   const showCapabilityNote =
-    detection.capability &&
-    (detection.capability.notes || detection.capability.warning) &&
-    (detection.capability.themeConfidence === "generic-only" ||
-      detection.capability.themeConfidence === "not-applicable" ||
-      detection.capability.stability !== "stable");
+    effectiveDetection.capability &&
+    (effectiveDetection.capability.notes || effectiveDetection.capability.warning) &&
+    (effectiveDetection.capability.themeConfidence === "generic-only" ||
+      effectiveDetection.capability.themeConfidence === "not-applicable" ||
+      effectiveDetection.capability.stability !== "stable");
 
   const handleCopy = useCallback(
     async (type: ExportType) => {
@@ -534,11 +559,85 @@ export function ApplyTab({
           <div className="flex items-center justify-between px-3 py-1.5 border-b border-border bg-card/20 flex-none gap-2">
             <span className="text-xs font-medium text-muted-foreground">Diagram Code</span>
             <div className="flex items-center gap-1.5">
-              {detection.family !== "unknown" && (
-                <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[11px] font-medium">
-                  {detection.label}
-                </span>
-              )}
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setShowFamilyMenu((v) => !v)}
+                  aria-haspopup="menu"
+                  aria-expanded={showFamilyMenu}
+                  title={
+                    familyOverride
+                      ? `Family override: ${effectiveDetection.label} (auto-detected: ${detection.label}). Click to change or clear.`
+                      : detection.family === "unknown"
+                      ? "Diagram family not auto-detected — click to set manually."
+                      : `Auto-detected family: ${detection.label}. Click to override.`
+                  }
+                  className={`px-2 py-0.5 rounded-full text-[11px] font-medium inline-flex items-center gap-1 transition-colors ${
+                    familyOverride
+                      ? "bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/40 hover:bg-amber-500/25"
+                      : effectiveDetection.family === "unknown"
+                      ? "bg-muted text-muted-foreground border border-border hover:bg-muted/70"
+                      : "bg-primary/10 text-primary hover:bg-primary/20"
+                  }`}
+                >
+                  <span>{effectiveDetection.family === "unknown" ? "Set family…" : effectiveDetection.label}</span>
+                  {familyOverride && <span className="text-[9px] opacity-70">override</span>}
+                  <svg viewBox="0 0 12 12" className="w-2.5 h-2.5 opacity-60" fill="currentColor" aria-hidden="true">
+                    <path d="M3 4.5l3 3 3-3z" />
+                  </svg>
+                </button>
+                {showFamilyMenu && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-30"
+                      onClick={() => setShowFamilyMenu(false)}
+                      aria-hidden="true"
+                    />
+                    <div
+                      className="absolute right-0 top-full mt-1 z-40 min-w-[200px] max-h-[320px] overflow-auto rounded-md border border-border bg-popover shadow-lg py-1"
+                      role="menu"
+                      aria-label="Override diagram family"
+                    >
+                      <button
+                        role="menuitemradio"
+                        aria-checked={!familyOverride}
+                        onClick={() => {
+                          setFamilyOverride(null);
+                          setShowFamilyMenu(false);
+                        }}
+                        className={`w-full text-left px-3 py-1.5 text-xs hover:bg-muted transition-colors flex items-center justify-between gap-2 ${
+                          !familyOverride ? "font-medium text-foreground" : "text-muted-foreground"
+                        }`}
+                      >
+                        <span>Auto-detect</span>
+                        <span className="text-[10px] opacity-60">
+                          {detection.family === "unknown" ? "unknown" : detection.label}
+                        </span>
+                      </button>
+                      <div className="border-t border-border my-1" aria-hidden="true" />
+                      {DIAGRAM_CAPABILITIES.map((cap) => {
+                        const active = familyOverride === cap.id;
+                        return (
+                          <button
+                            key={cap.id}
+                            role="menuitemradio"
+                            aria-checked={active}
+                            onClick={() => {
+                              setFamilyOverride(cap.id);
+                              setShowFamilyMenu(false);
+                            }}
+                            className={`w-full text-left px-3 py-1.5 text-xs hover:bg-muted transition-colors ${
+                              active ? "bg-primary/10 text-primary font-medium" : "text-muted-foreground"
+                            }`}
+                          >
+                            {cap.displayName}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </>
+                )}
+              </div>
               <button
                 type="button"
                 onClick={() => setTextareaExpanded((v) => !v)}
@@ -644,9 +743,9 @@ export function ApplyTab({
             <WarningBanner warnings={warnings} />
           </div>
         )}
-        {showCapabilityNote && detection.capability && (
+        {showCapabilityNote && effectiveDetection.capability && (
           <div className="px-3 pt-2.5">
-            <CapabilityNote capability={detection.capability} />
+            <CapabilityNote capability={effectiveDetection.capability} />
           </div>
         )}
         <div className="flex flex-wrap items-center gap-2 px-3 py-2.5">
