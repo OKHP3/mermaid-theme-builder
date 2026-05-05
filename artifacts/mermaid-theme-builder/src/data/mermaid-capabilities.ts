@@ -1,12 +1,5 @@
 export const MERMAID_VERSION_VERIFIED = "11.14.0";
 
-export const DEPENDENCY_GOVERNANCE = {
-  reviewedMermaidVersion: "11.14.0",
-  reviewedDate: "2026-04-25",
-  dependencyRange: "^11.14.0",
-  lastCapabilityRegistryUpdate: "2026-04-26",
-} as const;
-
 export type DiagramFamily =
   | "flowchart"
   | "sequenceDiagram"

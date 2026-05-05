@@ -253,18 +253,3 @@ export function getEffectiveThemeName(palette: Palette, customName: string, isCu
   if (isCustomized) return `Custom — based on ${palette.name}`;
   return palette.name;
 }
-
-export function createCustomPalette(base: Palette, overrides: Partial<ThemeColor>[] = []): Palette {
-  const colors = base.colors.map((c) => {
-    const override = overrides.find((o) => o.key === c.key);
-    return override ? { ...c, ...override } : c;
-  });
-  return {
-    ...base,
-    id: "custom",
-    name: "Custom",
-    description: "Your custom palette",
-    isBrandPreset: false,
-    colors,
-  };
-}

@@ -1,6 +1,4 @@
-export type ExampleDiagramType = "flowchart" | "sequence";
-
-export interface PaletteExamples {
+interface PaletteExamples {
   flowchart: string;
   sequence: string;
 }
