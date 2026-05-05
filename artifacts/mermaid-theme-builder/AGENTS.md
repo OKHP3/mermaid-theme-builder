@@ -100,39 +100,72 @@ Run the end-to-end test plan (see `docs/RELEASE_CHECKLIST.md`) before opening a 
 ```
 artifacts/mermaid-theme-builder/
 ├── src/
-│   ├── data/
-│   │   └── mermaid-capabilities.ts   # capability registry
-│   ├── lib/
-│   │   ├── detector.ts               # diagram detection
-│   │   ├── themeEngine.ts            # theme application + exports
-│   │   └── palettes.ts               # palette schema + built-ins
+│   ├── App.tsx                       # root shell: tab routing, theme mode, keyboard shortcuts
+│   ├── main.tsx                      # Vite entry point
+│   ├── index.css                     # global Tailwind + custom CSS vars
 │   ├── components/
-│   │   ├── CapabilityNote.tsx        # blue info note for non-full diagrams
-│   │   ├── WarningBanner.tsx         # yellow warning banner
-│   │   └── MermaidPreview.tsx        # live preview renderer
+│   │   ├── CapabilityNote.tsx        # blue info note for non-full-support diagram families
+│   │   ├── ClassBrowser.tsx          # collapsible CSS class reference panel
+│   │   ├── ColorSwatch.tsx           # single colour chip with copy-on-click
+│   │   ├── DiagramInventory.tsx      # filterable/searchable diagram family index
+│   │   ├── DiffView.tsx              # three-mode preview: original / themed / diff
+│   │   ├── MermaidPreview.tsx        # live Mermaid render wrapper
+│   │   ├── MermaidReferral.tsx       # attribution + link-back component
+│   │   ├── PromptScaffoldModal.tsx   # AI scaffold prompt modal
+│   │   └── WarningBanner.tsx         # yellow warning for init-directive conflicts
+│   ├── data/
+│   │   ├── example-library.ts        # full example entries with inlined .mmd content
+│   │   ├── examples.ts               # example metadata + display config
+│   │   └── mermaid-capabilities.ts   # authoritative capability registry (27 families)
+│   ├── lib/
+│   │   ├── detector.ts               # diagram-family detection from raw text
+│   │   ├── diagramSplit.ts           # splits multi-diagram pastes into individual blocks
+│   │   ├── diff.ts                   # line-level diff computation for DiffView
+│   │   ├── exporters.ts              # all export-format serialisers (CSS, JSON, MD, etc.)
+│   │   ├── extractor.ts              # extracts existing init/theme from pasted code
+│   │   ├── familyTheming.ts          # per-family themeVariables overlays (sequence, ER, etc.)
+│   │   ├── palettes.ts               # palette schema, built-in palettes, user-palette types
+│   │   ├── persistence.ts            # localStorage read/write with schema versioning
+│   │   ├── themeEngine.ts            # core: palette → Mermaid init directive + exports
+│   │   └── themeMode.ts              # light/dark mode state hook
 │   └── pages/
-│       └── ThemeBuilder.tsx          # main page
+│       └── tabs/
+│           ├── ApplyTab.tsx          # Apply tab: paste → detect → theme → export
+│           ├── ComposeTab.tsx        # Compose tab: build/edit user palettes
+│           ├── ExamplesTab.tsx       # Examples tab: browse OKHP3 example pack
+│           └── ReferenceTab.tsx      # Reference tab: DiagramInventory + ClassBrowser
 ├── docs/
-│   ├── BRAND_PRESETS.md
-│   ├── ATTRIBUTION.md
-│   ├── THEME_METADATA.md
-│   ├── ROADMAP.md
-│   ├── MERMAID_CAPABILITY_REGISTRY.md
+│   ├── ATTRIBUTION.md                # attribution model and third-party credits
+│   ├── BRAND_PRESETS.md              # OKHP3 brand palette definitions
+│   ├── DEPLOYMENT.md                 # GitHub Pages deployment instructions
+│   ├── LEGAL.md                      # colour copyright + brand policy analysis
+│   ├── MERMAID_CAPABILITY_REGISTRY.md # registry update checklist per Mermaid version
 │   ├── MERMAID_THEMING_REFERENCE.md  # full themeVariables table + renderer compat
-│   ├── LEGAL.md                      # color copyright + brand policy analysis
-│   ├── PRODUCT_BRIEF.md
-│   ├── DEPLOYMENT.md
-│   └── RELEASE_CHECKLIST.md
-├── examples/
-│   ├── overkill-hill-flowchart.mmd   # OverKill Hill P³ flowchart example
-│   ├── overkill-hill-sequence.mmd    # OverKill Hill P³ sequence example
-│   ├── askjamie-flowchart.mmd        # AskJamie flowchart example
-│   ├── askjamie-sequence.mmd         # AskJamie sequence example
-│   ├── glee-fully-flowchart.mmd      # Glee-fully flowchart example
-│   └── glee-fully-sequence.mmd       # Glee-fully sequence example
+│   ├── PRODUCT_BRIEF.md              # product vision, scope, and constraints
+│   ├── RELEASE_CHECKLIST.md          # pre-release gate: 81 manual test steps
+│   ├── ROADMAP.md                    # feature backlog with completion status
+│   └── THEME_METADATA.md             # palette metadata schema reference
+├── examples/                         # .mmd source files — human-readable originals
+│   │                                 # Content is inlined into example-library.ts;
+│   │                                 # these files are dev/authoring references only.
+│   ├── overkill-hill-flowchart.mmd
+│   ├── overkill-hill-sequence.mmd
+│   ├── askjamie-flowchart.mmd
+│   ├── askjamie-sequence.mmd
+│   ├── glee-fully-flowchart.mmd
+│   ├── glee-fully-sequence.mmd
+│   ├── overkill-rube-goldberg-showcase.mmd
+│   └── … (27 files total — one per diagram family)
+├── public/
+│   ├── favicon.svg
+│   ├── manifest.webmanifest          # PWA manifest
+│   ├── opengraph.jpg
+│   ├── robots.txt
+│   ├── sitemap.xml
+│   └── sw.js                         # service worker (cache-first strategy)
 ├── standards/
-│   ├── render-safety-checklist.md
-│   └── mermaid-theme-builder-standard.md
-├── LICENSE                           # MIT License — Jamie Hill / OverKill Hill P³
+│   ├── mermaid-theme-builder-standard.md  # identity, brand, and quality standards
+│   └── render-safety-checklist.md         # known Mermaid rendering pitfalls + mitigations
+├── LICENSE                           # MIT — Jamie Hill / OverKill Hill P³
 └── AGENTS.md
 ```
