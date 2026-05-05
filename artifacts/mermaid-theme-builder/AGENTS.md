@@ -137,6 +137,7 @@ artifacts/mermaid-theme-builder/
 ├── docs/
 │   ├── ATTRIBUTION.md                # attribution model and third-party credits
 │   ├── BRAND_PRESETS.md              # OKHP3 brand palette definitions
+│   ├── COPILOT_PROMPT_KIT.md         # reusable M365 Copilot prompt templates for themed Mermaid diagrams
 │   ├── DEPLOYMENT.md                 # GitHub Pages deployment instructions
 │   ├── LEGAL.md                      # colour copyright + brand policy analysis
 │   ├── MERMAID_CAPABILITY_REGISTRY.md # registry update checklist per Mermaid version

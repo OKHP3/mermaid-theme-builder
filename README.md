@@ -1,7 +1,7 @@
 # Mermaid Theme Builder
 
-[![CI](https://github.com/OWNER/REPO/actions/workflows/ci.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/ci.yml)
-[![Pages](https://github.com/OWNER/REPO/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/deploy-pages.yml)
+[![CI](https://github.com/OKHP3/mermaid-theme-builder/actions/workflows/ci.yml/badge.svg)](https://github.com/OKHP3/mermaid-theme-builder/actions/workflows/ci.yml)
+[![Pages](https://github.com/OKHP3/mermaid-theme-builder/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/OKHP3/mermaid-theme-builder/actions/workflows/deploy-pages.yml)
 
 > **Disclaimer:** Mermaid Theme Builder is a personal OverKill Hill P³ project by Jamie Hill. It is not affiliated with Builders FirstSource, BFS, Mermaid, Mermaid Chart, Mermaid.ai, or any third-party brand represented by user-entered colors.
 >
@@ -9,14 +9,12 @@
 
 **Mermaid Theme Builder** is a browser-based tool for applying consistent visual themes to [Mermaid](https://mermaid.js.org/) diagrams — especially AI-generated ones.
 
-> Replace `OWNER/REPO` in the badges above with your GitHub org/repo after the first push, and the badges will go live alongside the workflows.
-
 ## Try It
 
 After enabling GitHub Pages on this repo (Settings → Pages → Source: GitHub Actions), the latest `main` deploys to:
 
 ```
-https://OWNER.github.io/REPO/
+https://OKHP3.github.io/mermaid-theme-builder/
 ```
 
 The Pages workflow auto-derives the base path from the repository name. To deploy at a different path (e.g. a custom domain), set a repository Variable named `MTB_BASE_PATH` (for example `/`).
@@ -32,7 +30,7 @@ AI tools like ChatGPT and GitHub Copilot generate Mermaid diagrams using default
 5. **Download** the result as `.mermaid`, `.svg`, `.png`, or `.theme.json`.
 6. **Save, share, and reuse** palettes — named saves persist locally; shareable URLs encode the theme in a base64url query parameter.
 
-## Features (v0.3-alpha)
+## Features (v0.3.1)
 
 - **9 built-in palettes** including OverKill Hill P³ ecosystem themes and generic originals
 - **Per-color override editor** with live preview
@@ -65,7 +63,7 @@ OKH ecosystem palettes are derived from public OverKill Hill P³ site CSS. See a
 
 ## Mermaid Version
 
-This tool is reviewed and tested against **Mermaid `^11.14.0`**. The capability registry (`src/data/mermaid-capabilities.json`) documents the reviewed version and diagram-specific theming support levels.
+This tool is reviewed and tested against **Mermaid `^11.14.0`**. The capability registry (`artifacts/mermaid-theme-builder/src/data/mermaid-capabilities.ts`) documents the reviewed version and diagram-specific theming support levels.
 
 ## Development
 
@@ -86,17 +84,24 @@ To build for production:
 PORT=18624 BASE_PATH=/mermaid-theme-builder/ pnpm --filter @workspace/mermaid-theme-builder run build
 ```
 
-See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for build and deployment instructions.
+See [artifacts/mermaid-theme-builder/docs/DEPLOYMENT.md](artifacts/mermaid-theme-builder/docs/DEPLOYMENT.md) for full build and deployment instructions.
 
 ## Documentation
 
-- [docs/PRODUCT_BRIEF.md](docs/PRODUCT_BRIEF.md) — What this tool is and isn't
-- [docs/ROADMAP.md](docs/ROADMAP.md) — Planned and shipped work
-- [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) — Build and deployment
-- [docs/RELEASE_CHECKLIST.md](docs/RELEASE_CHECKLIST.md) — Pre-release checklist
-- [standards/mermaid-theme-builder-standard.md](standards/mermaid-theme-builder-standard.md) — Technical and product standards
-- [standards/render-safety-checklist.md](standards/render-safety-checklist.md) — Render safety guide
-- [AGENTS.md](AGENTS.md) — Instructions for AI coding agents
+All documentation lives under `artifacts/mermaid-theme-builder/docs/`:
+
+- [PRODUCT_BRIEF.md](artifacts/mermaid-theme-builder/docs/PRODUCT_BRIEF.md) — What this tool is and isn't
+- [ROADMAP.md](artifacts/mermaid-theme-builder/docs/ROADMAP.md) — Planned and shipped work
+- [DEPLOYMENT.md](artifacts/mermaid-theme-builder/docs/DEPLOYMENT.md) — Build and deployment
+- [RELEASE_CHECKLIST.md](artifacts/mermaid-theme-builder/docs/RELEASE_CHECKLIST.md) — Pre-release checklist
+- [MERMAID_THEMING_REFERENCE.md](artifacts/mermaid-theme-builder/docs/MERMAID_THEMING_REFERENCE.md) — Full themeVariables table and renderer compatibility
+- [COPILOT_PROMPT_KIT.md](artifacts/mermaid-theme-builder/docs/COPILOT_PROMPT_KIT.md) — Reusable prompt templates for M365 Copilot
+
+Standards and agent guidance:
+
+- [standards/mermaid-theme-builder-standard.md](artifacts/mermaid-theme-builder/standards/mermaid-theme-builder-standard.md) — Technical and product standards
+- [standards/render-safety-checklist.md](artifacts/mermaid-theme-builder/standards/render-safety-checklist.md) — Render safety guide
+- [AGENTS.md](artifacts/mermaid-theme-builder/AGENTS.md) — Instructions for AI coding agents
 
 ## License
 
