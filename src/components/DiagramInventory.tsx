@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { CapabilityNote } from "@/components/CapabilityNote";
 import {
   DIAGRAM_CAPABILITIES,
   CAPABILITY_GAPS,
@@ -65,55 +66,120 @@ function StabilityDot({ stability }: { stability: string }) {
 
 function CapabilityRow({ cap }: { cap: DiagramCapability }) {
   const [expanded, setExpanded] = useState(false);
+  const hasExtra = !!(cap.warning || cap.notes);
   return (
-    <tr className="border-b border-border last:border-0 hover:bg-muted/30 transition-colors">
-      <td className="px-3 py-2.5 align-top">
-        <div className="flex items-center gap-1.5">
-          <StabilityDot stability={cap.stability} />
-          <span className="text-xs font-medium text-foreground whitespace-nowrap">{cap.displayName}</span>
-        </div>
-        <div className="text-[10px] text-muted-foreground mt-0.5 font-mono">{cap.id}</div>
-      </td>
-      <td className="px-3 py-2.5 align-top">
-        <StatusBadge status={cap.supportStatus} />
-      </td>
-      <td className="px-3 py-2.5 align-top">
-        <ThemeBadge confidence={cap.themeConfidence} />
-      </td>
-      <td className="px-3 py-2.5 align-top hidden md:table-cell">
-        <span className="text-[10px] text-muted-foreground">
-          {NOTATION_COMPLIANCE_LABELS[cap.notationCompliance]}
-        </span>
-      </td>
-      <td className="px-3 py-2.5 align-top hidden lg:table-cell max-w-[220px]">
-        <p className="text-[11px] text-muted-foreground leading-relaxed line-clamp-2">
-          {cap.description}
-        </p>
-      </td>
-      <td className="px-3 py-2.5 align-top">
-        {cap.exampleFile ? (
-          <div className="flex items-center gap-1">
-            {cap.examplePending ? (
-              <span className="text-[10px] text-muted-foreground/60 italic">pending</span>
-            ) : (
-              <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">
-                ✓
-              </span>
-            )}
-            <span className="text-[10px] text-muted-foreground font-mono hidden xl:block truncate max-w-[160px]">
-              {cap.exampleFile}
-            </span>
+    <>
+      <tr className="border-b border-border last:border-0 hover:bg-muted/30 transition-colors">
+        <td className="px-3 py-2.5 align-top">
+          <div className="flex items-center gap-1.5">
+            <StabilityDot stability={cap.stability} />
+            <span className="text-xs font-medium text-foreground whitespace-nowrap">{cap.displayName}</span>
           </div>
-        ) : (
-          <span className="text-[10px] text-muted-foreground/40">—</span>
-        )}
-      </td>
-      <td className="px-3 py-2.5 align-top w-6">
-        {(cap.warning || cap.notes) && (
+          <div className="text-[10px] text-muted-foreground mt-0.5 font-mono">{cap.id}</div>
+        </td>
+        <td className="px-3 py-2.5 align-top">
+          <StatusBadge status={cap.supportStatus} />
+        </td>
+        <td className="px-3 py-2.5 align-top">
+          <ThemeBadge confidence={cap.themeConfidence} />
+        </td>
+        <td className="px-3 py-2.5 align-top hidden md:table-cell">
+          <span className="text-[10px] text-muted-foreground">
+            {NOTATION_COMPLIANCE_LABELS[cap.notationCompliance]}
+          </span>
+        </td>
+        <td className="px-3 py-2.5 align-top hidden lg:table-cell max-w-[220px]">
+          <p className="text-[11px] text-muted-foreground leading-relaxed line-clamp-2">
+            {cap.description}
+          </p>
+        </td>
+        <td className="px-3 py-2.5 align-top">
+          {cap.exampleFile ? (
+            <div className="flex items-center gap-1">
+              {cap.examplePending ? (
+                <span className="text-[10px] text-muted-foreground/60 italic">pending</span>
+              ) : (
+                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">
+                  ✓
+                </span>
+              )}
+              <span className="text-[10px] text-muted-foreground font-mono hidden xl:block truncate max-w-[160px]">
+                {cap.exampleFile}
+              </span>
+            </div>
+          ) : (
+            <span className="text-[10px] text-muted-foreground/40">—</span>
+          )}
+        </td>
+        <td className="px-3 py-2.5 align-top w-6">
+          {hasExtra && (
+            <button
+              onClick={() => setExpanded((v) => !v)}
+              className={`transition-colors ${expanded ? "text-sky-500" : "text-amber-500 hover:text-amber-600 dark:text-amber-400"}`}
+              title={expanded ? "Hide details" : "Show capability details"}
+              aria-expanded={expanded}
+            >
+              <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5">
+                <path
+                  fillRule="evenodd"
+                  d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </button>
+          )}
+        </td>
+      </tr>
+      {expanded && hasExtra && (
+        <tr className="border-b border-border bg-sky-50/40 dark:bg-sky-950/10">
+          <td colSpan={7} className="px-4 py-3">
+            <CapabilityNote capability={cap} />
+          </td>
+        </tr>
+      )}
+    </>
+  );
+}
+
+function GapRow({ gap }: { gap: GapEntry }) {
+  const [expanded, setExpanded] = useState(false);
+  return (
+    <>
+      <tr className="border-b border-border last:border-0 hover:bg-muted/30 transition-colors">
+        <td className="px-3 py-2.5 align-top">
+          <span className="text-xs font-medium text-foreground whitespace-nowrap">{gap.displayName}</span>
+          <div className="text-[10px] text-muted-foreground mt-0.5 font-mono">{gap.id}</div>
+        </td>
+        <td className="px-3 py-2.5 align-top">
+          <StatusBadge status={gap.supportStatus} />
+        </td>
+        <td className="px-3 py-2.5 align-top">
+          <ThemeBadge confidence={gap.themeConfidence} />
+        </td>
+        <td className="px-3 py-2.5 align-top hidden md:table-cell">
+          <span className="text-[10px] text-muted-foreground">
+            {NOTATION_COMPLIANCE_LABELS[gap.notationCompliance]}
+          </span>
+        </td>
+        <td className="px-3 py-2.5 align-top hidden lg:table-cell max-w-[220px]">
+          <p className="text-[11px] text-muted-foreground leading-relaxed line-clamp-2">
+            {gap.description}
+          </p>
+          {gap.approximatedBy && (
+            <span className="inline-block mt-0.5 text-[10px] text-sky-600 dark:text-sky-400">
+              Approx. via {gap.approximatedBy}
+            </span>
+          )}
+        </td>
+        <td className="px-3 py-2.5 align-top">
+          <span className="text-[10px] text-muted-foreground/40 italic">none</span>
+        </td>
+        <td className="px-3 py-2.5 align-top w-6">
           <button
             onClick={() => setExpanded((v) => !v)}
-            className="text-amber-500 hover:text-amber-600 dark:text-amber-400 transition-colors"
-            title="Show warning / notes"
+            className={`transition-colors ${expanded ? "text-amber-600 dark:text-amber-300" : "text-amber-500 hover:text-amber-600 dark:text-amber-400"}`}
+            title={expanded ? "Hide details" : "Show gap details"}
+            aria-expanded={expanded}
           >
             <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5">
               <path
@@ -123,79 +189,28 @@ function CapabilityRow({ cap }: { cap: DiagramCapability }) {
               />
             </svg>
           </button>
-        )}
-        {expanded && (cap.warning || cap.notes) && (
-          <div
-            className="absolute z-10 mt-1 w-64 rounded-lg border border-amber-300/50 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-700/40 p-2.5 shadow-md text-[11px] text-amber-800 dark:text-amber-300 leading-relaxed"
-            onClick={() => setExpanded(false)}
-          >
-            {cap.warning && <p className="mb-1">{cap.warning}</p>}
-            {cap.notes && cap.notes !== cap.warning && (
-              <p className="text-muted-foreground">{cap.notes}</p>
-            )}
-          </div>
-        )}
-      </td>
-    </tr>
-  );
-}
-
-function GapRow({ gap }: { gap: GapEntry }) {
-  const [expanded, setExpanded] = useState(false);
-  return (
-    <tr className="border-b border-border last:border-0 hover:bg-muted/30 transition-colors">
-      <td className="px-3 py-2.5 align-top">
-        <span className="text-xs font-medium text-foreground whitespace-nowrap">{gap.displayName}</span>
-        <div className="text-[10px] text-muted-foreground mt-0.5 font-mono">{gap.id}</div>
-      </td>
-      <td className="px-3 py-2.5 align-top">
-        <StatusBadge status={gap.supportStatus} />
-      </td>
-      <td className="px-3 py-2.5 align-top">
-        <ThemeBadge confidence={gap.themeConfidence} />
-      </td>
-      <td className="px-3 py-2.5 align-top hidden md:table-cell">
-        <span className="text-[10px] text-muted-foreground">
-          {NOTATION_COMPLIANCE_LABELS[gap.notationCompliance]}
-        </span>
-      </td>
-      <td className="px-3 py-2.5 align-top hidden lg:table-cell max-w-[220px]">
-        <p className="text-[11px] text-muted-foreground leading-relaxed line-clamp-2">
-          {gap.description}
-        </p>
-        {gap.approximatedBy && (
-          <span className="inline-block mt-0.5 text-[10px] text-sky-600 dark:text-sky-400">
-            Approx. via {gap.approximatedBy}
-          </span>
-        )}
-      </td>
-      <td className="px-3 py-2.5 align-top">
-        <span className="text-[10px] text-muted-foreground/40 italic">none</span>
-      </td>
-      <td className="px-3 py-2.5 align-top w-6 relative">
-        <button
-          onClick={() => setExpanded((v) => !v)}
-          className="text-amber-500 hover:text-amber-600 dark:text-amber-400 transition-colors"
-          title="Show warning"
-        >
-          <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5">
-            <path
-              fillRule="evenodd"
-              d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z"
-              clipRule="evenodd"
-            />
-          </svg>
-        </button>
-        {expanded && (
-          <div
-            className="absolute right-0 z-10 mt-1 w-72 rounded-lg border border-amber-300/50 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-700/40 p-2.5 shadow-md text-[11px] text-amber-800 dark:text-amber-300 leading-relaxed"
-            onClick={() => setExpanded(false)}
-          >
-            {gap.warning}
-          </div>
-        )}
-      </td>
-    </tr>
+        </td>
+      </tr>
+      {expanded && (
+        <tr className="border-b border-border bg-amber-50/40 dark:bg-amber-950/10">
+          <td colSpan={7} className="px-4 py-3">
+            <div className="rounded-lg border border-amber-300/60 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-700/40 px-4 py-3">
+              <p className="text-xs font-medium text-amber-800 dark:text-amber-300 mb-1">
+                Capability gap — not implementable in Mermaid
+              </p>
+              <p className="text-xs text-amber-700/80 dark:text-amber-400/80 leading-relaxed">
+                {gap.warning}
+              </p>
+              {gap.approximatedBy && (
+                <p className="text-[11px] text-sky-600 dark:text-sky-400 mt-1.5">
+                  Can be approximated using: {gap.approximatedBy}
+                </p>
+              )}
+            </div>
+          </td>
+        </tr>
+      )}
+    </>
   );
 }
 

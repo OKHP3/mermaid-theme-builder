@@ -237,7 +237,11 @@ function ThemeModeToggle({ mode, cycle }: { mode: ThemeMode; cycle: () => void }
 }
 
 function AppShell() {
-  const [activeTab, setActiveTab] = useState<AppTab>("apply");
+  const [activeTab, setActiveTab] = useState<AppTab>(() => {
+    const h = window.location.hash.slice(1);
+    const TABS: AppTab[] = ["apply", "compose", "examples", "reference"];
+    return TABS.includes(h as AppTab) ? (h as AppTab) : "apply";
+  });
   const [hydrated, setHydrated] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [userPalettes, setUserPalettes] = useState<Palette[]>([]);
@@ -254,6 +258,11 @@ function AppShell() {
   const [fontSize, setFontSize] = useState<string>("");
   const tabsRef = useRef<HTMLDivElement>(null);
   const { mode: themeMode, cycle: cycleThemeMode } = useThemeMode();
+
+  // Keep URL hash in sync with active tab so tabs are bookmarkable/shareable.
+  useEffect(() => {
+    window.location.hash = activeTab;
+  }, [activeTab]);
 
   // Hydrate from URL share token (highest priority) or localStorage on mount.
   useEffect(() => {

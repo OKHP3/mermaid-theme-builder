@@ -87,7 +87,7 @@ export function ReferenceTab({ selectedPalette }: ReferenceTabProps) {
           GitHub repository
         </a>
         <span className="ml-auto text-[10px] text-muted-foreground/50">
-          v0.3.1 · OKHP3 personal project
+          v{__APP_VERSION__} · an OKHP³ Project
         </span>
       </div>
     </div>
