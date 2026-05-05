@@ -1,0 +1,672 @@
+# REPLIT: V0.4 Release — Tabbed UI + Mobile Responsive
+
+## OBJECTIVE
+
+Restructure the Mermaid Theme Builder from a single-screen layout into 4 tabbed sub-screens. Each tab has one job. The current product works but puts every feature on one page: palette selector, color editor, code input, preview, ClassBrowser, DiagramInventory, CapabilityNote, PromptScaffoldModal, and export buttons. This creates cognitive overload on desktop and is completely unusable on mobile.
+
+After this release, a first-time user on the Apply tab can paste code and copy styled output in under 30 seconds. On mobile, the app is fully usable without horizontal scrolling.
+
+**Read AGENTS.md before starting.** No BFS hex values. No employer references. This is a personal OverKill Hill P3 project.
+
+---
+
+## ARCHITECTURE: 4 Tabs
+
+```
+┌─────────┬──────────┬──────────┬───────────┐
+│  Apply  │ Compose  │ Examples │ Reference │
+│(default)│          │          │           │
+└─────────┴──────────┴──────────┴───────────┘
+```
+
+| Tab | One-Sentence Job | What Lives Here |
+|-----|-----------------|-----------------|
+| **Apply** (default) | Paste, theme, preview, copy. | Code textarea, palette strip, preview, export buttons. Nothing else. |
+| **Compose** | Define your visual identity. Export bootstraps. | Full color editor, font controls, theme name, watermark toggle, bootstrap/scaffold export. |
+| **Examples** | Browse and load example diagrams. | Example list grouped by family, preview with current theme, "Load into Apply" button. |
+| **Reference** | Learn what Mermaid supports. | ClassBrowser, CapabilityNote, DiagramInventory, support-level indicators. |
+
+---
+
+## STEP 1: Create Shared State (React Context)
+
+Create a file `src/context/AppContext.tsx` (or add to existing state management):
+
+```tsx
+import { createContext, useContext, useState, ReactNode } from 'react';
+
+type AppTab = 'apply' | 'compose' | 'examples' | 'reference';
+
+interface AppState {
+  // Navigation
+  activeTab: AppTab;
+  setActiveTab: (tab: AppTab) => void;
+
+  // Theme (shared between Apply and Compose)
+  selectedPaletteId: string;
+  setSelectedPaletteId: (id: string) => void;
+  customColors: Record<string, string>;
+  setCustomColors: (colors: Record<string, string>) => void;
+  fontFamily: string;
+  setFontFamily: (font: string) => void;
+  themeName: string;
+  setThemeName: (name: string) => void;
+  watermarkEnabled: boolean;
+  setWatermarkEnabled: (enabled: boolean) => void;
+
+  // Diagram (shared between Apply and Examples)
+  inputCode: string;
+  setInputCode: (code: string) => void;
+  detectedFamily: string | null;
+
+  // Color editor panel visibility
+  colorEditorOpen: boolean;
+  setColorEditorOpen: (open: boolean) => void;
+}
+```
+
+**Critical behaviors:**
+- When the user selects a palette in Compose, Apply reflects the change immediately.
+- When the user clicks "Load into Apply" in Examples, the code pastes into Apply AND the active tab switches to Apply.
+- When the user edits colors in the Apply slide-out panel, Compose reflects the changes.
+- No prop drilling. All cross-tab state flows through context.
+
+---
+
+## STEP 2: Create Tab Navigation Component
+
+Create `src/components/TabNavigation.tsx`:
+
+### Desktop (>= 768px): Top tab bar
+
+```
+┌──────────────────────────────────────────────────────┐
+│  ⚡ Apply    🎨 Compose    📋 Examples    📖 Reference │
+└──────────────────────────────────────────────────────┘
+```
+
+- Horizontal bar at the top of the app, below any header/branding
+- Each tab: icon + label
+- Active tab: filled background using the current theme accent color, white text
+- Inactive tabs: ghost/outline style, muted text
+- Smooth transition (no page reload, just state change)
+- Icons (use Lucide or inline SVG): Apply = Wand2, Compose = Palette, Examples = LayoutGrid, Reference = BookOpen
+
+### Mobile (< 768px): Bottom navigation bar
+
+```
+┌───────────────────────┐
+│                       │
+│   (app content)       │
+│                       │
+├───────────────────────┤
+│ ⚡  🎨  📋  📖       │  ← fixed bottom, icon + small label
+└───────────────────────┘
+```
+
+- Fixed position at viewport bottom (like iOS/Android tab bars)
+- 4 equally sized tap targets (minimum 48px height for touch)
+- Icon above label, label text 11px
+- Active tab: accent color icon + label. Inactive: muted gray.
+- Content area gets `padding-bottom` to avoid being hidden behind the bar
+
+### URL hash routing (nice to have, not required)
+If feasible, update `window.location.hash` when tabs change (#apply, #compose, #examples, #reference) and read hash on load to restore tab state. This lets users bookmark or share a specific tab.
+
+---
+
+## STEP 3: Build the Apply Tab
+
+Create `src/components/tabs/ApplyTab.tsx`
+
+This is the core workflow. Paste, theme, preview, copy. **Nothing else.**
+
+### Desktop layout (>= 1024px): Side-by-side panels
+
+```
+┌───────────────────────────────────────────────────────────┐
+│ PALETTE STRIP                                             │
+│ [OD] [FS] [SE] [VM] [OKH] [GF] [AJ] [+ Custom]          │
+├────────────────────────┬──────────────────────────────────┤
+│                        │                                  │
+│  Code Input            │  Live Preview                    │
+│  (monospace textarea)  │  (Mermaid SVG)                   │
+│                        │                                  │
+│  ⚠ Warnings (if any)  │  [Original] [Themed] toggle      │
+│                        │                                  │
+├────────────────────────┴──────────────────────────────────┤
+│ [🎨 Edit Colors]  [Copy Code] [Copy MD] [Copy Prompt]    │
+└───────────────────────────────────────────────────────────┘
+```
+
+### Tablet layout (768-1023px): Stacked
+
+Code input on top (40% height), preview below (60% height). Palette strip horizontal above code input. Export bar at bottom.
+
+### Mobile layout (< 768px):
+
+```
+┌───────────────────────┐
+│ Palette strip (scroll)│  ← horizontal scrollable, compact 28px swatches
+├───────────────────────┤
+│ Code input            │  ← 4 visible lines, tap to expand to 50% viewport
+│ (collapsible)         │
+├───────────────────────┤
+│ Live Preview          │  ← takes remaining vertical space
+│ (pinch-to-zoom)       │
+├───────────────────────┤
+│ [Edit][Code][MD][AI]  │  ← fixed bottom action bar (above tab nav)
+└───────────────────────┘
+```
+
+### Palette Strip Component
+
+Create `src/components/PaletteStrip.tsx`:
+
+- Horizontal row of small circular color swatches (28px diameter each)
+- Each swatch shows the palette's `primaryColor` as the fill
+- Selected palette has a 2px ring/glow in the palette's accent color
+- Palette name appears as a tooltip on hover (desktop) or below the strip (mobile)
+- On mobile: horizontal scroll if palettes exceed viewport width
+- Clicking a swatch sets `selectedPaletteId` in shared state
+- This is NOT the full card grid with descriptions. That belongs in Compose.
+
+### Color Editor Slide-Out
+
+When user clicks "Edit Colors" button:
+
+- **Desktop**: A 320px-wide panel slides in from the right edge. Contains all 13 color fields (reuse existing ColorSwatch components). Close button (X) at top. Clicking outside the panel also closes it.
+- **Mobile**: Full-screen modal. All 13 color fields in a scrollable list. "Done" button at top to close. Swipe-down to dismiss.
+
+The color editor is NOT permanently visible in Apply. It's on-demand only.
+
+### What Does NOT Belong in Apply
+
+These components must be removed from the Apply tab entirely:
+
+- ❌ ClassBrowser (moves to Reference)
+- ❌ DiagramInventory (moves to Examples + Reference)
+- ❌ CapabilityNote (moves to Reference)
+- ❌ PromptScaffoldModal trigger (Compose tab handles scaffold export)
+- ❌ Full color editor (hidden behind "Edit Colors" button)
+- ❌ Font family editor (moves to Compose)
+- ❌ Theme name field (moves to Compose)
+- ❌ Watermark toggle (moves to Compose)
+
+### Export Buttons
+
+Four buttons in the bottom bar:
+
+1. **Copy Styled Code**: Copies the themed Mermaid code (with init directive) to clipboard. Toast: "Styled code copied!"
+2. **Copy Markdown**: Copies the markdown bootstrap block. Toast: "Markdown bootstrap copied!"
+3. **Copy Prompt**: Copies the AI prompt scaffold. Toast: "Prompt scaffold copied!"
+4. **Edit Colors**: Opens the color editor slide-out/modal.
+
+On mobile, use short labels or icons only: [🎨] [</>] [📝] [🤖]
+
+### Toast Notifications
+
+After any copy action, show a brief (2-second) toast notification at the bottom of the viewport confirming the action. Auto-dismiss. No manual close needed.
+
+---
+
+## STEP 4: Build the Compose Tab
+
+Create `src/components/tabs/ComposeTab.tsx`
+
+Pre-prompt mode. Define your visual identity, export bootstraps/scaffolds. No diagram input needed here.
+
+### Layout
+
+```
+┌──────────────────────┬────────────────────────────────────┐
+│ Palette Selector     │                                    │
+│ (full card style,    │  PREVIEW: Generic sample flowchart │
+│  with descriptions)  │  rendered with the selected theme  │
+│                      │  (read-only, auto-generated)       │
+│ ─────────────────    │                                    │
+│                      │                                    │
+│ Full Color Editor    │                                    │
+│ (all 13 fields,      │                                    │
+│ always visible)      │                                    │
+│                      │                                    │
+│ ─────────────────    │                                    │
+│                      │                                    │
+│ Font Family dropdown │                                    │
+│ ┌────────────────┐   │                                    │
+│ │ Trebuchet MS ▾ │   │                                    │
+│ └────────────────┘   │                                    │
+│                      │                                    │
+│ Theme Name field     │                                    │
+│ ┌────────────────┐   │                                    │
+│ │ My Brand Theme │   │                                    │
+│ └────────────────┘   │                                    │
+│                      │                                    │
+│ Watermark toggle     │                                    │
+│ [ON/OFF]             │                                    │
+├──────────────────────┴────────────────────────────────────┤
+│ [Copy Bootstrap Markdown]  [Copy Prompt Scaffold]         │
+│                                                           │
+│ "Paste the bootstrap into your LLM before generating      │
+│  diagrams to enforce this visual standard."               │
+└───────────────────────────────────────────────────────────┘
+```
+
+### Palette Selector (full card style)
+
+In Compose, palettes are displayed as larger cards (not the compact strip from Apply):
+
+```
+┌─────────────────────────┐
+│ ■■■ Ocean Depth         │
+│ Deep navy + steel blue  │
+│ Professional, corporate │
+└─────────────────────────┘
+```
+
+Each card shows: color swatch preview (3 primary colors), palette name, one-line description. Selected card has a border highlight.
+
+### Font Family Dropdown
+
+Options:
+- Trebuchet MS (default)
+- Arial
+- Calibri
+- Georgia
+- Courier New
+- Impact
+- system-ui
+- Custom... (shows text input when selected)
+
+The selected font is stored in shared state (`fontFamily`) and included in the init directive's `fontFamily` field.
+
+### Theme Name Field
+
+Text input. Defaults to the selected preset name (e.g., "Ocean Depth"). User can edit to any string (e.g., "Acme Corp Standard"). This name appears in exported markdown bootstrap headers and prompt scaffolds.
+
+### Watermark Toggle
+
+Switch control. Default: ON.
+- When ON: exported Mermaid code includes an attribution node at the bottom.
+- When OFF: no attribution.
+- Label: "Include theme attribution"
+
+### Generic Preview Diagram
+
+The right panel shows a read-only sample diagram rendered with the current theme. Use this sample (or similar) that exercises multiple element types:
+
+```mermaid
+flowchart TD
+  subgraph Section["Section Title"]
+    A["Primary Node"] --> B["Secondary Node"]
+    B --> C{"Decision"}
+    C -->|"Yes"| D["Result A"]
+    C -->|"No"| E["Result B"]
+  end
+  F["External"] -->|"connects"| A
+```
+
+This updates live as the user changes colors. No textarea, no paste, no user input. Just the preview.
+
+### Mobile Layout
+
+- Palette cards stack vertically (single column)
+- Color editor takes full width below palette
+- Preview is below the fold (user scrolls to see it)
+- Export buttons fixed at bottom
+
+---
+
+## STEP 5: Build the Examples Tab
+
+Create `src/components/tabs/ExamplesTab.tsx`
+
+Browse, preview, and load example diagrams.
+
+### Layout
+
+```
+┌──────────────────────┬────────────────────────────────────┐
+│ Example List          │                                    │
+│ (grouped by family)   │  Preview of selected example       │
+│                      │  (rendered with current theme)      │
+│ ▼ Flowchart          │                                    │
+│   ○ Basic Process    │                                    │
+│   ○ Architecture     │                                    │
+│ ▼ Sequence           │                                    │
+│   ○ Auth Flow        │                                    │
+│ ▼ Class              │                                    │
+│   ○ Domain Model     │                                    │
+│ ▼ State              │                                    │
+│   ○ Lifecycle        │                                    │
+│ ▼ ER                 │                                    │
+│   ○ Registry         │                                    │
+│ ...more families     │                                    │
+│                      │                                    │
+│ ★ Showcase           │                                    │
+│   ○ Rube Goldberg    │                                    │
+│                      │                                    │
+│ Badges:              │                                    │
+│ [●Native] [●Beta]   │                                    │
+│ [●Emulation]         │                                    │
+├──────────────────────┴────────────────────────────────────┤
+│ [Load into Apply Tab]  [Copy Raw Code]  [View Source]     │
+└───────────────────────────────────────────────────────────┘
+```
+
+### Example List
+
+- Use data from `examples.ts` (already exists)
+- Group examples by diagram family. Each family is a collapsible section.
+- Each example row shows: name, support badge (Native=green, Beta=yellow, Emulation=orange), one-line description
+- Clicking an example renders it in the preview panel with the currently selected theme
+- First example is auto-selected on tab load
+
+### Support Badges
+
+```tsx
+type SupportLevel = 'native' | 'beta' | 'emulation';
+
+// Badge colors
+// native:    bg-green-100 text-green-800 (or equivalent Tailwind)
+// beta:      bg-yellow-100 text-yellow-800
+// emulation: bg-orange-100 text-orange-800
+```
+
+### Action Buttons
+
+- **Load into Apply Tab**: Sets `inputCode` in shared state to the example's raw Mermaid code, then switches `activeTab` to `'apply'`. The user lands on Apply with the example pre-loaded.
+- **Copy Raw Code**: Copies the unthemed original Mermaid source to clipboard. Toast: "Raw code copied!"
+- **View Source**: Expands a code block below the preview showing the raw .mmd source. Toggle on/off.
+
+### Mobile Layout
+
+- Example list is full-width (no side panel)
+- Selecting an example opens the preview as a bottom sheet (slides up from bottom, covers ~60% of screen)
+- Action buttons appear inside the bottom sheet
+- "Load into Apply" closes the sheet and switches tabs
+
+---
+
+## STEP 6: Build the Reference Tab
+
+Create `src/components/tabs/ReferenceTab.tsx`
+
+Mermaid capability documentation and reference.
+
+### Layout
+
+```
+┌───────────────────────────────────────────────────────────┐
+│ Mermaid Capability Registry                               │
+│                                                           │
+│ [Search / Filter]                                         │
+│                                                           │
+│ ┌─ Diagram Families ─────────────────────────────────┐   │
+│ │ Flowchart          ● Native    15+ shape types     │   │
+│ │ Sequence Diagram   ● Native    fragments, notes    │   │
+│ │ Class Diagram      ● Native    relationships       │   │
+│ │ State Diagram      ● Native    v2, nested states   │   │
+│ │ ER Diagram         ● Native    cardinality         │   │
+│ │ Gantt Chart        ● Native    sections, deps      │   │
+│ │ Pie Chart          ● Native    percentages         │   │
+│ │ Git Graph          ● Native    branches, merges    │   │
+│ │ Mindmap            ● Native    hierarchical        │   │
+│ │ Timeline           ● Native    chronological       │   │
+│ │ ... (all 22+ types)                                │   │
+│ │ ──────────────────────────────────────────────     │   │
+│ │ BPMN               ○ Gap       not supported       │   │
+│ │ Use Case           ○ Gap       not supported       │   │
+│ └────────────────────────────────────────────────────┘   │
+│                                                           │
+│ Expand any family row to see:                             │
+│ - ClassBrowser (shapes, syntax for that family)           │
+│ - CapabilityNote (warnings, limitations)                  │
+│ - Theme confidence (High/Medium/Generic/Low)              │
+│ - Link to Mermaid docs for that family                    │
+│                                                           │
+│ Footer: "Mermaid Theme Builder themes what Mermaid        │
+│ supports. It does not implement new diagram grammars."    │
+└───────────────────────────────────────────────────────────┘
+```
+
+### Component Relocation
+
+Move these existing components here:
+- `ClassBrowser.tsx` — show inside expanded family rows
+- `CapabilityNote.tsx` — show as contextual warnings per family
+- `DiagramInventory.tsx` — becomes the family list itself
+
+### Search/Filter
+
+- Text input at the top filters the family list by name or keyword
+- Typing "sequence" shows only the Sequence Diagram row
+- Typing "gap" shows only rows with Gap status
+- Empty search shows all
+
+### Mobile Layout
+
+Simple accordion list. Each family is a tap-to-expand row. No side panel. Search bar at top.
+
+---
+
+## STEP 7: Relocate Existing Components
+
+This is the most important step. Every component that currently lives on the single screen must be assigned to exactly one tab. Nothing should appear in more than one tab.
+
+### Component Assignment Map
+
+| Component | Currently | Moves To | Notes |
+|-----------|-----------|----------|-------|
+| Code textarea (input) | Main screen | **Apply** | Core workflow |
+| Palette selector (card grid) | Main screen sidebar | **Compose** (full cards), **Apply** (compact strip) | Two presentations of same data |
+| Color editor (13 fields) | Main screen sidebar | **Compose** (always visible), **Apply** (slide-out on demand) | |
+| MermaidPreview | Main screen | **Apply** (user code), **Compose** (generic sample), **Examples** (selected example) | Shared component, different data sources |
+| Export buttons | Main screen | **Apply** (styled code, markdown, prompt), **Compose** (bootstrap, scaffold) | |
+| WarningBanner | Main screen | **Apply** | Only relevant when user has pasted code |
+| ClassBrowser | Main screen | **Reference** | |
+| CapabilityNote | Main screen | **Reference** | |
+| DiagramInventory | Main screen | **Reference** (full registry), **Examples** (as the example list data source) | |
+| PromptScaffoldModal | Main screen | **Compose** (as an export button, not a modal) | Simplify: just a "Copy Prompt Scaffold" button |
+| ColorSwatch | Main screen sidebar | **Compose** (always visible), **Apply** (inside slide-out) | Reused in both contexts |
+
+### What Gets Deleted
+
+- The current single-screen layout component (whatever wraps everything today) gets replaced by the tab navigation + tab content router
+- Any layout code that arranges all components in a single viewport
+
+### What Gets Created
+
+| New Component | Purpose |
+|--------------|---------|
+| `TabNavigation.tsx` | Tab bar (top on desktop, bottom on mobile) |
+| `ApplyTab.tsx` | Apply tab content |
+| `ComposeTab.tsx` | Compose tab content |
+| `ExamplesTab.tsx` | Examples tab content |
+| `ReferenceTab.tsx` | Reference tab content |
+| `PaletteStrip.tsx` | Compact horizontal palette selector for Apply |
+| `ColorEditorPanel.tsx` | Slide-out/modal color editor for Apply |
+| `AppContext.tsx` | Shared state provider |
+
+---
+
+## STEP 8: Responsive Breakpoints
+
+Define three breakpoints. Use Tailwind classes or CSS media queries:
+
+| Breakpoint | Width | Tab Bar | Layout |
+|-----------|-------|---------|--------|
+| Mobile | < 768px | Bottom fixed nav | Single column, stacked |
+| Tablet | 768-1023px | Top bar | Stacked with wider panels |
+| Desktop | >= 1024px | Top bar | Side-by-side panels |
+
+### Mobile-Specific Rules
+
+1. **Tab bar**: Fixed at bottom, 56px height, 4 equal tap targets
+2. **Content area**: Full-width, single column, scroll vertical
+3. **Code input**: Collapsed to 4 visible lines by default. Tap to expand to 50% viewport. Tap "Done" or scroll past to collapse.
+4. **Preview**: Takes remaining space between input and bottom bar
+5. **Color editor**: Full-screen modal (not slide-out)
+6. **Export buttons**: Fixed bottom action bar (positioned above the tab nav)
+7. **No horizontal scrolling** anywhere except the palette strip
+8. **Touch targets**: Minimum 44px for all interactive elements
+
+### Desktop-Specific Rules
+
+1. **Tab bar**: Top of content area, horizontal, text + icon labels
+2. **Apply/Compose**: Two-panel side-by-side (left panel 40-45%, right panel 55-60%)
+3. **Examples**: List panel (30%) + preview panel (70%)
+4. **Reference**: Full-width single column (accordion list)
+5. **Color editor**: 320px slide-out from right edge
+
+---
+
+## STEP 9: App Shell Update
+
+Update `App.tsx` (or the root layout component) to use the new architecture:
+
+```tsx
+import { AppProvider } from './context/AppContext';
+import { TabNavigation } from './components/TabNavigation';
+import { ApplyTab } from './components/tabs/ApplyTab';
+import { ComposeTab } from './components/tabs/ComposeTab';
+import { ExamplesTab } from './components/tabs/ExamplesTab';
+import { ReferenceTab } from './components/tabs/ReferenceTab';
+
+function App() {
+  return (
+    <AppProvider>
+      <div className="flex flex-col h-screen">
+        {/* Desktop: tab bar at top */}
+        <div className="hidden md:block">
+          <TabNavigation position="top" />
+        </div>
+
+        {/* Tab content */}
+        <main className="flex-1 overflow-auto pb-16 md:pb-0">
+          <TabContent />
+        </main>
+
+        {/* Mobile: tab bar at bottom */}
+        <div className="md:hidden fixed bottom-0 left-0 right-0 z-50">
+          <TabNavigation position="bottom" />
+        </div>
+      </div>
+    </AppProvider>
+  );
+}
+
+function TabContent() {
+  const { activeTab } = useAppContext();
+
+  switch (activeTab) {
+    case 'apply': return <ApplyTab />;
+    case 'compose': return <ComposeTab />;
+    case 'examples': return <ExamplesTab />;
+    case 'reference': return <ReferenceTab />;
+  }
+}
+```
+
+---
+
+## STEP 10: Verify and Commit
+
+### Verification Checklist
+
+Test each of these before committing:
+
+- [ ] Apply tab shows ONLY: code input, palette strip, preview, export buttons
+- [ ] A first-time user on Apply can paste code and copy styled output in under 30 seconds
+- [ ] Palette selection in Compose is reflected in Apply immediately
+- [ ] Loading an example in Examples switches to Apply with the code loaded
+- [ ] ClassBrowser and DiagramInventory are NOT visible in Apply
+- [ ] Color editor is NOT visible until "Edit Colors" is clicked
+- [ ] Mobile (375px viewport in Chrome DevTools): no horizontal scrolling
+- [ ] Mobile: tab bar is at the bottom, fixed position
+- [ ] Mobile: code input collapses to 4 lines
+- [ ] Mobile: export buttons are accessible without scrolling past the preview
+- [ ] Desktop (1440px): side-by-side layout in Apply and Compose
+- [ ] All 7+ palettes are selectable in both Apply strip and Compose cards
+- [ ] All 3 export buttons work (styled code, markdown, prompt scaffold)
+- [ ] Mermaid preview renders correctly in Apply, Compose, and Examples
+- [ ] Reference tab shows all diagram families from the capability registry
+- [ ] No console errors on any tab
+
+### Commit
+
+```bash
+git add -A
+git commit -m "feat(v0.4): restructure UI into 4 tabbed sub-screens
+
+BREAKING: Single-screen layout replaced with tabbed architecture.
+
+Tabs:
+- Apply (default): paste code, select palette, preview, export
+- Compose: full color editor, font selector, theme name, bootstrap export
+- Examples: browse diagrams by family, load into Apply
+- Reference: ClassBrowser, CapabilityNote, DiagramInventory
+
+Architecture:
+- React Context for cross-tab shared state
+- Desktop: top tab bar, side-by-side panels
+- Mobile: bottom tab nav, stacked single-column, slide-out/modal editors
+- Three responsive breakpoints: mobile (<768), tablet (768-1023), desktop (1024+)
+
+Components relocated:
+- ClassBrowser → Reference tab
+- CapabilityNote → Reference tab
+- DiagramInventory → Reference + Examples tabs
+- PromptScaffoldModal → Compose tab (as export button)
+- Full color editor → Compose tab (always visible) + Apply (slide-out)
+
+No business logic changes. Theme engine, detector, palettes unchanged."
+
+git push origin main
+```
+
+---
+
+## WHAT NOT TO CHANGE
+
+These files should not be modified during this release:
+
+- `themeEngine.ts` — theme generation logic stays as-is
+- `detector.ts` — diagram detection stays as-is
+- `palettes.ts` — palette data stays as-is
+- `examples.ts` — example data stays as-is
+- `mermaid-capabilities.ts` — capability data stays as-is
+- `MermaidPreview.tsx` — preview renderer stays as-is (just used in more places)
+- `ColorSwatch.tsx` — color picker stays as-is (just relocated)
+- `WarningBanner.tsx` — warning display stays as-is (just relocated to Apply)
+
+The restructuring is a **layout change**, not a **logic change**. All components already exist. They need to be moved into the correct tab containers and wired to shared state.
+
+---
+
+## BRAND RULES (NON-NEGOTIABLE)
+
+1. Personal OverKill Hill P3 project by Jamie Hill
+2. NOT affiliated with Builders FirstSource, BFS, or any employer
+3. NEVER use: #00205B, #003087, #002F86, #B3C1DB, #D6E5F9, #D0D0CE, #C8102E
+4. Generic palette names: Ocean Depth, Forest Sage, Slate Ember, Violet Mist
+5. Brand palettes: OverKill Hill P3, Glee-fully, AskJamie
+6. Footer disclaimer: "Not affiliated with Mermaid, Mermaid Chart, or Mermaid.ai"
+
+---
+
+## SUCCESS CRITERIA
+
+When V0.4 is complete:
+
+- [ ] 4 tabs visible and navigable (Apply, Compose, Examples, Reference)
+- [ ] Apply tab contains ONLY: palette strip, code input, preview, export buttons, "Edit Colors" trigger
+- [ ] Compose tab contains: full palette cards, color editor, font dropdown, theme name, watermark toggle, export buttons
+- [ ] Examples tab contains: grouped example list, preview, "Load into Apply" button
+- [ ] Reference tab contains: ClassBrowser, CapabilityNote, DiagramInventory
+- [ ] Mobile (375px): fully usable, no horizontal scroll, bottom tab nav
+- [ ] Tablet (768px): functional stacked layout
+- [ ] Desktop (1440px): side-by-side panels in Apply and Compose
+- [ ] Cross-tab state works (palette changes propagate, example loading switches tabs)
+- [ ] All existing functionality preserved (paste, theme, preview, copy still works)
+- [ ] Zero BFS/employer references
