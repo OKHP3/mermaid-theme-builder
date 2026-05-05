@@ -534,9 +534,9 @@ function AppShell() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[10px] text-muted-foreground/50 hidden lg:block">v0.3-alpha</span>
+          <span className="text-[10px] text-muted-foreground/50 hidden lg:block">v{__APP_VERSION__}</span>
           <span className="text-[10px] px-2 py-1 rounded-full bg-muted text-muted-foreground hidden md:block">
-            OKHP3 Personal Project
+            an OKHP³ Project
           </span>
           <ThemeModeToggle mode={themeMode} cycle={cycleThemeMode} />
         </div>

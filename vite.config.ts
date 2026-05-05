@@ -3,6 +3,10 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
+import { createRequire } from "module";
+
+const _require = createRequire(import.meta.url);
+const pkg = _require("./package.json") as { version: string };
 
 const rawPort = process.env.PORT;
 
@@ -28,6 +32,9 @@ if (!basePath) {
 
 export default defineConfig({
   base: basePath,
+  define: {
+    __APP_VERSION__: JSON.stringify(pkg.version),
+  },
   plugins: [
     react(),
     tailwindcss(),
