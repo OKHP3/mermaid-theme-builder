@@ -11,6 +11,7 @@ import {
   generatePromptScaffoldWithFormat,
   type ExportOptions,
   type ScaffoldFormat,
+  type MermaidLook,
 } from "@/lib/themeEngine";
 import { MermaidPreview } from "@/components/MermaidPreview";
 import { MermaidReferral } from "@/components/MermaidReferral";
@@ -69,6 +70,10 @@ interface ApplyTabProps {
   userPalettes: Palette[];
   onShowToast: (msg: string) => void;
   recentPaletteIds: string[];
+  look: MermaidLook;
+  onLookChange: (v: MermaidLook) => void;
+  fontSize: string;
+  onFontSizeChange: (v: string) => void;
 }
 
 const EXPORT_LABELS: Record<ExportType, string> = {
@@ -107,6 +112,10 @@ export function ApplyTab({
   userPalettes,
   onShowToast,
   recentPaletteIds,
+  look,
+  onLookChange,
+  fontSize,
+  onFontSizeChange: _onFontSizeChange,
 }: ApplyTabProps) {
   const [previewMode, setPreviewMode] = useState<PreviewMode>("themed");
   const [showColorEditor, setShowColorEditor] = useState(false);
@@ -232,8 +241,10 @@ export function ApplyTab({
       includeBadge,
       customThemeName:
         effectiveThemeName !== selectedPalette.name ? effectiveThemeName : undefined,
+      look,
+      fontSize: fontSize || undefined,
     }),
-    [selectedPalette, effectiveDetection.family, includeMetaComments, includeBadge, effectiveThemeName],
+    [selectedPalette, effectiveDetection.family, includeMetaComments, includeBadge, effectiveThemeName, look, fontSize],
   );
 
   const previewOptions = useMemo(
@@ -553,6 +564,39 @@ export function ApplyTab({
           </button>
         </div>
       )}
+
+      <div className="flex-none border-b border-border bg-card/20 px-3 py-1.5 flex items-center gap-2 print-hide">
+        <span className="text-[10px] uppercase tracking-wide text-muted-foreground font-semibold shrink-0">
+          Look
+        </span>
+        <div className="flex gap-1">
+          {(
+            [
+              { value: "classic" as MermaidLook, label: "Classic" },
+              { value: "neo" as MermaidLook, label: "Neo" },
+              { value: "handDrawn" as MermaidLook, label: "Hand Drawn" },
+            ] as const
+          ).map((opt) => (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => onLookChange(opt.value)}
+              className={`text-[10px] px-2 py-0.5 rounded-full border font-medium transition-all ${
+                look === opt.value
+                  ? "border-primary/50 bg-primary/10 text-primary"
+                  : "border-border bg-background hover:border-primary/40 hover:bg-muted text-muted-foreground"
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+        {look !== "classic" && (
+          <span className="text-[10px] text-muted-foreground/60">
+            {look === "neo" ? "Mermaid v11+ required" : "Rough.js sketch style"}
+          </span>
+        )}
+      </div>
 
       <div className="flex-1 overflow-hidden flex flex-col md:flex-row min-h-0">
         <div className="flex flex-col w-full md:w-1/2 border-b md:border-b-0 md:border-r border-border min-h-0 print-hide">

@@ -37,7 +37,7 @@ export default defineConfig({
       ? [
           await import("@replit/vite-plugin-cartographer").then((m) =>
             m.cartographer({
-              root: path.resolve(import.meta.dirname, ".."),
+              root: import.meta.dirname,
             }),
           ),
           await import("@replit/vite-plugin-dev-banner").then((m) =>

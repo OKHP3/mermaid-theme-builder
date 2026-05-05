@@ -1,108 +1,47 @@
 # Mermaid Theme Builder
 
-[![CI](https://github.com/OKHP3/mermaid-theme-builder/actions/workflows/ci.yml/badge.svg)](https://github.com/OKHP3/mermaid-theme-builder/actions/workflows/ci.yml)
-[![Pages](https://github.com/OKHP3/mermaid-theme-builder/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/OKHP3/mermaid-theme-builder/actions/workflows/deploy-pages.yml)
+**Define your brand. Style your diagrams. Stop fighting with LLM outputs.**
 
-> **Disclaimer:** Mermaid Theme Builder is a personal OverKill Hill P³ project by Jamie Hill. It is not affiliated with Builders FirstSource, BFS, Mermaid, Mermaid Chart, Mermaid.ai, or any third-party brand represented by user-entered colors.
->
-> Built-in themes are original generic palettes or personal OverKill Hill ecosystem palettes. Users are responsible for ensuring they have the right to use any brand colors, fonts, logos, or identity systems they enter into the tool.
+Mermaid Theme Builder is a browser-based visual governance tool for Mermaid diagrams. Paste any Mermaid diagram, apply a theme, preview it live, and export styled code, markdown bootstraps, or AI prompt scaffolds.
 
-**Mermaid Theme Builder** is a browser-based tool for applying consistent visual themes to [Mermaid](https://mermaid.js.org/) diagrams — especially AI-generated ones.
+Built for enterprise architects, technical writers, and AI power users who generate Mermaid diagrams through Claude, ChatGPT, Copilot, Gemini, or Mermaid.ai.
 
-## Try It
+## Workflow Tabs (V0.3.1)
 
-After enabling GitHub Pages on this repo (Settings → Pages → Source: GitHub Actions), the latest `main` deploys to:
+The interface is organized into four focused tabs that share palette and code state:
 
-```
-https://OKHP3.github.io/mermaid-theme-builder/
-```
+- **Apply** — paste Mermaid, apply a theme, preview, and copy/export. The default landing tab and core workflow.
+- **Compose** — design a reusable theme/bootstrap without needing diagram code. Hosts the full color editor and exports a Bootstrap Markdown or Prompt Scaffold to seed an LLM.
+- **Examples** — browse and load sample diagrams. Each example previews live with the current theme and can be loaded into Apply with one click.
+- **Reference** — inspect Mermaid support, capability warnings, theme confidence, notation compliance, and visual-language guidance. Hosts the Diagram Inventory and Class Library.
 
-The Pages workflow auto-derives the base path from the repository name. To deploy at a different path (e.g. a custom domain), set a repository Variable named `MTB_BASE_PATH` (for example `/`).
+Mobile uses a fixed bottom tab bar to keep navigation in thumb reach. The Apply tab on mobile stacks code, preview, and export actions vertically; the color editor opens as a full-screen drawer. See `docs/ux-restructure-assessment.md` for the full restructure rationale.
 
-## What It Does
+## Features
 
-AI tools like ChatGPT and GitHub Copilot generate Mermaid diagrams using default colors. Mermaid Theme Builder lets you:
+- Paste Mermaid code, auto-detect diagram family (15 types)
+- 7 built-in palettes: Ocean Depth, Forest Sage, Slate Ember, Violet Mist, OverKill Hill P3, Glee-fully, AskJamie
+- Two-way live color editor with instant preview
+- Three export modes: Styled Code, Markdown Bootstrap, Prompt Scaffold
+- Render-safety warnings (existing init directives, non-printable chars, long labels)
+- Optional theme attribution watermark with clickable link
+- 100% client-side. No backend, no login, no data leaves your browser.
 
-1. **Pick or customize a color palette** from the built-in library, or **extract** the theme from a diagram you already have.
-2. **Paste your Mermaid code** — the tool detects the diagram type automatically.
-3. **See a live preview** of your diagram with the theme applied.
-4. **Export** the themed code, Markdown, or an AI prompt scaffold with the theme baked in.
-5. **Download** the result as `.mermaid`, `.svg`, `.png`, or `.theme.json`.
-6. **Save, share, and reuse** palettes — named saves persist locally; shareable URLs encode the theme in a base64url query parameter.
-
-## Features (v0.3.1)
-
-- **9 built-in palettes** including OverKill Hill P³ ecosystem themes and generic originals
-- **Per-color override editor** with live preview
-- **Diagram type detection** with Mermaid capability registry (stable / beta / experimental classification)
-- **Family-specific theme variables** for sequence diagrams, state diagrams, ER diagrams, class diagrams, Gantt charts, pie charts, git graphs, journey maps, and quadrant charts — Mermaid renders the right tokens for each diagram family rather than only flowchart tokens
-- **Theme extraction** from pasted diagrams with YAML frontmatter or `%%{init}%%` directives — turns any styled diagram into an editable palette
-- **Local persistence** of palette selection, color customizations, theme name, exports settings, and the diagram you're working on (localStorage; no backend)
-- **Named user palettes** — save the current theme, delete unwanted ones, import/export JSON
-- **Shareable URLs** — copy a link with the theme encoded in a `?theme=…` query parameter
-- **File downloads** — `.mermaid` (raw text), `.svg` (vector), `.png` (2× rasterised), `.theme.json` (portable palette)
-- **Optional metadata comments** in all exports (default: ON)
-- **Optional attribution watermark** for visible-credit exports
-- **No backend, no accounts, no telemetry** — everything runs in the browser
-
-## Built-in Palettes
-
-| Palette | Category | Description |
-|---|---|---|
-| OKH Light | OKH Ecosystem | OverKill Hill P³ light — warm paper tones, teal nodes |
-| OKH Protocol | OKH Ecosystem | OverKill Hill P³ dark — espresso bg, rust-orange edges |
-| AskJamie Friendly | OKH Ecosystem | AskJamie.bot light — calm blues, OKH orange accents |
-| Glee-fully Bright | OKH Ecosystem | Glee-fully.tools — amber-gold, energetic |
-| Neutral Enterprise | Generic | Clean gray-on-white, works anywhere |
-| Ocean Depth | Generic | Deep blues and teals |
-| Forest Sage | Generic | Earthy greens and warm neutrals |
-| Slate Ember | Generic | Dark grays with orange accents |
-| Violet Mist | Generic | Soft purples and lavenders |
-
-OKH ecosystem palettes are derived from public OverKill Hill P³ site CSS. See attribution in the color editor sidebar.
-
-## Mermaid Version
-
-This tool is reviewed and tested against **Mermaid `^11.14.0`**. The capability registry (`artifacts/mermaid-theme-builder/src/data/mermaid-capabilities.ts`) documents the reviewed version and diagram-specific theming support levels.
-
-## Development
+## Quick Start
 
 ```bash
 pnpm install
-pnpm --filter @workspace/mermaid-theme-builder run dev
+pnpm dev
 ```
 
-The dev server reads `PORT` and `BASE_PATH` from the environment (provided automatically by the Replit workflow). For local non-Replit dev:
+## Supported Diagram Types
 
-```bash
-PORT=18624 BASE_PATH=/mermaid-theme-builder/ pnpm --filter @workspace/mermaid-theme-builder run dev
-```
-
-To build for production:
-
-```bash
-PORT=18624 BASE_PATH=/mermaid-theme-builder/ pnpm --filter @workspace/mermaid-theme-builder run build
-```
-
-See [artifacts/mermaid-theme-builder/docs/DEPLOYMENT.md](artifacts/mermaid-theme-builder/docs/DEPLOYMENT.md) for full build and deployment instructions.
-
-## Documentation
-
-All documentation lives under `artifacts/mermaid-theme-builder/docs/`:
-
-- [PRODUCT_BRIEF.md](artifacts/mermaid-theme-builder/docs/PRODUCT_BRIEF.md) — What this tool is and isn't
-- [ROADMAP.md](artifacts/mermaid-theme-builder/docs/ROADMAP.md) — Planned and shipped work
-- [DEPLOYMENT.md](artifacts/mermaid-theme-builder/docs/DEPLOYMENT.md) — Build and deployment
-- [RELEASE_CHECKLIST.md](artifacts/mermaid-theme-builder/docs/RELEASE_CHECKLIST.md) — Pre-release checklist
-- [MERMAID_THEMING_REFERENCE.md](artifacts/mermaid-theme-builder/docs/MERMAID_THEMING_REFERENCE.md) — Full themeVariables table and renderer compatibility
-- [COPILOT_PROMPT_KIT.md](artifacts/mermaid-theme-builder/docs/COPILOT_PROMPT_KIT.md) — Reusable prompt templates for M365 Copilot
-
-Standards and agent guidance:
-
-- [standards/mermaid-theme-builder-standard.md](artifacts/mermaid-theme-builder/standards/mermaid-theme-builder-standard.md) — Technical and product standards
-- [standards/render-safety-checklist.md](artifacts/mermaid-theme-builder/standards/render-safety-checklist.md) — Render safety guide
-- [AGENTS.md](artifacts/mermaid-theme-builder/AGENTS.md) — Instructions for AI coding agents
+Flowchart, Sequence, Class, State, ER, Gantt, Pie, Git Graph, Mindmap, Timeline, Quadrant, User Journey, Block, Sankey, XY Chart.
 
 ## License
 
-MIT — Personal project by Jamie Hill / OverKill Hill P³.
+MIT
+
+## Disclaimer
+
+Mermaid Theme Builder is a personal OverKill Hill P3 project by Jamie Hill. It is not affiliated with Builders FirstSource, BFS, Mermaid, Mermaid Chart, or Mermaid.ai.

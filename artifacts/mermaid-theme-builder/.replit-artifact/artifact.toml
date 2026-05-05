@@ -15,11 +15,11 @@ paths = [ "/mermaid-theme-builder/" ]
 localPort = 18624
 
 [services.development]
-run = "pnpm --filter @workspace/mermaid-theme-builder run dev"
+run = "pnpm run dev"
 
 [services.production]
-build = [ "pnpm", "--filter", "@workspace/mermaid-theme-builder", "run", "build" ]
-publicDir = "artifacts/mermaid-theme-builder/dist/public"
+build = [ "pnpm", "run", "build" ]
+publicDir = "dist/public"
 serve = "static"
 
 [[services.production.rewrites]]

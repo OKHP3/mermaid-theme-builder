@@ -2,6 +2,8 @@ import type { Palette } from "./palettes";
 import type { DiagramFamily } from "./detector";
 import { familyThemeOverlay } from "./familyTheming";
 
+export type MermaidLook = "classic" | "neo" | "handDrawn";
+
 export interface WatermarkOptions {
   enabled: boolean;
   themeName: string;
@@ -14,6 +16,8 @@ export interface ExportOptions {
   includeMetaComments: boolean;
   includeBadge: boolean;
   customThemeName?: string;
+  look?: MermaidLook;
+  fontSize?: string;
 }
 
 const TOOL_URL = "https://overkillhill.com/projects/mermaid-theme-builder/";
@@ -31,11 +35,13 @@ function buildThemeVars(palette: Palette): Record<string, string> {
   return vars;
 }
 
-function buildInitDirective(palette: Palette, family: DiagramFamily = "flowchart"): string {
+function buildInitDirective(palette: Palette, family: DiagramFamily = "flowchart", look?: MermaidLook, fontSize?: string): string {
   const baseVars = buildThemeVars(palette);
   const overlay = familyThemeOverlay(palette, family);
   // Base palette tokens win over family-derived defaults so user edits propagate.
   const vars = { ...overlay, ...baseVars };
+  // Inject fontSize when explicitly set (overrides any palette-level value).
+  if (fontSize) vars["fontSize"] = fontSize;
 
   const varEntries = Object.entries(vars)
     .filter(([k]) => k !== "fontFamily")
@@ -45,7 +51,8 @@ function buildInitDirective(palette: Palette, family: DiagramFamily = "flowchart
   const fontFamilyEntry = vars["fontFamily"] ? `"fontFamily": "${vars["fontFamily"]}"` : null;
   const themeVarsStr = [varEntries, fontFamilyEntry].filter(Boolean).join(", ");
 
-  return `%%{init: {"theme": "base", "themeVariables": {${themeVarsStr}}}}%%`;
+  const lookEntry = look && look !== "classic" ? `"look": "${look}", ` : "";
+  return `%%{init: {${lookEntry}"theme": "base", "themeVariables": {${themeVarsStr}}}}%%`;
 }
 
 function buildMetaComments(palette: Palette, themeName: string): string {
@@ -103,7 +110,7 @@ export function generateThemedCode(originalCode: string, options: ExportOptions)
     .replace(/\n\s*click MTB_ATTR.*\n?/g, "")
     .trimStart();
 
-  const initDirective = buildInitDirective(palette, diagramFamily);
+  const initDirective = buildInitDirective(palette, diagramFamily, options.look, options.fontSize);
   const metaComments = includeMetaComments ? buildMetaComments(palette, themeName) : null;
   const badge = includeBadge ? buildBadgeNode(palette, themeName, diagramFamily) : null;
 
@@ -337,7 +344,7 @@ function buildScaffold(palette: Palette, options: ExportOptions, scaffoldFormat:
     .map((c) => `  - ${c.label}: \`${c.value}\``)
     .join("\n");
 
-  const initBlock = buildInitDirective(palette, diagramFamily);
+  const initBlock = buildInitDirective(palette, diagramFamily, options.look, options.fontSize);
   const frontmatterBlock = buildFrontmatter(palette);
   const classDefBlock = buildClassDefLibrary(palette);
   const subgraphBlock = buildSubgraphTiers(palette);

@@ -19,6 +19,7 @@ import {
   decodeShareableTheme,
   type ShareablePayload,
 } from "@/lib/persistence";
+import { type MermaidLook } from "@/lib/themeEngine";
 import {
   paletteFromExtracted,
   makeExtractedPaletteId,
@@ -249,6 +250,8 @@ function AppShell() {
   const [includeBadge, setIncludeBadge] = useState(true);
   const [customThemeName, setCustomThemeName] = useState("");
   const [recentPaletteIds, setRecentPaletteIds] = useState<string[]>([]);
+  const [look, setLook] = useState<MermaidLook>("classic");
+  const [fontSize, setFontSize] = useState<string>("");
   const tabsRef = useRef<HTMLDivElement>(null);
   const { mode: themeMode, cycle: cycleThemeMode } = useThemeMode();
 
@@ -290,6 +293,10 @@ function AppShell() {
       if (Array.isArray(persisted.recentPaletteIds)) {
         setRecentPaletteIds(persisted.recentPaletteIds.filter((s): s is string => typeof s === "string").slice(0, RECENT_PALETTES_MAX));
       }
+      if (persisted.look === "neo" || persisted.look === "handDrawn" || persisted.look === "classic") {
+        setLook(persisted.look as MermaidLook);
+      }
+      if (typeof persisted.fontSize === "string") setFontSize(persisted.fontSize);
     }
     setHydrated(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -308,8 +315,10 @@ function AppShell() {
       inputCode,
       userPalettes,
       recentPaletteIds,
+      look,
+      fontSize,
     });
-  }, [hydrated, selectedPaletteId, customColors, includeMetaComments, includeBadge, customThemeName, inputCode, userPalettes, recentPaletteIds]);
+  }, [hydrated, selectedPaletteId, customColors, includeMetaComments, includeBadge, customThemeName, inputCode, userPalettes, recentPaletteIds, look, fontSize]);
 
   // Auto-clear toast after 3.5s
   useEffect(() => {
@@ -607,6 +616,10 @@ function AppShell() {
             userPalettes={userPalettes}
             onShowToast={showToast}
             recentPaletteIds={recentPaletteIds}
+            look={look}
+            onLookChange={setLook}
+            fontSize={fontSize}
+            onFontSizeChange={setFontSize}
           />
         )}
         {activeTab === "compose" && (
@@ -630,6 +643,10 @@ function AppShell() {
             onImportPalette={handleImportPalette}
             onDeleteUserPalette={handleDeleteUserPalette}
             onShowToast={showToast}
+            look={look}
+            onLookChange={setLook}
+            fontSize={fontSize}
+            onFontSizeChange={setFontSize}
           />
         )}
         {activeTab === "examples" && (

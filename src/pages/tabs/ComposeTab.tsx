@@ -7,6 +7,7 @@ import {
   generatePromptScaffoldWithFormat,
   type ExportOptions,
   type ScaffoldFormat,
+  type MermaidLook,
 } from "@/lib/themeEngine";
 import { MermaidPreview } from "@/components/MermaidPreview";
 import { MermaidReferral } from "@/components/MermaidReferral";
@@ -108,6 +109,10 @@ interface ComposeTabProps {
   onImportPalette: (palette: Palette) => void;
   onDeleteUserPalette: (id: string) => void;
   onShowToast: (msg: string) => void;
+  look: MermaidLook;
+  onLookChange: (v: MermaidLook) => void;
+  fontSize: string;
+  onFontSizeChange: (v: string) => void;
 }
 
 export function ComposeTab({
@@ -130,6 +135,10 @@ export function ComposeTab({
   onImportPalette,
   onDeleteUserPalette,
   onShowToast,
+  look,
+  onLookChange,
+  fontSize,
+  onFontSizeChange,
 }: ComposeTabProps) {
   const [copiedBootstrap, setCopiedBootstrap] = useState(false);
   const [copiedShare, setCopiedShare] = useState(false);
@@ -146,8 +155,10 @@ export function ComposeTab({
       includeBadge: false,
       customThemeName:
         effectiveThemeName !== selectedPalette.name ? effectiveThemeName : undefined,
+      look,
+      fontSize: fontSize || undefined,
     }),
-    [selectedPalette, includeMetaComments, effectiveThemeName],
+    [selectedPalette, includeMetaComments, effectiveThemeName, look, fontSize],
   );
 
   const sampleThemedCode = useMemo(
@@ -327,6 +338,39 @@ export function ComposeTab({
               />
             </div>
             <div>
+              <label className="text-xs font-medium text-foreground block mb-1.5">Look</label>
+              <div className="flex gap-1">
+                {(
+                  [
+                    { value: "classic" as MermaidLook, label: "Classic", desc: "Standard rendering" },
+                    { value: "neo" as MermaidLook, label: "Neo", desc: "Mermaid v11+ rounder shapes" },
+                    { value: "handDrawn" as MermaidLook, label: "Hand Drawn", desc: "Rough.js sketch style" },
+                  ] as const
+                ).map((opt) => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => onLookChange(opt.value)}
+                    title={opt.desc}
+                    className={`flex-1 text-[11px] px-1 py-1.5 rounded-md border font-medium transition-all ${
+                      look === opt.value
+                        ? "border-primary bg-primary/10 text-primary"
+                        : "border-border bg-background hover:bg-muted text-muted-foreground"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+              {look !== "classic" && (
+                <p className="text-[10px] text-muted-foreground mt-1 leading-relaxed">
+                  {look === "neo"
+                    ? "Neo look — requires Mermaid v11+. Rounder nodes, cleaner lines."
+                    : "Hand-drawn sketch style via Rough.js. Great for informal diagrams."}
+                </p>
+              )}
+            </div>
+            <div>
               <label className="text-xs font-medium text-foreground block mb-1">Theme name</label>
               <input
                 type="text"
@@ -359,6 +403,86 @@ export function ComposeTab({
               />
               <span className="text-xs text-foreground">Include attribution watermark</span>
             </label>
+          </div>
+        </div>
+
+        <div className="p-3 border-b border-border">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+            Typography
+          </p>
+          <div className="space-y-3">
+            <div>
+              <label className="text-xs font-medium text-foreground block mb-1.5">Base font size</label>
+              <div className="flex gap-1 mb-1.5">
+                {(
+                  [
+                    { label: "XS", value: "12px" },
+                    { label: "S", value: "14px" },
+                    { label: "M", value: "16px" },
+                    { label: "L", value: "18px" },
+                    { label: "XL", value: "20px" },
+                  ] as const
+                ).map((opt) => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => onFontSizeChange(fontSize === opt.value ? "" : opt.value)}
+                    className={`flex-1 text-xs py-1 rounded-md border font-medium transition-all ${
+                      (fontSize || "16px") === opt.value
+                        ? "border-primary bg-primary/10 text-primary"
+                        : "border-border bg-background hover:bg-muted text-muted-foreground"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+              <input
+                type="text"
+                value={fontSize}
+                onChange={(e) => onFontSizeChange(e.target.value)}
+                placeholder="16px (Mermaid default)"
+                className="w-full text-[11px] font-mono bg-background border border-border rounded-md px-2 py-1 text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50"
+                aria-label="Custom font size"
+              />
+            </div>
+            <div className="rounded-md border border-border/60 bg-muted/30 px-3 py-2.5 space-y-2">
+              <p className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground/60">
+                Scale preview
+              </p>
+              {(() => {
+                const base = parseFloat(fontSize || "16") || 16;
+                const ratio = 1.25;
+                return (
+                  [
+                    { label: "Diagram title", size: +(base * ratio * ratio).toFixed(1) },
+                    { label: "Node label", size: +(base * ratio).toFixed(1) },
+                    { label: "Body / default", size: base },
+                    { label: "Small / note", size: +(base / ratio).toFixed(1) },
+                  ] as const
+                ).map(({ label, size }) => (
+                  <div key={label} className="flex items-baseline justify-between gap-2">
+                    <span
+                      className="text-foreground/70 leading-tight"
+                      style={{ fontSize: `${Math.min(size, 20)}px` }}
+                    >
+                      {label}
+                    </span>
+                    <span className="text-[9px] font-mono text-muted-foreground/40 shrink-0 tabular-nums">
+                      {size}px
+                    </span>
+                  </div>
+                ));
+              })()}
+            </div>
+            <p className="text-[10px] text-muted-foreground leading-relaxed">
+              Sets{" "}
+              <code className="font-mono text-[9px] bg-muted rounded px-0.5">fontSize</code> in the
+              Mermaid theme directive.{" "}
+              {fontSize
+                ? "Applied to all diagram exports and preview."
+                : "Leave blank to use Mermaid's default (16px)."}
+            </p>
           </div>
         </div>
 
