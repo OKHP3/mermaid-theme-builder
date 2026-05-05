@@ -1,31 +1,18 @@
 # Mermaid Theme Builder
 
-**Define your brand. Style your diagrams. Stop fighting with LLM outputs.**
+Visual theme builder for Mermaid diagrams — paste, theme, preview, and export. Reduces follow-on AI prompts with pre-prompt scaffolding.
 
-Mermaid Theme Builder is a browser-based visual governance tool for Mermaid diagrams. Paste any Mermaid diagram, apply a theme, preview it live, and export styled code, markdown bootstraps, or AI prompt scaffolds.
-
-Built for enterprise architects, technical writers, and AI power users who generate Mermaid diagrams through Claude, ChatGPT, Copilot, Gemini, or Mermaid.ai.
-
-## Workflow Tabs (V0.3.1)
-
-The interface is organized into four focused tabs that share palette and code state:
-
-- **Apply** — paste Mermaid, apply a theme, preview, and copy/export. The default landing tab and core workflow.
-- **Compose** — design a reusable theme/bootstrap without needing diagram code. Hosts the full color editor and exports a Bootstrap Markdown or Prompt Scaffold to seed an LLM.
-- **Examples** — browse and load sample diagrams. Each example previews live with the current theme and can be loaded into Apply with one click.
-- **Reference** — inspect Mermaid support, capability warnings, theme confidence, notation compliance, and visual-language guidance. Hosts the Diagram Inventory and Class Library.
-
-Mobile uses a fixed bottom tab bar to keep navigation in thumb reach. The Apply tab on mobile stacks code, preview, and export actions vertically; the color editor opens as a full-screen drawer. See `docs/ux-restructure-assessment.md` for the full restructure rationale.
+**[Live Tool](https://okhp3.github.io/mermaid-theme-builder/)** · **[Project Page](https://overkillhill.com/projects/mermaid-theme-builder/)** · **[Article](https://overkillhill.com/writings/first-diagram-is-a-liar/)**
 
 ## Features
 
-- Paste Mermaid code, auto-detect diagram family (15 types)
-- 7 built-in palettes: Ocean Depth, Forest Sage, Slate Ember, Violet Mist, OverKill Hill P3, Glee-fully, AskJamie
-- Two-way live color editor with instant preview
-- Three export modes: Styled Code, Markdown Bootstrap, Prompt Scaffold
-- Render-safety warnings (existing init directives, non-printable chars, long labels)
-- Optional theme attribution watermark with clickable link
-- 100% client-side. No backend, no login, no data leaves your browser.
+- 7+ built-in palettes (Ocean Depth, Forest Sage, Slate Ember, Violet Mist, OverKill Hill P³, Glee-fully, AskJamie)
+- 3 rendering looks: Classic, Neo, Sketch (Mermaid v11.14+)
+- 25+ diagram types detected with family-specific theming
+- Live preview with before/after toggle
+- Two-way color editor with 13 theme variables
+- Styled code, Markdown bootstrap, and AI prompt scaffold exports
+- 100% client-side — no backend, no login, no data collection
 
 ## Quick Start
 
@@ -34,14 +21,37 @@ pnpm install
 pnpm dev
 ```
 
+## Tabs
+
+| Tab | Purpose |
+|-----|---------|
+| **Apply** | Paste Mermaid code, select palette, preview live, export |
+| **Compose** | Design a theme without diagram code — exports bootstrap/scaffold for LLM pre-prompting |
+| **Examples** | Browse 20+ example diagrams by family, preview with current theme, load into Apply |
+| **Reference** | Diagram capability registry, theme confidence ratings, class library |
+
+## Built-in Palettes
+
+| Palette | Primary | Accent | Background |
+|---------|---------|--------|------------|
+| Ocean Depth | Deep navy | Steel blue | Slate |
+| Forest Sage | Forest green | Sage | Stone |
+| Slate Ember | Charcoal | Ember orange | Cool gray |
+| Violet Mist | Deep violet | Lavender | Soft gray |
+| OverKill Hill P³ | #1C3A34 | #E6A03C | #111827 |
+| Glee-fully | #D94F63 | #F6F2EE | #2D6F7E |
+| AskJamie | #2D6F7E | #EDE9E3 | #4A9BAD |
+
 ## Supported Diagram Types
 
-Flowchart, Sequence, Class, State, ER, Gantt, Pie, Git Graph, Mindmap, Timeline, Quadrant, User Journey, Block, Sankey, XY Chart.
-
-## License
-
-MIT
+Flowchart, Sequence, Class, State, ER, Gantt, Pie, Git Graph, Mindmap, Timeline, Quadrant, User Journey, Requirement, C4, Architecture (beta), Block, Sankey, XY Chart, Packet, Kanban, Treemap, Venn (beta), Ishikawa (beta), Wardley (beta), Tree View (beta), ZenUML, Radar, and more.
 
 ## Disclaimer
 
-Mermaid Theme Builder is a personal OverKill Hill P3 project by Jamie Hill. It is not affiliated with Builders FirstSource, BFS, Mermaid, Mermaid Chart, or Mermaid.ai.
+Not affiliated with Mermaid, Mermaid Chart, Mermaid.ai, Builders FirstSource, or any third-party brand.
+
+## License
+
+MIT — see [LICENSE](LICENSE).
+
+Built by [OverKill Hill P³](https://overkillhill.com/).

@@ -1,6 +1,6 @@
 {
   "name": "@workspace/mermaid-theme-builder",
-  "version": "0.3.0-alpha",
+  "version": "0.5.0",
   "private": true,
   "type": "module",
   "scripts": {

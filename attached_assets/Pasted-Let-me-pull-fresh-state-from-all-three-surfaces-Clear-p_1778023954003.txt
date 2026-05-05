@@ -1,0 +1,22 @@
+Let me pull fresh state from all three surfaces.Clear picture. **V0.4 has not been executed.** The GitHub repo is still 2 commits, old monorepo structure, stale README. None of the three Replit prompts have been pasted. The product is still at V0.3-alpha on the live site and V0.0 on the repo.
+
+Rather than generating a separate V0.4 deficiency patch AND a V0.5 prompt, I'll build one consolidated prompt that rolls V0.3.1 (repo cleanup) + V0.4 (tabbed UI) + V0.5 (Mermaid v11.14 parity) into a single Replit session. No point in three separate passes when one comprehensive prompt will do.Now update Notion to reflect the current reality and log the consolidated prompt.**Fresh scan result: V0.4 was not executed.** GitHub repo is unchanged from the last audit: 2 commits, old monorepo structure (`artifacts/`, `lib/`, `pnpm-workspace.yaml`), stale README ("4 built-in palettes"), no LICENSE, no AGENTS.md, no CONTRIBUTING.md. The product remains at V0.3-alpha.
+
+Rather than patching V0.4 deficiencies and then creating a separate V0.5 prompt (which would mean three Replit sessions re-establishing context each time), I built one consolidated prompt that does all three releases in sequence:
+
+| Phase | Version | What Ships | Commit |
+|:-----:|:-------:|-----------|--------|
+| 1 | V0.3.1 | Flatten monorepo, delete 6 dead packages + 60 shadcn files, add LICENSE/AGENTS.md/CONTRIBUTING.md, update README | `chore(v0.3.1): flatten monorepo, add governance files` |
+| 2 | V0.4 | 4 tabbed sub-screens (Apply/Compose/Examples/Reference), React Context shared state, mobile bottom nav, responsive breakpoints | `feat(v0.4): tabbed UI + mobile responsive` |
+| 3 | V0.5 | Neo Look selector (Classic/Neo/Sketch), 4 new detectors (wardley/treeview/venn/ishikawa), family-specific themeVariables for 5 diagram families, htmlLabels deprecation fix, capability registry update to 25+ types | `feat(v0.5): Neo Look, new detectors, family-specific theming` |
+
+One paste into Replit. Three sequential phases. Three commits. Three version bumps. Each phase verifies the build before proceeding.
+
+**Notion updates applied:**
+- Master plan title: updated to "v0.3-alpha > v0.5"
+- Version Status + Release Roadmap page: updated prompt table, marked individual prompts as superseded, added consolidated prompt as the recommended action
+- V0.4 sprint directive page: marked as superseded
+- New sub-page created: "Consolidated Sprint Directive: V0.3.1 + V0.4 + V0.5"
+- Comment logged on master plan with full status
+
+The previous individual prompts (repo cleanup, V0.4 tabbed UI, correction/enhancement) are superseded for V0.3.1-V0.5 scope. The V0.6 typography hierarchy and V0.7-V0.9 content from earlier prompts remain valid for future releases.

@@ -21,7 +21,7 @@ export interface ExportOptions {
 }
 
 const TOOL_URL = "https://overkillhill.com/projects/mermaid-theme-builder/";
-const TOOL_VERSION = "0.3.0";
+const TOOL_VERSION = "0.5.0";
 
 const BADGE_SAFE_FAMILIES: DiagramFamily[] = ["flowchart", "sequenceDiagram", "stateDiagram", "classDiagram"];
 
@@ -52,7 +52,8 @@ function buildInitDirective(palette: Palette, family: DiagramFamily = "flowchart
   const themeVarsStr = [varEntries, fontFamilyEntry].filter(Boolean).join(", ");
 
   const lookEntry = look && look !== "classic" ? `"look": "${look}", ` : "";
-  return `%%{init: {${lookEntry}"theme": "base", "themeVariables": {${themeVarsStr}}}}%%`;
+  const archEntry = family === "architectureBeta" ? `"architecture": {"randomize": false}, ` : "";
+  return `%%{init: {${lookEntry}"theme": "base", ${archEntry}"themeVariables": {${themeVarsStr}}}}%%`;
 }
 
 function buildMetaComments(palette: Palette, themeName: string): string {

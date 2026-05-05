@@ -1,0 +1,729 @@
+# REPLIT: Consolidated Sprint — V0.3.1 + V0.4 + V0.5
+
+## CONTEXT
+
+The Mermaid Theme Builder is a 100% client-side visual governance tool for Mermaid diagrams. It lives in the `artifacts/mermaid-theme-builder/` directory inside a pnpm monorepo. The monorepo structure is dead weight. The app uses React + TypeScript + Vite + Tailwind CSS + Mermaid.js ^11.14.0. It deploys to GitHub Pages at okhp3.github.io/mermaid-theme-builder/.
+
+This prompt consolidates three releases into one session:
+
+- **V0.3.1**: Flatten the monorepo, add governance files, update README
+- **V0.4**: Restructure UI into 4 tabbed sub-screens + mobile responsive
+- **V0.5**: Neo Look selector, 4 new diagram detectors, family-specific themeVariables, htmlLabels fix
+
+**Read AGENTS.md (if it exists) or the brand rules at the end of this prompt before starting.** No BFS hex values. No employer references. This is a personal OverKill Hill P3 project.
+
+Execute each phase sequentially. Verify the build compiles after each phase before moving on. Commit after each phase.
+
+---
+
+# PHASE 1: FLATTEN THE MONOREPO (V0.3.1)
+
+## Problem
+
+The repo is a pnpm monorepo with 6 dead workspace packages. The Mermaid Theme Builder is a static client-side tool with no backend, no API, no database, and no storage. The monorepo ships dead weight.
+
+## Step 1.1: Verify what's dead
+
+```bash
+# Check for imports from dead packages
+grep -r "api-server\|mockup-sandbox\|api-client\|api-spec\|api-zod\|@workspace/db" artifacts/mermaid-theme-builder/src/ 2>/dev/null
+
+# Check shadcn usage
+grep -r "from.*components/ui/" artifacts/mermaid-theme-builder/src/ --include="*.tsx" --include="*.ts" 2>/dev/null | grep -v "node_modules" | sort -u
+```
+
+## Step 1.2: Move the product to repo root
+
+```bash
+# Copy the product app to repo root
+cp -r artifacts/mermaid-theme-builder/* .
+cp -r artifacts/mermaid-theme-builder/.* . 2>/dev/null
+```
+
+## Step 1.3: Delete dead packages
+
+```bash
+rm -rf artifacts/
+rm -rf lib/
+rm -f pnpm-workspace.yaml
+rm -f tsconfig.base.json
+rm -f replit.md
+```
+
+## Step 1.4: Update package.json
+
+The root `package.json` must now be the product's `package.json`. It must:
+- Have NO `workspaces` field
+- Have `"name": "mermaid-theme-builder"`
+- Have `scripts.dev`, `scripts.build`, `scripts.preview`
+- Pin `mermaid` to `"^11.14.0"`
+- Remove any `@workspace/*` references
+
+## Step 1.5: Remove unused shadcn components
+
+If the grep from Step 1.1 shows zero imports from `components/ui/`, delete the entire directory:
+```bash
+rm -rf src/components/ui/
+```
+
+If some shadcn components ARE imported, keep only those specific files and delete the rest.
+
+## Step 1.6: Add governance files
+
+### LICENSE (MIT)
+Create `LICENSE` at repo root:
+```
+MIT License
+
+Copyright (c) 2026 Jamie Hill / OverKill Hill P3
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+### AGENTS.md
+Create `AGENTS.md` at repo root:
+```markdown
+# AGENTS.md — Mermaid Theme Builder
+
+## Identity
+- **Product**: Mermaid Theme Builder
+- **Owner**: Jamie Hill / OverKill Hill P3
+- **Type**: Personal project. NOT employer-affiliated.
+
+## Brand Separation (Non-Negotiable)
+This project is NOT associated with Builders FirstSource (BFS) or any employer.
+
+### Rejected Hex Values (never use)
+- #00205B, #003087, #002F86 (BFS blues)
+- #B3C1DB, #D6E5F9, #D0D0CE (BFS support colors)
+- #C8102E (BFS red)
+
+### Acceptable Brand Palettes
+- **OverKill Hill P3**: #1C3A34 / #E6A03C / #111827
+- **Glee-fully**: #D94F63 / #F6F2EE / #2D6F7E
+- **AskJamie**: #2D6F7E / #EDE9E3 / #4A9BAD
+- **Generic presets**: Ocean Depth, Forest Sage, Slate Ember, Violet Mist
+
+## Technical Context
+- Stack: React + TypeScript + Vite + Tailwind CSS
+- Runtime: Mermaid.js ^11.14.0
+- Deploy: GitHub Pages via GitHub Actions
+- Architecture: 100% client-side. No backend, no API, no database, no storage.
+```
+
+### CONTRIBUTING.md
+Create `CONTRIBUTING.md` at repo root:
+```markdown
+# Contributing to Mermaid Theme Builder
+
+## Quick Start
+1. Fork the repo
+2. `pnpm install`
+3. `pnpm dev`
+4. Make your changes
+5. `pnpm build` (verify it compiles)
+6. Submit a PR
+
+## Brand Rules (Non-Negotiable)
+See AGENTS.md. Do NOT use BFS hex values or employer references.
+
+## What We Accept
+- Bug fixes, new generic palette presets, new example diagrams
+- Accessibility improvements, documentation improvements
+
+## What We Don't Accept
+- Server-side features, third-party brand presets, AI API integrations
+
+## License
+MIT. All contributions are under the same license.
+```
+
+## Step 1.7: Update README.md
+
+Replace the entire README with:
+```markdown
+# Mermaid Theme Builder
+
+Visual theme builder for Mermaid diagrams — paste, theme, preview, and export. Reduces follow-on AI prompts with pre-prompt scaffolding.
+
+**[Live Tool](https://okhp3.github.io/mermaid-theme-builder/)** · **[Project Page](https://overkillhill.com/projects/mermaid-theme-builder/)** · **[Article](https://overkillhill.com/writings/first-diagram-is-a-liar/)**
+
+## Features
+
+- 7+ built-in palettes (Ocean Depth, Forest Sage, Slate Ember, Violet Mist, OverKill Hill P3, Glee-fully, AskJamie)
+- 3 rendering looks: Classic, Neo, Sketch (Mermaid v11.14+)
+- 22+ diagram types detected with family-specific theming
+- Live preview with before/after toggle
+- Two-way color editor with 13 theme variables
+- Styled code, Markdown bootstrap, and AI prompt scaffold exports
+- 100% client-side — no backend, no login, no data collection
+
+## Quick Start
+
+\`\`\`bash
+pnpm install
+pnpm dev
+\`\`\`
+
+## Built-in Palettes
+
+| Palette | Primary | Accent | Background |
+|---------|---------|--------|------------|
+| Ocean Depth | Deep navy | Steel blue | Slate |
+| Forest Sage | Forest green | Sage | Stone |
+| Slate Ember | Charcoal | Ember orange | Cool gray |
+| Violet Mist | Deep violet | Lavender | Soft gray |
+| OverKill Hill P3 | #1C3A34 | #E6A03C | #111827 |
+| Glee-fully | #D94F63 | #F6F2EE | #2D6F7E |
+| AskJamie | #2D6F7E | #EDE9E3 | #4A9BAD |
+
+## Disclaimer
+
+Not affiliated with Mermaid, Mermaid Chart, Mermaid.ai, Builders FirstSource, or any third-party brand.
+
+## License
+
+MIT — see [LICENSE](LICENSE).
+
+Built by [OverKill Hill P3](https://overkillhill.com/).
+```
+
+## Step 1.8: Clean install + verify
+
+```bash
+rm -rf node_modules/ pnpm-lock.yaml
+pnpm install
+pnpm build
+pnpm dev  # verify it runs
+```
+
+## Step 1.9: Commit V0.3.1
+
+```bash
+git add -A
+git commit -m "chore(v0.3.1): flatten monorepo, add governance files, update README
+
+Removed: artifacts/api-server, artifacts/mockup-sandbox, lib/db,
+lib/api-spec, lib/api-zod, lib/api-client-react, pnpm-workspace.yaml,
+tsconfig.base.json, replit.md, unused shadcn components.
+
+Added: LICENSE (MIT), AGENTS.md, CONTRIBUTING.md.
+Updated: README.md (7 palettes, links, disclaimer)."
+
+git push origin main
+```
+
+---
+
+# PHASE 2: TABBED UI + MOBILE RESPONSIVE (V0.4)
+
+## Step 2.1: Create Shared State
+
+Create `src/context/AppContext.tsx`:
+
+```tsx
+import { createContext, useContext, useState, ReactNode } from 'react';
+
+type AppTab = 'apply' | 'compose' | 'examples' | 'reference';
+
+interface AppState {
+  activeTab: AppTab;
+  setActiveTab: (tab: AppTab) => void;
+  selectedPaletteId: string;
+  setSelectedPaletteId: (id: string) => void;
+  customColors: Record<string, string>;
+  setCustomColors: (colors: Record<string, string>) => void;
+  fontFamily: string;
+  setFontFamily: (font: string) => void;
+  themeName: string;
+  setThemeName: (name: string) => void;
+  watermarkEnabled: boolean;
+  setWatermarkEnabled: (enabled: boolean) => void;
+  inputCode: string;
+  setInputCode: (code: string) => void;
+  colorEditorOpen: boolean;
+  setColorEditorOpen: (open: boolean) => void;
+  look: 'default' | 'neo' | 'handDrawn';
+  setLook: (look: 'default' | 'neo' | 'handDrawn') => void;
+}
+```
+
+Wrap the app in `<AppProvider>`. All tabs read from and write to this shared state. No prop drilling.
+
+## Step 2.2: Create Tab Navigation
+
+Create `src/components/TabNavigation.tsx`:
+
+- **Desktop (>=768px)**: Horizontal bar at top. Labels: Apply, Compose, Examples, Reference. Icons optional (Lucide: Wand2, Palette, LayoutGrid, BookOpen).
+- **Mobile (<768px)**: Fixed bottom bar, 56px height, 4 equal tap targets (minimum 44px), icon above 11px label.
+- Active tab: filled accent color background. Inactive: muted/outline.
+- Switching tabs changes `activeTab` in shared state. No page reload.
+
+## Step 2.3: Build Apply Tab
+
+Create `src/components/tabs/ApplyTab.tsx`:
+
+**This tab contains ONLY:**
+1. Compact palette strip (horizontal row of 28px circular swatches, selected has ring)
+2. Code input textarea (monospace, auto-resize to max 50% viewport)
+3. Live Mermaid preview (rendered SVG, spinner while rendering, error inline)
+4. Original/Themed toggle
+5. Export buttons: Copy Styled Code, Copy Markdown, Copy Prompt
+6. "Edit Colors" button that opens a slide-out panel (desktop: 320px right side) or full-screen modal (mobile)
+7. Warning banner (only if warnings exist)
+
+**Apply does NOT contain:** ClassBrowser, DiagramInventory, CapabilityNote, PromptScaffoldModal, full color editor, font selector, theme name field, watermark toggle.
+
+**Desktop**: Side-by-side (code left 45%, preview right 55%).
+**Mobile**: Stacked. Palette strip horizontal scroll. Code input 4 visible lines (tap to expand). Preview takes remaining space. Export buttons fixed above bottom tab nav. No horizontal scrolling.
+
+Toast notifications on copy (auto-dismiss after 2 seconds).
+
+## Step 2.4: Build Compose Tab
+
+Create `src/components/tabs/ComposeTab.tsx`:
+
+Contains:
+- Palette selector (full card style with descriptions, not compact strip)
+- Full color editor (all 13 fields, always visible)
+- Font family dropdown (Trebuchet MS, Arial, Calibri, Georgia, Courier New, Impact, system-ui, Custom)
+- Theme name text input (default: selected palette name)
+- Watermark toggle (default ON)
+- Look selector: Classic / Neo / Sketch (segmented control — see Phase 3 for details)
+- Generic preview diagram (read-only, auto-generated sample with subgraph, decision, edges)
+- Export buttons: Copy Bootstrap Markdown, Copy Prompt Scaffold
+- Helper text: "Paste the bootstrap into your LLM before generating diagrams to enforce this visual standard."
+
+**Desktop**: Left panel (controls 40%), right panel (preview 60%).
+**Mobile**: Controls full-width, preview below fold, export fixed at bottom.
+
+## Step 2.5: Build Examples Tab
+
+Create `src/components/tabs/ExamplesTab.tsx`:
+
+Contains:
+- Example list from `examples.ts`, grouped by diagram family. Collapsible family groups.
+- Each row: name, support badge (Native=green, Beta=yellow, Emulation=orange), one-line description
+- Preview panel showing selected example rendered with current theme
+- Action buttons: "Load into Apply Tab" (sets inputCode + switches tab), "Copy Raw Code", "View Source" (toggles code block)
+
+**Desktop**: List panel (30%) + preview panel (70%).
+**Mobile**: List full-width, selecting example opens preview as bottom sheet.
+
+## Step 2.6: Build Reference Tab
+
+Create `src/components/tabs/ReferenceTab.tsx`:
+
+Move existing components here:
+- ClassBrowser
+- CapabilityNote
+- DiagramInventory
+
+Add:
+- Search/filter input at top (filter by family name or keyword)
+- Expandable rows per diagram family showing shapes, syntax, theme confidence (High/Medium/Generic/Low)
+- Support-level badges (Native/Beta/Gap)
+- Footer: "Mermaid Theme Builder themes what Mermaid supports. It does not implement new diagram grammars."
+
+**Desktop**: Full-width single column, accordion rows.
+**Mobile**: Same, simple accordion.
+
+## Step 2.7: Update App Shell
+
+Replace the current single-screen layout in `App.tsx` with:
+
+```tsx
+<AppProvider>
+  <div className="flex flex-col h-screen">
+    <div className="hidden md:block"><TabNavigation position="top" /></div>
+    <main className="flex-1 overflow-auto pb-16 md:pb-0">
+      {activeTab === 'apply' && <ApplyTab />}
+      {activeTab === 'compose' && <ComposeTab />}
+      {activeTab === 'examples' && <ExamplesTab />}
+      {activeTab === 'reference' && <ReferenceTab />}
+    </main>
+    <div className="md:hidden fixed bottom-0 left-0 right-0 z-50">
+      <TabNavigation position="bottom" />
+    </div>
+  </div>
+</AppProvider>
+```
+
+## Step 2.8: Verify + Commit V0.4
+
+Verify:
+- [ ] 4 tabs visible and navigable
+- [ ] Apply: only palette strip, code input, preview, exports, "Edit Colors"
+- [ ] Compose: palette cards, color editor, font, theme name, watermark, look, exports
+- [ ] Examples: grouped list, preview, "Load into Apply"
+- [ ] Reference: ClassBrowser, CapabilityNote, DiagramInventory
+- [ ] Mobile (375px): no horizontal scroll, bottom tab nav, collapsed input
+- [ ] Desktop (1440px): side-by-side panels
+- [ ] Cross-tab state works (palette changes propagate, example loading switches tabs)
+
+```bash
+git add -A
+git commit -m "feat(v0.4): tabbed UI with Apply/Compose/Examples/Reference + mobile responsive
+
+4 tabbed sub-screens with React Context shared state.
+Desktop: top tab bar, side-by-side panels.
+Mobile: bottom nav, stacked, slide-out/modal editors.
+Components relocated: ClassBrowser/CapabilityNote/DiagramInventory → Reference."
+
+git push origin main
+```
+
+---
+
+# PHASE 3: MERMAID v11.14 FEATURE PARITY (V0.5)
+
+## Step 3.1: Neo Look Selector
+
+Mermaid v11.14.0 has three rendering styles: `default` (classic flat), `neo` (modern with drop shadows), `handDrawn` (sketch/rough). The Theme Builder currently generates only `default`.
+
+### Add to shared state
+Already included in Step 2.1: `look: 'default' | 'neo' | 'handDrawn'`
+
+### Add Look Selector UI
+
+In the **Compose tab**, add a segmented control below the palette selector:
+
+```
+┌──────────┬──────────┬──────────┐
+│ Classic  │   Neo    │  Sketch  │
+└──────────┴──────────┴──────────┘
+```
+
+- Classic = `'default'`. Label: "Classic". Description: "Clean flat rendering."
+- Neo = `'neo'`. Label: "Neo". Description: "Modern with drop shadows. Requires Mermaid v11.14+."
+- Sketch = `'handDrawn'`. Label: "Sketch". Description: "Hand-drawn rough style."
+
+In the **Apply tab**, add a compact version (3 small buttons) in the palette strip area.
+
+### Update Theme Engine
+
+In `themeEngine.ts`, include `look` in the init directive output:
+
+```ts
+// When look is 'default', omit (it's the Mermaid default)
+// When look is 'neo' or 'handDrawn', include it:
+const lookConfig = look !== 'default' ? `"look": "${look}",` : '';
+
+// Output:
+// %%{init: { "theme": "base", "look": "neo", "themeVariables": { ... } }}%%
+```
+
+### Update ALL Exports
+
+- **Styled Code**: Include `look` in init directive
+- **Markdown Bootstrap**: Add `Look: Neo` row
+- **Prompt Scaffold**: Instruct LLM to use the specified look
+- **Theme JSON** (if export exists): Include `"look": "neo"`
+
+### Update Preview
+
+The Mermaid preview renderer must pass `look` to `mermaid.initialize()`:
+
+```ts
+mermaid.initialize({
+  theme: 'base',
+  look: selectedLook,
+  themeVariables: { ... }
+});
+```
+
+## Step 3.2: New Diagram Type Detection
+
+Update `detector.ts` to detect 4 new diagram types from recent Mermaid releases:
+
+```ts
+// Wardley Maps (v11.14.0)
+{ pattern: /^\s*wardley-beta/m, family: 'wardley', label: 'Wardley Map', supportLevel: 'beta' },
+
+// TreeView (v11.14.0)
+{ pattern: /^\s*treeview/m, family: 'treeview', label: 'TreeView', supportLevel: 'native' },
+
+// Venn Diagram (v11.13.0)
+{ pattern: /^\s*venn-beta/m, family: 'venn', label: 'Venn Diagram', supportLevel: 'beta' },
+
+// Ishikawa / Fishbone (v11.13.0)
+{ pattern: /^\s*ishikawa-beta/m, family: 'ishikawa', label: 'Ishikawa Diagram', supportLevel: 'beta' },
+```
+
+Also verify these are detected (may already exist):
+```ts
+{ pattern: /^\s*kanban/m, family: 'kanban', label: 'Kanban Board', supportLevel: 'native' },
+{ pattern: /^\s*architecture-beta/m, family: 'architecture', label: 'Architecture Diagram', supportLevel: 'beta' },
+{ pattern: /^\s*block-beta/m, family: 'block', label: 'Block Diagram', supportLevel: 'native' },
+```
+
+When a beta type is detected, the Apply tab badge should show yellow "Beta" indicator: "Wardley Map (Beta)"
+
+## Step 3.3: Family-Specific themeVariables
+
+Create `src/lib/familyVariables.ts`:
+
+The theme engine currently generates the same themeVariables block for all diagram families. Different families use different variable sets.
+
+```ts
+export type PaletteColors = {
+  primaryColor: string;
+  primaryTextColor: string;
+  primaryBorderColor: string;
+  secondaryColor: string;
+  secondaryTextColor: string;
+  secondaryBorderColor: string;
+  tertiaryColor: string;
+  tertiaryTextColor: string;
+  tertiaryBorderColor: string;
+  lineColor: string;
+  textColor: string;
+  edgeLabelBackground: string;
+  [key: string]: string;
+};
+
+export const FAMILY_VARIABLES: Record<string, (p: PaletteColors) => Record<string, string>> = {
+
+  flowchart: (p) => ({
+    primaryColor: p.primaryColor,
+    primaryTextColor: p.primaryTextColor,
+    primaryBorderColor: p.primaryBorderColor,
+    secondaryColor: p.secondaryColor,
+    secondaryTextColor: p.secondaryTextColor,
+    secondaryBorderColor: p.secondaryBorderColor,
+    tertiaryColor: p.tertiaryColor,
+    tertiaryTextColor: p.tertiaryTextColor,
+    tertiaryBorderColor: p.tertiaryBorderColor,
+    lineColor: p.lineColor,
+    textColor: p.textColor,
+    mainBkg: p.primaryColor,
+    nodeBorder: p.primaryBorderColor,
+    clusterBkg: p.tertiaryColor,
+    clusterBorder: p.tertiaryBorderColor,
+    edgeLabelBackground: p.edgeLabelBackground,
+    nodeTextColor: p.primaryTextColor,
+  }),
+
+  sequence: (p) => ({
+    actorBkg: p.primaryColor,
+    actorBorder: p.primaryBorderColor,
+    actorTextColor: p.primaryTextColor,
+    actorLineColor: p.lineColor,
+    signalColor: p.lineColor,
+    signalTextColor: p.textColor,
+    labelBoxBkgColor: p.secondaryColor,
+    labelBoxBorderColor: p.secondaryBorderColor,
+    labelTextColor: p.secondaryTextColor,
+    loopTextColor: p.textColor,
+    noteBkgColor: p.tertiaryColor,
+    noteBorderColor: p.tertiaryBorderColor,
+    noteTextColor: p.tertiaryTextColor,
+    activationBkgColor: p.secondaryColor,
+    activationBorderColor: p.secondaryBorderColor,
+    sequenceNumberColor: p.primaryTextColor,
+  }),
+
+  pie: (p) => ({
+    pie1: p.primaryColor,
+    pie2: p.secondaryColor,
+    pie3: p.tertiaryColor,
+    pie4: p.primaryBorderColor,
+    pie5: p.secondaryBorderColor,
+    pie6: p.tertiaryBorderColor,
+    pie7: p.lineColor,
+    pie8: p.edgeLabelBackground,
+    pieTitleTextColor: p.textColor,
+    pieSectionTextColor: '#FFFFFF',
+    pieLegendTextColor: p.textColor,
+    pieStrokeColor: p.lineColor,
+    pieStrokeWidth: '2px',
+    pieOpacity: '0.85',
+  }),
+
+  state: (p) => ({
+    labelColor: p.textColor,
+    altBackground: p.tertiaryColor,
+    compositeBackground: p.secondaryColor,
+    compositeBorder: p.secondaryBorderColor,
+    compositeTitleBackground: p.primaryColor,
+    innerEndBackground: p.primaryColor,
+    transitionColor: p.lineColor,
+    transitionLabelColor: p.textColor,
+    specialStateColor: p.primaryBorderColor,
+  }),
+
+  timeline: (p) => ({
+    cScale0: p.primaryColor,
+    cScale1: p.secondaryColor,
+    cScale2: p.tertiaryColor,
+    cScale3: p.primaryBorderColor,
+    cScale4: p.secondaryBorderColor,
+    cScale5: p.tertiaryBorderColor,
+    cScaleLabel0: p.primaryTextColor,
+    cScaleLabel1: p.secondaryTextColor,
+    cScaleLabel2: p.tertiaryTextColor,
+  }),
+
+  xychart: (p) => ({
+    backgroundColor: 'transparent',
+    titleColor: p.textColor,
+    xAxisLabelColor: p.textColor,
+    xAxisTitleColor: p.textColor,
+    xAxisTickColor: p.lineColor,
+    xAxisLineColor: p.lineColor,
+    yAxisLabelColor: p.textColor,
+    yAxisTitleColor: p.textColor,
+    yAxisTickColor: p.lineColor,
+    yAxisLineColor: p.lineColor,
+    plotColorPalette: `${p.primaryColor},${p.secondaryColor},${p.tertiaryColor}`,
+  }),
+};
+
+export function getVariablesForFamily(palette: PaletteColors, family: string): Record<string, string> {
+  const generator = FAMILY_VARIABLES[family] || FAMILY_VARIABLES.flowchart;
+  return generator(palette);
+}
+```
+
+### Update Theme Engine
+
+In `themeEngine.ts`, import and use `getVariablesForFamily`:
+
+```ts
+import { getVariablesForFamily } from './familyVariables';
+
+// When generating the init directive:
+const detectedFamily = detectDiagramFamily(inputCode);
+const themeVars = getVariablesForFamily(paletteColors, detectedFamily);
+```
+
+Show a badge in the Apply tab when family-specific variables are used: "Sequence-optimized theme applied" or "Using flowchart defaults (family not detected)."
+
+## Step 3.4: htmlLabels Deprecation Fix
+
+Mermaid v11.13.0 deprecated `flowchart.htmlLabels` in favor of root-level `htmlLabels`.
+
+Audit `themeEngine.ts` for any occurrence of `flowchart.htmlLabels` or `flowchart: { htmlLabels`. If found, replace with root-level `htmlLabels`:
+
+**Before (deprecated):**
+```json
+{ "theme": "base", "flowchart": { "htmlLabels": true }, "themeVariables": { ... } }
+```
+
+**After (correct):**
+```json
+{ "theme": "base", "htmlLabels": true, "themeVariables": { ... } }
+```
+
+## Step 3.5: Update Capability Registry
+
+In `mermaid-capabilities.ts`, update:
+1. **Wardley Map**: Status = "Beta". Note: "Shipped v11.14.0. wardley-beta syntax."
+2. **TreeView**: Add new entry. Status = "Native". Note: "Shipped v11.14.0."
+3. **Venn Diagram**: Status = "Beta". Note: "Shipped v11.13.0. venn-beta syntax."
+4. **Ishikawa/Fishbone**: Status = "Beta". Note: "Shipped v11.13.0. ishikawa-beta syntax."
+5. Add a global note: "Neo Look rendering available across 8+ diagram types (v11.14+)."
+6. Total diagram count: 25+ (22 stable + wardley-beta, venn-beta, ishikawa-beta, treeview)
+
+## Step 3.6: Architecture Diagram Deterministic Layout
+
+When detecting an architecture diagram, include `randomize: false` in the config:
+
+```json
+{ "architecture": { "randomize": false } }
+```
+
+This ensures consistent rendering across refreshes.
+
+## Step 3.7: Verify + Commit V0.5
+
+Verify:
+- [ ] Look selector visible in Compose (full) and Apply (compact)
+- [ ] Switching to Neo shows drop shadows in preview
+- [ ] Switching to Sketch shows hand-drawn style in preview
+- [ ] Look is included in styled code, markdown, and prompt exports
+- [ ] Pasting a wardley-beta diagram shows "Wardley Map (Beta)" badge
+- [ ] Pasting a sequence diagram generates sequence-specific themeVariables
+- [ ] Pasting a pie chart generates pie-specific themeVariables
+- [ ] No deprecation warnings in browser console for htmlLabels
+- [ ] Capability registry in Reference tab shows 25+ diagram types
+
+```bash
+git add -A
+git commit -m "feat(v0.5): Neo Look selector, 4 new detectors, family-specific themeVariables
+
+Added: Look selector (Classic/Neo/Sketch) in Compose + Apply tabs.
+Added: Detection for wardley-beta, treeview, venn-beta, ishikawa-beta.
+Added: Family-specific themeVariables for sequence, pie, state, timeline, xychart.
+Fixed: htmlLabels uses root-level config (no deprecation warnings).
+Updated: Capability registry reflects Mermaid v11.14.0 reality (25+ types)."
+
+git push origin main
+```
+
+---
+
+# WHAT NOT TO CHANGE
+
+These files provide core logic that should remain functionally intact (though they may be extended):
+- `palettes.ts` — palette data (can add properties, don't restructure)
+- `examples.ts` — example data (can add entries, don't restructure)
+- `MermaidPreview.tsx` — preview renderer (used in more places, core logic unchanged)
+- `ColorSwatch.tsx` — color picker (relocated, not rewritten)
+- `WarningBanner.tsx` — warning display (relocated to Apply)
+
+---
+
+# BRAND RULES (NON-NEGOTIABLE)
+
+1. Personal OverKill Hill P3 project by Jamie Hill
+2. NOT affiliated with Builders FirstSource, BFS, or any employer
+3. NEVER use: #00205B, #003087, #002F86, #B3C1DB, #D6E5F9, #D0D0CE, #C8102E
+4. Generic palette names: Ocean Depth, Forest Sage, Slate Ember, Violet Mist
+5. Brand palettes: OverKill Hill P3, Glee-fully, AskJamie
+6. Disclaimer in app footer: "Not affiliated with Mermaid, Mermaid Chart, or Mermaid.ai"
+
+---
+
+# SUCCESS CRITERIA
+
+When this sprint is complete:
+
+**V0.3.1 (repo governance):**
+- [ ] No `artifacts/`, `lib/`, `pnpm-workspace.yaml` directories
+- [ ] LICENSE, AGENTS.md, CONTRIBUTING.md exist at repo root
+- [ ] README reflects 7+ palettes, links, disclaimer
+- [ ] `pnpm install && pnpm build` succeeds without workspace errors
+
+**V0.4 (tabbed UI):**
+- [ ] 4 tabs visible: Apply, Compose, Examples, Reference
+- [ ] Apply: ONLY palette strip, code input, preview, exports, "Edit Colors"
+- [ ] Compose: palette cards, color editor, font, theme name, watermark, look, exports
+- [ ] Examples: grouped list, preview, "Load into Apply"
+- [ ] Reference: ClassBrowser, CapabilityNote, DiagramInventory
+- [ ] Mobile (375px): no horizontal scroll, bottom tab nav
+- [ ] Desktop (1440px): side-by-side panels
+
+**V0.5 (Mermaid v11.14 parity):**
+- [ ] Look selector with 3 options (Classic/Neo/Sketch) in Compose and Apply
+- [ ] wardley-beta, treeview, venn-beta, ishikawa-beta detected
+- [ ] Family-specific themeVariables for sequence, pie, state, timeline, xychart
+- [ ] No htmlLabels deprecation warnings
+- [ ] Capability registry shows 25+ types
+- [ ] Zero BFS/employer references anywhere
