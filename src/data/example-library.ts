@@ -299,28 +299,28 @@ const STATE_THEME_LIFECYCLE = `stateDiagram-v2
 const REQUIREMENT_SCOPE_FIREWALL = `requirementDiagram
 
     requirement brand_separation {
-        id: REQ-001
+        id: 1
         text: No employer branding, colors, or references in any deliverable
         risk: high
         verifymethod: inspection
     }
 
     requirement static_only {
-        id: REQ-002
+        id: 2
         text: No backend, no login, no API calls, no data storage
         risk: medium
         verifymethod: test
     }
 
     requirement local_privacy {
-        id: REQ-003
+        id: 3
         text: All transforms happen client-side; no data leaves the browser
         risk: medium
         verifymethod: inspection
     }
 
     requirement mermaid_compat {
-        id: REQ-004
+        id: 4
         text: Generated output must render in Mermaid v11.x renderers
         risk: medium
         verifymethod: test
@@ -546,35 +546,33 @@ const MINDMAP_OKH_SYSTEM = `mindmap
         First Diagram Is a Liar
         OKRs Are Invisible`;
 
-const ISHIKAWA_PREMATURE_RENDERING = `%%{init: {"theme": "base"} }%%
-fishbone
-    title Why does a Mermaid diagram render incorrectly?
-    accTitle: Root cause analysis - premature or incorrect rendering
-    section Syntax
-        Missing init block : Syntax
-        Wrong diagram keyword : Syntax
-        Fences not stripped : Syntax
-        Unsupported node shape : Syntax
-    section Renderer
-        Mermaid version mismatch : Renderer
-        Beta diagram family : Renderer
-        Security level too strict : Renderer
-        ELK layout unavailable : Renderer
-    section Theme
-        Theme variables not injected : Theme
-        Wrong family transform applied : Theme
-        classDef overridden by global : Theme
-        Init block duplicated : Theme
-    section Environment
-        CDN load failure : Environment
-        Stale browser cache : Environment
-        Wrong securityLevel setting : Environment
-        Renderer not initialized : Environment
-    section User Workflow
-        Pasted with outer code fences : Workflow
-        Wrong palette for diagram type : Workflow
-        Applied generic theme to beta diagram : Workflow
-        Ignored renderer warning : Workflow`;
+const ISHIKAWA_PREMATURE_RENDERING = `mindmap
+  root((Why does a diagram render incorrectly?))
+    Syntax
+      Missing init block
+      Wrong diagram keyword
+      Fences not stripped
+      Unsupported node shape
+    Renderer
+      Mermaid version mismatch
+      Beta diagram family
+      Security level too strict
+      ELK layout unavailable
+    Theme
+      Theme variables not injected
+      Wrong family transform applied
+      classDef overridden by global
+      Init block duplicated
+    Environment
+      CDN load failure
+      Stale browser cache
+      Wrong securityLevel setting
+      Renderer not initialized
+    User Workflow
+      Pasted with outer code fences
+      Wrong palette for diagram type
+      Applied generic theme to beta diagram
+      Ignored renderer warning`;
 
 export const EXAMPLE_CATALOG: ExampleEntry[] = [
   {
@@ -706,11 +704,10 @@ export const EXAMPLE_CATALOG: ExampleEntry[] = [
   },
   {
     id: "ishikawa-premature-rendering-root-cause",
-    label: "Ishikawa — rendering root cause",
-    family: "fishbone",
+    label: "Root cause — rendering errors",
+    family: "mindmap",
     category: "specialty",
     content: ISHIKAWA_PREMATURE_RENDERING,
-    badge: "Beta",
   },
   {
     id: "wardley-diagram-generation-value-chain",

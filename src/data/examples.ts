@@ -126,15 +126,16 @@ export const ASKJAMIE_SEQUENCE = `sequenceDiagram
     U->>A: Ask a question
     activate A
     A->>K: Search for answer
-    activate K
 
     alt Answer found
+        activate K
         K-->>A: Matched article
         deactivate K
         A-->>U: Here's what I found
         U->>A: Was this helpful?
         A-->>U: Great! Ticket closed.
     else No match found
+        activate K
         K-->>A: No match
         deactivate K
         A->>H: Escalate ticket
