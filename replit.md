@@ -54,6 +54,17 @@ Flat pnpm workspace. The Mermaid Theme Builder IS the root package — all sourc
 
 **App icon:** Custom "Forked Flow" SVG icon — dark navy bg, cream input node, rust-orange fork connectors, orange themed output node. `src/components/AppIcon.tsx` used in header. PNG rasters generated via `node scripts/generate-icons.mjs` (pngjs, no native deps).
 
+**Design language (OKH P³ Forge):**
+- Header: always-dark `#1c3a34` (`.forge-header`) — persists across light/dark mode
+- Background: warm paper token `33 18% 94%` + subtle 28px crosshatch grid
+- Code panels: dark teal `.forge-code-panel` (`#0f1f1c` bg, `#d4c9b5` cream text, JetBrains Mono)
+- OKHP³ identity: rust-orange `#c46a2c` for accents, version badge, footer brand name
+- Footer: always-dark `#0f1a17` rail (desktop only), mirrors header tonality
+- Mobile nav: always-dark `#1c3a34/97`, active tab rust-orange
+- Section labels: `.forge-eyebrow` (11px, 600, uppercase, 0.07em tracking)
+- Export hierarchy: primary (solid) → accent (tinted) → outline
+- Fonts: Alfa Slab One (h1), DM Sans (body), JetBrains Mono (code)
+
 **Features:**
 - Paste Mermaid code → auto-detects diagram family (flowchart, sequence, class, ER, Gantt, pie, etc.)
 - Built-in brand palettes: Overkill Hill, AskJamie, Glee Fully, and utility palettes

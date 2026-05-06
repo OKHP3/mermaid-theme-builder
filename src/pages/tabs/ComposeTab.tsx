@@ -239,7 +239,7 @@ export function ComposeTab({
     <div className="flex flex-col md:flex-row h-full overflow-hidden">
       <div className="flex flex-col w-full md:w-80 lg:w-96 border-b md:border-b-0 md:border-r border-border overflow-y-auto shrink-0">
         <div className="p-3 border-b border-border">
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+          <p className="forge-eyebrow mb-2">
             Theme
           </p>
           <div className="space-y-0.5">
@@ -293,7 +293,7 @@ export function ComposeTab({
 
         <div className="p-3 border-b border-border">
           <div className="flex items-center justify-between mb-1">
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <p className="forge-eyebrow">
               Colors
             </p>
             {hasCustomizations && (
@@ -322,7 +322,7 @@ export function ComposeTab({
         </div>
 
         <div className="p-3 border-b border-border">
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+          <p className="forge-eyebrow mb-2">
             Settings
           </p>
           <div className="space-y-3">
@@ -407,7 +407,7 @@ export function ComposeTab({
         </div>
 
         <div className="p-3 border-b border-border">
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+          <p className="forge-eyebrow mb-2">
             Typography
           </p>
           <div className="space-y-3">
@@ -487,7 +487,7 @@ export function ComposeTab({
         </div>
 
         <div className="p-3 border-b border-border">
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1">
+          <p className="forge-eyebrow mb-1">
             My Palettes
           </p>
           <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
@@ -541,7 +541,7 @@ export function ComposeTab({
         </div>
 
         <div className="p-3">
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1">
+          <p className="forge-eyebrow mb-1">
             Bootstrap Export
           </p>
           <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
@@ -553,14 +553,14 @@ export function ComposeTab({
               className={`w-full flex items-center justify-center gap-2 text-xs px-3 py-2 rounded-md border font-medium transition-all ${
                 copiedBootstrap
                   ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-                  : "border-border bg-background hover:bg-muted hover:border-primary/40"
+                  : "border-primary bg-primary text-primary-foreground hover:opacity-90"
               }`}
             >
               {copiedBootstrap ? "Copied!" : "Copy Bootstrap Markdown"}
             </button>
             <button
               onClick={() => setShowScaffoldModal(true)}
-              className="w-full flex items-center justify-center gap-2 text-xs px-3 py-2 rounded-md border border-border bg-background hover:bg-muted hover:border-primary/40 font-medium transition-all"
+              className="w-full flex items-center justify-center gap-2 text-xs px-3 py-2 rounded-md border border-primary/35 bg-primary/8 text-primary hover:bg-primary/14 font-medium transition-all"
             >
               Copy Prompt Scaffold
             </button>

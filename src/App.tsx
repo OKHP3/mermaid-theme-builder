@@ -200,7 +200,7 @@ function clearShareToken(): void {
 
 const RECENT_PALETTES_MAX = 5;
 
-function ThemeModeToggle({ mode, cycle }: { mode: ThemeMode; cycle: () => void }) {
+function ThemeModeToggle({ mode, cycle, className }: { mode: ThemeMode; cycle: () => void; className?: string }) {
   const label =
     mode === "system"
       ? "System theme (click to switch to light)"
@@ -213,7 +213,7 @@ function ThemeModeToggle({ mode, cycle }: { mode: ThemeMode; cycle: () => void }
       onClick={cycle}
       aria-label={label}
       title={label}
-      className="p-1.5 rounded-md border border-border/60 hover:border-border hover:bg-muted text-muted-foreground hover:text-foreground transition-colors print-hide"
+      className={className ?? "p-1.5 rounded-md border border-border/60 hover:border-border hover:bg-muted text-muted-foreground hover:text-foreground transition-colors print-hide"}
     >
       {mode === "light" ? (
         <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5" aria-hidden="true">
@@ -531,30 +531,40 @@ function AppShell() {
 
   return (
     <div className="h-dvh bg-background flex flex-col overflow-hidden">
-      <header className="border-b border-border bg-card/60 backdrop-blur sticky top-0 z-20 px-4 md:px-6 py-2.5 flex items-center justify-between gap-4 shrink-0">
+      <header className="forge-header sticky top-0 z-20 px-4 md:px-6 py-3 flex items-center justify-between gap-4 shrink-0 print-hide">
         <div className="flex items-center gap-3">
           <AppIcon size={28} aria-hidden="true" />
           <div>
-            <h1 className="text-sm font-semibold text-foreground leading-none">
-              Mermaid Theme Builder
-            </h1>
-            <p className="text-xs text-muted-foreground mt-0.5 hidden sm:block">
-              Visual theme control for AI-generated diagrams
+            <div className="flex items-baseline gap-2 leading-none">
+              <h1 className="text-[17px] leading-none text-[#e8dcc8]">
+                Mermaid Theme Builder
+              </h1>
+              <code className="hidden sm:inline text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/8 text-[#b8aa96] border border-white/10 leading-none align-middle">
+                theme-builder
+              </code>
+            </div>
+            <p className="text-[11px] text-[#e5e7eb]/55 mt-1 hidden sm:block leading-none">
+              Visual theme governance for AI-generated diagrams
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-[10px] text-muted-foreground/50 hidden lg:block">v{__APP_VERSION__}</span>
-          <span className="text-[10px] px-2 py-1 rounded-full bg-muted text-muted-foreground hidden md:block">
-            an OKHP³ Project
-          </span>
-          <ThemeModeToggle mode={themeMode} cycle={cycleThemeMode} />
+        <div className="flex items-center gap-3">
+          <div className="hidden md:flex items-center gap-2 text-[10px]">
+            <span className="font-bold uppercase tracking-wider text-[#c46a2c]">OKHP³</span>
+            <span className="text-[#e5e7eb]/25">·</span>
+            <span className="font-mono text-[#e5e7eb]/40">v{__APP_VERSION__}</span>
+          </div>
+          <ThemeModeToggle
+            mode={themeMode}
+            cycle={cycleThemeMode}
+            className="p-1.5 rounded-md border border-white/15 hover:border-white/30 hover:bg-white/8 text-[#e5e7eb]/60 hover:text-[#e5e7eb] transition-colors print-hide"
+          />
         </div>
       </header>
 
       <nav
         ref={tabsRef}
-        className="hidden md:flex border-b border-border bg-card/40 px-4 shrink-0 print-hide"
+        className="hidden md:flex border-b border-border bg-card/60 px-4 shrink-0 print-hide"
         role="tablist"
         aria-label="Mermaid Theme Builder sections"
         onKeyDown={(e) => {
@@ -586,10 +596,10 @@ function AppShell() {
               aria-controls={`tabpanel-${tab.id}`}
               tabIndex={selected ? 0 : -1}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-1.5 px-4 py-2.5 text-xs font-medium border-b-2 transition-all ${
+              className={`flex items-center gap-1.5 px-4 py-2.5 text-[13px] font-medium border-b-2 transition-all ${
                 selected
                   ? "border-primary text-primary"
-                  : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
+                  : "border-transparent text-foreground/55 hover:text-foreground hover:border-border/60"
               }`}
             >
               {tab.icon}
@@ -671,7 +681,7 @@ function AppShell() {
       </main>
 
       <nav
-        className="fixed bottom-0 left-0 right-0 flex md:hidden border-t border-border bg-card/95 backdrop-blur z-30 shrink-0 print-hide"
+        className="fixed bottom-0 left-0 right-0 flex md:hidden border-t border-white/10 bg-[#1c3a34]/97 backdrop-blur z-30 shrink-0 print-hide"
         role="tablist"
         aria-label="Mermaid Theme Builder sections (mobile)"
       >
@@ -685,8 +695,8 @@ function AppShell() {
               aria-controls={`tabpanel-${tab.id}`}
               tabIndex={selected ? 0 : -1}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 flex flex-col items-center gap-1 py-2.5 text-[10px] font-medium transition-all ${
-                selected ? "text-primary" : "text-muted-foreground hover:text-foreground"
+              className={`flex-1 flex flex-col items-center gap-1 py-2.5 text-[11px] font-medium transition-all ${
+                selected ? "text-[#c46a2c]" : "text-[#e5e7eb]/55 hover:text-[#e5e7eb]/80"
               }`}
             >
               {tab.icon}
@@ -695,6 +705,21 @@ function AppShell() {
           );
         })}
       </nav>
+
+      <footer className="flex-none hidden md:flex items-center justify-between px-4 py-1.5 border-t border-white/8 bg-[#0f1a17] print-hide" style={{minHeight: '34px'}}>
+        <div className="flex items-center gap-2 text-[10px] text-[#e5e7eb]/45">
+          <span className="font-mono font-medium text-[#e5e7eb]/65">mermaid-theme-builder</span>
+          <span>·</span>
+          <span>visual governance utility</span>
+          <span>·</span>
+          <span className="font-semibold text-[#c46a2c]">OverKill Hill P³</span>
+        </div>
+        <div className="flex items-center gap-4 text-[10px] text-[#e5e7eb]/40">
+          <a href="https://github.com/OKHP3/mermaid-theme-builder" target="_blank" rel="noopener noreferrer" className="hover:text-[#e5e7eb]/75 transition-colors">GitHub</a>
+          <a href="https://overkillhill.com/projects" target="_blank" rel="noopener noreferrer" className="hover:text-[#e5e7eb]/75 transition-colors">OKHP³ Projects</a>
+          <a href="https://mermaid.live" target="_blank" rel="noopener noreferrer" className="hover:text-[#e5e7eb]/75 transition-colors">Mermaid Live</a>
+        </div>
+      </footer>
 
       {toast && (
         <div

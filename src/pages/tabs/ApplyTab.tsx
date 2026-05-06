@@ -405,6 +405,32 @@ export function ApplyTab({
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
+      <div className="flex-none border-b border-border px-4 py-2.5 hidden md:flex items-center justify-between gap-6 bg-card/50 print-hide">
+        <p className="text-xs leading-none min-w-0">
+          <span className="font-semibold text-foreground">Design once. Paste everywhere.</span>
+          <span className="text-muted-foreground ml-1.5 hidden lg:inline">Keep AI-generated Mermaid diagrams on-brand.</span>
+        </p>
+        <div className="flex items-center gap-1.5 shrink-0">
+          <button
+            onClick={() => onSwitchTab("examples")}
+            className="text-[11px] px-2.5 py-1 rounded-md border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors font-medium"
+          >
+            Examples
+          </button>
+          <button
+            onClick={() => onSwitchTab("compose")}
+            className="text-[11px] px-2.5 py-1 rounded-md border border-primary/35 bg-primary/8 text-primary hover:bg-primary/14 transition-colors font-medium"
+          >
+            Compose
+          </button>
+          <button
+            onClick={() => onSwitchTab("reference")}
+            className="text-[11px] px-2.5 py-1 rounded-md border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors font-medium"
+          >
+            Reference
+          </button>
+        </div>
+      </div>
       {recentPalettes.length > 1 && (
         <div className="flex-none border-b border-border bg-muted/20 px-3 py-1.5 flex items-center gap-2 print-hide">
           <span className="text-[10px] uppercase tracking-wide text-muted-foreground font-semibold shrink-0">
@@ -696,7 +722,7 @@ export function ApplyTab({
             value={inputCode}
             onChange={(e) => onInputChange(e.target.value)}
             placeholder="Paste your Mermaid diagram here…"
-            className={`flex-1 w-full p-3 bg-background text-foreground text-xs font-mono resize-none focus:outline-none placeholder:text-muted-foreground/50 md:min-h-0 transition-all ${
+            className={`forge-code-panel flex-1 w-full p-3 text-xs font-mono resize-none md:min-h-0 transition-all ${
               textareaExpanded ? "min-h-[60vh]" : "min-h-[88px]"
             }`}
             spellCheck={false}
@@ -866,6 +892,8 @@ export function ApplyTab({
           {(["code", "markdown", "prompt"] as ExportType[]).map((type) => {
             const copied = copiedType === type;
             const disabled = !inputCode.trim() && type !== "prompt";
+            const isPrimary = type === "code";
+            const isAccent = type === "prompt";
             return (
               <button
                 key={type}
@@ -875,7 +903,11 @@ export function ApplyTab({
                 className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-md border font-medium transition-all ${
                   copied
                     ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-                    : "border-border bg-background hover:bg-muted hover:border-primary/40 disabled:opacity-40 disabled:cursor-not-allowed"
+                    : isPrimary
+                    ? "border-primary bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
+                    : isAccent
+                    ? "border-primary/35 bg-primary/8 text-primary hover:bg-primary/14 disabled:opacity-40 disabled:cursor-not-allowed"
+                    : "border-border bg-card text-foreground hover:bg-muted hover:border-primary/30 disabled:opacity-40 disabled:cursor-not-allowed"
                 }`}
               >
                 {copied ? (

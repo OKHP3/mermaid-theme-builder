@@ -173,7 +173,7 @@ export function ExamplesTab({ selectedPalette, onLoadExample }: ExamplesTabProps
             return (
               <div key={section}>
                 <div className="px-3 pt-3 pb-1.5 sticky top-0 bg-card/90 backdrop-blur z-10 border-b border-border/50">
-                  <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  <p className="forge-eyebrow">
                     {section}
                   </p>
                 </div>
@@ -324,7 +324,7 @@ export function ExamplesTab({ selectedPalette, onLoadExample }: ExamplesTabProps
         <button
           onClick={handleLoad}
           disabled={!selectedExample}
-          className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-md border border-primary/60 bg-primary/8 text-primary font-medium hover:bg-primary/12 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+          className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-md border border-primary bg-primary text-primary-foreground font-medium hover:opacity-90 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
         >
           <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5">
             <path

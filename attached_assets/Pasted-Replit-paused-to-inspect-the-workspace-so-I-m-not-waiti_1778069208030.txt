@@ -1,0 +1,566 @@
+Replit paused to inspect the workspace, so I’m not waiting on it. Use the revised directive below.
+
+The reason this version is tighter: the BPMN app already has the stronger sibling-product shell. Its `Layout.tsx` uses an always-dark OKH-style sticky header, mobile nav, footer, and forge-grid body structure.  Its `index.css` defines the better visual primitives: warm paper light mode, rust-orange primary, display/body/mono font split, forge-grid, code-panel, forge buttons, eyebrow labels, and callouts.  Mermaid Theme Builder already has strong functionality and OKH-ish tokens, but its shell is still more generic app/dashboard than branded OverKill product.  
+
+Use this with Replit:
+
+```text
+# REPLIT: Mermaid Theme Builder — Rebrand / Visual Alignment With BPMN Diagrams from Mermaid
+
+You are updating the existing Mermaid Theme Builder application.
+
+Primary app to update:
+https://replit.com/t/overkill-hill/repls/Mermaid-Theme-Builder
+https://github.com/OKHP3/mermaid-theme-builder
+
+Sibling visual reference:
+https://replit.com/t/overkill-hill/repls/BPMN-Diagrams-from-Mermaid
+https://github.com/OKHP3/mermaid-diagram-bpmn
+
+Primary brand authority:
+https://overkillhill.com
+https://github.com/OKHP3/OverKill-Hill/blob/main/assets/css/theme.css
+https://github.com/OKHP3/OverKill-Hill/blob/main/index.html
+
+Primary instruction:
+Rebrand and visually restyle Mermaid Theme Builder so it looks like a polished sibling application to BPMN Diagrams from Mermaid, while preserving Mermaid Theme Builder’s current product workflow, logic, data, exports, examples, and deployed behavior.
+
+This is a visual-branding and UI-composition pass. It is not a feature expansion and not a product rewrite.
+
+## Design problem
+
+Mermaid Theme Builder is functionally mature, but its current visual language still feels too much like a generic generated SaaS utility. BPMN Diagrams from Mermaid has a stronger OverKill Hill P³ product skin: always-dark forge header, warm-paper light mode, rust-orange actions, grid texture, expressive typography, code-panel styling, branded buttons, footer/status rail, and clearer sibling-product identity.
+
+Mermaid Theme Builder should retain its stronger functionality but inherit the visual confidence of BPMN Diagrams from Mermaid.
+
+## Visual target
+
+Make Mermaid Theme Builder feel like:
+
+BPMN Diagrams from Mermaid
++
+OverKill Hill P³ light-mode brand system
++
+Mermaid Theme Builder’s existing workflow and feature set
+
+The app should become warmer, more branded, more intentional, and more visually distinctive without becoming harder to use.
+
+The target feel:
+
+- OverKill Hill P³ sibling product
+- warm paper UI
+- industrial/forge visual texture
+- rust-orange action language
+- dark forge header
+- readable dense utility layout
+- professional but not sterile
+- branded but not over-decorated
+- desktop-polished
+- mobile-safe
+
+## Non-negotiable preservation rules
+
+Do not remove, break, rename, or regress the existing product workflow:
+
+- Apply tab
+- Compose tab
+- Examples tab
+- Reference tab
+- palette selection
+- custom color editing
+- Mermaid preview
+- diagram detection
+- manual diagram-family override
+- example loading
+- prompt scaffold export
+- Markdown export
+- styled code export
+- local persistence
+- shareable theme URLs
+- theme extraction
+- portable JSON import/export
+- SVG/PNG/Mermaid downloads
+- capability registry
+- class browser
+- mobile bottom navigation
+- GitHub Pages deployment
+
+Do not rewrite the core logic unless unavoidable. This is mainly a shell, CSS, and component-styling pass.
+
+Preserve the current four-tab information architecture:
+
+- Apply = paste/theme/preview/export
+- Compose = design reusable theme/bootstrap
+- Examples = browse/load examples
+- Reference = capability registry/class browser/support guidance
+
+Do not replace this with BPMN’s route structure. BPMN is a proposal/playground app. Mermaid Theme Builder is a working utility.
+
+## Brand firewall
+
+Mermaid Theme Builder is a personal Jamie Hill / OverKill Hill P³ project.
+
+It is not associated with Builders FirstSource, BFS, or any employer-owned work.
+
+Do not add or restore employer references, employer colors, employer example diagrams, employer screenshots, employer workflow names, or employer brand tokens.
+
+Do not add built-in themes named after or imitating real companies such as Walmart, Starbucks, Microsoft, Apple, Target, Home Depot, or any other third-party corporate brand.
+
+Built-in themes must remain either:
+
+- original generic palettes, or
+- personal OverKill Hill / AskJamie / Glee-fully ecosystem palettes.
+
+## Visual authority order
+
+When making styling decisions, use this priority:
+
+1. OverKill Hill P³ light-mode brand tokens and visual grammar.
+2. BPMN Diagrams from Mermaid’s current polished sibling-app implementation.
+3. Mermaid Theme Builder’s existing app shell and workflow.
+4. Generic shadcn/Tailwind defaults only when they do not conflict with the above.
+
+## Required implementation approach
+
+Before changing files, inspect:
+
+- Mermaid Theme Builder current app shell
+- Mermaid Theme Builder current CSS/theme tokens
+- Mermaid Theme Builder tab components
+- BPMN Diagrams from Mermaid Layout component
+- BPMN Diagrams from Mermaid index CSS
+- BPMN Diagrams from Mermaid Home/Playground styling
+- OverKill Hill theme.css light-mode tokens
+
+Then perform a focused visual refactor.
+
+## Required visual changes
+
+### 1. Replace the generic header with an OKH forge header
+
+Mermaid Theme Builder’s header should visually match the BPMN sibling app.
+
+Use an always-dark OverKill Hill-style header, not a pale `bg-card/60` header.
+
+Header should include:
+
+- app icon
+- “Mermaid Theme Builder”
+- small code-style badge: `theme-builder`
+- version label
+- OKHP³ project indicator
+- theme toggle
+- optional compact repo/project link if already present or easy to add
+
+Header visual treatment:
+
+- dark olive / espresso / blueprint background
+- warm cream text
+- muted warm cream secondary text
+- rust-orange active/accent
+- subtle dark border
+- hover states with low-opacity white overlay
+- compact, product-grade spacing
+
+The header should remain dark in light mode, just like the BPMN app.
+
+### 2. Apply forge-grid background treatment
+
+Add the same kind of subtle forge-grid / blueprint-grid treatment used by BPMN Diagrams from Mermaid.
+
+Use it on the main application body behind the panels.
+
+Constraints:
+
+- grid must be subtle
+- grid must not compete with diagram preview
+- grid must not reduce text contrast
+- grid must not create visual noise inside code/preview panes
+- respect dark/light mode
+
+### 3. Align typography with the sibling app
+
+Adopt the same or highly similar font hierarchy:
+
+- display font for product identity and major headings
+- clean UI sans-serif for body/interface text
+- JetBrains Mono or equivalent for code
+
+Recommended:
+
+- Fraunces or Alfa Slab One for app title / major headings / branded intro
+- Inter for UI text
+- JetBrains Mono for Mermaid/code surfaces
+
+Do not use the display font on dense controls, tables, code, or small labels.
+
+### 4. Add a compact branded intro strip
+
+Add a compact branded intro strip at the top of the Apply experience.
+
+It should not become a giant marketing hero. It should be a concise product-identity banner.
+
+Suggested copy:
+
+“Design once. Paste everywhere. Keep AI-generated Mermaid diagrams on-brand.”
+
+Optional secondary line:
+
+“Theme Mermaid diagrams with reusable visual governance for ChatGPT, Claude, Copilot, Gemini, Mermaid Live, and documentation workflows.”
+
+Suggested actions:
+
+- Start with Example
+- Compose Theme
+- Open Reference
+
+Behavior:
+
+- Keep it compact on desktop.
+- Collapse or simplify it on mobile.
+- Do not push the core Apply workflow too far below the fold.
+- Do not add another separate route for it.
+
+### 5. Restyle tab navigation as an OKH workbench rail
+
+Keep the four tabs:
+
+- Apply
+- Compose
+- Examples
+- Reference
+
+Restyle desktop tabs:
+
+- warm paper / soft card background under the dark header
+- rust-orange active underline or active pill
+- stronger active state
+- less generic gray-tab appearance
+- subtle border and shadow
+- clear hover state
+
+Restyle mobile bottom nav:
+
+- consistent OKH dark or warm-paper treatment
+- rust-orange active state
+- readable labels/icons
+- no horizontal overflow
+- enough tap target height
+
+### 6. Introduce reusable forge UI primitives
+
+Create or standardize reusable styles/classes/components equivalent to the BPMN app’s visual primitives.
+
+Add or adapt:
+
+- forge header tokens
+- forge grid background
+- forge primary button
+- forge outline button
+- forge utility button
+- forge panel/card
+- forge eyebrow label
+- forge callout
+- forge status pill
+- forge code panel
+
+Use these consistently rather than scattering one-off Tailwind classes everywhere.
+
+### 7. Restyle primary actions as forge buttons
+
+High-value actions should look like branded product actions, not generic dashboard buttons.
+
+Apply forge primary button styling to the most important actions:
+
+- Copy Styled Code
+- Copy Bootstrap Markdown
+- Copy Prompt Scaffold
+- Load into Apply
+- Save Palette
+- Export / Download primary actions
+
+Use forge outline or utility variants for secondary actions:
+
+- Edit Colors
+- Reset
+- Import JSON
+- Copy Raw Code
+- Open Reference
+- Start with Example
+
+Rust-orange should signal primary forward motion.
+
+### 8. Make code panels feel like a deliberate forge/code workbench
+
+Mermaid code input, generated code, prompt scaffold output, and raw example code should have an intentional code-panel treatment.
+
+Use:
+
+- dark green/espresso code background
+- warm cream code text
+- muted placeholder text
+- JetBrains Mono
+- subtle warm border
+- rounded corners
+- optional terminal/header strip where useful
+- good scroll behavior
+
+The code editor should not feel like a default textarea.
+
+### 9. Improve cards, panels, and layout rhythm
+
+Restyle cards/panels to better match OverKill Hill light mode:
+
+- warm paper card surfaces
+- subtle warm borders
+- soft shadows
+- rust accent lines only where meaningful
+- fewer nested borders
+- clearer panel headers
+- better vertical rhythm
+- less visual clutter
+
+This should improve all tabs, especially:
+
+- Apply
+- Compose
+- Examples
+- Reference
+
+Do not make the interface more spacious at the expense of usability. It is still a dense utility.
+
+### 10. Improve warnings and capability badges
+
+Use branded status/callout treatments for:
+
+- detected diagram type
+- theme confidence
+- support status
+- renderer-dependent warnings
+- unsupported/gap warnings
+- BPMN approximation warning
+- export readiness
+- selected palette
+- extracted theme notices
+
+Warnings should feel intentional and legible, not like raw form validation.
+
+### 11. Add a compact footer or status rail
+
+Add a small footer/status rail on desktop and a non-intrusive equivalent on mobile if feasible.
+
+Suggested content:
+
+`mermaid-theme-builder — visual governance utility · OverKill Hill P³`
+
+Useful links:
+
+- GitHub
+- OverKill Hill project page
+- Mermaid Live
+- BPMN sibling app if appropriate
+
+Keep it compact. Do not steal significant vertical space from the app.
+
+### 12. Preserve and improve mobile behavior
+
+The visual rebrand must not break the mobile improvements.
+
+Mobile requirements:
+
+- no horizontal scrolling
+- Apply remains usable
+- code input remains accessible
+- preview remains useful
+- color editor drawer/modal still works
+- bottom nav remains usable
+- buttons are thumb-friendly
+- tabs do not crowd
+- intro strip is compact or collapsible
+- Reference and Examples remain readable
+
+Do not introduce large desktop-only decorative elements that make mobile worse.
+
+## Component-specific guidance
+
+### App shell
+
+Update the shell/header/nav/footer styling first. This is the highest-leverage change.
+
+The final shell should look like a sibling of BPMN Diagrams from Mermaid.
+
+### Apply tab
+
+Apply should remain the default work mode.
+
+Improve:
+
+- compact intro strip
+- palette strip styling
+- code panel styling
+- preview panel styling
+- export action hierarchy
+- warning/status styling
+
+Do not make Apply busier.
+
+### Compose tab
+
+Compose should feel like the “theme studio” surface.
+
+Improve:
+
+- full palette cards
+- color editor grouping
+- font controls
+- theme metadata
+- bootstrap/scaffold actions
+- sample preview card
+
+Make it look like a branded theme-building workstation.
+
+### Examples tab
+
+Examples should look like a curated example gallery, not a raw list.
+
+Improve:
+
+- grouped example cards
+- support badges
+- selected example state
+- preview card
+- Load into Apply button hierarchy
+- raw code panel styling
+
+### Reference tab
+
+Reference should look like a capability guide.
+
+Improve:
+
+- registry cards/table styling
+- search/filter styling
+- status badges
+- limitation callouts
+- external links
+- class browser hierarchy
+
+Make it dense but organized.
+
+## What not to do
+
+Do not clone BPMN’s page/route structure.
+
+Do not remove the four-tab workflow.
+
+Do not add a new landing page route unless absolutely necessary.
+
+Do not bury Apply under a marketing page.
+
+Do not add unrelated features.
+
+Do not add AI generation.
+
+Do not add file upload.
+
+Do not add backend services.
+
+Do not add accounts or payment.
+
+Do not add corporate brand presets.
+
+Do not add employer-specific references.
+
+Do not weaken the existing functionality.
+
+## Validation checklist
+
+After the rebrand:
+
+1. App opens successfully.
+2. Apply tab loads by default.
+3. Header now visually resembles the BPMN sibling app.
+4. Body uses subtle forge-grid background.
+5. Light mode has warm-paper OKH styling.
+6. Dark mode remains usable.
+7. Header stays OKH dark in light mode.
+8. Tabs look like a branded workbench rail.
+9. Code input/output panels use intentional code-panel styling.
+10. Primary actions use forge/rust-orange styling.
+11. Compose remains fully functional.
+12. Examples can still load examples into Apply.
+13. Reference still shows capability registry/class browser.
+14. Mermaid preview still renders.
+15. Copy/export actions still work.
+16. Theme extraction still works.
+17. Local persistence still works.
+18. Shareable theme URL behavior still works.
+19. Mobile has no horizontal scrolling.
+20. Mobile bottom nav still works.
+21. Build passes.
+22. GitHub Pages deployment remains intact.
+23. No employer references are introduced.
+24. No third-party corporate themes are introduced.
+
+## Required documentation update
+
+Update relevant docs to mention the visual rebrand.
+
+At minimum update:
+
+- README.md
+- docs/ROADMAP.md if present
+- docs/RELEASE_CHECKLIST.md if present
+- docs/ux-restructure-assessment.md or create a new visual-branding assessment doc
+
+Add a short release note:
+
+“Visual rebrand pass: aligned Mermaid Theme Builder with the BPMN Diagrams from Mermaid sibling app and OverKill Hill P³ light-mode design language. Preserved the Apply / Compose / Examples / Reference workflow while improving header, typography, cards, buttons, code panels, forge-grid background, and mobile-safe brand treatment.”
+
+## Required final report
+
+When complete, report:
+
+1. Visual assessment summary.
+2. Files changed.
+3. CSS/tokens added or changed.
+4. Components changed.
+5. What was borrowed from BPMN Diagrams from Mermaid.
+6. What was grounded in OverKill Hill light mode.
+7. What was intentionally not copied.
+8. Mobile validation result.
+9. Build/test result.
+10. GitHub Pages deployment status.
+11. Firewall scan result.
+12. Commit SHA.
+13. Remaining polish recommendations.
+
+## Final quality bar
+
+Mermaid Theme Builder should no longer look like a generic generated utility.
+
+It should look like a deliberate OverKill Hill P³ product:
+
+- sibling-consistent with BPMN Diagrams from Mermaid,
+- visually grounded in the OverKill Hill light-mode system,
+- still utility-first,
+- still dense where needed,
+- but now branded, warmer, sharper, and more polished.
+```
+
+## Priority order for Replit
+
+Give Replit one clear order of operations:
+
+```text
+1. App shell/header/nav/footer
+2. Global tokens and forge utilities
+3. Apply tab visual polish
+4. Compose tab visual polish
+5. Examples tab visual polish
+6. Reference tab visual polish
+7. Mobile pass
+8. Docs and final report
+```
+
+The mistake to avoid: letting it redesign features before it fixes the shell. The shell is what made the BPMN app feel better.
