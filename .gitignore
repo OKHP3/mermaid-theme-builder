@@ -10,6 +10,7 @@ out-tsc
 
 # dependencies
 node_modules
+artifacts/*/node_modules/
 
 # IDEs and editors
 /.idea
@@ -47,3 +48,4 @@ Thumbs.db
 # Replit
 .cache/
 .local/
+artifacts/mockup-sandbox/
