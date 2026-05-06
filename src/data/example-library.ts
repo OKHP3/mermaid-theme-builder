@@ -324,22 +324,7 @@ const REQUIREMENT_SCOPE_FIREWALL = `requirementDiagram
         text: Generated output must render in Mermaid v11 renderers
         risk: medium
         verifymethod: test
-    }
-
-    element scope_audit {
-        type: test
-        docref: AGENTS
-    }
-
-    element render_test {
-        type: test
-        docref: examples
-    }
-
-    scope_audit - verifies -> brand_separation
-    scope_audit - verifies -> static_only
-    scope_audit - verifies -> local_privacy
-    render_test - verifies -> mermaid_compat`;
+    }`;
 
 const PIE_EFFORT_ALLOCATION = `pie showData
     title Development Effort Allocation
