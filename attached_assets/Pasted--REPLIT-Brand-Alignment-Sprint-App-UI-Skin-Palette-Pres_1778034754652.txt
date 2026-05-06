@@ -1,0 +1,428 @@
+# REPLIT: Brand Alignment Sprint — App UI Skin + Palette Preset Corrections
+
+## IMPORTANT: TWO SEPARATE CONCERNS
+
+This prompt addresses two distinct problems. Do not confuse them.
+
+**Concern 1: The app's own UI skin.**
+The Mermaid Theme Builder's interface (tab bar, backgrounds, typography, buttons, panels, headers) currently uses generic Tailwind defaults. It should instead use the OverKill Hill light-mode design tokens so the app *looks like* an OverKill Hill product. This is about the tool's own appearance, not about diagram theming.
+
+**Concern 2: The three brand diagram-theming presets are wrong.**
+The OverKill Hill P3, Glee-fully, and AskJamie color swatches in `palettes.ts` were approximated during early development. They need to be corrected against the actual production CSS from each website. This is about what colors get injected into Mermaid diagrams when a user selects these presets, not the app's own appearance.
+
+---
+
+# CONCERN 1: APP UI SKIN (OverKill Hill Light Mode)
+
+## Source of Truth
+
+The design tokens come from `https://github.com/OKHP3/OverKill-Hill/blob/main/assets/css/theme.css`. The app should use the **light mode** values (`:root[data-theme="light"]` overrides).
+
+## Extracted Tokens (from production theme.css)
+
+### Core palette variables
+```css
+--okh-teal:      #1c3a34;
+--okh-olive:     #676a2c;
+--okh-ochre:     #a06e28;
+--okh-rust:      #5b3a27;
+--okh-espresso:  #2a2320;
+--okh-orange:    #c46a2c;   /* rust-orange accent */
+--okh-amber:     #e6a03c;
+--okh-paper:     #f6f2ee;
+--okh-gray:      #6b7280;
+```
+
+### Light mode mapped tokens (what the app should use)
+```css
+--color-bg:             #eff2f5;              /* page background */
+--color-surface:        #f6f2ee;              /* warm paper — cards, panels */
+--color-surface-soft:   #f0ebe5;              /* slightly richer paper for soft insets */
+--color-fg:             #0f172a;              /* primary text */
+--color-muted:          #4b5563;              /* secondary text */
+--color-accent:         #c46a2c;              /* rust-orange accent (buttons, active tab, links) */
+--color-border-subtle:  rgba(15, 23, 42, 0.08); /* subtle dividers */
+```
+
+### Typography
+```css
+--font-heading: "Alfa Slab One", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+--font-body:    "DM Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+```
+
+### Layout constants
+```css
+--radius-md: 0.75rem;
+--radius-lg: 1.25rem;
+--shadow-soft: 0 18px 40px rgba(0, 0, 0, 0.12); /* softer for light mode */
+```
+
+## Implementation
+
+### Step 1.1: Add Google Fonts
+
+In `index.html`, add the Google Fonts link in `<head>`:
+
+```html
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+```
+
+### Step 1.2: Define CSS custom properties
+
+In `src/index.css` (or the global CSS file), add these at the top:
+
+```css
+:root {
+  /* OverKill Hill P3 Light Mode — from production theme.css */
+  --okh-teal:           #1c3a34;
+  --okh-orange:         #c46a2c;
+  --okh-amber:          #e6a03c;
+  --okh-paper:          #f6f2ee;
+
+  --color-bg:           #eff2f5;
+  --color-surface:      #f6f2ee;
+  --color-surface-soft: #f0ebe5;
+  --color-fg:           #0f172a;
+  --color-muted:        #4b5563;
+  --color-accent:       #c46a2c;
+  --color-border:       rgba(15, 23, 42, 0.08);
+
+  --font-heading:       "Alfa Slab One", system-ui, sans-serif;
+  --font-body:          "DM Sans", system-ui, sans-serif;
+
+  --radius-md:          0.75rem;
+  --radius-lg:          1.25rem;
+}
+```
+
+### Step 1.3: Apply to the app shell
+
+Replace the current generic Tailwind styling on major UI surfaces with the OKH design tokens. Here is the mapping:
+
+| UI Element | Current (generic) | Target (OKH light mode) |
+|------------|-------------------|------------------------|
+| **Page background** | White or Tailwind gray-50 | `var(--color-bg)` = `#eff2f5` |
+| **Card/panel backgrounds** | White or gray-100 | `var(--color-surface)` = `#f6f2ee` (warm paper) |
+| **Inset/recessed areas** (code textarea bg) | Gray-50 | `var(--color-surface-soft)` = `#f0ebe5` |
+| **Primary text** | Tailwind gray-900 | `var(--color-fg)` = `#0f172a` |
+| **Secondary/muted text** | Tailwind gray-500 | `var(--color-muted)` = `#4b5563` |
+| **Active tab indicator** | Blue or purple | `var(--color-accent)` = `#c46a2c` (rust-orange) |
+| **Buttons (primary)** | Blue | `var(--color-accent)` bg with white text |
+| **Buttons (ghost/outline)** | Gray outline | `var(--color-accent)` text with transparent bg, `var(--color-border)` border |
+| **Links on hover** | Blue | `var(--color-accent)` |
+| **Borders/dividers** | Tailwind gray-200 | `var(--color-border)` = `rgba(15, 23, 42, 0.08)` |
+| **Card border-radius** | Tailwind rounded-lg | `var(--radius-md)` = `0.75rem` |
+| **App title "Mermaid Theme Builder"** | System font | `var(--font-heading)` = Alfa Slab One |
+| **Tab labels** | System font | `var(--font-body)` = DM Sans |
+| **Body text, labels, inputs** | System font | `var(--font-body)` = DM Sans |
+| **Color swatch labels** | System font | `var(--font-body)` at 12-13px, `var(--color-muted)` |
+| **Toast notifications** | Generic | `var(--color-surface)` bg, `var(--color-fg)` text, left border `var(--color-accent)` |
+
+### Step 1.4: Tab bar styling
+
+The tab bar should look like it belongs on overkillhill.com:
+
+```css
+/* Tab bar */
+.tab-bar {
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  font-family: var(--font-body);
+}
+
+/* Active tab */
+.tab-active {
+  color: var(--color-accent);
+  border-bottom: 2px solid var(--color-accent);
+  font-weight: 600;
+}
+
+/* Inactive tab */
+.tab-inactive {
+  color: var(--color-muted);
+}
+
+/* Tab hover */
+.tab-inactive:hover {
+  color: var(--color-fg);
+}
+```
+
+### Step 1.5: App header
+
+The header area (title + subtitle) should use:
+```css
+.app-title {
+  font-family: var(--font-heading);  /* Alfa Slab One */
+  color: var(--okh-teal);             /* #1c3a34, not black */
+  font-size: 1.5rem;
+}
+
+.app-subtitle {
+  font-family: var(--font-body);
+  color: var(--color-muted);
+  font-size: 0.875rem;
+}
+```
+
+### Step 1.6: Version badge
+
+The version badge in the header (currently shows "v0.5.0") should use:
+```css
+.version-badge {
+  background: var(--color-surface-soft);
+  color: var(--color-muted);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+  border: 1px solid var(--color-border);
+}
+```
+
+### Step 1.7: Export buttons
+
+```css
+.btn-primary {
+  background: var(--color-accent);
+  color: #ffffff;
+  font-family: var(--font-body);
+  font-weight: 600;
+  border-radius: var(--radius-md);
+}
+
+.btn-primary:hover {
+  background: #a85a24;  /* slightly darker orange */
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--color-accent);
+  border: 1px solid var(--color-border);
+  font-family: var(--font-body);
+  border-radius: var(--radius-md);
+}
+```
+
+### Step 1.8: Code textarea
+
+```css
+.code-textarea {
+  background: var(--color-surface-soft);  /* #f0ebe5 warm inset */
+  color: var(--color-fg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-family: "Courier New", monospace;  /* code stays monospace */
+}
+```
+
+### Step 1.9: Mermaid preview panel
+
+The preview panel background should be white (`#ffffff`) so diagrams render cleanly against a neutral background. The panel border uses `var(--color-border)`.
+
+### Step 1.10: Warning banner
+
+The existing warning banner ("This diagram has its own theme directive") should use:
+```css
+.warning-banner {
+  background: #fef3cd;  /* warm amber alert bg */
+  border-left: 3px solid var(--okh-amber);  /* #e6a03c */
+  color: var(--okh-rust);  /* #5b3a27 */
+  font-family: var(--font-body);
+}
+```
+
+### What NOT to change
+
+- The Mermaid preview area renders diagrams with their own theme. The preview background stays white.
+- The palette swatch circles show each palette's own colors. They do NOT use the app's accent color.
+- The color editor hex inputs stay as-is. They show the diagram theme colors, not the app UI colors.
+
+---
+
+# CONCERN 2: BRAND PALETTE PRESET CORRECTIONS
+
+## Source of Truth
+
+The correct values come from the production CSS at `https://github.com/OKHP3/OverKill-Hill/blob/main/assets/css/theme.css`. This single CSS file contains the root tokens plus brand-specific overrides for `.glee-main` and `.askjamie-main` body classes.
+
+### How to find the brand overrides
+
+In the Replit terminal, fetch and search the CSS:
+```bash
+curl -sL "https://raw.githubusercontent.com/OKHP3/OverKill-Hill/main/assets/css/theme.css" > /tmp/okh-theme.css
+
+# Find all Mermaid-related custom properties
+grep -n "mermaid" /tmp/okh-theme.css
+
+# Find Glee-fully brand tokens
+grep -n -A 20 "glee" /tmp/okh-theme.css | head -80
+
+# Find AskJamie brand tokens
+grep -n -A 20 "askjamie" /tmp/okh-theme.css | head -80
+
+# Find all color token overrides
+grep -n "color-accent\|color-surface\|color-bg\|color-fg" /tmp/okh-theme.css | head -40
+```
+
+Use the actual values found in the CSS to populate the palette corrections below. **Do not approximate or guess.**
+
+## Known Values (from production sources)
+
+### OverKill Hill P3 Mermaid Tokens (from `:root` in theme.css)
+
+These are the EXACT production values. Update `palettes.ts` to match:
+
+```ts
+// OverKill Hill P3 — from theme.css :root
+{
+  primaryColor:       '#111827',   // --mermaid-primary-color
+  primaryTextColor:   '#e5e7eb',   // --mermaid-primary-text-color
+  primaryBorderColor: '#c46a2c',   // --mermaid-primary-border-color
+  secondaryColor:     '#181f26',   // --mermaid-secondary-color
+  secondaryTextColor: '#e5e7eb',
+  secondaryBorderColor: '#c46a2c',
+  tertiaryColor:      '#1c3a34',   // --mermaid-tertiary-color
+  tertiaryTextColor:  '#e5e7eb',
+  tertiaryBorderColor: '#c46a2c',
+  lineColor:          '#c46a2c',   // --mermaid-line-color
+  textColor:          '#e5e7eb',
+  edgeLabelBackground: '#181f26',  // --mermaid-edge-label-bg
+}
+```
+
+### Glee-fully Mermaid Tokens (EXACT, from `.glee-main` in theme.css lines 3428-3435)
+
+```ts
+// Glee-fully — from theme.css .glee-main block
+// Comment in CSS: "Mermaid theming – Glee-fully (coral + cream)"
+{
+  primaryColor:       '#fffdfa',   // warm white (NOT #D94F63 — that's the accent/border)
+  primaryTextColor:   '#2e2b29',   // charcoal
+  primaryBorderColor: '#d94f63',   // coral
+  secondaryColor:     '#f6f2ee',   // paper cream
+  secondaryTextColor: '#2e2b29',
+  secondaryBorderColor: '#d94f63',
+  tertiaryColor:      '#e5d9ce',   // warm sand
+  tertiaryTextColor:  '#2e2b29',
+  tertiaryBorderColor: '#d94f63',
+  lineColor:          '#d94f63',   // coral
+  textColor:          '#2e2b29',
+  edgeLabelBackground: '#fff7f1',  // soft warm white
+}
+// UI accent: #d94f63 (coral), accent-2: #2d6f7e (teal)
+// Font: "Open Sans", system-ui
+```
+
+### AskJamie Mermaid Tokens (EXACT, from `.askjamie-main` in theme.css lines 4111-4118)
+
+```ts
+// AskJamie — from theme.css .askjamie-main block
+// Comment in CSS: "Mermaid theming – AskJamie (teal + paper)"
+{
+  primaryColor:       '#fdfbf7',   // warm off-white (NOT #2d6f7e — that's the accent/border)
+  primaryTextColor:   '#2e2b29',   // charcoal
+  primaryBorderColor: '#2d6f7e',   // teal
+  secondaryColor:     '#f6f2ee',   // paper cream
+  secondaryTextColor: '#2e2b29',
+  secondaryBorderColor: '#2d6f7e',
+  tertiaryColor:      '#e1ecef',   // cool aqua wash
+  tertiaryTextColor:  '#2e2b29',
+  tertiaryBorderColor: '#2d6f7e',
+  lineColor:          '#2d6f7e',   // teal
+  textColor:          '#2e2b29',
+  edgeLabelBackground: '#f6f2ee',  // paper cream
+}
+// UI accent: #2d6f7e (teal)
+// Heading font: "Baloo 2", system-ui
+// Body font: "Open Sans", system-ui
+// Accent font: "Kalam", system-ui
+```
+
+## Palette Correction Process
+
+### Step 2.1: Update palettes.ts with exact production values
+
+Open `palettes.ts`. Find the three brand palette definitions. Replace their color values with the exact values listed above. Every hex code comes directly from the production `theme.css` on lines 51-58 (OKH), 3428-3435 (Glee-fully), and 4111-4118 (AskJamie).
+
+**Key corrections from the previous approximations:**
+
+| Palette | Field | OLD (wrong) | NEW (from CSS) |
+|---------|-------|-------------|----------------|
+| OKH P3 | primaryColor | #1C3A34 | **#111827** |
+| OKH P3 | lineColor | #E6A03C | **#c46a2c** |
+| OKH P3 | secondaryColor | (approx) | **#181f26** |
+| OKH P3 | tertiaryColor | (approx) | **#1c3a34** |
+| OKH P3 | edgeLabelBackground | (approx) | **#181f26** |
+| Glee-fully | primaryColor | #D94F63 | **#fffdfa** (coral is the BORDER, not primary) |
+| Glee-fully | secondaryColor | #F6F2EE | **#f6f2ee** (was correct) |
+| Glee-fully | tertiaryColor | #2D6F7E | **#e5d9ce** (teal is accent-2, not tertiary) |
+| Glee-fully | edgeLabelBackground | (approx) | **#fff7f1** |
+| AskJamie | primaryColor | #2D6F7E | **#fdfbf7** (teal is the BORDER, not primary) |
+| AskJamie | secondaryColor | #EDE9E3 | **#f6f2ee** |
+| AskJamie | tertiaryColor | #4A9BAD | **#e1ecef** |
+| AskJamie | edgeLabelBackground | (approx) | **#f6f2ee** |
+
+The most important fix: **Glee-fully and AskJamie both use light/warm backgrounds as their Mermaid primary color** (cream/off-white nodes), with the brand accent (coral or teal) as border and line colors. The previous implementation had the accent color as the primary fill, which would produce dark-filled nodes instead of light cream nodes with colored borders. This is wrong. Fix it.
+
+### Step 2.4: Verify visually
+
+After updating, paste a flowchart with subgraphs into the Apply tab and cycle through all three brand presets. Each diagram should look like it *belongs* on that brand's website.
+
+---
+
+# COMMIT
+
+```bash
+git add -A
+git commit -m "style: align app UI to OverKill Hill light-mode brand tokens + correct brand palette presets
+
+App UI:
+- Page bg: #eff2f5, panels: #f6f2ee (warm paper), insets: #f0ebe5
+- Accent: #c46a2c (rust-orange) for active tabs, buttons, links
+- Typography: Alfa Slab One headings, DM Sans body
+- All borders, shadows, radii from production theme.css
+
+Palette presets:
+- OKH P3: corrected to production Mermaid tokens from theme.css :root
+- Glee-fully: corrected to production brand overrides from .glee-main
+- AskJamie: corrected to production brand overrides from .askjamie-main
+
+Source of truth: github.com/OKHP3/OverKill-Hill/blob/main/assets/css/theme.css"
+
+git push origin main
+```
+
+---
+
+# BRAND RULES (NON-NEGOTIABLE)
+
+1. Personal OverKill Hill P3 project by Jamie Hill
+2. NOT affiliated with Builders FirstSource, BFS, or any employer
+3. NEVER use: #00205B, #003087, #002F86, #B3C1DB, #D6E5F9, #D0D0CE, #C8102E
+4. The app UI uses the OverKill Hill light-mode tokens
+5. The brand palette presets use the production Mermaid tokens from theme.css
+
+---
+
+# SUCCESS CRITERIA
+
+**Concern 1 (App UI Skin):**
+- [ ] Page background is `#eff2f5` (not white, not generic gray)
+- [ ] Cards/panels are `#f6f2ee` (warm paper cream)
+- [ ] Active tab indicator is `#c46a2c` (rust-orange)
+- [ ] Buttons use `#c46a2c` accent
+- [ ] App title uses Alfa Slab One font
+- [ ] Body text uses DM Sans font
+- [ ] Code textarea background is `#f0ebe5` (warm inset)
+- [ ] Mermaid preview panel background is white
+- [ ] The app visually looks like it belongs on overkillhill.com
+
+**Concern 2 (Palette Presets):**
+- [ ] OverKill Hill P3 preset uses exact values from theme.css `:root` Mermaid tokens
+- [ ] Glee-fully preset uses values from `.glee-main` Mermaid tokens (or constructed from brand UI tokens)
+- [ ] AskJamie preset uses values from `.askjamie-main` Mermaid tokens (or constructed from brand UI tokens)
+- [ ] Selecting each brand preset produces a diagram that visually matches that brand's website
+- [ ] The 4 generic presets (Ocean Depth, Forest Sage, Slate Ember, Violet Mist) are unchanged
