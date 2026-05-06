@@ -365,20 +365,26 @@ function AppShell() {
       const next = [id, ...prev.filter((p) => p !== id)].slice(0, RECENT_PALETTES_MAX);
       return next;
     });
+    const knownExamples = new Set<string>([
+      GENERIC_EXAMPLE,
+      SHOWCASE_EXAMPLE,
+      ...Object.values(BRAND_EXAMPLES).flatMap(({ flowchart, sequence }) => [
+        flowchart,
+        sequence,
+      ]),
+      ...EXAMPLE_GROUPS.flatMap((g) => g.entries.map((e) => e.content)),
+    ]);
     const isBrandPalette = BRAND_PALETTES.some((p) => p.id === id);
     if (isBrandPalette && BRAND_EXAMPLES[id]) {
-      const knownExamples = new Set<string>([
-        GENERIC_EXAMPLE,
-        SHOWCASE_EXAMPLE,
-        ...Object.values(BRAND_EXAMPLES).flatMap(({ flowchart, sequence }) => [
-          flowchart,
-          sequence,
-        ]),
-        ...EXAMPLE_GROUPS.flatMap((g) => g.entries.map((e) => e.content)),
-      ]);
       setInputCode((current) =>
         current.trim() === "" || knownExamples.has(current)
           ? BRAND_EXAMPLES[id].flowchart
+          : current,
+      );
+    } else if (!isBrandPalette) {
+      setInputCode((current) =>
+        current.trim() === "" || knownExamples.has(current)
+          ? GENERIC_EXAMPLE
           : current,
       );
     }

@@ -77,11 +77,11 @@ export const OVERKILL_HILL_SEQUENCE = `sequenceDiagram
     deactivate O`;
 
 const ASKJAMIE_FLOWCHART = `flowchart TD
-    classDef primary fill:#5b3a27,stroke:#c46a2c,color:#f6f2ee
-    classDef gate fill:#c46a2c,stroke:#a06e28,color:#f6f2ee
-    classDef secondary fill:#676a2c,stroke:#a06e28,color:#f6f2ee
-    classDef accent fill:#e6a03c,stroke:#a06e28,color:#2a2320
-    classDef outOfScope fill:#f6f2ee,stroke:#a06e28,color:#5b3a27,stroke-dasharray:5
+    classDef primary fill:#fdfbf7,stroke:#2d6f7e,color:#2e2b29
+    classDef gate fill:#2d6f7e,stroke:#1a505c,color:#fdfbf7
+    classDef secondary fill:#f6f2ee,stroke:#2d6f7e,color:#2e2b29
+    classDef accent fill:#e8f4f7,stroke:#2d6f7e,color:#2e2b29
+    classDef outOfScope fill:#fdfbf7,stroke:#2d6f7e,color:#2e2b29,stroke-dasharray:5
 
     subgraph Intake [Request Intake]
         A([User submits question]):::primary
@@ -113,9 +113,9 @@ const ASKJAMIE_FLOWCHART = `flowchart TD
     G -->|No| I
     I --> D
 
-    style Intake fill:#f0ebe5,stroke:#c46a2c,color:#2a2320
-    style Resolution fill:#f0ebe5,stroke:#a06e28,color:#2a2320
-    style Followup fill:#f0ebe5,stroke:#a06e28,color:#2a2320`;
+    style Intake fill:#e8f4f7,stroke:#2d6f7e,color:#2e2b29
+    style Resolution fill:#e8f4f7,stroke:#2d6f7e,color:#2e2b29
+    style Followup fill:#e8f4f7,stroke:#2d6f7e,color:#2e2b29`;
 
 export const ASKJAMIE_SEQUENCE = `sequenceDiagram
     participant U as User
@@ -149,11 +149,11 @@ export const ASKJAMIE_SEQUENCE = `sequenceDiagram
     deactivate A`;
 
 const GLEE_FULLY_FLOWCHART = `flowchart TD
-    classDef primary fill:#1c3a34,stroke:#2d6a4f,color:#f6f2ee
-    classDef secondary fill:#52b788,stroke:#2d6a4f,color:#1c3a34
-    classDef tertiary fill:#d8f3e6,stroke:#2d6a4f,color:#1c3a34
-    classDef gate fill:#e6a03c,stroke:#2d6a4f,color:#1c3a34,font-weight:bold
-    classDef accent fill:#2d6a4f,stroke:#1c3a34,color:#f6f2ee
+    classDef primary fill:#fffdfa,stroke:#d94f63,color:#2e2b29
+    classDef secondary fill:#f6f2ee,stroke:#d94f63,color:#2e2b29
+    classDef tertiary fill:#e5d9ce,stroke:#d94f63,color:#2e2b29
+    classDef gate fill:#d94f63,stroke:#b03050,color:#fffdfa,font-weight:bold
+    classDef accent fill:#f9f3ef,stroke:#d94f63,color:#2e2b29
 
     subgraph Morning [Morning Routine]
         A([Wake up]):::primary
@@ -187,9 +187,9 @@ const GLEE_FULLY_FLOWCHART = `flowchart TD
     K -->|Yes| M
     K -->|No| L --> J
 
-    style Morning fill:#e8f7ef,stroke:#2d6a4f,color:#1c3a34
-    style Planning fill:#e8f7ef,stroke:#2d6a4f,color:#1c3a34
-    style Focus fill:#e8f7ef,stroke:#2d6a4f,color:#1c3a34`;
+    style Morning fill:#f9f3ef,stroke:#d94f63,color:#2e2b29
+    style Planning fill:#f9f3ef,stroke:#d94f63,color:#2e2b29
+    style Focus fill:#f9f3ef,stroke:#d94f63,color:#2e2b29`;
 
 export const GLEE_FULLY_SEQUENCE = `sequenceDiagram
     participant Me as Me
