@@ -49,3 +49,6 @@ Thumbs.db
 .cache/
 .local/
 artifacts/mockup-sandbox/
+
+# Replit paste/scratchpad artifacts
+attached_assets/
