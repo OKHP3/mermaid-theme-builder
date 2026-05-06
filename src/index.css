@@ -72,45 +72,52 @@
   --elevate-1: rgba(0,0,0, .03);
   --elevate-2: rgba(0,0,0, .08);
 
-  --background: 220 20% 97%;
-  --foreground: 224 30% 12%;
-  --border: 220 14% 88%;
-  --card: 0 0% 100%;
-  --card-foreground: 224 30% 12%;
-  --card-border: 220 14% 90%;
-  --sidebar: 220 20% 95%;
-  --sidebar-foreground: 224 30% 12%;
-  --sidebar-border: 220 14% 86%;
-  --sidebar-primary: 258 80% 56%;
+  /* ── OverKill Hill P³ raw palette tokens (light mode) ──────────────── */
+  --okh-teal:           #1c3a34;
+  --okh-orange:         #c46a2c;
+  --okh-amber:          #e6a03c;
+  --okh-paper:          #f6f2ee;
+  /* ─────────────────────────────────────────────────────────────────── */
+
+  --background: 210 13% 95%;        /* #eff2f5  page bg */
+  --foreground: 222 47% 11%;        /* #0f172a  primary text */
+  --border: 30 20% 88%;             /* warm subtle border */
+  --card: 34 35% 95%;               /* #f6f2ee  warm paper */
+  --card-foreground: 222 47% 11%;
+  --card-border: 30 20% 88%;
+  --sidebar: 33 28% 93%;
+  --sidebar-foreground: 222 47% 11%;
+  --sidebar-border: 30 18% 86%;
+  --sidebar-primary: 25 63% 47%;    /* #c46a2c  rust-orange */
   --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 258 40% 92%;
-  --sidebar-accent-foreground: 258 60% 30%;
-  --sidebar-ring: 258 80% 56%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 224 30% 12%;
-  --popover-border: 220 14% 88%;
-  --primary: 258 80% 56%;
+  --sidebar-accent: 25 40% 92%;
+  --sidebar-accent-foreground: 25 63% 35%;
+  --sidebar-ring: 25 63% 47%;
+  --popover: 34 35% 97%;
+  --popover-foreground: 222 47% 11%;
+  --popover-border: 30 20% 88%;
+  --primary: 25 63% 47%;            /* #c46a2c  rust-orange */
   --primary-foreground: 0 0% 100%;
-  --secondary: 220 14% 93%;
-  --secondary-foreground: 224 30% 20%;
-  --muted: 220 14% 93%;
-  --muted-foreground: 220 12% 46%;
-  --accent: 258 40% 92%;
-  --accent-foreground: 258 60% 30%;
+  --secondary: 33 28% 92%;          /* #f0ebe5  warm soft inset */
+  --secondary-foreground: 222 30% 20%;
+  --muted: 33 25% 91%;
+  --muted-foreground: 220 9% 35%;   /* #4b5563 */
+  --accent: 25 40% 92%;             /* light rust tint */
+  --accent-foreground: 25 63% 35%;
   --destructive: 0 72% 51%;
   --destructive-foreground: 0 0% 100%;
-  --input: 220 14% 84%;
-  --ring: 258 80% 56%;
-  --chart-1: 258 80% 56%;
+  --input: 30 20% 85%;
+  --ring: 25 63% 47%;               /* rust-orange focus ring */
+  --chart-1: 25 63% 47%;
   --chart-2: 196 90% 45%;
   --chart-3: 38 92% 52%;
   --chart-4: 142 72% 42%;
   --chart-5: 330 80% 54%;
 
-  --app-font-sans: 'Inter', 'system-ui', sans-serif;
+  --app-font-sans: 'DM Sans', 'system-ui', sans-serif;
   --app-font-serif: Georgia, serif;
   --app-font-mono: 'JetBrains Mono', 'Menlo', monospace;
-  --radius: 0.5rem;
+  --radius: 0.75rem;
 
   --shadow-2xs: 0 1px 2px 0 rgba(0,0,0,0.04);
   --shadow-xs: 0 1px 3px 0 rgba(0,0,0,0.06);
@@ -146,6 +153,12 @@
   --elevate-1: rgba(255,255,255, .04);
   --elevate-2: rgba(255,255,255, .09);
 
+  /* ── OverKill Hill P³ dark mode — espresso/blueprint palette ───────── */
+  --okh-teal:           #1c3a34;
+  --okh-orange:         #c46a2c;
+  --okh-amber:          #e6a03c;
+  /* ─────────────────────────────────────────────────────────────────── */
+
   --background: 224 30% 8%;
   --foreground: 220 14% 92%;
   --border: 224 20% 18%;
@@ -155,27 +168,27 @@
   --sidebar: 224 28% 10%;
   --sidebar-foreground: 220 14% 90%;
   --sidebar-border: 224 20% 16%;
-  --sidebar-primary: 258 80% 64%;
+  --sidebar-primary: 25 63% 58%;    /* rust-orange, lighter for dark bg */
   --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 258 30% 20%;
-  --sidebar-accent-foreground: 258 60% 78%;
-  --sidebar-ring: 258 80% 64%;
+  --sidebar-accent: 25 25% 18%;
+  --sidebar-accent-foreground: 25 50% 75%;
+  --sidebar-ring: 25 63% 58%;
   --popover: 224 25% 11%;
   --popover-foreground: 220 14% 92%;
   --popover-border: 224 20% 18%;
-  --primary: 258 80% 64%;
+  --primary: 25 63% 58%;            /* rust-orange, slightly lighter */
   --primary-foreground: 0 0% 100%;
   --secondary: 224 20% 16%;
   --secondary-foreground: 220 14% 88%;
   --muted: 224 20% 14%;
   --muted-foreground: 220 12% 56%;
-  --accent: 258 30% 20%;
-  --accent-foreground: 258 60% 78%;
+  --accent: 25 25% 18%;
+  --accent-foreground: 25 50% 75%;
   --destructive: 0 72% 58%;
   --destructive-foreground: 0 0% 100%;
   --input: 224 20% 18%;
-  --ring: 258 80% 64%;
-  --chart-1: 258 80% 64%;
+  --ring: 25 63% 58%;               /* rust-orange focus ring */
+  --chart-1: 25 63% 58%;
   --chart-2: 196 90% 52%;
   --chart-3: 38 92% 58%;
   --chart-4: 142 72% 48%;
@@ -197,6 +210,9 @@
   }
   body {
     @apply font-sans antialiased bg-background text-foreground;
+  }
+  header h1 {
+    font-family: 'Alfa Slab One', system-ui, sans-serif;
   }
 }
 
