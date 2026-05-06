@@ -300,21 +300,21 @@ const REQUIREMENT_SCOPE_FIREWALL = `requirementDiagram
 
     requirement brand_separation {
         id: 1
-        text: No employer branding, colors, or references in any deliverable
+        text: No employer branding or colors in any deliverable
         risk: high
         verifymethod: inspection
     }
 
     requirement static_only {
         id: 2
-        text: No backend, no login, no API calls, no data storage
+        text: No backend or login or API calls or data storage
         risk: medium
         verifymethod: test
     }
 
     requirement local_privacy {
         id: 3
-        text: All transforms happen client-side; no data leaves the browser
+        text: All transforms happen client-side and no data leaves the browser
         risk: medium
         verifymethod: inspection
     }
