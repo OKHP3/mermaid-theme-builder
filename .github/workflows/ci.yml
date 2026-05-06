@@ -20,15 +20,15 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
         with:
           version: 10
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: pnpm
@@ -43,4 +43,4 @@ jobs:
         env:
           PORT: "18624"
           BASE_PATH: "/mermaid-theme-builder/"
-        run: pnpm --filter @workspace/mermaid-theme-builder run build
+        run: pnpm run build
