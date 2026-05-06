@@ -307,33 +307,33 @@ const REQUIREMENT_SCOPE_FIREWALL = `requirementDiagram
 
     requirement static_only {
         id: 2
-        text: No backend or login or API calls or data storage
+        text: No backend no login no API calls no data storage
         risk: medium
         verifymethod: test
     }
 
     requirement local_privacy {
         id: 3
-        text: All transforms happen client-side and no data leaves the browser
+        text: All transforms happen in browser and no data leaves it
         risk: medium
         verifymethod: inspection
     }
 
     requirement mermaid_compat {
         id: 4
-        text: Generated output must render in Mermaid v11.x renderers
+        text: Generated output must render in Mermaid v11 renderers
         risk: medium
         verifymethod: test
     }
 
     element scope_audit {
         type: test
-        docref: AGENTS.md
+        docref: AGENTS
     }
 
     element render_test {
         type: test
-        docref: examples/*.mmd
+        docref: examples
     }
 
     scope_audit - verifies -> brand_separation
