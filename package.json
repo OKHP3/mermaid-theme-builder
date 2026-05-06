@@ -19,6 +19,7 @@
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "catalog:",
+    "pngjs": "^7.0.0",
     "prettier": "^3.8.1",
     "react": "catalog:",
     "react-dom": "catalog:",

@@ -9,6 +9,7 @@ import {
 } from "@/lib/palettes";
 import { BRAND_EXAMPLES, GENERIC_EXAMPLE, SHOWCASE_EXAMPLE } from "@/data/examples";
 import { EXAMPLE_GROUPS } from "@/data/example-library";
+import { AppIcon } from "@/components/AppIcon";
 import { ApplyTab } from "@/pages/tabs/ApplyTab";
 import { ComposeTab } from "@/pages/tabs/ComposeTab";
 import { ExamplesTab } from "@/pages/tabs/ExamplesTab";
@@ -532,13 +533,7 @@ function AppShell() {
     <div className="h-dvh bg-background flex flex-col overflow-hidden">
       <header className="border-b border-border bg-card/60 backdrop-blur sticky top-0 z-20 px-4 md:px-6 py-2.5 flex items-center justify-between gap-4 shrink-0">
         <div className="flex items-center gap-3">
-          <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center shrink-0">
-            <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" className="w-3.5 h-3.5">
-              <circle cx="12" cy="12" r="3" />
-              <path d="M12 2v3M12 19v3M2 12h3M19 12h3" />
-              <path d="M5.636 5.636l2.122 2.122M16.243 16.243l2.121 2.121M5.636 18.364l2.122-2.122M16.243 7.757l2.121-2.121" />
-            </svg>
-          </div>
+          <AppIcon size={28} aria-hidden="true" />
           <div>
             <h1 className="text-sm font-semibold text-foreground leading-none">
               Mermaid Theme Builder
