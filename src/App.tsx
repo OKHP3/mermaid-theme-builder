@@ -530,7 +530,7 @@ function AppShell() {
   const showToast = useCallback((msg: string) => setToast(msg), []);
 
   return (
-    <div className="h-dvh bg-background flex flex-col overflow-hidden">
+    <div className="forge-shell">
       <header className="forge-header sticky top-0 z-20 px-4 md:px-6 py-3 flex items-center justify-between gap-4 shrink-0 print-hide">
         <div className="flex items-center gap-3">
           <AppIcon size={28} aria-hidden="true" />
@@ -681,7 +681,7 @@ function AppShell() {
       </main>
 
       <nav
-        className="fixed bottom-0 left-0 right-0 flex md:hidden border-t border-white/10 bg-[#1c3a34]/97 backdrop-blur z-30 shrink-0 print-hide"
+        className="forge-mobile-nav fixed bottom-0 left-0 right-0 flex md:hidden z-30 shrink-0 print-hide"
         role="tablist"
         aria-label="Mermaid Theme Builder sections (mobile)"
       >
@@ -706,7 +706,7 @@ function AppShell() {
         })}
       </nav>
 
-      <footer className="flex-none hidden md:flex items-center justify-between px-4 py-1.5 border-t border-white/8 bg-[#0f1a17] print-hide" style={{minHeight: '34px'}}>
+      <footer className="forge-footer flex-none hidden md:flex items-center justify-between px-4 py-1.5 print-hide" style={{minHeight: '34px'}}>
         <div className="flex items-center gap-2 text-[10px] text-[#e5e7eb]/45">
           <span className="font-mono font-medium text-[#e5e7eb]/65">mermaid-theme-builder</span>
           <span>·</span>
