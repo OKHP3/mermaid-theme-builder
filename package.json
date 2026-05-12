@@ -30,6 +30,6 @@
     "vite": "catalog:"
   },
   "dependencies": {
-    "mermaid": "^11.14.0"
+    "mermaid": "11.15.0"
   }
 }
