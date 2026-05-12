@@ -7,8 +7,9 @@ interface MermaidPreviewProps {
 
 type MermaidType = typeof import("mermaid").default;
 
-const MIN_SCALE = 0.5;
-const MAX_SCALE = 4;
+const MIN_SCALE = 0.1;
+const MAX_SCALE = 8;
+const ZOOM_STEP = 0.15;
 
 let mermaidInstance: MermaidType | null = null;
 let initializationDone = false;
@@ -29,35 +30,142 @@ async function getMermaid(): Promise<MermaidType> {
   return mermaidInstance;
 }
 
+function clamp(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function IconZoomIn() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="6.5" cy="6.5" r="4.5" />
+      <line x1="10.5" y1="10.5" x2="14" y2="14" />
+      <line x1="6.5" y1="4.5" x2="6.5" y2="8.5" />
+      <line x1="4.5" y1="6.5" x2="8.5" y2="6.5" />
+    </svg>
+  );
+}
+
+function IconZoomOut() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="6.5" cy="6.5" r="4.5" />
+      <line x1="10.5" y1="10.5" x2="14" y2="14" />
+      <line x1="4.5" y1="6.5" x2="8.5" y2="6.5" />
+    </svg>
+  );
+}
+
+function IconReset() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M2.5 8a5.5 5.5 0 1 0 1.1-3.3" />
+      <polyline points="2.5 3 2.5 6 5.5 6" />
+    </svg>
+  );
+}
+
 export function MermaidPreview({ code, className }: MermaidPreviewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [svgContent, setSvgContent] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [scale, setScale] = useState(1);
+  const [translate, setTranslate] = useState({ x: 0, y: 0 });
+  const [isPanning, setIsPanning] = useState(false);
+
+  const panAnchor = useRef<{ mouseX: number; mouseY: number; tx: number; ty: number } | null>(null);
+  const translateRef = useRef({ x: 0, y: 0 });
   const lastPinchDistance = useRef<number | null>(null);
   const lastTapTime = useRef<number>(0);
   const uniqueId = useId().replace(/:/g, "");
 
   useEffect(() => {
-    setScale(1);
-  }, [code]);
+    translateRef.current = translate;
+  }, [translate]);
 
-  const onTouchStart = useCallback((e: React.TouchEvent<HTMLDivElement>) => {
-    if (e.touches.length === 2) {
-      const dx = e.touches[0].clientX - e.touches[1].clientX;
-      const dy = e.touches[0].clientY - e.touches[1].clientY;
-      lastPinchDistance.current = Math.hypot(dx, dy);
-    } else if (e.touches.length === 1) {
-      const now = Date.now();
-      if (now - lastTapTime.current < 300) {
-        setScale(1);
-        lastTapTime.current = 0;
-      } else {
-        lastTapTime.current = now;
-      }
-    }
+  const resetView = useCallback(() => {
+    setScale(1);
+    setTranslate({ x: 0, y: 0 });
   }, []);
+
+  useEffect(() => {
+    resetView();
+  }, [code, resetView]);
+
+  const zoomBy = useCallback((delta: number) => {
+    setScale((s) => clamp(Math.round((s + delta) * 100) / 100, MIN_SCALE, MAX_SCALE));
+  }, []);
+
+  const zoomIn = useCallback(() => zoomBy(ZOOM_STEP), [zoomBy]);
+  const zoomOut = useCallback(() => zoomBy(-ZOOM_STEP), [zoomBy]);
+
+  // Wheel zoom — must be non-passive to call preventDefault
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const handler = (e: WheelEvent) => {
+      e.preventDefault();
+      const delta = e.deltaY < 0 ? ZOOM_STEP : -ZOOM_STEP;
+      setScale((s) => clamp(Math.round((s + delta) * 100) / 100, MIN_SCALE, MAX_SCALE));
+    };
+    el.addEventListener("wheel", handler, { passive: false });
+    return () => el.removeEventListener("wheel", handler);
+  }, []);
+
+  // Mouse pan start
+  const onMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.button !== 0) return;
+    e.preventDefault();
+    panAnchor.current = {
+      mouseX: e.clientX,
+      mouseY: e.clientY,
+      tx: translateRef.current.x,
+      ty: translateRef.current.y,
+    };
+    setIsPanning(true);
+  }, []);
+
+  // Mouse pan move/end at window level so dragging outside container still works
+  useEffect(() => {
+    if (!isPanning) return;
+    const onMove = (e: MouseEvent) => {
+      if (!panAnchor.current) return;
+      setTranslate({
+        x: panAnchor.current.tx + e.clientX - panAnchor.current.mouseX,
+        y: panAnchor.current.ty + e.clientY - panAnchor.current.mouseY,
+      });
+    };
+    const onUp = () => {
+      panAnchor.current = null;
+      setIsPanning(false);
+    };
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onUp);
+    };
+  }, [isPanning]);
+
+  // Touch: pinch-to-zoom + double-tap reset
+  const onTouchStart = useCallback(
+    (e: React.TouchEvent<HTMLDivElement>) => {
+      if (e.touches.length === 2) {
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        lastPinchDistance.current = Math.hypot(dx, dy);
+      } else if (e.touches.length === 1) {
+        const now = Date.now();
+        if (now - lastTapTime.current < 300) {
+          resetView();
+          lastTapTime.current = 0;
+        } else {
+          lastTapTime.current = now;
+        }
+      }
+    },
+    [resetView]
+  );
 
   const onTouchMove = useCallback((e: React.TouchEvent<HTMLDivElement>) => {
     if (e.touches.length === 2 && lastPinchDistance.current !== null) {
@@ -66,7 +174,7 @@ export function MermaidPreview({ code, className }: MermaidPreviewProps) {
       const dy = e.touches[0].clientY - e.touches[1].clientY;
       const distance = Math.hypot(dx, dy);
       const factor = distance / lastPinchDistance.current;
-      setScale((s) => Math.min(MAX_SCALE, Math.max(MIN_SCALE, s * factor)));
+      setScale((s) => clamp(s * factor, MIN_SCALE, MAX_SCALE));
       lastPinchDistance.current = distance;
     }
   }, []);
@@ -75,10 +183,9 @@ export function MermaidPreview({ code, className }: MermaidPreviewProps) {
     lastPinchDistance.current = null;
   }, []);
 
-  const onDoubleClick = useCallback(() => {
-    setScale(1);
-  }, []);
+  const onDoubleClick = useCallback(() => resetView(), [resetView]);
 
+  // Diagram rendering
   useEffect(() => {
     if (!code.trim()) {
       setSvgContent("");
@@ -89,7 +196,6 @@ export function MermaidPreview({ code, className }: MermaidPreviewProps) {
 
     let cancelled = false;
     const diagramId = `mermaid-${uniqueId}-${Date.now()}`;
-
     setLoading(true);
 
     (async () => {
@@ -115,6 +221,9 @@ export function MermaidPreview({ code, className }: MermaidPreviewProps) {
       cancelled = true;
     };
   }, [code, uniqueId]);
+
+  const btnBase =
+    "flex items-center justify-center w-6 h-6 rounded transition-colors duration-100 text-[#d4c9b5]/70 hover:text-[#c46a2c] hover:bg-white/8 active:bg-white/12 disabled:opacity-30 disabled:cursor-not-allowed";
 
   if (!code.trim()) {
     return (
@@ -152,24 +261,69 @@ export function MermaidPreview({ code, className }: MermaidPreviewProps) {
   }
 
   return (
-    <div
-      ref={containerRef}
-      className={`overflow-auto select-none ${scale === 1 ? "flex items-center justify-center" : ""} ${className ?? ""}`}
-      style={{ touchAction: "pan-x pan-y" }}
-      onTouchStart={onTouchStart}
-      onTouchMove={onTouchMove}
-      onTouchEnd={onTouchEnd}
-      onTouchCancel={onTouchEnd}
-      onDoubleClick={onDoubleClick}
-      title={scale !== 1 ? "Double-tap or double-click to reset zoom" : undefined}
-    >
+    <div className={`relative overflow-hidden ${className ?? ""}`}>
+      {/* Pan/zoom canvas */}
       <div
-        style={{
-          zoom: scale,
-          transition: lastPinchDistance.current !== null ? "none" : "zoom 0.15s ease-out",
-        }}
-        dangerouslySetInnerHTML={{ __html: svgContent }}
-      />
+        ref={containerRef}
+        className="w-full h-full overflow-hidden select-none flex items-center justify-center"
+        style={{ cursor: isPanning ? "grabbing" : "grab", touchAction: "none" }}
+        onMouseDown={onMouseDown}
+        onDoubleClick={onDoubleClick}
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+        onTouchCancel={onTouchEnd}
+        title="Drag to pan · Scroll to zoom · Double-click to reset"
+      >
+        <div
+          style={{
+            transform: `translate(${translate.x}px, ${translate.y}px) scale(${scale})`,
+            transformOrigin: "center center",
+            flexShrink: 0,
+          }}
+          dangerouslySetInnerHTML={{ __html: svgContent }}
+        />
+      </div>
+
+      {/* Controls overlay */}
+      <div
+        className="absolute bottom-2 right-2 z-10 flex items-center gap-0.5 rounded-md border border-white/10 bg-[#0f1f1c]/88 px-1 py-0.5 backdrop-blur-sm shadow-lg"
+        onMouseDown={(e) => e.stopPropagation()}
+      >
+        <button
+          className={btnBase}
+          onClick={zoomOut}
+          title="Zoom out (scroll down)"
+          disabled={scale <= MIN_SCALE}
+          aria-label="Zoom out"
+        >
+          <IconZoomOut />
+        </button>
+        <span
+          className="min-w-[38px] text-center font-mono text-[10px] leading-none text-[#d4c9b5]/55 select-none tabular-nums"
+          title="Current zoom level"
+        >
+          {Math.round(scale * 100)}%
+        </span>
+        <button
+          className={btnBase}
+          onClick={zoomIn}
+          title="Zoom in (scroll up)"
+          disabled={scale >= MAX_SCALE}
+          aria-label="Zoom in"
+        >
+          <IconZoomIn />
+        </button>
+        <div className="mx-0.5 h-3.5 w-px bg-white/15" />
+        <button
+          className={btnBase}
+          onClick={resetView}
+          title="Reset view (double-click)"
+          aria-label="Reset view"
+        >
+          <IconReset />
+        </button>
+      </div>
     </div>
   );
 }
