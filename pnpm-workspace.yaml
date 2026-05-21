@@ -33,10 +33,6 @@ minimumReleaseAgeExclude:
   # this setting guards against does not apply to our own packages.
   - '@replit/*'
   - stripe-replit-sync
-  # Temporary: mermaid 11.15.0 is a security patch fixing 4 CVEs (GHSA-ghcm-xqfw-q4vr,
-  # GHSA-87f9-hvmw-gh4p, GHSA-6m6c-36f7-fhxh, GHSA-xcj9-5m2h-648r). Remove once >1 day old.
-  - mermaid
-  - '@mermaid-js/*'
 
 packages:
   - "."

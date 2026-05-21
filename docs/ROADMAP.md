@@ -1,104 +1,100 @@
 # Roadmap
 
-## v0.1.0 — Foundation ✅ Complete
-
-**Status:** Shipped
+## v0.1.0 — Foundation ✅ Shipped (2026-04-23)
 
 - Static React + Vite + Tailwind CSS v4 app, no backend
 - 15 diagram family auto-detection
 - 7 built-in palettes (3 OKHP3 brand + 4 utility)
 - Live side-by-side preview (Original / Themed)
 - Three export formats: Styled Code, Markdown Bootstrap, Prompt Scaffold
-- Render-safety warnings
 - Two-way live color editor
 - Attribution system (metadata comments + badge)
-- Custom theme naming
-- Extended palette schema with brand metadata
-- Documentation: README, BRAND_PRESETS, THEME_METADATA, ATTRIBUTION
+- MIT license, README, GitHub Pages deployment
 
 ---
 
-## v0.2.0-alpha — Capability Registry ✅ Complete
+## v0.2.0 — Capability Registry + Persistence ✅ Shipped (2026-04-25)
 
-**Status:** Shipped
-
-- **Diagram Inventory** — full-screen registry panel accessible from app header
-- **27 Mermaid families** tracked with Support Status, Theme Confidence, Notation Compliance, description, best-used-for, warning, and example file
-- **10 capability gap entries** — BPMN 2.0, ArchiMate, SysML, VSM, Service Blueprint, OKR Alignment, DFD, Decision Tree, Org Chart, Threat Model DFD
-- **ZenUML and Radar** added to detection engine and capability registry
-- **OverKill Mermaid Example Pack** — 27-entry example metadata registry (pending file delivery)
-- **Richer detection badges** — Support Status + Theme Confidence shown in app header on detect
-- **Richer CapabilityNote** — warning field + support/confidence badges in inline notes
-- Filter tabs: All / Native / Beta+Partial / Experimental / Gaps
-- Search across diagram name, ID, description, and best-used-for
-- Honest gap taxonomy: tracking != implementing unsupported notations
+- **Diagram Capability Registry** — 27 families tracked with support levels, confidence, compliance, and example files
+- **10 capability gap entries** — honest "not supported" tracking for BPMN 2.0, ArchiMate, SysML, VSM, etc.
+- **OverKill Mermaid Example Pack** — 26-entry example library with inlined `.mmd` content
+- **Examples tab** — browse brand-matched examples per palette
+- **`CapabilityNote`** — inline note for non-full-support diagram types
+- **Render-safety warnings** — init directive conflicts, non-printable chars, long labels
+- **localStorage persistence** — palette edits survive reload
+- **URL-encoded palette sharing** — hash-fragment encoding
+- **Import/export palette** as JSON; export all as bundle; export as CSS custom properties
+- **Dark/light/system mode toggle**
+- **Keyboard shortcut** `Ctrl+Shift+C` → copy Styled Code
+- **Diagram family override** — manual selector
+- **Compose tab** — build and edit custom palettes
+- **Diff view** — three-mode Original / Themed / Diff
+- **Multi-diagram paste splitting**
+- **Extract mode** — reverse-engineer theme from existing `%%{init}%%`
+- **Family-specific theming overlays** (sequence, ER, etc.)
+- **Prompt Scaffold v2** — classDefs, YAML frontmatter, repair templates
+- **Documentation suite** — AGENTS.md, PRODUCT_BRIEF, BRAND_PRESETS, ATTRIBUTION, LEGAL, MERMAID_CAPABILITY_REGISTRY, MERMAID_THEMING_REFERENCE, RELEASE_CHECKLIST, THEME_METADATA, DEPLOYMENT
+- **`MERMAID_VERSION_VERIFIED`** governance constant
+- **PWA manifest + service worker**
 
 ---
 
-## v0.2.0 — Examples + Persistence
+## v0.3.0 — App Icon + Palette Corrections ✅ Shipped (2026-05-05)
 
-**Status:** In progress
+- **Custom app icon** — "Forked Flow" SVG + PNG rasters (`scripts/generate-icons.mjs`)
+- **Corrected OKHP3 palette hex values** — accurate colors for OverKill Hill, AskJamie, Glee-fully
+- **Touch compatibility** improvements for mobile preview interactions
+- **Diagram render fixes** — requirements, sequence, fishbone, comma parsing
 
-**Goals:** Make the app useful from first open. Add example library. Make custom themes survive a browser reload.
+---
 
-### Examples (shipped in v0.2-alpha)
-- [x] Brand-matched example library (flowchart + sequence per OKHP3 palette)
-- [x] "OverKill Rube Goldberg Showcase" — advanced stress-test flowchart with ELK layout, semantic classDefs, clickable nodes, and attribution
-- [x] YAML frontmatter detection and strip-on-export
-- [x] Showcase compatibility warning in UI
+## v0.4.0 — Reference Tab + URL Routing ✅ Shipped (2026-05-05)
 
-### Palette / Theme
-- [x] localStorage persistence for custom color edits and custom theme names
-- [x] Export custom palette as a JSON file (`download .json`)
-- [x] Import palette from JSON file
+- **Reference tab** — `DiagramInventory` + `ClassBrowser` as a standalone tab
+- **URL routing** — tab state encoded in URL hash
+- **Filterable/searchable DiagramInventory** — All / Native / Beta+Partial / Experimental / Gaps filter tabs
+- **`ClassBrowser`** — collapsible CSS class reference panel
 
-### Export
-- [ ] Preview all three export formats before copying (read-only code pane below the diagram)
-- [x] Download as `.md` file (Markdown Bootstrap)
-- [x] Download as `.txt` file (Prompt Scaffold)
+---
 
-### UI
-- [x] Dark/light mode toggle (independent of diagram theme)
-- [x] Keyboard shortcut: `Ctrl+Shift+C` → copy Styled Code
-- [x] Diagram family override (manual selector when auto-detect is wrong)
+## v0.5.0 — Forge UI System + Pan/Zoom + CI/CD ✅ Shipped (2026-05-12)
+
+- **OKH Forge UI System v0.1.0** — structured design token layer (8 sections, canonical `--okh-forge-*` tokens, utility classes)
+- **`docs/design-system.md`** — design system reference
+- **Pan and zoom on all diagram previews** — drag-to-pan, scroll zoom, pinch zoom, control toolbar
+- **GitHub Pages CI/CD fixed** — pnpm/action-setup@v6 wired correctly; actions upgraded to current versions
+- **5 security CVEs resolved** — mermaid upgraded to 11.15.0; uuid override `^11.1.1`
+
+---
+
+## v0.6.0 — Palette Library + Prompt Scaffold Depth
+
+**Status:** Active planning
+
+**Goals:** Complete the palette authoring workflow. Make Prompt Scaffold smarter per diagram type. Improve discoverability of existing features.
 
 ### Palette
-- [ ] User-created palettes — save, rename, delete, reorder
-- [x] Reset individual color (single swatch) without resetting all
-
----
-
-## v0.3.0 — Palette Library
-
-**Status:** Planned
-
-**Goals:** Grow the community palette library without adding backend.
-
-### Palette
-- [x] Share palette as a URL-encoded link (query string or hash fragment)
-- [x] Import palette from URL
+- [ ] **User palette CRUD** — save, rename, delete, reorder user-created palettes (persist in localStorage)
+- [ ] **"Copy share link" button** — surface URL-encoded palette sharing prominently in palette editor UI (encoding already exists in persistence.ts)
 - [ ] 3–5 additional community palettes (not brand-locked)
 
 ### Export
-- [x] Export all palettes as a JSON bundle
-- [x] Generate a static CSS custom-properties file (`:root { --mermaid-primary: ...; }`)
+- [ ] **Export preview pane** — read-only code pane showing all three export formats before copy/download
+- [ ] **Family-specific Prompt Scaffold templates** — per-family scaffold sections (flowchart, sequence, class, ER)
+
+### Testing
+- [ ] **Playwright smoke tests** — core pipeline: paste → detect → themed preview renders → Styled Code export contains `%%{init}%%`
 
 ---
 
-## v0.4.0 — Diagram Guidance
+## v0.7.0 — Editor + Accessibility
 
 **Status:** Planned
 
-**Goals:** Make the Prompt Scaffold smarter for different diagram families.
-
-### Prompt Scaffold
-- [ ] Family-specific scaffold templates (flowchart, sequence, class, ER)
-- [ ] Configurable scaffold sections (select which sections to include)
-- [ ] Option to generate multiple diagram type examples in one scaffold
-
-### Editor
-- [ ] Syntax-highlighted code editor (CodeMirror or Monaco micro-bundle)
-- [x] Paste-and-auto-switch to diagram family if auto-detected
+- [ ] **Syntax-highlighted code editor** — CodeMirror or Monaco micro-bundle for the paste area
+- [ ] **Auto-load brand example on palette switch** — pre-fill Apply tab with matching example when no code is present
+- [ ] **WCAG 2.1 AA audit** — axe-core review + remediation of critical/serious violations
+- [ ] Configurable Prompt Scaffold sections — select which sections to include
 
 ---
 
@@ -108,12 +104,11 @@
 
 **Goals:** Polish, publish, and make the site properly discoverable.
 
-- [x] GitHub Pages deployment via CI (auto-publish on `main` merge)
-- [x] Proper `og:image` and social preview
-- [ ] Analytics (privacy-respecting, no cookies)
-- [ ] Accessibility audit (WCAG 2.1 AA)
-- [x] Keyboard-navigable palette picker
-- [x] `robots.txt` and sitemap
+- [ ] **Privacy-respecting analytics** — Plausible or Fathom (no cookies, no diagram content captured)
+- [ ] **GitHub release cadence** — tagged releases with CHANGELOG notes for each version
+- [ ] **Accessibility** — WCAG 2.1 AA verified
+- [ ] Keyboard-navigable palette picker (already partial) ✅
+- [ ] `robots.txt` and `sitemap.xml` ✅
 
 ---
 
@@ -126,8 +121,9 @@ These will never be added regardless of version:
 - Cloud storage for user diagrams
 - AI API calls or LLM integration
 - Payment or subscriptions
-- File upload (beyond JSON palette import in v0.2)
+- File upload (beyond JSON palette import)
 - Fork of Mermaid.js source code
+- Analytics that capture or transmit pasted diagram content
 
 ---
 
