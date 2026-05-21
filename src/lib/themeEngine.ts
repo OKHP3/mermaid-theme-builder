@@ -138,7 +138,7 @@ export function generateMarkdownExport(themedCode: string, palette: Palette, opt
     ? `\n**Use for:** ${palette.themeIntent}`
     : "";
 
-  const warningNote = `\n> ⚠️ **Renderer note:** The \`%%{init}%%\` directive is supported by Mermaid.js v9+ and most modern renderers. GitHub Markdown, Notion, and some other tools may strip or ignore theme variables.`;
+  const warningNote = `\n> ⚠️ **Renderer note:** The \`%%{init}%%\` directive is supported by Mermaid.js v9+ and most modern renderers (including [mermaid.live](https://mermaid.live)). GitHub Markdown, Notion, and some other tools may strip or ignore theme variables. The \`look\` parameter (\`neo\`, \`handDrawn\`) requires Mermaid.js v11+.`;
 
   const disclaimerNote = `\n> _Mermaid Theme Builder is a personal [OverKill Hill P³](https://overkillhill.com) project by Jamie Hill. Not affiliated with Builders FirstSource, Mermaid, Mermaid Chart, or Mermaid.ai. All transformations are local — your diagram code never leaves the browser._`;
 
