@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import type { ClassDef } from "@/lib/themeEngine";
 
 interface ClassBrowserProps {
@@ -154,6 +154,13 @@ function ClassNode({
 export function ClassBrowser({ classDefs, supportsClassDef = true, usedClassNames }: ClassBrowserProps) {
   const [copiedState, setCopiedState] = useState<CopiedState>(null);
 
+  const sortedClassDefs = useMemo<ClassDef[]>(() => {
+    if (!usedClassNames || usedClassNames.size === 0) return classDefs;
+    const used = classDefs.filter((def) => usedClassNames.has(def.name));
+    const unused = classDefs.filter((def) => !usedClassNames.has(def.name));
+    return [...used, ...unused];
+  }, [classDefs, usedClassNames]);
+
   const writeToClipboard = useCallback(async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -234,7 +241,7 @@ export function ClassBrowser({ classDefs, supportsClassDef = true, usedClassName
       )}
 
       <div className={`grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2 ${!supportsClassDef ? "pointer-events-none select-none" : ""}`}>
-        {classDefs.map((def) => (
+        {sortedClassDefs.map((def) => (
           <ClassNode
             key={def.name}
             def={def}
