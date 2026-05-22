@@ -152,15 +152,39 @@ export function familyThemeOverlay(palette: Palette, family: DiagramFamily): Rec
         quadrantPointTextFill: primaryText,
       };
 
+    case "timeline":
+      // cScale0–cScale11 are the documented Mermaid themeVariables for timeline section coloring.
+      // They cycle through the palette: primary → secondary → tertiary → accent tones, repeating.
+      return {
+        cScale0: primary,
+        cScale1: secondary,
+        cScale2: tertiary,
+        cScale3: lineColor,
+        cScale4: nodeBorder,
+        cScale5: clusterBkg,
+        cScale6: mainBkg,
+        cScale7: primary,
+        cScale8: secondary,
+        cScale9: tertiary,
+        cScale10: lineColor,
+        cScale11: nodeBorder,
+      };
+
+    case "xychart":
+      // XY chart series colors are controlled by config.xyChart.plotColorPalette (not themeVariables).
+      // The variables below are the standard themeVariables most relevant to XY chart rendering:
+      // background, axis label text, title, and plot border colors all respond to these keys.
+      return {
+        xyChart: [primary, secondary, tertiary, lineColor, nodeBorder, mainBkg].join(","),
+      };
+
     case "flowchart":
     case "block":
     case "mindmap":
-    case "timeline":
     case "requirementDiagram":
     case "c4Diagram":
     case "architectureBeta":
     case "sankey":
-    case "xychart":
     case "packet":
     case "kanban":
     case "treemap":
@@ -170,6 +194,7 @@ export function familyThemeOverlay(palette: Palette, family: DiagramFamily): Rec
     case "treeView":
     case "zenuml":
     case "radar":
+    case "eventModeling":
     case "unknown":
     default:
       return {};
