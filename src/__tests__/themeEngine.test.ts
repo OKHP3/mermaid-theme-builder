@@ -504,6 +504,99 @@ describe("generatePromptScaffoldWithFormat", () => {
   });
 });
 
+describe("typography → init directive mapping", () => {
+  function extractInitDirective(code: string): string {
+    return code.split("\n")[0];
+  }
+
+  it("nodeLabel.fontSize sets the fontSize themeVariable in the init directive", () => {
+    const result = generateThemedCode(SIMPLE_FLOWCHART, {
+      ...BASE_OPTIONS,
+      typography: { ...DEFAULT_TYPOGRAPHY, nodeLabel: { fontSize: 14, fontFamily: "" } },
+    });
+    const init = extractInitDirective(result);
+    expect(init).toContain('"fontSize": "14px"');
+  });
+
+  it("explicit fontSize override wins over typography-derived fontSize", () => {
+    const result = generateThemedCode(SIMPLE_FLOWCHART, {
+      ...BASE_OPTIONS,
+      typography: { ...DEFAULT_TYPOGRAPHY, nodeLabel: { fontSize: 14, fontFamily: "" } },
+      fontSize: "20px",
+    });
+    const init = extractInitDirective(result);
+    expect(init).toContain('"fontSize": "20px"');
+    expect(init).not.toContain('"fontSize": "14px"');
+  });
+
+  it("sequence diagram family emits sequence.fontSize in the init block when typography is active", () => {
+    const result = generateThemedCode("sequenceDiagram\n  Alice->>Bob: hello", {
+      ...BASE_OPTIONS,
+      diagramFamily: "sequenceDiagram",
+      typography: DEFAULT_TYPOGRAPHY,
+    });
+    const init = extractInitDirective(result);
+    expect(init).toContain('"sequence": {"fontSize": 14}');
+  });
+
+  it("sequence.fontSize in init block matches the resolved typography nodeLabel fontSize", () => {
+    const customTypography = { ...DEFAULT_TYPOGRAPHY, nodeLabel: { fontSize: 18, fontFamily: "" } };
+    const result = generateThemedCode("sequenceDiagram\n  Alice->>Bob: hello", {
+      ...BASE_OPTIONS,
+      diagramFamily: "sequenceDiagram",
+      typography: customTypography,
+    });
+    const init = extractInitDirective(result);
+    expect(init).toContain('"sequence": {"fontSize": 18}');
+  });
+
+  it("non-sequence families do NOT emit the sequence config block", () => {
+    const families = ["flowchart", "classDiagram", "erDiagram", "gantt", "pie"] as const;
+    for (const family of families) {
+      const result = generateThemedCode(SIMPLE_FLOWCHART, {
+        ...BASE_OPTIONS,
+        diagramFamily: family,
+        typography: DEFAULT_TYPOGRAPHY,
+      });
+      const init = extractInitDirective(result);
+      expect(init).not.toContain('"sequence"');
+    }
+  });
+
+  it("sequence config block is NOT emitted when typography is absent", () => {
+    const result = generateThemedCode("sequenceDiagram\n  Alice->>Bob: hello", {
+      ...BASE_OPTIONS,
+      diagramFamily: "sequenceDiagram",
+    });
+    const init = extractInitDirective(result);
+    expect(init).not.toContain('"sequence"');
+  });
+
+  it("nodeLabel.fontFamily populates fontFamily themeVariable when palette has no fontFamily color", () => {
+    const paletteWithoutFontFamily = {
+      ...palette,
+      colors: palette.colors.filter((c) => c.key !== "fontFamily"),
+    };
+    const result = generateThemedCode(SIMPLE_FLOWCHART, {
+      ...BASE_OPTIONS,
+      palette: paletteWithoutFontFamily,
+      typography: { ...DEFAULT_TYPOGRAPHY, nodeLabel: { fontSize: 14, fontFamily: "Georgia, serif" } },
+    });
+    const init = extractInitDirective(result);
+    expect(init).toContain('"fontFamily": "Georgia, serif"');
+  });
+
+  it("palette fontFamily wins over typography nodeLabel.fontFamily", () => {
+    const result = generateThemedCode(SIMPLE_FLOWCHART, {
+      ...BASE_OPTIONS,
+      typography: { ...DEFAULT_TYPOGRAPHY, nodeLabel: { fontSize: 14, fontFamily: "Georgia, serif" } },
+    });
+    const init = extractInitDirective(result);
+    expect(init).toContain("DM Sans");
+    expect(init).not.toContain("Georgia, serif");
+  });
+});
+
 describe("buildClassDefString", () => {
   it("returns a line starting with 'classDef '", () => {
     const def = { name: "primary", fill: "#111827", stroke: "#888888", color: "#f0f0f0", extra: "", description: "" };
