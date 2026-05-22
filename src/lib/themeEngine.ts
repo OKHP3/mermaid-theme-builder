@@ -29,7 +29,7 @@ const TOOL_VERSION = "0.5.0";
 
 const BADGE_SAFE_FAMILIES: DiagramFamily[] = ["flowchart", "sequenceDiagram", "stateDiagram", "classDiagram"];
 
-const CLASSDEF_CAPABLE_FAMILIES: DiagramFamily[] = ["flowchart", "classDiagram", "stateDiagram", "block"];
+export const CLASSDEF_CAPABLE_FAMILIES: DiagramFamily[] = ["flowchart", "classDiagram", "stateDiagram", "block"];
 
 function buildThemeVars(palette: Palette): Record<string, string> {
   const vars: Record<string, string> = {};

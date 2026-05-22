@@ -7,6 +7,7 @@ import { RENDERER_PROFILES, supportLabel, supportColor } from "@/data/renderer-p
 
 interface ReferenceTabProps {
   selectedPalette: Palette;
+  supportsClassDef: boolean;
 }
 
 const NOTION_TAXONOMY_URL =
@@ -27,7 +28,7 @@ function SupportBadge({ support }: { support: import("@/data/renderer-parity").R
   );
 }
 
-export function ReferenceTab({ selectedPalette }: ReferenceTabProps) {
+export function ReferenceTab({ selectedPalette, supportsClassDef }: ReferenceTabProps) {
   const classDefs = useMemo(() => getClassDefs(selectedPalette), [selectedPalette]);
 
   return (
@@ -145,7 +146,7 @@ export function ReferenceTab({ selectedPalette }: ReferenceTabProps) {
             </svg>
           </summary>
           <div className="border-t border-border max-h-72 overflow-y-auto">
-            <ClassBrowser classDefs={classDefs} />
+            <ClassBrowser classDefs={classDefs} supportsClassDef={supportsClassDef} />
           </div>
         </details>
       </div>

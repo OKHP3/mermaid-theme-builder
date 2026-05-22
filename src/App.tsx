@@ -20,7 +20,8 @@ import {
   decodeShareableTheme,
   type ShareablePayload,
 } from "@/lib/persistence";
-import { type MermaidLook } from "@/lib/themeEngine";
+import { type MermaidLook, CLASSDEF_CAPABLE_FAMILIES } from "@/lib/themeEngine";
+import { detectDiagram } from "@/lib/detector";
 import { type TypographySettings, DEFAULT_TYPOGRAPHY } from "@/lib/typography";
 import {
   paletteFromExtracted,
@@ -260,6 +261,11 @@ function AppShell() {
   const [fontSize, setFontSize] = useState<string>("");
   const [typography, setTypography] = useState<TypographySettings>(DEFAULT_TYPOGRAPHY);
   const [rendererTarget, setRendererTarget] = useState<string>("mermaid-live");
+
+  const supportsClassDef = useMemo(
+    () => CLASSDEF_CAPABLE_FAMILIES.includes(detectDiagram(inputCode).family),
+    [inputCode],
+  );
   const tabsRef = useRef<HTMLDivElement>(null);
   const { mode: themeMode, cycle: cycleThemeMode } = useThemeMode();
 
@@ -690,7 +696,7 @@ function AppShell() {
           />
         )}
         {activeTab === "reference" && (
-          <ReferenceTab selectedPalette={selectedPalette} />
+          <ReferenceTab selectedPalette={selectedPalette} supportsClassDef={supportsClassDef} />
         )}
       </main>
 
