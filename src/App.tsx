@@ -261,6 +261,7 @@ function AppShell() {
   const [fontSize, setFontSize] = useState<string>("");
   const [typography, setTypography] = useState<TypographySettings>(DEFAULT_TYPOGRAPHY);
   const [rendererTarget, setRendererTarget] = useState<string>("mermaid-live");
+  const [lastExampleType, setLastExampleType] = useState<Record<string, "flowchart" | "sequence">>({});
 
   const supportsClassDef = useMemo(
     () => CLASSDEF_CAPABLE_FAMILIES.includes(detectDiagram(inputCode).family),
@@ -396,13 +397,14 @@ function AppShell() {
     const willReplace = inputCode.trim() === "" || knownExamples.has(inputCode);
     const isBrandPalette = BRAND_PALETTES.some((p) => p.id === id);
     if (isBrandPalette && BRAND_EXAMPLES[id]) {
+      const exType = lastExampleType[id] ?? "flowchart";
       if (willReplace) {
         const paletteName = BRAND_PALETTES.find((p) => p.id === id)?.name ?? id;
-        setToast(`Loaded ${paletteName} flowchart example`);
+        setToast(`Loaded ${paletteName} ${exType} example`);
       }
       setInputCode((current) =>
         current.trim() === "" || knownExamples.has(current)
-          ? BRAND_EXAMPLES[id].flowchart
+          ? BRAND_EXAMPLES[id][exType]
           : current,
       );
     } else if (!isBrandPalette) {
@@ -415,7 +417,7 @@ function AppShell() {
           : current,
       );
     }
-  }, [inputCode]);
+  }, [inputCode, lastExampleType]);
 
   const handleColorChange = useCallback(
     (key: string, value: string) => {
@@ -555,6 +557,10 @@ function AppShell() {
 
   const showToast = useCallback((msg: string) => setToast(msg), []);
 
+  const handleRecordExampleType = useCallback((id: string, type: "flowchart" | "sequence") => {
+    setLastExampleType((prev) => ({ ...prev, [id]: type }));
+  }, []);
+
   return (
     <div className="forge-shell">
       <header className="forge-header sticky top-0 z-20 px-4 md:px-6 py-3 flex items-center justify-between gap-4 shrink-0 print-hide">
@@ -662,6 +668,8 @@ function AppShell() {
             typography={typography}
             rendererTarget={rendererTarget}
             onRendererTargetChange={setRendererTarget}
+            lastExampleType={lastExampleType}
+            onRecordExampleType={handleRecordExampleType}
           />
         )}
         {activeTab === "compose" && (

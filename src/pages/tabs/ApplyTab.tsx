@@ -31,6 +31,7 @@ import {
   palettesToBundleJson,
 } from "@/lib/exporters";
 import { openInLiveEditor } from "@/lib/liveEditor";
+import { BRAND_EXAMPLES } from "@/data/examples";
 import { RENDERER_PROFILES, getRendererById } from "@/data/renderer-parity";
 import { type TypographySettings } from "@/lib/typography";
 import type { AppTab } from "@/App";
@@ -80,6 +81,8 @@ interface ApplyTabProps {
   typography: TypographySettings;
   rendererTarget: string;
   onRendererTargetChange: (v: string) => void;
+  lastExampleType: Record<string, "flowchart" | "sequence">;
+  onRecordExampleType: (id: string, type: "flowchart" | "sequence") => void;
 }
 
 const EXPORT_LABELS: Record<ExportType, string> = {
@@ -125,6 +128,8 @@ export function ApplyTab({
   typography,
   rendererTarget,
   onRendererTargetChange,
+  lastExampleType,
+  onRecordExampleType,
 }: ApplyTabProps) {
   const [previewMode, setPreviewMode] = useState<PreviewMode>("themed");
   const [showColorEditor, setShowColorEditor] = useState(false);
@@ -602,6 +607,37 @@ export function ApplyTab({
           >
             Extract theme
           </button>
+        </div>
+      )}
+
+      {BRAND_EXAMPLES[selectedPaletteId] && (
+        <div className="flex-none border-b border-border bg-card/20 px-3 py-1.5 flex items-center gap-2 print-hide">
+          <span className="text-[10px] uppercase tracking-wide text-muted-foreground font-semibold shrink-0">
+            Example
+          </span>
+          <div className="flex gap-1">
+            {(["flowchart", "sequence"] as const).map((type) => {
+              const isActive = (lastExampleType[selectedPaletteId] ?? "flowchart") === type;
+              return (
+                <button
+                  key={type}
+                  type="button"
+                  onClick={() => {
+                    onInputChange(BRAND_EXAMPLES[selectedPaletteId][type]);
+                    onRecordExampleType(selectedPaletteId, type);
+                    onShowToast(`Loaded ${selectedPalette.name} ${type} example`);
+                  }}
+                  className={`text-[10px] px-2 py-0.5 rounded-full border font-medium transition-all ${
+                    isActive
+                      ? "border-primary/50 bg-primary/10 text-primary"
+                      : "border-border bg-background hover:border-primary/40 hover:bg-muted text-muted-foreground"
+                  }`}
+                >
+                  {type === "flowchart" ? "Flowchart" : "Sequence"}
+                </button>
+              );
+            })}
+          </div>
         </div>
       )}
 
