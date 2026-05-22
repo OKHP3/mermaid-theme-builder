@@ -348,10 +348,10 @@ function AppShell() {
     });
   }, [hydrated, selectedPaletteId, customColors, includeMetaComments, includeBadge, customThemeName, inputCode, userPalettes, recentPaletteIds, look, fontSize, typography, rendererTarget]);
 
-  // Auto-clear toast after 3.5s
+  // Auto-clear toast after 2.5s
   useEffect(() => {
     if (!toast) return;
-    const t = setTimeout(() => setToast(null), 3500);
+    const t = setTimeout(() => setToast(null), 2500);
     return () => clearTimeout(t);
   }, [toast]);
 
@@ -393,21 +393,29 @@ function AppShell() {
       ]),
       ...EXAMPLE_GROUPS.flatMap((g) => g.entries.map((e) => e.content)),
     ]);
+    const willReplace = inputCode.trim() === "" || knownExamples.has(inputCode);
     const isBrandPalette = BRAND_PALETTES.some((p) => p.id === id);
     if (isBrandPalette && BRAND_EXAMPLES[id]) {
+      if (willReplace) {
+        const paletteName = BRAND_PALETTES.find((p) => p.id === id)?.name ?? id;
+        setToast(`Loaded ${paletteName} flowchart example`);
+      }
       setInputCode((current) =>
         current.trim() === "" || knownExamples.has(current)
           ? BRAND_EXAMPLES[id].flowchart
           : current,
       );
     } else if (!isBrandPalette) {
+      if (willReplace) {
+        setToast("Loaded Mermaid flowchart example");
+      }
       setInputCode((current) =>
         current.trim() === "" || knownExamples.has(current)
           ? GENERIC_EXAMPLE
           : current,
       );
     }
-  }, []);
+  }, [inputCode]);
 
   const handleColorChange = useCallback(
     (key: string, value: string) => {
@@ -742,9 +750,20 @@ function AppShell() {
       {toast && (
         <div
           role="status"
-          className="fixed bottom-16 md:bottom-4 left-1/2 -translate-x-1/2 z-40 px-4 py-2 rounded-md bg-foreground/90 text-background text-xs font-medium shadow-lg backdrop-blur animate-in fade-in slide-in-from-bottom-2"
+          aria-live="polite"
+          className="fixed bottom-16 md:bottom-4 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 pl-4 pr-2 py-2 rounded-md bg-foreground/90 text-background text-xs font-medium shadow-lg backdrop-blur animate-in fade-in slide-in-from-bottom-2"
         >
-          {toast}
+          <span>{toast}</span>
+          <button
+            type="button"
+            onClick={() => setToast(null)}
+            aria-label="Dismiss"
+            className="shrink-0 opacity-60 hover:opacity-100 transition-opacity p-0.5 rounded"
+          >
+            <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5" aria-hidden="true">
+              <path d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" />
+            </svg>
+          </button>
         </div>
       )}
     </div>
