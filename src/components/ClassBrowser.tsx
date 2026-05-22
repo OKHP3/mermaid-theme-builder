@@ -38,11 +38,13 @@ type CopiedState = { name: string; kind: "usage" | "classdef" | "all" } | null;
 function ClassNode({
   def,
   isUsed,
+  disabled,
   onCopyUsage,
   onCopyClassDef,
 }: {
   def: ClassDef;
   isUsed: boolean;
+  disabled?: boolean;
   onCopyUsage: (name: string) => void;
   onCopyClassDef: (def: ClassDef) => void;
 }) {
@@ -57,9 +59,11 @@ function ClassNode({
   return (
     <div
       role="button"
-      tabIndex={0}
-      onClick={() => onCopyUsage(def.name)}
+      tabIndex={disabled ? -1 : 0}
+      aria-disabled={disabled ? true : undefined}
+      onClick={() => !disabled && onCopyUsage(def.name)}
       onKeyDown={(e) => {
+        if (disabled) return;
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
           onCopyUsage(def.name);
@@ -114,9 +118,11 @@ function ClassNode({
 
         <button
           type="button"
+          tabIndex={disabled ? -1 : 0}
+          aria-disabled={disabled ? true : undefined}
           onClick={(e) => {
             e.stopPropagation();
-            onCopyClassDef(def);
+            if (!disabled) onCopyClassDef(def);
           }}
           title={`Copy full classDef for ${def.name}`}
           className="absolute top-1 right-1 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-150 flex items-center justify-center w-5 h-5 rounded bg-black/40 hover:bg-black/65 focus:outline-none focus:ring-1 focus:ring-white/60"
@@ -258,12 +264,16 @@ export function ClassBrowser({ classDefs, supportsClassDef = true, usedClassName
         </div>
       )}
 
-      <div className={`grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2 ${!supportsClassDef ? "pointer-events-none select-none" : ""}`}>
+      <div
+        aria-disabled={!supportsClassDef ? true : undefined}
+        className={`grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2 ${!supportsClassDef ? "pointer-events-none select-none" : ""}`}
+      >
         {sortedClassDefs.map((def) => (
           <ClassNode
             key={def.name}
             def={def}
             isUsed={usedClassNames?.has(def.name) ?? false}
+            disabled={!supportsClassDef}
             onCopyUsage={handleCopyUsage}
             onCopyClassDef={handleCopyClassDef}
           />

@@ -190,3 +190,42 @@ describe("ClassBrowser — usedClassNames interaction", () => {
     expect(html).toContain("pointer-events-none");
   });
 });
+
+describe("ClassBrowser — aria accessibility (inactive state)", () => {
+  it("grid container carries aria-disabled=\"true\" when supportsClassDef={false}", () => {
+    const html = render({ supportsClassDef: false });
+    expect(html).toContain('aria-disabled="true"');
+  });
+
+  it("grid container does NOT carry aria-disabled when supportsClassDef={true}", () => {
+    const html = render({ supportsClassDef: true });
+    expect(html).not.toContain('aria-disabled="true"');
+  });
+
+  it("card role=button elements have tabindex=\"-1\" when inactive", () => {
+    const html = render({ supportsClassDef: false });
+    expect(html).toContain('tabindex="-1"');
+  });
+
+  it("card role=button elements do NOT have tabindex=\"-1\" when active", () => {
+    const html = render({ supportsClassDef: true });
+    expect(html).not.toContain('tabindex="-1"');
+  });
+
+  it("card role=button elements have tabindex=\"0\" when active", () => {
+    const html = render({ supportsClassDef: true });
+    expect(html).toContain('tabindex="0"');
+  });
+});
+
+describe("ClassBrowser — aria accessibility (active state)", () => {
+  it("no aria-disabled attribute present when supportsClassDef={true}", () => {
+    const html = render({ supportsClassDef: true });
+    expect(html).not.toContain("aria-disabled");
+  });
+
+  it("no aria-disabled attribute present when supportsClassDef is omitted", () => {
+    const html = render({});
+    expect(html).not.toContain("aria-disabled");
+  });
+});
