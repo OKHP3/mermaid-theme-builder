@@ -431,32 +431,6 @@ export function ApplyTab({
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
-      <div className="flex-none border-b border-border px-4 py-2.5 hidden md:flex items-center justify-between gap-6 bg-card/50 print-hide">
-        <p className="text-xs leading-none min-w-0">
-          <span className="font-semibold text-foreground">Design once. Paste everywhere.</span>
-          <span className="text-muted-foreground ml-1.5 hidden lg:inline">Keep AI-generated Mermaid diagrams on-brand.</span>
-        </p>
-        <div className="flex items-center gap-1.5 shrink-0">
-          <button
-            onClick={() => onSwitchTab("examples")}
-            className="text-[11px] px-2.5 py-1 rounded-md border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors font-medium"
-          >
-            Examples
-          </button>
-          <button
-            onClick={() => onSwitchTab("compose")}
-            className="text-[11px] px-2.5 py-1 rounded-md border border-primary/35 bg-primary/8 text-primary hover:bg-primary/14 transition-colors font-medium"
-          >
-            Compose
-          </button>
-          <button
-            onClick={() => onSwitchTab("reference")}
-            className="text-[11px] px-2.5 py-1 rounded-md border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors font-medium"
-          >
-            Reference
-          </button>
-        </div>
-      </div>
       {recentPalettes.length > 1 && (
         <div className="flex-none border-b border-border bg-muted/20 px-3 py-1.5 flex items-center gap-2 print-hide">
           <span className="text-[10px] uppercase tracking-wide text-muted-foreground font-semibold shrink-0">
@@ -683,7 +657,7 @@ export function ApplyTab({
       </div>
 
       <div className="flex-1 overflow-hidden flex flex-col md:flex-row min-h-0">
-        <div className="flex flex-col w-full md:w-1/2 border-b md:border-b-0 md:border-r border-border min-h-0 print-hide">
+        <div className="flex flex-col flex-1 md:flex-none md:w-1/2 border-b md:border-b-0 md:border-r border-border min-h-0 print-hide">
           <div className="flex items-center justify-between px-3 py-1.5 border-b border-border bg-card/20 flex-none gap-2">
             <span className="text-xs font-medium text-muted-foreground">Diagram Code</span>
             <div className="flex items-center gap-1.5">
@@ -787,7 +761,7 @@ export function ApplyTab({
           />
         </div>
 
-        <div className="flex flex-col w-full md:w-1/2 min-h-[220px] md:min-h-0">
+        <div className="flex flex-col flex-1 md:flex-none md:w-1/2 min-h-0 overflow-hidden">
           <div className="flex items-center gap-2 px-3 py-1.5 border-b border-border bg-card/20 flex-none flex-wrap print-hide">
             <div className="flex items-center gap-1" role="tablist" aria-label="Preview mode">
               {(["original", "themed", "diff"] as PreviewMode[]).map((mode) => {
