@@ -2,7 +2,7 @@ import type { Palette } from "./palettes";
 import type { DiagramFamily } from "./detector";
 import { familyThemeOverlay } from "./familyTheming";
 import { typographyToScaffoldSection, type TypographySettings } from "./typography";
-import { rendererToScaffoldSection } from "../data/renderer-parity";
+import { rendererToScaffoldSection, buildRendererHeaderComment, getRendererById } from "../data/renderer-parity";
 
 // ── Markdown output sanitizers ──────────────────────────────────────────────
 // These helpers prevent attacker-controlled palette metadata (imported via
@@ -499,6 +499,13 @@ function buildScaffold(palette: Palette, options: ExportOptions, scaffoldFormat:
   const familyName = diagramFamily === "unknown" ? "Mermaid" : diagramFamily;
   const supportsClassDef = CLASSDEF_CAPABLE_FAMILIES.includes(diagramFamily);
 
+  const rendererProfile = options.rendererTarget ? getRendererById(options.rendererTarget) : undefined;
+  const rendererInitPartial = rendererProfile?.initDirectiveSupport === "partial";
+  const rendererInitNone = rendererProfile?.initDirectiveSupport === "none";
+  const rendererThemeVarsPartial = rendererProfile?.themeVariableSupport === "partial";
+  const rendererClassDefBlocked = rendererProfile?.classDefSupport === "none";
+  const rendererClassDefPartial = rendererProfile?.classDefSupport === "partial";
+
   const colorLines = palette.colors
     .filter((c) => !["fontFamily", "edgeLabelBackground"].includes(c.key))
     .map((c) => `  - ${c.label}: \`${c.value}\``)
@@ -512,6 +519,18 @@ function buildScaffold(palette: Palette, options: ExportOptions, scaffoldFormat:
 
   const exampleDirective = scaffoldFormat === "formatB" ? frontmatterBlock : initBlock;
 
+  const rendererInitCaveat =
+    rendererInitNone && rendererProfile
+      ? `\n\n> ✗ **Not supported on ${rendererProfile.shortName}:** The \`%%{init}%%\` directive is not supported on this renderer. Use Format B (YAML frontmatter) if it is available, or contact your rendering environment for an alternative.`
+      : rendererInitPartial && rendererProfile
+      ? `\n\n> ⚠ **Partial support on ${rendererProfile.shortName}:** The \`%%{init}%%\` directive is recognized but only a subset of \`themeVariables\` are applied — some color tokens may be ignored. Validate the themed output in this renderer before publishing.`
+      : "";
+
+  const rendererThemeVarCaveat =
+    rendererThemeVarsPartial && rendererProfile && !rendererInitPartial && !rendererInitNone
+      ? `\n\n> ⚠ **Partial themeVariable support on ${rendererProfile.shortName}:** Only a subset of the color tokens in the directive will take effect — some values may be ignored. Validate in this renderer before publishing.`
+      : "";
+
   const themeDirectiveSection =
     scaffoldFormat === "formatA"
       ? `## Required: Theme directive
@@ -520,7 +539,7 @@ Use the \`%%{init}%%\` directive (Format A) — compatible with Mermaid v9+, Mic
 
 \`\`\`
 ${initBlock}
-\`\`\``
+\`\`\`${rendererInitCaveat}${rendererThemeVarCaveat}`
       : scaffoldFormat === "formatB"
       ? `## Required: Theme directive
 
@@ -528,7 +547,7 @@ Use YAML frontmatter (Format B) — the preferred format for Mermaid v10.5+, Mer
 
 \`\`\`
 ${frontmatterBlock}
-\`\`\``
+\`\`\`${rendererThemeVarCaveat}`
       : `## Required: Theme directive
 
 Choose ONE of the two formats below based on your renderer. Never use both in the same diagram.
@@ -539,7 +558,7 @@ Choose ONE of the two formats below based on your renderer. Never use both in th
 
 \`\`\`
 ${initBlock}
-\`\`\`
+\`\`\`${rendererInitCaveat}
 
 ### Format B — YAML frontmatter (preferred, Mermaid v10.5+)
 
@@ -547,7 +566,7 @@ ${initBlock}
 
 \`\`\`
 ${frontmatterBlock}
-\`\`\``;
+\`\`\`${rendererThemeVarCaveat}`;
 
   const formatRuleText =
     scaffoldFormat === "formatA"
@@ -670,6 +689,16 @@ ${frontmatterBlock}
     %% Your diagram here`;
 
   const scaffoldPaletteId = sanitizeMdCode(palette.id);
+  const rendererHeaderComment = options.rendererTarget
+    ? buildRendererHeaderComment(options.rendererTarget) + "\n"
+    : "";
+
+  const classDefCaveatNote =
+    rendererClassDefBlocked && rendererProfile
+      ? `> ✗ **Not supported on ${rendererProfile.shortName}:** \`classDef\` / \`:::className\` styling is not available on this renderer. Rely only on the theme directive for all visual styling — omit any \`:::className\` annotations.`
+      : rendererClassDefPartial && rendererProfile
+      ? `> ⚠ **Partial support on ${rendererProfile.shortName}:** \`classDef\` / \`:::className\` rendering quality varies on this renderer. Test before relying on per-node class styles; the theme directive is the safer primary styling mechanism.`
+      : null;
 
   return `# Mermaid Diagram Prompt Scaffold — ${themeName}
 
@@ -678,7 +707,7 @@ ${frontmatterBlock}
 **Version:** ${sanitizeMdText(palette.version)}  
 **Tool:** [Mermaid Theme Builder](${TOOL_URL})${sourceNote}
 
----
+${rendererHeaderComment}---
 
 <!-- ═══════════════════════════════════════════════════════════════════ -->
 <!-- PART 1 — THREAD OPENER                                             -->
@@ -866,7 +895,7 @@ Cardinality on each end: \`Dog "1" --> "0..*" Owner : owns\`
 
 ## Semantic classDef library
 
-Apply these classDef classes to class nodes using \`:::className\` syntax. Do NOT add any other fill, stroke, or color values — use only these classes.
+${classDefCaveatNote ? classDefCaveatNote : `Apply these classDef classes to class nodes using \`:::className\` syntax. Do NOT add any other fill, stroke, or color values — use only these classes.
 
 \`\`\`mermaid
 ${exampleDirective}
@@ -896,7 +925,7 @@ ${classDefBlock}
 | \`slate\` | Neutral / muted | Supporting detail classes |
 | \`scope\` | In-scope boundary | Classes explicitly in scope |
 | \`outOfScope\` | Out-of-scope (faded, dashed) | Excluded classes |
-| \`redDash\` | Warning / error / blocker | Error or exception classes |` : diagramFamily === "stateDiagram" ? `## State diagram: declaration syntax & theming
+| \`redDash\` | Warning / error / blocker | Error or exception classes |`}` : diagramFamily === "stateDiagram" ? `## State diagram: declaration syntax & theming
 
 \`stateDiagram-v2\` styling is primarily controlled by the theme directive above — state box colors, transition arrow colors, and label fonts all come from the theme variables. classDef is available but renderer support varies; test in your target renderer before relying on per-state styling.
 
@@ -1041,7 +1070,7 @@ The root node is at the first indentation level. Each deeper indentation level c
 
 All mindmap colors come from the theme directive. No per-node style overrides are possible with classDef or inline styling.` : `## Semantic classDef library
 
-This is the complete styling vocabulary for this theme. Apply these classDef classes to nodes using \`:::className\` syntax. Do NOT add any other fill, stroke, or color values — use only these classes.
+${classDefCaveatNote ? classDefCaveatNote : `This is the complete styling vocabulary for this theme. Apply these classDef classes to nodes using \`:::className\` syntax. Do NOT add any other fill, stroke, or color values — use only these classes.
 
 \`\`\`mermaid
 ${exampleDirective}
@@ -1072,7 +1101,7 @@ ${classDefBlock}
 | \`slate\` | Neutral / muted | Low-priority nodes, supporting details |
 | \`scope\` | In-scope boundary | Items explicitly in scope |
 | \`outOfScope\` | Out-of-scope (faded, dashed) | Explicitly excluded items |
-| \`redDash\` | Warning / error / blocker | Error states, blockers, known failures |
+| \`redDash\` | Warning / error / blocker | Error states, blockers, known failures |`}
 
 ---
 

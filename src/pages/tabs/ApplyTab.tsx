@@ -727,6 +727,7 @@ export function ApplyTab({
           className="text-[10px] bg-background border border-border rounded-md px-1.5 py-0.5 text-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 cursor-pointer"
           aria-label="Select target renderer"
         >
+          <option value="">Generic (most compatible)</option>
           {RENDERER_PROFILES.map((r) => (
             <option key={r.id} value={r.id}>
               {r.displayName}
@@ -1219,6 +1220,8 @@ export function ApplyTab({
         onClose={() => setShowScaffoldModal(false)}
         onCopy={handleScaffoldCopy}
         generatePreview={handleScaffoldPreview}
+        rendererTarget={rendererTarget}
+        onRendererTargetChange={onRendererTargetChange}
       />
     </div>
   );

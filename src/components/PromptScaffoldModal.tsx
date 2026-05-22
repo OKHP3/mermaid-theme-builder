@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import type { ScaffoldFormat } from "@/lib/themeEngine";
 import { SCAFFOLD_FORMAT_KEY, resolveScaffoldFormat, saveScaffoldFormat } from "@/lib/scaffoldPrefs";
+import { RENDERER_PROFILES } from "@/data/renderer-parity";
 
 const PREVIEW_LINES = 25;
 
@@ -55,9 +56,11 @@ interface PromptScaffoldModalProps {
   onClose: () => void;
   onCopy: (format: ScaffoldFormat) => Promise<void>;
   generatePreview: (format: ScaffoldFormat) => string;
+  rendererTarget: string;
+  onRendererTargetChange: (v: string) => void;
 }
 
-export function PromptScaffoldModal({ open, onClose, onCopy, generatePreview }: PromptScaffoldModalProps) {
+export function PromptScaffoldModal({ open, onClose, onCopy, generatePreview, rendererTarget, onRendererTargetChange }: PromptScaffoldModalProps) {
   const [copiedFormat, setCopiedFormat] = useState<ScaffoldFormat | null>(null);
   const [isClosing, setIsClosing] = useState(false);
   const [lastUsedFormat, setLastUsedFormat] = useState<ScaffoldFormat | null>(null);
@@ -114,6 +117,7 @@ export function PromptScaffoldModal({ open, onClose, onCopy, generatePreview }: 
   if (!open) return null;
 
   const hasPreference = lastUsedFormat !== null;
+  const selectedRendererProfile = RENDERER_PROFILES.find((r) => r.id === rendererTarget);
 
   return (
     <div
@@ -153,6 +157,39 @@ export function PromptScaffoldModal({ open, onClose, onCopy, generatePreview }: 
               <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
             </svg>
           </button>
+        </div>
+
+        {/* Target Renderer selector */}
+        <div className="px-4 py-2.5 border-b border-border bg-muted/20 flex items-center gap-2">
+          <label
+            htmlFor="scaffold-renderer-select"
+            className="text-[10px] uppercase tracking-wide text-muted-foreground font-semibold shrink-0"
+          >
+            Target
+          </label>
+          <select
+            id="scaffold-renderer-select"
+            value={rendererTarget}
+            onChange={(e) => onRendererTargetChange(e.target.value)}
+            className="flex-1 text-[10px] bg-background border border-border rounded-md px-1.5 py-0.5 text-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 cursor-pointer"
+            aria-label="Select target renderer for scaffold"
+          >
+            <option value="">Generic (most compatible)</option>
+            {RENDERER_PROFILES.map((r) => (
+              <option key={r.id} value={r.id}>
+                {r.displayName}
+              </option>
+            ))}
+          </select>
+          {selectedRendererProfile ? (
+            <span className="text-[10px] text-muted-foreground/50 shrink-0 hidden sm:block">
+              {selectedRendererProfile.mermaidVersionApprox}
+            </span>
+          ) : (
+            <span className="text-[10px] text-muted-foreground/40 shrink-0 hidden sm:block">
+              conservative output
+            </span>
+          )}
         </div>
 
         <div className="p-3 space-y-2">

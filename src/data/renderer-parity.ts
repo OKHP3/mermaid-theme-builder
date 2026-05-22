@@ -211,6 +211,25 @@ export function supportColor(s: RendererSupport): string {
   }
 }
 
+/**
+ * Builds a one-line HTML comment that identifies the target renderer and lists
+ * any styling capabilities that are blocked or limited on that renderer.
+ * Returns an empty string for unknown / generic (empty) renderer IDs.
+ */
+export function buildRendererHeaderComment(rendererId: string): string {
+  if (!rendererId) return "";
+  const renderer = getRendererById(rendererId);
+  if (!renderer) return "";
+  const blocked: string[] = [];
+  if (renderer.initDirectiveSupport === "none") blocked.push("%%{init}%% not supported");
+  if (renderer.themeVariableSupport === "partial") blocked.push("themeVariable support is partial");
+  if (renderer.cssInjectionSupport === "none") blocked.push("CSS injection not supported");
+  else if (renderer.cssInjectionSupport === "partial") blocked.push("CSS injection is partial");
+  if (renderer.customFontSupport === "none") blocked.push("custom fonts not supported");
+  const suffix = blocked.length > 0 ? ` — ${blocked.join(", ")}` : "";
+  return `<!-- Target renderer: ${renderer.shortName}${suffix} -->`;
+}
+
 export function rendererToScaffoldSection(rendererId: string, look?: string): string {
   const renderer = getRendererById(rendererId);
   if (!renderer) return "";

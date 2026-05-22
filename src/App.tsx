@@ -260,7 +260,7 @@ function AppShell() {
   const [look, setLook] = useState<MermaidLook>("classic");
   const [fontSize, setFontSize] = useState<string>("");
   const [typography, setTypography] = useState<TypographySettings>(DEFAULT_TYPOGRAPHY);
-  const [rendererTarget, setRendererTarget] = useState<string>("mermaid-live");
+  const [rendererTarget, setRendererTarget] = useState<string>("");
   const [previewMode, setPreviewMode] = useState<"original" | "themed" | "diff" | "code">("themed");
   const [lastExampleType, setLastExampleType] = useState<Record<string, "flowchart" | "sequence">>({});
 
@@ -716,6 +716,7 @@ function AppShell() {
             typography={typography}
             onTypographyChange={setTypography}
             rendererTarget={rendererTarget}
+            onRendererTargetChange={setRendererTarget}
           />
         )}
         {activeTab === "examples" && (

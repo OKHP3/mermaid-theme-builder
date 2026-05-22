@@ -128,6 +128,7 @@ interface ComposeTabProps {
   typography: TypographySettings;
   onTypographyChange: (t: TypographySettings) => void;
   rendererTarget: string;
+  onRendererTargetChange: (v: string) => void;
 }
 
 export function ComposeTab({
@@ -157,6 +158,7 @@ export function ComposeTab({
   typography,
   onTypographyChange,
   rendererTarget,
+  onRendererTargetChange,
 }: ComposeTabProps) {
   const [copiedBootstrap, setCopiedBootstrap] = useState(false);
   const [copiedShare, setCopiedShare] = useState(false);
@@ -725,6 +727,8 @@ export function ComposeTab({
         onClose={() => setShowScaffoldModal(false)}
         onCopy={handleScaffoldCopy}
         generatePreview={handleScaffoldPreview}
+        rendererTarget={rendererTarget}
+        onRendererTargetChange={onRendererTargetChange}
       />
 
       {showSaveDialog && (
