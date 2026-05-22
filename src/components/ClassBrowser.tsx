@@ -125,7 +125,7 @@ function ClassNode({
             if (!disabled) onCopyClassDef(def);
           }}
           title={`Copy full classDef for ${def.name}`}
-          className="absolute top-1 right-1 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-150 flex items-center justify-center w-5 h-5 rounded bg-black/40 hover:bg-black/65 focus:outline-none focus:ring-1 focus:ring-white/60"
+          className="absolute top-1 right-1 z-20 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-150 flex items-center justify-center w-5 h-5 rounded bg-black/40 hover:bg-black/65 focus:outline-none focus:ring-1 focus:ring-white/60"
           aria-label={`Copy classDef ${def.name}`}
         >
           <svg
