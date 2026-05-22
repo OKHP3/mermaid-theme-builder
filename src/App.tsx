@@ -649,7 +649,7 @@ function AppShell() {
       </nav>
 
       <main
-        className="flex-1 overflow-hidden pb-14 md:pb-0 min-h-0"
+        className="flex-1 overflow-hidden pb-20 md:pb-0 min-h-0"
         role="tabpanel"
         id={`tabpanel-${activeTab}`}
         aria-labelledby={`tab-${activeTab}`}
@@ -729,6 +729,12 @@ function AppShell() {
         )}
       </main>
 
+      <div className="md:hidden fixed bottom-14 left-0 right-0 z-20 flex items-center justify-center px-4 py-1 print-hide" style={{background: '#0f1a17', borderTop: '1px solid rgba(212,201,181,0.08)'}}>
+        <p className="text-[9px] text-center" style={{color: 'rgba(212,201,181,0.45)', lineHeight: 1.4}}>
+          Not affiliated with Mermaid, Mermaid Chart, or Mermaid.ai
+        </p>
+      </div>
+
       <nav
         className="forge-mobile-nav fixed bottom-0 left-0 right-0 flex md:hidden z-30 shrink-0 print-hide"
         role="tablist"
@@ -761,9 +767,12 @@ function AppShell() {
           <span>·</span>
           <span className="forge-footer-brand">OverKill Hill P³</span>
         </div>
+        <div className="flex items-center gap-2 forge-footer-meta" style={{opacity: 0.45, fontSize: '9px'}}>
+          Not affiliated with Mermaid, Mermaid Chart, or Mermaid.ai
+        </div>
         <div className="flex items-center gap-4">
           <a href="https://github.com/OKHP3/mermaid-theme-builder" target="_blank" rel="noopener noreferrer" className="forge-footer-link">GitHub</a>
-          <a href="https://overkillhill.com/projects" target="_blank" rel="noopener noreferrer" className="forge-footer-link">OKHP³ Projects</a>
+          <a href="https://overkillhill.com/projects/mermaid-theme-builder/" target="_blank" rel="noopener noreferrer" className="forge-footer-link">Project Page</a>
           <a href="https://mermaid.live" target="_blank" rel="noopener noreferrer" className="forge-footer-link">Mermaid Live</a>
         </div>
       </footer>
