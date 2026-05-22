@@ -214,6 +214,21 @@ export function ClassBrowser({ classDefs, supportsClassDef = true, usedClassName
         <div>
           <p className="text-xs font-semibold text-foreground flex items-center gap-2">
             Class Library
+            <span
+              className={`inline-flex items-center text-[10px] font-semibold px-1.5 py-0.5 rounded-full tabular-nums ${
+                supportsClassDef
+                  ? "text-primary/80 bg-primary/10"
+                  : "text-muted-foreground/60 bg-muted/60"
+              }`}
+              title={
+                supportsClassDef
+                  ? `${classDefs.length} semantic class styles available for this diagram type`
+                  : `${classDefs.length} class styles exist but are inactive for this diagram type`
+              }
+              aria-label={`${classDefs.length} class styles`}
+            >
+              {classDefs.length} styles
+            </span>
             {usedClassNames && usedClassNames.size > 0 && (
               <span className="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-full">
                 <svg viewBox="0 0 10 10" fill="none" className="w-2.5 h-2.5">
@@ -224,7 +239,7 @@ export function ClassBrowser({ classDefs, supportsClassDef = true, usedClassName
             )}
           </p>
           <p className="text-[10px] text-muted-foreground mt-0.5">
-            {sortedClassDefs.length} semantic styles — click any node to copy its{" "}
+            Click any node to copy its{" "}
             <span className="font-mono">:::className</span> syntax, or hover for the full{" "}
             <span className="font-mono">classDef</span> block
           </p>
