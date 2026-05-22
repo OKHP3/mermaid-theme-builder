@@ -26,6 +26,7 @@ export type DiagramFamily =
   | "ishikawa"
   | "wardley"
   | "treeView"
+  | "eventModeling"
   | "zenuml"
   | "radar"
   | "unknown";
@@ -654,6 +655,29 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
       "Experimental. May not render consistently across all Mermaid-compatible environments.",
     exampleFile: "treeview-example-index.mmd",
     examplePending: false,
+  },
+  {
+    id: "eventModeling",
+    displayName: "Event Modeling",
+    declarations: /^\s*eventmodeling\b/im,
+    stability: "experimental",
+    styleStrategy: "limited",
+    supportsClassDef: false,
+    supportsLinkStyle: false,
+    supportsSubgraphStyle: false,
+    notes:
+      "New in Mermaid 11.15.0. Event Modeling diagrams use event-storming notation with commands, domain events, read models, and aggregates. Background and primary colors from themeVariables apply; per-element styling is not available. Not available in Mermaid installations older than 11.15.0.",
+    supportStatus: "partial",
+    themeConfidence: "low",
+    notationCompliance: "mermaid-native",
+    description:
+      "Event Modeling notation showing commands, domain events, read models, and aggregates for event-driven system design and CQRS/ES architecture documentation.",
+    bestUsedFor:
+      "Event-driven architecture documentation, event storming output, CQRS/event sourcing system design, DDD aggregate modeling.",
+    warning:
+      "Requires Mermaid 11.15.0 or later. Experimental — rendering behavior may vary across Mermaid versions and renderers.",
+    exampleFile: null,
+    examplePending: true,
   },
 ];
 

@@ -82,6 +82,13 @@
 - [ ] **Export preview pane** — read-only code pane showing all three export formats before copy/download
 - [ ] **Family-specific Prompt Scaffold templates** — per-family scaffold sections (flowchart, sequence, class, ER)
 
+### Mermaid 11.14–11.15 Coverage
+- [ ] **Event Modeling example** — add example `.mmd` for the new 11.15 diagram type; update capability registry `examplePending → false`
+- [ ] **Look mode per-family warnings** — show a warning in Apply tab when `look: handDrawn` or `look: neo` is unsupported for the detected diagram family (see `docs/renderer-compatibility.md`)
+- [ ] **Renderer compatibility warnings** — surface "CSS injection blocked on GitHub" and "classDef unsupported for sequence/Gantt" as contextual warnings in the export bar
+- [ ] **Timeline direction** — document `LR`/`TD` direction support in capability notes and expose in family-specific overrides
+- [ ] **Root-level `htmlLabels`** — emit at root config level in `%%{init}%%` exports (11.13+ migration: deprecated `flowchart.htmlLabels`)
+
 ### Testing
 - [ ] **Playwright smoke tests** — core pipeline: paste → detect → themed preview renders → Styled Code export contains `%%{init}%%`
 
