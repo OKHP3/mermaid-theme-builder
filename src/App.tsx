@@ -676,14 +676,18 @@ function AppShell() {
       </nav>
 
       <main className="flex-1 md:overflow-hidden pb-20 md:pb-0 md:min-h-0">
+        {/* ApplyTab is always mounted so its local state (activeDiagramIdx,
+            showColorEditor, textareaExpanded, familyOverride, etc.) survives
+            tab switches. It is visually hidden via the HTML `hidden` attribute
+            when another tab is active. */}
         <div
           role="tabpanel"
-          id={`tabpanel-${activeTab}`}
-          aria-label={TAB_CONFIG.find((t) => t.id === activeTab)?.label ?? activeTab}
+          id="tabpanel-apply"
+          aria-label="Apply"
           tabIndex={-1}
           className="md:h-full"
+          hidden={activeTab !== "apply"}
         >
-        {activeTab === "apply" && (
           <ApplyTab
             selectedPalette={selectedPalette}
             selectedPaletteId={selectedPaletteId}
@@ -715,7 +719,15 @@ function AppShell() {
             previewMode={previewMode}
             onPreviewModeChange={setPreviewMode}
           />
-        )}
+        </div>
+        <div
+          role="tabpanel"
+          id={`tabpanel-${activeTab}`}
+          aria-label={TAB_CONFIG.find((t) => t.id === activeTab)?.label ?? activeTab}
+          tabIndex={-1}
+          className="md:h-full"
+          hidden={activeTab === "apply"}
+        >
         {activeTab === "compose" && (
           <ComposeTab
             selectedPalette={selectedPalette}
