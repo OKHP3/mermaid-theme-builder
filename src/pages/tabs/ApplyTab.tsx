@@ -307,6 +307,9 @@ export function ApplyTab({
 
   const warnings = useMemo(() => {
     const w: string[] = [];
+    // Input-level warnings from the detector (unknown family, existing init,
+    // non-printable chars, long labels, and diagram breaker checks).
+    w.push(...detection.warnings);
     const cap = effectiveDetection.capability;
     if (effectiveDetection.family !== "unknown" && cap && cap.warning) {
       const isPurelyPositive =
