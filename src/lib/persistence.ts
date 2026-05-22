@@ -1,4 +1,5 @@
 import type { Palette, ThemeColor } from "./palettes";
+import type { TypographySettings } from "./typography";
 
 export const PERSISTENCE_SCHEMA_VERSION = 1;
 const STORAGE_KEY = "mtb.state.v1";
@@ -15,7 +16,7 @@ export interface PersistedState {
   recentPaletteIds?: string[];
   look?: string;
   fontSize?: string;
-  typography?: unknown;
+  typography?: TypographySettings;
   rendererTarget?: string;
 }
 

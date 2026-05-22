@@ -37,7 +37,7 @@ import type { AppTab } from "@/App";
 
 const SWATCH_INDICES = [0, 3, 4, 6];
 
-type PreviewMode = "original" | "themed" | "diff";
+type PreviewMode = "original" | "themed" | "diff" | "code";
 type ExportType = "code" | "markdown" | "prompt";
 type DownloadType = "mermaid" | "svg" | "png" | "json" | "markdown" | "scaffold" | "css" | "bundle";
 
@@ -147,6 +147,7 @@ export function ApplyTab({
   }, [rendererProfile, look]);
   const [showScaffoldModal, setShowScaffoldModal] = useState(false);
   const [textareaExpanded, setTextareaExpanded] = useState(false);
+  const [codeEditorOverride, setCodeEditorOverride] = useState<string | null>(null);
   const [showDownloadMenu, setShowDownloadMenu] = useState(false);
   const [activeDiagramIdx, setActiveDiagramIdx] = useState(0);
   const [familyOverride, setFamilyOverride] = useState<DiagramFamily | null>(null);
@@ -288,6 +289,14 @@ export function ApplyTab({
     [activeDiagramCode, exportOptions],
   );
 
+  // Reset any manual code-panel edits when the underlying export output changes.
+  useEffect(() => {
+    setCodeEditorOverride(null);
+  }, [exportCode]);
+
+  // The effective export text — uses the user's in-panel edit when present.
+  const effectiveExportCode = codeEditorOverride ?? exportCode;
+
   const previewCode = previewMode === "themed" ? themedCode : activeDiagramCode;
 
   const warnings = useMemo(() => {
@@ -324,14 +333,14 @@ export function ApplyTab({
         return;
       }
       let text = "";
-      if (type === "code") text = exportCode;
+      if (type === "code") text = effectiveExportCode;
       else if (type === "markdown")
-        text = generateMarkdownExport(exportCode, selectedPalette, exportOptions);
+        text = generateMarkdownExport(effectiveExportCode, selectedPalette, exportOptions);
       await writeToClipboard(text);
       setCopiedType(type);
       setTimeout(() => setCopiedType(null), 2000);
     },
-    [exportCode, selectedPalette, exportOptions],
+    [effectiveExportCode, selectedPalette, exportOptions],
   );
 
   // Global keyboard shortcut: Ctrl/Cmd+Shift+C copies the Styled Code.
@@ -371,7 +380,7 @@ export function ApplyTab({
         if (type === "mermaid") {
           downloadTextFile(
             makeFilename(effectiveThemeName, "themed", "mermaid"),
-            exportCode,
+            effectiveExportCode,
             "text/plain;charset=utf-8",
           );
           onShowToast("Downloaded .mermaid file.");
@@ -398,7 +407,7 @@ export function ApplyTab({
         } else if (type === "markdown") {
           downloadTextFile(
             makeFilename(effectiveThemeName, "themed", "md"),
-            generateMarkdownExport(exportCode, selectedPalette, exportOptions),
+            generateMarkdownExport(effectiveExportCode, selectedPalette, exportOptions),
             "text/markdown;charset=utf-8",
           );
           onShowToast("Downloaded .md file.");
@@ -431,7 +440,7 @@ export function ApplyTab({
         setDownloadingType(null);
       }
     },
-    [downloadingType, exportCode, themedCode, selectedPalette, effectiveThemeName, allPalettes, exportOptions, onShowToast],
+    [downloadingType, effectiveExportCode, themedCode, selectedPalette, effectiveThemeName, allPalettes, exportOptions, onShowToast],
   );
 
   return (
@@ -769,7 +778,7 @@ export function ApplyTab({
         <div className="flex flex-col flex-1 md:flex-none md:w-1/2 min-h-0 overflow-hidden">
           <div className="flex items-center gap-2 px-3 py-1.5 border-b border-border bg-card/20 flex-none flex-wrap print-hide">
             <div className="flex items-center gap-1" role="tablist" aria-label="Preview mode">
-              {(["original", "themed", "diff"] as PreviewMode[]).map((mode) => {
+              {(["original", "themed", "diff", "code"] as PreviewMode[]).map((mode) => {
                 const selected = previewMode === mode;
                 return (
                   <button
@@ -789,6 +798,16 @@ export function ApplyTab({
                 );
               })}
             </div>
+            {previewMode === "code" && codeEditorOverride !== null && (
+              <button
+                type="button"
+                onClick={() => setCodeEditorOverride(null)}
+                title="Discard edits and reset to computed output"
+                className="text-[10px] px-2 py-0.5 rounded border border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-300 font-medium hover:bg-amber-500/20 transition-colors"
+              >
+                Reset
+              </button>
+            )}
             {isMultiDiagram && (
               <div className="flex items-center gap-1 ml-auto">
                 <span className="text-[10px] text-muted-foreground uppercase tracking-wide font-semibold mr-1">
@@ -831,13 +850,24 @@ export function ApplyTab({
               </div>
             )}
           </div>
-          <div className="flex-1 overflow-auto p-3 md:p-4" data-print-only>
-            {previewMode === "diff" ? (
-              <DiffView oldText={activeDiagramCode} newText={themedCode} className="w-full h-full" />
-            ) : (
-              <MermaidPreview code={previewCode} className="w-full h-full" />
-            )}
-          </div>
+          {previewMode === "code" ? (
+            <textarea
+              className="forge-code-panel flex-1 w-full p-3 text-xs font-mono resize-none overflow-auto focus:outline-none"
+              value={effectiveExportCode}
+              onChange={(e) => setCodeEditorOverride(e.target.value)}
+              spellCheck={false}
+              aria-label="Styled code output — edit to customise before copying"
+              placeholder="Paste a diagram above to see the styled output…"
+            />
+          ) : (
+            <div className="flex-1 overflow-auto p-3 md:p-4" data-print-only>
+              {previewMode === "diff" ? (
+                <DiffView oldText={activeDiagramCode} newText={themedCode} className="w-full h-full" />
+              ) : (
+                <MermaidPreview code={previewCode} className="w-full h-full" />
+              )}
+            </div>
+          )}
           <div className="flex-none border-t border-border px-3 py-1.5 bg-card/20 print-hide">
             <MermaidReferral variant="ai" />
           </div>
