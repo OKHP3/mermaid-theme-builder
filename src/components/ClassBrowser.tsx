@@ -213,11 +213,16 @@ export function ClassBrowser({ classDefs, supportsClassDef = true, usedClassName
   );
 
   const handleCopyAll = useCallback(async () => {
-    const block = sortedClassDefs.map((def) => buildClassDefString(def)).join("\n");
+    // Use `classDefs` (definition order from getClassDefs) so "Copy all" output
+    // matches the export engine's buildClassDefLibrary order exactly.
+    // The visual grid uses sortedClassDefs (used-first), but that reordering must
+    // not affect the copied block — users should be able to drop it straight into
+    // exported code without a diff.
+    const block = classDefs.map((def) => buildClassDefString(def)).join("\n");
     await writeToClipboard(block);
-    setCopiedState({ name: String(sortedClassDefs.length), kind: "all" });
+    setCopiedState({ name: String(classDefs.length), kind: "all" });
     setTimeout(() => setCopiedState(null), 1800);
-  }, [sortedClassDefs, writeToClipboard]);
+  }, [classDefs, writeToClipboard]);
 
   const handleCopyUsed = useCallback(async () => {
     if (!usedClassNames || usedClassNames.size === 0) return;
@@ -228,9 +233,11 @@ export function ClassBrowser({ classDefs, supportsClassDef = true, usedClassName
     setTimeout(() => setCopiedState(null), 1800);
   }, [sortedClassDefs, usedClassNames, writeToClipboard]);
 
+  // Preview block mirrors what "Copy all" copies: definition order (classDefs),
+  // not the visual sort order (sortedClassDefs), so the preview is a true preview.
   const previewBlock = useMemo(
-    () => sortedClassDefs.map((def) => buildClassDefString(def)).join("\n"),
-    [sortedClassDefs]
+    () => classDefs.map((def) => buildClassDefString(def)).join("\n"),
+    [classDefs]
   );
 
   const toastLabel =

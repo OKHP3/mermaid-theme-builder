@@ -641,4 +641,34 @@ describe("buildClassDefString", () => {
       expect(line).toMatch(/^classDef \S+ fill:#[0-9a-fA-F]{3,8}/);
     }
   });
+
+  /**
+   * Ordering contract: getClassDefs must return entries in a stable definition
+   * order. Both "Copy all" in ClassBrowser and buildClassDefLibrary in the
+   * export engine iterate getClassDefs in this order — keeping them aligned
+   * ensures the copied block is a drop-in replacement for the exported one.
+   * If you intentionally change the order, update this test to match.
+   */
+  it("returns classDefs in the documented definition order", () => {
+    const testPalette = BUILTIN_PALETTES[0];
+    const names = getClassDefs(testPalette).map((d) => d.name);
+    expect(names).toEqual([
+      "primary",
+      "secondary",
+      "tertiary",
+      "platform",
+      "boundary",
+      "actor",
+      "gate",
+      "control",
+      "log",
+      "question",
+      "accent",
+      "deepBlue",
+      "slate",
+      "scope",
+      "outOfScope",
+      "redDash",
+    ]);
+  });
 });
