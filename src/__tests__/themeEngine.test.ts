@@ -276,6 +276,127 @@ describe("generatePromptScaffoldWithFormat", () => {
     );
     expect(result).not.toContain("Subgraph tier patterns");
   });
+
+  it("includes gantt-specific section when diagramFamily is gantt", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "gantt" },
+      "both",
+    );
+    expect(result).toContain("Gantt diagram");
+    expect(result).toContain("dateFormat");
+    expect(result).toContain("section");
+    expect(result).toContain("gantt");
+  });
+
+  it("does not include classDef library section for gantt", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "gantt" },
+      "both",
+    );
+    expect(result).not.toContain("## Semantic classDef library");
+  });
+
+  it("gantt scaffold rules forbid :::className and inline styles", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "gantt" },
+      "both",
+    );
+    expect(result).toContain(":::className");
+    expect(result).toContain("gantt does not support per-task classDef styling");
+  });
+
+  it("gantt scaffold includes milestone and dateFormat syntax", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "gantt" },
+      "both",
+    );
+    expect(result).toContain("milestone");
+    expect(result).toContain("YYYY-MM-DD");
+  });
+
+  it("includes pie-specific section when diagramFamily is pie", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "pie" },
+      "both",
+    );
+    expect(result).toContain("Pie chart");
+    expect(result).toContain("pie title");
+    expect(result).toContain("pie");
+  });
+
+  it("does not include classDef library section for pie", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "pie" },
+      "both",
+    );
+    expect(result).not.toContain("## Semantic classDef library");
+  });
+
+  it("pie scaffold rules forbid :::className and inline styles", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "pie" },
+      "both",
+    );
+    expect(result).toContain(":::className");
+    expect(result).toContain("pie does not support per-slice classDef styling");
+  });
+
+  it("pie scaffold explains label:value slice syntax", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "pie" },
+      "both",
+    );
+    expect(result).toContain('"Label" : value');
+  });
+
+  it("includes mindmap-specific section when diagramFamily is mindmap", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "mindmap" },
+      "both",
+    );
+    expect(result).toContain("Mindmap");
+    expect(result).toContain("indented");
+    expect(result).toContain("mindmap");
+  });
+
+  it("does not include classDef library section for mindmap", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "mindmap" },
+      "both",
+    );
+    expect(result).not.toContain("## Semantic classDef library");
+  });
+
+  it("mindmap scaffold rules forbid :::className and inline styles", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "mindmap" },
+      "both",
+    );
+    expect(result).toContain(":::className");
+    expect(result).toContain("mindmap does not support per-node classDef styling");
+  });
+
+  it("mindmap scaffold explains shape notation", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "mindmap" },
+      "both",
+    );
+    expect(result).toContain("((text))");
+    expect(result).toContain("[text]");
+    expect(result).toContain("(text)");
+  });
 });
 
 describe("buildClassDefString", () => {

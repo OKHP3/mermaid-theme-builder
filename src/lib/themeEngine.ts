@@ -630,6 +630,36 @@ ${frontmatterBlock}
     Active --> Paused : pause
     Paused --> Active : resume
     Active --> [*] : complete`
+      : diagramFamily === "gantt"
+      ? `gantt
+    title Project Timeline
+    dateFormat YYYY-MM-DD
+    section Planning
+        Requirements : done, req, 2024-01-01, 7d
+        Design       : active, des, 2024-01-08, 7d
+    section Development
+        Backend      : dev, 2024-01-15, 14d
+        Frontend     : fe, 2024-01-22, 14d
+    section Release
+        Launch       : milestone, m1, 2024-02-05, 0d`
+      : diagramFamily === "pie"
+      ? `pie title Distribution
+    "Category A" : 40
+    "Category B" : 30
+    "Category C" : 20
+    "Category D" : 10`
+      : diagramFamily === "mindmap"
+      ? `mindmap
+  root((Project))
+    Planning
+      Requirements
+      Design
+    Development
+      Backend
+      Frontend
+    Release
+      Testing
+      Launch`
       : diagramFamily === "flowchart" || diagramFamily === "unknown"
       ? `flowchart TD
     A[Start] --> B[Process]
@@ -915,7 +945,101 @@ classDef is technically available in state diagrams but support varies by render
 stateDiagram-v2
     classDef active fill:#abc,stroke:#def
     class Processing active
-\`\`\`` : `## Semantic classDef library
+\`\`\`` : diagramFamily === "gantt" ? `## Gantt diagram: section and task syntax
+
+\`gantt\` styling is controlled entirely by the theme directive above — bar colors, section backgrounds, and label fonts all come from the theme variables. There is **no** \`:::className\` syntax in Gantt diagrams; tasks cannot be individually styled.
+
+### Date format and task declaration
+
+Always declare \`dateFormat\` before any sections or tasks:
+
+\`\`\`mermaid
+${exampleDirective}
+gantt
+    title My Project Timeline
+    dateFormat YYYY-MM-DD
+    section Phase 1
+        Task A : done, a1, 2024-01-01, 7d
+        Task B : active, a2, 2024-01-08, 7d
+    section Phase 2
+        Task C : c1, after a2, 5d
+        Launch : milestone, m1, 2024-01-20, 0d
+\`\`\`
+
+Task status keywords: \`done\` (completed), \`active\` (in progress), \`crit\` (critical path). Use a duration of \`0d\` to mark a milestone point. Task IDs are optional but enable \`after taskId\` relative scheduling.
+
+### Date format tokens
+
+| Token | Meaning |
+|-------|---------|
+| \`YYYY\` | 4-digit year |
+| \`MM\` | 2-digit month (01–12) |
+| \`DD\` | 2-digit day (01–31) |
+| \`HH\` | Hour (00–23) |
+| \`mm\` | Minute (00–59) |
+
+---
+
+## Gantt diagram: theming note
+
+All Gantt colors come from the theme directive. No per-task style overrides are possible with classDef or inline styling.` : diagramFamily === "pie" ? `## Pie chart: title and slice syntax
+
+\`pie\` styling is controlled entirely by the theme directive above — slice colors, label fonts, and background all come from the theme variables. There is **no** \`:::className\` syntax in pie charts; individual slices cannot be independently styled beyond the palette color sequence.
+
+### Pie chart syntax
+
+\`\`\`mermaid
+${exampleDirective}
+pie title Distribution
+    "Label A" : 40
+    "Label B" : 30
+    "Label C" : 20
+    "Label D" : 10
+\`\`\`
+
+The \`title\` keyword is optional but recommended. Each slice is \`"Label" : value\` where value is a positive number — Mermaid calculates percentages automatically. Labels must be quoted strings.
+
+---
+
+## Pie chart: theming note
+
+All pie chart colors come from the theme directive and are assigned in palette sequence order. No per-slice style overrides are possible with classDef or inline styling.` : diagramFamily === "mindmap" ? `## Mindmap: indented node syntax & shape notation
+
+\`mindmap\` styling is controlled entirely by the theme directive above — node colors, border styles, and label fonts all come from the theme variables. There is **no** \`:::className\` syntax in mindmaps; nodes cannot be individually styled.
+
+### Node shape notation
+
+| Syntax | Shape |
+|--------|-------|
+| \`text\` | Default (cloud / rounded rectangle) |
+| \`[text]\` | Rectangle |
+| \`(text)\` | Rounded rectangle |
+| \`((text))\` | Circle |
+| \`{{text}}\` | Hexagon |
+| \`)text(\` | Bang / callout |
+
+### Indented node syntax
+
+\`\`\`mermaid
+${exampleDirective}
+mindmap
+  root((Central Topic))
+    Branch A
+      Leaf A1
+      Leaf A2
+    Branch B
+      Sub-branch
+        Deep leaf
+    Branch C
+\`\`\`
+
+The root node is at the first indentation level. Each deeper indentation level creates child nodes. Use 2 or 4 spaces consistently — do not mix indent sizes within the same diagram.
+
+---
+
+## Mindmap: theming note
+
+All mindmap colors come from the theme directive. No per-node style overrides are possible with classDef or inline styling.` : `## Semantic classDef library
 
 This is the complete styling vocabulary for this theme. Apply these classDef classes to nodes using \`:::className\` syntax. Do NOT add any other fill, stroke, or color values — use only these classes.
 
@@ -1018,6 +1142,36 @@ ${diagramFamily === "sequenceDiagram" ? `1. ${formatRuleText}
 6. Use \`state CompositeName { ... }\` for composite (nested) states.
 7. Use \`--\` inside a composite state to separate concurrent regions.
 8. classDef styling is available but support varies by renderer — test before relying on it.
+9. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values — the theme directive handles all styling.
+10. Do NOT change any color values — reproduce them exactly as shown.
+11. If the diagram type changes, preserve the exact same theme directive.` : diagramFamily === "gantt" ? `1. ${formatRuleText}
+2. Add the metadata comment block immediately after the theme directive.
+3. Use \`gantt\` as the diagram type.
+4. Always declare \`dateFormat\` before any \`section\` or task entries.
+5. Use \`title\` to name the overall timeline.
+6. Group tasks into \`section\` blocks for visual organization.
+7. Task status keywords: \`done\` (completed), \`active\` (in progress), \`crit\` (critical path), \`milestone\` (zero-duration point with \`0d\`).
+8. Durations can be absolute dates (\`YYYY-MM-DD\`) or relative (\`7d\`, \`after taskId\`).
+9. Do NOT use \`:::className\` syntax — gantt does not support per-task classDef styling.
+10. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values — the theme directive handles all styling.
+11. Do NOT change any color values — reproduce them exactly as shown.
+12. If the diagram type changes, preserve the exact same theme directive.` : diagramFamily === "pie" ? `1. ${formatRuleText}
+2. Add the metadata comment block immediately after the theme directive.
+3. Use \`pie\` as the diagram type.
+4. Add a \`title\` on the same line as \`pie\`: \`pie title My Title\`.
+5. Each slice is \`"Label" : value\` where value is a positive number — Mermaid auto-calculates percentages.
+6. Labels must be quoted strings; keep them concise (under 40 characters each).
+7. Do NOT use \`:::className\` syntax — pie does not support per-slice classDef styling.
+8. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values — the theme directive handles all styling.
+9. Do NOT change any color values — reproduce them exactly as shown.
+10. If the diagram type changes, preserve the exact same theme directive.` : diagramFamily === "mindmap" ? `1. ${formatRuleText}
+2. Add the metadata comment block immediately after the theme directive.
+3. Use \`mindmap\` as the diagram type.
+4. The root node is at the first indentation level; each deeper level creates child nodes.
+5. Use consistent indentation (2 or 4 spaces) — do not mix indent sizes within the same diagram.
+6. Use shape notation to distinguish node types: \`((text))\` for root, \`[text]\` for categories, \`(text)\` for subcategories.
+7. Keep node labels concise (under 40 characters each).
+8. Do NOT use \`:::className\` syntax — mindmap does not support per-node classDef styling.
 9. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values — the theme directive handles all styling.
 10. Do NOT change any color values — reproduce them exactly as shown.
 11. If the diagram type changes, preserve the exact same theme directive.` : `1. ${formatRuleText}
