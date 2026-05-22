@@ -1,0 +1,14 @@
+C4Context
+    title System Context Diagram for E-commerce Platform
+
+    Enterprise_Boundary(ecommerce, "E-commerce Platform Boundary") {
+        Person(user, "User", "A customer using the e-commerce platform")
+        System(ecomSystem, "E-commerce Platform", "Manages products, user accounts, orders, etc.")
+
+        System_Ext(paymentGateway, "Payment Gateway", "Processes payments securely")
+        System_Ext(notificationService, "Notification Service", "Sends notifications to users")
+
+        Rel(user, ecomSystem, "Uses")
+        Rel(ecomSystem, paymentGateway, "Processes payments via")
+        Rel(ecomSystem, notificationService, "Notifies users via")
+    }

@@ -98,6 +98,15 @@ const FAMILY_ALIAS_TO_REGISTRY_ID: Record<string, DiagramFamily> = {
   mindmap:        "mindmap",
   eventModeling:  "eventModeling",
   wardley:        "wardley",
+
+  // new families added in Batch #1
+  architectureBeta: "architectureBeta",
+  block:            "block",
+  c4:               "c4Diagram",
+  kanban:           "kanban",
+  packet:           "packet",
+  radar:            "radar",
+  xychart:          "xychart",
 };
 
 describe("EXAMPLE_CATALOG — registry consistency guard", () => {
