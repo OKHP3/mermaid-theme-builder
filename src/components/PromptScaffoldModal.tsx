@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import type { ScaffoldFormat } from "@/lib/themeEngine";
 
 const SCAFFOLD_FORMAT_KEY = "mtb-scaffold-format";
+const PREVIEW_LINES = 25;
 
 function readLastFormat(): ScaffoldFormat | null {
   try {
@@ -57,17 +58,20 @@ interface PromptScaffoldModalProps {
   open: boolean;
   onClose: () => void;
   onCopy: (format: ScaffoldFormat) => Promise<void>;
+  generatePreview: (format: ScaffoldFormat) => string;
 }
 
-export function PromptScaffoldModal({ open, onClose, onCopy }: PromptScaffoldModalProps) {
+export function PromptScaffoldModal({ open, onClose, onCopy, generatePreview }: PromptScaffoldModalProps) {
   const [copiedFormat, setCopiedFormat] = useState<ScaffoldFormat | null>(null);
   const [isClosing, setIsClosing] = useState(false);
   const [lastUsedFormat, setLastUsedFormat] = useState<ScaffoldFormat | null>(null);
+  const [openPreview, setOpenPreview] = useState<ScaffoldFormat | null>(null);
 
-  // Load saved preference whenever the modal opens
+  // Load saved preference whenever the modal opens; reset preview state
   useEffect(() => {
     if (open) {
       setLastUsedFormat(readLastFormat());
+      setOpenPreview(null);
     }
   }, [open]);
 
@@ -75,6 +79,7 @@ export function PromptScaffoldModal({ open, onClose, onCopy }: PromptScaffoldMod
     setIsClosing(true);
     setTimeout(() => {
       setIsClosing(false);
+      setOpenPreview(null);
       onClose();
     }, 150);
   }, [onClose]);
@@ -91,6 +96,14 @@ export function PromptScaffoldModal({ open, onClose, onCopy }: PromptScaffoldMod
       }, 1200);
     },
     [onCopy, handleClose],
+  );
+
+  const togglePreview = useCallback(
+    (format: ScaffoldFormat, e: React.MouseEvent) => {
+      e.stopPropagation();
+      setOpenPreview((prev) => (prev === format ? null : format));
+    },
+    [],
   );
 
   useEffect(() => {
@@ -150,77 +163,136 @@ export function PromptScaffoldModal({ open, onClose, onCopy }: PromptScaffoldMod
           {FORMAT_OPTIONS.map((opt) => {
             const copied = copiedFormat === opt.format;
             const isLastUsed = lastUsedFormat === opt.format && copiedFormat === null;
+            const isPreviewing = openPreview === opt.format;
+            const isDimmed = copiedFormat !== null && !copied;
+
             return (
-              <button
+              <div
                 key={opt.format}
-                onClick={() => handleCopy(opt.format)}
-                disabled={copiedFormat !== null}
-                className={`w-full text-left rounded-lg border p-3 transition-all group ${
+                className={`rounded-lg border overflow-hidden transition-all ${
                   copied
-                    ? "border-emerald-500/60 bg-emerald-500/10"
+                    ? "border-emerald-500/60"
                     : isLastUsed
-                    ? "border-primary/50 bg-primary/5 ring-1 ring-primary/20"
-                    : "border-border bg-background hover:border-primary/40 hover:bg-muted/40 active:bg-muted/70"
-                } ${copiedFormat !== null && !copied ? "opacity-40 pointer-events-none" : ""}`}
+                    ? "border-primary/50 ring-1 ring-primary/20"
+                    : isPreviewing
+                    ? "border-primary/40"
+                    : "border-border"
+                } ${isDimmed ? "opacity-40 pointer-events-none" : ""}`}
               >
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span
-                        className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full border ${
-                          opt.format === "formatA"
-                            ? "bg-blue-500/10 text-blue-400 border-blue-500/20"
-                            : opt.format === "formatB"
-                            ? "bg-purple-500/10 text-purple-400 border-purple-500/20"
-                            : "bg-primary/10 text-primary border-primary/20"
-                        }`}
-                      >
-                        {opt.badge}
-                      </span>
-                      <span className="text-xs font-semibold text-foreground font-mono">{opt.label}</span>
-                      {isLastUsed && (
-                        <span className="text-[9px] font-medium text-primary/70 bg-primary/8 border border-primary/20 px-1.5 py-0.5 rounded-full leading-none">
-                          last used
+                {/* Copy button — main card body */}
+                <button
+                  onClick={() => handleCopy(opt.format)}
+                  disabled={copiedFormat !== null}
+                  className={`w-full text-left p-3 transition-all group ${
+                    copied
+                      ? "bg-emerald-500/10"
+                      : isLastUsed
+                      ? "bg-primary/5 hover:bg-primary/10"
+                      : "bg-background hover:bg-muted/40 active:bg-muted/70"
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span
+                          className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full border ${
+                            opt.format === "formatA"
+                              ? "bg-blue-500/10 text-blue-400 border-blue-500/20"
+                              : opt.format === "formatB"
+                              ? "bg-purple-500/10 text-purple-400 border-purple-500/20"
+                              : "bg-primary/10 text-primary border-primary/20"
+                          }`}
+                        >
+                          {opt.badge}
                         </span>
+                        <span className="text-xs font-semibold text-foreground font-mono">{opt.label}</span>
+                        {isLastUsed && (
+                          <span className="text-[9px] font-medium text-primary/70 bg-primary/8 border border-primary/20 px-1.5 py-0.5 rounded-full leading-none">
+                            last used
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[11px] text-muted-foreground mt-1.5 leading-snug">
+                        {opt.description}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground/60 mt-1 leading-none">
+                        {opt.renderer}
+                      </p>
+                    </div>
+
+                    <div className="shrink-0 mt-0.5">
+                      {copied ? (
+                        <span className="flex items-center gap-1 text-emerald-400 text-xs font-medium">
+                          <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+                            <path
+                              fillRule="evenodd"
+                              d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                          Copied
+                        </span>
+                      ) : (
+                        <svg
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                          className={`w-4 h-4 transition-colors ${
+                            isLastUsed
+                              ? "text-primary/50 group-hover:text-primary"
+                              : "text-muted-foreground/40 group-hover:text-muted-foreground"
+                          }`}
+                        >
+                          <path d="M7 3.5A1.5 1.5 0 018.5 2h3.879a1.5 1.5 0 011.06.44l3.122 3.12A1.5 1.5 0 0117 6.622V12.5a1.5 1.5 0 01-1.5 1.5h-1v-3.379a3 3 0 00-.879-2.121L10.5 5.379A3 3 0 008.379 4.5H7v-1z" />
+                          <path d="M4.5 6A1.5 1.5 0 003 7.5v9A1.5 1.5 0 004.5 18h7a1.5 1.5 0 001.5-1.5v-5.879a1.5 1.5 0 00-.44-1.06L9.44 6.44A1.5 1.5 0 008.378 6H4.5z" />
+                        </svg>
                       )}
                     </div>
-                    <p className="text-[11px] text-muted-foreground mt-1.5 leading-snug">
-                      {opt.description}
-                    </p>
-                    <p className="text-[10px] text-muted-foreground/60 mt-1 leading-none">
-                      {opt.renderer}
-                    </p>
                   </div>
+                </button>
 
-                  <div className="shrink-0 mt-0.5">
-                    {copied ? (
-                      <span className="flex items-center gap-1 text-emerald-400 text-xs font-medium">
-                        <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
-                          <path
-                            fillRule="evenodd"
-                            d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                        Copied
-                      </span>
-                    ) : (
-                      <svg
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                        className={`w-4 h-4 transition-colors ${
-                          isLastUsed
-                            ? "text-primary/50 group-hover:text-primary"
-                            : "text-muted-foreground/40 group-hover:text-muted-foreground"
-                        }`}
-                      >
-                        <path d="M7 3.5A1.5 1.5 0 018.5 2h3.879a1.5 1.5 0 011.06.44l3.122 3.12A1.5 1.5 0 0117 6.622V12.5a1.5 1.5 0 01-1.5 1.5h-1v-3.379a3 3 0 00-.879-2.121L10.5 5.379A3 3 0 008.379 4.5H7v-1z" />
-                        <path d="M4.5 6A1.5 1.5 0 003 7.5v9A1.5 1.5 0 004.5 18h7a1.5 1.5 0 001.5-1.5v-5.879a1.5 1.5 0 00-.44-1.06L9.44 6.44A1.5 1.5 0 008.378 6H4.5z" />
-                      </svg>
-                    )}
+                {/* Preview toggle — thin bar below the copy button */}
+                <button
+                  onClick={(e) => togglePreview(opt.format, e)}
+                  className={`w-full flex items-center justify-between px-3 py-1.5 border-t text-[10px] font-medium transition-colors ${
+                    isPreviewing
+                      ? "border-primary/20 bg-primary/5 text-primary/80 hover:bg-primary/10"
+                      : "border-border/60 bg-muted/20 text-muted-foreground/60 hover:text-muted-foreground hover:bg-muted/40"
+                  }`}
+                  aria-expanded={isPreviewing}
+                  aria-label={isPreviewing ? `Hide preview for ${opt.badge}` : `Preview ${opt.badge} scaffold`}
+                >
+                  <span>{isPreviewing ? "Hide preview" : "Preview"}</span>
+                  <svg
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    className={`w-3 h-3 transition-transform duration-150 ${isPreviewing ? "rotate-180" : ""}`}
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </button>
+
+                {/* Preview panel */}
+                {isPreviewing && (
+                  <div className="border-t border-border/40">
+                    <pre
+                      className="overflow-y-auto max-h-48 px-3 py-2.5 text-[10px] leading-relaxed font-mono whitespace-pre bg-[#0f1f1c] text-[#d4c9b5] select-text"
+                      aria-label={`Scaffold preview for ${opt.label}`}
+                    >
+                      {generatePreview(opt.format)
+                        .split("\n")
+                        .slice(0, PREVIEW_LINES)
+                        .join("\n")}
+                      {generatePreview(opt.format).split("\n").length > PREVIEW_LINES && (
+                        `\n…  (${generatePreview(opt.format).split("\n").length - PREVIEW_LINES} more lines)`
+                      )}
+                    </pre>
                   </div>
-                </div>
-              </button>
+                )}
+              </div>
             );
           })}
         </div>

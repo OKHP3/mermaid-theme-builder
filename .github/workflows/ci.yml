@@ -37,6 +37,9 @@ jobs:
       - name: Typecheck (libs + leaves)
         run: pnpm run typecheck
 
+      - name: Run tests
+        run: pnpm run test
+
       - name: Build Mermaid Theme Builder
         env:
           PORT: "18624"

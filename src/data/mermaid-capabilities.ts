@@ -135,7 +135,7 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
       "UML class diagrams showing entities, attributes, methods, and relationships (inheritance, composition, aggregation).",
     bestUsedFor: "Domain modeling, data models, OOP design, software architecture documentation.",
     warning: null,
-    exampleFile: "class-theme-builder-domain-model.mmd",
+    exampleFile: "class-domain-model.mmd",
     examplePending: false,
     minMermaidVersion: "10.0.0",
     supportedLooks: ["classic", "neo"],
@@ -282,7 +282,7 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
     bestUsedFor:
       "Opportunity mapping, priority matrices, effort-vs-impact analysis, competitive positioning.",
     warning: null,
-    exampleFile: "quadrant-opportunity-map.mmd",
+    exampleFile: "quadrant-opportunity.mmd",
     examplePending: false,
     minMermaidVersion: "10.0.0",
     supportedLooks: ["classic"],
@@ -307,7 +307,7 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
     bestUsedFor:
       "Product requirements documentation, compliance traceability, system specification.",
     warning: null,
-    exampleFile: "requirement-firewall-and-scope.mmd",
+    exampleFile: "requirement-scope-firewall.mmd",
     examplePending: false,
     minMermaidVersion: "10.0.0",
     supportedLooks: ["classic", "neo"],

@@ -199,6 +199,11 @@ export function ComposeTab({
     [selectedPalette, exportOptions],
   );
 
+  const handleScaffoldPreview = useCallback(
+    (format: ScaffoldFormat) => generatePromptScaffoldWithFormat(selectedPalette, exportOptions, format),
+    [selectedPalette, exportOptions],
+  );
+
   const handleCopyShareLink = useCallback(async () => {
     const payload = paletteToShareablePayload(selectedPalette, customThemeName);
     const token = encodeShareableTheme(payload);
@@ -655,6 +660,7 @@ export function ComposeTab({
         open={showScaffoldModal}
         onClose={() => setShowScaffoldModal(false)}
         onCopy={handleScaffoldCopy}
+        generatePreview={handleScaffoldPreview}
       />
 
       {showSaveDialog && (

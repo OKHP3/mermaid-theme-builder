@@ -1,0 +1,13 @@
+zenuml
+  title Council to Prototype Flow
+
+  @Actor Jamie
+  @Boundary AI
+  @Database ThemeStore
+
+  Jamie -> AI: "Draft a flowchart for user auth"
+  AI -> Jamie: return diagram code
+  Jamie -> ThemeStore: applyTheme(palette)
+  ThemeStore -> Jamie: return themedCode
+  Jamie -> AI: "Refine with scaffold"
+  AI -> Jamie: return finalDiagram

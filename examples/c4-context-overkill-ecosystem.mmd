@@ -1,0 +1,18 @@
+C4Context
+  title Overkill Hill P³ — Tool Ecosystem Context
+
+  Person(jamie, "Jamie Hill", "Builder, author, tool author")
+
+  System(mtb, "Mermaid Theme Builder", "Visual governance for AI-generated Mermaid diagrams")
+  System(forge, "OKH Forge", "Personal tooling suite and brand system")
+
+  System_Ext(mermaid, "Mermaid.js", "Open-source diagram renderer")
+  System_Ext(llm, "AI Assistant", "LLM used to generate Mermaid diagrams")
+  System_Ext(renderer, "Target Renderer", "GitHub / Notion / Obsidian / etc.")
+
+  Rel(jamie, mtb, "Builds themes using")
+  Rel(jamie, llm, "Prompts for diagrams")
+  Rel(mtb, mermaid, "Renders previews via")
+  Rel(mtb, llm, "Exports prompt scaffold to")
+  Rel(llm, renderer, "Outputs themed Mermaid to")
+  Rel(mtb, forge, "Part of")

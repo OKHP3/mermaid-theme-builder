@@ -357,6 +357,11 @@ export function ApplyTab({
     [selectedPalette, exportOptions],
   );
 
+  const handleScaffoldPreview = useCallback(
+    (format: ScaffoldFormat) => generatePromptScaffoldWithFormat(selectedPalette, exportOptions, format),
+    [selectedPalette, exportOptions],
+  );
+
   const handleDownload = useCallback(
     async (type: DownloadType) => {
       if (downloadingType) return;
@@ -1075,6 +1080,7 @@ export function ApplyTab({
         open={showScaffoldModal}
         onClose={() => setShowScaffoldModal(false)}
         onCopy={handleScaffoldCopy}
+        generatePreview={handleScaffoldPreview}
       />
     </div>
   );

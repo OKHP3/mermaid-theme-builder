@@ -111,6 +111,30 @@ describe("detectDiagram — family detection", () => {
     expect(detectDiagram("wardley-beta\n  title Online Shopping").family).toBe("wardley");
   });
 
+  it("detects treeView-beta as treeView family", () => {
+    expect(detectDiagram("treeView-beta\n  root\n    child1\n    child2").family).toBe("treeView");
+  });
+
+  it("detects venn-beta as venn family", () => {
+    expect(detectDiagram("venn-beta\n  A[Set A]\n  B[Set B]").family).toBe("venn");
+  });
+
+  it("detects ishikawa-beta as ishikawa family", () => {
+    expect(detectDiagram("ishikawa-beta\n  root((Root Cause))").family).toBe("ishikawa");
+  });
+
+  it("detects radar-beta as radar family", () => {
+    expect(detectDiagram("radar-beta\n  axis A,B,C\n  curve Candidate [5,3,4]").family).toBe("radar");
+  });
+
+  it("detects treemap-beta as treemap family", () => {
+    expect(detectDiagram("treemap-beta\n  root\n    leaf 10").family).toBe("treemap");
+  });
+
+  it("detects eventmodeling as eventModeling family", () => {
+    expect(detectDiagram("eventmodeling\n  Command AddItem").family).toBe("eventModeling");
+  });
+
   it("strips %%{init:...}%% directive before detecting family", () => {
     const withInit = '%%{init: {"theme": "dark"}}%%\nflowchart LR\n  A --> B';
     expect(detectDiagram(withInit).family).toBe("flowchart");
