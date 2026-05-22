@@ -170,8 +170,32 @@ export function ComposeTab({
   const [clampedTiers, setClampedTiers] = useState<Set<TypographyTierKey>>(new Set());
   const clampTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
 
+  const handleTypographyChangeWithClamp = useCallback(
+    (proposed: TypographySettings) => {
+      const enforced = enforceHierarchy(proposed);
+      onTypographyChange(enforced);
+      const newlyClamped = (TIER_ORDER as TypographyTierKey[]).filter(
+        (k) => enforced[k].fontSize < proposed[k].fontSize,
+      );
+      if (newlyClamped.length > 0) {
+        setClampedTiers((prev) => new Set([...prev, ...newlyClamped]));
+        for (const k of newlyClamped) {
+          if (clampTimers.current[k]) clearTimeout(clampTimers.current[k]);
+          clampTimers.current[k] = setTimeout(() => {
+            setClampedTiers((prev) => {
+              const next = new Set(prev);
+              next.delete(k);
+              return next;
+            });
+          }, 2000);
+        }
+      }
+    },
+    [onTypographyChange],
+  );
+
   const handleTierSizeBlur = useCallback(
-    (key: TypographyTierKey, rawValue: string, maxSize: number) => {
+    (key: TypographyTierKey, rawValue: string, _maxSize: number) => {
       setTierDraftSizes((prev) => {
         const next = { ...prev };
         delete next[key];
@@ -179,23 +203,9 @@ export function ComposeTab({
       });
       const parsed = parseInt(rawValue, 10);
       if (isNaN(parsed) || parsed < 8) return;
-      const clamped = Math.min(parsed, maxSize);
-      const wasOverParent = parsed > maxSize;
-      const next = enforceHierarchy({ ...typography, [key]: { ...typography[key], fontSize: clamped } });
-      onTypographyChange(next);
-      if (wasOverParent) {
-        setClampedTiers((prev) => new Set([...prev, key]));
-        if (clampTimers.current[key]) clearTimeout(clampTimers.current[key]);
-        clampTimers.current[key] = setTimeout(() => {
-          setClampedTiers((prev) => {
-            const next = new Set(prev);
-            next.delete(key);
-            return next;
-          });
-        }, 2000);
-      }
+      handleTypographyChangeWithClamp({ ...typography, [key]: { ...typography[key], fontSize: parsed } });
     },
-    [typography, onTypographyChange],
+    [typography, handleTypographyChangeWithClamp],
   );
 
   const exportOptions = useMemo(
@@ -560,7 +570,7 @@ export function ComposeTab({
                         type="button"
                         disabled={tier.fontSize <= 8}
                         onClick={() => {
-                          onTypographyChange(enforceHierarchy({ ...typography, [key]: { ...tier, fontSize: tier.fontSize - 1 } }));
+                          handleTypographyChangeWithClamp({ ...typography, [key]: { ...tier, fontSize: tier.fontSize - 1 } });
                         }}
                         className="w-5 h-5 flex items-center justify-center rounded border border-border bg-background hover:bg-muted disabled:opacity-30 text-xs font-bold leading-none"
                         aria-label={`Decrease ${meta.label} size`}
@@ -587,7 +597,7 @@ export function ComposeTab({
                         type="button"
                         disabled={tier.fontSize >= maxSize}
                         onClick={() => {
-                          onTypographyChange(enforceHierarchy({ ...typography, [key]: { ...tier, fontSize: tier.fontSize + 1 } }));
+                          handleTypographyChangeWithClamp({ ...typography, [key]: { ...tier, fontSize: tier.fontSize + 1 } });
                         }}
                         className="w-5 h-5 flex items-center justify-center rounded border border-border bg-background hover:bg-muted disabled:opacity-30 text-xs font-bold leading-none"
                         aria-label={`Increase ${meta.label} size`}
@@ -601,7 +611,7 @@ export function ComposeTab({
                     type="text"
                     value={tier.fontFamily}
                     onChange={(e) => {
-                      onTypographyChange(enforceHierarchy({ ...typography, [key]: { ...tier, fontFamily: e.target.value } }));
+                      handleTypographyChangeWithClamp({ ...typography, [key]: { ...tier, fontFamily: e.target.value } });
                     }}
                     placeholder="(inherit palette font)"
                     className="w-full text-[10px] font-mono bg-background border border-border/60 rounded px-1.5 py-0.5 text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50"
