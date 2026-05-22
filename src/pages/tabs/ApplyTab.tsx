@@ -176,6 +176,11 @@ export function ApplyTab({
     if (activeDiagramIdx >= diagrams.length) setActiveDiagramIdx(0);
   }, [diagrams.length, activeDiagramIdx]);
 
+  // Reset the advisory banner whenever the user picks a different target renderer.
+  useEffect(() => {
+    setAdvisoryDismissed(false);
+  }, [rendererTarget]);
+
   // ESC closes the color editor / download menu / family menu when open.
   useEffect(() => {
     if (!showColorEditor && !showDownloadMenu && !showFamilyMenu) return;
@@ -258,41 +263,39 @@ export function ApplyTab({
   }, [detection, familyOverride]);
 
   const exportAdvisories = useMemo((): string[] => {
-    if (!inputCode.trim()) return [];
+    if (!inputCode.trim() || !rendererTarget) return [];
+    const r = getRendererById(rendererTarget);
+    if (!r) return [];
+
     const advisories: string[] = [];
     const hasCustomFont = selectedPalette.colors.some(
       (c) => c.key === "fontFamily" && c.value && c.value.trim() !== "",
     );
     const classDefActive = CLASSDEF_CAPABLE_FAMILIES.includes(effectiveDetection.family);
 
-    const HIGH_TRAFFIC_IDS = ["github", "gitlab", "notion"] as const;
-    for (const rid of HIGH_TRAFFIC_IDS) {
-      const r = getRendererById(rid);
-      if (!r) continue;
-      if (r.initDirectiveSupport !== "full") {
-        advisories.push(
-          `%%{init}%% directive has partial support on ${r.shortName} — some theme colors may differ`,
-        );
-      }
-      if (r.themeVariableSupport !== "full") {
-        advisories.push(
-          `themeVariables partially applied on ${r.shortName} — only a subset of colors will take effect`,
-        );
-      }
-      if (classDefActive && r.classDefSupport !== "full") {
-        advisories.push(
-          `classDef node styles may render differently on ${r.shortName} — validate before publishing`,
-        );
-      }
-      if (hasCustomFont && r.customFontSupport === "none") {
-        advisories.push(
-          `Custom fontFamily is blocked on ${r.shortName} — system font fallback will apply`,
-        );
-      }
+    if (r.initDirectiveSupport !== "full") {
+      advisories.push(
+        `%%{init}%% directive has partial support on ${r.shortName} — some theme colors may differ`,
+      );
+    }
+    if (r.themeVariableSupport !== "full") {
+      advisories.push(
+        `themeVariables partially applied on ${r.shortName} — only a subset of colors will take effect`,
+      );
+    }
+    if (classDefActive && r.classDefSupport !== "full") {
+      advisories.push(
+        `classDef node styles may render differently on ${r.shortName} — validate before publishing`,
+      );
+    }
+    if (hasCustomFont && r.customFontSupport === "none") {
+      advisories.push(
+        `Custom fontFamily is blocked on ${r.shortName} — system font fallback will apply`,
+      );
     }
 
-    return [...new Set(advisories)];
-  }, [inputCode, selectedPalette, effectiveDetection.family]);
+    return advisories;
+  }, [inputCode, selectedPalette, effectiveDetection.family, rendererTarget]);
 
   const canExtract = useMemo(() => hasExtractableTheme(inputCode), [inputCode]);
   const isExtracted = isExtractedPaletteId(selectedPaletteId);
@@ -684,165 +687,169 @@ export function ApplyTab({
         </div>
       )}
 
-      <div className="flex-none border-b border-border bg-card/20 px-3 py-1.5 flex items-center gap-2 print-hide">
-        <span className="text-[10px] uppercase tracking-wide text-muted-foreground font-semibold shrink-0">
-          Look
-        </span>
-        <div className="flex gap-1">
-          {(
-            [
-              { value: "classic" as MermaidLook, label: "Classic" },
-              { value: "neo" as MermaidLook, label: "Neo" },
-              { value: "handDrawn" as MermaidLook, label: "Hand Drawn" },
-            ] as const
-          ).map((opt) => (
-            <button
-              key={opt.value}
-              type="button"
-              onClick={() => onLookChange(opt.value)}
-              className={`text-[10px] px-2 py-0.5 rounded-full border font-medium transition-all ${
-                look === opt.value
-                  ? "border-primary/50 bg-primary/10 text-primary"
-                  : "border-border bg-background hover:border-primary/40 hover:bg-muted text-muted-foreground"
-              }`}
-            >
-              {opt.label}
-            </button>
-          ))}
-        </div>
-        {look !== "classic" && (
-          <span className="text-[10px] text-muted-foreground/60">
-            {look === "neo" ? "Mermaid v11+ required" : "Rough.js sketch style"}
-          </span>
-        )}
-      </div>
-
-      <div className="flex-none border-b border-border bg-card/20 px-3 py-1 flex items-center gap-2 print-hide">
-        <span className="text-[10px] uppercase tracking-wide text-muted-foreground font-semibold shrink-0">
-          Target
-        </span>
-        <select
-          value={rendererTarget}
-          onChange={(e) => onRendererTargetChange(e.target.value)}
-          className="text-[10px] bg-background border border-border rounded-md px-1.5 py-0.5 text-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 cursor-pointer"
-          aria-label="Select target renderer"
-        >
-          <option value="">Generic (most compatible)</option>
-          {RENDERER_PROFILES.map((r) => (
-            <option key={r.id} value={r.id}>
-              {r.displayName}
-            </option>
-          ))}
-        </select>
-        {rendererLookWarning ? (
-          <span className="text-[10px] text-amber-600 dark:text-amber-400 flex items-center gap-1">
-            <svg viewBox="0 0 16 16" fill="currentColor" className="w-3 h-3 shrink-0">
-              <path d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM0 8a8 8 0 1116 0A8 8 0 010 8zm8-3a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 018 5zm0 8.25a1 1 0 110-2 1 1 0 010 2z" />
-            </svg>
-            {rendererLookWarning}
-          </span>
-        ) : (
-          rendererProfile && (
-            <span className="text-[10px] text-muted-foreground/50 truncate hidden sm:block">
-              {rendererProfile.mermaidVersionApprox}
+      <div className="flex-none border-b border-border bg-card/20 px-3 py-1.5 flex flex-wrap items-center gap-x-3 gap-y-1.5 print-hide">
+        {/* Target */}
+        <div className="flex items-center gap-1.5 shrink-0">
+          <span className="text-[10px] uppercase tracking-wide text-muted-foreground font-semibold">Target</span>
+          <select
+            value={rendererTarget}
+            onChange={(e) => onRendererTargetChange(e.target.value)}
+            className="text-[10px] bg-background border border-border rounded-md px-1.5 py-0.5 text-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 cursor-pointer"
+            aria-label="Select target renderer"
+          >
+            <option value="">Generic (most compatible)</option>
+            {RENDERER_PROFILES.map((r) => (
+              <option key={r.id} value={r.id}>
+                {r.displayName}
+              </option>
+            ))}
+          </select>
+          {rendererLookWarning ? (
+            <span className="text-[10px] text-amber-600 dark:text-amber-400 flex items-center gap-1">
+              <svg viewBox="0 0 16 16" fill="currentColor" className="w-3 h-3 shrink-0">
+                <path d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM0 8a8 8 0 1116 0A8 8 0 010 8zm8-3a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 018 5zm0 8.25a1 1 0 110-2 1 1 0 010 2z" />
+              </svg>
+              {rendererLookWarning}
             </span>
-          )
-        )}
+          ) : (
+            rendererProfile && (
+              <span className="text-[10px] text-muted-foreground/50 hidden sm:block">
+                {rendererProfile.mermaidVersionApprox}
+              </span>
+            )
+          )}
+        </div>
+
+        <div className="w-px h-3.5 bg-border/60 shrink-0 hidden sm:block" aria-hidden="true" />
+
+        {/* Look */}
+        <div className="flex items-center gap-1.5 shrink-0">
+          <span className="text-[10px] uppercase tracking-wide text-muted-foreground font-semibold">Look</span>
+          <div className="flex gap-1">
+            {(
+              [
+                { value: "classic" as MermaidLook, label: "Classic" },
+                { value: "neo" as MermaidLook, label: "Neo" },
+                { value: "handDrawn" as MermaidLook, label: "Hand Drawn" },
+              ] as const
+            ).map((opt) => (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => onLookChange(opt.value)}
+                className={`text-[10px] px-2 py-0.5 rounded-full border font-medium transition-all ${
+                  look === opt.value
+                    ? "border-primary/50 bg-primary/10 text-primary"
+                    : "border-border bg-background hover:border-primary/40 hover:bg-muted text-muted-foreground"
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+          {look !== "classic" && (
+            <span className="text-[10px] text-muted-foreground/60">
+              {look === "neo" ? "v11+ required" : "sketch style"}
+            </span>
+          )}
+        </div>
+
+        <div className="w-px h-3.5 bg-border/60 shrink-0 hidden sm:block" aria-hidden="true" />
+
+        {/* Chart Type */}
+        <div className="relative shrink-0">
+          <button
+            type="button"
+            onClick={() => setShowFamilyMenu((v) => !v)}
+            aria-haspopup="menu"
+            aria-expanded={showFamilyMenu}
+            title={
+              familyOverride
+                ? `Family override: ${effectiveDetection.label} (auto-detected: ${detection.label}). Click to change or clear.`
+                : detection.family === "unknown"
+                ? "Diagram family not auto-detected — click to set manually."
+                : `Auto-detected family: ${detection.label}. Click to override.`
+            }
+            className={`px-2 py-0.5 rounded-full text-[11px] font-medium inline-flex items-center gap-1 transition-colors ${
+              familyOverride
+                ? "bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/40 hover:bg-amber-500/25"
+                : effectiveDetection.family === "unknown"
+                ? "bg-muted text-muted-foreground border border-border hover:bg-muted/70"
+                : "bg-primary/10 text-primary hover:bg-primary/20"
+            }`}
+          >
+            <span>{effectiveDetection.family === "unknown" ? "Set family…" : effectiveDetection.label}</span>
+            {familyOverride && <span className="text-[9px] opacity-70">override</span>}
+            <svg viewBox="0 0 12 12" className="w-2.5 h-2.5 opacity-60" fill="currentColor" aria-hidden="true">
+              <path d="M3 4.5l3 3 3-3z" />
+            </svg>
+          </button>
+          {showFamilyMenu && (
+            <>
+              <div
+                className="fixed inset-0 z-30"
+                onClick={() => setShowFamilyMenu(false)}
+                aria-hidden="true"
+              />
+              <div
+                className="absolute left-0 top-full mt-1 z-40 min-w-[200px] max-h-[320px] overflow-auto rounded-md border border-border bg-popover shadow-lg py-1"
+                role="menu"
+                aria-label="Override diagram family"
+              >
+                <button
+                  role="menuitemradio"
+                  aria-checked={!familyOverride}
+                  onClick={() => {
+                    setFamilyOverride(null);
+                    setShowFamilyMenu(false);
+                  }}
+                  className={`w-full text-left px-3 py-1.5 text-xs hover:bg-muted transition-colors flex items-center justify-between gap-2 ${
+                    !familyOverride ? "font-medium text-foreground" : "text-muted-foreground"
+                  }`}
+                >
+                  <span>Auto-detect</span>
+                  <span className="text-[10px] opacity-60">
+                    {detection.family === "unknown" ? "unknown" : detection.label}
+                  </span>
+                </button>
+                <div className="border-t border-border my-1" aria-hidden="true" />
+                {DIAGRAM_CAPABILITIES.map((cap) => {
+                  const active = familyOverride === cap.id;
+                  return (
+                    <button
+                      key={cap.id}
+                      role="menuitemradio"
+                      aria-checked={active}
+                      onClick={() => {
+                        setFamilyOverride(cap.id);
+                        setShowFamilyMenu(false);
+                      }}
+                      className={`w-full text-left px-3 py-1.5 text-xs hover:bg-muted transition-colors ${
+                        active ? "bg-primary/10 text-primary font-medium" : "text-muted-foreground"
+                      }`}
+                    >
+                      {cap.displayName}
+                    </button>
+                  );
+                })}
+              </div>
+            </>
+          )}
+        </div>
       </div>
 
       <div className="md:flex-1 md:overflow-hidden flex flex-col md:flex-row md:min-h-0">
         <div className="flex flex-col md:flex-none md:w-1/2 border-b md:border-b-0 md:border-r border-border md:min-h-0 print-hide">
           <div className="flex items-center justify-between px-3 py-1.5 border-b border-border bg-card/20 flex-none gap-2">
             <span className="text-xs font-medium text-muted-foreground">Diagram Code</span>
-            <div className="flex items-center gap-1.5">
-              <div className="relative">
-                <button
-                  type="button"
-                  onClick={() => setShowFamilyMenu((v) => !v)}
-                  aria-haspopup="menu"
-                  aria-expanded={showFamilyMenu}
-                  title={
-                    familyOverride
-                      ? `Family override: ${effectiveDetection.label} (auto-detected: ${detection.label}). Click to change or clear.`
-                      : detection.family === "unknown"
-                      ? "Diagram family not auto-detected — click to set manually."
-                      : `Auto-detected family: ${detection.label}. Click to override.`
-                  }
-                  className={`px-2 py-0.5 rounded-full text-[11px] font-medium inline-flex items-center gap-1 transition-colors ${
-                    familyOverride
-                      ? "bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/40 hover:bg-amber-500/25"
-                      : effectiveDetection.family === "unknown"
-                      ? "bg-muted text-muted-foreground border border-border hover:bg-muted/70"
-                      : "bg-primary/10 text-primary hover:bg-primary/20"
-                  }`}
-                >
-                  <span>{effectiveDetection.family === "unknown" ? "Set family…" : effectiveDetection.label}</span>
-                  {familyOverride && <span className="text-[9px] opacity-70">override</span>}
-                  <svg viewBox="0 0 12 12" className="w-2.5 h-2.5 opacity-60" fill="currentColor" aria-hidden="true">
-                    <path d="M3 4.5l3 3 3-3z" />
-                  </svg>
-                </button>
-                {showFamilyMenu && (
-                  <>
-                    <div
-                      className="fixed inset-0 z-30"
-                      onClick={() => setShowFamilyMenu(false)}
-                      aria-hidden="true"
-                    />
-                    <div
-                      className="absolute right-0 top-full mt-1 z-40 min-w-[200px] max-h-[320px] overflow-auto rounded-md border border-border bg-popover shadow-lg py-1"
-                      role="menu"
-                      aria-label="Override diagram family"
-                    >
-                      <button
-                        role="menuitemradio"
-                        aria-checked={!familyOverride}
-                        onClick={() => {
-                          setFamilyOverride(null);
-                          setShowFamilyMenu(false);
-                        }}
-                        className={`w-full text-left px-3 py-1.5 text-xs hover:bg-muted transition-colors flex items-center justify-between gap-2 ${
-                          !familyOverride ? "font-medium text-foreground" : "text-muted-foreground"
-                        }`}
-                      >
-                        <span>Auto-detect</span>
-                        <span className="text-[10px] opacity-60">
-                          {detection.family === "unknown" ? "unknown" : detection.label}
-                        </span>
-                      </button>
-                      <div className="border-t border-border my-1" aria-hidden="true" />
-                      {DIAGRAM_CAPABILITIES.map((cap) => {
-                        const active = familyOverride === cap.id;
-                        return (
-                          <button
-                            key={cap.id}
-                            role="menuitemradio"
-                            aria-checked={active}
-                            onClick={() => {
-                              setFamilyOverride(cap.id);
-                              setShowFamilyMenu(false);
-                            }}
-                            className={`w-full text-left px-3 py-1.5 text-xs hover:bg-muted transition-colors ${
-                              active ? "bg-primary/10 text-primary font-medium" : "text-muted-foreground"
-                            }`}
-                          >
-                            {cap.displayName}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </>
-                )}
-              </div>
-              <button
-                type="button"
-                onClick={() => setTextareaExpanded((v) => !v)}
-                className="md:hidden text-[10px] font-medium text-muted-foreground hover:text-foreground px-1.5 py-0.5 rounded border border-border/60 hover:border-border transition-colors inline-flex items-center gap-1"
-                aria-label={textareaExpanded ? "Collapse code editor" : "Expand code editor"}
-              >
-                {textareaExpanded ? "Collapse" : "Expand"}
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={() => setTextareaExpanded((v) => !v)}
+              className="md:hidden text-[10px] font-medium text-muted-foreground hover:text-foreground px-1.5 py-0.5 rounded border border-border/60 hover:border-border transition-colors inline-flex items-center gap-1"
+              aria-label={textareaExpanded ? "Collapse code editor" : "Expand code editor"}
+            >
+              {textareaExpanded ? "Collapse" : "Expand"}
+            </button>
           </div>
           <textarea
             value={inputCode}
@@ -1041,53 +1048,6 @@ export function ApplyTab({
 
           <div className="flex-1" />
 
-          <div className="relative">
-            <button
-              onClick={() => setShowDownloadMenu((v) => !v)}
-              disabled={!inputCode.trim() || !!downloadingType}
-              className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-md border border-border bg-background hover:bg-muted hover:border-primary/40 font-medium transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 text-muted-foreground">
-                <path d="M10.75 2.75a.75.75 0 00-1.5 0v8.614L6.295 8.235a.75.75 0 10-1.09 1.03l4.25 4.5a.75.75 0 001.09 0l4.25-4.5a.75.75 0 00-1.09-1.03l-2.955 3.129V2.75z" />
-                <path d="M3.5 12.75a.75.75 0 00-1.5 0v2.5A2.75 2.75 0 004.75 18h10.5A2.75 2.75 0 0018 15.25v-2.5a.75.75 0 00-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5z" />
-              </svg>
-              {downloadingType ? `Saving ${DOWNLOAD_LABELS[downloadingType]}…` : "Download"}
-              <svg viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3 text-muted-foreground">
-                <path
-                  fillRule="evenodd"
-                  d="M5.22 8.22a.75.75 0 011.06 0L10 11.94l3.72-3.72a.75.75 0 111.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 9.28a.75.75 0 010-1.06z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </button>
-            {showDownloadMenu && (
-              <>
-                <div className="fixed inset-0 z-30" onClick={() => setShowDownloadMenu(false)} />
-                <div className="absolute right-0 bottom-full mb-1 z-40 min-w-[180px] rounded-md border border-border bg-popover shadow-lg overflow-hidden">
-                  {(["mermaid", "markdown", "scaffold", "svg", "png", "json", "css", "bundle"] as DownloadType[]).map((t) => (
-                    <button
-                      key={t}
-                      onClick={() => handleDownload(t)}
-                      className="w-full text-left px-3 py-2 text-xs hover:bg-muted transition-colors flex items-center justify-between"
-                    >
-                      <span className="font-medium text-foreground">{DOWNLOAD_LABELS[t]}</span>
-                      <span className="text-[10px] text-muted-foreground">
-                        {t === "mermaid" && "raw text"}
-                        {t === "markdown" && "bootstrap"}
-                        {t === "scaffold" && "prompt"}
-                        {t === "svg" && "vector"}
-                        {t === "png" && "raster 2x"}
-                        {t === "json" && "palette"}
-                        {t === "css" && "variables"}
-                        {t === "bundle" && "all palettes"}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              </>
-            )}
-          </div>
-
           <button
             onClick={() => openInLiveEditor(exportCode)}
             disabled={!inputCode.trim()}
@@ -1141,24 +1101,52 @@ export function ApplyTab({
             );
           })}
 
-          <button
-            onClick={() => void handleDownload("markdown")}
-            disabled={!inputCode.trim() || downloadingType === "markdown"}
-            title="Save as Markdown file (.md)"
-            className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-md border border-border bg-card text-foreground hover:bg-muted hover:border-primary/30 font-medium transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            {downloadingType === "markdown" ? (
-              <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 animate-spin text-muted-foreground">
-                <path fillRule="evenodd" d="M15.312 11.424a5.5 5.5 0 01-9.201 2.466l-.312-.311h2.433a.75.75 0 000-1.5H3.989a.75.75 0 00-.75.75v4.242a.75.75 0 001.5 0v-2.43l.31.31a7 7 0 0011.712-3.138.75.75 0 00-1.449-.39zm1.23-3.723a.75.75 0 00.219-.53V2.929a.75.75 0 00-1.5 0V5.36l-.31-.31A7 7 0 003.239 8.188a.75.75 0 101.448.389A5.5 5.5 0 0113.89 6.11l.311.31h-2.432a.75.75 0 000 1.5h4.243a.75.75 0 00.53-.219z" clipRule="evenodd" />
-              </svg>
-            ) : (
+          <div className="relative">
+            <button
+              onClick={() => setShowDownloadMenu((v) => !v)}
+              disabled={!inputCode.trim() || !!downloadingType}
+              className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-md border border-border bg-background hover:bg-muted hover:border-primary/40 font-medium transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+            >
               <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 text-muted-foreground">
                 <path d="M10.75 2.75a.75.75 0 00-1.5 0v8.614L6.295 8.235a.75.75 0 10-1.09 1.03l4.25 4.5a.75.75 0 001.09 0l4.25-4.5a.75.75 0 00-1.09-1.03l-2.955 3.129V2.75z" />
                 <path d="M3.5 12.75a.75.75 0 00-1.5 0v2.5A2.75 2.75 0 004.75 18h10.5A2.75 2.75 0 0018 15.25v-2.5a.75.75 0 00-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5z" />
               </svg>
+              {downloadingType ? `Saving ${DOWNLOAD_LABELS[downloadingType]}…` : "Download"}
+              <svg viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3 text-muted-foreground">
+                <path
+                  fillRule="evenodd"
+                  d="M5.22 8.22a.75.75 0 011.06 0L10 11.94l3.72-3.72a.75.75 0 111.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 9.28a.75.75 0 010-1.06z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </button>
+            {showDownloadMenu && (
+              <>
+                <div className="fixed inset-0 z-30" onClick={() => setShowDownloadMenu(false)} />
+                <div className="absolute right-0 bottom-full mb-1 z-40 min-w-[180px] rounded-md border border-border bg-popover shadow-lg overflow-hidden">
+                  {(["mermaid", "markdown", "scaffold", "svg", "png", "json", "css", "bundle"] as DownloadType[]).map((t) => (
+                    <button
+                      key={t}
+                      onClick={() => handleDownload(t)}
+                      className="w-full text-left px-3 py-2 text-xs hover:bg-muted transition-colors flex items-center justify-between"
+                    >
+                      <span className="font-medium text-foreground">{DOWNLOAD_LABELS[t]}</span>
+                      <span className="text-[10px] text-muted-foreground">
+                        {t === "mermaid" && "raw text"}
+                        {t === "markdown" && "bootstrap"}
+                        {t === "scaffold" && "prompt"}
+                        {t === "svg" && "vector"}
+                        {t === "png" && "raster 2x"}
+                        {t === "json" && "palette"}
+                        {t === "css" && "variables"}
+                        {t === "bundle" && "all palettes"}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </>
             )}
-            Markdown
-          </button>
+          </div>
         </div>
       </div>
 
