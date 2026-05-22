@@ -707,7 +707,7 @@ export function ComposeTab({
           </span>
         </div>
         <div className="flex-1 overflow-auto p-4">
-          <MermaidPreview code={sampleThemedCode} className="w-full h-full" />
+          <MermaidPreview code={sampleThemedCode} className="w-full h-full" typography={typography} />
         </div>
         <div className="flex-none border-t border-border px-4 py-1.5 bg-card/20 print-hide">
           <MermaidReferral variant="chart" />

@@ -967,7 +967,7 @@ export function ApplyTab({
               {previewMode === "diff" ? (
                 <DiffView oldText={activeDiagramCode} newText={themedCode} className="w-full h-full" />
               ) : (
-                <MermaidPreview code={previewCode} className="w-full h-full" />
+                <MermaidPreview code={previewCode} className="w-full h-full" typography={typography} />
               )}
             </div>
           )}

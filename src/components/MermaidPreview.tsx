@@ -1,8 +1,10 @@
-import { useCallback, useEffect, useRef, useState, useId } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useId } from "react";
+import { type TypographySettings, generateTypographyCss } from "@/lib/typography";
 
 interface MermaidPreviewProps {
   code: string;
   className?: string;
+  typography?: TypographySettings;
 }
 
 type MermaidType = typeof import("mermaid").default;
@@ -64,7 +66,19 @@ function IconReset() {
   );
 }
 
-export function MermaidPreview({ code, className }: MermaidPreviewProps) {
+function scopedTypographyCss(css: string, scopeId: string): string {
+  const scope = `#${scopeId}`;
+  return css
+    .split("\n")
+    .map((line) => {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith("/*")) return line;
+      return `${scope} ${line}`;
+    })
+    .join("\n");
+}
+
+export function MermaidPreview({ code, className, typography }: MermaidPreviewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [svgContent, setSvgContent] = useState<string>("");
@@ -79,6 +93,13 @@ export function MermaidPreview({ code, className }: MermaidPreviewProps) {
   const lastPinchDistance = useRef<number | null>(null);
   const lastTapTime = useRef<number>(0);
   const uniqueId = useId().replace(/:/g, "");
+
+  const typographyCss = useMemo(() => {
+    if (!typography) return "";
+    const raw = generateTypographyCss(typography);
+    const previewScopeId = `mermaid-preview-${uniqueId}`;
+    return scopedTypographyCss(raw, previewScopeId);
+  }, [typography, uniqueId]);
 
   useEffect(() => {
     translateRef.current = translate;
@@ -230,8 +251,11 @@ export function MermaidPreview({ code, className }: MermaidPreviewProps) {
   const isEmpty = !code.trim();
   const isLoadingInitial = loading && !svgContent && !error;
 
+  const previewScopeId = `mermaid-preview-${uniqueId}`;
+
   return (
-    <div className={`relative overflow-hidden ${className ?? ""}`}>
+    <div id={previewScopeId} className={`relative overflow-hidden ${className ?? ""}`}>
+      {typographyCss && <style>{typographyCss}</style>}
       {/* Always-mounted screen reader live region — stays in the DOM across all render states */}
       <div aria-live="polite" aria-atomic="true" className="sr-only">
         {statusAnnouncement}
