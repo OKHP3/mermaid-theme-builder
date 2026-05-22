@@ -272,18 +272,19 @@ export function PromptScaffoldModal({ open, onClose, onCopy, generatePreview }: 
                 </button>
 
                 {/* Preview panel */}
-                {isPreviewing && (
+                {isPreviewing && (() => {
+                  const previewLines = generatePreview(opt.format).split("\n");
+                  return (
                   <div className="border-t border-border/40">
                     <pre
                       className="overflow-y-auto max-h-48 px-3 py-2.5 text-[10px] leading-relaxed font-mono whitespace-pre bg-[#0f1f1c] text-[#d4c9b5] select-text"
                       aria-label={`Scaffold preview for ${opt.label}`}
                     >
-                      {generatePreview(opt.format)
-                        .split("\n")
+                      {previewLines
                         .slice(0, PREVIEW_LINES)
                         .join("\n")}
-                      {generatePreview(opt.format).split("\n").length > PREVIEW_LINES && (
-                        `\n…  (${generatePreview(opt.format).split("\n").length - PREVIEW_LINES} more lines)`
+                      {previewLines.length > PREVIEW_LINES && (
+                        `\n…  (${previewLines.length - PREVIEW_LINES} more lines)`
                       )}
                     </pre>
                     <div className="flex justify-end px-2 py-1.5 bg-[#0f1f1c] border-t border-white/10">
@@ -301,7 +302,8 @@ export function PromptScaffoldModal({ open, onClose, onCopy, generatePreview }: 
                       </button>
                     </div>
                   </div>
-                )}
+                  );
+                })()}
               </div>
             );
           })}
