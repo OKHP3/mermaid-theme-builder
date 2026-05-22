@@ -25,6 +25,15 @@ import {
   encodeShareableTheme,
   paletteToShareablePayload,
 } from "@/lib/persistence";
+import {
+  type TypographySettings,
+  type TypographyTierKey,
+  TIER_ORDER,
+  TIER_META,
+  DEFAULT_TYPOGRAPHY,
+  enforceHierarchy,
+  isDefaultTypography,
+} from "@/lib/typography";
 
 const FONT_FAMILY_OPTIONS = [
   { label: "Inter", value: "Inter, system-ui, sans-serif" },
@@ -113,6 +122,9 @@ interface ComposeTabProps {
   onLookChange: (v: MermaidLook) => void;
   fontSize: string;
   onFontSizeChange: (v: string) => void;
+  typography: TypographySettings;
+  onTypographyChange: (t: TypographySettings) => void;
+  rendererTarget: string;
 }
 
 export function ComposeTab({
@@ -139,6 +151,9 @@ export function ComposeTab({
   onLookChange,
   fontSize,
   onFontSizeChange,
+  typography,
+  onTypographyChange,
+  rendererTarget,
 }: ComposeTabProps) {
   const [copiedBootstrap, setCopiedBootstrap] = useState(false);
   const [copiedShare, setCopiedShare] = useState(false);
@@ -157,8 +172,10 @@ export function ComposeTab({
         effectiveThemeName !== selectedPalette.name ? effectiveThemeName : undefined,
       look,
       fontSize: fontSize || undefined,
+      typography,
+      rendererTarget,
     }),
-    [selectedPalette, includeMetaComments, effectiveThemeName, look, fontSize],
+    [selectedPalette, includeMetaComments, effectiveThemeName, look, fontSize, typography, rendererTarget],
   );
 
   const sampleThemedCode = useMemo(
@@ -407,83 +424,124 @@ export function ComposeTab({
         </div>
 
         <div className="p-3 border-b border-border">
-          <p className="forge-eyebrow mb-2">
-            Typography
-          </p>
-          <div className="space-y-3">
-            <div>
-              <label className="text-xs font-medium text-foreground block mb-1.5">Base font size</label>
-              <div className="flex gap-1 mb-1.5">
-                {(
-                  [
-                    { label: "XS", value: "12px" },
-                    { label: "S", value: "14px" },
-                    { label: "M", value: "16px" },
-                    { label: "L", value: "18px" },
-                    { label: "XL", value: "20px" },
-                  ] as const
-                ).map((opt) => (
-                  <button
-                    key={opt.value}
-                    type="button"
-                    onClick={() => onFontSizeChange(fontSize === opt.value ? "" : opt.value)}
-                    className={`flex-1 text-xs py-1 rounded-md border font-medium transition-all ${
-                      (fontSize || "16px") === opt.value
-                        ? "border-primary bg-primary/10 text-primary"
-                        : "border-border bg-background hover:bg-muted text-muted-foreground"
-                    }`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
-              <input
-                type="text"
-                value={fontSize}
-                onChange={(e) => onFontSizeChange(e.target.value)}
-                placeholder="16px (Mermaid default)"
-                className="w-full text-[11px] font-mono bg-background border border-border rounded-md px-2 py-1 text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50"
-                aria-label="Custom font size"
-              />
-            </div>
-            <div className="rounded-md border border-border/60 bg-muted/30 px-3 py-2.5 space-y-2">
-              <p className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground/60">
-                Scale preview
-              </p>
-              {(() => {
-                const base = parseFloat(fontSize || "16") || 16;
-                const ratio = 1.25;
-                return (
-                  [
-                    { label: "Diagram title", size: +(base * ratio * ratio).toFixed(1) },
-                    { label: "Node label", size: +(base * ratio).toFixed(1) },
-                    { label: "Body / default", size: base },
-                    { label: "Small / note", size: +(base / ratio).toFixed(1) },
-                  ] as const
-                ).map(({ label, size }) => (
-                  <div key={label} className="flex items-baseline justify-between gap-2">
-                    <span
-                      className="text-foreground/70 leading-tight"
-                      style={{ fontSize: `${Math.min(size, 20)}px` }}
-                    >
-                      {label}
-                    </span>
-                    <span className="text-[9px] font-mono text-muted-foreground/40 shrink-0 tabular-nums">
-                      {size}px
-                    </span>
-                  </div>
-                ));
-              })()}
-            </div>
-            <p className="text-[10px] text-muted-foreground leading-relaxed">
-              Sets{" "}
-              <code className="font-mono text-[9px] bg-muted rounded px-0.5">fontSize</code> in the
-              Mermaid theme directive.{" "}
-              {fontSize
-                ? "Applied to all diagram exports and preview."
-                : "Leave blank to use Mermaid's default (16px)."}
-            </p>
+          <div className="flex items-center justify-between mb-1.5">
+            <p className="forge-eyebrow">Typography</p>
+            {!isDefaultTypography(typography) && (
+              <button
+                type="button"
+                onClick={() => onTypographyChange(DEFAULT_TYPOGRAPHY)}
+                className="text-[10px] text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Reset
+              </button>
+            )}
           </div>
+
+          <div className="mb-3">
+            <label className="text-xs font-medium text-foreground block mb-1.5">
+              Global base size
+              <span className="text-[10px] text-muted-foreground font-normal ml-1">(Mermaid <code className="font-mono bg-muted rounded px-0.5">fontSize</code>)</span>
+            </label>
+            <div className="flex gap-1 mb-1.5">
+              {(
+                [
+                  { label: "XS", value: "12px" },
+                  { label: "S", value: "14px" },
+                  { label: "M", value: "16px" },
+                  { label: "L", value: "18px" },
+                  { label: "XL", value: "20px" },
+                ] as const
+              ).map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => onFontSizeChange(fontSize === opt.value ? "" : opt.value)}
+                  className={`flex-1 text-xs py-1 rounded-md border font-medium transition-all ${
+                    (fontSize || "16px") === opt.value
+                      ? "border-primary bg-primary/10 text-primary"
+                      : "border-border bg-background hover:bg-muted text-muted-foreground"
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+            <input
+              type="text"
+              value={fontSize}
+              onChange={(e) => onFontSizeChange(e.target.value)}
+              placeholder="16px (Mermaid default)"
+              className="w-full text-[11px] font-mono bg-background border border-border rounded-md px-2 py-1 text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50"
+              aria-label="Custom font size"
+            />
+          </div>
+
+          <p className="text-[10px] uppercase tracking-wide text-muted-foreground/60 font-semibold mb-2">Tier hierarchy</p>
+          <div className="space-y-2">
+            {(TIER_ORDER as TypographyTierKey[]).map((key, idx) => {
+              const tier = typography[key];
+              const meta = TIER_META[key];
+              const parentKey = idx > 0 ? (TIER_ORDER as TypographyTierKey[])[idx - 1] : null;
+              const maxSize = parentKey ? typography[parentKey].fontSize : 48;
+              return (
+                <div
+                  key={key}
+                  className="rounded-md border border-border/60 bg-muted/20 px-2.5 py-2 space-y-1.5"
+                  style={{ marginLeft: `${idx * 4}px` }}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span
+                      className="font-medium text-foreground leading-tight"
+                      style={{ fontSize: `${Math.min(tier.fontSize, 18)}px` }}
+                    >
+                      {meta.label}
+                    </span>
+                    <div className="flex items-center gap-1 shrink-0">
+                      <button
+                        type="button"
+                        disabled={tier.fontSize <= 8}
+                        onClick={() => {
+                          onTypographyChange(enforceHierarchy({ ...typography, [key]: { ...tier, fontSize: tier.fontSize - 1 } }));
+                        }}
+                        className="w-5 h-5 flex items-center justify-center rounded border border-border bg-background hover:bg-muted disabled:opacity-30 text-xs font-bold leading-none"
+                        aria-label={`Decrease ${meta.label} size`}
+                      >
+                        −
+                      </button>
+                      <span className="text-[10px] font-mono text-muted-foreground tabular-nums w-9 text-center">
+                        {tier.fontSize}px
+                      </span>
+                      <button
+                        type="button"
+                        disabled={tier.fontSize >= maxSize}
+                        onClick={() => {
+                          onTypographyChange(enforceHierarchy({ ...typography, [key]: { ...tier, fontSize: tier.fontSize + 1 } }));
+                        }}
+                        className="w-5 h-5 flex items-center justify-center rounded border border-border bg-background hover:bg-muted disabled:opacity-30 text-xs font-bold leading-none"
+                        aria-label={`Increase ${meta.label} size`}
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                  <p className="text-[9px] text-muted-foreground/60 leading-snug">{meta.description}</p>
+                  <input
+                    type="text"
+                    value={tier.fontFamily}
+                    onChange={(e) => {
+                      onTypographyChange(enforceHierarchy({ ...typography, [key]: { ...tier, fontFamily: e.target.value } }));
+                    }}
+                    placeholder="(inherit palette font)"
+                    className="w-full text-[10px] font-mono bg-background border border-border/60 rounded px-1.5 py-0.5 text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50"
+                    aria-label={`${meta.label} font family override`}
+                  />
+                </div>
+              );
+            })}
+          </div>
+          <p className="text-[10px] text-muted-foreground mt-2 leading-relaxed">
+            Hierarchy enforced: each tier cannot exceed the tier above. Included in Prompt Scaffold export.
+          </p>
         </div>
 
         <div className="p-3 border-b border-border">

@@ -15,6 +15,8 @@ export interface PersistedState {
   recentPaletteIds?: string[];
   look?: string;
   fontSize?: string;
+  typography?: unknown;
+  rendererTarget?: string;
 }
 
 export const DEFAULT_PERSISTED_STATE: Omit<PersistedState, "selectedPaletteId" | "inputCode"> = {

@@ -21,6 +21,7 @@ import {
   type ShareablePayload,
 } from "@/lib/persistence";
 import { type MermaidLook } from "@/lib/themeEngine";
+import { type TypographySettings, DEFAULT_TYPOGRAPHY } from "@/lib/typography";
 import {
   paletteFromExtracted,
   makeExtractedPaletteId,
@@ -257,6 +258,8 @@ function AppShell() {
   const [recentPaletteIds, setRecentPaletteIds] = useState<string[]>([]);
   const [look, setLook] = useState<MermaidLook>("classic");
   const [fontSize, setFontSize] = useState<string>("");
+  const [typography, setTypography] = useState<TypographySettings>(DEFAULT_TYPOGRAPHY);
+  const [rendererTarget, setRendererTarget] = useState<string>("mermaid-live");
   const tabsRef = useRef<HTMLDivElement>(null);
   const { mode: themeMode, cycle: cycleThemeMode } = useThemeMode();
 
@@ -307,6 +310,13 @@ function AppShell() {
         setLook(persisted.look as MermaidLook);
       }
       if (typeof persisted.fontSize === "string") setFontSize(persisted.fontSize);
+      if (persisted.typography && typeof persisted.typography === "object") {
+        const t = persisted.typography as TypographySettings;
+        if (t.diagramTitle && t.subgraphTitle && t.nestedSubgraphTitle && t.nodeLabel && t.edgeLabel) {
+          setTypography(t);
+        }
+      }
+      if (typeof persisted.rendererTarget === "string") setRendererTarget(persisted.rendererTarget);
     }
     setHydrated(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -327,8 +337,10 @@ function AppShell() {
       recentPaletteIds,
       look,
       fontSize,
+      typography,
+      rendererTarget,
     });
-  }, [hydrated, selectedPaletteId, customColors, includeMetaComments, includeBadge, customThemeName, inputCode, userPalettes, recentPaletteIds, look, fontSize]);
+  }, [hydrated, selectedPaletteId, customColors, includeMetaComments, includeBadge, customThemeName, inputCode, userPalettes, recentPaletteIds, look, fontSize, typography, rendererTarget]);
 
   // Auto-clear toast after 3.5s
   useEffect(() => {
@@ -544,7 +556,7 @@ function AppShell() {
               </code>
             </div>
             <p className="text-[11px] text-[#e5e7eb]/55 mt-1 hidden sm:block leading-none">
-              Visual theme governance for AI-generated diagrams
+              visual governance for AI-generated Mermaid diagrams
             </p>
           </div>
         </div>
@@ -640,6 +652,9 @@ function AppShell() {
             onLookChange={setLook}
             fontSize={fontSize}
             onFontSizeChange={setFontSize}
+            typography={typography}
+            rendererTarget={rendererTarget}
+            onRendererTargetChange={setRendererTarget}
           />
         )}
         {activeTab === "compose" && (
@@ -667,6 +682,9 @@ function AppShell() {
             onLookChange={setLook}
             fontSize={fontSize}
             onFontSizeChange={setFontSize}
+            typography={typography}
+            onTypographyChange={setTypography}
+            rendererTarget={rendererTarget}
           />
         )}
         {activeTab === "examples" && (

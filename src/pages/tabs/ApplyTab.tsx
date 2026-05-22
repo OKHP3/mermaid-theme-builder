@@ -31,6 +31,8 @@ import {
   palettesToBundleJson,
 } from "@/lib/exporters";
 import { openInLiveEditor } from "@/lib/liveEditor";
+import { RENDERER_PROFILES, getRendererById } from "@/data/renderer-parity";
+import { type TypographySettings } from "@/lib/typography";
 import type { AppTab } from "@/App";
 
 const SWATCH_INDICES = [0, 3, 4, 6];
@@ -75,6 +77,9 @@ interface ApplyTabProps {
   onLookChange: (v: MermaidLook) => void;
   fontSize: string;
   onFontSizeChange: (v: string) => void;
+  typography: TypographySettings;
+  rendererTarget: string;
+  onRendererTargetChange: (v: string) => void;
 }
 
 const EXPORT_LABELS: Record<ExportType, string> = {
@@ -117,11 +122,29 @@ export function ApplyTab({
   onLookChange,
   fontSize,
   onFontSizeChange: _onFontSizeChange,
+  typography,
+  rendererTarget,
+  onRendererTargetChange,
 }: ApplyTabProps) {
   const [previewMode, setPreviewMode] = useState<PreviewMode>("themed");
   const [showColorEditor, setShowColorEditor] = useState(false);
   const [copiedType, setCopiedType] = useState<ExportType | null>(null);
   const [downloadingType, setDownloadingType] = useState<DownloadType | null>(null);
+
+  const rendererProfile = useMemo(() => getRendererById(rendererTarget), [rendererTarget]);
+  const rendererLookWarning = useMemo((): string | null => {
+    if (!rendererProfile) return null;
+    const support = rendererProfile.looksSupported[look as keyof typeof rendererProfile.looksSupported];
+    if (support === "none") {
+      const label = look === "neo" ? "Neo" : look === "handDrawn" ? "Hand Drawn" : "Classic";
+      return `${rendererProfile.shortName} does not support ${label} look`;
+    }
+    if (support === "partial") {
+      const label = look === "neo" ? "Neo" : look === "handDrawn" ? "Hand Drawn" : "Classic";
+      return `${rendererProfile.shortName} has partial ${label} look support — validate before publishing`;
+    }
+    return null;
+  }, [rendererProfile, look]);
   const [showScaffoldModal, setShowScaffoldModal] = useState(false);
   const [textareaExpanded, setTextareaExpanded] = useState(false);
   const [showDownloadMenu, setShowDownloadMenu] = useState(false);
@@ -244,8 +267,10 @@ export function ApplyTab({
         effectiveThemeName !== selectedPalette.name ? effectiveThemeName : undefined,
       look,
       fontSize: fontSize || undefined,
+      typography,
+      rendererTarget,
     }),
-    [selectedPalette, effectiveDetection.family, includeMetaComments, includeBadge, effectiveThemeName, look, fontSize],
+    [selectedPalette, effectiveDetection.family, includeMetaComments, includeBadge, effectiveThemeName, look, fontSize, typography, rendererTarget],
   );
 
   const previewOptions = useMemo(
@@ -622,6 +647,38 @@ export function ApplyTab({
           <span className="text-[10px] text-muted-foreground/60">
             {look === "neo" ? "Mermaid v11+ required" : "Rough.js sketch style"}
           </span>
+        )}
+      </div>
+
+      <div className="flex-none border-b border-border bg-card/20 px-3 py-1 flex items-center gap-2 print-hide">
+        <span className="text-[10px] uppercase tracking-wide text-muted-foreground font-semibold shrink-0">
+          Target
+        </span>
+        <select
+          value={rendererTarget}
+          onChange={(e) => onRendererTargetChange(e.target.value)}
+          className="text-[10px] bg-background border border-border rounded-md px-1.5 py-0.5 text-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 cursor-pointer"
+          aria-label="Select target renderer"
+        >
+          {RENDERER_PROFILES.map((r) => (
+            <option key={r.id} value={r.id}>
+              {r.displayName}
+            </option>
+          ))}
+        </select>
+        {rendererLookWarning ? (
+          <span className="text-[10px] text-amber-600 dark:text-amber-400 flex items-center gap-1">
+            <svg viewBox="0 0 16 16" fill="currentColor" className="w-3 h-3 shrink-0">
+              <path d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM0 8a8 8 0 1116 0A8 8 0 010 8zm8-3a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 018 5zm0 8.25a1 1 0 110-2 1 1 0 010 2z" />
+            </svg>
+            {rendererLookWarning}
+          </span>
+        ) : (
+          rendererProfile && (
+            <span className="text-[10px] text-muted-foreground/50 truncate hidden sm:block">
+              {rendererProfile.mermaidVersionApprox}
+            </span>
+          )
         )}
       </div>
 

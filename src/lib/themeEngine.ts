@@ -1,6 +1,8 @@
 import type { Palette } from "./palettes";
 import type { DiagramFamily } from "./detector";
 import { familyThemeOverlay } from "./familyTheming";
+import { typographyToScaffoldSection, type TypographySettings } from "./typography";
+import { rendererToScaffoldSection } from "../data/renderer-parity";
 
 export type MermaidLook = "classic" | "neo" | "handDrawn";
 
@@ -18,6 +20,8 @@ export interface ExportOptions {
   customThemeName?: string;
   look?: MermaidLook;
   fontSize?: string;
+  typography?: TypographySettings;
+  rendererTarget?: string;
 }
 
 const TOOL_URL = "https://overkillhill.com/projects/mermaid-theme-builder/";
@@ -521,7 +525,7 @@ ${colorLines}
 
 ---
 
-## Rules
+${options.typography ? typographyToScaffoldSection(options.typography) + "\n\n---\n\n" : ""}${options.rendererTarget ? rendererToScaffoldSection(options.rendererTarget, options.look) + "\n\n---\n\n" : ""}## Rules
 
 1. ${formatRuleText}
 2. Add the metadata comment block immediately after the theme directive.

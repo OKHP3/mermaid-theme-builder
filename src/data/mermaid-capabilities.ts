@@ -60,6 +60,9 @@ export interface DiagramCapability {
   warning: string | null;
   exampleFile: string | null;
   examplePending: boolean;
+  minMermaidVersion?: string;
+  supportedLooks?: ("classic" | "neo" | "handDrawn")[];
+  unsupportedLooks?: ("classic" | "neo" | "handDrawn")[];
 }
 
 export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
@@ -84,6 +87,9 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
       "Best-supported family for rich theme styling, classDef, subgraphs, links, and visual governance.",
     exampleFile: "flowchart-overkill-operating-system.mmd",
     examplePending: false,
+    minMermaidVersion: "10.0.0",
+    supportedLooks: ["classic", "neo", "handDrawn"],
+    unsupportedLooks: [],
   },
   {
     id: "sequenceDiagram",
@@ -107,6 +113,9 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
       "Supported natively, but styling surface is narrower than flowchart; classDef/linkStyle patterns may not apply.",
     exampleFile: "sequence-council-to-prototype.mmd",
     examplePending: false,
+    minMermaidVersion: "10.0.0",
+    supportedLooks: ["classic", "neo"],
+    unsupportedLooks: ["handDrawn"],
   },
   {
     id: "classDiagram",
@@ -128,6 +137,9 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
     warning: null,
     exampleFile: "class-theme-builder-domain-model.mmd",
     examplePending: false,
+    minMermaidVersion: "10.0.0",
+    supportedLooks: ["classic", "neo"],
+    unsupportedLooks: ["handDrawn"],
   },
   {
     id: "stateDiagram",
@@ -150,6 +162,9 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
     warning: null,
     exampleFile: "state-theme-lifecycle.mmd",
     examplePending: false,
+    minMermaidVersion: "10.0.0",
+    supportedLooks: ["classic", "neo", "handDrawn"],
+    unsupportedLooks: [],
   },
   {
     id: "erDiagram",
@@ -171,6 +186,9 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
     warning: null,
     exampleFile: "er-theme-registry.mmd",
     examplePending: false,
+    minMermaidVersion: "10.0.0",
+    supportedLooks: ["classic"],
+    unsupportedLooks: ["neo", "handDrawn"],
   },
   {
     id: "journey",
@@ -193,6 +211,9 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
     warning: null,
     exampleFile: "journey-idea-to-shipped-tool.mmd",
     examplePending: false,
+    minMermaidVersion: "10.0.0",
+    supportedLooks: ["classic"],
+    unsupportedLooks: ["neo", "handDrawn"],
   },
   {
     id: "gantt",
@@ -214,6 +235,9 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
     warning: null,
     exampleFile: "gantt-mermaid-theme-builder-roadmap.mmd",
     examplePending: false,
+    minMermaidVersion: "10.0.0",
+    supportedLooks: ["classic"],
+    unsupportedLooks: ["neo", "handDrawn"],
   },
   {
     id: "pie",
@@ -235,6 +259,9 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
     warning: null,
     exampleFile: "pie-effort-allocation.mmd",
     examplePending: false,
+    minMermaidVersion: "10.0.0",
+    supportedLooks: ["classic"],
+    unsupportedLooks: ["neo", "handDrawn"],
   },
   {
     id: "quadrantChart",
@@ -257,6 +284,9 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
     warning: null,
     exampleFile: "quadrant-opportunity-map.mmd",
     examplePending: false,
+    minMermaidVersion: "10.0.0",
+    supportedLooks: ["classic"],
+    unsupportedLooks: ["neo", "handDrawn"],
   },
   {
     id: "requirementDiagram",
@@ -279,6 +309,9 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
     warning: null,
     exampleFile: "requirement-firewall-and-scope.mmd",
     examplePending: false,
+    minMermaidVersion: "10.0.0",
+    supportedLooks: ["classic"],
+    unsupportedLooks: ["neo", "handDrawn"],
   },
   {
     id: "gitGraph",
@@ -300,6 +333,9 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
     warning: null,
     exampleFile: "gitgraph-repo-evolution.mmd",
     examplePending: false,
+    minMermaidVersion: "10.0.0",
+    supportedLooks: ["classic"],
+    unsupportedLooks: ["neo", "handDrawn"],
   },
   {
     id: "c4Diagram",
@@ -323,6 +359,9 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
       "Mermaid C4 support may vary by renderer and version. Treat as partial unless verified.",
     exampleFile: "c4-context-overkill-ecosystem.mmd",
     examplePending: false,
+    minMermaidVersion: "10.0.0",
+    supportedLooks: ["classic"],
+    unsupportedLooks: ["neo", "handDrawn"],
   },
   {
     id: "mindmap",
@@ -345,6 +384,9 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
     warning: null,
     exampleFile: "mindmap-overkill-hill-system.mmd",
     examplePending: false,
+    minMermaidVersion: "10.0.0",
+    supportedLooks: ["classic"],
+    unsupportedLooks: ["neo", "handDrawn"],
   },
   {
     id: "timeline",
@@ -366,6 +408,9 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
     warning: null,
     exampleFile: "timeline-overkill-theme-builder-history.mmd",
     examplePending: false,
+    minMermaidVersion: "10.0.0",
+    supportedLooks: ["classic"],
+    unsupportedLooks: ["neo", "handDrawn"],
   },
   {
     id: "zenuml",
@@ -388,6 +433,9 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
     warning: null,
     exampleFile: "zenuml-council-prototype-flow.mmd",
     examplePending: false,
+    minMermaidVersion: "11.0.0",
+    supportedLooks: ["classic"],
+    unsupportedLooks: ["neo", "handDrawn"],
   },
   {
     id: "sankey",
@@ -410,6 +458,9 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
       "Beta or renderer-dependent. Validate in target renderer before publication.",
     exampleFile: "sankey-effort-to-output.mmd",
     examplePending: false,
+    minMermaidVersion: "10.9.0",
+    supportedLooks: ["classic"],
+    unsupportedLooks: ["neo", "handDrawn"],
   },
   {
     id: "xychart",
@@ -432,6 +483,9 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
       "Beta or renderer-dependent. Validate in target renderer before publication.",
     exampleFile: "xychart-clarity-velocity.mmd",
     examplePending: false,
+    minMermaidVersion: "10.9.0",
+    supportedLooks: ["classic"],
+    unsupportedLooks: ["neo", "handDrawn"],
   },
   {
     id: "block",
@@ -454,6 +508,9 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
       "Beta or renderer-dependent. Validate in target renderer before publication.",
     exampleFile: "block-product-modules.mmd",
     examplePending: false,
+    minMermaidVersion: "11.0.0",
+    supportedLooks: ["classic"],
+    unsupportedLooks: ["neo", "handDrawn"],
   },
   {
     id: "packet",
@@ -477,6 +534,9 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
       "Beta or renderer-dependent. Validate in target renderer before publication.",
     exampleFile: "packet-theme-bootstrap-payload.mmd",
     examplePending: false,
+    minMermaidVersion: "11.1.0",
+    supportedLooks: ["classic"],
+    unsupportedLooks: ["neo", "handDrawn"],
   },
   {
     id: "kanban",
@@ -498,6 +558,9 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
     warning: null,
     exampleFile: "kanban-public-alpha-board.mmd",
     examplePending: false,
+    minMermaidVersion: "11.4.0",
+    supportedLooks: ["classic"],
+    unsupportedLooks: ["neo", "handDrawn"],
   },
   {
     id: "architectureBeta",
@@ -521,6 +584,9 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
       "Architecture diagrams may be beta or renderer-dependent depending on Mermaid version.",
     exampleFile: "architecture-static-app.mmd",
     examplePending: false,
+    minMermaidVersion: "11.0.0",
+    supportedLooks: ["classic"],
+    unsupportedLooks: ["neo", "handDrawn"],
   },
   {
     id: "radar",
@@ -544,6 +610,9 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
       "Beta or renderer-dependent. Validate in target renderer before publication.",
     exampleFile: "radar-product-maturity.mmd",
     examplePending: false,
+    minMermaidVersion: "11.4.0",
+    supportedLooks: ["classic"],
+    unsupportedLooks: ["neo", "handDrawn"],
   },
   {
     id: "treemap",
@@ -566,6 +635,9 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
       "Beta or renderer-dependent. Validate in target renderer before publication.",
     exampleFile: "treemap-project-value.mmd",
     examplePending: false,
+    minMermaidVersion: "11.4.0",
+    supportedLooks: ["classic"],
+    unsupportedLooks: ["neo", "handDrawn"],
   },
   {
     id: "venn",
@@ -588,6 +660,9 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
       "Beta or renderer-dependent. Validate in target renderer before publication.",
     exampleFile: "venn-measure-document-diagram.mmd",
     examplePending: false,
+    minMermaidVersion: "11.13.0",
+    supportedLooks: ["classic"],
+    unsupportedLooks: ["neo", "handDrawn"],
   },
   {
     id: "ishikawa",
@@ -611,18 +686,21 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
       "Beta or renderer-dependent. Validate in target renderer before publication.",
     exampleFile: "ishikawa-premature-rendering-root-cause.mmd",
     examplePending: false,
+    minMermaidVersion: "11.13.0",
+    supportedLooks: ["classic"],
+    unsupportedLooks: ["neo", "handDrawn"],
   },
   {
     id: "wardley",
     displayName: "Wardley Map",
     declarations: /^\s*wardley-beta\b/im,
-    stability: "experimental",
+    stability: "beta",
     styleStrategy: "limited",
     supportsClassDef: false,
     supportsLinkStyle: false,
     supportsSubgraphStyle: false,
     notes:
-      "Experimental diagram type. themeVariables apply to background colors. Component and evolution axis styles are primarily managed by Mermaid's internal Wardley renderer.",
+      "Beta diagram type. themeVariables apply to background colors. Component and evolution axis styles are primarily managed by Mermaid's internal Wardley renderer. handDrawn look is not supported and will fall back to classic.",
     supportStatus: "partial",
     themeConfidence: "low",
     notationCompliance: "mermaid-native",
@@ -630,9 +708,12 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
       "Strategic mapping of components on visibility vs. evolution axes for competitive landscape analysis.",
     bestUsedFor: "Strategic positioning, technology evolution planning, build-vs-buy decisions.",
     warning:
-      "Experimental. Rendering behavior may vary significantly across Mermaid versions.",
-    exampleFile: null,
-    examplePending: true,
+      "Beta. Rendering behavior may vary across Mermaid versions and renderers. handDrawn look is not supported.",
+    exampleFile: "wardley-basic.mmd",
+    examplePending: false,
+    minMermaidVersion: "11.14.0",
+    supportedLooks: ["classic"],
+    unsupportedLooks: ["neo", "handDrawn"],
   },
   {
     id: "treeView",
@@ -655,6 +736,9 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
       "Experimental. May not render consistently across all Mermaid-compatible environments.",
     exampleFile: "treeview-example-index.mmd",
     examplePending: false,
+    minMermaidVersion: "11.14.0",
+    supportedLooks: ["classic"],
+    unsupportedLooks: ["neo", "handDrawn"],
   },
   {
     id: "eventModeling",
@@ -676,8 +760,11 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
       "Event-driven architecture documentation, event storming output, CQRS/event sourcing system design, DDD aggregate modeling.",
     warning:
       "Requires Mermaid 11.15.0 or later. Experimental — rendering behavior may vary across Mermaid versions and renderers.",
-    exampleFile: null,
-    examplePending: true,
+    exampleFile: "eventmodeling-basic.mmd",
+    examplePending: false,
+    minMermaidVersion: "11.15.0",
+    supportedLooks: ["classic"],
+    unsupportedLooks: ["neo", "handDrawn"],
   },
 ];
 

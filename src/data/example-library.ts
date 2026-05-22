@@ -695,6 +695,16 @@ export const EXAMPLE_CATALOG: ExampleEntry[] = [
     content: ISHIKAWA_PREMATURE_RENDERING,
   },
   {
+    id: "eventmodeling-order-lifecycle",
+    label: "Event Modeling — order lifecycle",
+    family: "eventModeling",
+    category: "specialty",
+    content: `eventmodeling
+title Order Processing System
+`,
+    badge: "Experimental",
+  },
+  {
     id: "wardley-diagram-generation-value-chain",
     label: "Wardley — diagram value chain",
     family: "wardley",
