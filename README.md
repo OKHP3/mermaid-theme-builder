@@ -122,3 +122,31 @@ Not affiliated with Mermaid, Mermaid Chart, Mermaid.ai, Builders FirstSource, or
 MIT — see [LICENSE](LICENSE).
 
 Built by [OverKill Hill P³](https://overkillhill.com/).
+
+---
+
+## Agent Skill
+
+This repo ships a SKILL.md-compatible agent skill at `skills/okhp3-mermaid-theme-builder/`. It packages the theming logic (palette registry, renderer profiles, prompt scaffold generation) into a headless, browser-free format consumable by Claude Code, GitHub Copilot, Cursor, Gemini CLI, VS Code, and OpenAI Codex.
+
+**Skill path:** `skills/okhp3-mermaid-theme-builder/SKILL.md`
+
+**Trigger example:**
+
+> "Apply the OverKill Hill P³ palette to this flowchart and make it GitHub-safe"
+
+The skill will detect the diagram family, select the appropriate themeVariables, apply renderer constraints, and return a `%%{init}%%` directive ready to paste.
+
+**Install (Claude Code):**
+
+```bash
+cp -r skills/okhp3-mermaid-theme-builder ~/.claude/skills/
+```
+
+**Install (Cursor):**
+
+```bash
+cp skills/okhp3-mermaid-theme-builder/SKILL.md .cursor/rules/mermaid-theme-builder.mdc
+```
+
+See `skills/okhp3-mermaid-theme-builder/README.md` for full install instructions for all platforms.
