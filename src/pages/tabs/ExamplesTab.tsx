@@ -65,7 +65,7 @@ function buildExampleList(): ExampleItem[] {
     id: "showcase",
     label: SHOWCASE_META.title,
     content: SHOWCASE_EXAMPLE,
-    badge: "Showcase",
+    badge: "Advanced / renderer-dependent",
     section: "Showcase",
   });
 

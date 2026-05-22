@@ -110,6 +110,11 @@ const FAMILY_ALIAS_TO_REGISTRY_ID: Record<string, DiagramFamily> = {
 
   // new families added in Batch #2
   treemap:          "treemap",
+
+  // new families added in Batch #3
+  zenuml:           "zenuml",
+  venn:             "venn",
+  ishikawa:         "ishikawa",
 };
 
 describe("EXAMPLE_CATALOG — registry consistency guard", () => {

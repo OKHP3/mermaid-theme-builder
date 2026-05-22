@@ -1,0 +1,45 @@
+flowchart LR
+%% BPMN-like approximation — not BPMN 2.0 compliant
+%% Uses Mermaid flowchart subgraphs to emulate BPMN pools and lanes.
+%% For true BPMN 2.0, use a dedicated BPMN tool (e.g. bpmn.io).
+
+subgraph REQUESTER["Pool: Requester — Jamie"]
+  direction TB
+  START([Start])
+  SUBMIT[Submit Tool Request]
+  REVIEW_RESULT{Outcome?}
+  USE_TOOL([Use Tool])
+  END([End])
+end
+
+subgraph COUNCIL["Pool: AI Council Review"]
+  direction TB
+  RECEIVE[Receive Request]
+  ASSESS{Worth Building?}
+  APPROVE[Approve + Scope]
+  REJECT[Reject + Log Idea]
+end
+
+subgraph BUILD_AGENT["Pool: Replit Build Agent"]
+  direction TB
+  BUILD[Build Prototype]
+  TEST{Tests Pass?}
+  ITERATE[Iterate]
+  SHIP[Ship to GitHub Pages]
+end
+
+START --> SUBMIT
+SUBMIT --> RECEIVE
+RECEIVE --> ASSESS
+ASSESS -->|Yes| APPROVE
+ASSESS -->|No| REJECT
+REJECT --> REVIEW_RESULT
+APPROVE --> BUILD
+BUILD --> TEST
+TEST -->|No| ITERATE
+ITERATE --> BUILD
+TEST -->|Yes| SHIP
+SHIP --> REVIEW_RESULT
+REVIEW_RESULT -->|Approved| USE_TOOL
+REVIEW_RESULT -->|Revise| SUBMIT
+USE_TOOL --> END

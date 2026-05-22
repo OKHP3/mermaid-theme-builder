@@ -7,6 +7,8 @@ export interface ExampleEntry {
   category: ExampleCategory;
   content: string;
   badge?: string;
+  description?: string;
+  tags?: string[];
 }
 
 export interface ExampleGroup {
@@ -795,6 +797,186 @@ title UDP Packet
 48-63: "Checksum"
 64-95: "Data (variable length)"`;
 
+// ── Batch #3: OKH contextual + emulation + new families ──────────────────────
+
+const VENN_GOVERNANCE_TRIANGLE = `venn-beta
+  title The Governance Triangle
+
+  A[Measure]
+  B[Document]
+  C[Diagram]
+
+  A&B[Auditable Records]
+  B&C[Annotated Diagrams]
+  A&C[Metric Visualizations]
+  A&B&C[Visual Governance]`;
+
+const ISHIKAWA_RENDER_FAILURE = `%%{init: {"theme": "base"} }%%
+fishbone
+    title Why does a Mermaid diagram render incorrectly?
+    accTitle: Root cause analysis - premature or incorrect rendering
+    section Syntax
+        Missing init block : Syntax
+        Wrong diagram keyword : Syntax
+        Fences not stripped : Syntax
+        Unsupported node shape : Syntax
+    section Renderer
+        Mermaid version mismatch : Renderer
+        Beta diagram family : Renderer
+        Security level too strict : Renderer
+        ELK layout unavailable : Renderer
+    section Theme
+        Theme variables not injected : Theme
+        Wrong family transform applied : Theme
+        classDef overridden by global : Theme
+        Init block duplicated : Theme
+    section Environment
+        CDN load failure : Environment
+        Stale browser cache : Environment
+        Wrong securityLevel setting : Environment
+        Renderer not initialized : Environment
+    section User Workflow
+        Pasted with outer code fences : Workflow
+        Wrong palette for diagram type : Workflow
+        Applied generic theme to beta diagram : Workflow
+        Ignored renderer warning : Workflow`;
+
+const BPMN_LITE_PROCESS = `flowchart LR
+%% BPMN-like approximation — not BPMN 2.0 compliant
+%% Mermaid subgraphs emulate BPMN pools and lanes.
+%% For true BPMN 2.0, use a dedicated tool such as bpmn.io.
+
+subgraph REQUESTER["Pool: Requester — Jamie"]
+  direction TB
+  START([Start])
+  SUBMIT[Submit Tool Request]
+  REVIEW_RESULT{Outcome?}
+  USE_TOOL([Use Tool])
+  END([End])
+end
+
+subgraph COUNCIL["Pool: AI Council Review"]
+  direction TB
+  RECEIVE[Receive Request]
+  ASSESS{Worth Building?}
+  APPROVE[Approve + Scope]
+  REJECT[Reject + Log Idea]
+end
+
+subgraph BUILD_AGENT["Pool: Replit Build Agent"]
+  direction TB
+  BUILD[Build Prototype]
+  TEST{Tests Pass?}
+  ITERATE[Iterate]
+  SHIP[Ship to GitHub Pages]
+end
+
+START --> SUBMIT
+SUBMIT --> RECEIVE
+RECEIVE --> ASSESS
+ASSESS -->|Yes| APPROVE
+ASSESS -->|No| REJECT
+REJECT --> REVIEW_RESULT
+APPROVE --> BUILD
+BUILD --> TEST
+TEST -->|No| ITERATE
+ITERATE --> BUILD
+TEST -->|Yes| SHIP
+SHIP --> REVIEW_RESULT
+REVIEW_RESULT -->|Approved| USE_TOOL
+REVIEW_RESULT -->|Revise| SUBMIT
+USE_TOOL --> END`;
+
+const C4_OKH_ECOSYSTEM = `C4Context
+  title Overkill Hill P³ — Tool Ecosystem Context
+
+  Person(jamie, "Jamie Hill", "Builder, author, tool author")
+
+  System(mtb, "Mermaid Theme Builder", "Visual governance for AI-generated Mermaid diagrams")
+  System(forge, "OKH Forge", "Personal tooling suite and brand system")
+
+  System_Ext(mermaid, "Mermaid.js", "Open-source diagram renderer")
+  System_Ext(llm, "AI Assistant", "LLM used to generate Mermaid diagrams")
+  System_Ext(renderer, "Target Renderer", "GitHub / Notion / Obsidian / etc.")
+
+  Rel(jamie, mtb, "Builds themes using")
+  Rel(jamie, llm, "Prompts for diagrams")
+  Rel(mtb, mermaid, "Renders previews via")
+  Rel(mtb, llm, "Exports prompt scaffold to")
+  Rel(llm, renderer, "Outputs themed Mermaid to")
+  Rel(mtb, forge, "Part of")`;
+
+const ARCHITECTURE_STATIC_APP = `architecture-beta
+  group browser(cloud)[Browser]
+    service vite(server)[Vite Dev Server]
+    service app(disk)[React App]
+  end
+
+  group cdn(cloud)[GitHub Pages CDN]
+    service pages(server)[Static Files]
+  end
+
+  service mermaidjs(internet)[Mermaid.js]
+
+  app:R --> mermaidjs:L
+  vite:R --> app:L
+  pages:R --> app:L`;
+
+const XYCHART_CLARITY_VELOCITY = `xychart-beta
+  title "Clarity Velocity — Sprints 1–6"
+  x-axis ["S1", "S2", "S3", "S4", "S5", "S6"]
+  y-axis "Story Points" 0 --> 50
+  bar [22, 28, 31, 27, 38, 42]
+  line [20, 24, 29, 30, 35, 41]`;
+
+const BLOCK_PRODUCT_MODULES = `block-beta
+  columns 3
+
+  block:Apply["Apply Tab"]:1
+  block:Compose["Compose Tab"]:1
+  block:Examples["Examples Tab"]:1
+  block:Reference["Reference Tab"]:1
+
+  block:ThemeEngine["Theme Engine"]:2
+  block:Detector["Family Detector"]:1
+
+  block:Palettes["Palette Store"]:1
+  block:Persistence["Persistence"]:1
+  block:Export["Exporters"]:1`;
+
+const ZENUML_COUNCIL_FLOW = `zenuml
+  title Council to Prototype Flow
+
+  @Actor Jamie
+  @Boundary AI
+  @Database ThemeStore
+
+  Jamie -> AI: "Draft a flowchart for user auth"
+  AI -> Jamie: return diagram code
+  Jamie -> ThemeStore: applyTheme(palette)
+  ThemeStore -> Jamie: return themedCode
+  Jamie -> AI: "Refine with scaffold"
+  AI -> Jamie: return finalDiagram`;
+
+const KANBAN_OKH_ALPHA_BOARD = `kanban
+  title Mermaid Theme Builder — Public Alpha Board
+
+  column Backlog
+    task Registry truth pass
+    task Renderer parity matrix
+    task Typography 5-tier model
+
+  column In Progress
+    task Prompt scaffold hardening
+    task Test coverage
+
+  column Done
+    task Family detection
+    task Palette editor
+    task Extract mode
+    task Share URL
+    task Example library`;
+
 // ── Batch #2 ─────────────────────────────────────────────────────────────────
 
 const JOURNEY_MERMAID_BASIC = `journey
@@ -1394,6 +1576,123 @@ title Order Processing System
     family: "flowchart",
     category: "flow",
     content: FLOWCHART_MERMAID_AI_CONTEXTUAL,
+  },
+
+  // ── Batch #3: OKH contextual + emulation + new families ────────────────────
+
+  // BPMN-lite emulation — flowchart approximating BPMN pools and lanes
+  {
+    id: "bpmn-lite-process",
+    label: "BPMN-lite — tool request process (approximation)",
+    family: "flowchart",
+    category: "flow",
+    content: BPMN_LITE_PROCESS,
+    badge: "BPMN approx. only",
+    description:
+      "A Mermaid flowchart that emulates BPMN-style pools and lanes using subgraphs. Approximates a three-pool tool-request process across Requester, AI Council, and Build Agent roles.",
+    tags: ["BPMN", "emulation", "process", "flowchart", "OKH", "approximation"],
+  },
+
+  // C4 — OKH ecosystem context diagram
+  {
+    id: "c4-context-overkill-ecosystem",
+    label: "C4 context — OKH tool ecosystem",
+    family: "c4",
+    category: "structural",
+    content: C4_OKH_ECOSYSTEM,
+    description:
+      "C4 Context diagram showing the Overkill Hill P³ tool ecosystem — Jamie, Mermaid Theme Builder, OKH Forge, and their external relationships to Mermaid.js, AI assistants, and target renderers.",
+    tags: ["C4", "architecture", "OKH", "context diagram", "overkillhill.com"],
+  },
+
+  // Architecture — static app deployment
+  {
+    id: "architecture-static-app",
+    label: "Architecture — static app deployment",
+    family: "architectureBeta",
+    category: "specialty",
+    content: ARCHITECTURE_STATIC_APP,
+    badge: "Beta",
+    description:
+      "Architecture diagram showing the Mermaid Theme Builder's static deployment topology: Vite dev server, React app, GitHub Pages CDN, and Mermaid.js as an external service.",
+    tags: ["architecture", "deployment", "static", "GitHub Pages", "Vite", "beta"],
+  },
+
+  // XY chart — OKH sprint velocity
+  {
+    id: "xychart-clarity-velocity",
+    label: "XY chart — clarity velocity, sprints 1–6",
+    family: "xychart",
+    category: "data-viz",
+    content: XYCHART_CLARITY_VELOCITY,
+    badge: "Beta",
+    description:
+      "XY bar + line chart tracking story point velocity across six sprints. Illustrates trend analysis and sprint comparison for the OKH project.",
+    tags: ["XY chart", "velocity", "sprints", "bar", "line", "beta", "data visualization"],
+  },
+
+  // Block diagram — product modules
+  {
+    id: "block-product-modules",
+    label: "Block diagram — product module map",
+    family: "block",
+    category: "structural",
+    content: BLOCK_PRODUCT_MODULES,
+    badge: "Beta",
+    description:
+      "Block diagram laying out the four UI tabs and three core library modules of the Mermaid Theme Builder — Apply, Compose, Examples, Reference tabs plus Theme Engine, Palette Store, and Exporters.",
+    tags: ["block", "modules", "product", "architecture", "beta"],
+  },
+
+  // ZenUML — council to prototype flow
+  {
+    id: "zenuml-council-prototype-flow",
+    label: "ZenUML — council to prototype flow",
+    family: "zenuml",
+    category: "flow",
+    content: ZENUML_COUNCIL_FLOW,
+    description:
+      "ZenUML code-first sequence diagram showing the OKH workflow from prompt to themed diagram: Jamie, AI assistant, and ThemeStore interaction.",
+    tags: ["ZenUML", "sequence", "OKH", "AI", "prototype", "code-first"],
+  },
+
+  // Kanban — OKH public alpha board
+  {
+    id: "kanban-public-alpha-board",
+    label: "Kanban — OKH public alpha board",
+    family: "kanban",
+    category: "specialty",
+    content: KANBAN_OKH_ALPHA_BOARD,
+    badge: "Beta",
+    description:
+      "Kanban board showing the Mermaid Theme Builder public alpha work — Backlog, In Progress, and Done columns with real task cards from the project.",
+    tags: ["kanban", "project management", "OKH", "alpha", "beta"],
+  },
+
+  // Venn — governance triangle (beta)
+  {
+    id: "venn-governance-triangle",
+    label: "Venn — governance triangle",
+    family: "venn",
+    category: "specialty",
+    content: VENN_GOVERNANCE_TRIANGLE,
+    badge: "Beta — may not render in all environments",
+    description:
+      "Venn diagram showing the three-way overlap of Measure, Document, and Diagram — the Visual Governance triangle at the core of the OKH methodology.",
+    tags: ["venn", "governance", "OKH", "beta", "set diagram"],
+  },
+
+  // Ishikawa — render failure root cause (beta)
+  {
+    id: "ishikawa-render-failure",
+    label: "Ishikawa (fishbone) — render failure root cause",
+    family: "ishikawa",
+    category: "specialty",
+    content: ISHIKAWA_RENDER_FAILURE,
+    badge: "Beta — may not render in all environments",
+    description:
+      "Fishbone (Ishikawa) diagram using Mermaid's native fishbone syntax to analyze root causes of diagram rendering failures — covering Syntax, Renderer, Theme, Environment, and User Workflow categories.",
+    tags: ["ishikawa", "fishbone", "root cause", "beta", "quality", "rendering"],
   },
 ];
 
