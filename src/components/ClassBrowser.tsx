@@ -31,7 +31,24 @@ function parseFontStyle(extra: string): string | undefined {
   return m ? m[1] : undefined;
 }
 
-function ClassNode({ def, onCopy }: { def: ClassDef; onCopy: (name: string) => void }) {
+function buildClassDefString(def: ClassDef): string {
+  const style = [`fill:${def.fill}`, `stroke:${def.stroke}`, `color:${def.color}`, def.extra]
+    .filter(Boolean)
+    .join(",");
+  return `classDef ${def.name} ${style}`;
+}
+
+type CopiedState = { name: string; kind: "usage" | "classdef" } | null;
+
+function ClassNode({
+  def,
+  onCopyUsage,
+  onCopyClassDef,
+}: {
+  def: ClassDef;
+  onCopyUsage: (name: string) => void;
+  onCopyClassDef: (def: ClassDef) => void;
+}) {
   const dashArray = parseDashArray(def.extra);
   const opacity = parseOpacity(def.extra);
   const strokeWidth = parseStrokeWidth(def.extra) ?? "1px";
@@ -41,10 +58,18 @@ function ClassNode({ def, onCopy }: { def: ClassDef; onCopy: (name: string) => v
   const svgStrokeWidth = strokeWidth === "2px" ? 2 : 1;
 
   return (
-    <button
-      onClick={() => onCopy(def.name)}
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={() => onCopyUsage(def.name)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onCopyUsage(def.name);
+        }
+      }}
       title={`Click to copy :::${def.name}`}
-      className="group flex flex-col items-stretch gap-0 rounded-lg overflow-hidden border border-border/40 hover:border-primary/50 hover:shadow-md transition-all text-left focus:outline-none focus:ring-1 focus:ring-primary/60"
+      className="group flex flex-col items-stretch gap-0 rounded-lg overflow-hidden border border-border/40 hover:border-primary/50 hover:shadow-md transition-all text-left cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary/60"
       style={{ opacity: opacity ?? 1 }}
     >
       <div
@@ -73,6 +98,27 @@ function ClassNode({ def, onCopy }: { def: ClassDef; onCopy: (name: string) => v
         >
           {def.name}
         </span>
+
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onCopyClassDef(def);
+          }}
+          title={`Copy full classDef for ${def.name}`}
+          className="absolute top-1 right-1 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-150 flex items-center justify-center w-5 h-5 rounded bg-black/40 hover:bg-black/65 focus:outline-none focus:ring-1 focus:ring-white/60"
+          aria-label={`Copy classDef ${def.name}`}
+        >
+          <svg
+            viewBox="0 0 14 14"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-3 h-3"
+          >
+            <rect x="4.5" y="1" width="7.5" height="9" rx="1.2" stroke="white" strokeWidth="1.2" />
+            <rect x="2" y="4" width="7.5" height="9" rx="1.2" fill="rgba(0,0,0,0.4)" stroke="white" strokeWidth="1.2" />
+          </svg>
+        </button>
       </div>
       <div className="bg-card/80 px-2 py-1.5 border-t border-border/30">
         <p className="text-[10px] text-muted-foreground leading-tight line-clamp-1">
@@ -82,15 +128,14 @@ function ClassNode({ def, onCopy }: { def: ClassDef; onCopy: (name: string) => v
           :::{ def.name}
         </p>
       </div>
-    </button>
+    </div>
   );
 }
 
 export function ClassBrowser({ classDefs, supportsClassDef = true }: ClassBrowserProps) {
-  const [copiedName, setCopiedName] = useState<string | null>(null);
+  const [copiedState, setCopiedState] = useState<CopiedState>(null);
 
-  const handleCopy = useCallback(async (name: string) => {
-    const text = `:::${name}`;
+  const writeToClipboard = useCallback(async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
     } catch {
@@ -101,9 +146,32 @@ export function ClassBrowser({ classDefs, supportsClassDef = true }: ClassBrowse
       document.execCommand("copy");
       document.body.removeChild(el);
     }
-    setCopiedName(name);
-    setTimeout(() => setCopiedName(null), 1800);
   }, []);
+
+  const handleCopyUsage = useCallback(
+    async (name: string) => {
+      await writeToClipboard(`:::${name}`);
+      setCopiedState({ name, kind: "usage" });
+      setTimeout(() => setCopiedState(null), 1800);
+    },
+    [writeToClipboard]
+  );
+
+  const handleCopyClassDef = useCallback(
+    async (def: ClassDef) => {
+      await writeToClipboard(buildClassDefString(def));
+      setCopiedState({ name: def.name, kind: "classdef" });
+      setTimeout(() => setCopiedState(null), 1800);
+    },
+    [writeToClipboard]
+  );
+
+  const toastLabel =
+    copiedState?.kind === "classdef"
+      ? `Copied classDef ${copiedState.name}`
+      : copiedState?.kind === "usage"
+      ? `Copied :::${copiedState.name}`
+      : null;
 
   return (
     <div className={`flex flex-col h-full overflow-auto p-4 bg-muted/20 ${!supportsClassDef ? "opacity-60" : ""}`}>
@@ -112,12 +180,13 @@ export function ClassBrowser({ classDefs, supportsClassDef = true }: ClassBrowse
           <p className="text-xs font-semibold text-foreground">Class Library</p>
           <p className="text-[10px] text-muted-foreground mt-0.5">
             16 semantic styles — click any node to copy its{" "}
-            <span className="font-mono">:::className</span> syntax
+            <span className="font-mono">:::className</span> syntax, or hover for the full{" "}
+            <span className="font-mono">classDef</span> block
           </p>
         </div>
-        {supportsClassDef && copiedName && (
-          <span className="text-[10px] bg-primary/10 text-primary px-2 py-1 rounded-full font-mono animate-in fade-in duration-150">
-            Copied :::{ copiedName}
+        {supportsClassDef && toastLabel && (
+          <span className="text-[10px] bg-primary/10 text-primary px-2 py-1 rounded-full font-mono animate-in fade-in duration-150 shrink-0">
+            {toastLabel}
           </span>
         )}
       </div>
@@ -137,7 +206,12 @@ export function ClassBrowser({ classDefs, supportsClassDef = true }: ClassBrowse
 
       <div className={`grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2 ${!supportsClassDef ? "pointer-events-none select-none" : ""}`}>
         {classDefs.map((def) => (
-          <ClassNode key={def.name} def={def} onCopy={handleCopy} />
+          <ClassNode
+            key={def.name}
+            def={def}
+            onCopyUsage={handleCopyUsage}
+            onCopyClassDef={handleCopyClassDef}
+          />
         ))}
       </div>
 
