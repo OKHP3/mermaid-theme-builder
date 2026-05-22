@@ -19,6 +19,7 @@ export interface PersistedState {
   typography?: TypographySettings;
   rendererTarget?: string;
   previewMode?: string;
+  lastExampleType?: Record<string, "flowchart" | "sequence">;
 }
 
 export const DEFAULT_PERSISTED_STATE: Omit<PersistedState, "selectedPaletteId" | "inputCode"> = {

@@ -329,6 +329,13 @@ function AppShell() {
       if (typeof persisted.previewMode === "string" && (VALID_PREVIEW_MODES as readonly string[]).includes(persisted.previewMode)) {
         setPreviewMode(persisted.previewMode as "original" | "themed" | "diff" | "code");
       }
+      if (persisted.lastExampleType && typeof persisted.lastExampleType === "object") {
+        const clean: Record<string, "flowchart" | "sequence"> = {};
+        for (const [k, v] of Object.entries(persisted.lastExampleType)) {
+          if (typeof k === "string" && (v === "flowchart" || v === "sequence")) clean[k] = v;
+        }
+        setLastExampleType(clean);
+      }
     }
     setHydrated(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -352,8 +359,9 @@ function AppShell() {
       typography,
       rendererTarget,
       previewMode,
+      lastExampleType,
     });
-  }, [hydrated, selectedPaletteId, customColors, includeMetaComments, includeBadge, customThemeName, inputCode, userPalettes, recentPaletteIds, look, fontSize, typography, rendererTarget, previewMode]);
+  }, [hydrated, selectedPaletteId, customColors, includeMetaComments, includeBadge, customThemeName, inputCode, userPalettes, recentPaletteIds, look, fontSize, typography, rendererTarget, previewMode, lastExampleType]);
 
   // Auto-clear toast after 2.5s
   useEffect(() => {
