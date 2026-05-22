@@ -417,9 +417,18 @@ export function ApplyTab({
           );
           onShowToast("Downloaded .md file.");
         } else if (type === "scaffold") {
+          const scaffoldFormat: ScaffoldFormat = (() => {
+            try {
+              const v = localStorage.getItem("mtb-scaffold-format");
+              if (v === "formatA" || v === "formatB" || v === "both") return v;
+            } catch {
+              // storage unavailable — fall through to default
+            }
+            return "both";
+          })();
           downloadTextFile(
             makeFilename(effectiveThemeName, "scaffold", "txt"),
-            generatePromptScaffoldWithFormat(selectedPalette, exportOptions, "formatA"),
+            generatePromptScaffoldWithFormat(selectedPalette, exportOptions, scaffoldFormat),
             "text/plain;charset=utf-8",
           );
           onShowToast("Downloaded .txt scaffold file.");
