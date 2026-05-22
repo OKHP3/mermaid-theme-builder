@@ -277,6 +277,7 @@ function AppShell() {
   const [rendererTarget, setRendererTarget] = useState<string>("");
   const [previewMode, setPreviewMode] = useState<"original" | "themed" | "diff" | "code">("themed");
   const [lastExampleType, setLastExampleType] = useState<Record<string, "flowchart" | "sequence">>({});
+  const [lastSelectedExampleId, setLastSelectedExampleId] = useState<string>("");
 
   const supportsClassDef = useMemo(
     () => CLASSDEF_CAPABLE_FAMILIES.includes(detectDiagram(inputCode).family),
@@ -350,6 +351,9 @@ function AppShell() {
         }
         setLastExampleType(clean);
       }
+      if (typeof persisted.lastSelectedExampleId === "string" && persisted.lastSelectedExampleId) {
+        setLastSelectedExampleId(persisted.lastSelectedExampleId);
+      }
     }
     setHydrated(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -374,8 +378,9 @@ function AppShell() {
       rendererTarget,
       previewMode,
       lastExampleType,
+      lastSelectedExampleId,
     });
-  }, [hydrated, selectedPaletteId, customColors, includeMetaComments, includeBadge, customThemeName, inputCode, userPalettes, recentPaletteIds, look, fontSize, typography, rendererTarget, previewMode, lastExampleType]);
+  }, [hydrated, selectedPaletteId, customColors, includeMetaComments, includeBadge, customThemeName, inputCode, userPalettes, recentPaletteIds, look, fontSize, typography, rendererTarget, previewMode, lastExampleType, lastSelectedExampleId]);
 
   // Auto-clear toast after 2.5s
   useEffect(() => {
@@ -763,6 +768,8 @@ function AppShell() {
           <ExamplesTab
             selectedPalette={selectedPalette}
             onLoadExample={handleLoadExample}
+            initialSelectedId={lastSelectedExampleId}
+            onExampleSelect={setLastSelectedExampleId}
           />
         )}
         {activeTab === "reference" && (

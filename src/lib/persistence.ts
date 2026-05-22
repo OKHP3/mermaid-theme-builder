@@ -20,6 +20,7 @@ export interface PersistedState {
   rendererTarget?: string;
   previewMode?: string;
   lastExampleType?: Record<string, "flowchart" | "sequence">;
+  lastSelectedExampleId?: string;
 }
 
 export const DEFAULT_PERSISTED_STATE: Omit<PersistedState, "selectedPaletteId" | "inputCode"> = {

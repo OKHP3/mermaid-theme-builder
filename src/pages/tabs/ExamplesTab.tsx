@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import type { Palette } from "@/lib/palettes";
 import { BRAND_PALETTES } from "@/lib/palettes";
 import { generateThemedCode, type ExportOptions } from "@/lib/themeEngine";
@@ -90,11 +90,27 @@ const SECTIONS = Array.from(new Set(ALL_EXAMPLES.map((e) => e.section)));
 interface ExamplesTabProps {
   selectedPalette: Palette;
   onLoadExample: (code: string) => void;
+  initialSelectedId?: string;
+  onExampleSelect?: (id: string) => void;
 }
 
-export function ExamplesTab({ selectedPalette, onLoadExample }: ExamplesTabProps) {
-  const [selectedId, setSelectedId] = useState(ALL_EXAMPLES[0]?.id ?? "");
+export function ExamplesTab({ selectedPalette, onLoadExample, initialSelectedId, onExampleSelect }: ExamplesTabProps) {
+  const [selectedId, setSelectedId] = useState(() => {
+    if (initialSelectedId && ALL_EXAMPLES.some((e) => e.id === initialSelectedId)) {
+      return initialSelectedId;
+    }
+    return ALL_EXAMPLES[0]?.id ?? "";
+  });
   const [copiedRaw, setCopiedRaw] = useState(false);
+
+  // Sync with hydrated initialSelectedId that arrives after first render (e.g.,
+  // when the app opens directly on the Examples tab and localStorage is read in
+  // a useEffect in App.tsx after this component has already mounted).
+  useEffect(() => {
+    if (initialSelectedId && ALL_EXAMPLES.some((e) => e.id === initialSelectedId)) {
+      setSelectedId(initialSelectedId);
+    }
+  }, [initialSelectedId]);
   const [showMobilePreview, setShowMobilePreview] = useState(false);
   const [showInventory, setShowInventory] = useState(false);
 
@@ -183,6 +199,7 @@ export function ExamplesTab({ selectedPalette, onLoadExample }: ExamplesTabProps
                       <button
                         onClick={() => {
                           setSelectedId(entry.id);
+                          onExampleSelect?.(entry.id);
                           setShowMobilePreview(true);
                         }}
                         className={`w-full text-left px-2.5 py-2 rounded-md text-xs transition-all flex items-start gap-2 ${
