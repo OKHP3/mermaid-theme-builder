@@ -502,6 +502,158 @@ describe("generatePromptScaffoldWithFormat", () => {
     );
     expect(result).toContain("target renderer");
   });
+
+  it("includes journey-specific section when diagramFamily is journey", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "journey" },
+      "both",
+    );
+    expect(result).toContain("Journey diagram");
+    expect(result).toContain("section");
+    expect(result).toContain("journey");
+  });
+
+  it("does not include classDef library section for journey", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "journey" },
+      "both",
+    );
+    expect(result).not.toContain("## Semantic classDef library");
+  });
+
+  it("journey scaffold rules forbid :::className and inline styles", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "journey" },
+      "both",
+    );
+    expect(result).toContain(":::className");
+    expect(result).toContain("journey does not support per-task classDef styling");
+  });
+
+  it("journey scaffold explains score notation (1–5)", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "journey" },
+      "both",
+    );
+    expect(result).toContain("score");
+    expect(result).toContain("1–5");
+  });
+
+  it("journey scaffold example output contains task score syntax", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "journey" },
+      "both",
+    );
+    expect(result).toContain(": 5: ");
+    expect(result).toContain(": 3: ");
+  });
+
+  it("includes timeline-specific section when diagramFamily is timeline", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "timeline" },
+      "both",
+    );
+    expect(result).toContain("Timeline diagram");
+    expect(result).toContain("period");
+    expect(result).toContain("timeline");
+  });
+
+  it("does not include classDef library section for timeline", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "timeline" },
+      "both",
+    );
+    expect(result).not.toContain("## Semantic classDef library");
+  });
+
+  it("timeline scaffold rules forbid :::className and note styling is theme-only", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "timeline" },
+      "both",
+    );
+    expect(result).toContain(":::className");
+    expect(result).toContain("timeline does not support per-event classDef styling");
+  });
+
+  it("timeline scaffold explains period and event syntax", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "timeline" },
+      "both",
+    );
+    expect(result).toContain("section");
+    expect(result).toContain("title");
+  });
+
+  it("timeline scaffold example output contains period : event entries", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "timeline" },
+      "both",
+    );
+    expect(result).toContain("timeline\n");
+    expect(result).toContain(": UNIVAC I");
+  });
+
+  it("includes quadrant-specific section when diagramFamily is quadrant", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "quadrantChart" },
+      "both",
+    );
+    expect(result).toContain("Quadrant chart");
+    expect(result).toContain("x-axis");
+    expect(result).toContain("y-axis");
+    expect(result).toContain("quadrantChart");
+  });
+
+  it("does not include classDef library section for quadrant", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "quadrantChart" },
+      "both",
+    );
+    expect(result).not.toContain("## Semantic classDef library");
+  });
+
+  it("quadrant scaffold rules forbid :::className and inline styles", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "quadrantChart" },
+      "both",
+    );
+    expect(result).toContain(":::className");
+    expect(result).toContain("quadrantChart does not support per-point classDef styling");
+  });
+
+  it("quadrant scaffold explains point placement notation [x, y]", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "quadrantChart" },
+      "both",
+    );
+    expect(result).toContain("[x, y]");
+    expect(result).toContain("quadrant-1");
+    expect(result).toContain("quadrant-4");
+  });
+
+  it("quadrant scaffold example output contains point declarations", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "quadrantChart" },
+      "both",
+    );
+    expect(result).toContain("quadrantChart\n");
+    expect(result).toContain("Feature A: [0.3, 0.8]");
+  });
 });
 
 describe("typography → init directive mapping", () => {

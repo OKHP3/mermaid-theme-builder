@@ -698,6 +698,47 @@ ${frontmatterBlock}
     y-axis "Users (thousands)" 0 --> 120
     bar [42, 58, 74, 91, 105, 118]
     line [42, 58, 74, 91, 105, 118]`
+      : diagramFamily === "journey"
+      ? `journey
+    title My Working Day
+    section Morning
+        Wake up       : 5: Me
+        Have coffee   : 3: Me
+        Check emails  : 2: Me, Work
+    section Afternoon
+        Team standup  : 4: Me, Work
+        Development   : 5: Me
+        Code review   : 3: Me, Work
+    section Evening
+        Wind down     : 4: Me
+        Dinner        : 5: Me, Family`
+      : diagramFamily === "timeline"
+      ? `timeline
+    title History of Technology
+    section 1950s
+        1951 : UNIVAC I
+             : First commercial computer
+    section 1970s
+        1971 : Intel 4004
+             : First microprocessor
+        1975 : Altair 8800
+    section 1990s
+        1991 : World Wide Web
+        1995 : JavaScript
+             : Java`
+      : diagramFamily === "quadrantChart"
+      ? `quadrantChart
+    title Feature Prioritization
+    x-axis Low Effort --> High Effort
+    y-axis Low Impact --> High Impact
+    quadrant-1 Do Now
+    quadrant-2 Schedule
+    quadrant-3 Deprioritize
+    quadrant-4 Delegate
+    Feature A: [0.3, 0.8]
+    Feature B: [0.7, 0.7]
+    Feature C: [0.4, 0.3]
+    Feature D: [0.8, 0.2]`
       : diagramFamily === "flowchart" || diagramFamily === "unknown"
       ? `flowchart TD
     A[Start] --> B[Process]
@@ -1163,7 +1204,118 @@ Both \`bar\` and \`line\` can appear together in the same chart. The number of v
 
 ## XY chart: theming note
 
-Background, axis labels, title, and grid colors come from the theme directive. Bar and line series colors partially respond to \`primaryColor\` and related palette tokens — validate in your target renderer, as xychart-beta color application can vary. No per-bar or per-point style overrides are possible with classDef or inline styling.` : `## Semantic classDef library
+Background, axis labels, title, and grid colors come from the theme directive. Bar and line series colors partially respond to \`primaryColor\` and related palette tokens — validate in your target renderer, as xychart-beta color application can vary. No per-bar or per-point style overrides are possible with classDef or inline styling.` : diagramFamily === "journey" ? `## Journey diagram: section and task syntax
+
+\`journey\` styling is controlled entirely by the theme directive above — section backgrounds, task bars, and label fonts all come from the theme variables. There is **no** \`:::className\` syntax in journey diagrams; individual tasks cannot be styled with classDef.
+
+### Task declaration syntax
+
+Each task follows the pattern \`Task label : score: Actor1, Actor2\`. Scores range from **1** (very negative) to **5** (very positive) and control the vertical position of each task bar on the experience curve.
+
+\`\`\`mermaid
+${exampleDirective}
+journey
+    title User Onboarding Experience
+    section Sign-up
+        Visit landing page   : 4: Visitor
+        Fill out form        : 3: Visitor
+        Confirm email        : 2: Visitor
+    section First use
+        Complete tutorial    : 5: User
+        Explore dashboard    : 4: User
+    section Ongoing
+        Daily check-in       : 5: User, Team
+        Share with colleague : 4: User
+\`\`\`
+
+### Score reference
+
+| Score | Experience |
+|-------|-----------|
+| \`5\` | Very positive |
+| \`4\` | Positive |
+| \`3\` | Neutral |
+| \`2\` | Negative |
+| \`1\` | Very negative |
+
+Multiple actors separated by commas (\`Actor1, Actor2\`) are all shown on the same task row.
+
+---
+
+## Journey diagram: theming note
+
+All journey colors come from the theme directive. Scores (1–5) control task bar height on the experience curve — they are not affected by theme styling. No per-task style overrides are possible with classDef or inline styling.` : diagramFamily === "timeline" ? `## Timeline diagram: period and event syntax
+
+\`timeline\` styling is controlled entirely by the theme directive above — period headers, event blocks, and label fonts all come from the theme variables. There is **no** \`:::className\` syntax in timeline diagrams; individual events cannot be styled with classDef.
+
+### Event declaration syntax
+
+Group events under named periods. Multiple events can appear under the same period date/label by repeating the indented \`:\` notation:
+
+\`\`\`mermaid
+${exampleDirective}
+timeline
+    title Product Roadmap
+    section Q1
+        Jan : Kickoff
+            : Team onboarding
+        Feb : Architecture design
+        Mar : Prototype complete
+    section Q2
+        Apr : Alpha release
+            : User testing begins
+        May : Feedback review
+        Jun : Beta launch
+\`\`\`
+
+Periods (the date or label before the first \`:\`) appear as section headers on the timeline rail. Events (indented \`:\` entries) appear as blocks under their period. \`section\` groups are optional but help with long timelines.
+
+---
+
+## Timeline diagram: theming note
+
+All timeline colors come from the theme directive. Period header colors, event block backgrounds, and connector lines are all theme-controlled. No per-event style overrides are possible with classDef or inline styling.` : diagramFamily === "quadrantChart" ? `## Quadrant chart: axis and point syntax
+
+\`quadrantChart\` styling is controlled entirely by the theme directive above — quadrant backgrounds, axis labels, and point colors all come from the theme variables. There is **no** \`:::className\` syntax in quadrant charts; individual points cannot be styled with classDef.
+
+### Axis and quadrant label declaration
+
+Always declare \`x-axis\` and \`y-axis\` before any points. Quadrant labels (\`quadrant-1\` through \`quadrant-4\`) are optional but recommended for clarity:
+
+\`\`\`mermaid
+${exampleDirective}
+quadrantChart
+    title Strategic Portfolio
+    x-axis Low Complexity --> High Complexity
+    y-axis Low Value --> High Value
+    quadrant-1 Core investments
+    quadrant-2 Plan carefully
+    quadrant-3 Deprioritize
+    quadrant-4 Quick wins
+    Initiative A: [0.2, 0.8]
+    Initiative B: [0.6, 0.75]
+    Initiative C: [0.35, 0.3]
+    Initiative D: [0.75, 0.25]
+\`\`\`
+
+### Point placement
+
+Points are declared as \`Label: [x, y]\` where \`x\` and \`y\` are decimal values between \`0\` and \`1\` (0 = left/bottom, 1 = right/top).
+
+### Quadrant numbering
+
+| Label | Position |
+|-------|----------|
+| \`quadrant-1\` | Top-right |
+| \`quadrant-2\` | Top-left |
+| \`quadrant-3\` | Bottom-left |
+| \`quadrant-4\` | Bottom-right |
+
+---
+
+## Quadrant chart: theming note
+
+All quadrant colors come from the theme directive. Point colors, quadrant backgrounds, and axis line colors are theme-controlled. No per-point style overrides are possible with classDef or inline styling.` : `## Semantic classDef library
 
 ${classDefCaveatNote ? classDefCaveatNote : `This is the complete styling vocabulary for this theme. Apply these classDef classes to nodes using \`:::className\` syntax. Do NOT add any other fill, stroke, or color values — use only these classes.
 
@@ -1320,7 +1472,37 @@ ${diagramFamily === "sequenceDiagram" ? `1. ${formatRuleText}
 9. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values — the theme directive handles all styling.
 10. Do NOT change any color values — reproduce them exactly as shown.
 11. Validate the output in your target renderer — xychart-beta color application varies across renderers.
-12. If the diagram type changes, preserve the exact same theme directive.` : `1. ${formatRuleText}
+12. If the diagram type changes, preserve the exact same theme directive.` : diagramFamily === "journey" ? `1. ${formatRuleText}
+2. Add the metadata comment block immediately after the theme directive.
+3. Use \`journey\` as the diagram type.
+4. Each task follows the syntax \`Task label : score: Actor1, Actor2\` — the score (1–5) is required and controls vertical position on the experience curve.
+5. Group tasks into \`section\` blocks for phase or stage organization.
+6. Scores must be integers between 1 and 5: 1 = very negative, 3 = neutral, 5 = very positive.
+7. List multiple actors separated by commas after the score — all named actors appear on the same task bar.
+8. Do NOT use \`:::className\` syntax — journey does not support per-task classDef styling.
+9. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values — the theme directive handles all styling.
+10. Do NOT change any color values — reproduce them exactly as shown.
+11. If the diagram type changes, preserve the exact same theme directive.` : diagramFamily === "timeline" ? `1. ${formatRuleText}
+2. Add the metadata comment block immediately after the theme directive.
+3. Use \`timeline\` as the diagram type.
+4. Use \`title\` to name the overall timeline.
+5. Periods (dates or labels) appear before the first \`:\` on a line — they become the column headers on the timeline rail.
+6. Events appear as \`: Event label\` entries indented under their period — multiple events share the same period column.
+7. Use optional \`section\` blocks to group periods into larger phases.
+8. Do NOT use \`:::className\` syntax — timeline does not support per-event classDef styling; styling is theme-only.
+9. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values — the theme directive handles all styling.
+10. Do NOT change any color values — reproduce them exactly as shown.
+11. If the diagram type changes, preserve the exact same theme directive.` : diagramFamily === "quadrantChart" ? `1. ${formatRuleText}
+2. Add the metadata comment block immediately after the theme directive.
+3. Use \`quadrantChart\` as the diagram type keyword.
+4. Always declare \`x-axis\` and \`y-axis\` with labels and direction: \`x-axis Low Label --> High Label\`.
+5. Quadrant labels (\`quadrant-1\` through \`quadrant-4\`) are optional but recommended: 1 = top-right, 2 = top-left, 3 = bottom-left, 4 = bottom-right.
+6. Points use \`Label: [x, y]\` where x and y are decimal values between 0 (left/bottom) and 1 (right/top).
+7. Use a \`title\` line to name the chart — it appears as the chart heading.
+8. Do NOT use \`:::className\` syntax — quadrantChart does not support per-point classDef styling.
+9. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values — the theme directive handles all styling.
+10. Do NOT change any color values — reproduce them exactly as shown.
+11. If the diagram type changes, preserve the exact same theme directive.` : `1. ${formatRuleText}
 2. Add the metadata comment block immediately after the theme directive.
 3. Use \`${diagramFamily === "unknown" ? "flowchart TD" : diagramFamily === "flowchart" ? "flowchart TD" : diagramFamily}\` as the diagram type unless the user specifies otherwise.
 4. Keep node labels concise (under 60 characters each).
