@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from "react";
+import { useCodeEditorOverride } from "@/hooks/useCodeEditorOverride";
 import type { Palette, ThemeColor } from "@/lib/palettes";
 import { BUILTIN_PALETTES, BRAND_PALETTES, UTILITY_PALETTES } from "@/lib/palettes";
 import { detectDiagram, type DetectionResult } from "@/lib/detector";
@@ -159,7 +160,6 @@ export function ApplyTab({
 
   const [showScaffoldModal, setShowScaffoldModal] = useState(false);
   const [textareaExpanded, setTextareaExpanded] = useState(false);
-  const [codeEditorOverride, setCodeEditorOverride] = useState<string | null>(null);
   const [showDownloadMenu, setShowDownloadMenu] = useState(false);
   const [activeDiagramIdx, setActiveDiagramIdx] = useState(0);
   const [familyOverride, setFamilyOverride] = useState<DiagramFamily | null>(null);
@@ -339,13 +339,7 @@ export function ApplyTab({
     [activeDiagramCode, exportOptions],
   );
 
-  // Reset any manual code-panel edits when the underlying export output changes.
-  useEffect(() => {
-    setCodeEditorOverride(null);
-  }, [exportCode]);
-
-  // The effective export text — uses the user's in-panel edit when present.
-  const effectiveExportCode = codeEditorOverride ?? exportCode;
+  const { codeEditorOverride, setCodeEditorOverride, effectiveExportCode } = useCodeEditorOverride(exportCode);
 
   const previewCode = previewMode === "themed" ? themedCode : activeDiagramCode;
 

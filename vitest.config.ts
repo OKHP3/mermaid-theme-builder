@@ -6,6 +6,9 @@ export default defineConfig({
   plugins: [react()],
   test: {
     environment: "node",
+    environmentMatchGlobs: [
+      ["src/__tests__/applyTab.test.ts", "happy-dom"],
+    ],
     include: ["src/__tests__/**/*.test.ts"],
     globals: false,
   },
