@@ -253,6 +253,14 @@ export function ClassBrowser({ classDefs, supportsClassDef = true, usedClassName
 
   return (
     <div className={`flex flex-col h-full overflow-auto p-4 bg-muted/20 ${!supportsClassDef ? "opacity-60" : ""}`}>
+      <span
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className="sr-only"
+      >
+        {toastLabel ?? ""}
+      </span>
       <div ref={previewRef} className="mb-3">
       <div className="flex items-start justify-between gap-2">
         <div>

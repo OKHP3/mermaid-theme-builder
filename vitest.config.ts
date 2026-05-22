@@ -9,8 +9,9 @@ export default defineConfig({
     environmentMatchGlobs: [
       ["src/__tests__/applyTab.test.ts", "happy-dom"],
       ["src/__tests__/exporters-browser.test.ts", "happy-dom"],
+      ["src/__tests__/classBrowserLiveRegion.test.tsx", "happy-dom"],
     ],
-    include: ["src/__tests__/**/*.test.ts"],
+    include: ["src/__tests__/**/*.test.ts", "src/__tests__/**/*.test.tsx"],
     globals: false,
   },
   resolve: {

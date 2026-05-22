@@ -230,6 +230,40 @@ describe("ClassBrowser — aria accessibility (active state)", () => {
   });
 });
 
+describe("ClassBrowser — aria-live region (screen reader announcements)", () => {
+  it("renders an aria-live='polite' region in the DOM", () => {
+    const html = render({ supportsClassDef: true });
+    expect(html).toContain('aria-live="polite"');
+  });
+
+  it("aria-live region is present even when supportsClassDef={false}", () => {
+    const html = render({ supportsClassDef: false });
+    expect(html).toContain('aria-live="polite"');
+  });
+
+  it("aria-live region carries role='status'", () => {
+    const html = render({ supportsClassDef: true });
+    expect(html).toContain('role="status"');
+  });
+
+  it("aria-live region carries aria-atomic='true'", () => {
+    const html = render({ supportsClassDef: true });
+    expect(html).toContain('aria-atomic="true"');
+  });
+
+  it("aria-live region is visually hidden via sr-only", () => {
+    const html = render({ supportsClassDef: true });
+    expect(html).toContain("sr-only");
+  });
+
+  it("aria-live region is initially empty (no copiedState on mount)", () => {
+    const html = render({ supportsClassDef: true });
+    const match = html.match(/aria-live="polite"[^>]*>(.*?)<\/span>/);
+    expect(match).not.toBeNull();
+    expect(match![1].trim()).toBe("");
+  });
+});
+
 describe("ClassBrowser — Copy used button", () => {
   it("shows 'Copy used' button when usedClassNames is non-empty and supportsClassDef={true}", () => {
     const html = render({
