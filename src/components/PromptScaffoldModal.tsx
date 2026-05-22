@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import type { ScaffoldFormat } from "@/lib/themeEngine";
 import { SCAFFOLD_FORMAT_KEY, resolveScaffoldFormat, saveScaffoldFormat } from "@/lib/scaffoldPrefs";
 import { RENDERER_PROFILES } from "@/data/renderer-parity";
@@ -113,6 +113,15 @@ export function PromptScaffoldModal({ open, onClose, onCopy, generatePreview, re
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
   }, [open, handleClose]);
+
+  const previews = useMemo(
+    () => ({
+      formatA: generatePreview("formatA"),
+      formatB: generatePreview("formatB"),
+      both: generatePreview("both"),
+    }),
+    [generatePreview],
+  );
 
   if (!open) return null;
 
@@ -310,7 +319,7 @@ export function PromptScaffoldModal({ open, onClose, onCopy, generatePreview, re
 
                 {/* Preview panel */}
                 {isPreviewing && (() => {
-                  const previewLines = generatePreview(opt.format).split("\n");
+                  const previewLines = previews[opt.format].split("\n");
                   return (
                   <div className="border-t border-border/40">
                     <pre
