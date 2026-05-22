@@ -4,9 +4,17 @@ import tailwindcss from "@tailwindcss/vite";
 import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 import { createRequire } from "module";
+import { execSync } from "child_process";
 
 const _require = createRequire(import.meta.url);
 const pkg = _require("./package.json") as { version: string };
+
+let gitSha = "";
+try {
+  gitSha = execSync("git rev-parse --short HEAD", { encoding: "utf8" }).trim();
+} catch {
+  // git unavailable in this environment — version without SHA
+}
 
 const rawPort = process.env.PORT;
 
@@ -33,7 +41,7 @@ if (!basePath) {
 export default defineConfig({
   base: basePath,
   define: {
-    __APP_VERSION__: JSON.stringify(pkg.version),
+    __APP_VERSION__: JSON.stringify(gitSha ? `${pkg.version}-${gitSha}` : pkg.version),
   },
   plugins: [
     react(),

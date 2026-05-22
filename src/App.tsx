@@ -565,9 +565,6 @@ function AppShell() {
               <h1 className="forge-header-title">
                 Mermaid Theme Builder
               </h1>
-              <code className="forge-header-slug">
-                theme-builder
-              </code>
             </div>
             <p className="forge-header-subtitle">
               visual governance for AI-generated Mermaid diagrams
