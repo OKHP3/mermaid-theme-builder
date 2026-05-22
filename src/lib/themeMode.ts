@@ -10,7 +10,7 @@ function safeRead(): ThemeMode {
   } catch {
     // ignore
   }
-  return "system";
+  return "light";
 }
 
 function prefersDark(): boolean {
@@ -37,7 +37,7 @@ export function applyMode(mode: ThemeMode): void {
 
 export function useThemeMode() {
   const [mode, setMode] = useState<ThemeMode>(() =>
-    typeof window === "undefined" ? "system" : safeRead(),
+    typeof window === "undefined" ? "light" : safeRead(),
   );
 
   useEffect(() => {

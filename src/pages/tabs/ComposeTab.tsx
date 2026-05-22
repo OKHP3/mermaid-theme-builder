@@ -36,10 +36,11 @@ import {
 } from "@/lib/typography";
 
 const FONT_FAMILY_OPTIONS = [
+  { label: "DM Sans (default)", value: "DM Sans, system-ui, sans-serif" },
   { label: "Inter", value: "Inter, system-ui, sans-serif" },
   { label: "Trebuchet MS", value: "Trebuchet MS, Calibri, sans-serif" },
   { label: "Arial", value: "Arial, Helvetica, sans-serif" },
-  { label: "Calibri", value: "Calibri, Inter, sans-serif" },
+  { label: "Calibri", value: "Calibri, sans-serif" },
   { label: "Georgia", value: "Georgia, Cambria, serif" },
   { label: "Courier New", value: "Courier New, monospace" },
   { label: "system-ui", value: "system-ui, -apple-system, sans-serif" },
@@ -349,7 +350,7 @@ export function ComposeTab({
                 value={
                   customColors[selectedPaletteId]?.find((c) => c.key === "fontFamily")?.value ??
                   selectedPalette.colors.find((c) => c.key === "fontFamily")?.value ??
-                  "Inter, system-ui, sans-serif"
+                  "DM Sans, system-ui, sans-serif"
                 }
                 onChange={(v) => onColorChange("fontFamily", v)}
               />

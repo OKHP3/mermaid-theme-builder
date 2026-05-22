@@ -51,7 +51,7 @@ export const BUILTIN_PALETTES: Palette[] = [
       { key: "clusterBkg", label: "Cluster background", value: "#e0f2fe" },
       { key: "titleColor", label: "Title color", value: "#1e3a5f" },
       { key: "edgeLabelBackground", label: "Edge label bg", value: "#f0f9ff" },
-      { key: "fontFamily", label: "Font family", value: "Inter, system-ui, sans-serif" },
+      { key: "fontFamily", label: "Font family", value: "DM Sans, system-ui, sans-serif" },
     ],
     attribution: {
       ...TOOL_ATTRIBUTION_BASE,
@@ -78,7 +78,7 @@ export const BUILTIN_PALETTES: Palette[] = [
       { key: "clusterBkg", label: "Cluster background", value: "#d8f3dc" },
       { key: "titleColor", label: "Title color", value: "#1b4332" },
       { key: "edgeLabelBackground", label: "Edge label bg", value: "#f4faf6" },
-      { key: "fontFamily", label: "Font family", value: "Inter, system-ui, sans-serif" },
+      { key: "fontFamily", label: "Font family", value: "DM Sans, system-ui, sans-serif" },
     ],
     attribution: {
       ...TOOL_ATTRIBUTION_BASE,
@@ -105,7 +105,7 @@ export const BUILTIN_PALETTES: Palette[] = [
       { key: "clusterBkg", label: "Cluster background", value: "#1f2937" },
       { key: "titleColor", label: "Title color", value: "#f97316" },
       { key: "edgeLabelBackground", label: "Edge label bg", value: "#1e2330" },
-      { key: "fontFamily", label: "Font family", value: "Inter, system-ui, sans-serif" },
+      { key: "fontFamily", label: "Font family", value: "DM Sans, system-ui, sans-serif" },
     ],
     attribution: {
       ...TOOL_ATTRIBUTION_BASE,
@@ -132,7 +132,7 @@ export const BUILTIN_PALETTES: Palette[] = [
       { key: "clusterBkg", label: "Cluster background", value: "#ede9fe" },
       { key: "titleColor", label: "Title color", value: "#4c1d95" },
       { key: "edgeLabelBackground", label: "Edge label bg", value: "#f5f3ff" },
-      { key: "fontFamily", label: "Font family", value: "Inter, system-ui, sans-serif" },
+      { key: "fontFamily", label: "Font family", value: "DM Sans, system-ui, sans-serif" },
     ],
     attribution: {
       ...TOOL_ATTRIBUTION_BASE,

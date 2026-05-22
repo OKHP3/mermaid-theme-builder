@@ -242,7 +242,7 @@ const FALLBACK_COLORS: Record<string, string> = {
   clusterBkg: "#f9fafb",
   titleColor: "#111827",
   edgeLabelBackground: "#ffffff",
-  fontFamily: "Inter, system-ui, sans-serif",
+  fontFamily: "DM Sans, system-ui, sans-serif",
 };
 
 /**
