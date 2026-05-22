@@ -679,6 +679,25 @@ ${frontmatterBlock}
     Release
       Testing
       Launch`
+      : diagramFamily === "gitGraph"
+      ? `gitGraph
+   commit id: "init"
+   branch feature/login
+   checkout feature/login
+   commit id: "add-auth"
+   commit id: "add-tests"
+   checkout main
+   merge feature/login id: "merge-login"
+   branch release/1.0
+   checkout release/1.0
+   commit id: "bump-version" tag: "v1.0.0"`
+      : diagramFamily === "xychart"
+      ? `xychart-beta
+    title "Monthly Active Users"
+    x-axis [Jan, Feb, Mar, Apr, May, Jun]
+    y-axis "Users (thousands)" 0 --> 120
+    bar [42, 58, 74, 91, 105, 118]
+    line [42, 58, 74, 91, 105, 118]`
       : diagramFamily === "flowchart" || diagramFamily === "unknown"
       ? `flowchart TD
     A[Start] --> B[Process]
@@ -1068,7 +1087,83 @@ The root node is at the first indentation level. Each deeper indentation level c
 
 ## Mindmap: theming note
 
-All mindmap colors come from the theme directive. No per-node style overrides are possible with classDef or inline styling.` : `## Semantic classDef library
+All mindmap colors come from the theme directive. No per-node style overrides are possible with classDef or inline styling.` : diagramFamily === "gitGraph" ? `## Git graph: commit and branch syntax
+
+\`gitGraph\` styling is controlled by the theme directive and gitGraph-specific config options. There is **no** \`:::className\` syntax in git graphs; commits and branches cannot be individually styled via classDef.
+
+### Basic commit and branch syntax
+
+\`\`\`mermaid
+${exampleDirective}
+gitGraph
+   commit id: "initial commit"
+   branch develop
+   checkout develop
+   commit id: "add feature"
+   commit id: "add tests"
+   checkout main
+   merge develop id: "merge feature"
+   commit id: "release" tag: "v1.0.0"
+\`\`\`
+
+Keywords: \`commit\` adds a commit on the current branch. \`branch\` creates a new branch. \`checkout\` switches to a branch. \`merge\` merges a named branch into the current branch. \`cherry-pick\` copies a commit by ID.
+
+### Commit options
+
+| Option | Meaning |
+|--------|---------|
+| \`id: "label"\` | Display label for the commit |
+| \`tag: "v1.0"\` | Adds a version tag badge |
+| \`type: HIGHLIGHT\` | Highlighted commit (filled circle) |
+| \`type: REVERSE\` | Reverse commit (crossed circle) |
+| \`type: NORMAL\` | Default commit style |
+
+### Branch color config
+
+Branch colors (\`git0\`–\`git7\`) are set via the \`gitGraph\` config block inside the theme directive. They are **not** standard \`themeVariables\` — they must be placed in a separate \`gitGraph\` key:
+
+\`\`\`
+%%{init: {"theme": "base", "themeVariables": { ... }, "gitGraph": {"rotateCommitLabel": false}}}%%
+\`\`\`
+
+The theme directive's \`primaryColor\` and \`primaryBorderColor\` influence the overall background and label colors but branch rail colors are assigned by Mermaid's gitGraph renderer from a built-in sequence.
+
+---
+
+## Git graph: theming note
+
+All global colors (background, text, label boxes) come from the theme directive. Branch rail colors (\`git0\`–\`git7\`) are renderer-assigned and cannot be individually overridden with classDef or inline styles. Use the theme directive to control the overall visual palette.` : diagramFamily === "xychart" ? `## XY chart: axis and data series syntax
+
+\`xychart-beta\` styling is partially controlled by the theme directive — background, axis labels, title fonts, and bar/line colors respond to themeVariables. There is **no** \`:::className\` syntax in XY charts; individual bars or points cannot be styled via classDef.
+
+### Basic xychart syntax
+
+\`\`\`mermaid
+${exampleDirective}
+xychart-beta
+    title "Chart Title"
+    x-axis ["Label A", "Label B", "Label C", "Label D"]
+    y-axis "Y Axis Label" 0 --> 100
+    bar [25, 50, 75, 100]
+    line [10, 40, 65, 90]
+\`\`\`
+
+The \`title\` line sets the chart heading. \`x-axis\` declares category labels (quoted strings in brackets, or bare tokens for simple labels). \`y-axis\` sets the axis label and the numeric range (\`min --> max\`). \`bar\` and \`line\` each take a bracketed list of numeric values — one per x-axis category.
+
+### Data series
+
+| Statement | Meaning |
+|-----------|---------|
+| \`bar [v1, v2, ...]\` | Vertical bar series |
+| \`line [v1, v2, ...]\` | Line series overlaid on the same axes |
+
+Both \`bar\` and \`line\` can appear together in the same chart. The number of values must match the number of x-axis categories. Negative values and decimal numbers are supported.
+
+---
+
+## XY chart: theming note
+
+Background, axis labels, title, and grid colors come from the theme directive. Bar and line series colors partially respond to \`primaryColor\` and related palette tokens — validate in your target renderer, as xychart-beta color application can vary. No per-bar or per-point style overrides are possible with classDef or inline styling.` : `## Semantic classDef library
 
 ${classDefCaveatNote ? classDefCaveatNote : `This is the complete styling vocabulary for this theme. Apply these classDef classes to nodes using \`:::className\` syntax. Do NOT add any other fill, stroke, or color values — use only these classes.
 
@@ -1203,7 +1298,29 @@ ${diagramFamily === "sequenceDiagram" ? `1. ${formatRuleText}
 8. Do NOT use \`:::className\` syntax — mindmap does not support per-node classDef styling.
 9. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values — the theme directive handles all styling.
 10. Do NOT change any color values — reproduce them exactly as shown.
-11. If the diagram type changes, preserve the exact same theme directive.` : `1. ${formatRuleText}
+11. If the diagram type changes, preserve the exact same theme directive.` : diagramFamily === "gitGraph" ? `1. ${formatRuleText}
+2. Add the metadata comment block immediately after the theme directive.
+3. Use \`gitGraph\` as the diagram type.
+4. Always use \`checkout\` before adding commits to a branch — do not commit directly without checking out the branch first.
+5. Use \`commit id: "label"\` to give commits meaningful display names.
+6. Use \`tag: "v1.0.0"\` on milestone commits to add version badges.
+7. Use \`merge branchName\` (on the receiving branch after \`checkout\`) to merge commits.
+8. Do NOT use \`:::className\` syntax — gitGraph does not support per-commit or per-branch classDef styling.
+9. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values — the theme directive handles all styling.
+10. Do NOT change any color values — reproduce them exactly as shown.
+11. Branch rail colors (\`git0\`–\`git7\`) are assigned by the renderer — do not attempt to override them with classDef.
+12. If the diagram type changes, preserve the exact same theme directive.` : diagramFamily === "xychart" ? `1. ${formatRuleText}
+2. Add the metadata comment block immediately after the theme directive.
+3. Use \`xychart-beta\` as the diagram type keyword.
+4. Always declare \`title\`, \`x-axis\`, and \`y-axis\` before any data series (\`bar\` or \`line\`).
+5. The number of values in each \`bar\` or \`line\` series must match the number of x-axis categories exactly.
+6. \`y-axis\` range syntax: \`"Axis Label" min --> max\` — the label must be a quoted string.
+7. Use \`bar\` for column series and \`line\` for line series; both can appear together in the same chart.
+8. Do NOT use \`:::className\` syntax — xychart-beta does not support per-bar or per-point classDef styling.
+9. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values — the theme directive handles all styling.
+10. Do NOT change any color values — reproduce them exactly as shown.
+11. Validate the output in your target renderer — xychart-beta color application varies across renderers.
+12. If the diagram type changes, preserve the exact same theme directive.` : `1. ${formatRuleText}
 2. Add the metadata comment block immediately after the theme directive.
 3. Use \`${diagramFamily === "unknown" ? "flowchart TD" : diagramFamily === "flowchart" ? "flowchart TD" : diagramFamily}\` as the diagram type unless the user specifies otherwise.
 4. Keep node labels concise (under 60 characters each).

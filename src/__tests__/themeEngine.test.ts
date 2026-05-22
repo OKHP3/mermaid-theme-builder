@@ -397,6 +397,111 @@ describe("generatePromptScaffoldWithFormat", () => {
     expect(result).toContain("[text]");
     expect(result).toContain("(text)");
   });
+
+  it("includes gitGraph-specific section when diagramFamily is gitGraph", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "gitGraph" },
+      "both",
+    );
+    expect(result).toContain("Git graph");
+    expect(result).toContain("gitGraph");
+    expect(result).toContain("commit");
+    expect(result).toContain("branch");
+    expect(result).toContain("checkout");
+    expect(result).toContain("merge");
+  });
+
+  it("does not include classDef library section for gitGraph", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "gitGraph" },
+      "both",
+    );
+    expect(result).not.toContain("## Semantic classDef library");
+  });
+
+  it("gitGraph scaffold rules forbid :::className and inline styles", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "gitGraph" },
+      "both",
+    );
+    expect(result).toContain(":::className");
+    expect(result).toContain("gitGraph does not support per-commit or per-branch classDef styling");
+  });
+
+  it("gitGraph scaffold mentions git branch color config (git0–git7)", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "gitGraph" },
+      "both",
+    );
+    expect(result).toContain("git0");
+    expect(result).toContain("git7");
+  });
+
+  it("gitGraph scaffold example output contains commit and branch syntax", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "gitGraph" },
+      "both",
+    );
+    expect(result).toContain('id: "');
+    expect(result).toContain("tag:");
+  });
+
+  it("includes xychart-specific section when diagramFamily is xychart", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "xychart" },
+      "both",
+    );
+    expect(result).toContain("XY chart");
+    expect(result).toContain("xychart-beta");
+    expect(result).toContain("x-axis");
+    expect(result).toContain("y-axis");
+    expect(result).toContain("bar");
+    expect(result).toContain("line");
+  });
+
+  it("does not include classDef library section for xychart", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "xychart" },
+      "both",
+    );
+    expect(result).not.toContain("## Semantic classDef library");
+  });
+
+  it("xychart scaffold rules forbid :::className and inline styles", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "xychart" },
+      "both",
+    );
+    expect(result).toContain(":::className");
+    expect(result).toContain("xychart-beta does not support per-bar or per-point classDef styling");
+  });
+
+  it("xychart scaffold explains bar and line data series syntax", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "xychart" },
+      "both",
+    );
+    expect(result).toContain("bar [v1, v2");
+    expect(result).toContain("line [v1, v2");
+  });
+
+  it("xychart scaffold mentions renderer validation caveat", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "xychart" },
+      "both",
+    );
+    expect(result).toContain("target renderer");
+  });
 });
 
 describe("buildClassDefString", () => {
