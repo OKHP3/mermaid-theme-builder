@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import type { Palette } from "@/lib/palettes";
 import { getClassDefs } from "@/lib/themeEngine";
 import { extractUsedClasses } from "@/lib/usedClasses";
@@ -45,6 +45,18 @@ export function ReferenceTab({ selectedPalette, supportsClassDef, inputCode = ""
     () => extractUsedClasses(inputCode),
     [inputCode],
   );
+
+  const classLibraryRef = useRef<HTMLDetailsElement>(null);
+
+  useEffect(() => {
+    const el = classLibraryRef.current;
+    if (!el) return;
+    if (!supportsClassDef) {
+      el.open = false;
+    } else {
+      el.open = true;
+    }
+  }, [supportsClassDef]);
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
@@ -157,7 +169,7 @@ export function ReferenceTab({ selectedPalette, supportsClassDef, inputCode = ""
       </div>
 
       <div className="flex-none border-t border-border">
-        <details className="group">
+        <details ref={classLibraryRef} className="group">
           <summary className="flex items-center justify-between px-4 py-2.5 cursor-pointer list-none hover:bg-muted/40 transition-colors select-none">
             <div className="flex items-center gap-2">
               <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 text-muted-foreground">
