@@ -419,7 +419,19 @@ ${frontmatterBlock}
     : "";
 
   const diagramTypeExample =
-    diagramFamily === "flowchart" || diagramFamily === "unknown"
+    diagramFamily === "sequenceDiagram"
+      ? `sequenceDiagram
+    actor User as User
+    participant App as Application
+    participant API as API Server
+
+    User->>App: Initiate request
+    activate App
+    App->>API: POST /process
+    API-->>App: 200 OK
+    deactivate App
+    App-->>User: Show result`
+      : diagramFamily === "flowchart" || diagramFamily === "unknown"
       ? `flowchart TD
     A[Start] --> B[Process]
     B:::primary --> C{Decision}:::gate
@@ -463,7 +475,85 @@ ${metaBlock}
 
 ---
 
-## Semantic classDef library
+${diagramFamily === "sequenceDiagram" ? `## Sequence diagram: participant syntax & theming
+
+SequenceDiagram styling is controlled entirely by the theme directive above — all participant box colors, arrow colors, and label fonts come from the theme variables. There is **no** \`:::className\` syntax in sequence diagrams; nodes cannot be individually styled.
+
+### Participant declarations
+
+Declare all participants at the top of the diagram, before any messages:
+
+\`\`\`mermaid
+${exampleDirective}
+sequenceDiagram
+    actor User as User
+    participant FE as Frontend
+    participant API as API Server
+    participant DB as Database
+\`\`\`
+
+Use \`actor\` for human roles and \`participant\` for systems, services, and components. The \`as\` keyword sets the display label.
+
+### Arrow types
+
+| Syntax | Style | Meaning |
+|--------|-------|---------|
+| \`->>\` | Solid arrowhead | Synchronous request / call |
+| \`-->>\` | Dashed arrowhead | Async reply / response |
+| \`->\` | Solid line | Message (no arrowhead) |
+| \`-->\` | Dashed line | Reply (no arrowhead) |
+| \`-x\` | Solid with ✕ | Fire-and-forget / destroy message |
+| \`--x\` | Dashed with ✕ | Async fire-and-forget |
+| \`-)\` | Solid open | Async message |
+| \`--)\` | Dashed open | Async reply |
+
+---
+
+## Sequence diagram: control flow & activation blocks
+
+Use these blocks to show conditional logic, repetition, and activation lifelines:
+
+\`\`\`mermaid
+${exampleDirective}
+sequenceDiagram
+    %% Conditional
+    alt Happy path
+        Client->>Server: POST /resource
+        Server-->>Client: 201 Created
+    else Error path
+        Client->>Server: POST /resource
+        Server-->>Client: 400 Bad Request
+    end
+
+    %% Loop
+    loop Retry up to 3 times
+        Client->>Server: GET /status
+        Server-->>Client: 202 Accepted
+    end
+
+    %% Activation lifeline (box on participant bar)
+    activate Server
+        Client->>Server: Long operation
+        Server-->>Client: Result
+    deactivate Server
+
+    %% Notes
+    Note right of Server: Processing request
+    Note over Client,Server: Handshake complete
+
+    %% Optional block
+    opt Only if authenticated
+        Client->>Server: GET /profile
+        Server-->>Client: 200 OK
+    end
+
+    %% Parallel
+    par Fetch in parallel
+        Client->>ServiceA: GET /a
+    and
+        Client->>ServiceB: GET /b
+    end
+\`\`\`` : `## Semantic classDef library
 
 This is the complete styling vocabulary for this theme. Apply these classDef classes to nodes using \`:::className\` syntax. Do NOT add any other fill, stroke, or color values — use only these classes.
 
@@ -508,7 +598,7 @@ Use \`style SubgraphName ...\` statements to apply visual hierarchy to subgraphs
 ${exampleDirective}
 flowchart TD
 ${subgraphBlock}
-\`\`\`
+\`\`\``}
 
 ---
 
@@ -527,7 +617,18 @@ ${colorLines}
 
 ${options.typography ? typographyToScaffoldSection(options.typography) + "\n\n---\n\n" : ""}${options.rendererTarget ? rendererToScaffoldSection(options.rendererTarget, options.look) + "\n\n---\n\n" : ""}## Rules
 
-1. ${formatRuleText}
+${diagramFamily === "sequenceDiagram" ? `1. ${formatRuleText}
+2. Add the metadata comment block immediately after the theme directive.
+3. Use \`sequenceDiagram\` as the diagram type.
+4. Declare all \`participant\` and \`actor\` labels at the top — before any messages.
+5. Use \`->>\` for synchronous requests and \`-->>\` for async replies/responses.
+6. Use \`alt\`/\`else\`/\`end\` for conditional flows, \`loop\` for repetition, \`opt\` for optional blocks.
+7. Use \`activate\`/\`deactivate\` (or the \`+\`/\`-\` shorthand) to show lifeline activation boxes.
+8. Do NOT use \`:::className\` syntax — sequenceDiagram does not support per-node classDef styling.
+9. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values — the theme directive handles all styling.
+10. Do NOT change any color values — reproduce them exactly as shown.
+11. Keep message labels concise (under 60 characters).
+12. If the diagram type changes, preserve the exact same theme directive.` : `1. ${formatRuleText}
 2. Add the metadata comment block immediately after the theme directive.
 3. Use \`${diagramFamily === "unknown" ? "flowchart TD" : diagramFamily === "flowchart" ? "flowchart TD" : diagramFamily}\` as the diagram type unless the user specifies otherwise.
 4. Keep node labels concise (under 60 characters each).
@@ -536,7 +637,7 @@ ${options.typography ? typographyToScaffoldSection(options.typography) + "\n\n--
 7. Do NOT change any color values — reproduce them exactly as shown.
 8. Use subgraph tier styles for visual hierarchy — never leave subgraphs unstyled.
 9. If the diagram type changes, preserve the exact same theme directive.
-10. If the diagram type does not support classDef (e.g. sequenceDiagram, erDiagram), omit classDef statements entirely — the theme directive handles all styling.
+10. If the diagram type does not support classDef (e.g. sequenceDiagram, erDiagram), omit classDef statements entirely — the theme directive handles all styling.`}
 
 ---
 
