@@ -696,7 +696,7 @@ function AppShell() {
           />
         )}
         {activeTab === "reference" && (
-          <ReferenceTab selectedPalette={selectedPalette} supportsClassDef={supportsClassDef} />
+          <ReferenceTab selectedPalette={selectedPalette} supportsClassDef={supportsClassDef} inputCode={inputCode} />
         )}
       </main>
 

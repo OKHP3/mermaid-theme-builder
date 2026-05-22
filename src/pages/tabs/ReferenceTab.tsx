@@ -8,6 +8,7 @@ import { RENDERER_PROFILES, supportLabel, supportColor } from "@/data/renderer-p
 interface ReferenceTabProps {
   selectedPalette: Palette;
   supportsClassDef: boolean;
+  inputCode?: string;
 }
 
 const NOTION_TAXONOMY_URL =
@@ -28,8 +29,14 @@ function SupportBadge({ support }: { support: import("@/data/renderer-parity").R
   );
 }
 
-export function ReferenceTab({ selectedPalette, supportsClassDef }: ReferenceTabProps) {
+export function ReferenceTab({ selectedPalette, supportsClassDef, inputCode = "" }: ReferenceTabProps) {
   const classDefs = useMemo(() => getClassDefs(selectedPalette), [selectedPalette]);
+
+  const usedClassNames = useMemo<ReadonlySet<string>>(() => {
+    if (!inputCode) return new Set();
+    const matches = inputCode.matchAll(/:::(\w+)/g);
+    return new Set(Array.from(matches, (m) => m[1]));
+  }, [inputCode]);
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
@@ -146,7 +153,7 @@ export function ReferenceTab({ selectedPalette, supportsClassDef }: ReferenceTab
             </svg>
           </summary>
           <div className="border-t border-border max-h-72 overflow-y-auto">
-            <ClassBrowser classDefs={classDefs} supportsClassDef={supportsClassDef} />
+            <ClassBrowser classDefs={classDefs} supportsClassDef={supportsClassDef} usedClassNames={usedClassNames} />
           </div>
         </details>
       </div>

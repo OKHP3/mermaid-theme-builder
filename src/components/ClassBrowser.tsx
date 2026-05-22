@@ -4,6 +4,7 @@ import type { ClassDef } from "@/lib/themeEngine";
 interface ClassBrowserProps {
   classDefs: ClassDef[];
   supportsClassDef?: boolean;
+  usedClassNames?: ReadonlySet<string>;
 }
 
 function parseDashArray(extra: string): string | undefined {
@@ -42,10 +43,12 @@ type CopiedState = { name: string; kind: "usage" | "classdef" } | null;
 
 function ClassNode({
   def,
+  isUsed,
   onCopyUsage,
   onCopyClassDef,
 }: {
   def: ClassDef;
+  isUsed: boolean;
   onCopyUsage: (name: string) => void;
   onCopyClassDef: (def: ClassDef) => void;
 }) {
@@ -69,7 +72,11 @@ function ClassNode({
         }
       }}
       title={`Click to copy :::${def.name}`}
-      className="group flex flex-col items-stretch gap-0 rounded-lg overflow-hidden border border-border/40 hover:border-primary/50 hover:shadow-md transition-all text-left cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary/60"
+      className={`group flex flex-col items-stretch gap-0 rounded-lg overflow-hidden border hover:shadow-md transition-all text-left cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary/60 ${
+        isUsed
+          ? "border-emerald-500/60 ring-1 ring-emerald-500/25 hover:border-emerald-500/80"
+          : "border-border/40 hover:border-primary/50"
+      }`}
       style={{ opacity: opacity ?? 1 }}
     >
       <div
@@ -98,6 +105,18 @@ function ClassNode({
         >
           {def.name}
         </span>
+
+        {isUsed && (
+          <span
+            className="absolute bottom-1 left-1 z-20 flex items-center justify-center w-4 h-4 rounded-full bg-emerald-500/80"
+            title={`:::${def.name} is used in the current diagram`}
+            aria-label="Used in current diagram"
+          >
+            <svg viewBox="0 0 10 10" fill="none" className="w-2.5 h-2.5">
+              <path d="M2 5.2l2 2 4-4" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </span>
+        )}
 
         <button
           type="button"
@@ -132,7 +151,7 @@ function ClassNode({
   );
 }
 
-export function ClassBrowser({ classDefs, supportsClassDef = true }: ClassBrowserProps) {
+export function ClassBrowser({ classDefs, supportsClassDef = true, usedClassNames }: ClassBrowserProps) {
   const [copiedState, setCopiedState] = useState<CopiedState>(null);
 
   const writeToClipboard = useCallback(async (text: string) => {
@@ -177,7 +196,17 @@ export function ClassBrowser({ classDefs, supportsClassDef = true }: ClassBrowse
     <div className={`flex flex-col h-full overflow-auto p-4 bg-muted/20 ${!supportsClassDef ? "opacity-60" : ""}`}>
       <div className="mb-3 flex items-center justify-between gap-2">
         <div>
-          <p className="text-xs font-semibold text-foreground">Class Library</p>
+          <p className="text-xs font-semibold text-foreground flex items-center gap-2">
+            Class Library
+            {usedClassNames && usedClassNames.size > 0 && (
+              <span className="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-full">
+                <svg viewBox="0 0 10 10" fill="none" className="w-2.5 h-2.5">
+                  <path d="M2 5.2l2 2 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                {usedClassNames.size} in use
+              </span>
+            )}
+          </p>
           <p className="text-[10px] text-muted-foreground mt-0.5">
             16 semantic styles — click any node to copy its{" "}
             <span className="font-mono">:::className</span> syntax, or hover for the full{" "}
@@ -209,6 +238,7 @@ export function ClassBrowser({ classDefs, supportsClassDef = true }: ClassBrowse
           <ClassNode
             key={def.name}
             def={def}
+            isUsed={usedClassNames?.has(def.name) ?? false}
             onCopyUsage={handleCopyUsage}
             onCopyClassDef={handleCopyClassDef}
           />
