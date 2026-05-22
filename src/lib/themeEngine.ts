@@ -491,6 +491,25 @@ ${frontmatterBlock}
     API-->>App: 200 OK
     deactivate App
     App-->>User: Show result`
+      : diagramFamily === "erDiagram"
+      ? `erDiagram
+    CUSTOMER {
+        int customerId PK
+        string name
+        string email
+    }
+    ORDER {
+        int orderId PK
+        date createdAt
+        string status
+    }
+    PRODUCT {
+        int productId PK
+        string name
+        float price
+    }
+    CUSTOMER ||--o{ ORDER : "places"
+    ORDER }o--|{ PRODUCT : "contains"`
       : diagramFamily === "flowchart" || diagramFamily === "unknown"
       ? `flowchart TD
     A[Start] --> B[Process]
@@ -615,7 +634,44 @@ sequenceDiagram
     and
         Client->>ServiceB: GET /b
     end
-\`\`\`` : `## Semantic classDef library
+\`\`\`` : diagramFamily === "erDiagram" ? `## ER diagram: entity syntax & theming
+
+\`erDiagram\` styling is controlled entirely by the theme directive above — entity header colors, attribute row styles, and relationship line colors all come from the theme variables. There is **no** \`:::className\` syntax in ER diagrams; entities cannot be individually styled.
+
+### Entity declaration syntax
+
+Declare entities with their attributes using this syntax:
+
+\`\`\`mermaid
+${exampleDirective}
+erDiagram
+    ENTITY_NAME {
+        dataType attributeName PK "optional description"
+        dataType attributeName FK
+        dataType attributeName
+    }
+\`\`\`
+
+Attribute constraint keywords: \`PK\` (primary key), \`FK\` (foreign key), \`UK\` (unique key). A quoted description string may follow the constraint.
+
+### Relationship cardinality notation
+
+| Syntax | Meaning |
+|--------|---------|
+| \`||--||\` | Exactly one to exactly one |
+| \`||--o{\` | Exactly one to zero or more |
+| \`||--|{\` | Exactly one to one or more |
+| \`o|--o{\` | Zero or one to zero or more |
+| \`}o--o{\` | Zero or more to zero or more |
+| \`}|--|{\` | One or more to one or more |
+
+Relationship statement format: \`ENTITY_A cardinality ENTITY_B : "label"\`
+
+---
+
+## ER diagram: theming note
+
+All ER diagram colors come from the theme directive. No per-entity style overrides are possible with classDef or inline styling.` : `## Semantic classDef library
 
 This is the complete styling vocabulary for this theme. Apply these classDef classes to nodes using \`:::className\` syntax. Do NOT add any other fill, stroke, or color values — use only these classes.
 
@@ -690,7 +746,17 @@ ${diagramFamily === "sequenceDiagram" ? `1. ${formatRuleText}
 9. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values — the theme directive handles all styling.
 10. Do NOT change any color values — reproduce them exactly as shown.
 11. Keep message labels concise (under 60 characters).
-12. If the diagram type changes, preserve the exact same theme directive.` : `1. ${formatRuleText}
+12. If the diagram type changes, preserve the exact same theme directive.` : diagramFamily === "erDiagram" ? `1. ${formatRuleText}
+2. Add the metadata comment block immediately after the theme directive.
+3. Use \`erDiagram\` as the diagram type.
+4. Declare all entities with their attributes: \`ENTITY_NAME { dataType attrName PK|FK|UK "description" }\`.
+5. Use correct cardinality notation: \`||--o{\` (one-to-many), \`}o--o{\` (many-to-many), \`||--||\` (one-to-one), etc.
+6. Always include a relationship label in quotes: \`ENTITY_A ||--o{ ENTITY_B : "label"\`.
+7. Do NOT use \`:::className\` syntax — erDiagram does not support per-entity classDef styling.
+8. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values — the theme directive handles all styling.
+9. Do NOT change any color values — reproduce them exactly as shown.
+10. Attribute type names are descriptive only; Mermaid does not validate them against a schema.
+11. If the diagram type changes, preserve the exact same theme directive.` : `1. ${formatRuleText}
 2. Add the metadata comment block immediately after the theme directive.
 3. Use \`${diagramFamily === "unknown" ? "flowchart TD" : diagramFamily === "flowchart" ? "flowchart TD" : diagramFamily}\` as the diagram type unless the user specifies otherwise.
 4. Keep node labels concise (under 60 characters each).

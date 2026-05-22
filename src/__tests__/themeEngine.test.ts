@@ -185,4 +185,34 @@ describe("generatePromptScaffoldWithFormat", () => {
     expect(result).toContain("Typography Hierarchy");
     expect(result).toContain("Target Renderer");
   });
+
+  it("includes ER-specific section when diagramFamily is erDiagram", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "erDiagram" },
+      "both",
+    );
+    expect(result).toContain("ER diagram");
+    expect(result).toContain("cardinality");
+    expect(result).toContain("erDiagram");
+  });
+
+  it("does not include classDef library section for erDiagram", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "erDiagram" },
+      "both",
+    );
+    expect(result).not.toContain("## Semantic classDef library");
+  });
+
+  it("ER scaffold rules forbid :::className and inline styles", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "erDiagram" },
+      "both",
+    );
+    expect(result).toContain(":::className");
+    expect(result).toContain("erDiagram does not support per-entity classDef styling");
+  });
 });
