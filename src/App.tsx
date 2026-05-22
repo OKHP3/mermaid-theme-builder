@@ -548,28 +548,28 @@ function AppShell() {
           <AppIcon size={28} aria-hidden="true" />
           <div>
             <div className="flex items-baseline gap-2 leading-none">
-              <h1 className="text-[17px] leading-none text-[#e8dcc8]">
+              <h1 className="forge-header-title">
                 Mermaid Theme Builder
               </h1>
-              <code className="hidden sm:inline text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/8 text-[#b8aa96] border border-white/10 leading-none align-middle">
+              <code className="forge-header-slug">
                 theme-builder
               </code>
             </div>
-            <p className="text-[11px] text-[#e5e7eb]/55 mt-1 hidden sm:block leading-none">
+            <p className="forge-header-subtitle">
               visual governance for AI-generated Mermaid diagrams
             </p>
           </div>
         </div>
         <div className="flex items-center gap-3">
           <div className="hidden md:flex items-center gap-2 text-[10px]">
-            <span className="font-bold uppercase tracking-wider text-[#c46a2c]">OKHP³</span>
-            <span className="text-[#e5e7eb]/25">·</span>
-            <span className="font-mono text-[#e5e7eb]/40">v{__APP_VERSION__}</span>
+            <span className="forge-header-badge">OKHP³</span>
+            <span className="forge-header-sep">·</span>
+            <span className="forge-header-meta">v{__APP_VERSION__}</span>
           </div>
           <ThemeModeToggle
             mode={themeMode}
             cycle={cycleThemeMode}
-            className="p-1.5 rounded-md border border-white/15 hover:border-white/30 hover:bg-white/8 text-[#e5e7eb]/60 hover:text-[#e5e7eb] transition-colors print-hide"
+            className="forge-header-icon-btn print-hide"
           />
         </div>
       </header>
@@ -608,11 +608,7 @@ function AppShell() {
               aria-controls={`tabpanel-${tab.id}`}
               tabIndex={selected ? 0 : -1}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-1.5 px-4 py-2.5 text-[13px] font-medium border-b-2 transition-all ${
-                selected
-                  ? "border-primary text-primary"
-                  : "border-transparent text-foreground/55 hover:text-foreground hover:border-border/60"
-              }`}
+              className={`forge-tab${selected ? " forge-tab-active" : ""}`}
             >
               {tab.icon}
               {tab.label}
@@ -713,9 +709,7 @@ function AppShell() {
               aria-controls={`tabpanel-${tab.id}`}
               tabIndex={selected ? 0 : -1}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 flex flex-col items-center gap-1 py-2.5 text-[11px] font-medium transition-all ${
-                selected ? "text-[#c46a2c]" : "text-[#e5e7eb]/55 hover:text-[#e5e7eb]/80"
-              }`}
+              className={`forge-mobile-nav-item${selected ? " forge-mobile-nav-item-active" : ""}`}
             >
               {tab.icon}
               {tab.label}
@@ -725,17 +719,17 @@ function AppShell() {
       </nav>
 
       <footer className="forge-footer flex-none hidden md:flex items-center justify-between px-4 py-1.5 print-hide" style={{minHeight: '34px'}}>
-        <div className="flex items-center gap-2 text-[10px] text-[#e5e7eb]/45">
-          <span className="font-mono font-medium text-[#e5e7eb]/65">mermaid-theme-builder</span>
+        <div className="flex items-center gap-2 forge-footer-meta">
+          <span className="forge-footer-slug">mermaid-theme-builder</span>
           <span>·</span>
           <span>visual governance utility</span>
           <span>·</span>
-          <span className="font-semibold text-[#c46a2c]">OverKill Hill P³</span>
+          <span className="forge-footer-brand">OverKill Hill P³</span>
         </div>
-        <div className="flex items-center gap-4 text-[10px] text-[#e5e7eb]/40">
-          <a href="https://github.com/OKHP3/mermaid-theme-builder" target="_blank" rel="noopener noreferrer" className="hover:text-[#e5e7eb]/75 transition-colors">GitHub</a>
-          <a href="https://overkillhill.com/projects" target="_blank" rel="noopener noreferrer" className="hover:text-[#e5e7eb]/75 transition-colors">OKHP³ Projects</a>
-          <a href="https://mermaid.live" target="_blank" rel="noopener noreferrer" className="hover:text-[#e5e7eb]/75 transition-colors">Mermaid Live</a>
+        <div className="flex items-center gap-4">
+          <a href="https://github.com/OKHP3/mermaid-theme-builder" target="_blank" rel="noopener noreferrer" className="forge-footer-link">GitHub</a>
+          <a href="https://overkillhill.com/projects" target="_blank" rel="noopener noreferrer" className="forge-footer-link">OKHP³ Projects</a>
+          <a href="https://mermaid.live" target="_blank" rel="noopener noreferrer" className="forge-footer-link">Mermaid Live</a>
         </div>
       </footer>
 

@@ -222,8 +222,7 @@ export function MermaidPreview({ code, className }: MermaidPreviewProps) {
     };
   }, [code, uniqueId]);
 
-  const btnBase =
-    "flex items-center justify-center w-6 h-6 rounded transition-colors duration-100 text-[#d4c9b5]/70 hover:text-[#c46a2c] hover:bg-white/8 active:bg-white/12 disabled:opacity-30 disabled:cursor-not-allowed";
+  const btnBase = "forge-preview-btn";
 
   if (!code.trim()) {
     return (
@@ -287,7 +286,7 @@ export function MermaidPreview({ code, className }: MermaidPreviewProps) {
 
       {/* Controls overlay */}
       <div
-        className="absolute bottom-2 right-2 z-10 flex items-center gap-0.5 rounded-md border border-white/10 bg-[#0f1f1c]/88 px-1 py-0.5 backdrop-blur-sm shadow-lg"
+        className="absolute bottom-2 right-2 z-10 flex items-center gap-0.5 forge-preview-controls"
         onMouseDown={(e) => e.stopPropagation()}
       >
         <button
@@ -300,7 +299,7 @@ export function MermaidPreview({ code, className }: MermaidPreviewProps) {
           <IconZoomOut />
         </button>
         <span
-          className="min-w-[38px] text-center font-mono text-[10px] leading-none text-[#d4c9b5]/55 select-none tabular-nums"
+          className="forge-preview-counter tabular-nums"
           title="Current zoom level"
         >
           {Math.round(scale * 100)}%

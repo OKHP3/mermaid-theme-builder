@@ -88,6 +88,10 @@
   --mermaid-cluster-bg:           #0d1117;
   --mermaid-edge-label-bg:        #181f26;
 
+  /* Header-specific text tones (warm cream family for always-dark header) */
+  --forge-header-title:  #e8dcc8;   /* warm cream app title — warmer than header-fg */
+  --forge-header-slug:   #b8aa96;   /* muted warm cream for slug/code badge */
+
   /* Legacy shorthand aliases (backward compat; prefer --okh-forge-*) */
   --okh-teal:   #1c3a34;
   --okh-orange: #c46a2c;
