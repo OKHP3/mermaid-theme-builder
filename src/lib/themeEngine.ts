@@ -4,6 +4,59 @@ import { familyThemeOverlay } from "./familyTheming";
 import { typographyToScaffoldSection, type TypographySettings } from "./typography";
 import { rendererToScaffoldSection } from "../data/renderer-parity";
 
+// ── Markdown output sanitizers ──────────────────────────────────────────────
+// These helpers prevent attacker-controlled palette metadata (imported via
+// .theme.json files or ?theme= share tokens) from injecting active content
+// into generated Markdown artifacts.
+
+/** Sanitize a string for insertion into Markdown body/heading/bold contexts.
+ *  - Strips CR/LF so attacker input cannot break heading or paragraph structure.
+ *  - HTML-escapes < > & so raw HTML tags cannot be injected into the artifact.
+ *  - Backslash-escapes [ ] ( ) so attacker input cannot synthesise Markdown links
+ *    (e.g. `[label](javascript:...)`) inside fields that are not URL-valued. */
+function sanitizeMdText(s: string): string {
+  return s
+    .replace(/[\r\n]/g, " ")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\[/g, "\\[")
+    .replace(/\]/g, "\\]")
+    .replace(/\(/g, "\\(")
+    .replace(/\)/g, "\\)");
+}
+
+/** Sanitize a string for insertion into a Markdown inline-code span (`` `...` ``).
+ *  Strips CR/LF and backticks so the attacker cannot break out of the span.
+ *  Also HTML-escapes < > & as defence-in-depth for permissive renderers. */
+function sanitizeMdCode(s: string): string {
+  return s
+    .replace(/[\r\n`]/g, " ")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+/** Sanitize a string for insertion into a fenced code block line.
+ *  Strips CR/LF and backticks to prevent premature fence termination. */
+function sanitizeFenceContent(s: string): string {
+  return s.replace(/[\r\n`]/g, " ");
+}
+
+/** Accept only http: and https: URLs for Markdown link generation.
+ *  Returns the URL constructor's re-serialized href (which percent-encodes
+ *  characters like [ ] ( ) that could break Markdown link syntax), or null
+ *  for any other scheme (e.g. javascript:, data:, vbscript:). */
+function sanitizeSourceUrl(u: string): string | null {
+  try {
+    const parsed = new URL(u);
+    if (parsed.protocol === "http:" || parsed.protocol === "https:") return parsed.href;
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 export type MermaidLook = "classic" | "neo" | "handDrawn";
 
 export interface WatermarkOptions {
@@ -62,18 +115,21 @@ function buildInitDirective(palette: Palette, family: DiagramFamily = "flowchart
 
 function buildMetaComments(palette: Palette, themeName: string): string {
   const now = new Date().toISOString();
+  const safeThemeName = sanitizeMdText(themeName);
+  const safeId = sanitizeMdText(palette.id);
   const lines = [
-    `%% Theme: ${themeName}`,
-    `%% Theme ID: ${palette.id}`,
-    `%% Theme Version: ${palette.version}`,
+    `%% Theme: ${safeThemeName}`,
+    `%% Theme ID: ${safeId}`,
+    `%% Theme Version: ${sanitizeFenceContent(palette.version)}`,
     `%% Created with: Mermaid Theme Builder by OverKill Hill P³`,
     `%% Tool URL: ${TOOL_URL}`,
     `%% Tool Version: ${TOOL_VERSION}`,
     `%% Theme Created: ${now}`,
     `%% Theme Updated: ${now}`,
   ];
-  if (palette.isBrandPreset && palette.sourceUrls?.[0]) {
-    lines.push(`%% Brand source: ${palette.sourceUrls[0]}`);
+  const safeBrandUrl = palette.isBrandPreset && palette.sourceUrls?.[0] ? sanitizeSourceUrl(palette.sourceUrls[0]) : null;
+  if (safeBrandUrl) {
+    lines.push(`%% Brand source: ${safeBrandUrl}`);
   }
   lines.push(`%% Personal OverKill Hill P³ project by Jamie Hill — overkillhill.com`);
   lines.push(`%% Not affiliated with Builders FirstSource, Mermaid, Mermaid Chart, or Mermaid.ai`);
@@ -129,17 +185,20 @@ export function generateThemedCode(originalCode: string, options: ExportOptions)
 
 export function generateMarkdownExport(themedCode: string, palette: Palette, options: ExportOptions): string {
   const { customThemeName } = options;
-  const themeName = customThemeName?.trim() || palette.name;
+  const rawThemeName = customThemeName?.trim() || palette.name;
+  const themeName = sanitizeMdText(rawThemeName);
   const isCustom = !!customThemeName?.trim() && customThemeName.trim() !== palette.name;
-  const displayLabel = isCustom ? `Custom — based on ${palette.name}` : palette.name;
+  const displayLabel = sanitizeMdText(isCustom ? `Custom — based on ${palette.name}` : palette.name);
+  const paletteId = sanitizeMdCode(palette.id);
   const now = new Date().toISOString().split("T")[0];
 
-  const sourceSection = palette.sourceUrls?.length
-    ? `\n**Brand sources:** ${palette.sourceUrls.map((u) => `[${u}](${u})`).join(" · ")}`
+  const safeSourceUrls = (palette.sourceUrls ?? []).map(sanitizeSourceUrl).filter((u): u is string => u !== null);
+  const sourceSection = safeSourceUrls.length
+    ? `\n**Brand sources:** ${safeSourceUrls.map((u) => `<${u}>`).join(" · ")}`
     : "";
 
   const intentSection = palette.themeIntent
-    ? `\n**Use for:** ${palette.themeIntent}`
+    ? `\n**Use for:** ${sanitizeMdText(palette.themeIntent)}`
     : "";
 
   const warningNote = `\n> ⚠️ **Renderer note:** The \`%%{init}%%\` directive is supported by Mermaid.js v9+ and most modern renderers (including [mermaid.live](https://mermaid.live)). GitHub Markdown, Notion, and some other tools may strip or ignore theme variables. The \`look\` parameter (\`neo\`, \`handDrawn\`) requires Mermaid.js v11+.`;
@@ -149,8 +208,8 @@ export function generateMarkdownExport(themedCode: string, palette: Palette, opt
   return `# Mermaid Diagram — ${themeName} Theme
 
 **Theme:** ${displayLabel}  
-**Theme ID:** \`${palette.id}\`  
-**Version:** ${palette.version}  
+**Theme ID:** \`${paletteId}\`  
+**Version:** ${sanitizeMdText(palette.version)}  
 **Generated:** ${now}  
 **Tool:** [Mermaid Theme Builder](${TOOL_URL})${sourceSection}${intentSection}
 
@@ -164,7 +223,7 @@ ${themedCode}
 
 ## Recommended diagram families
 
-${palette.themeIntent ? `This theme was designed for: **${palette.themeIntent}**` : "This theme works well with flowcharts, sequence diagrams, and class diagrams."}
+${palette.themeIntent ? `This theme was designed for: **${sanitizeMdText(palette.themeIntent)}**` : "This theme works well with flowcharts, sequence diagrams, and class diagrams."}
 
 ## Attribution
 
@@ -338,9 +397,9 @@ export type ScaffoldFormat = "formatA" | "formatB" | "both";
 
 function buildScaffold(palette: Palette, options: ExportOptions, scaffoldFormat: ScaffoldFormat): string {
   const { diagramFamily, customThemeName } = options;
-  const themeName = customThemeName?.trim() || palette.name;
+  const themeName = sanitizeMdText(customThemeName?.trim() || palette.name);
   const isCustom = !!customThemeName?.trim() && customThemeName.trim() !== palette.name;
-  const displayLabel = isCustom ? `Custom — based on ${palette.name}` : palette.name;
+  const displayLabel = sanitizeMdText(isCustom ? `Custom — based on ${palette.name}` : palette.name);
   const familyName = diagramFamily === "unknown" ? "Mermaid" : diagramFamily;
   const supportsClassDef = CLASSDEF_CAPABLE_FAMILIES.includes(diagramFamily);
 
@@ -408,14 +467,15 @@ ${frontmatterBlock}
       ? "Restore the YAML frontmatter theme directive at the very top (do not omit it)."
       : "Restore the theme directive at the very top (use Format A or B from the original scaffold — do not omit it).";
 
-  const metaBlock = `%% Theme: ${themeName}
-%% Theme ID: ${palette.id}
+  const metaBlock = `%% Theme: ${sanitizeFenceContent(themeName)}
+%% Theme ID: ${sanitizeFenceContent(palette.id)}
 %% Tool: ${TOOL_URL}
 %% Personal OverKill Hill P³ project by Jamie Hill — overkillhill.com
 %% Not affiliated with Builders FirstSource, Mermaid, Mermaid Chart, or Mermaid.ai`;
 
-  const sourceNote = palette.sourceUrls?.length
-    ? `\n**Source:** ${palette.sourceUrls[0]}`
+  const safeFirstSourceUrl = palette.sourceUrls?.length ? sanitizeSourceUrl(palette.sourceUrls[0]) : null;
+  const sourceNote = safeFirstSourceUrl
+    ? `\n**Source:** <${safeFirstSourceUrl}>`
     : "";
 
   const diagramTypeExample =
@@ -440,11 +500,13 @@ ${frontmatterBlock}
       : `${diagramFamily}
     %% Your diagram here`;
 
+  const scaffoldPaletteId = sanitizeMdCode(palette.id);
+
   return `# Mermaid Diagram Prompt Scaffold — ${themeName}
 
 **Theme:** ${displayLabel}  
-**Theme ID:** \`${palette.id}\`  
-**Version:** ${palette.version}  
+**Theme ID:** \`${scaffoldPaletteId}\`  
+**Version:** ${sanitizeMdText(palette.version)}  
 **Tool:** [Mermaid Theme Builder](${TOOL_URL})${sourceNote}
 
 ---
@@ -604,8 +666,8 @@ ${subgraphBlock}
 
 ## Theme: ${themeName}
 
-${palette.description}
-${palette.themeIntent ? `\n**Intended use:** ${palette.themeIntent}` : ""}
+${sanitizeMdText(palette.description ?? "")}
+${palette.themeIntent ? `\n**Intended use:** ${sanitizeMdText(palette.themeIntent)}` : ""}
 
 ### Color reference
 ${colorLines}
@@ -677,7 +739,7 @@ ${supportsClassDef
 5. Output the complete diagram from top to bottom — do not abbreviate or use "..." placeholders.`}
 
 Theme contract reference:
-- Theme: **${themeName}** (\`${palette.id}\`)
+- Theme: **${themeName}** (\`${scaffoldPaletteId}\`)
 - Primary node color: \`${palette.colors.find((c) => c.key === "primaryColor")?.value ?? "n/a"}\`
 - Border color: \`${palette.colors.find((c) => c.key === "primaryBorderColor")?.value ?? "n/a"}\`
 - Accent / line color: \`${palette.colors.find((c) => c.key === "lineColor")?.value ?? "n/a"}\`

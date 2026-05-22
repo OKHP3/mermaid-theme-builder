@@ -33,7 +33,7 @@ export async function renderToSvg(code: string): Promise<string> {
   const mermaid = mod.default;
   mermaid.initialize({
     startOnLoad: false,
-    securityLevel: "loose",
+    securityLevel: "strict",
     suppressErrorRendering: true,
   });
   const id = `mtb-export-${Date.now().toString(36)}`;

@@ -22,7 +22,7 @@ async function getMermaid(): Promise<MermaidType> {
   if (!initializationDone) {
     mermaidInstance.initialize({
       startOnLoad: false,
-      securityLevel: "loose",
+      securityLevel: "strict",
       suppressErrorRendering: true,
     });
     initializationDone = true;
