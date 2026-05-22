@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import type { Palette } from "@/lib/palettes";
 import { getClassDefs } from "@/lib/themeEngine";
+import { extractUsedClasses } from "@/lib/usedClasses";
 import { DiagramInventory } from "@/components/DiagramInventory";
 import { ClassBrowser } from "@/components/ClassBrowser";
 import { RENDERER_PROFILES, supportLabel, supportColor } from "@/data/renderer-parity";
@@ -32,11 +33,10 @@ function SupportBadge({ support }: { support: import("@/data/renderer-parity").R
 export function ReferenceTab({ selectedPalette, supportsClassDef, inputCode = "" }: ReferenceTabProps) {
   const classDefs = useMemo(() => getClassDefs(selectedPalette), [selectedPalette]);
 
-  const usedClassNames = useMemo<ReadonlySet<string>>(() => {
-    if (!inputCode) return new Set();
-    const matches = inputCode.matchAll(/:::(\w+)/g);
-    return new Set(Array.from(matches, (m) => m[1]));
-  }, [inputCode]);
+  const usedClassNames = useMemo<ReadonlySet<string>>(
+    () => extractUsedClasses(inputCode),
+    [inputCode],
+  );
 
   return (
     <div className="flex flex-col h-full overflow-hidden">

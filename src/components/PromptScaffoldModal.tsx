@@ -1,24 +1,20 @@
 import { useState, useEffect, useCallback } from "react";
 import type { ScaffoldFormat } from "@/lib/themeEngine";
+import { SCAFFOLD_FORMAT_KEY, resolveScaffoldFormat, saveScaffoldFormat } from "@/lib/scaffoldPrefs";
 
-const SCAFFOLD_FORMAT_KEY = "mtb-scaffold-format";
 const PREVIEW_LINES = 25;
 
+/**
+ * Returns the stored scaffold format preference, or null when nothing is stored.
+ * null → no "last used" badge should be shown in the modal.
+ */
 function readLastFormat(): ScaffoldFormat | null {
   try {
-    const v = localStorage.getItem(SCAFFOLD_FORMAT_KEY);
-    if (v === "formatA" || v === "formatB" || v === "both") return v;
-    return null;
+    const raw = localStorage.getItem(SCAFFOLD_FORMAT_KEY);
+    if (raw === null) return null;
+    return resolveScaffoldFormat(raw);
   } catch {
     return null;
-  }
-}
-
-function saveLastFormat(format: ScaffoldFormat): void {
-  try {
-    localStorage.setItem(SCAFFOLD_FORMAT_KEY, format);
-  } catch {
-    // storage may be unavailable — silently ignore
   }
 }
 
@@ -87,7 +83,7 @@ export function PromptScaffoldModal({ open, onClose, onCopy, generatePreview }: 
   const handleCopy = useCallback(
     async (format: ScaffoldFormat) => {
       await onCopy(format);
-      saveLastFormat(format);
+      saveScaffoldFormat(format);
       setLastUsedFormat(format);
       setCopiedFormat(format);
       setTimeout(() => {

@@ -13,6 +13,7 @@ import {
   type ScaffoldFormat,
   type MermaidLook,
 } from "@/lib/themeEngine";
+import { readScaffoldFormat } from "@/lib/scaffoldPrefs";
 import { MermaidPreview } from "@/components/MermaidPreview";
 import { MermaidReferral } from "@/components/MermaidReferral";
 import { ColorSwatch } from "@/components/ColorSwatch";
@@ -417,15 +418,7 @@ export function ApplyTab({
           );
           onShowToast("Downloaded .md file.");
         } else if (type === "scaffold") {
-          const scaffoldFormat: ScaffoldFormat = (() => {
-            try {
-              const v = localStorage.getItem("mtb-scaffold-format");
-              if (v === "formatA" || v === "formatB" || v === "both") return v;
-            } catch {
-              // storage unavailable — fall through to default
-            }
-            return "both";
-          })();
+          const scaffoldFormat: ScaffoldFormat = readScaffoldFormat();
           downloadTextFile(
             makeFilename(effectiveThemeName, "scaffold", "txt"),
             generatePromptScaffoldWithFormat(selectedPalette, exportOptions, scaffoldFormat),

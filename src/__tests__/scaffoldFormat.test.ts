@@ -2,8 +2,8 @@ import { describe, it, expect } from "vitest";
 import {
   generatePromptScaffoldWithFormat,
   type ExportOptions,
-  type ScaffoldFormat,
 } from "@/lib/themeEngine";
+import { resolveScaffoldFormat } from "@/lib/scaffoldPrefs";
 import { BRAND_PALETTES } from "@/lib/palettes";
 
 const palette = BRAND_PALETTES[0];
@@ -16,16 +16,11 @@ const BASE_OPTIONS: ExportOptions = {
 };
 
 /**
- * Mirrors the preference resolver in ApplyTab.tsx (handleDownload → scaffold branch)
- * and the readLastFormat() helper in PromptScaffoldModal.tsx.
- * Both use the same validation: accept only "formatA" | "formatB" | "both", else "both".
+ * Tests for resolveScaffoldFormat (src/lib/scaffoldPrefs.ts).
+ * That function is the single validator used by both PromptScaffoldModal and
+ * ApplyTab — it guards against invalid or missing localStorage values.
  */
-function resolveScaffoldFormat(stored: string | null): ScaffoldFormat {
-  if (stored === "formatA" || stored === "formatB" || stored === "both") return stored;
-  return "both";
-}
-
-describe("scaffold format preference resolver", () => {
+describe("resolveScaffoldFormat", () => {
   it('returns "formatA" when "formatA" is stored', () => {
     expect(resolveScaffoldFormat("formatA")).toBe("formatA");
   });

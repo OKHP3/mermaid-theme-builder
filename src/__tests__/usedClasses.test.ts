@@ -1,18 +1,15 @@
 import { describe, it, expect } from "vitest";
+import { extractUsedClasses } from "@/lib/usedClasses";
 
 /**
- * Mirrors the used-class detection logic from ReferenceTab.tsx:
- *   const matches = inputCode.matchAll(/:::(\w+)/g);
- *   return new Set(Array.from(matches, (m) => m[1]));
+ * Tests for extractUsedClasses (src/lib/usedClasses.ts).
+ * That function is the single source of truth used by ReferenceTab.tsx — any
+ * regression in the regex or early-return path will break these tests.
  *
- * Tests are written against this extracted helper so they document the actual
- * regex behaviour (including edge cases) rather than testing React rendering.
+ * Documented edge cases (intentional behaviour, not bugs):
+ *  - `\w` = [a-zA-Z0-9_]: hyphens stop the match, so `:::my-class` → `"my"`.
+ *  - `%%` comment lines are NOT excluded: `%% :::primary` still yields "primary".
  */
-function extractUsedClasses(code: string): Set<string> {
-  if (!code) return new Set();
-  const matches = code.matchAll(/:::(\w+)/g);
-  return new Set(Array.from(matches, (m) => m[1]));
-}
 
 describe("extractUsedClasses", () => {
   it("returns empty set for empty string (early-return path)", () => {
