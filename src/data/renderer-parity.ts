@@ -11,10 +11,14 @@ export interface RendererProfile {
   displayName: string;
   shortName: string;
   url: string;
+  sourceUrl: string;
   notes: string;
   looksSupported: RendererLookSupport;
+  initDirectiveSupport: RendererSupport;
   themeVariableSupport: RendererSupport;
+  classDefSupport: RendererSupport;
   cssInjectionSupport: RendererSupport;
+  customFontSupport: RendererSupport;
   mermaidVersionApprox: string;
   caveats: string[];
 }
@@ -25,11 +29,15 @@ export const RENDERER_PROFILES: RendererProfile[] = [
     displayName: "Mermaid Live Editor",
     shortName: "mermaid.live",
     url: "https://mermaid.live",
+    sourceUrl: "https://mermaid.js.org/config/theming.html",
     notes:
       "Reference renderer. Always runs the latest published Mermaid. All looks, themeVariables, and CSS injection are fully supported. Use this to validate before committing to other renderers.",
     looksSupported: { classic: "full", neo: "full", handDrawn: "full" },
+    initDirectiveSupport: "full",
     themeVariableSupport: "full",
+    classDefSupport: "full",
     cssInjectionSupport: "full",
+    customFontSupport: "full",
     mermaidVersionApprox: "latest",
     caveats: [],
   },
@@ -38,14 +46,19 @@ export const RENDERER_PROFILES: RendererProfile[] = [
     displayName: "GitHub",
     shortName: "GitHub",
     url: "https://github.com",
+    sourceUrl: "https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-diagrams",
     notes:
-      "Renders Mermaid in issues, PRs, markdown files, and wikis. The %%{init}%% directive is respected and themeVariables apply. Mermaid version is pinned to a stable release — neo look may work depending on pinned version; handDrawn requires Rough.js which GitHub does not bundle.",
+      "Renders Mermaid in issues, PRs, markdown files, and wikis. The %%{init}%% directive is respected and themeVariables apply. Mermaid version is pinned to a stable release — neo look may work depending on pinned version; handDrawn requires Rough.js which GitHub does not bundle. Custom web fonts are blocked by CSP.",
     looksSupported: { classic: "full", neo: "partial", handDrawn: "none" },
+    initDirectiveSupport: "full",
     themeVariableSupport: "full",
+    classDefSupport: "full",
     cssInjectionSupport: "none",
+    customFontSupport: "none",
     mermaidVersionApprox: "11.x (pinned, updated periodically)",
     caveats: [
-      "CSS injection not supported",
+      "CSS injection not supported — external stylesheets cannot target Mermaid SVG",
+      "Custom web fonts blocked by CSP — system font fallback applies",
       "handDrawn requires Rough.js — not available in GitHub renderer",
       "neo look depends on GitHub's pinned Mermaid version",
       "Some beta/experimental diagram families may not render",
@@ -56,14 +69,19 @@ export const RENDERER_PROFILES: RendererProfile[] = [
     displayName: "GitLab",
     shortName: "GitLab",
     url: "https://gitlab.com",
+    sourceUrl: "https://docs.gitlab.com/user/markdown/#mermaid",
     notes:
-      "Similar to GitHub. Mermaid is rendered in markdown files, wikis, and descriptions. themeVariables from %%{init}%% are respected. Self-hosted GitLab instances may use older Mermaid versions where neo/handDrawn are unavailable.",
+      "Similar to GitHub. Mermaid is rendered in markdown files, wikis, and descriptions. themeVariables from %%{init}%% are respected. Self-hosted GitLab instances may use older Mermaid versions where neo/handDrawn are unavailable. Custom web fonts are blocked by CSP.",
     looksSupported: { classic: "full", neo: "partial", handDrawn: "none" },
+    initDirectiveSupport: "full",
     themeVariableSupport: "full",
+    classDefSupport: "full",
     cssInjectionSupport: "none",
+    customFontSupport: "none",
     mermaidVersionApprox: "11.x (varies by GitLab version)",
     caveats: [
       "CSS injection not supported",
+      "Custom web fonts blocked by CSP — system font fallback applies",
       "handDrawn not available",
       "Self-hosted instances may use a significantly older Mermaid version",
     ],
@@ -73,16 +91,21 @@ export const RENDERER_PROFILES: RendererProfile[] = [
     displayName: "Notion",
     shortName: "Notion",
     url: "https://notion.so",
+    sourceUrl: "https://www.notion.so/help/embed-and-connect-other-apps",
     notes:
-      "Notion embeds Mermaid diagrams in pages. The %%{init}%% directive is supported but only a subset of themeVariables are applied. Mermaid version is pinned to an older stable release — neo and handDrawn looks are unavailable. Some diagram families (beta/experimental) may not render.",
+      "Notion embeds Mermaid diagrams in pages. The %%{init}%% directive is parsed but only a subset of themeVariables are applied — colors may differ from other renderers. Mermaid version is pinned to an older stable release — neo and handDrawn looks are unavailable. Some diagram families (beta/experimental) may not render.",
     looksSupported: { classic: "full", neo: "none", handDrawn: "none" },
+    initDirectiveSupport: "partial",
     themeVariableSupport: "partial",
+    classDefSupport: "full",
     cssInjectionSupport: "none",
+    customFontSupport: "none",
     mermaidVersionApprox: "10.x (pinned, rarely updated)",
     caveats: [
+      "%%{init}%% directive parsed but only a subset of themeVariables are applied",
       "Pinned to an older Mermaid version — neo and handDrawn unavailable",
-      "Only a subset of themeVariables are applied",
       "CSS injection not supported",
+      "Custom fonts not supported",
       "Beta and experimental diagram families may fail to render",
       "No dark-mode theming passthrough",
     ],
@@ -92,15 +115,20 @@ export const RENDERER_PROFILES: RendererProfile[] = [
     displayName: "Obsidian",
     shortName: "Obsidian",
     url: "https://obsidian.md",
+    sourceUrl: "https://help.obsidian.md/Editing+and+formatting/Advanced+formatting+syntax#Diagram",
     notes:
-      "Obsidian supports Mermaid via a built-in renderer and community plugins. themeVariables are respected. The Mermaid Enhancer or similar plugins can upgrade the bundled Mermaid version. CSS injection may work via Obsidian CSS snippets when targeting .mermaid elements.",
+      "Obsidian supports Mermaid via a built-in renderer and community plugins. themeVariables are respected. The Mermaid Enhancer or similar plugins can upgrade the bundled Mermaid version. CSS injection may work via Obsidian CSS snippets when targeting .mermaid elements. System fonts work; web fonts require custom snippet.",
     looksSupported: { classic: "full", neo: "partial", handDrawn: "partial" },
+    initDirectiveSupport: "full",
     themeVariableSupport: "full",
+    classDefSupport: "full",
     cssInjectionSupport: "partial",
+    customFontSupport: "partial",
     mermaidVersionApprox: "11.x (built-in; plugin may update)",
     caveats: [
       "Mermaid version depends on Obsidian release or installed plugin",
-      "CSS injection requires custom Obsidian snippets",
+      "CSS injection requires custom Obsidian CSS snippets",
+      "Custom web fonts require CSS snippet; system fonts work",
       "neo/handDrawn availability depends on bundled Mermaid version",
     ],
   },
@@ -109,18 +137,24 @@ export const RENDERER_PROFILES: RendererProfile[] = [
     displayName: "Confluence + Plugin",
     shortName: "Confluence",
     url: "https://marketplace.atlassian.com/search?category=Diagramming&hosting=cloud",
+    sourceUrl: "https://marketplace.atlassian.com/search?category=Diagramming&hosting=cloud",
     notes:
       "Mermaid in Confluence requires a third-party macro plugin (e.g., Mermaid Diagrams, Markdown Macro). Plugin quality and Mermaid version vary. Most plugins support basic themeVariables; CSS injection is generally not available. neo and handDrawn looks are typically unavailable.",
     looksSupported: { classic: "partial", neo: "none", handDrawn: "none" },
+    initDirectiveSupport: "partial",
     themeVariableSupport: "partial",
+    classDefSupport: "partial",
     cssInjectionSupport: "none",
+    customFontSupport: "none",
     mermaidVersionApprox: "varies by plugin (often 10.x)",
     caveats: [
       "Third-party plugin required — not native Confluence functionality",
       "Plugin version determines Mermaid version and feature support",
+      "%%{init}%% support and themeVariable coverage varies by plugin",
+      "classDef rendering quality varies by plugin",
       "CSS injection not available",
+      "Custom fonts not supported",
       "neo and handDrawn looks not supported",
-      "Not all diagram families render correctly",
       "Cloud vs. Data Center plugin behavior may differ",
     ],
   },
@@ -129,11 +163,15 @@ export const RENDERER_PROFILES: RendererProfile[] = [
     displayName: "Mermaid CLI (mmdc)",
     shortName: "CLI/mmdc",
     url: "https://github.com/mermaid-js/mermaid-cli",
+    sourceUrl: "https://github.com/mermaid-js/mermaid-cli",
     notes:
       "Command-line renderer using Puppeteer + Mermaid. Produces SVG/PNG/PDF. Full feature support — the installed Mermaid version determines look and feature support. CSS injection is possible via the --cssFile flag. Best for CI/CD pipelines and batch rendering.",
     looksSupported: { classic: "full", neo: "full", handDrawn: "full" },
+    initDirectiveSupport: "full",
     themeVariableSupport: "full",
+    classDefSupport: "full",
     cssInjectionSupport: "full",
+    customFontSupport: "full",
     mermaidVersionApprox: "pinned to installed npm package version",
     caveats: [
       "Must install matching Mermaid npm version to access new looks/features",

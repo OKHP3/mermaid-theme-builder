@@ -22,6 +22,14 @@ const LOOK_COLS = [
   { key: "handDrawn" as const, label: "Hand-Drawn" },
 ];
 
+const CAPABILITY_COLS: { key: "initDirectiveSupport" | "themeVariableSupport" | "classDefSupport" | "cssInjectionSupport" | "customFontSupport"; label: string; abbrev: string }[] = [
+  { key: "initDirectiveSupport",   label: "%%{init}%% directive", abbrev: "init" },
+  { key: "themeVariableSupport",   label: "themeVariables",       abbrev: "themeVars" },
+  { key: "classDefSupport",        label: "classDef styling",     abbrev: "classDef" },
+  { key: "cssInjectionSupport",    label: "CSS injection",        abbrev: "CSS" },
+  { key: "customFontSupport",      label: "Custom fonts",         abbrev: "fonts" },
+];
+
 function SupportBadge({ support }: { support: import("@/data/renderer-parity").RendererSupport }) {
   return (
     <span className={`inline-block text-[9px] font-semibold px-1.5 py-0.5 rounded-full ${supportColor(support)}`}>
@@ -66,18 +74,26 @@ export function ReferenceTab({ selectedPalette, supportsClassDef, inputCode = ""
               />
             </svg>
           </summary>
-          <div className="border-t border-border overflow-x-auto max-h-64 overflow-y-auto">
-            <table className="w-full text-[10px] border-collapse min-w-[480px]">
+          <div className="border-t border-border overflow-x-auto max-h-72 overflow-y-auto">
+            <table className="w-full text-[10px] border-collapse min-w-[640px]">
               <thead>
-                <tr className="bg-muted/40 sticky top-0">
+                <tr className="bg-muted/40 sticky top-0 z-10">
                   <th className="text-left px-3 py-1.5 font-semibold text-muted-foreground border-b border-border whitespace-nowrap">Renderer</th>
                   {LOOK_COLS.map((c) => (
                     <th key={c.key} className="text-center px-2 py-1.5 font-semibold text-muted-foreground border-b border-border whitespace-nowrap">
                       {c.label}
                     </th>
                   ))}
-                  <th className="text-center px-2 py-1.5 font-semibold text-muted-foreground border-b border-border whitespace-nowrap">themeVars</th>
-                  <th className="text-center px-2 py-1.5 font-semibold text-muted-foreground border-b border-border whitespace-nowrap">CSS inject</th>
+                  <th className="w-px bg-border/40 border-b border-border" aria-hidden="true" />
+                  {CAPABILITY_COLS.map((c) => (
+                    <th
+                      key={c.key}
+                      className="text-center px-2 py-1.5 font-semibold text-muted-foreground border-b border-border whitespace-nowrap"
+                      title={c.label}
+                    >
+                      {c.abbrev}
+                    </th>
+                  ))}
                   <th className="text-left px-2 py-1.5 font-semibold text-muted-foreground border-b border-border whitespace-nowrap">Version</th>
                 </tr>
               </thead>
@@ -86,7 +102,6 @@ export function ReferenceTab({ selectedPalette, supportsClassDef, inputCode = ""
                   <tr
                     key={renderer.id}
                     className={`border-b border-border/50 hover:bg-muted/20 transition-colors ${i % 2 === 1 ? "bg-muted/10" : ""}`}
-                    title={renderer.notes}
                   >
                     <td className="px-3 py-1.5 font-medium text-foreground whitespace-nowrap">
                       <a
@@ -94,6 +109,7 @@ export function ReferenceTab({ selectedPalette, supportsClassDef, inputCode = ""
                         target="_blank"
                         rel="noreferrer noopener"
                         className="hover:text-primary transition-colors"
+                        title={renderer.notes}
                       >
                         {renderer.shortName}
                       </a>
@@ -106,20 +122,36 @@ export function ReferenceTab({ selectedPalette, supportsClassDef, inputCode = ""
                         <SupportBadge support={renderer.looksSupported[c.key]} />
                       </td>
                     ))}
-                    <td className="px-2 py-1.5 text-center">
-                      <SupportBadge support={renderer.themeVariableSupport} />
-                    </td>
-                    <td className="px-2 py-1.5 text-center">
-                      <SupportBadge support={renderer.cssInjectionSupport} />
-                    </td>
+                    <td className="w-px bg-border/20" aria-hidden="true" />
+                    {CAPABILITY_COLS.map((c) => (
+                      <td key={c.key} className="px-2 py-1.5 text-center">
+                        <SupportBadge support={renderer[c.key]} />
+                      </td>
+                    ))}
                     <td className="px-2 py-1.5 text-muted-foreground whitespace-nowrap">{renderer.mermaidVersionApprox}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
-            <p className="px-3 py-1.5 text-[9px] text-muted-foreground/50">
-              * Hover renderer name for notes. Caveats marked with asterisk. Data reflects research as of Mermaid 11.15.0 — validate in your target environment.
-            </p>
+            <div className="px-3 py-2 flex flex-wrap gap-x-4 gap-y-0.5">
+              <p className="text-[9px] text-muted-foreground/50 w-full">
+                * Hover renderer name for notes. Caveats marked with asterisk. Looks: Classic / Neo / Hand-Drawn. Capabilities: init = %%{"{"}init{"}"}%% directives, themeVars = themeVariables, classDef = inline node styling, CSS = external stylesheet injection, fonts = custom fontFamily. Data reflects research as of Mermaid 11.15.0 — validate in your target environment.
+              </p>
+              <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-0.5">
+                {RENDERER_PROFILES.map((r) => (
+                  <a
+                    key={r.id}
+                    href={r.sourceUrl}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    className="text-[9px] text-muted-foreground/40 hover:text-muted-foreground transition-colors"
+                    title={`Source: ${r.sourceUrl}`}
+                  >
+                    {r.shortName} docs ↗
+                  </a>
+                ))}
+              </div>
+            </div>
           </div>
         </details>
       </div>

@@ -9,6 +9,7 @@ import {
   generateThemedCode,
   generateMarkdownExport,
   generatePromptScaffoldWithFormat,
+  CLASSDEF_CAPABLE_FAMILIES,
   type ExportOptions,
   type ScaffoldFormat,
   type MermaidLook,
@@ -136,6 +137,7 @@ export function ApplyTab({
   const [showColorEditor, setShowColorEditor] = useState(false);
   const [copiedType, setCopiedType] = useState<ExportType | null>(null);
   const [downloadingType, setDownloadingType] = useState<DownloadType | null>(null);
+  const [advisoryDismissed, setAdvisoryDismissed] = useState(false);
 
   const rendererProfile = useMemo(() => getRendererById(rendererTarget), [rendererTarget]);
   const rendererLookWarning = useMemo((): string | null => {
@@ -151,6 +153,7 @@ export function ApplyTab({
     }
     return null;
   }, [rendererProfile, look]);
+
   const [showScaffoldModal, setShowScaffoldModal] = useState(false);
   const [textareaExpanded, setTextareaExpanded] = useState(false);
   const [codeEditorOverride, setCodeEditorOverride] = useState<string | null>(null);
@@ -250,6 +253,44 @@ export function ApplyTab({
       capability: cap ?? null,
     };
   }, [detection, familyOverride]);
+
+  const exportAdvisories = useMemo((): string[] => {
+    if (!inputCode.trim()) return [];
+    const advisories: string[] = [];
+    const hasCustomFont = selectedPalette.colors.some(
+      (c) => c.key === "fontFamily" && c.value && c.value.trim() !== "",
+    );
+    const classDefActive = CLASSDEF_CAPABLE_FAMILIES.includes(effectiveDetection.family);
+
+    const HIGH_TRAFFIC_IDS = ["github", "gitlab", "notion"] as const;
+    for (const rid of HIGH_TRAFFIC_IDS) {
+      const r = getRendererById(rid);
+      if (!r) continue;
+      if (r.initDirectiveSupport !== "full") {
+        advisories.push(
+          `%%{init}%% directive has partial support on ${r.shortName} — some theme colors may differ`,
+        );
+      }
+      if (r.themeVariableSupport !== "full") {
+        advisories.push(
+          `themeVariables partially applied on ${r.shortName} — only a subset of colors will take effect`,
+        );
+      }
+      if (classDefActive && r.classDefSupport !== "full") {
+        advisories.push(
+          `classDef node styles may render differently on ${r.shortName} — validate before publishing`,
+        );
+      }
+      if (hasCustomFont && r.customFontSupport === "none") {
+        advisories.push(
+          `Custom fontFamily is blocked on ${r.shortName} — system font fallback will apply`,
+        );
+      }
+    }
+
+    return [...new Set(advisories)];
+  }, [inputCode, selectedPalette, effectiveDetection.family]);
+
   const canExtract = useMemo(() => hasExtractableTheme(inputCode), [inputCode]);
   const isExtracted = isExtractedPaletteId(selectedPaletteId);
 
@@ -924,6 +965,35 @@ export function ApplyTab({
         {showCapabilityNote && effectiveDetection.capability && (
           <div className="px-3 pt-2.5">
             <CapabilityNote capability={effectiveDetection.capability} />
+          </div>
+        )}
+        {exportAdvisories.length > 0 && !advisoryDismissed && (
+          <div className="mx-3 mt-2.5 rounded-md border border-sky-500/30 bg-sky-500/8 px-3 py-2 flex gap-2.5 items-start">
+            <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400 shrink-0 mt-px">
+              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z" clipRule="evenodd" />
+            </svg>
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] font-semibold text-sky-900 dark:text-sky-100 mb-1">
+                Renderer compatibility note
+              </p>
+              <ul className="space-y-0.5">
+                {exportAdvisories.map((msg, i) => (
+                  <li key={i} className="text-[10px] text-sky-800 dark:text-sky-200/80 leading-snug">
+                    {msg}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <button
+              type="button"
+              onClick={() => setAdvisoryDismissed(true)}
+              aria-label="Dismiss renderer advisory"
+              className="shrink-0 text-sky-500/60 hover:text-sky-500 transition-colors mt-px"
+            >
+              <svg viewBox="0 0 16 16" fill="currentColor" className="w-3.5 h-3.5">
+                <path d="M3.72 3.72a.75.75 0 011.06 0L8 6.94l3.22-3.22a.75.75 0 111.06 1.06L9.06 8l3.22 3.22a.75.75 0 11-1.06 1.06L8 9.06l-3.22 3.22a.75.75 0 01-1.06-1.06L6.94 8 3.72 4.78a.75.75 0 010-1.06z" />
+              </svg>
+            </button>
           </div>
         )}
         <div className="flex flex-wrap items-center gap-2 px-3 py-2.5">
