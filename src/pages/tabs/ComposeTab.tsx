@@ -37,11 +37,13 @@ import {
 
 const FONT_FAMILY_OPTIONS = [
   { label: "DM Sans (default)", value: "DM Sans, system-ui, sans-serif" },
+  { label: "Alfa Slab One (display)", value: "Alfa Slab One, Georgia, serif" },
+  { label: "JetBrains Mono (code)", value: "JetBrains Mono, Courier New, monospace" },
   { label: "Inter", value: "Inter, system-ui, sans-serif" },
-  { label: "Trebuchet MS", value: "Trebuchet MS, Calibri, sans-serif" },
-  { label: "Arial", value: "Arial, Helvetica, sans-serif" },
-  { label: "Calibri", value: "Calibri, sans-serif" },
   { label: "Georgia", value: "Georgia, Cambria, serif" },
+  { label: "Arial", value: "Arial, Helvetica, sans-serif" },
+  { label: "Trebuchet MS", value: "Trebuchet MS, Calibri, sans-serif" },
+  { label: "Calibri", value: "Calibri, sans-serif" },
   { label: "Courier New", value: "Courier New, monospace" },
   { label: "system-ui", value: "system-ui, -apple-system, sans-serif" },
 ];
@@ -162,6 +164,37 @@ export function ComposeTab({
   const [savePaletteName, setSavePaletteName] = useState("");
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [tierDraftSizes, setTierDraftSizes] = useState<Partial<Record<TypographyTierKey, string>>>({});
+  const [clampedTiers, setClampedTiers] = useState<Set<TypographyTierKey>>(new Set());
+  const clampTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
+
+  const handleTierSizeBlur = useCallback(
+    (key: TypographyTierKey, rawValue: string, maxSize: number) => {
+      setTierDraftSizes((prev) => {
+        const next = { ...prev };
+        delete next[key];
+        return next;
+      });
+      const parsed = parseInt(rawValue, 10);
+      if (isNaN(parsed) || parsed < 8) return;
+      const clamped = Math.min(parsed, maxSize);
+      const wasOverParent = parsed > maxSize;
+      const next = enforceHierarchy({ ...typography, [key]: { ...typography[key], fontSize: clamped } });
+      onTypographyChange(next);
+      if (wasOverParent) {
+        setClampedTiers((prev) => new Set([...prev, key]));
+        if (clampTimers.current[key]) clearTimeout(clampTimers.current[key]);
+        clampTimers.current[key] = setTimeout(() => {
+          setClampedTiers((prev) => {
+            const next = new Set(prev);
+            next.delete(key);
+            return next;
+          });
+        }, 2000);
+      }
+    },
+    [typography, onTypographyChange],
+  );
 
   const exportOptions = useMemo(
     (): ExportOptions => ({
@@ -350,17 +383,6 @@ export function ComposeTab({
           </p>
           <div className="space-y-3">
             <div>
-              <label className="text-xs font-medium text-foreground block mb-1">Font family</label>
-              <FontFamilySelect
-                value={
-                  customColors[selectedPaletteId]?.find((c) => c.key === "fontFamily")?.value ??
-                  selectedPalette.colors.find((c) => c.key === "fontFamily")?.value ??
-                  "DM Sans, system-ui, sans-serif"
-                }
-                onChange={(v) => onColorChange("fontFamily", v)}
-              />
-            </div>
-            <div>
               <label className="text-xs font-medium text-foreground block mb-1.5">Look</label>
               <div className="flex gap-1">
                 {(
@@ -444,6 +466,21 @@ export function ComposeTab({
           </div>
 
           <div className="mb-3">
+            <label className="text-xs font-medium text-foreground block mb-1">Diagram body font</label>
+            <FontFamilySelect
+              value={
+                customColors[selectedPaletteId]?.find((c) => c.key === "fontFamily")?.value ??
+                selectedPalette.colors.find((c) => c.key === "fontFamily")?.value ??
+                "DM Sans, system-ui, sans-serif"
+              }
+              onChange={(v) => onColorChange("fontFamily", v)}
+            />
+            <p className="text-[10px] text-muted-foreground mt-1 leading-relaxed">
+              Sets the <code className="font-mono bg-muted rounded px-0.5">fontFamily</code> themeVariable in the init directive. Per-tier overrides below.
+            </p>
+          </div>
+
+          <div className="mb-3">
             <label className="text-xs font-medium text-foreground block mb-1.5">
               Global base size
               <span className="text-[10px] text-muted-foreground font-normal ml-1">(Mermaid <code className="font-mono bg-muted rounded px-0.5">fontSize</code>)</span>
@@ -489,19 +526,33 @@ export function ComposeTab({
               const meta = TIER_META[key];
               const parentKey = idx > 0 ? (TIER_ORDER as TypographyTierKey[])[idx - 1] : null;
               const maxSize = parentKey ? typography[parentKey].fontSize : 48;
+              const draftValue = tierDraftSizes[key];
+              const displayValue = draftValue !== undefined ? draftValue : String(tier.fontSize);
+              const isClamped = clampedTiers.has(key);
               return (
                 <div
                   key={key}
-                  className="rounded-md border border-border/60 bg-muted/20 px-2.5 py-2 space-y-1.5"
+                  className={`rounded-md border px-2.5 py-2 space-y-1.5 transition-colors ${
+                    isClamped
+                      ? "border-amber-400/60 bg-amber-50/40 dark:bg-amber-900/10"
+                      : "border-border/60 bg-muted/20"
+                  }`}
                   style={{ marginLeft: `${idx * 4}px` }}
                 >
                   <div className="flex items-center justify-between gap-2">
-                    <span
-                      className="font-medium text-foreground leading-tight"
-                      style={{ fontSize: `${Math.min(tier.fontSize, 18)}px` }}
-                    >
-                      {meta.label}
-                    </span>
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      <span
+                        className="font-medium text-foreground leading-tight truncate"
+                        style={{ fontSize: `${Math.min(tier.fontSize, 18)}px` }}
+                      >
+                        {meta.label}
+                      </span>
+                      {isClamped && (
+                        <span className="shrink-0 text-[9px] font-semibold text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-900/30 rounded px-1 py-0.5 leading-tight">
+                          clamped to max
+                        </span>
+                      )}
+                    </div>
                     <div className="flex items-center gap-1 shrink-0">
                       <button
                         type="button"
@@ -514,9 +565,22 @@ export function ComposeTab({
                       >
                         −
                       </button>
-                      <span className="text-[10px] font-mono text-muted-foreground tabular-nums w-9 text-center">
-                        {tier.fontSize}px
-                      </span>
+                      <input
+                        type="number"
+                        min={8}
+                        max={maxSize}
+                        value={displayValue}
+                        onChange={(e) => {
+                          setTierDraftSizes((prev) => ({ ...prev, [key]: e.target.value }));
+                        }}
+                        onBlur={(e) => handleTierSizeBlur(key, e.target.value, maxSize)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") e.currentTarget.blur();
+                        }}
+                        className="w-10 text-[10px] font-mono text-center bg-background border border-border rounded px-1 py-0.5 text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        aria-label={`${meta.label} font size in pixels`}
+                      />
+                      <span className="text-[9px] text-muted-foreground/60">px</span>
                       <button
                         type="button"
                         disabled={tier.fontSize >= maxSize}
@@ -546,7 +610,7 @@ export function ComposeTab({
             })}
           </div>
           <p className="text-[10px] text-muted-foreground mt-2 leading-relaxed">
-            Hierarchy enforced: each tier cannot exceed the tier above. Included in Prompt Scaffold export.
+            Hierarchy enforced: each tier cannot exceed the tier above. Node Body size maps to the Mermaid <code className="font-mono bg-muted rounded px-0.5">fontSize</code> themeVariable. Other tiers and per-tier font overrides are included in the Prompt Scaffold export.
           </p>
         </div>
 

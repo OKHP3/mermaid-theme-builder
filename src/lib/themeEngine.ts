@@ -92,13 +92,70 @@ function buildThemeVars(palette: Palette): Record<string, string> {
   return vars;
 }
 
-function buildInitDirective(palette: Palette, family: DiagramFamily = "flowchart", look?: MermaidLook, fontSize?: string): string {
+/**
+ * 5-tier typography → Mermaid themeVariable mapping table.
+ *
+ * Mermaid's themeVariables have limited typography support. The table below
+ * documents the full 5-tier model and whether each tier has a direct
+ * themeVariable key or requires CSS injection only:
+ *
+ * | Tier              | themeVariable / config key | Family support     |
+ * |-------------------|----------------------------|--------------------|
+ * | diagramTitle      | (CSS only: .label)         | flowchart only     |
+ * | subgraphTitle     | (CSS only: .cluster-label) | flowchart only     |
+ * | nestedSubgraph    | (CSS only: .cluster-label) | flowchart only     |
+ * | nodeLabel         | `fontSize` themeVariable   | universal          |
+ * | edgeLabel         | (CSS only: .edgeLabel)     | flowchart only     |
+ *
+ * Additionally, for sequence diagrams `config.sequence.fontSize` is emitted
+ * and must always match the resolved `fontSize` themeVariable to stay
+ * consistent (see buildInitDirective for resolution order).
+ *
+ * Per-tier fontFamily overrides: only `nodeLabel.fontFamily` is mapped to the
+ * universal `fontFamily` themeVariable; tier-specific overrides for other tiers
+ * (diagramTitle, subgraphTitle, etc.) are CSS-only and go into the Prompt
+ * Scaffold via typographyToScaffoldSection(), not the init directive.
+ *
+ * Keys unsupported by a diagram family are silently omitted.
+ */
+function applyTypographyToVars(
+  vars: Record<string, string>,
+  typography: TypographySettings,
+): void {
+  // nodeLabel.fontSize → universal `fontSize` themeVariable (lower priority than
+  // explicit fontSize override — caller applies the explicit override after this).
+  vars["fontSize"] = `${typography.nodeLabel.fontSize}px`;
+
+  // nodeLabel.fontFamily → universal `fontFamily` themeVariable, but only when
+  // the palette has not already provided one (palette value wins).
+  if (typography.nodeLabel.fontFamily && !vars["fontFamily"]) {
+    vars["fontFamily"] = typography.nodeLabel.fontFamily;
+  }
+}
+
+function buildInitDirective(
+  palette: Palette,
+  family: DiagramFamily = "flowchart",
+  look?: MermaidLook,
+  fontSize?: string,
+  typography?: TypographySettings,
+): string {
   const baseVars = buildThemeVars(palette);
   const overlay = familyThemeOverlay(palette, family);
   // Base palette tokens win over family-derived defaults so user edits propagate.
   const vars = { ...overlay, ...baseVars };
-  // Inject fontSize when explicitly set (overrides any palette-level value).
+
+  // Typography-derived values are applied next (lower priority than explicit fontSize).
+  if (typography) {
+    applyTypographyToVars(vars, typography);
+  }
+
+  // Explicit fontSize override has highest priority — always wins if set.
   if (fontSize) vars["fontSize"] = fontSize;
+
+  // --- vars["fontSize"] is now the single resolved effective font size ---
+  // All downstream references (themeVariables + family config) must read from
+  // vars["fontSize"] so explicit and typography-derived sizes never conflict.
 
   const varEntries = Object.entries(vars)
     .filter(([k]) => k !== "fontFamily")
@@ -110,7 +167,20 @@ function buildInitDirective(palette: Palette, family: DiagramFamily = "flowchart
 
   const lookEntry = look && look !== "classic" ? `"look": "${look}", ` : "";
   const archEntry = family === "architectureBeta" ? `"architecture": {"randomize": false}, ` : "";
-  return `%%{init: {${lookEntry}"theme": "base", ${archEntry}"themeVariables": {${themeVarsStr}}}}%%`;
+
+  // Sequence-specific config: emit `sequence.fontSize` using the SAME resolved
+  // effective fontSize as themeVariables.fontSize so both always agree.
+  // Only emit when typography is active (opt-in) to avoid changing existing exports.
+  let extraConfig = "";
+  if (typography && family === "sequenceDiagram" && vars["fontSize"]) {
+    const resolvedPx = vars["fontSize"];
+    const numericSize = parseInt(resolvedPx, 10);
+    if (!isNaN(numericSize)) {
+      extraConfig = `"sequence": {"fontSize": ${numericSize}}, `;
+    }
+  }
+
+  return `%%{init: {${lookEntry}"theme": "base", ${archEntry}${extraConfig}"themeVariables": {${themeVarsStr}}}}%%`;
 }
 
 function buildMetaComments(palette: Palette, themeName: string): string {
@@ -171,7 +241,7 @@ export function generateThemedCode(originalCode: string, options: ExportOptions)
     .replace(/\n\s*click MTB_ATTR.*\n?/g, "")
     .trimStart();
 
-  const initDirective = buildInitDirective(palette, diagramFamily, options.look, options.fontSize);
+  const initDirective = buildInitDirective(palette, diagramFamily, options.look, options.fontSize, options.typography);
   const metaComments = includeMetaComments ? buildMetaComments(palette, themeName) : null;
   const badge = includeBadge ? buildBadgeNode(palette, themeName, diagramFamily) : null;
 
@@ -301,12 +371,25 @@ ${themeLines}
  *
  *  Delegates to getClassDefs() as the single source of truth so the rendered
  *  class browser and the exported classDef text always stay in sync.
+ *
+ *  When `typography` is provided and nodeLabel.fontSize differs from the
+ *  Mermaid default (16px), a `font-size:Npx` rule is appended to each
+ *  classDef so the exported block respects the typography settings.
  */
-function buildClassDefLibrary(palette: Palette): string {
+function buildClassDefLibrary(palette: Palette, typography?: TypographySettings): string {
+  // Mermaid's built-in default fontSize is 16px. Only emit font-size on classDefs
+  // when the user has explicitly chosen a different nodeLabel size.
+  const mermaidDefaultFontSize = 16;
+  const nodeFontSize = typography?.nodeLabel.fontSize;
+  const fontSizeRule =
+    nodeFontSize !== undefined && nodeFontSize !== mermaidDefaultFontSize
+      ? `font-size:${nodeFontSize}px`
+      : "";
+
   return getClassDefs(palette)
     .map(({ name, fill, stroke, color, extra }) => {
-      const style = [`fill:${fill}`, `stroke:${stroke}`, `color:${color}`, extra].filter(Boolean).join(",");
-      return `    classDef ${name} ${style}`;
+      const parts = [`fill:${fill}`, `stroke:${stroke}`, `color:${color}`, extra, fontSizeRule].filter(Boolean);
+      return `    classDef ${name} ${parts.join(",")}`;
     })
     .join("\n");
 }
@@ -408,9 +491,9 @@ function buildScaffold(palette: Palette, options: ExportOptions, scaffoldFormat:
     .map((c) => `  - ${c.label}: \`${c.value}\``)
     .join("\n");
 
-  const initBlock = buildInitDirective(palette, diagramFamily, options.look, options.fontSize);
+  const initBlock = buildInitDirective(palette, diagramFamily, options.look, options.fontSize, options.typography);
   const frontmatterBlock = buildFrontmatter(palette);
-  const classDefBlock = buildClassDefLibrary(palette);
+  const classDefBlock = buildClassDefLibrary(palette, options.typography);
   const subgraphBlock = buildSubgraphTiers(palette);
   const brandGuidance = getBrandGuidance(palette);
 
