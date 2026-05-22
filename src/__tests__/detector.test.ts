@@ -83,7 +83,11 @@ describe("detectDiagram — family detection", () => {
     expect(detectDiagram("kanban\n  Todo\n    Task 1").family).toBe("kanban");
   });
 
-  it("detects packet-beta", () => {
+  it("detects packet (official v11.0+ syntax)", () => {
+    expect(detectDiagram("packet\n  0-7: \"Source Port\"").family).toBe("packet");
+  });
+
+  it("detects packet-beta (legacy fallback)", () => {
     expect(detectDiagram("packet-beta\n  0-7: \"Source Port\"").family).toBe("packet");
   });
 
@@ -139,6 +143,56 @@ describe("DIAGRAM_CAPABILITIES registry", () => {
     for (const cap of DIAGRAM_CAPABILITIES) {
       expect(cap.description, `${cap.id} should have a description`).toBeTruthy();
     }
+  });
+
+  it("erDiagram supportedLooks includes neo (Mermaid 11.14+)", () => {
+    const er = DIAGRAM_CAPABILITIES.find((c) => c.id === "erDiagram");
+    expect(er?.supportedLooks).toContain("neo");
+  });
+
+  it("requirementDiagram supportedLooks includes neo (Mermaid 11.14+)", () => {
+    const req = DIAGRAM_CAPABILITIES.find((c) => c.id === "requirementDiagram");
+    expect(req?.supportedLooks).toContain("neo");
+  });
+
+  it("mindmap supportedLooks includes neo (Mermaid 11.14+)", () => {
+    const mm = DIAGRAM_CAPABILITIES.find((c) => c.id === "mindmap");
+    expect(mm?.supportedLooks).toContain("neo");
+  });
+
+  it("packet minMermaidVersion is 11.0.0", () => {
+    const packet = DIAGRAM_CAPABILITIES.find((c) => c.id === "packet");
+    expect(packet?.minMermaidVersion).toBe("11.0.0");
+  });
+
+  it("radar minMermaidVersion is 11.6.0", () => {
+    const radar = DIAGRAM_CAPABILITIES.find((c) => c.id === "radar");
+    expect(radar?.minMermaidVersion).toBe("11.6.0");
+  });
+
+  it("architectureBeta minMermaidVersion is 11.1.0", () => {
+    const arch = DIAGRAM_CAPABILITIES.find((c) => c.id === "architectureBeta");
+    expect(arch?.minMermaidVersion).toBe("11.1.0");
+  });
+
+  it("venn minMermaidVersion is 11.12.3", () => {
+    const venn = DIAGRAM_CAPABILITIES.find((c) => c.id === "venn");
+    expect(venn?.minMermaidVersion).toBe("11.12.3");
+  });
+
+  it("ishikawa minMermaidVersion is 11.12.3", () => {
+    const ish = DIAGRAM_CAPABILITIES.find((c) => c.id === "ishikawa");
+    expect(ish?.minMermaidVersion).toBe("11.12.3");
+  });
+
+  it("sankey themeConfidence is medium (Mermaid 11.15 improvements)", () => {
+    const sankey = DIAGRAM_CAPABILITIES.find((c) => c.id === "sankey");
+    expect(sankey?.themeConfidence).toBe("medium");
+  });
+
+  it("sankey styleStrategy is partial (Mermaid 11.15 improvements)", () => {
+    const sankey = DIAGRAM_CAPABILITIES.find((c) => c.id === "sankey");
+    expect(sankey?.styleStrategy).toBe("partial");
   });
 
   it("wardley stability is beta", () => {
