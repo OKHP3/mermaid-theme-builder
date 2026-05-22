@@ -261,6 +261,7 @@ function AppShell() {
   const [fontSize, setFontSize] = useState<string>("");
   const [typography, setTypography] = useState<TypographySettings>(DEFAULT_TYPOGRAPHY);
   const [rendererTarget, setRendererTarget] = useState<string>("mermaid-live");
+  const [previewMode, setPreviewMode] = useState<"original" | "themed" | "diff" | "code">("themed");
   const [lastExampleType, setLastExampleType] = useState<Record<string, "flowchart" | "sequence">>({});
 
   const supportsClassDef = useMemo(
@@ -324,6 +325,10 @@ function AppShell() {
         }
       }
       if (typeof persisted.rendererTarget === "string") setRendererTarget(persisted.rendererTarget);
+      const VALID_PREVIEW_MODES = ["original", "themed", "diff", "code"] as const;
+      if (typeof persisted.previewMode === "string" && (VALID_PREVIEW_MODES as readonly string[]).includes(persisted.previewMode)) {
+        setPreviewMode(persisted.previewMode as "original" | "themed" | "diff" | "code");
+      }
     }
     setHydrated(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -346,8 +351,9 @@ function AppShell() {
       fontSize,
       typography,
       rendererTarget,
+      previewMode,
     });
-  }, [hydrated, selectedPaletteId, customColors, includeMetaComments, includeBadge, customThemeName, inputCode, userPalettes, recentPaletteIds, look, fontSize, typography, rendererTarget]);
+  }, [hydrated, selectedPaletteId, customColors, includeMetaComments, includeBadge, customThemeName, inputCode, userPalettes, recentPaletteIds, look, fontSize, typography, rendererTarget, previewMode]);
 
   // Auto-clear toast after 2.5s
   useEffect(() => {
@@ -670,6 +676,8 @@ function AppShell() {
             onRendererTargetChange={setRendererTarget}
             lastExampleType={lastExampleType}
             onRecordExampleType={handleRecordExampleType}
+            previewMode={previewMode}
+            onPreviewModeChange={setPreviewMode}
           />
         )}
         {activeTab === "compose" && (

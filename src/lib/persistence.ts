@@ -18,6 +18,7 @@ export interface PersistedState {
   fontSize?: string;
   typography?: TypographySettings;
   rendererTarget?: string;
+  previewMode?: string;
 }
 
 export const DEFAULT_PERSISTED_STATE: Omit<PersistedState, "selectedPaletteId" | "inputCode"> = {

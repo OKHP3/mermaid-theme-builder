@@ -85,6 +85,8 @@ interface ApplyTabProps {
   onRendererTargetChange: (v: string) => void;
   lastExampleType: Record<string, "flowchart" | "sequence">;
   onRecordExampleType: (id: string, type: "flowchart" | "sequence") => void;
+  previewMode: PreviewMode;
+  onPreviewModeChange: (mode: PreviewMode) => void;
 }
 
 const EXPORT_LABELS: Record<ExportType, string> = {
@@ -132,8 +134,9 @@ export function ApplyTab({
   onRendererTargetChange,
   lastExampleType,
   onRecordExampleType,
+  previewMode,
+  onPreviewModeChange: setPreviewMode,
 }: ApplyTabProps) {
-  const [previewMode, setPreviewMode] = useState<PreviewMode>("themed");
   const [showColorEditor, setShowColorEditor] = useState(false);
   const [copiedType, setCopiedType] = useState<ExportType | null>(null);
   const [downloadingType, setDownloadingType] = useState<DownloadType | null>(null);
