@@ -1,6 +1,26 @@
 import { useState, useEffect, useCallback } from "react";
 import type { ScaffoldFormat } from "@/lib/themeEngine";
 
+const SCAFFOLD_FORMAT_KEY = "mtb-scaffold-format";
+
+function readLastFormat(): ScaffoldFormat | null {
+  try {
+    const v = localStorage.getItem(SCAFFOLD_FORMAT_KEY);
+    if (v === "formatA" || v === "formatB" || v === "both") return v;
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+function saveLastFormat(format: ScaffoldFormat): void {
+  try {
+    localStorage.setItem(SCAFFOLD_FORMAT_KEY, format);
+  } catch {
+    // storage may be unavailable — silently ignore
+  }
+}
+
 interface FormatOption {
   format: ScaffoldFormat;
   label: string;
@@ -42,6 +62,14 @@ interface PromptScaffoldModalProps {
 export function PromptScaffoldModal({ open, onClose, onCopy }: PromptScaffoldModalProps) {
   const [copiedFormat, setCopiedFormat] = useState<ScaffoldFormat | null>(null);
   const [isClosing, setIsClosing] = useState(false);
+  const [lastUsedFormat, setLastUsedFormat] = useState<ScaffoldFormat | null>(null);
+
+  // Load saved preference whenever the modal opens
+  useEffect(() => {
+    if (open) {
+      setLastUsedFormat(readLastFormat());
+    }
+  }, [open]);
 
   const handleClose = useCallback(() => {
     setIsClosing(true);
@@ -54,6 +82,8 @@ export function PromptScaffoldModal({ open, onClose, onCopy }: PromptScaffoldMod
   const handleCopy = useCallback(
     async (format: ScaffoldFormat) => {
       await onCopy(format);
+      saveLastFormat(format);
+      setLastUsedFormat(format);
       setCopiedFormat(format);
       setTimeout(() => {
         setCopiedFormat(null);
@@ -73,6 +103,8 @@ export function PromptScaffoldModal({ open, onClose, onCopy }: PromptScaffoldMod
   }, [open, handleClose]);
 
   if (!open) return null;
+
+  const hasPreference = lastUsedFormat !== null;
 
   return (
     <div
@@ -100,7 +132,7 @@ export function PromptScaffoldModal({ open, onClose, onCopy }: PromptScaffoldMod
               Copy Prompt Scaffold
             </h2>
             <p className="text-xs text-muted-foreground mt-1">
-              Choose a theme directive format
+              {hasPreference ? "Your last-used format is highlighted" : "Choose a theme directive format"}
             </p>
           </div>
           <button
@@ -117,6 +149,7 @@ export function PromptScaffoldModal({ open, onClose, onCopy }: PromptScaffoldMod
         <div className="p-3 space-y-2">
           {FORMAT_OPTIONS.map((opt) => {
             const copied = copiedFormat === opt.format;
+            const isLastUsed = lastUsedFormat === opt.format && copiedFormat === null;
             return (
               <button
                 key={opt.format}
@@ -125,6 +158,8 @@ export function PromptScaffoldModal({ open, onClose, onCopy }: PromptScaffoldMod
                 className={`w-full text-left rounded-lg border p-3 transition-all group ${
                   copied
                     ? "border-emerald-500/60 bg-emerald-500/10"
+                    : isLastUsed
+                    ? "border-primary/50 bg-primary/5 ring-1 ring-primary/20"
                     : "border-border bg-background hover:border-primary/40 hover:bg-muted/40 active:bg-muted/70"
                 } ${copiedFormat !== null && !copied ? "opacity-40 pointer-events-none" : ""}`}
               >
@@ -143,6 +178,11 @@ export function PromptScaffoldModal({ open, onClose, onCopy }: PromptScaffoldMod
                         {opt.badge}
                       </span>
                       <span className="text-xs font-semibold text-foreground font-mono">{opt.label}</span>
+                      {isLastUsed && (
+                        <span className="text-[9px] font-medium text-primary/70 bg-primary/8 border border-primary/20 px-1.5 py-0.5 rounded-full leading-none">
+                          last used
+                        </span>
+                      )}
                     </div>
                     <p className="text-[11px] text-muted-foreground mt-1.5 leading-snug">
                       {opt.description}
@@ -168,7 +208,11 @@ export function PromptScaffoldModal({ open, onClose, onCopy }: PromptScaffoldMod
                       <svg
                         viewBox="0 0 20 20"
                         fill="currentColor"
-                        className="w-4 h-4 text-muted-foreground/40 group-hover:text-muted-foreground transition-colors"
+                        className={`w-4 h-4 transition-colors ${
+                          isLastUsed
+                            ? "text-primary/50 group-hover:text-primary"
+                            : "text-muted-foreground/40 group-hover:text-muted-foreground"
+                        }`}
                       >
                         <path d="M7 3.5A1.5 1.5 0 018.5 2h3.879a1.5 1.5 0 011.06.44l3.122 3.12A1.5 1.5 0 0117 6.622V12.5a1.5 1.5 0 01-1.5 1.5h-1v-3.379a3 3 0 00-.879-2.121L10.5 5.379A3 3 0 008.379 4.5H7v-1z" />
                         <path d="M4.5 6A1.5 1.5 0 003 7.5v9A1.5 1.5 0 004.5 18h7a1.5 1.5 0 001.5-1.5v-5.879a1.5 1.5 0 00-.44-1.06L9.44 6.44A1.5 1.5 0 008.378 6H4.5z" />
