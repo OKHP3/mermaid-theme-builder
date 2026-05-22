@@ -1,0 +1,81 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# sync-forge-tokens.yml
+# OKH Forge UI System — canonical token sync
+#
+# Pulls the upstream forge-tokens.css from the brand source-of-truth repo and
+# opens a pull request in THIS repo whenever the local copy has drifted.
+#
+# It NEVER edits tokens directly on main. It opens a reviewable PR on diff,
+# preserving the rule: one upstream definition, every downstream copy
+# regenerated rather than hand-edited.
+# ─────────────────────────────────────────────────────────────────────────────
+
+name: Sync Forge Tokens
+
+on:
+  schedule:
+    - cron: "0 13 * * 1"   # Mondays 13:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  UPSTREAM_REPO: OKHP3/OverKill-Hill
+  UPSTREAM_PATH: assets/css/forge-tokens.css
+  LOCAL_PATH: src/styles/forge-tokens.css
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out this repo
+        uses: actions/checkout@v4
+
+      - name: Fetch upstream forge-tokens.css
+        run: |
+          mkdir -p "$(dirname "$LOCAL_PATH")"
+          curl -fsSL \
+            "https://raw.githubusercontent.com/${UPSTREAM_REPO}/main/${UPSTREAM_PATH}" \
+            -o /tmp/forge-tokens.upstream.css
+
+      - name: Compare against local copy
+        id: diff
+        run: |
+          if [ ! -f "$LOCAL_PATH" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "reason=local copy missing" >> "$GITHUB_OUTPUT"
+          elif ! cmp -s /tmp/forge-tokens.upstream.css "$LOCAL_PATH"; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "reason=local copy drifted from upstream" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "Local forge-tokens.css already matches upstream. Nothing to do."
+          fi
+
+      - name: Stage updated token file
+        if: steps.diff.outputs.changed == 'true'
+        run: cp /tmp/forge-tokens.upstream.css "$LOCAL_PATH"
+
+      - name: Open pull request on drift
+        if: steps.diff.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: chore/sync-forge-tokens
+          base: main
+          commit-message: "chore: sync forge-tokens.css from ${{ env.UPSTREAM_REPO }}"
+          title: "Sync canonical Forge tokens"
+          body: |
+            Automated sync of the OKH Forge UI System token layer.
+
+            Source: `${{ env.UPSTREAM_REPO }}` / `${{ env.UPSTREAM_PATH }}`
+            Target: `${{ env.LOCAL_PATH }}`
+            Reason: ${{ steps.diff.outputs.reason }}
+
+            Review the diff, run a visual check in light and dark mode, then merge.
+            Do not hand-edit the token file; edit it upstream and let this workflow re-sync.
+          labels: |
+            brand
+            automated
+          delete-branch: true
