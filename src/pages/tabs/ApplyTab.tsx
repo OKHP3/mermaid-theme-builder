@@ -36,6 +36,7 @@ import {
 import { openInLiveEditor } from "@/lib/liveEditor";
 import { BRAND_EXAMPLES } from "@/data/examples";
 import { RENDERER_PROFILES, getRendererById } from "@/data/renderer-parity";
+import { FamilySyntaxHint } from "@/components/FamilySyntaxHint";
 import { type TypographySettings } from "@/lib/typography";
 import type { AppTab } from "@/App";
 
@@ -837,6 +838,8 @@ export function ApplyTab({
           )}
         </div>
       </div>
+
+      <FamilySyntaxHint family={effectiveDetection.family} />
 
       <div className="md:flex-1 md:overflow-hidden flex flex-col md:flex-row md:min-h-0">
         <div className="flex flex-col md:flex-none md:w-1/2 border-b md:border-b-0 md:border-r border-border md:min-h-0 print-hide">
