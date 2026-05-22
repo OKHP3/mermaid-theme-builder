@@ -934,7 +934,7 @@ export function ApplyTab({
             Live Editor
           </button>
 
-          {(["code", "markdown", "prompt"] as ExportType[]).map((type) => {
+          {(["code", "prompt"] as ExportType[]).map((type) => {
             const copied = copiedType === type;
             const disabled = !inputCode.trim() && type !== "prompt";
             const isPrimary = type === "code";
@@ -973,6 +973,25 @@ export function ApplyTab({
               </button>
             );
           })}
+
+          <button
+            onClick={() => void handleDownload("markdown")}
+            disabled={!inputCode.trim() || downloadingType === "markdown"}
+            title="Save as Markdown file (.md)"
+            className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-md border border-border bg-card text-foreground hover:bg-muted hover:border-primary/30 font-medium transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            {downloadingType === "markdown" ? (
+              <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 animate-spin text-muted-foreground">
+                <path fillRule="evenodd" d="M15.312 11.424a5.5 5.5 0 01-9.201 2.466l-.312-.311h2.433a.75.75 0 000-1.5H3.989a.75.75 0 00-.75.75v4.242a.75.75 0 001.5 0v-2.43l.31.31a7 7 0 0011.712-3.138.75.75 0 00-1.449-.39zm1.23-3.723a.75.75 0 00.219-.53V2.929a.75.75 0 00-1.5 0V5.36l-.31-.31A7 7 0 003.239 8.188a.75.75 0 101.448.389A5.5 5.5 0 0113.89 6.11l.311.31h-2.432a.75.75 0 000 1.5h4.243a.75.75 0 00.53-.219z" clipRule="evenodd" />
+              </svg>
+            ) : (
+              <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 text-muted-foreground">
+                <path d="M10.75 2.75a.75.75 0 00-1.5 0v8.614L6.295 8.235a.75.75 0 10-1.09 1.03l4.25 4.5a.75.75 0 001.09 0l4.25-4.5a.75.75 0 00-1.09-1.03l-2.955 3.129V2.75z" />
+                <path d="M3.5 12.75a.75.75 0 00-1.5 0v2.5A2.75 2.75 0 004.75 18h10.5A2.75 2.75 0 0018 15.25v-2.5a.75.75 0 00-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5z" />
+              </svg>
+            )}
+            Markdown
+          </button>
         </div>
       </div>
 

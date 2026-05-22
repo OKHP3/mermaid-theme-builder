@@ -50,7 +50,15 @@ async function buildLiveEditorUrl(themedCode: string): Promise<string> {
 }
 
 export function openInLiveEditor(themedCode: string): void {
+  // Open the window synchronously inside the click event so the popup blocker
+  // treats it as a direct user gesture. Navigate it once the URL is ready.
+  const win = window.open("", "_blank", "noopener,noreferrer");
+  if (!win) return;
   buildLiveEditorUrl(themedCode)
-    .then((url) => window.open(url, "_blank", "noopener,noreferrer"))
-    .catch(() => window.open(LIVE_EDITOR_BASE, "_blank", "noopener,noreferrer"));
+    .then((url) => {
+      win.location.href = url;
+    })
+    .catch(() => {
+      win.location.href = LIVE_EDITOR_BASE;
+    });
 }
