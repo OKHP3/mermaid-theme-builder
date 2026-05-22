@@ -107,6 +107,9 @@ const FAMILY_ALIAS_TO_REGISTRY_ID: Record<string, DiagramFamily> = {
   packet:           "packet",
   radar:            "radar",
   xychart:          "xychart",
+
+  // new families added in Batch #2
+  treemap:          "treemap",
 };
 
 describe("EXAMPLE_CATALOG — registry consistency guard", () => {

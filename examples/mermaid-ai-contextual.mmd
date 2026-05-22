@@ -1,0 +1,57 @@
+---
+config:
+  layout: elk
+  theme: neutral
+---
+flowchart RL
+ subgraph THINK_MODE["💡 Think Mode — Context First, Rendering Second"]
+    direction TB
+        T1(["Narrative Input<br>(the problem space)"])
+        T2(["Logic Layer<br>(system rules &amp; relationships)"])
+        T3(["Mapping Stage<br>(connecting functions)"])
+        T4{{"Hold Phase 🧘<br>Model absorbs context"}}
+        T5(["Synthesis 🧩<br>Integrate &amp; verify understanding"])
+        T6(["Rendering 🎨<br>Diagram reflects synthesis"])
+  end
+ subgraph PREMATURE_RENDERING["⚡ Premature Rendering — Speed Without Synthesis"]
+    direction TB
+        P1(["Prompt Detected"])
+        P2{{"Instant Execution ⏩"}}
+        P3(["Surface Coherence<br>(looks right, incomplete)"])
+        P4(["Correction Loops 🔁"])
+  end
+    T1 --> T2
+    T2 --> T3
+    T3 --> T4
+    T4 --> T5
+    T5 --> T6
+    P1 --> P2
+    P2 --> P3
+    P3 --> P4
+    THINK_MODE -- Structured understanding before speed --> O1(("✅ Durable Insight"))
+    PREMATURE_RENDERING -- Output first, meaning later --> O2(("⚠️ Plausible but Incomplete"))
+    O1 -. Encourages discipline .-> PREMATURE_RENDERING
+    O2 -. Reminds need for Think Mode .-> THINK_MODE
+
+     T1:::indigo
+     T2:::teal
+     T3:::cyan
+     T4:::violet
+     T5:::green
+     T6:::lime
+     P1:::orange
+     P2:::red
+     P3:::rose
+     P4:::yellow
+     O1:::green
+     O2:::red
+    classDef indigo stroke:#818cf8,fill:#eef2ff
+    classDef teal stroke:#2dd4bf,fill:#f0fdfa
+    classDef cyan stroke:#22d3ee,fill:#ecfeff
+    classDef violet stroke:#a78bfa,fill:#f5f3ff
+    classDef green stroke:#4ade80,fill:#f0fdf4
+    classDef lime stroke:#a3e635,fill:#f7fee7
+    classDef orange stroke:#fb923c,fill:#fff7ed
+    classDef red stroke:#f87171,fill:#fef2f2
+    classDef rose stroke:#fb7185,fill:#fff1f2
+    classDef yellow stroke:#facc15,fill:#fefce8
