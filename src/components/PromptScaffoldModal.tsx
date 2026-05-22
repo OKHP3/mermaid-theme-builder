@@ -328,14 +328,33 @@ export function PromptScaffoldModal({ open, onClose, onCopy, generatePreview, re
                       <button
                         onClick={() => handleCopy(opt.format)}
                         disabled={copiedFormat !== null}
-                        className="flex items-center gap-1.5 px-2.5 py-1 rounded text-[10px] font-medium bg-white/8 text-[#d4c9b5] hover:bg-white/14 active:bg-white/20 transition-colors disabled:opacity-40 disabled:pointer-events-none"
-                        aria-label={`Copy ${opt.badge} scaffold`}
+                        className={`flex items-center gap-1.5 px-2.5 py-1 rounded text-[10px] font-medium transition-colors disabled:pointer-events-none ${
+                          copied
+                            ? "bg-emerald-500/20 text-emerald-300 disabled:opacity-100"
+                            : "bg-white/8 text-[#d4c9b5] hover:bg-white/14 active:bg-white/20 disabled:opacity-40"
+                        }`}
+                        aria-label={copied ? `Copied ${opt.badge} scaffold` : `Copy ${opt.badge} scaffold`}
                       >
-                        <svg viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3 shrink-0">
-                          <path d="M7 3.5A1.5 1.5 0 018.5 2h3.879a1.5 1.5 0 011.06.44l3.122 3.12A1.5 1.5 0 0117 6.622V12.5a1.5 1.5 0 01-1.5 1.5h-1v-3.379a3 3 0 00-.879-2.121L10.5 5.379A3 3 0 008.379 4.5H7v-1z" />
-                          <path d="M4.5 6A1.5 1.5 0 003 7.5v9A1.5 1.5 0 004.5 18h7a1.5 1.5 0 001.5-1.5v-5.879a1.5 1.5 0 00-.44-1.06L9.44 6.44A1.5 1.5 0 008.378 6H4.5z" />
-                        </svg>
-                        Copy this format
+                        {copied ? (
+                          <>
+                            <svg viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3 shrink-0">
+                              <path
+                                fillRule="evenodd"
+                                d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                            Copied!
+                          </>
+                        ) : (
+                          <>
+                            <svg viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3 shrink-0">
+                              <path d="M7 3.5A1.5 1.5 0 018.5 2h3.879a1.5 1.5 0 011.06.44l3.122 3.12A1.5 1.5 0 0117 6.622V12.5a1.5 1.5 0 01-1.5 1.5h-1v-3.379a3 3 0 00-.879-2.121L10.5 5.379A3 3 0 008.379 4.5H7v-1z" />
+                              <path d="M4.5 6A1.5 1.5 0 003 7.5v9A1.5 1.5 0 004.5 18h7a1.5 1.5 0 001.5-1.5v-5.879a1.5 1.5 0 00-.44-1.06L9.44 6.44A1.5 1.5 0 008.378 6H4.5z" />
+                            </svg>
+                            Copy this format
+                          </>
+                        )}
                       </button>
                     </div>
                   </div>
