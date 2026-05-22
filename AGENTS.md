@@ -57,8 +57,8 @@ Do not break this flow.
 - Do not copy Mermaid source into this repo
 - Dependency updates must be reviewed and tested before release
 - The capability registry (`src/data/mermaid-capabilities.ts`) must be manually updated after each Mermaid version upgrade
-- See `docs/MERMAID_CAPABILITY_REGISTRY.md` for the update checklist
-- See `docs/RELEASE_CHECKLIST.md` for release governance
+- See `docs/mermaid-capability-registry.md` for the update checklist
+- See `docs/release-checklist.md` for release governance
 
 ## Version governance constants
 
@@ -93,7 +93,7 @@ These must be updated whenever the Mermaid dependency is upgraded.
 
 ## Testing before PR
 
-Run the end-to-end test plan (see `docs/RELEASE_CHECKLIST.md`) before opening a pull request. All 6 e2e test scenarios must pass.
+Run the end-to-end test plan (see `docs/release-checklist.md`) before opening a pull request. All 6 e2e test scenarios must pass.
 
 ## File structure
 
@@ -135,17 +135,25 @@ artifacts/mermaid-theme-builder/
 │           ├── ExamplesTab.tsx       # Examples tab: browse OKHP3 example pack
 │           └── ReferenceTab.tsx      # Reference tab: DiagramInventory + ClassBrowser
 ├── docs/
-│   ├── ATTRIBUTION.md                # attribution model and third-party credits
-│   ├── BRAND_PRESETS.md              # OKHP3 brand palette definitions
-│   ├── COPILOT_PROMPT_KIT.md         # reusable M365 Copilot prompt templates for themed Mermaid diagrams
-│   ├── DEPLOYMENT.md                 # GitHub Pages deployment instructions
-│   ├── LEGAL.md                      # colour copyright + brand policy analysis
-│   ├── MERMAID_CAPABILITY_REGISTRY.md # registry update checklist per Mermaid version
-│   ├── MERMAID_THEMING_REFERENCE.md  # full themeVariables table + renderer compat
-│   ├── PRODUCT_BRIEF.md              # product vision, scope, and constraints
-│   ├── RELEASE_CHECKLIST.md          # pre-release gate: 81 manual test steps
-│   ├── ROADMAP.md                    # feature backlog with completion status
-│   └── THEME_METADATA.md             # palette metadata schema reference
+│   ├── attribution.md                # attribution model and third-party credits
+│   ├── brand-presets.md              # OKHP3 brand palette definitions
+│   ├── capability-crosswalk.md       # Mermaid 11.15 capability → builder coverage → gap
+│   ├── copilot-prompt-kit.md         # reusable M365 Copilot prompt templates for themed Mermaid diagrams
+│   ├── deployment.md                 # GitHub Pages deployment instructions
+│   ├── design-system.md              # OKH Forge UI System reference
+│   ├── legal.md                      # colour copyright + brand policy analysis
+│   ├── market-research.md            # competitive landscape and positioning
+│   ├── mermaid-capability-registry.md # registry update checklist per Mermaid version
+│   ├── mermaid-theming-reference.md  # full themeVariables table + renderer compat
+│   ├── mermaid-version-matrix.md     # version-by-version feature matrix
+│   ├── product-brief.md              # product vision, scope, and constraints
+│   ├── product-positioning.md        # positioning and messaging
+│   ├── prototype-to-product-retrospective.md  # v0.1–v0.4 retrospective
+│   ├── release-checklist.md          # pre-release gate: manual test steps
+│   ├── renderer-compatibility.md     # renderer compat notes
+│   ├── roadmap.md                    # feature backlog with completion status
+│   ├── technical-debt-register.md    # known tech debt items
+│   └── theme-metadata.md             # palette metadata schema reference
 ├── examples/                         # .mmd source files — human-readable originals
 │   │                                 # Content is inlined into example-library.ts;
 │   │                                 # these files are dev/authoring references only.

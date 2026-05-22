@@ -1,23 +1,11 @@
-# DEPRECATED — superseded by deploy-pages.yml as of v0.3-alpha.
-#
-# This file is kept as an empty placeholder so existing branches/PRs do not
-# silently fall back to the old configuration. The new workflow lives at
-# .github/workflows/deploy-pages.yml and is the only one that triggers on
-# push/main and workflow_dispatch.
-#
-# Safe to delete this file in a follow-up cleanup commit.
-
+# Deprecated — superseded by deploy-pages.yml since v0.3-alpha. Safe to delete.
 name: Deploy to GitHub Pages (deprecated)
-
 on:
   workflow_dispatch:
-
 permissions:
   contents: read
-
 jobs:
   noop:
     runs-on: ubuntu-latest
     steps:
-      - name: Notice
-        run: echo "This workflow has been superseded by deploy-pages.yml. No action taken."
+      - run: echo "Deprecated. See deploy-pages.yml."

@@ -1,23 +1,11 @@
-# DEPRECATED — superseded by deploy-pages.yml as of v0.3-alpha.
-#
-# deploy-pages.yml is the canonical GitHub Pages deployment workflow.
-# It handles dynamic base-path resolution, SPA 404 fallback, and
-# correct path scoping via MTB_BASE_PATH repo variable.
-#
-# This file is kept as a no-op placeholder to prevent silent fallback
-# on open branches. Safe to delete in a follow-up cleanup commit.
-
-name: Deploy Mermaid Theme Builder to GitHub Pages (deprecated)
-
+# Deprecated — superseded by deploy-pages.yml since v0.3-alpha. Safe to delete.
+name: Deploy Mermaid Theme Builder (deprecated)
 on:
   workflow_dispatch:
-
 permissions:
   contents: read
-
 jobs:
   noop:
     runs-on: ubuntu-latest
     steps:
-      - name: Notice
-        run: echo "This workflow is deprecated. See deploy-pages.yml."
+      - run: echo "Deprecated. See deploy-pages.yml."

@@ -79,8 +79,8 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - **Multi-diagram splitting** (`diagramSplit.ts`) — handles multi-block pastes
 - **Extract mode** — pull theme from existing `%%{init}%%` directive in pasted Mermaid code
 - **Family-specific theming overlays** (`familyTheming.ts`) — per-family themeVariable corrections for sequence, ER, and other families
-- **Prompt Scaffold v2** — classDefs, YAML frontmatter, repair templates (`docs/COPILOT_PROMPT_KIT.md`)
-- **Documentation suite** — `AGENTS.md`, `docs/PRODUCT_BRIEF.md`, `docs/BRAND_PRESETS.md`, `docs/ATTRIBUTION.md`, `docs/LEGAL.md`, `docs/MERMAID_CAPABILITY_REGISTRY.md`, `docs/MERMAID_THEMING_REFERENCE.md`, `docs/RELEASE_CHECKLIST.md`, `docs/THEME_METADATA.md`, `docs/DEPLOYMENT.md`, `standards/`
+- **Prompt Scaffold v2** — classDefs, YAML frontmatter, repair templates (`docs/copilot-prompt-kit.md`)
+- **Documentation suite** — `AGENTS.md`, `docs/product-brief.md`, `docs/brand-presets.md`, `docs/attribution.md`, `docs/legal.md`, `docs/mermaid-capability-registry.md`, `docs/mermaid-theming-reference.md`, `docs/release-checklist.md`, `docs/theme-metadata.md`, `docs/deployment.md`, `standards/`
 - **`MERMAID_VERSION_VERIFIED`** governance constant in `mermaid-capabilities.ts`
 - **Ko-fi funding** link (`.github/FUNDING.yml`)
 - **`robots.txt`**, **`sitemap.xml`**, **`opengraph.jpg`**, **PWA manifest** (`manifest.webmanifest`), **service worker** (`sw.js`)
@@ -104,7 +104,7 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - Custom theme naming
 - Palette schema with brand metadata (`src/lib/palettes.ts`)
 - `src/lib/themeEngine.ts` — palette → `%%{init}%%` directive generation
-- MIT license, README, `docs/PRODUCT_BRIEF.md`
+- MIT license, README, `docs/product-brief.md`
 - GitHub Pages deployment via CI (`deploy-pages.yml`, `ci.yml`)
 
 ---
