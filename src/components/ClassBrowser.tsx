@@ -39,7 +39,7 @@ function buildClassDefString(def: ClassDef): string {
   return `classDef ${def.name} ${style}`;
 }
 
-type CopiedState = { name: string; kind: "usage" | "classdef" } | null;
+type CopiedState = { name: string; kind: "usage" | "classdef" | "all" } | null;
 
 function ClassNode({
   def,
@@ -192,8 +192,17 @@ export function ClassBrowser({ classDefs, supportsClassDef = true, usedClassName
     [writeToClipboard]
   );
 
+  const handleCopyAll = useCallback(async () => {
+    const block = sortedClassDefs.map(buildClassDefString).join("\n");
+    await writeToClipboard(block);
+    setCopiedState({ name: String(sortedClassDefs.length), kind: "all" });
+    setTimeout(() => setCopiedState(null), 1800);
+  }, [sortedClassDefs, writeToClipboard]);
+
   const toastLabel =
-    copiedState?.kind === "classdef"
+    copiedState?.kind === "all"
+      ? `Copied ${copiedState.name} classDefs`
+      : copiedState?.kind === "classdef"
       ? `Copied classDef ${copiedState.name}`
       : copiedState?.kind === "usage"
       ? `Copied :::${copiedState.name}`
@@ -201,7 +210,7 @@ export function ClassBrowser({ classDefs, supportsClassDef = true, usedClassName
 
   return (
     <div className={`flex flex-col h-full overflow-auto p-4 bg-muted/20 ${!supportsClassDef ? "opacity-60" : ""}`}>
-      <div className="mb-3 flex items-center justify-between gap-2">
+      <div className="mb-3 flex items-start justify-between gap-2">
         <div>
           <p className="text-xs font-semibold text-foreground flex items-center gap-2">
             Class Library
@@ -215,16 +224,31 @@ export function ClassBrowser({ classDefs, supportsClassDef = true, usedClassName
             )}
           </p>
           <p className="text-[10px] text-muted-foreground mt-0.5">
-            16 semantic styles — click any node to copy its{" "}
+            {sortedClassDefs.length} semantic styles — click any node to copy its{" "}
             <span className="font-mono">:::className</span> syntax, or hover for the full{" "}
             <span className="font-mono">classDef</span> block
           </p>
         </div>
-        {supportsClassDef && toastLabel && (
-          <span className="text-[10px] bg-primary/10 text-primary px-2 py-1 rounded-full font-mono animate-in fade-in duration-150 shrink-0">
-            {toastLabel}
-          </span>
-        )}
+        <div className="flex items-center gap-2 shrink-0">
+          {supportsClassDef && toastLabel && (
+            <span className="text-[10px] bg-primary/10 text-primary px-2 py-1 rounded-full font-mono animate-in fade-in duration-150">
+              {toastLabel}
+            </span>
+          )}
+          <button
+            type="button"
+            onClick={handleCopyAll}
+            disabled={!supportsClassDef}
+            title="Copy all classDefs as a single block"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-medium border border-border/50 bg-card/70 text-muted-foreground hover:text-foreground hover:border-primary/40 hover:bg-card transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus:ring-1 focus:ring-primary/60"
+          >
+            <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-3 h-3">
+              <rect x="4.5" y="1" width="7.5" height="9" rx="1.2" stroke="currentColor" strokeWidth="1.2" />
+              <rect x="2" y="4" width="7.5" height="9" rx="1.2" fill="currentColor" fillOpacity="0.12" stroke="currentColor" strokeWidth="1.2" />
+            </svg>
+            Copy all
+          </button>
+        </div>
       </div>
 
       {!supportsClassDef && (
