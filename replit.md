@@ -110,3 +110,8 @@ pnpm run typecheck         # TypeScript check
 ## Post-merge
 
 `scripts/post-merge.sh` — runs `pnpm install --frozen-lockfile` after every task agent merge.
+
+## User preferences
+
+- **Language**: US English only. Use American spellings in all code comments, UI strings, documentation, and commit messages. Examples: "color" not "colour", "behavior" not "behaviour", "recognize" not "recognise", "defense" not "defence", "canceled" not "cancelled", "customize" not "customise", "honor" not "honour".
+- **Measurements**: US standard formatting (imperial units where applicable; use US date formats MM/DD/YYYY when dates appear in UI).

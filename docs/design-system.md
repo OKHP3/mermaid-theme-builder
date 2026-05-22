@@ -116,7 +116,7 @@ Token definitions live in `src/styles/forge-tokens.css`; utility classes live in
 
 ### Action buttons
 
-| Class | Action colour | Shape |
+| Class | Action color | Shape |
 |---|---|---|
 | `.forge-btn-primary` | Solid rust-orange | Filled |
 | `.forge-btn-outline` | Warm paper bg | Outlined |
@@ -145,7 +145,7 @@ These are **fixed** — they do not change in dark mode. Do not override them in
 
 ---
 
-## Semantic tokens (safe to customise per-app)
+## Semantic tokens (safe to customize per-app)
 
 These follow Tailwind CSS v4 convention and are consumed via `hsl(var(--token))`:
 
@@ -158,7 +158,7 @@ These follow Tailwind CSS v4 convention and are consumed via `hsl(var(--token))`
 --ring
 ```
 
-Customise these to shift a companion app's light/dark behaviour without touching raw palette tokens.
+Customize these to shift a companion app's light/dark behavior without touching raw palette tokens.
 
 ---
 
@@ -176,7 +176,7 @@ Customise these to shift a companion app's light/dark behaviour without touching
 
 1. Copy `src/styles/forge-tokens.css` into the sibling app's global CSS.
 2. Layer your own utility classes on top in a second file.
-3. Override only the **semantic tokens** (Sections B/C) for app-specific colour shifts.
+3. Override only the **semantic tokens** (Sections B/C) for app-specific color shifts.
 4. Do not change `--okh-forge-*` tokens — they are the shared identity.
 5. Use the canonical class names from the tables above; do not invent one-off variants.
 6. Header and footer must remain always-dark (`var(--forge-header-bg)` / `var(--forge-footer-bg)`).

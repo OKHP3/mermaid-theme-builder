@@ -1,7 +1,7 @@
 /**
  * Split a single Mermaid input buffer into multiple diagrams.
  *
- * Heuristic: a "next diagram" boundary is recognised when a line at indent 0
+ * Heuristic: a "next diagram" boundary is recognized when a line at indent 0
  * matches a known top-level Mermaid diagram declaration keyword AND there has
  * already been at least one diagram-content line above it. The first diagram
  * always starts at the first non-blank line (or the start of YAML frontmatter

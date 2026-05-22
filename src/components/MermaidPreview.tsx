@@ -194,7 +194,7 @@ export function MermaidPreview({ code, className }: MermaidPreviewProps) {
       return;
     }
 
-    let cancelled = false;
+    let canceled = false;
     const diagramId = `mermaid-${uniqueId}-${Date.now()}`;
     setLoading(true);
 
@@ -202,13 +202,13 @@ export function MermaidPreview({ code, className }: MermaidPreviewProps) {
       try {
         const mermaid = await getMermaid();
         const { svg } = await mermaid.render(diagramId, code);
-        if (!cancelled) {
+        if (!canceled) {
           setSvgContent(svg);
           setError(null);
           setLoading(false);
         }
       } catch (err) {
-        if (!cancelled) {
+        if (!canceled) {
           const message = err instanceof Error ? err.message : String(err);
           setError(message.replace(/<br\s*\/?>/gi, "\n").replace(/<[^>]*>/g, ""));
           setSvgContent("");
@@ -218,7 +218,7 @@ export function MermaidPreview({ code, className }: MermaidPreviewProps) {
     })();
 
     return () => {
-      cancelled = true;
+      canceled = true;
     };
   }, [code, uniqueId]);
 

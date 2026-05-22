@@ -16,7 +16,7 @@ export function resolveScaffoldFormat(stored: string | null): ScaffoldFormat {
 
 /**
  * Reads the stored scaffold format preference from localStorage.
- * Returns "both" when not set, unavailable, or unrecognised.
+ * Returns "both" when not set, unavailable, or unrecognized.
  */
 export function readScaffoldFormat(): ScaffoldFormat {
   try {

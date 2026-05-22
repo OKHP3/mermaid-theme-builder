@@ -6,7 +6,7 @@ import { extractUsedClasses } from "@/lib/usedClasses";
  * That function is the single source of truth used by ReferenceTab.tsx — any
  * regression in the regex or early-return path will break these tests.
  *
- * Documented edge cases (intentional behaviour, not bugs):
+ * Documented edge cases (intentional behavior, not bugs):
  *  - `\w` = [a-zA-Z0-9_]: hyphens stop the match, so `:::my-class` → `"my"`.
  *  - `%%` comment lines are NOT excluded: `%% :::primary` still yields "primary".
  */

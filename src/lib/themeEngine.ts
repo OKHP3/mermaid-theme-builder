@@ -28,7 +28,7 @@ function sanitizeMdText(s: string): string {
 
 /** Sanitize a string for insertion into a Markdown inline-code span (`` `...` ``).
  *  Strips CR/LF and backticks so the attacker cannot break out of the span.
- *  Also HTML-escapes < > & as defence-in-depth for permissive renderers. */
+ *  Also HTML-escapes < > & as defense-in-depth for permissive renderers. */
 function sanitizeMdCode(s: string): string {
   return s
     .replace(/[\r\n`]/g, " ")

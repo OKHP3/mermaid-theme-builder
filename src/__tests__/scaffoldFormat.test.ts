@@ -41,7 +41,7 @@ describe("resolveScaffoldFormat", () => {
     expect(resolveScaffoldFormat("")).toBe("both");
   });
 
-  it('defaults to "both" for an unrecognised value', () => {
+  it('defaults to "both" for an unrecognized value', () => {
     expect(resolveScaffoldFormat("format-a")).toBe("both");
     expect(resolveScaffoldFormat("A")).toBe("both");
     expect(resolveScaffoldFormat("formatC")).toBe("both");

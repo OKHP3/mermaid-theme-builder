@@ -1,7 +1,7 @@
 /**
  * Affiliate / referral CTA shown once per page that embeds a live Mermaid
  * diagram. The "Mermaid.AI" wordmark uses the official Mermaid hot-pink
- * brand colour (#FF3670). The href is Jamie's paid referral link.
+ * brand color (#FF3670). The href is Jamie's paid referral link.
  */
 const MERMAID_PINK = "#FF3670";
 const REFERRAL_HREF = "https://mermaidchart.cello.so/UhVlNtC2MlS";
