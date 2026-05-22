@@ -3,9 +3,11 @@ import {
   generateThemedCode,
   generateMarkdownExport,
   generatePromptScaffoldWithFormat,
+  buildClassDefString,
+  getClassDefs,
   type ExportOptions,
 } from "@/lib/themeEngine";
-import { BRAND_PALETTES } from "@/lib/palettes";
+import { BRAND_PALETTES, BUILTIN_PALETTES } from "@/lib/palettes";
 import { DEFAULT_TYPOGRAPHY } from "@/lib/typography";
 
 const palette = BRAND_PALETTES[0];
@@ -273,5 +275,51 @@ describe("generatePromptScaffoldWithFormat", () => {
       "both",
     );
     expect(result).not.toContain("Subgraph tier patterns");
+  });
+});
+
+describe("buildClassDefString", () => {
+  it("returns a line starting with 'classDef '", () => {
+    const def = { name: "primary", fill: "#111827", stroke: "#888888", color: "#f0f0f0", extra: "", description: "" };
+    expect(buildClassDefString(def)).toMatch(/^classDef /);
+  });
+
+  it("formats name, fill, stroke, and color in the correct order", () => {
+    const def = { name: "accent", fill: "#aabbcc", stroke: "#112233", color: "#ffffff", extra: "", description: "" };
+    expect(buildClassDefString(def)).toBe("classDef accent fill:#aabbcc,stroke:#112233,color:#ffffff");
+  });
+
+  it("appends extra when present", () => {
+    const def = { name: "boundary", fill: "#111", stroke: "#222", color: "#333", extra: "stroke-dasharray:5", description: "" };
+    expect(buildClassDefString(def)).toBe("classDef boundary fill:#111,stroke:#222,color:#333,stroke-dasharray:5");
+  });
+
+  it("appends fontSizeRule when provided", () => {
+    const def = { name: "primary", fill: "#111", stroke: "#222", color: "#333", extra: "", description: "" };
+    expect(buildClassDefString(def, "font-size:14px")).toBe("classDef primary fill:#111,stroke:#222,color:#333,font-size:14px");
+  });
+
+  it("appends both extra and fontSizeRule when both are present", () => {
+    const def = { name: "actor", fill: "#111", stroke: "#222", color: "#333", extra: "font-weight:bold", description: "" };
+    expect(buildClassDefString(def, "font-size:18px")).toBe("classDef actor fill:#111,stroke:#222,color:#333,font-weight:bold,font-size:18px");
+  });
+
+  it("omits fontSizeRule when not provided", () => {
+    const def = { name: "slate", fill: "#eee", stroke: "#ccc", color: "#111", extra: "", description: "" };
+    expect(buildClassDefString(def)).not.toContain("font-size");
+  });
+
+  it("produces no leading whitespace (copy format is indent-free)", () => {
+    const def = { name: "primary", fill: "#111827", stroke: "#888888", color: "#f0f0f0", extra: "", description: "" };
+    expect(buildClassDefString(def)).not.toMatch(/^\s/);
+  });
+
+  it("is consistent with getClassDefs output on a real palette", () => {
+    const testPalette = BUILTIN_PALETTES[0];
+    const defs = getClassDefs(testPalette);
+    for (const def of defs) {
+      const line = buildClassDefString(def);
+      expect(line).toMatch(/^classDef \S+ fill:#[0-9a-fA-F]{3,8}/);
+    }
   });
 });

@@ -367,10 +367,26 @@ ${themeLines}
 ---`;
 }
 
+/** Serialize a single ClassDef object to a Mermaid `classDef` line.
+ *
+ *  This is the single source of truth for classDef string format. Both the
+ *  Class Library copy buttons (ClassBrowser) and the Styled Code export
+ *  (buildClassDefLibrary) delegate here so they can never drift apart.
+ *
+ *  @param def          The ClassDef to serialize.
+ *  @param fontSizeRule Optional `font-size:Npx` rule to append (used by the
+ *                      export path when a non-default node font size is set).
+ */
+export function buildClassDefString(def: ClassDef, fontSizeRule?: string): string {
+  const parts = [`fill:${def.fill}`, `stroke:${def.stroke}`, `color:${def.color}`, def.extra, fontSizeRule ?? ""].filter(Boolean);
+  return `classDef ${def.name} ${parts.join(",")}`;
+}
+
 /** Build a 16-entry semantic classDef library from palette hex values.
  *
- *  Delegates to getClassDefs() as the single source of truth so the rendered
- *  class browser and the exported classDef text always stay in sync.
+ *  Delegates to getClassDefs() and buildClassDefString() as the single source
+ *  of truth so the rendered class browser and the exported classDef text
+ *  always stay in sync.
  *
  *  When `typography` is provided and nodeLabel.fontSize differs from the
  *  Mermaid default (16px), a `font-size:Npx` rule is appended to each
@@ -387,10 +403,7 @@ function buildClassDefLibrary(palette: Palette, typography?: TypographySettings)
       : "";
 
   return getClassDefs(palette)
-    .map(({ name, fill, stroke, color, extra }) => {
-      const parts = [`fill:${fill}`, `stroke:${stroke}`, `color:${color}`, extra, fontSizeRule].filter(Boolean);
-      return `    classDef ${name} ${parts.join(",")}`;
-    })
+    .map((def) => `    ${buildClassDefString(def, fontSizeRule)}`)
     .join("\n");
 }
 

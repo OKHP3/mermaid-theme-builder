@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from "react";
-import type { ClassDef } from "@/lib/themeEngine";
+import { buildClassDefString, type ClassDef } from "@/lib/themeEngine";
 
 interface ClassBrowserProps {
   classDefs: ClassDef[];
@@ -32,12 +32,6 @@ function parseFontStyle(extra: string): string | undefined {
   return m ? m[1] : undefined;
 }
 
-function buildClassDefString(def: ClassDef): string {
-  const style = [`fill:${def.fill}`, `stroke:${def.stroke}`, `color:${def.color}`, def.extra]
-    .filter(Boolean)
-    .join(",");
-  return `classDef ${def.name} ${style}`;
-}
 
 type CopiedState = { name: string; kind: "usage" | "classdef" | "all" } | null;
 
@@ -193,7 +187,7 @@ export function ClassBrowser({ classDefs, supportsClassDef = true, usedClassName
   );
 
   const handleCopyAll = useCallback(async () => {
-    const block = sortedClassDefs.map(buildClassDefString).join("\n");
+    const block = sortedClassDefs.map((def) => buildClassDefString(def)).join("\n");
     await writeToClipboard(block);
     setCopiedState({ name: String(sortedClassDefs.length), kind: "all" });
     setTimeout(() => setCopiedState(null), 1800);
