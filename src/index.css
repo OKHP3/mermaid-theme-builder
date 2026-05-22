@@ -85,6 +85,15 @@
   background-color: hsl(var(--background));
 }
 
+@media (max-width: 767px) {
+  .forge-shell {
+    height: auto;
+    min-height: 100dvh;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+}
+
 /* ── Header — always-dark, persists across light/dark mode ────────────── */
 
 .forge-header {

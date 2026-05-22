@@ -675,13 +675,13 @@ function AppShell() {
         })}
       </nav>
 
-      <main className="flex-1 overflow-hidden pb-20 md:pb-0 min-h-0">
+      <main className="flex-1 md:overflow-hidden pb-20 md:pb-0 md:min-h-0">
         <div
           role="tabpanel"
           id={`tabpanel-${activeTab}`}
           aria-label={TAB_CONFIG.find((t) => t.id === activeTab)?.label ?? activeTab}
           tabIndex={-1}
-          className="h-full"
+          className="md:h-full"
         >
         {activeTab === "apply" && (
           <ApplyTab

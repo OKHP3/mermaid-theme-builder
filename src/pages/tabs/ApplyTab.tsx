@@ -492,7 +492,7 @@ export function ApplyTab({
   );
 
   return (
-    <div className="flex flex-col h-full overflow-hidden">
+    <div className="flex flex-col md:h-full md:overflow-hidden">
       {recentPalettes.length > 1 && (
         <div className="flex-none border-b border-border bg-muted/20 px-3 py-1.5 flex items-center gap-2 print-hide">
           <span className="text-[10px] uppercase tracking-wide text-muted-foreground font-semibold shrink-0">
@@ -750,8 +750,8 @@ export function ApplyTab({
         )}
       </div>
 
-      <div className="flex-1 overflow-hidden flex flex-col md:flex-row min-h-0">
-        <div className="flex flex-col flex-1 md:flex-none md:w-1/2 border-b md:border-b-0 md:border-r border-border min-h-0 print-hide">
+      <div className="md:flex-1 md:overflow-hidden flex flex-col md:flex-row md:min-h-0">
+        <div className="flex flex-col md:flex-none md:w-1/2 border-b md:border-b-0 md:border-r border-border md:min-h-0 print-hide">
           <div className="flex items-center justify-between px-3 py-1.5 border-b border-border bg-card/20 flex-none gap-2">
             <span className="text-xs font-medium text-muted-foreground">Diagram Code</span>
             <div className="flex items-center gap-1.5">
@@ -850,13 +850,13 @@ export function ApplyTab({
             placeholder="Paste your Mermaid diagram here…"
             aria-label="Mermaid diagram code input"
             className={`forge-code-panel flex-1 w-full p-3 text-xs font-mono resize-none md:min-h-0 transition-all ${
-              textareaExpanded ? "min-h-[60vh]" : "min-h-[88px]"
+              textareaExpanded ? "min-h-[60vh]" : "min-h-[160px]"
             }`}
             spellCheck={false}
           />
         </div>
 
-        <div className="flex flex-col flex-1 md:flex-none md:w-1/2 min-h-0 overflow-hidden">
+        <div className="flex flex-col md:flex-none md:w-1/2 md:min-h-0 md:overflow-hidden">
           <div className="flex items-center gap-2 px-3 py-1.5 border-b border-border bg-card/20 flex-none flex-wrap print-hide">
             <div
               className="flex items-center gap-1"
@@ -955,7 +955,7 @@ export function ApplyTab({
           </div>
           {previewMode === "code" ? (
             <textarea
-              className="forge-code-panel flex-1 w-full p-3 text-xs font-mono resize-none overflow-auto focus:outline-none"
+              className="forge-code-panel flex-1 min-h-[160px] md:min-h-0 w-full p-3 text-xs font-mono resize-none overflow-auto focus:outline-none"
               value={effectiveExportCode}
               onChange={(e) => setCodeEditorOverride(e.target.value)}
               spellCheck={false}
@@ -963,7 +963,7 @@ export function ApplyTab({
               placeholder="Paste a diagram above to see the styled output…"
             />
           ) : (
-            <div className="flex-1 overflow-auto p-3 md:p-4" data-print-only>
+            <div className="md:flex-1 overflow-auto p-3 md:p-4 min-h-[260px]" data-print-only>
               {previewMode === "diff" ? (
                 <DiffView oldText={activeDiagramCode} newText={themedCode} className="w-full h-full" />
               ) : (
