@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { buildClassDefString, type ClassDef } from "@/lib/themeEngine";
 
 interface ClassBrowserProps {
@@ -153,6 +153,26 @@ function ClassNode({
 
 export function ClassBrowser({ classDefs, supportsClassDef = true, usedClassNames }: ClassBrowserProps) {
   const [copiedState, setCopiedState] = useState<CopiedState>(null);
+  const [showPreview, setShowPreview] = useState(false);
+  const previewRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!showPreview) return;
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setShowPreview(false);
+    }
+    function handleClick(e: MouseEvent) {
+      if (previewRef.current && !previewRef.current.contains(e.target as Node)) {
+        setShowPreview(false);
+      }
+    }
+    document.addEventListener("keydown", handleKey);
+    document.addEventListener("mousedown", handleClick);
+    return () => {
+      document.removeEventListener("keydown", handleKey);
+      document.removeEventListener("mousedown", handleClick);
+    };
+  }, [showPreview]);
 
   const sortedClassDefs = useMemo<ClassDef[]>(() => {
     if (!usedClassNames || usedClassNames.size === 0) return classDefs;
@@ -199,6 +219,11 @@ export function ClassBrowser({ classDefs, supportsClassDef = true, usedClassName
     setTimeout(() => setCopiedState(null), 1800);
   }, [sortedClassDefs, writeToClipboard]);
 
+  const previewBlock = useMemo(
+    () => sortedClassDefs.map((def) => buildClassDefString(def)).join("\n"),
+    [sortedClassDefs]
+  );
+
   const toastLabel =
     copiedState?.kind === "all"
       ? `Copied ${copiedState.name} classDefs`
@@ -210,7 +235,8 @@ export function ClassBrowser({ classDefs, supportsClassDef = true, usedClassName
 
   return (
     <div className={`flex flex-col h-full overflow-auto p-4 bg-muted/20 ${!supportsClassDef ? "opacity-60" : ""}`}>
-      <div className="mb-3 flex items-start justify-between gap-2">
+      <div ref={previewRef} className="mb-3">
+      <div className="flex items-start justify-between gap-2">
         <div>
           <p className="text-xs font-semibold text-foreground flex items-center gap-2">
             Class Library
@@ -252,6 +278,29 @@ export function ClassBrowser({ classDefs, supportsClassDef = true, usedClassName
           )}
           <button
             type="button"
+            onClick={() => setShowPreview((v) => !v)}
+            disabled={!supportsClassDef}
+            title={showPreview ? "Hide classDef preview" : "Preview what 'Copy all' will paste"}
+            aria-pressed={showPreview}
+            aria-label="Preview all classDefs"
+            className={`inline-flex items-center justify-center w-[26px] h-[26px] rounded-md text-[10px] border transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus:ring-1 focus:ring-primary/60 ${
+              showPreview
+                ? "border-primary/50 bg-primary/10 text-primary"
+                : "border-border/50 bg-card/70 text-muted-foreground hover:text-foreground hover:border-primary/40 hover:bg-card"
+            }`}
+          >
+            <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5">
+              <ellipse cx="7" cy="7" rx="5.5" ry="3.5" stroke="currentColor" strokeWidth="1.2" />
+              <circle cx="7" cy="7" r="1.5" fill="currentColor" />
+              {showPreview && (
+                <>
+                  <line x1="2" y1="2" x2="12" y2="12" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+                </>
+              )}
+            </svg>
+          </button>
+          <button
+            type="button"
             onClick={handleCopyAll}
             disabled={!supportsClassDef}
             title="Copy all classDefs as a single block"
@@ -264,6 +313,31 @@ export function ClassBrowser({ classDefs, supportsClassDef = true, usedClassName
             Copy all
           </button>
         </div>
+      </div>
+
+      {showPreview && supportsClassDef && (
+        <div className="mt-2 rounded-md border border-border/50 bg-[#0f1f1c] overflow-hidden">
+          <div className="flex items-center justify-between px-3 py-1.5 border-b border-white/8">
+            <span className="text-[10px] font-medium text-[#d4c9b5]/60 uppercase tracking-wider font-mono">
+              Preview — {sortedClassDefs.length} classDef{sortedClassDefs.length !== 1 ? "s" : ""}
+            </span>
+            <button
+              type="button"
+              onClick={() => setShowPreview(false)}
+              aria-label="Close preview"
+              className="text-[#d4c9b5]/40 hover:text-[#d4c9b5]/80 transition-colors focus:outline-none focus:ring-1 focus:ring-white/30 rounded"
+            >
+              <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-3 h-3">
+                <line x1="2" y1="2" x2="12" y2="12" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+                <line x1="12" y1="2" x2="2" y2="12" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+              </svg>
+            </button>
+          </div>
+          <pre className="px-3 py-2.5 text-[11px] font-mono text-[#d4c9b5] leading-relaxed overflow-x-auto whitespace-pre select-all">
+            {previewBlock}
+          </pre>
+        </div>
+      )}
       </div>
 
       {!supportsClassDef && (
