@@ -72,6 +72,7 @@ export function MermaidPreview({ code, className }: MermaidPreviewProps) {
   const [scale, setScale] = useState(1);
   const [translate, setTranslate] = useState({ x: 0, y: 0 });
   const [isPanning, setIsPanning] = useState(false);
+  const [statusAnnouncement, setStatusAnnouncement] = useState("");
 
   const panAnchor = useRef<{ mouseX: number; mouseY: number; tx: number; ty: number } | null>(null);
   const translateRef = useRef({ x: 0, y: 0 });
@@ -206,13 +207,16 @@ export function MermaidPreview({ code, className }: MermaidPreviewProps) {
           setSvgContent(svg);
           setError(null);
           setLoading(false);
+          setStatusAnnouncement("Diagram rendered");
         }
       } catch (err) {
         if (!canceled) {
           const message = err instanceof Error ? err.message : String(err);
-          setError(message.replace(/<br\s*\/?>/gi, "\n").replace(/<[^>]*>/g, ""));
+          const cleanMessage = message.replace(/<br\s*\/?>/gi, "\n").replace(/<[^>]*>/g, "");
+          setError(cleanMessage);
           setSvgContent("");
           setLoading(false);
+          setStatusAnnouncement(`Render error: ${cleanMessage.slice(0, 100)}`);
         }
       }
     })();
@@ -223,106 +227,105 @@ export function MermaidPreview({ code, className }: MermaidPreviewProps) {
   }, [code, uniqueId]);
 
   const btnBase = "forge-preview-btn";
-
-  if (!code.trim()) {
-    return (
-      <div className={`flex flex-col items-center justify-center text-muted-foreground gap-2 ${className ?? ""}`}>
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-          <rect x="3" y="3" width="18" height="18" rx="2" />
-          <path d="M9 9h1M9 12h1M9 15h1M13 9h2M13 12h2M13 15h2" />
-        </svg>
-        <p className="text-sm">Paste a Mermaid diagram to see the preview</p>
-      </div>
-    );
-  }
-
-  if (loading && !svgContent) {
-    return (
-      <div className={`flex flex-col items-center justify-center text-muted-foreground gap-3 ${className ?? ""}`}>
-        <svg className="animate-spin w-8 h-8 text-primary/60" viewBox="0 0 24 24" fill="none">
-          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
-          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
-        </svg>
-        <p className="text-xs">Rendering diagram…</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className={`flex flex-col items-center justify-center gap-3 ${className ?? ""}`}>
-        <div className="w-full max-w-lg rounded-lg border border-destructive/30 bg-destructive/8 p-4">
-          <p className="text-sm font-semibold text-destructive mb-1">Render Error</p>
-          <pre className="text-xs text-destructive/80 whitespace-pre-wrap font-mono">{error}</pre>
-        </div>
-      </div>
-    );
-  }
+  const isEmpty = !code.trim();
+  const isLoadingInitial = loading && !svgContent && !error;
 
   return (
     <div className={`relative overflow-hidden ${className ?? ""}`}>
-      {/* Pan/zoom canvas */}
-      <div
-        ref={containerRef}
-        className="w-full h-full overflow-hidden select-none flex items-center justify-center"
-        style={{ cursor: isPanning ? "grabbing" : "grab", touchAction: "none" }}
-        onMouseDown={onMouseDown}
-        onDoubleClick={onDoubleClick}
-        onTouchStart={onTouchStart}
-        onTouchMove={onTouchMove}
-        onTouchEnd={onTouchEnd}
-        onTouchCancel={onTouchEnd}
-        title="Drag to pan · Scroll to zoom · Double-click to reset"
-      >
-        <div
-          style={{
-            transform: `translate(${translate.x}px, ${translate.y}px) scale(${scale})`,
-            transformOrigin: "center center",
-            flexShrink: 0,
-          }}
-          dangerouslySetInnerHTML={{ __html: svgContent }}
-        />
+      {/* Always-mounted screen reader live region — stays in the DOM across all render states */}
+      <div aria-live="polite" aria-atomic="true" className="sr-only">
+        {statusAnnouncement}
       </div>
 
-      {/* Controls overlay */}
-      <div
-        className="absolute bottom-2 right-2 z-10 flex items-center gap-0.5 forge-preview-controls"
-        onMouseDown={(e) => e.stopPropagation()}
-      >
-        <button
-          className={btnBase}
-          onClick={zoomOut}
-          title="Zoom out (scroll down)"
-          disabled={scale <= MIN_SCALE}
-          aria-label="Zoom out"
-        >
-          <IconZoomOut />
-        </button>
-        <span
-          className="forge-preview-counter tabular-nums"
-          title="Current zoom level"
-        >
-          {Math.round(scale * 100)}%
-        </span>
-        <button
-          className={btnBase}
-          onClick={zoomIn}
-          title="Zoom in (scroll up)"
-          disabled={scale >= MAX_SCALE}
-          aria-label="Zoom in"
-        >
-          <IconZoomIn />
-        </button>
-        <div className="mx-0.5 h-3.5 w-px bg-white/15" />
-        <button
-          className={btnBase}
-          onClick={resetView}
-          title="Reset view (double-click)"
-          aria-label="Reset view"
-        >
-          <IconReset />
-        </button>
-      </div>
+      {isEmpty ? (
+        <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground gap-2">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+            <rect x="3" y="3" width="18" height="18" rx="2" />
+            <path d="M9 9h1M9 12h1M9 15h1M13 9h2M13 12h2M13 15h2" />
+          </svg>
+          <p className="text-sm">Paste a Mermaid diagram to see the preview</p>
+        </div>
+      ) : isLoadingInitial ? (
+        <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground gap-3">
+          <svg className="animate-spin w-8 h-8 text-primary/60" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+          </svg>
+          <p className="text-xs">Rendering diagram…</p>
+        </div>
+      ) : error ? (
+        <div className="w-full h-full flex flex-col items-center justify-center gap-3">
+          <div className="w-full max-w-lg rounded-lg border border-destructive/30 bg-destructive/8 p-4">
+            <p className="text-sm font-semibold text-destructive mb-1">Render Error</p>
+            <pre className="text-xs text-destructive/80 whitespace-pre-wrap font-mono">{error}</pre>
+          </div>
+        </div>
+      ) : (
+        <>
+          {/* Pan/zoom canvas */}
+          <div
+            ref={containerRef}
+            className="w-full h-full overflow-hidden select-none flex items-center justify-center"
+            style={{ cursor: isPanning ? "grabbing" : "grab", touchAction: "none" }}
+            onMouseDown={onMouseDown}
+            onDoubleClick={onDoubleClick}
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
+            onTouchCancel={onTouchEnd}
+            title="Drag to pan · Scroll to zoom · Double-click to reset"
+          >
+            <div
+              style={{
+                transform: `translate(${translate.x}px, ${translate.y}px) scale(${scale})`,
+                transformOrigin: "center center",
+                flexShrink: 0,
+              }}
+              dangerouslySetInnerHTML={{ __html: svgContent }}
+            />
+          </div>
+
+          {/* Controls overlay */}
+          <div
+            className="absolute bottom-2 right-2 z-10 flex items-center gap-0.5 forge-preview-controls"
+            onMouseDown={(e) => e.stopPropagation()}
+          >
+            <button
+              className={btnBase}
+              onClick={zoomOut}
+              title="Zoom out (scroll down)"
+              disabled={scale <= MIN_SCALE}
+              aria-label="Zoom out"
+            >
+              <IconZoomOut />
+            </button>
+            <span
+              className="forge-preview-counter tabular-nums"
+              title="Current zoom level"
+            >
+              {Math.round(scale * 100)}%
+            </span>
+            <button
+              className={btnBase}
+              onClick={zoomIn}
+              title="Zoom in (scroll up)"
+              disabled={scale >= MAX_SCALE}
+              aria-label="Zoom in"
+            >
+              <IconZoomIn />
+            </button>
+            <div className="mx-0.5 h-3.5 w-px bg-white/15" />
+            <button
+              className={btnBase}
+              onClick={resetView}
+              title="Reset view (double-click)"
+              aria-label="Reset view"
+            >
+              <IconReset />
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 }

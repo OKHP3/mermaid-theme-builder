@@ -675,13 +675,14 @@ function AppShell() {
         })}
       </nav>
 
-      <main
-        className="flex-1 overflow-hidden pb-20 md:pb-0 min-h-0"
-        role="tabpanel"
-        id={`tabpanel-${activeTab}`}
-        aria-labelledby={`tab-${activeTab}`}
-        tabIndex={-1}
-      >
+      <main className="flex-1 overflow-hidden pb-20 md:pb-0 min-h-0">
+        <div
+          role="tabpanel"
+          id={`tabpanel-${activeTab}`}
+          aria-label={TAB_CONFIG.find((t) => t.id === activeTab)?.label ?? activeTab}
+          tabIndex={-1}
+          className="h-full"
+        >
         {activeTab === "apply" && (
           <ApplyTab
             selectedPalette={selectedPalette}
@@ -762,6 +763,7 @@ function AppShell() {
             onShowToast={showToast}
           />
         )}
+        </div>
       </main>
 
       <div className="md:hidden fixed bottom-14 left-0 right-0 z-20 flex items-center justify-center px-4 py-1 print-hide" style={{background: '#0f1a17', borderTop: '1px solid rgba(212,201,181,0.08)'}}>
@@ -774,13 +776,31 @@ function AppShell() {
         className="forge-mobile-nav fixed bottom-0 left-0 right-0 flex md:hidden z-30 shrink-0 print-hide"
         role="tablist"
         aria-label="Mermaid Theme Builder sections (mobile)"
+        onKeyDown={(e) => {
+          if (e.key !== "ArrowLeft" && e.key !== "ArrowRight" && e.key !== "Home" && e.key !== "End") return;
+          e.preventDefault();
+          const idx = TAB_CONFIG.findIndex((t) => t.id === activeTab);
+          let next = idx;
+          if (e.key === "ArrowLeft") next = (idx - 1 + TAB_CONFIG.length) % TAB_CONFIG.length;
+          else if (e.key === "ArrowRight") next = (idx + 1) % TAB_CONFIG.length;
+          else if (e.key === "Home") next = 0;
+          else if (e.key === "End") next = TAB_CONFIG.length - 1;
+          const nextId = TAB_CONFIG[next].id;
+          setActiveTab(nextId);
+          requestAnimationFrame(() => {
+            const btn = document.querySelector<HTMLButtonElement>(`.forge-mobile-nav [data-tab-id="${nextId}"]`);
+            btn?.focus();
+          });
+        }}
       >
         {TAB_CONFIG.map((tab) => {
           const selected = activeTab === tab.id;
           return (
             <button
               key={tab.id}
+              data-tab-id={tab.id}
               role="tab"
+              id={`mobile-tab-${tab.id}`}
               aria-selected={selected}
               aria-controls={`tabpanel-${tab.id}`}
               tabIndex={selected ? 0 : -1}

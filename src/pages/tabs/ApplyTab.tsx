@@ -848,6 +848,7 @@ export function ApplyTab({
             value={inputCode}
             onChange={(e) => onInputChange(e.target.value)}
             placeholder="Paste your Mermaid diagram here…"
+            aria-label="Mermaid diagram code input"
             className={`forge-code-panel flex-1 w-full p-3 text-xs font-mono resize-none md:min-h-0 transition-all ${
               textareaExpanded ? "min-h-[60vh]" : "min-h-[88px]"
             }`}
@@ -857,12 +858,34 @@ export function ApplyTab({
 
         <div className="flex flex-col flex-1 md:flex-none md:w-1/2 min-h-0 overflow-hidden">
           <div className="flex items-center gap-2 px-3 py-1.5 border-b border-border bg-card/20 flex-none flex-wrap print-hide">
-            <div className="flex items-center gap-1" role="tablist" aria-label="Preview mode">
+            <div
+              className="flex items-center gap-1"
+              role="tablist"
+              aria-label="Preview mode"
+              onKeyDown={(e) => {
+                const modes: PreviewMode[] = ["original", "themed", "diff", "code"];
+                const idx = modes.indexOf(previewMode);
+                let next: number | null = null;
+                if (e.key === "ArrowLeft") next = (idx - 1 + modes.length) % modes.length;
+                else if (e.key === "ArrowRight") next = (idx + 1) % modes.length;
+                else if (e.key === "Home") next = 0;
+                else if (e.key === "End") next = modes.length - 1;
+                if (next !== null) {
+                  e.preventDefault();
+                  setPreviewMode(modes[next]);
+                  requestAnimationFrame(() => {
+                    const btn = document.querySelector<HTMLButtonElement>(`[data-preview-mode="${modes[next!]}"]`);
+                    btn?.focus();
+                  });
+                }
+              }}
+            >
               {(["original", "themed", "diff", "code"] as PreviewMode[]).map((mode) => {
                 const selected = previewMode === mode;
                 return (
                   <button
                     key={mode}
+                    data-preview-mode={mode}
                     role="tab"
                     aria-selected={selected}
                     tabIndex={selected ? 0 : -1}
@@ -1145,7 +1168,7 @@ export function ApplyTab({
             className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"
             onClick={() => setShowColorEditor(false)}
           />
-          <div
+          <aside
             ref={colorEditorRef}
             className="fixed right-0 top-0 z-50 h-full w-full md:w-80 bg-card border-l border-border flex flex-col shadow-2xl print-hide"
             role="dialog"
@@ -1162,19 +1185,23 @@ export function ApplyTab({
               <div className="flex items-center gap-2">
                 {hasCustomizations && (
                   <button
+                    type="button"
                     onClick={() => {
                       onResetPalette();
                     }}
+                    aria-label="Reset all color overrides to default"
                     className="text-xs text-muted-foreground hover:text-destructive transition-colors"
                   >
                     Reset
                   </button>
                 )}
                 <button
+                  type="button"
                   onClick={() => setShowColorEditor(false)}
+                  aria-label="Close color editor"
                   className="p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
                 >
-                  <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+                  <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4" aria-hidden="true">
                     <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
                   </svg>
                 </button>
@@ -1211,7 +1238,7 @@ export function ApplyTab({
                 More options in Compose →
               </button>
             </div>
-          </div>
+          </aside>
         </>
       )}
 

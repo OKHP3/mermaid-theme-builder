@@ -43,14 +43,18 @@ export function ColorSwatch({ color, onChange, isOverridden = false, onReset }: 
     return (
       <div className="flex items-center gap-2 py-1.5 px-2 rounded-md hover:bg-muted/50 transition-colors group">
         <div className="w-7 h-7 rounded border border-border bg-secondary flex items-center justify-center shrink-0">
-          <span className="text-[10px] font-bold text-muted-foreground">Aa</span>
+          <span className="text-[10px] font-bold text-muted-foreground" aria-hidden="true">Aa</span>
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-xs font-medium text-foreground">{color.label}</p>
+          <label className="text-xs font-medium text-foreground" htmlFor={`swatch-font-${color.key}`}>
+            {color.label}
+          </label>
           <input
+            id={`swatch-font-${color.key}`}
             type="text"
             value={localValue}
             onChange={handleTextInput}
+            aria-label={`Font family for ${color.label}`}
             className="text-xs text-muted-foreground bg-transparent border-0 p-0 w-full focus:outline-none focus:text-foreground"
           />
         </div>
@@ -60,7 +64,7 @@ export function ColorSwatch({ color, onChange, isOverridden = false, onReset }: 
 
   return (
     <div className="flex items-center gap-2 py-1.5 px-2 rounded-md hover:bg-muted/50 transition-colors group">
-      <div className="relative w-7 h-7 shrink-0">
+      <div className="relative w-7 h-7 shrink-0 focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-1 rounded">
         <div
           className="absolute inset-0 rounded border border-border"
           style={{ backgroundColor: isHexColor ? localValue : "#e5e7eb" }}
@@ -70,17 +74,22 @@ export function ColorSwatch({ color, onChange, isOverridden = false, onReset }: 
             type="color"
             value={localValue.length === 7 ? localValue : "#1a4f8a"}
             onChange={handleColorPicker}
-            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer rounded"
+            aria-label={`Color picker for ${color.label}`}
             title={`Pick color for ${color.label}`}
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer rounded"
           />
         )}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-xs font-medium text-foreground">{color.label}</p>
+        <label className="text-xs font-medium text-foreground" htmlFor={`swatch-text-${color.key}`}>
+          {color.label}
+        </label>
         <input
+          id={`swatch-text-${color.key}`}
           type="text"
           value={localValue}
           onChange={handleTextInput}
+          aria-label={`Hex value for ${color.label}`}
           className="text-xs text-muted-foreground bg-transparent border-0 p-0 w-full focus:outline-none focus:text-foreground font-mono"
           placeholder="#000000"
         />
