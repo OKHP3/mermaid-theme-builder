@@ -229,3 +229,51 @@ describe("ClassBrowser — aria accessibility (active state)", () => {
     expect(html).not.toContain("aria-disabled");
   });
 });
+
+describe("ClassBrowser — Copy used button", () => {
+  it("shows 'Copy used' button when usedClassNames is non-empty and supportsClassDef={true}", () => {
+    const html = render({
+      supportsClassDef: true,
+      usedClassNames: new Set(["primary"]),
+    });
+    expect(html).toContain("Copy used");
+  });
+
+  it("includes the used count in the button label", () => {
+    const html = render({
+      supportsClassDef: true,
+      usedClassNames: new Set(["primary", "secondary"]),
+    });
+    expect(html).toContain("Copy used (");
+    expect(html).toContain(">2<");
+  });
+
+  it("does NOT show 'Copy used' when usedClassNames is empty", () => {
+    const html = render({
+      supportsClassDef: true,
+      usedClassNames: new Set(),
+    });
+    expect(html).not.toContain("Copy used");
+  });
+
+  it("does NOT show 'Copy used' when usedClassNames is omitted", () => {
+    const html = render({ supportsClassDef: true });
+    expect(html).not.toContain("Copy used");
+  });
+
+  it("does NOT show 'Copy used' when supportsClassDef={false} even if classes are in use", () => {
+    const html = render({
+      supportsClassDef: false,
+      usedClassNames: new Set(["primary"]),
+    });
+    expect(html).not.toContain("Copy used");
+  });
+
+  it("'Copy used' button has emerald styling to distinguish it from 'Copy all'", () => {
+    const html = render({
+      supportsClassDef: true,
+      usedClassNames: new Set(["primary"]),
+    });
+    expect(html).toContain("border-emerald-500");
+  });
+});

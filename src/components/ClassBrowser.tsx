@@ -33,7 +33,7 @@ function parseFontStyle(extra: string): string | undefined {
 }
 
 
-type CopiedState = { name: string; kind: "usage" | "classdef" | "all" } | null;
+type CopiedState = { name: string; kind: "usage" | "classdef" | "all" | "used" } | null;
 
 function ClassNode({
   def,
@@ -219,6 +219,15 @@ export function ClassBrowser({ classDefs, supportsClassDef = true, usedClassName
     setTimeout(() => setCopiedState(null), 1800);
   }, [sortedClassDefs, writeToClipboard]);
 
+  const handleCopyUsed = useCallback(async () => {
+    if (!usedClassNames || usedClassNames.size === 0) return;
+    const usedDefs = sortedClassDefs.filter((def) => usedClassNames.has(def.name));
+    const block = usedDefs.map((def) => buildClassDefString(def)).join("\n");
+    await writeToClipboard(block);
+    setCopiedState({ name: String(usedDefs.length), kind: "used" });
+    setTimeout(() => setCopiedState(null), 1800);
+  }, [sortedClassDefs, usedClassNames, writeToClipboard]);
+
   const previewBlock = useMemo(
     () => sortedClassDefs.map((def) => buildClassDefString(def)).join("\n"),
     [sortedClassDefs]
@@ -227,6 +236,8 @@ export function ClassBrowser({ classDefs, supportsClassDef = true, usedClassName
   const toastLabel =
     copiedState?.kind === "all"
       ? `Copied ${copiedState.name} classDefs`
+      : copiedState?.kind === "used"
+      ? `Copied ${copiedState.name} classDef${copiedState.name !== "1" ? "s" : ""}`
       : copiedState?.kind === "classdef"
       ? `Copied classDef ${copiedState.name}`
       : copiedState?.kind === "usage"
@@ -299,6 +310,21 @@ export function ClassBrowser({ classDefs, supportsClassDef = true, usedClassName
               )}
             </svg>
           </button>
+          {usedClassNames && usedClassNames.size > 0 && supportsClassDef && (
+            <button
+              type="button"
+              onClick={handleCopyUsed}
+              title={`Copy only the ${usedClassNames.size} classDef${usedClassNames.size !== 1 ? "s" : ""} used in the current diagram`}
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-medium border border-emerald-500/50 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/20 hover:border-emerald-500/70 transition-colors focus:outline-none focus:ring-1 focus:ring-emerald-500/60"
+            >
+              <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-3 h-3">
+                <rect x="4.5" y="1" width="7.5" height="9" rx="1.2" stroke="currentColor" strokeWidth="1.2" />
+                <rect x="2" y="4" width="7.5" height="9" rx="1.2" fill="currentColor" fillOpacity="0.12" stroke="currentColor" strokeWidth="1.2" />
+                <path d="M5.5 9.5l1.5 1.5 3-3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              Copy used ({usedClassNames.size})
+            </button>
+          )}
           <button
             type="button"
             onClick={handleCopyAll}
