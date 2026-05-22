@@ -510,6 +510,30 @@ ${frontmatterBlock}
     }
     CUSTOMER ||--o{ ORDER : "places"
     ORDER }o--|{ PRODUCT : "contains"`
+      : diagramFamily === "classDiagram"
+      ? `classDiagram
+    class User {
+        +int userId
+        +String email
+        +login() bool
+    }
+    class Service {
+        +String name
+        +process(request) Response
+    }
+    class Database {
+        +String host
+        +query(sql) Result
+    }
+    User:::actor --> Service:::primary : calls
+    Service:::primary --> Database:::platform : reads`
+      : diagramFamily === "stateDiagram"
+      ? `stateDiagram-v2
+    [*] --> Idle
+    Idle --> Active : start
+    Active --> Paused : pause
+    Paused --> Active : resume
+    Active --> [*] : complete`
       : diagramFamily === "flowchart" || diagramFamily === "unknown"
       ? `flowchart TD
     A[Start] --> B[Process]
@@ -671,7 +695,131 @@ Relationship statement format: \`ENTITY_A cardinality ENTITY_B : "label"\`
 
 ## ER diagram: theming note
 
-All ER diagram colors come from the theme directive. No per-entity style overrides are possible with classDef or inline styling.` : `## Semantic classDef library
+All ER diagram colors come from the theme directive. No per-entity style overrides are possible with classDef or inline styling.` : diagramFamily === "classDiagram" ? `## Class diagram: declaration syntax & classDef theming
+
+\`classDiagram\` supports \`:::className\` styling — apply the semantic classDef vocabulary below to class nodes. The theme directive controls default colors; classDef adds per-node variation.
+
+### Class declaration syntax
+
+Declare classes with their attributes and methods:
+
+\`\`\`mermaid
+${exampleDirective}
+classDiagram
+    class Animal {
+        +String name
+        +int age
+        +makeSound() String
+        -sleep() void
+    }
+    class Dog {
+        +String breed
+        +fetch() void
+    }
+    Animal <|-- Dog : inherits
+\`\`\`
+
+Visibility modifiers: \`+\` public, \`-\` private, \`#\` protected, \`~\` package/internal. Return type follows the method name.
+
+### Relationship arrow types
+
+| Arrow | Meaning |
+|-------|---------|
+| \`<|--\` | Inheritance / extension |
+| \`*--\` | Composition (filled diamond) |
+| \`o--\` | Aggregation (open diamond) |
+| \`-->\` | Association / dependency |
+| \`..>\` | Dashed dependency |
+| \`..|>\` | Realization / implements |
+| \`--\` | Solid link |
+| \`..\` | Dashed link |
+
+Cardinality on each end: \`Dog "1" --> "0..*" Owner : owns\`
+
+---
+
+## Semantic classDef library
+
+Apply these classDef classes to class nodes using \`:::className\` syntax. Do NOT add any other fill, stroke, or color values — use only these classes.
+
+\`\`\`mermaid
+${exampleDirective}
+classDiagram
+${classDefBlock}
+
+    %% Apply to a class node: class MyClass:::primary
+    %% Class with members: class Service:::platform { +process() void }
+\`\`\`
+
+### Class reference table
+
+| Class | Role | When to use |
+|-------|------|-------------|
+| \`primary\` | Main action / primary entity | Core domain classes |
+| \`secondary\` | Supporting / related | Adjacent services, helpers |
+| \`tertiary\` | Background / context | Passive or reference classes |
+| \`platform\` | Platform / infrastructure | Databases, queues, runtimes |
+| \`boundary\` | System boundary (dashed) | External systems, APIs |
+| \`actor\` | Person / user / role | User types, personas |
+| \`gate\` | Decision / gateway | Routing or condition classes |
+| \`control\` | Control / management | Orchestrators, managers |
+| \`log\` | Log / audit / record (italic) | Audit or event classes |
+| \`question\` | Open question / TBD (dashed) | Unknowns, pending design |
+| \`accent\` | Highlighted / key result | Output or result classes |
+| \`deepBlue\` | Deep emphasis | Core or critical classes |
+| \`slate\` | Neutral / muted | Supporting detail classes |
+| \`scope\` | In-scope boundary | Classes explicitly in scope |
+| \`outOfScope\` | Out-of-scope (faded, dashed) | Excluded classes |
+| \`redDash\` | Warning / error / blocker | Error or exception classes |` : diagramFamily === "stateDiagram" ? `## State diagram: declaration syntax & theming
+
+\`stateDiagram-v2\` styling is primarily controlled by the theme directive above — state box colors, transition arrow colors, and label fonts all come from the theme variables. classDef is available but renderer support varies; test in your target renderer before relying on per-state styling.
+
+### State declaration syntax
+
+\`\`\`mermaid
+${exampleDirective}
+stateDiagram-v2
+    [*] --> Idle
+    Idle --> Processing : submit
+    Processing --> Success : complete
+    Processing --> Error : fail
+    Success --> [*]
+    Error --> Idle : retry
+\`\`\`
+
+Use \`[*]\` for the initial state and terminal (end) states. Transition labels follow the arrow after a colon.
+
+### Composite states and concurrency
+
+\`\`\`mermaid
+${exampleDirective}
+stateDiagram-v2
+    state Processing {
+        [*] --> Validating
+        Validating --> Executing
+        Executing --> [*]
+    }
+
+    state "Parallel work" as parallel {
+        [*] --> TaskA
+        --
+        [*] --> TaskB
+    }
+
+    note right of Processing
+        Logged to audit trail
+    end note
+\`\`\`
+
+### ClassDef styling (limited renderer support)
+
+classDef is technically available in state diagrams but support varies by renderer. Use the theme directive as the primary styling mechanism:
+
+\`\`\`mermaid
+stateDiagram-v2
+    classDef active fill:#abc,stroke:#def
+    class Processing active
+\`\`\`` : `## Semantic classDef library
 
 This is the complete styling vocabulary for this theme. Apply these classDef classes to nodes using \`:::className\` syntax. Do NOT add any other fill, stroke, or color values — use only these classes.
 
@@ -756,6 +904,26 @@ ${diagramFamily === "sequenceDiagram" ? `1. ${formatRuleText}
 8. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values — the theme directive handles all styling.
 9. Do NOT change any color values — reproduce them exactly as shown.
 10. Attribute type names are descriptive only; Mermaid does not validate them against a schema.
+11. If the diagram type changes, preserve the exact same theme directive.` : diagramFamily === "classDiagram" ? `1. ${formatRuleText}
+2. Add the metadata comment block immediately after the theme directive.
+3. Use \`classDiagram\` as the diagram type.
+4. Declare classes with their attributes and methods: \`class Name { +type attr method() ReturnType }\`.
+5. Use visibility modifiers: \`+\` (public), \`-\` (private), \`#\` (protected), \`~\` (package).
+6. Use correct relationship arrows: \`<|--\` (inheritance), \`*--\` (composition), \`o--\` (aggregation), \`-->\` (association).
+7. Include cardinality labels where meaningful: \`"1"\` / \`"0..*"\` on each end of the line.
+8. Style class nodes using \`:::className\` with the classDef vocabulary from the scaffold.
+9. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values — use classDef classes instead.
+10. Do NOT change any color values — reproduce them exactly as shown.
+11. If the diagram type changes, preserve the exact same theme directive.` : diagramFamily === "stateDiagram" ? `1. ${formatRuleText}
+2. Add the metadata comment block immediately after the theme directive.
+3. Use \`stateDiagram-v2\` as the diagram type.
+4. Use \`[*]\` for the initial state and terminal (end) states.
+5. Transition syntax: \`StateA --> StateB : label\`.
+6. Use \`state CompositeName { ... }\` for composite (nested) states.
+7. Use \`--\` inside a composite state to separate concurrent regions.
+8. classDef styling is available but support varies by renderer — test before relying on it.
+9. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values — the theme directive handles all styling.
+10. Do NOT change any color values — reproduce them exactly as shown.
 11. If the diagram type changes, preserve the exact same theme directive.` : `1. ${formatRuleText}
 2. Add the metadata comment block immediately after the theme directive.
 3. Use \`${diagramFamily === "unknown" ? "flowchart TD" : diagramFamily === "flowchart" ? "flowchart TD" : diagramFamily}\` as the diagram type unless the user specifies otherwise.

@@ -215,4 +215,63 @@ describe("generatePromptScaffoldWithFormat", () => {
     expect(result).toContain(":::className");
     expect(result).toContain("erDiagram does not support per-entity classDef styling");
   });
+
+  it("includes class-diagram-specific section when diagramFamily is classDiagram", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "classDiagram" },
+      "both",
+    );
+    expect(result).toContain("Class diagram");
+    expect(result).toContain("Relationship arrow types");
+    expect(result).toContain("classDiagram");
+  });
+
+  it("includes classDef library for classDiagram (:::className is supported)", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "classDiagram" },
+      "both",
+    );
+    expect(result).toContain("## Semantic classDef library");
+    expect(result).toContain("classDef");
+  });
+
+  it("does not include subgraph tier patterns for classDiagram", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "classDiagram" },
+      "both",
+    );
+    expect(result).not.toContain("Subgraph tier patterns");
+  });
+
+  it("includes state-diagram-specific section when diagramFamily is stateDiagram", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "stateDiagram" },
+      "both",
+    );
+    expect(result).toContain("State diagram");
+    expect(result).toContain("stateDiagram-v2");
+    expect(result).toContain("[*]");
+  });
+
+  it("includes limited classDef support note for stateDiagram", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "stateDiagram" },
+      "both",
+    );
+    expect(result).toContain("limited renderer support");
+  });
+
+  it("does not include subgraph tier patterns for stateDiagram", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "stateDiagram" },
+      "both",
+    );
+    expect(result).not.toContain("Subgraph tier patterns");
+  });
 });
