@@ -418,6 +418,29 @@ export function ComposeTab({
 
         <div className="p-3 border-b border-border">
           <div className="flex items-center justify-between mb-1">
+            <p className="forge-eyebrow">Extract Theme</p>
+            <button
+              type="button"
+              onClick={() => setExtractOpen(v => !v)}
+              className="p-0.5 text-muted-foreground"
+              aria-expanded={extractOpen}
+              aria-label="Toggle Extract Theme"
+            >
+              <svg viewBox="0 0 12 12" fill="currentColor" className={`w-3.5 h-3.5 transition-transform ${extractOpen ? "rotate-180" : ""}`} aria-hidden="true"><path d="M3 4.5l3 3 3-3z" /></svg>
+            </button>
+          </div>
+          <div className={`${extractOpen ? "" : "hidden"}`}>
+            <ExtractTab
+              embedded
+              onUseExtractedTheme={onUseExtractedTheme}
+              onSwitchTab={onSwitchTab}
+              onShowToast={onShowToast}
+            />
+          </div>
+        </div>
+
+        <div className="p-3 border-b border-border">
+          <div className="flex items-center justify-between mb-1">
             <p className="forge-eyebrow">Colors</p>
             <div className="flex items-center gap-2">
               {hasCustomizations && (
@@ -807,7 +830,7 @@ export function ComposeTab({
           </div>
         </div>
 
-        <div className="p-3 border-b border-border">
+        <div className="p-3">
           <div className="flex items-center justify-between mb-1">
             <p className="forge-eyebrow">Bootstrap Export</p>
             <button
@@ -845,28 +868,6 @@ export function ComposeTab({
           </div>
         </div>
 
-        <div className="p-3">
-          <div className="flex items-center justify-between mb-1">
-            <p className="forge-eyebrow">Extract Theme</p>
-            <button
-              type="button"
-              onClick={() => setExtractOpen(v => !v)}
-              className="p-0.5 text-muted-foreground"
-              aria-expanded={extractOpen}
-              aria-label="Toggle Extract Theme"
-            >
-              <svg viewBox="0 0 12 12" fill="currentColor" className={`w-3.5 h-3.5 transition-transform ${extractOpen ? "rotate-180" : ""}`} aria-hidden="true"><path d="M3 4.5l3 3 3-3z" /></svg>
-            </button>
-          </div>
-          <div className={`${extractOpen ? "" : "hidden"}`}>
-            <ExtractTab
-              embedded
-              onUseExtractedTheme={onUseExtractedTheme}
-              onSwitchTab={onSwitchTab}
-              onShowToast={onShowToast}
-            />
-          </div>
-        </div>
       </div>
 
       <div className="flex-1 flex flex-col overflow-hidden min-h-[280px] md:min-h-0">
