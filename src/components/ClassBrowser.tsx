@@ -340,8 +340,11 @@ export function ClassBrowser({ classDefs, supportsClassDef = true, usedClassName
 
   const hasUsed = (usedClassNames?.size ?? 0) > 0;
   const activePreviewBlock = previewMode === "used" && hasUsed ? usedPreviewBlock : previewBlock;
-  const activePreviewCount =
-    previewMode === "used" && hasUsed ? (usedClassNames?.size ?? 0) : classDefs.length;
+  // Derive count directly from the block so the header always reflects the exact
+  // content that will be copied — never an independently-maintained variable.
+  const activePreviewCount = activePreviewBlock
+    ? activePreviewBlock.split("\n").filter(Boolean).length
+    : 0;
 
   const toastLabel =
     copiedState?.kind === "all"
