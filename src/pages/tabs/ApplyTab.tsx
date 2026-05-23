@@ -844,7 +844,7 @@ export function ApplyTab({
       <FamilySyntaxHint family={effectiveDetection.family} />
 
       <div className="md:flex-1 md:overflow-hidden flex flex-col md:flex-row md:min-h-0">
-        <div className="flex flex-col md:flex-none md:w-1/2 border-b md:border-b-0 md:border-r border-border md:min-h-0 print-hide">
+        <div className="flex flex-col md:flex-none md:w-[35%] border-b md:border-b-0 md:border-r border-border md:min-h-0 print-hide">
           {isExtracted && /^\s*classDef\s+/m.test(inputCode) && (
             <div className="px-3 py-1.5 flex items-start gap-1.5 bg-primary/5 border-b border-primary/20">
               <svg viewBox="0 0 16 16" fill="currentColor" className="w-3 h-3 text-primary shrink-0 mt-0.5" aria-hidden="true">
@@ -878,7 +878,7 @@ export function ApplyTab({
           />
         </div>
 
-        <div className="flex flex-col md:flex-none md:w-1/2 md:min-h-0 md:overflow-hidden">
+        <div className="flex flex-col md:flex-none md:w-[65%] md:min-h-0 md:overflow-hidden">
           <div className="flex items-center gap-2 px-3 py-1.5 border-b border-border bg-card/20 flex-none flex-wrap print-hide">
             <div
               className="flex items-center gap-1"

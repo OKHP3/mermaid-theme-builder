@@ -304,7 +304,7 @@ export function ComposeTab({
 
   return (
     <div className="flex flex-col md:flex-row h-full overflow-hidden">
-      <div className="flex flex-col w-full md:w-80 lg:w-96 border-b md:border-b-0 md:border-r border-border overflow-y-auto shrink-0">
+      <div className="flex flex-col w-full md:w-[35%] border-b md:border-b-0 md:border-r border-border overflow-y-auto shrink-0">
         <div className="p-3 border-b border-border">
           <p className="forge-eyebrow mb-2">
             Theme
