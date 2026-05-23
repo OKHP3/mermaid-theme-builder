@@ -314,6 +314,57 @@ describe("multi-diagram override reset", () => {
     }
   });
 
+  // -------------------------------------------------------------------------
+  // 8. Identical-exportCode edge case: two diagrams whose themed output is
+  //    textually identical must NOT bleed edits between each other.
+  //
+  //    The old implementation only depended on [exportCode], so the useEffect
+  //    would not fire when switching between two diagrams that produce the
+  //    same string. The fix adds activeDiagramIdx to the dependency array so
+  //    the override always resets on an index change regardless of code equality.
+  // -------------------------------------------------------------------------
+  it("override resets when switching between two diagrams with identical exportCode", () => {
+    // Construct two minimal flowcharts that produce the same themed output.
+    // Using the same palette and the same source text guarantees identical strings.
+    const SAME_SOURCE = "flowchart TD\n  A --> B";
+    const opts: ExportOptions = {
+      palette: paletteA,
+      diagramFamily: "flowchart",
+      includeMetaComments: false,
+      includeBadge: false,
+    };
+    const identicalCode = generateThemedCode(SAME_SOURCE, opts);
+
+    // Both diagram slots produce the exact same themed string — confirmed.
+    const identicalCodeForDiagram1 = generateThemedCode(SAME_SOURCE, opts);
+    expect(identicalCode).toBe(identicalCodeForDiagram1);
+
+    // Simulate the hook as used in ApplyTab: pass exportCode AND activeDiagramIdx.
+    let currentExportCode = identicalCode;
+    let currentIdx = 0;
+    const { result, rerender } = renderHook(() =>
+      useCodeEditorOverride(currentExportCode, currentIdx),
+    );
+
+    // User edits the panel while viewing diagram 0.
+    act(() => {
+      result.current.setCodeEditorOverride("edit on diagram 0");
+    });
+    expect(result.current.effectiveExportCode).toBe("edit on diagram 0");
+
+    // Switch to diagram 1 — exportCode is identical, but index changes.
+    // Without the activeDiagramIdx fix the effect would NOT fire and the
+    // override would bleed through.
+    currentIdx = 1;
+    // exportCode stays the same — this is the edge case.
+    rerender();
+
+    // The override from diagram 0 must be gone.
+    expect(result.current.codeEditorOverride).toBeNull();
+    expect(result.current.effectiveExportCode).toBe(identicalCode);
+    expect(result.current.effectiveExportCode).not.toBe("edit on diagram 0");
+  });
+
   it("switching back to diagram 0 again clears any override set on diagram 1", () => {
     const optsBase: ExportOptions = {
       palette: paletteA,

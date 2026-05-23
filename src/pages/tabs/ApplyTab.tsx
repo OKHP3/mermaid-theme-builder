@@ -348,7 +348,7 @@ export function ApplyTab({
     [activeDiagramCode, exportOptions],
   );
 
-  const { codeEditorOverride, setCodeEditorOverride, effectiveExportCode } = useCodeEditorOverride(exportCode);
+  const { codeEditorOverride, setCodeEditorOverride, effectiveExportCode } = useCodeEditorOverride(exportCode, safeDiagramIdx);
 
   const previewCode = previewMode === "themed" ? themedCode : activeDiagramCode;
 

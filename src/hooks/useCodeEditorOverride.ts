@@ -9,13 +9,17 @@ import { useState, useEffect } from "react";
  * - The override is cleared automatically whenever `exportCode` changes
  *   (palette switch, input edit, option toggle) so the panel always
  *   reflects fresh output after a user action.
+ * - The override is also cleared when `activeDiagramIdx` changes, even
+ *   if two diagrams happen to produce identical `exportCode` strings.
+ *   Without this guard, an edit on diagram N would silently bleed into
+ *   diagram M when their themed outputs are textually identical.
  */
-export function useCodeEditorOverride(exportCode: string) {
+export function useCodeEditorOverride(exportCode: string, activeDiagramIdx: number = 0) {
   const [codeEditorOverride, setCodeEditorOverride] = useState<string | null>(null);
 
   useEffect(() => {
     setCodeEditorOverride(null);
-  }, [exportCode]);
+  }, [exportCode, activeDiagramIdx]);
 
   const effectiveExportCode = codeEditorOverride ?? exportCode;
 
