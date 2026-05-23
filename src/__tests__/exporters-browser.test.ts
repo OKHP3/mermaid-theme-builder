@@ -31,6 +31,9 @@ function interceptAnchors(): { anchors: HTMLAnchorElement[]; restore: () => void
   const orig = document.body.appendChild.bind(document.body);
   const spy = vi.spyOn(document.body, "appendChild").mockImplementation((node) => {
     if (node instanceof HTMLAnchorElement) {
+      // Stub click() before the element enters the DOM so happy-dom's navigation
+      // handler never fires and never tries to construct a URL from the blob: href.
+      node.click = vi.fn();
       anchors.push(node);
     }
     return orig(node);
