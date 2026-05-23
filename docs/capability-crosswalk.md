@@ -1,8 +1,8 @@
 # Capability Crosswalk — Mermaid Theme Builder v0.5.0
 
-Maps Mermaid 11.15.0 capability → builder registry coverage → public project page claim → identified gap.
+Maps every diagram family in the registry to its Mermaid support status, theme confidence level, example file, and renderer-specific notes.
 
-Generated from `src/data/mermaid-capabilities.ts` and validated against the Mermaid 11.15.0 changelog and documentation.
+Source: `src/data/mermaid-capabilities.ts` · Verified against Mermaid 11.15.0.
 
 ---
 
@@ -10,122 +10,81 @@ Generated from `src/data/mermaid-capabilities.ts` and validated against the Merm
 
 | Column | Meaning |
 |--------|---------|
-| **Mermaid 11.15 Capability** | Feature or diagram type as documented in Mermaid 11.15.0 |
-| **Registry ID** | `id` field in `DIAGRAM_CAPABILITIES` |
-| **Builder Coverage** | What the builder does with this capability |
-| **Project Page Claim** | What the public project page says (overkillhill.com/projects/mermaid-theme-builder/) |
-| **Gap / Notes** | Discrepancy, caveat, or known limitation |
+| **Diagram Family** | Display name and registry `id` |
+| **Stability** | Mermaid's own stability label for the diagram type |
+| **Support Status** | How the builder covers this family: Native / Partial / Gap / External |
+| **Theme Confidence** | How reliably `themeVariables` control the visual output: High / Medium / Generic Only / Low / N/A |
+| **Example File** | Authoring reference in `examples/` and whether it is wired into the example library |
+| **Renderer Notes** | Caveats for specific renderers or look modes |
 
 ---
 
-## Diagram Families
+## Native Diagram Families (28 families)
 
-| Mermaid 11.15 Capability | Registry ID | Builder Coverage | Project Page Claim | Gap / Notes |
-|--------------------------|-------------|-----------------|-------------------|-------------|
-| Flowchart | `flowchart` | Full detection, theming, classDef, subgraph, preview | Supported | None |
-| Sequence Diagram | `sequenceDiagram` | Full detection, theming, actor colors | Supported | No classDef (not applicable) |
-| Class Diagram | `classDiagram` | Full detection, theming, classDef | Supported | None |
-| State Diagram (v2) | `stateDiagram` | Full detection, theming | Supported | stateDiagram v1 syntax not tested |
-| ER Diagram | `erDiagram` | Detection, theming (limited) | Supported | themeVars apply partially; no classDef |
-| Gantt | `gantt` | Detection, theming | Supported | Section colors use themeVars only |
-| Pie Chart | `pie` | Detection, theming | Supported | pie1–pie12 colors from themeVars |
-| Git Graph | `gitGraph` | Detection, theming | Supported | git0–git7 branch colors from themeVars |
-| User Journey | `journey` | Detection, theming | Supported | Limited themeVar influence |
-| Quadrant Chart | `quadrantChart` | Detection, theming | Supported | Axis/label colors from themeVars |
-| Requirement Diagram | `requirementDiagram` | Detection, theming | Supported | None |
-| Mindmap | `mindmap` | Detection, theming | Supported | Limited themeVar influence |
-| Timeline | `timeline` | Detection, theming | Supported | Limited themeVar influence |
-| ZenUML | `zenuml` | Detection, theming | Supported | None |
-| Sankey (beta) | `sankey` | Detection, theming | Supported | beta stability |
-| XY Chart (beta) | `xychart` | Detection, theming | Supported | beta stability |
-| Block Diagram (beta) | `block` | Detection, theming, classDef | Supported | beta stability |
-| Architecture (beta) | `architectureBeta` | Detection, partial theming | Supported (beta) | Keyword is `architecture-beta`; minMermaid 11.14.0; classDef not supported |
-| Packet (beta) | `packet` | Detection, partial theming | Supported (beta) | beta stability |
-| Kanban | `kanban` | Detection, partial theming | Supported | minMermaid 11.14.0; themeVar influence is low |
-| C4 (multi-variant) | `c4Diagram` | Detection via regex, partial theming | Supported | Covers C4Context/Container/Component/Dynamic/Deployment; CSS typically needed for full brand color control |
-| Wardley Map (beta) | `wardley` | Detection via `wardley-beta` keyword, partial theming | Supported (beta) | handDrawn not supported; low theme confidence |
-| Tree View (experimental) | `treeView` | Detection, limited theming | Listed | `treeView-beta` keyword; experimental stability |
-| Event Modeling | `eventModeling` | Detection, limited theming | Listed | minMermaid 11.15.0; example available |
-| Radar | `radar` | Detection, limited theming | Listed | Limited themeVar influence |
-| Treemap | `treemap` | Detection, limited theming | Listed | Limited themeVar support |
-| Venn (beta) | `venn` | Detection, limited theming | Listed (beta) | beta; themeVar influence is low |
-| Ishikawa (beta) | `ishikawa` | Detection, limited theming | Listed (beta) | beta; minimal themeVar influence |
-
----
-
-## Diagram Families — Extended Registry (non-native / community)
-
-These are in the registry as `notationCompliance: "extended"` or `"community"` and listed in the builder for reference, but are not native Mermaid diagram types.
-
-| Registry ID | Type | Builder Coverage | Gap / Notes |
-|-------------|------|-----------------|-------------|
-| `bpmn` | BPMN 2.0 (via plugin) | Detection signal only, no native theming | Not a native Mermaid type; requires bpmn.js plugin |
-| `archimate` | ArchiMate (via plugin) | Detection signal only | Not native; reference listing |
-| `sysml` | SysML (via plugin) | Detection signal only | Not native; reference listing |
-| `value-stream-map` | Value Stream Map | Detection signal only | Notation only; no native Mermaid support |
-| `service-blueprint` | Service Blueprint | Detection signal only | Notation only |
-| `okr-alignment-map` | OKR Alignment Map | Detection signal only | Notation only |
-| `dfd` | Data Flow Diagram | Detection signal only | Notation only; approximate with flowchart |
-| `decision-tree` | Decision Tree | Detection signal only | Notation only; approximate with flowchart |
-| `org-chart` | Org Chart | Detection signal only | Notation only; can approximate with gitGraph or flowchart |
-| `threat-model-dfd` | Threat Model DFD | Detection signal only | Notation only |
+| Diagram Family | Stability | Support Status | Theme Confidence | Example File | Renderer Notes |
+|----------------|-----------|---------------|-----------------|--------------|---------------|
+| **Flowchart** (`flowchart`) | Stable | Native | High | `flowchart-overkill-operating-system.mmd` ✓ | Classic / Neo / Hand-Drawn all supported. Best-supported family for full theme control, classDef, subgraphs, and linkStyle. |
+| **Sequence Diagram** (`sequenceDiagram`) | Stable | Native | Medium | `sequence-council-to-prototype.mmd` ✓ | Classic and Neo supported. Hand-Drawn not supported (Rough.js limitation). Actor and background colors theme reliably; activation box fills are partial. |
+| **Class Diagram** (`classDiagram`) | Stable | Native | Medium | `class-domain-model.mmd` ✓ | Classic and Neo supported. Hand-Drawn not supported. classDef applies to class boxes. Relationship line labels use primaryTextColor. |
+| **State Diagram** (`stateDiagram`) | Stable | Native | Medium | `state-theme-lifecycle.mmd` ✓ | Classic, Neo, Hand-Drawn all supported. classDef supported. Composite state backgrounds use clusterBkg. stateDiagram v1 syntax not separately tested. |
+| **ER Diagram** (`erDiagram`) | Stable | Native | Medium | `er-theme-registry.mmd` ✓ | Classic and Neo supported. Hand-Drawn not supported. No classDef or linkStyle. Relationship lines use lineColor. |
+| **Gantt Chart** (`gantt`) | Stable | Native | Generic Only | `gantt-mermaid-theme-builder-roadmap.mmd` ✓ | Classic only. Task bar colors cycle from Mermaid's internal Gantt palette — not overridable via themeVariables. Background and grid colors apply reliably. |
+| **Pie Chart** (`pie`) | Stable | Native | Generic Only | `pie-effort-allocation.mmd` ✓ | Classic only. Pie slice colors cycle internally (pie1–pie12). Background and title apply. |
+| **User Journey** (`journey`) | Stable | Native | Generic Only | `journey-idea-to-shipped-tool.mmd` ✓ | Classic only. Task bar and section header colors managed by Mermaid's journey renderer. Background and global text apply. |
+| **Quadrant Chart** (`quadrantChart`) | Stable | Native | Medium | `quadrant-opportunity.mmd` ✓ | Classic only. Background, axis labels, and grid lines apply. Quadrant fill and data point colors respond partially. |
+| **Requirement Diagram** (`requirementDiagram`) | Stable | Native | Medium | `requirement-scope-firewall.mmd` ✓ | Classic and Neo supported. Hand-Drawn not supported. Requirement box backgrounds, borders, and text theme reliably. |
+| **Git Graph** (`gitGraph`) | Stable | Native | Generic Only | `gitgraph-repo-evolution.mmd` ✓ | Classic only. Branch and commit colors are managed by Mermaid's gitGraph renderer. Background colors apply. |
+| **Mindmap** (`mindmap`) | Stable | Native | Generic Only | `mindmap-overkill-hill-system.mmd` ✓ | Classic and Neo supported. Hand-Drawn not supported. Individual node fill colors managed internally — themeVariables have limited effect. |
+| **Timeline** (`timeline`) | Stable | Native | Generic Only | `timeline-overkill-theme-builder-history.mmd` ✓ | Classic only. Section and event colors respond partially. Background and title apply. Full color control requires CSS injection. |
+| **Kanban** (`kanban`) | Stable | Native | Generic Only | `kanban-public-alpha-board.mmd` ✓ | Classic only. Card backgrounds partially influenced by themeVariables. Column header colors managed internally. Requires Mermaid 11.4.0+. |
+| **ZenUML** (`zenuml`) | Stable | Native | Medium | `zenuml-council-prototype-flow.mmd` ✓ | Classic only. Background and participant colors apply. Less granular than sequenceDiagram. Requires Mermaid 11.0.0+. |
+| **C4 Diagram** (`c4Diagram`) | Stable | Partial | Medium | `c4-context-overkill-ecosystem.mmd` ✓ | Classic only. Covers C4Context / Container / Component / Dynamic / Deployment. Background and primary colors apply; C4-specific boundary and system colors may need CSS for full brand control. Not supported on Hand-Drawn or Neo. |
+| **Sankey Diagram** (`sankey`) | Beta | Partial | Medium | `sankey-effort-to-output.mmd` ✓ | Classic only. Mermaid 11.15 added configurable nodeWidth, nodePadding, and custom node colors. Individual link flow colors still cycle internally. Validate in target renderer before publication. |
+| **XY Chart** (`xychart`) | Beta | Partial | Medium | `xychart-clarity-velocity.mmd` ✓ | Classic only. Background, axis labels, and title apply. Bar and line series colors respond partially. Validate in target renderer. Requires Mermaid 10.9.0+. |
+| **Block Diagram** (`block`) | Beta | Partial | Medium | `block-product-modules.mmd` ✓ | Classic only. Theming applies to block backgrounds, borders, and text. classDef supported for custom block styling. Requires Mermaid 11.0.0+. |
+| **Packet Diagram** (`packet`) | Beta | Partial | Generic Only | `packet-theme-bootstrap-payload.mmd` ✓ | Classic only. Use `packet` keyword (not `packet-beta`) for Mermaid 11.0+. Background and text apply. Packet field colors not controlled by themeVariables. Requires Mermaid 11.0.0+. |
+| **Architecture Diagram** (`architectureBeta`) | Beta | Partial | Generic Only | `architecture-static-app.mmd` ✓ | Classic only. Keyword is `architecture-beta`. Node backgrounds and line colors apply. May change in future Mermaid releases. Requires Mermaid 11.1.0+. |
+| **Wardley Map** (`wardley`) | Beta | Partial | Low | `wardley-basic.mmd` ✓ | Classic only (Hand-Drawn not supported, falls back to Classic). Background colors apply. Component and evolution axis styles managed internally. Requires Mermaid 11.14.0+. |
+| **Radar Chart** (`radar`) | Experimental | Partial | Generic Only | `radar-product-maturity.mmd` ✓ | Classic only. Background and title apply. Radar polygon and axis colors managed internally. Keyword is `radar-beta`. Requires Mermaid 11.6.0+. |
+| **Treemap** (`treemap`) | Experimental | Partial | Low | `treemap-project-value.mmd` ✓ | Classic only. Node fill colors use internal color cycling — themeVariables do not apply reliably. Keyword is `treemap-beta`. Requires Mermaid 11.4.0+. |
+| **Venn Diagram** (`venn`) | Experimental | Partial | Low | `venn-measure-document-diagram.mmd` ✓ | Classic only. Circle fill and label colors respond partially. Background applies reliably. Keyword is `venn-beta`. Requires Mermaid 11.12.3+. |
+| **Ishikawa (Fishbone)** (`ishikawa`) | Experimental | Partial | Low | `ishikawa-premature-rendering-root-cause.mmd` ✓ | Classic only. Background and spine line colors apply via themeVariables. Branch-level node colors not individually controllable. Keyword is `ishikawa-beta`. Requires Mermaid 11.12.3+. |
+| **Tree View** (`treeView`) | Experimental | Partial | Low | `treeview-example-index.mmd` ✓ | Classic only. Keyword is `treeView-beta`. Theming support is limited. May not render consistently across Mermaid-compatible environments. Requires Mermaid 11.14.0+. |
+| **Event Modeling** (`eventModeling`) | Experimental | Partial | Low | `eventmodeling-basic.mmd` ✓ | Classic only. New in Mermaid 11.15.0. Background and primary colors apply. Per-element styling not available. Will not render on Mermaid installations older than 11.15.0. |
 
 ---
 
-## Rendering Looks (Mermaid 11.15.0)
+## Gap / Emulatable / External Entries (10 entries)
 
-| Look | Mermaid 11.15 Status | Builder Registry | Renderer Parity | Gap / Notes |
-|------|---------------------|-----------------|----------------|-------------|
-| Classic | Stable, default | Fully supported | Universal | None |
-| Neo | Stable (11.4+) | Fully supported | Full on live/CLI, partial on GitHub/GitLab/Obsidian, none on Notion/Confluence | Notion and Confluence pinned to Mermaid 10.x — Neo unavailable |
-| Hand-Drawn | Stable (11.x) | Fully supported | Full on live/CLI, partial on Obsidian, none elsewhere | Requires Rough.js bundled by the renderer; GitHub, GitLab, Notion do not bundle Rough.js |
+These are listed in the capability registry for reference but are not native Mermaid diagram types. They may be approximated using native families.
 
----
-
-## themeVariables (Mermaid 11.15.0)
-
-| Variable | Builder Exposes | Palettes Use It | Gap / Notes |
-|----------|----------------|----------------|-------------|
-| `primaryColor` | Yes | Yes | Core brand primary |
-| `primaryTextColor` | Yes | Yes | Text on primary backgrounds |
-| `primaryBorderColor` | Yes | Yes | Border on primary elements |
-| `secondaryColor` | Yes | Yes | Supporting color |
-| `tertiaryColor` | Yes | Yes | Background / neutral areas |
-| `background` | Yes | Yes | Page/canvas background |
-| `mainBkg` | Yes | Yes | Main background (aliases primaryColor in some families) |
-| `nodeBorder` | Yes | Yes | Node border color |
-| `clusterBkg` | Yes | Yes | Subgraph background |
-| `lineColor` | Yes | Yes | Edge/line color |
-| `edgeLabelBackground` | Yes (editable) | Yes | Edge label pill background |
-| `fontFamily` | Yes | Yes | Global font stack |
-| `fontSize` | Via separate control | Via separate control | Global base size; per-tier sizes in Typography section |
+| Diagram Type | Support Status | Theme Confidence | Approximated By | Example File | Notes |
+|-------------|---------------|-----------------|-----------------|--------------|-------|
+| **BPMN 2.0** (`bpmn`) | Gap | N/A | `flowchart` | — (pending) | BPMN 2.0 semantics not supported in Mermaid. Use Camunda Modeler or bpmn.io for formal compliance. Flowchart can approximate visual flows only. |
+| **ArchiMate** (`archimate`) | External | N/A | `flowchart` | — (pending) | Not supported in Mermaid. Use Archi, Sparx EA, or other ArchiMate-certified tools. |
+| **SysML** (`sysml`) | External | N/A | `requirementDiagram` | — (pending) | Not supported in Mermaid. Use Cameo Systems Modeler or MagicDraw. requirementDiagram approximates requirements views only. |
+| **Value Stream Map** (`value-stream-map`) | Emulatable | Low | `flowchart` | — (pending) | VSM symbols (push arrows, kaizen bursts, inventory icons) not available in Mermaid. classDef can differentiate value-add vs. waste steps in a flowchart approximation. |
+| **Service Blueprint** (`service-blueprint`) | Emulatable | Low | `sequenceDiagram` | — (pending) | Swim-lane separation and line of visibility not natively supported. Sequence or flowchart can approximate but omits frontstage/backstage distinction. |
+| **OKR Alignment Map** (`okr-alignment-map`) | Emulatable | Low | `mindmap` | — (pending) | Mindmap or flowchart can approximate OKR hierarchy. Dedicated OKR tools (Lattice, Betterworks) provide richer semantic modeling. |
+| **Data Flow Diagram** (`dfd`) | Emulatable | Low | `flowchart` | — (pending) | DFD symbols (circles for processes, parallel lines for data stores) not available. Flowchart approximation supported. |
+| **Decision Tree** (`decision-tree`) | Emulatable | Medium | `flowchart` | — (pending) | Maps naturally to flowchart using diamond gate nodes. Probability annotations not natively supported. |
+| **Org Chart** (`org-chart`) | Emulatable | Medium | `flowchart` | — (pending) | Approximated with flowchart TD layout. Dedicated org chart tools support photo/avatar rendering. |
+| **Threat Model DFD** (`threat-model-dfd`) | Emulatable | Low | `flowchart` | — (pending) | STRIDE/PASTA semantics approximate with dashed trust boundaries and classDef threat annotations. Formal modeling requires Threat Dragon or IriusRisk. |
 
 ---
 
-## Typography Hierarchy (Phase 3 — Builder v0.5.0)
+## Renderer Look Support by Family
 
-| Tier | Default Size | Builder UI | Scaffold Section | Mermaid Native Control | Gap |
-|------|-------------|-----------|-----------------|----------------------|-----|
-| Diagram Title | 20px | Yes (±1 stepper) | Yes | Via `%%{init}%% title` (limited) | Mermaid does not expose a distinct title font-size themeVar; CSS targeting `.label` required for full control |
-| Subgraph Title | 16px | Yes | Yes | Via `.cluster-label` (CSS only) | Not a themeVar — CSS injection required |
-| Nested Subgraph | 14px | Yes | Yes | Via `.cluster-label .nodeLabel` (CSS only) | CSS only; renderer support varies |
-| Node Label | 14px | Yes | Yes | Via `fontSize` themeVar (all nodes, not per-tier) | Per-tier control requires CSS; `fontSize` themeVar scales all text globally |
-| Edge Label | 12px | Yes | Yes | Via `.edgeLabel` (CSS only) | CSS only; renderers that block CSS injection will not respect per-tier edge sizes |
+Summary of which Mermaid rendering looks each family supports:
 
----
+| Look | Supported Families | Not Supported |
+|------|-------------------|---------------|
+| **Classic** | All 28 native families | — |
+| **Neo** | flowchart, sequenceDiagram, classDiagram, stateDiagram, erDiagram, requirementDiagram, mindmap, zenuml | gantt, pie, gitGraph, journey, quadrantChart, timeline, kanban, sankey, xychart, block, packet, architectureBeta, radar, treemap, venn, ishikawa, wardley, treeView, eventModeling, c4Diagram |
+| **Hand-Drawn** | flowchart, stateDiagram | All others (Rough.js not bundled by most renderers) |
 
-## Prompt Scaffold Sections (Phase 6 target — v0.5.0)
-
-| Section | Current State | Phase 6 Target | Gap |
-|---------|-------------|---------------|-----|
-| Theme directive (Format A / B) | Present | Present | None |
-| Metadata comments | Present | Present | None |
-| Semantic classDef library | Present | Present | None |
-| Subgraph tier patterns | Present | Present | None |
-| Color reference table | Present | Present | None |
-| Typography contract | Present (Phase 3) | Present | None |
-| Renderer target section | Absent | Phase 6 | rendererTarget not yet in ExportOptions or scaffold output |
+> **Renderer compatibility:** Notion and Confluence plugin renderers support Classic only. GitHub's pinned Mermaid version determines Neo availability. Hand-Drawn requires Rough.js, which only mermaid.live and CLI bundle by default.
 
 ---
 
-*Last updated: Mermaid Theme Builder v0.5.0, Mermaid 11.15.0, research-grounding sprint completion.*
+*Last updated: Mermaid Theme Builder v0.5.0, Mermaid 11.15.0.*
