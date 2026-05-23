@@ -264,6 +264,62 @@ describe("ClassBrowser — aria-live region (screen reader announcements)", () =
   });
 });
 
+describe("ClassBrowser — count badge", () => {
+  it("renders the badge with the correct count when supportsClassDef={true}", () => {
+    const html = render({ supportsClassDef: true });
+    expect(html).toContain("2 semantic class styles available");
+  });
+
+  it("badge count matches classDefs.length for a different-length array", () => {
+    const html = render({
+      supportsClassDef: true,
+      classDefs: [SAMPLE_CLASS_DEFS[0]],
+    });
+    expect(html).toContain("1 semantic class styles available");
+    expect(html).not.toContain("2 semantic class styles available");
+  });
+
+  it("badge count is zero when classDefs is empty", () => {
+    const html = render({ supportsClassDef: true, classDefs: [] });
+    expect(html).toContain("0 semantic class styles available");
+  });
+
+  it("badge has active styling (bg-primary/10) when supportsClassDef={true}", () => {
+    const html = render({ supportsClassDef: true });
+    expect(html).toContain("bg-primary/10");
+  });
+
+  it("badge has inactive/muted styling (bg-muted/60) when supportsClassDef={false}", () => {
+    const html = render({ supportsClassDef: false });
+    expect(html).toContain("bg-muted/60");
+  });
+
+  it("badge is still present (renders count) when supportsClassDef={false}", () => {
+    const html = render({ supportsClassDef: false });
+    expect(html).toContain("2 class styles exist but are inactive");
+  });
+
+  it("badge does NOT use active styling when supportsClassDef={false}", () => {
+    const html = render({ supportsClassDef: false });
+    expect(html).not.toContain("bg-primary/10");
+  });
+
+  it("badge does NOT use muted styling when supportsClassDef={true}", () => {
+    const html = render({ supportsClassDef: true });
+    expect(html).not.toContain("bg-muted/60");
+  });
+
+  it("badge carries aria-label with the class count", () => {
+    const html = render({ supportsClassDef: true });
+    expect(html).toContain('aria-label="2 class styles"');
+  });
+
+  it("badge aria-label reflects classDefs.length in the inactive state", () => {
+    const html = render({ supportsClassDef: false });
+    expect(html).toContain('aria-label="2 class styles"');
+  });
+});
+
 describe("ClassBrowser — Copy used button", () => {
   it("shows 'Copy used' button when usedClassNames is non-empty and supportsClassDef={true}", () => {
     const html = render({
