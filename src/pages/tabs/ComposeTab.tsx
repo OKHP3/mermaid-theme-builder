@@ -1084,7 +1084,7 @@ function PaletteRow({ palette, selected, customized, onSelect, swatchIndices, on
         <button
           onClick={onDelete}
           aria-label={`Delete ${palette.name}`}
-          className="opacity-0 group-hover:opacity-100 px-2 text-muted-foreground hover:text-destructive transition-all"
+          className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 px-2 text-muted-foreground hover:text-destructive transition-all focus:opacity-100"
           title="Delete palette"
         >
           <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5">
