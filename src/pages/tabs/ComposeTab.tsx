@@ -614,6 +614,22 @@ export function ComposeTab({
                       </button>
                     </div>
                   </div>
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1 h-[3px] bg-border/40 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-primary/50 rounded-full transition-all duration-150"
+                        style={{ width: `${(tier.fontSize / Math.max(typography.diagramTitle.fontSize, 1)) * 100}%` }}
+                      />
+                    </div>
+                    <div className="h-7 w-9 overflow-hidden flex items-end shrink-0" aria-hidden="true" title={`${tier.fontSize}px sample`}>
+                      <span
+                        className="text-muted-foreground/45 font-semibold leading-none"
+                        style={{ fontSize: `${tier.fontSize}px` }}
+                      >
+                        Aa
+                      </span>
+                    </div>
+                  </div>
                   <p className="text-[9px] text-muted-foreground/60 leading-snug">{meta.description}</p>
                   <input
                     type="text"
