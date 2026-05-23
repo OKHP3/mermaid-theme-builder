@@ -4,6 +4,7 @@ import {
   getRendererById,
   supportLabel,
   supportColor,
+  buildRendererHeaderComment,
   type RendererSupport,
 } from "@/data/renderer-parity";
 
@@ -198,5 +199,153 @@ describe("supportColor", () => {
 
   it("returns different colors for full vs none", () => {
     expect(supportColor("full")).not.toBe(supportColor("none"));
+  });
+});
+
+describe("buildRendererHeaderComment", () => {
+  describe("generic / empty renderer ID", () => {
+    it("returns empty string for empty string input", () => {
+      expect(buildRendererHeaderComment("")).toBe("");
+    });
+  });
+
+  describe("unknown renderer ID", () => {
+    it("returns empty string for an unrecognized renderer ID", () => {
+      expect(buildRendererHeaderComment("nonexistent-renderer")).toBe("");
+    });
+
+    it("returns empty string for a plausible-sounding unknown ID", () => {
+      expect(buildRendererHeaderComment("vscode")).toBe("");
+    });
+  });
+
+  describe("mermaid-live — full support, no blocked features", () => {
+    it("returns an HTML comment naming the renderer", () => {
+      const result = buildRendererHeaderComment("mermaid-live");
+      expect(result).toMatch(/^<!-- Target renderer:/);
+    });
+
+    it("includes the shortName 'mermaid.live'", () => {
+      const result = buildRendererHeaderComment("mermaid-live");
+      expect(result).toContain("mermaid.live");
+    });
+
+    it("does NOT list any blocked or limited features", () => {
+      const result = buildRendererHeaderComment("mermaid-live");
+      expect(result).not.toContain("—");
+    });
+
+    it("closes the HTML comment correctly", () => {
+      const result = buildRendererHeaderComment("mermaid-live");
+      expect(result).toMatch(/-->$/);
+    });
+  });
+
+  describe("github — CSS injection and custom fonts blocked", () => {
+    it("returns an HTML comment naming GitHub", () => {
+      const result = buildRendererHeaderComment("github");
+      expect(result).toContain("GitHub");
+    });
+
+    it("lists CSS injection as not supported", () => {
+      const result = buildRendererHeaderComment("github");
+      expect(result).toContain("CSS injection not supported");
+    });
+
+    it("lists custom fonts as not supported", () => {
+      const result = buildRendererHeaderComment("github");
+      expect(result).toContain("custom fonts not supported");
+    });
+
+    it("uses the em-dash separator between renderer name and blocked list", () => {
+      const result = buildRendererHeaderComment("github");
+      expect(result).toContain(" — ");
+    });
+
+    it("matches the expected full comment string", () => {
+      expect(buildRendererHeaderComment("github")).toBe(
+        "<!-- Target renderer: GitHub — CSS injection not supported, custom fonts not supported -->",
+      );
+    });
+  });
+
+  describe("obsidian — CSS injection partial, no fully-blocked features", () => {
+    it("returns an HTML comment naming Obsidian", () => {
+      const result = buildRendererHeaderComment("obsidian");
+      expect(result).toContain("Obsidian");
+    });
+
+    it("notes CSS injection is partial (not 'not supported')", () => {
+      const result = buildRendererHeaderComment("obsidian");
+      expect(result).toContain("CSS injection is partial");
+      expect(result).not.toContain("CSS injection not supported");
+    });
+
+    it("does NOT report custom fonts as blocked (obsidian supports them partially)", () => {
+      const result = buildRendererHeaderComment("obsidian");
+      expect(result).not.toContain("custom fonts not supported");
+    });
+
+    it("matches the expected full comment string", () => {
+      expect(buildRendererHeaderComment("obsidian")).toBe(
+        "<!-- Target renderer: Obsidian — CSS injection is partial -->",
+      );
+    });
+  });
+
+  describe("notion — themeVariable partial, CSS injection and custom fonts blocked", () => {
+    it("notes themeVariable support is partial", () => {
+      const result = buildRendererHeaderComment("notion");
+      expect(result).toContain("themeVariable support is partial");
+    });
+
+    it("notes CSS injection is not supported", () => {
+      const result = buildRendererHeaderComment("notion");
+      expect(result).toContain("CSS injection not supported");
+    });
+
+    it("notes custom fonts are not supported", () => {
+      const result = buildRendererHeaderComment("notion");
+      expect(result).toContain("custom fonts not supported");
+    });
+
+    it("matches the expected full comment string", () => {
+      expect(buildRendererHeaderComment("notion")).toBe(
+        "<!-- Target renderer: Notion — themeVariable support is partial, CSS injection not supported, custom fonts not supported -->",
+      );
+    });
+  });
+
+  describe("output format invariants", () => {
+    it("every known renderer produces an HTML comment (not empty string)", () => {
+      for (const renderer of RENDERER_PROFILES) {
+        const result = buildRendererHeaderComment(renderer.id);
+        expect(result, `${renderer.id} should produce a non-empty comment`).toMatch(
+          /^<!-- Target renderer:/,
+        );
+      }
+    });
+
+    it("every known renderer comment closes with -->", () => {
+      for (const renderer of RENDERER_PROFILES) {
+        const result = buildRendererHeaderComment(renderer.id);
+        expect(result, `${renderer.id} comment should close with -->`).toMatch(/-->$/);
+      }
+    });
+
+    it("a renderer with all 'full' support produces no em-dash separator", () => {
+      const fullRenderers = RENDERER_PROFILES.filter(
+        (r) =>
+          r.initDirectiveSupport !== "none" &&
+          r.themeVariableSupport !== "partial" &&
+          r.cssInjectionSupport !== "none" &&
+          r.cssInjectionSupport !== "partial" &&
+          r.customFontSupport !== "none",
+      );
+      for (const renderer of fullRenderers) {
+        const result = buildRendererHeaderComment(renderer.id);
+        expect(result, `${renderer.id} should have no blocked items`).not.toContain(" — ");
+      }
+    });
   });
 });

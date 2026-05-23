@@ -158,3 +158,101 @@ describe("generatePromptScaffoldWithFormat — format-specific output", () => {
     });
   });
 });
+
+describe("generatePromptScaffoldWithFormat — renderer-awareness", () => {
+  const RENDERER_OPTIONS: ExportOptions = {
+    ...BASE_OPTIONS,
+    rendererTarget: "github",
+  };
+
+  describe("renderer header comment placement", () => {
+    it("appears before the first --- divider when a renderer is set", () => {
+      const result = generatePromptScaffoldWithFormat(palette, RENDERER_OPTIONS, "both");
+      const commentIdx = result.indexOf("<!-- Target renderer:");
+      const dividerIdx = result.indexOf("\n---\n");
+      expect(commentIdx, "renderer comment should be present").toBeGreaterThan(-1);
+      expect(dividerIdx, "divider should be present").toBeGreaterThan(-1);
+      expect(commentIdx).toBeLessThan(dividerIdx);
+    });
+
+    it("is absent when no rendererTarget is set", () => {
+      const result = generatePromptScaffoldWithFormat(palette, BASE_OPTIONS, "both");
+      expect(result).not.toContain("<!-- Target renderer:");
+    });
+
+    it("is absent when rendererTarget is undefined", () => {
+      const opts: ExportOptions = { ...BASE_OPTIONS, rendererTarget: undefined };
+      const result = generatePromptScaffoldWithFormat(palette, opts, "formatA");
+      expect(result).not.toContain("<!-- Target renderer:");
+    });
+  });
+
+  describe("github renderer — CSS injection and custom fonts blocked", () => {
+    it("includes the renderer header comment near the top", () => {
+      const result = generatePromptScaffoldWithFormat(palette, RENDERER_OPTIONS, "both");
+      expect(result).toContain("<!-- Target renderer: GitHub");
+    });
+
+    it("header comment includes CSS injection blocked note", () => {
+      const result = generatePromptScaffoldWithFormat(palette, RENDERER_OPTIONS, "both");
+      expect(result).toContain("CSS injection not supported");
+    });
+
+    it("header comment includes custom fonts blocked note", () => {
+      const result = generatePromptScaffoldWithFormat(palette, RENDERER_OPTIONS, "both");
+      expect(result).toContain("custom fonts not supported");
+    });
+
+    it("header comment is present for formatA", () => {
+      const result = generatePromptScaffoldWithFormat(palette, RENDERER_OPTIONS, "formatA");
+      expect(result).toContain("<!-- Target renderer: GitHub");
+    });
+
+    it("header comment is present for formatB", () => {
+      const result = generatePromptScaffoldWithFormat(palette, RENDERER_OPTIONS, "formatB");
+      expect(result).toContain("<!-- Target renderer: GitHub");
+    });
+  });
+
+  describe("obsidian renderer — CSS injection partial", () => {
+    const obsidianOpts: ExportOptions = { ...BASE_OPTIONS, rendererTarget: "obsidian" };
+
+    it("includes the renderer header comment", () => {
+      const result = generatePromptScaffoldWithFormat(palette, obsidianOpts, "both");
+      expect(result).toContain("<!-- Target renderer: Obsidian");
+    });
+
+    it("notes CSS injection is partial (not fully blocked)", () => {
+      const result = generatePromptScaffoldWithFormat(palette, obsidianOpts, "both");
+      expect(result).toContain("CSS injection is partial");
+      expect(result).not.toContain("CSS injection not supported");
+    });
+  });
+
+  describe("mermaid-live renderer — full support, no blocked items in comment", () => {
+    const liveOpts: ExportOptions = { ...BASE_OPTIONS, rendererTarget: "mermaid-live" };
+
+    it("includes the renderer header comment", () => {
+      const result = generatePromptScaffoldWithFormat(palette, liveOpts, "both");
+      expect(result).toContain("<!-- Target renderer: mermaid.live");
+    });
+
+    it("does NOT list any blocked features in the header comment", () => {
+      const result = generatePromptScaffoldWithFormat(palette, liveOpts, "both");
+      const commentStart = result.indexOf("<!-- Target renderer:");
+      const commentEnd = result.indexOf("-->", commentStart);
+      const commentText = result.slice(commentStart, commentEnd + 3);
+      expect(commentText).not.toContain("—");
+      expect(commentText).not.toContain("not supported");
+      expect(commentText).not.toContain("partial");
+    });
+  });
+
+  describe("scaffold with renderer differs from scaffold without renderer", () => {
+    it("github renderer output differs from generic (no renderer)", () => {
+      const withRenderer = generatePromptScaffoldWithFormat(palette, RENDERER_OPTIONS, "both");
+      const withoutRenderer = generatePromptScaffoldWithFormat(palette, BASE_OPTIONS, "both");
+      expect(withRenderer).not.toBe(withoutRenderer);
+    });
+  });
+});
