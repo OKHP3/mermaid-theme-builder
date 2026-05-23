@@ -735,6 +735,27 @@ ${frontmatterBlock}
     Feature B: [0.7, 0.7]
     Feature C: [0.4, 0.3]
     Feature D: [0.8, 0.2]`
+      : diagramFamily === "block"
+      ? `block-beta
+    columns 3
+    A["Input"]:::actor
+    B["Process"]:::primary
+    C["Output"]:::accent
+    space
+    D["Storage"]:::platform
+    space
+
+    A --> B
+    B --> C
+    B --> D`
+      : diagramFamily === "c4Diagram"
+      ? `C4Context
+    title System Context — My Application
+    Person(user, "User", "A person using the system")
+    System(app, "My Application", "Core application system")
+    System_Ext(ext, "External Service", "Third-party API provider")
+    Rel(user, app, "Uses", "HTTPS")
+    Rel(app, ext, "Calls", "REST/HTTPS")`
       : diagramFamily === "flowchart" || diagramFamily === "unknown"
       ? `flowchart TD
     A[Start] --> B[Process]
@@ -1311,7 +1332,136 @@ Points are declared as \`Label: [x, y]\` where \`x\` and \`y\` are decimal value
 
 ## Quadrant chart: theming note
 
-All quadrant colors come from the theme directive. Point colors, quadrant backgrounds, and axis line colors are theme-controlled. No per-point style overrides are possible with classDef or inline styling.` : `## Semantic classDef library
+All quadrant colors come from the theme directive. Point colors, quadrant backgrounds, and axis line colors are theme-controlled. No per-point style overrides are possible with classDef or inline styling.` : diagramFamily === "block" ? `## Block diagram: columns/space/block syntax & classDef theming
+
+\`block-beta\` supports \`:::className\` styling — apply the semantic classDef vocabulary below to block nodes. The theme directive controls default colors; classDef adds per-block color variation.
+
+### Layout syntax
+
+Declare the column count with \`columns N\` at the top of the diagram. Blocks are declared by ID with optional labels. Use \`space\` to insert empty grid cells for alignment:
+
+\`\`\`mermaid
+${exampleDirective}
+block-beta
+    columns 3
+    A["Input"] B["Process"] C["Output"]
+    space D["Storage"] space
+
+    A --> B
+    B --> C
+    B --> D
+\`\`\`
+
+### Block shape variants
+
+| Syntax | Shape |
+|--------|-------|
+| \`id["label"]\` | Rectangle (default) |
+| \`id(["label"])\` | Rounded rectangle |
+| \`id(("label"))\` | Circle |
+| \`id{{"label"}}\` | Hexagon |
+| \`id>"label"]\` | Asymmetric / flag shape |
+
+### classDef styling
+
+Apply \`:::className\` to individual block nodes after all block declarations:
+
+\`\`\`mermaid
+${exampleDirective}
+block-beta
+    columns 3
+    A["User"]:::actor
+    B["Service"]:::primary
+    C["Database"]:::platform
+
+    A --> B
+    B --> C
+\`\`\`
+
+---
+
+## Semantic classDef library
+
+${classDefCaveatNote ? classDefCaveatNote : `Apply these classDef classes to block nodes using \`:::className\` syntax. Do NOT add any other fill, stroke, or color values — use only these classes.
+
+\`\`\`mermaid
+${exampleDirective}
+block-beta
+${classDefBlock}
+
+    %% Usage example: A["My Block"]:::primary
+    %% Apply to any block node: B["Storage"]:::platform
+\`\`\`
+
+### Class reference table
+
+| Class | Role | When to use |
+|-------|------|-------------|
+| \`primary\` | Main action / primary entity | Core blocks, key steps, subject of the diagram |
+| \`secondary\` | Supporting / related entity | Adjacent processes, related systems |
+| \`tertiary\` | Background / context | Passive blocks, reference items |
+| \`platform\` | Platform / infrastructure | Hosting layer, databases, queues |
+| \`boundary\` | System boundary (dashed) | External system limits, context edges |
+| \`actor\` | Person / user / role | Human actors, teams, personas |
+| \`gate\` | Decision / gateway | Branching or condition blocks |
+| \`control\` | Control / management | Orchestrators, managers |
+| \`log\` | Log / audit / record (italic) | Audit trails, event logs |
+| \`question\` | Open question / TBD (dashed) | Unknowns, pending design |
+| \`accent\` | Highlighted / key result | Outputs, final states, primary results |
+| \`deepBlue\` | Deep emphasis | Core or critical blocks |
+| \`slate\` | Neutral / muted | Supporting detail blocks |
+| \`scope\` | In-scope boundary | Blocks explicitly in scope |
+| \`outOfScope\` | Out-of-scope (faded, dashed) | Excluded blocks |
+| \`redDash\` | Warning / error / blocker | Error states, blockers |`}
+
+---
+
+## Block diagram: theming note
+
+The theme directive controls background, border, and text colors for all blocks. Use \`:::className\` with the classDef vocabulary for per-block color variation. \`space\` cells are invisible layout-only placeholders — they cannot be styled.` : diagramFamily === "c4Diagram" ? `## C4 diagram: architecture vocabulary & theming
+
+\`c4Diagram\` styling is partially controlled by the theme directive — background, border, and label fonts respond to some themeVariables, but not all tokens are applied consistently across element types. There is **no** \`:::className\` syntax in C4 diagrams; elements cannot be individually styled with classDef.
+
+### C4 element types
+
+| Statement | Meaning |
+|-----------|---------|
+| \`Person(id, "Label", "Description")\` | A person / user role |
+| \`System(id, "Label", "Description")\` | An internal system |
+| \`System_Ext(id, "Label", "Description")\` | An external system (outside your scope) |
+| \`Container(id, "Label", "Technology", "Description")\` | A container within a system |
+| \`Component(id, "Label", "Technology", "Description")\` | A component within a container |
+| \`Rel(fromId, toId, "Label")\` | Directional relationship |
+| \`Rel(fromId, toId, "Label", "Technology")\` | Relationship with technology annotation |
+| \`BiRel(fromId, toId, "Label")\` | Bidirectional relationship |
+
+### C4 diagram type keywords
+
+| Keyword | Context |
+|---------|---------|
+| \`C4Context\` | System context — people and systems |
+| \`C4Container\` | Container view — internal containers |
+| \`C4Component\` | Component view — internal components |
+| \`C4Dynamic\` | Dynamic / sequence view |
+
+### Syntax example
+
+\`\`\`mermaid
+${exampleDirective}
+C4Context
+    title System Context — My Application
+    Person(user, "User", "A person using the system")
+    System(app, "My Application", "Core application")
+    System_Ext(ext, "External Service", "Third-party API")
+    Rel(user, app, "Uses", "HTTPS")
+    Rel(app, ext, "Calls", "REST/HTTPS")
+\`\`\`
+
+---
+
+## C4 diagram: theming note
+
+All C4 element colors (person icons, system/container boxes, boundary lines) are controlled by the theme directive. themeVariable support is partial — some tokens may not apply to all element types. No per-element style overrides are possible with classDef or inline styling.` : `## Semantic classDef library
 
 ${classDefCaveatNote ? classDefCaveatNote : `This is the complete styling vocabulary for this theme. Apply these classDef classes to nodes using \`:::className\` syntax. Do NOT add any other fill, stroke, or color values — use only these classes.
 
@@ -1498,7 +1648,28 @@ ${diagramFamily === "sequenceDiagram" ? `1. ${formatRuleText}
 8. Do NOT use \`:::className\` syntax — quadrantChart does not support per-point classDef styling.
 9. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values — the theme directive handles all styling.
 10. Do NOT change any color values — reproduce them exactly as shown.
-11. If the diagram type changes, preserve the exact same theme directive.` : `1. ${formatRuleText}
+11. If the diagram type changes, preserve the exact same theme directive.` : diagramFamily === "block" ? `1. ${formatRuleText}
+2. Add the metadata comment block immediately after the theme directive.
+3. Use \`block-beta\` as the diagram type.
+4. Declare \`columns N\` at the top to set the grid width — blocks fill left-to-right, top-to-bottom.
+5. Use \`space\` to insert empty grid cells and control layout alignment.
+6. Block shape syntax: \`id["label"]\` (rectangle), \`id(["label"])\` (rounded), \`id(("label"))\` (circle), \`id{{"label"}}\` (hexagon).
+7. Style block nodes using \`:::className\` with the classDef vocabulary from the scaffold.
+8. Declare all edges (\`A --> B\`) after all block declarations.
+9. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values — use classDef classes instead.
+10. Do NOT change any color values — reproduce them exactly as shown.
+11. If the diagram type changes, preserve the exact same theme directive.` : diagramFamily === "c4Diagram" ? `1. ${formatRuleText}
+2. Add the metadata comment block immediately after the theme directive.
+3. Use the appropriate C4 diagram type keyword: \`C4Context\`, \`C4Container\`, \`C4Component\`, or \`C4Dynamic\`.
+4. Declare all elements before relationships: \`Person(id, "Label", "Description")\`, \`System(id, "Label", "Description")\`, etc.
+5. Use \`System_Ext\` for external systems (outside your scope boundary).
+6. Relationship syntax: \`Rel(fromId, toId, "label")\` or \`Rel(fromId, toId, "label", "technology")\`.
+7. Use \`title\` to name the diagram view.
+8. Do NOT use \`:::className\` syntax — c4Diagram does not support per-element classDef styling.
+9. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values — the theme directive handles all styling.
+10. Do NOT change any color values — reproduce them exactly as shown.
+11. themeVariable support is partial — validate the output in your target renderer before publishing.
+12. If the diagram type changes, preserve the exact same theme directive.` : `1. ${formatRuleText}
 2. Add the metadata comment block immediately after the theme directive.
 3. Use \`${diagramFamily === "unknown" ? "flowchart TD" : diagramFamily === "flowchart" ? "flowchart TD" : diagramFamily}\` as the diagram type unless the user specifies otherwise.
 4. Keep node labels concise (under 60 characters each).

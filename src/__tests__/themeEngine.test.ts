@@ -654,6 +654,124 @@ describe("generatePromptScaffoldWithFormat", () => {
     expect(result).toContain("quadrantChart\n");
     expect(result).toContain("Feature A: [0.3, 0.8]");
   });
+
+  it("includes block-specific section when diagramFamily is block", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "block" },
+      "both",
+    );
+    expect(result).toContain("Block diagram");
+    expect(result).toContain("columns");
+    expect(result).toContain("space");
+    expect(result).toContain("block-beta");
+  });
+
+  it("includes classDef library section for block (:::className is supported)", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "block" },
+      "both",
+    );
+    expect(result).toContain("## Semantic classDef library");
+    expect(result).toContain("classDef");
+  });
+
+  it("block scaffold explains shape notation variants", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "block" },
+      "both",
+    );
+    expect(result).toContain('id["label"]');
+    expect(result).toContain('id(["label"])');
+    expect(result).toContain('id(("label"))');
+  });
+
+  it("block scaffold rules confirm :::className is valid for block nodes", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "block" },
+      "both",
+    );
+    expect(result).toContain(":::className");
+    expect(result).toContain("block-beta");
+    expect(result).not.toContain("block-beta does not support");
+  });
+
+  it("block scaffold example output contains block-beta syntax", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "block" },
+      "both",
+    );
+    expect(result).toContain("block-beta\n");
+    expect(result).toContain("columns 3");
+  });
+
+  it("includes c4Diagram-specific section when diagramFamily is c4Diagram", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "c4Diagram" },
+      "both",
+    );
+    expect(result).toContain("C4 diagram");
+    expect(result).toContain("Person");
+    expect(result).toContain("System");
+    expect(result).toContain("Rel");
+    expect(result).toContain("C4Context");
+  });
+
+  it("does not include classDef library section for c4Diagram", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "c4Diagram" },
+      "both",
+    );
+    expect(result).not.toContain("## Semantic classDef library");
+  });
+
+  it("c4Diagram scaffold rules forbid :::className", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "c4Diagram" },
+      "both",
+    );
+    expect(result).toContain(":::className");
+    expect(result).toContain("c4Diagram does not support per-element classDef styling");
+  });
+
+  it("c4Diagram scaffold notes partial themeVariable support", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "c4Diagram" },
+      "both",
+    );
+    expect(result).toContain("partial");
+    expect(result).toContain("themeVariable");
+  });
+
+  it("c4Diagram scaffold explains Container and Component element types", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "c4Diagram" },
+      "both",
+    );
+    expect(result).toContain("Container");
+    expect(result).toContain("Component");
+    expect(result).toContain("System_Ext");
+  });
+
+  it("c4Diagram scaffold example output contains Person/System/Rel declarations", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "c4Diagram" },
+      "both",
+    );
+    expect(result).toContain("C4Context\n");
+    expect(result).toContain("Person(user,");
+    expect(result).toContain("Rel(user, app,");
+  });
 });
 
 describe("typography → init directive mapping", () => {
