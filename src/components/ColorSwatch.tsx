@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import type { ThemeColor } from "@/lib/palettes";
 
 interface ColorSwatchProps {
@@ -13,6 +13,7 @@ interface ColorSwatchProps {
 
 export function ColorSwatch({ color, onChange, isOverridden = false, onReset }: ColorSwatchProps) {
   const [localValue, setLocalValue] = useState(color.value);
+  const hiddenPickerRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setLocalValue(color.value);
@@ -39,6 +40,10 @@ export function ColorSwatch({ color, onChange, isOverridden = false, onReset }: 
     [color.key, onChange],
   );
 
+  const openPicker = useCallback(() => {
+    hiddenPickerRef.current?.click();
+  }, []);
+
   if (isFontValue) {
     return (
       <div className="flex items-center gap-2 py-1.5 px-2 rounded-md hover:bg-muted/50 transition-colors group">
@@ -63,23 +68,21 @@ export function ColorSwatch({ color, onChange, isOverridden = false, onReset }: 
   }
 
   return (
-    <div className="flex items-center gap-2 py-1.5 px-2 rounded-md hover:bg-muted/50 transition-colors group">
-      <div className="relative w-7 h-7 shrink-0 focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-1 rounded">
-        <div
+    <div className="relative flex items-center gap-2 py-1.5 px-2 rounded-md hover:bg-muted/50 transition-colors group">
+      {/* Visual swatch — clicking triggers the right-anchored hidden picker */}
+      <button
+        type="button"
+        onClick={isHexColor ? openPicker : undefined}
+        title={isHexColor ? `Pick color for ${color.label}` : undefined}
+        aria-label={isHexColor ? `Color picker for ${color.label}` : undefined}
+        className={`relative w-7 h-7 shrink-0 rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary${isHexColor ? " cursor-pointer" : ""}`}
+      >
+        <span
           className="absolute inset-0 rounded border border-border"
           style={{ backgroundColor: isHexColor ? localValue : "#e5e7eb" }}
         />
-        {isHexColor && (
-          <input
-            type="color"
-            value={localValue.length === 7 ? localValue : "#1a4f8a"}
-            onChange={handleColorPicker}
-            aria-label={`Color picker for ${color.label}`}
-            title={`Pick color for ${color.label}`}
-            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer rounded"
-          />
-        )}
-      </div>
+      </button>
+
       <div className="flex-1 min-w-0">
         <label className="text-xs font-medium text-foreground" htmlFor={`swatch-text-${color.key}`}>
           {color.label}
@@ -94,6 +97,7 @@ export function ColorSwatch({ color, onChange, isOverridden = false, onReset }: 
           placeholder="#000000"
         />
       </div>
+
       {isOverridden && onReset && (
         <button
           type="button"
@@ -110,6 +114,20 @@ export function ColorSwatch({ color, onChange, isOverridden = false, onReset }: 
             />
           </svg>
         </button>
+      )}
+
+      {/* Hidden color input anchored at the right edge of the row so the
+          browser opens its picker popup on the right, not over the swatch list */}
+      {isHexColor && (
+        <input
+          ref={hiddenPickerRef}
+          type="color"
+          value={localValue.length === 7 ? localValue : "#1a4f8a"}
+          onChange={handleColorPicker}
+          aria-hidden="true"
+          tabIndex={-1}
+          className="absolute right-0 top-1/2 -translate-y-1/2 w-px h-px opacity-0 pointer-events-none"
+        />
       )}
     </div>
   );
