@@ -19,6 +19,56 @@ const HEX_COLOR_RE = /^#[0-9a-fA-F]{3}$|^#[0-9a-fA-F]{4}$|^#[0-9a-fA-F]{6}$|^#[0
 const FONT_FAMILY_KEY = "fontFamily";
 const CSS_KEYWORD_RE = /^transparent$|^inherit$|^currentColor$/i;
 
+const SEMVER_RE = /^\d+\.\d+\.\d+$/;
+
+describe("BUILTIN_PALETTES — schema validation", () => {
+  it("has no duplicate palette ids", () => {
+    const ids = BUILTIN_PALETTES.map((p) => p.id);
+    const duplicates = ids.filter((id, i) => ids.indexOf(id) !== i);
+    expect(
+      [...new Set(duplicates)],
+      `Duplicate palette ids: ${[...new Set(duplicates)].join(", ")}`,
+    ).toHaveLength(0);
+  });
+
+  for (const palette of BUILTIN_PALETTES) {
+    describe(`palette "${palette.id}"`, () => {
+      it("has a non-empty id", () => {
+        expect(palette.id.trim(), "id must not be blank").not.toBe("");
+      });
+
+      it("has a non-empty name", () => {
+        expect(palette.name.trim(), "name must not be blank").not.toBe("");
+      });
+
+      it("has a non-empty description", () => {
+        expect(palette.description.trim(), "description must not be blank").not.toBe("");
+      });
+
+      it("has a semver-formatted version", () => {
+        expect(
+          SEMVER_RE.test(palette.version),
+          `version "${palette.version}" does not match semver (e.g. 0.1.0)`,
+        ).toBe(true);
+      });
+
+      it("attribution has a non-empty label", () => {
+        expect(
+          palette.attribution.label.trim(),
+          "attribution.label must not be blank",
+        ).not.toBe("");
+      });
+
+      it("attribution has a non-empty themeName", () => {
+        expect(
+          palette.attribution.themeName.trim(),
+          "attribution.themeName must not be blank",
+        ).not.toBe("");
+      });
+    });
+  }
+});
+
 describe("BUILTIN_PALETTES — color token completeness", () => {
   it("exports at least one palette", () => {
     expect(BUILTIN_PALETTES.length).toBeGreaterThan(0);
