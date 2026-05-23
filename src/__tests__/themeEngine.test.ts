@@ -942,3 +942,108 @@ describe("buildClassDefString", () => {
     ]);
   });
 });
+
+/**
+ * buildClassDefLibrary font-size rule tests
+ *
+ * buildClassDefLibrary is an internal function called by buildScaffold, which
+ * powers generatePromptScaffoldWithFormat. These tests exercise the full pipeline
+ * to ensure the font-size:Npx rule is correctly appended (or omitted) on every
+ * classDef entry in the exported block based on typography.nodeLabel.fontSize
+ * relative to Mermaid's built-in 16px default.
+ *
+ * The 16 classDef names emitted: primary, secondary, tertiary, platform,
+ * boundary, actor, gate, control, log, question, accent, deepBlue, slate,
+ * scope, outOfScope, redDash.
+ */
+describe("buildClassDefLibrary — font-size rule in scaffold classDef block", () => {
+  const CLASSDEF_NAMES = [
+    "primary", "secondary", "tertiary", "platform", "boundary", "actor",
+    "gate", "control", "log", "question", "accent", "deepBlue", "slate",
+    "scope", "outOfScope", "redDash",
+  ] as const;
+
+  const SCAFFOLD_OPTIONS: ExportOptions = {
+    palette,
+    diagramFamily: "flowchart",
+    includeMetaComments: false,
+    includeBadge: false,
+  };
+
+  function getClassDefLines(scaffoldOutput: string): string[] {
+    return scaffoldOutput
+      .split("\n")
+      .filter((line) => /^\s*classDef \w/.test(line))
+      .filter((line) => !line.includes("mtb_watermark"));
+  }
+
+  it("adds font-size:Npx to every classDef when nodeLabel.fontSize differs from Mermaid default (16px)", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...SCAFFOLD_OPTIONS, typography: { ...DEFAULT_TYPOGRAPHY, nodeLabel: { fontSize: 14, fontFamily: "" } } },
+      "both",
+    );
+    const lines = getClassDefLines(result);
+    expect(lines.length).toBeGreaterThanOrEqual(16);
+    for (const line of lines) {
+      expect(line).toContain("font-size:14px");
+    }
+  });
+
+  it("does NOT add a font-size rule when nodeLabel.fontSize equals the Mermaid default (16px)", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...SCAFFOLD_OPTIONS, typography: { ...DEFAULT_TYPOGRAPHY, nodeLabel: { fontSize: 16, fontFamily: "" } } },
+      "both",
+    );
+    const lines = getClassDefLines(result);
+    expect(lines.length).toBeGreaterThanOrEqual(16);
+    for (const line of lines) {
+      expect(line).not.toContain("font-size");
+    }
+  });
+
+  it("does NOT add a font-size rule when no typography option is provided", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...SCAFFOLD_OPTIONS },
+      "both",
+    );
+    const lines = getClassDefLines(result);
+    expect(lines.length).toBeGreaterThanOrEqual(16);
+    for (const line of lines) {
+      expect(line).not.toContain("font-size");
+    }
+  });
+
+  it("applies a custom nodeLabel.fontSize to all 16 classDef entries consistently", () => {
+    const CUSTOM_SIZE = 20;
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...SCAFFOLD_OPTIONS, typography: { ...DEFAULT_TYPOGRAPHY, nodeLabel: { fontSize: CUSTOM_SIZE, fontFamily: "" } } },
+      "both",
+    );
+    const lines = getClassDefLines(result);
+    expect(lines).toHaveLength(16);
+    for (const line of lines) {
+      expect(line).toContain(`font-size:${CUSTOM_SIZE}px`);
+    }
+    for (const name of CLASSDEF_NAMES) {
+      const matchingLine = lines.find((l) => l.includes(`classDef ${name} `));
+      expect(matchingLine, `classDef ${name} should carry font-size:${CUSTOM_SIZE}px`).toContain(`font-size:${CUSTOM_SIZE}px`);
+    }
+  });
+
+  it("uses DEFAULT_TYPOGRAPHY nodeLabel.fontSize (14px) which is non-default for classDefs", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...SCAFFOLD_OPTIONS, typography: DEFAULT_TYPOGRAPHY },
+      "both",
+    );
+    const lines = getClassDefLines(result);
+    expect(lines.length).toBeGreaterThanOrEqual(16);
+    for (const line of lines) {
+      expect(line).toContain("font-size:14px");
+    }
+  });
+});
