@@ -1,0 +1,574 @@
+import { describe, it, expect } from "vitest";
+import {
+  extractTheme,
+  hasExtractableTheme,
+  paletteFromExtracted,
+  isExtractedPaletteId,
+  makeExtractedPaletteId,
+} from "@/lib/extractor";
+
+// ---------------------------------------------------------------------------
+// extractTheme — init directive
+//
+// NOTE: parseInitDirective uses a regex that requires the `themeVariables` key
+// to appear as an unquoted identifier followed by `: {`. Strict JSON with the
+// key quoted as `"themeVariables"` does NOT match — the colon is masked by
+// the closing `"`. Tests below use the JSON5-style mixed format that the regex
+// is designed for.
+// ---------------------------------------------------------------------------
+
+describe("extractTheme — init directive (happy path)", () => {
+  const CODE =
+    '%%{init: {theme: base, themeVariables: {primaryColor: "#ff0000", primaryTextColor: "#ffffff", lineColor: "#00ff00"}}}%%\nflowchart TD\n  A --> B';
+
+  it("returns sourceFormat 'init-directive'", () => {
+    expect(extractTheme(CODE).sourceFormat).toBe("init-directive");
+  });
+
+  it("extracts themeName from init directive", () => {
+    expect(extractTheme(CODE).themeName).toBe("base");
+  });
+
+  it("extracts primaryColor correctly", () => {
+    expect(extractTheme(CODE).themeVariables.primaryColor).toBe("#ff0000");
+  });
+
+  it("extracts primaryTextColor correctly", () => {
+    expect(extractTheme(CODE).themeVariables.primaryTextColor).toBe("#ffffff");
+  });
+
+  it("extracts lineColor correctly", () => {
+    expect(extractTheme(CODE).themeVariables.lineColor).toBe("#00ff00");
+  });
+
+  it("returns empty classDefs when none are present", () => {
+    expect(extractTheme(CODE).classDefs).toHaveLength(0);
+  });
+});
+
+describe("extractTheme — init directive with quoted string values", () => {
+  const CODE =
+    '%%{init: {"theme": "base", themeVariables: {primaryColor: "#aabbcc", background: "#111111"}}}%%\nsequenceDiagram\n  A->>B: Hello';
+
+  it("extracts primaryColor with quoted value", () => {
+    expect(extractTheme(CODE).themeVariables.primaryColor).toBe("#aabbcc");
+  });
+
+  it("extracts background with quoted value", () => {
+    expect(extractTheme(CODE).themeVariables.background).toBe("#111111");
+  });
+
+  it("identifies source as init-directive", () => {
+    expect(extractTheme(CODE).sourceFormat).toBe("init-directive");
+  });
+});
+
+describe("extractTheme — init directive with theme only (no themeVariables)", () => {
+  const CODE = '%%{init: {theme: dark}}%%\nflowchart LR\n  A --> B';
+
+  it("returns sourceFormat 'init-directive'", () => {
+    expect(extractTheme(CODE).sourceFormat).toBe("init-directive");
+  });
+
+  it("captures the theme name", () => {
+    expect(extractTheme(CODE).themeName).toBe("dark");
+  });
+
+  it("returns empty themeVariables", () => {
+    expect(extractTheme(CODE).themeVariables).toEqual({});
+  });
+});
+
+// ---------------------------------------------------------------------------
+// extractTheme — YAML frontmatter
+// ---------------------------------------------------------------------------
+
+describe("extractTheme — YAML frontmatter (happy path)", () => {
+  const CODE = `---
+config:
+  theme: base
+  themeVariables:
+    primaryColor: "#3b82f6"
+    primaryTextColor: "#ffffff"
+    lineColor: "#6b7280"
+    background: "#f9fafb"
+---
+flowchart TD
+  A --> B`;
+
+  it("returns sourceFormat 'frontmatter'", () => {
+    expect(extractTheme(CODE).sourceFormat).toBe("frontmatter");
+  });
+
+  it("extracts theme name from frontmatter", () => {
+    expect(extractTheme(CODE).themeName).toBe("base");
+  });
+
+  it("extracts primaryColor", () => {
+    expect(extractTheme(CODE).themeVariables.primaryColor).toBe("#3b82f6");
+  });
+
+  it("extracts primaryTextColor", () => {
+    expect(extractTheme(CODE).themeVariables.primaryTextColor).toBe("#ffffff");
+  });
+
+  it("extracts lineColor", () => {
+    expect(extractTheme(CODE).themeVariables.lineColor).toBe("#6b7280");
+  });
+
+  it("extracts background", () => {
+    expect(extractTheme(CODE).themeVariables.background).toBe("#f9fafb");
+  });
+});
+
+describe("extractTheme — frontmatter with theme only (no themeVariables)", () => {
+  const CODE = `---
+config:
+  theme: forest
+---
+flowchart LR
+  X --> Y`;
+
+  it("returns sourceFormat 'frontmatter'", () => {
+    expect(extractTheme(CODE).sourceFormat).toBe("frontmatter");
+  });
+
+  it("captures the theme name", () => {
+    expect(extractTheme(CODE).themeName).toBe("forest");
+  });
+
+  it("returns empty themeVariables", () => {
+    expect(extractTheme(CODE).themeVariables).toEqual({});
+  });
+});
+
+describe("extractTheme — frontmatter with quoted color values", () => {
+  const CODE = `---
+config:
+  theme: base
+  themeVariables:
+    primaryColor: "#c46a2c"
+    titleColor: "#1c3a34"
+---
+erDiagram
+  USER ||--o{ ORDER : places`;
+
+  it("strips surrounding double quotes from color values", () => {
+    expect(extractTheme(CODE).themeVariables.primaryColor).toBe("#c46a2c");
+  });
+
+  it("extracts second key without quotes leaking in", () => {
+    expect(extractTheme(CODE).themeVariables.titleColor).toBe("#1c3a34");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// extractTheme — no directive (bare diagram)
+// ---------------------------------------------------------------------------
+
+describe("extractTheme — no directive input", () => {
+  const CODE = "flowchart TD\n  A --> B\n  B --> C";
+
+  it("returns sourceFormat 'none'", () => {
+    expect(extractTheme(CODE).sourceFormat).toBe("none");
+  });
+
+  it("returns empty themeVariables", () => {
+    expect(extractTheme(CODE).themeVariables).toEqual({});
+  });
+
+  it("returns empty classDefs", () => {
+    expect(extractTheme(CODE).classDefs).toHaveLength(0);
+  });
+
+  it("returns undefined themeName", () => {
+    expect(extractTheme(CODE).themeName).toBeUndefined();
+  });
+});
+
+describe("extractTheme — empty string input", () => {
+  it("returns sourceFormat 'none'", () => {
+    expect(extractTheme("").sourceFormat).toBe("none");
+  });
+
+  it("returns empty themeVariables", () => {
+    expect(extractTheme("").themeVariables).toEqual({});
+  });
+
+  it("returns empty classDefs", () => {
+    expect(extractTheme("").classDefs).toHaveLength(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// extractTheme — classDef-only input
+// ---------------------------------------------------------------------------
+
+describe("extractTheme — classDef-only input", () => {
+  const CODE =
+    "flowchart TD\n  A:::myStyle --> B:::otherStyle\n  classDef myStyle fill:#ff6b6b,stroke:#c0392b,color:#ffffff\n  classDef otherStyle fill:#4ecdc4,stroke:#2ecc71";
+
+  it("returns sourceFormat 'none' (no init or frontmatter)", () => {
+    expect(extractTheme(CODE).sourceFormat).toBe("none");
+  });
+
+  it("extracts two classDefs", () => {
+    expect(extractTheme(CODE).classDefs).toHaveLength(2);
+  });
+
+  it("extracts first classDef name correctly", () => {
+    const defs = extractTheme(CODE).classDefs;
+    expect(defs[0].name).toBe("myStyle");
+  });
+
+  it("extracts first classDef fill correctly", () => {
+    const defs = extractTheme(CODE).classDefs;
+    expect(defs[0].fill).toBe("#ff6b6b");
+  });
+
+  it("extracts first classDef stroke correctly", () => {
+    const defs = extractTheme(CODE).classDefs;
+    expect(defs[0].stroke).toBe("#c0392b");
+  });
+
+  it("extracts first classDef color correctly", () => {
+    const defs = extractTheme(CODE).classDefs;
+    expect(defs[0].color).toBe("#ffffff");
+  });
+
+  it("extracts second classDef name correctly", () => {
+    const defs = extractTheme(CODE).classDefs;
+    expect(defs[1].name).toBe("otherStyle");
+  });
+
+  it("extracts second classDef fill correctly", () => {
+    const defs = extractTheme(CODE).classDefs;
+    expect(defs[1].fill).toBe("#4ecdc4");
+  });
+
+  it("returns empty themeVariables (no init directive)", () => {
+    expect(extractTheme(CODE).themeVariables).toEqual({});
+  });
+});
+
+describe("extractTheme — classDef with equals-sign syntax", () => {
+  const CODE =
+    "flowchart TD\n  A:::boxStyle --> B\n  classDef boxStyle fill=#abc123,stroke=#333333,stroke-width=2px";
+
+  it("extracts fill with equals syntax", () => {
+    const [def] = extractTheme(CODE).classDefs;
+    expect(def.fill).toBe("#abc123");
+  });
+
+  it("extracts stroke with equals syntax", () => {
+    const [def] = extractTheme(CODE).classDefs;
+    expect(def.stroke).toBe("#333333");
+  });
+
+  it("extracts strokeWidth with equals syntax", () => {
+    const [def] = extractTheme(CODE).classDefs;
+    expect(def.strokeWidth).toBe("2px");
+  });
+});
+
+describe("extractTheme — init directive combined with classDefs", () => {
+  const CODE =
+    '%%{init: {theme: base, themeVariables: {primaryColor: "#1a1a2e"}}}%%\nflowchart TD\n  A:::highlight --> B\n  classDef highlight fill:#e94560,stroke:#0f3460,color:#ffffff';
+
+  it("extracts themeVariables from init directive", () => {
+    expect(extractTheme(CODE).themeVariables.primaryColor).toBe("#1a1a2e");
+  });
+
+  it("extracts classDefs alongside themeVariables", () => {
+    expect(extractTheme(CODE).classDefs).toHaveLength(1);
+  });
+
+  it("classDef has the correct name", () => {
+    expect(extractTheme(CODE).classDefs[0].name).toBe("highlight");
+  });
+
+  it("classDef has the correct fill", () => {
+    expect(extractTheme(CODE).classDefs[0].fill).toBe("#e94560");
+  });
+});
+
+describe("extractTheme — skips mtb_watermark classDef", () => {
+  const CODE =
+    "flowchart TD\n  A --> B\n  classDef realStyle fill:#abcdef\n  classDef mtb_watermark fill:#000000,color:transparent";
+
+  it("only returns the non-watermark classDef", () => {
+    const defs = extractTheme(CODE).classDefs;
+    expect(defs).toHaveLength(1);
+    expect(defs[0].name).toBe("realStyle");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// extractTheme — frontmatter takes precedence over init directive
+// ---------------------------------------------------------------------------
+
+describe("extractTheme — frontmatter takes precedence over init directive", () => {
+  const CODE = `---
+config:
+  theme: base
+  themeVariables:
+    primaryColor: "#frontmatter"
+---
+%%{init: {theme: dark, themeVariables: {primaryColor: "#directive"}}}%%
+flowchart TD
+  A --> B`;
+
+  it("uses frontmatter sourceFormat", () => {
+    expect(extractTheme(CODE).sourceFormat).toBe("frontmatter");
+  });
+
+  it("uses frontmatter primaryColor, not directive value", () => {
+    expect(extractTheme(CODE).themeVariables.primaryColor).toBe("#frontmatter");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// hasExtractableTheme
+// ---------------------------------------------------------------------------
+
+describe("hasExtractableTheme", () => {
+  it("returns true when init directive has themeVariables", () => {
+    const code =
+      '%%{init: {themeVariables: {primaryColor: "#ff0000"}}}%%\nflowchart TD\n  A --> B';
+    expect(hasExtractableTheme(code)).toBe(true);
+  });
+
+  it("returns true when frontmatter has themeVariables", () => {
+    const code = `---\nconfig:\n  themeVariables:\n    primaryColor: "#ff0000"\n---\nflowchart TD\n  A --> B`;
+    expect(hasExtractableTheme(code)).toBe(true);
+  });
+
+  it("returns true when classDefs are present", () => {
+    const code = "flowchart TD\n  A --> B\n  classDef myStyle fill:#ff0000";
+    expect(hasExtractableTheme(code)).toBe(true);
+  });
+
+  it("returns false for bare diagram with no theme info", () => {
+    const code = "flowchart TD\n  A --> B";
+    expect(hasExtractableTheme(code)).toBe(false);
+  });
+
+  it("returns false for empty string", () => {
+    expect(hasExtractableTheme("")).toBe(false);
+  });
+
+  it("returns false for init directive with theme-only (no vars, no classDefs)", () => {
+    const code = '%%{init: {theme: dark}}%%\nflowchart TD\n  A --> B';
+    expect(hasExtractableTheme(code)).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// paletteFromExtracted — ThemeColor mapping
+// ---------------------------------------------------------------------------
+
+describe("paletteFromExtracted — ThemeColor mapping", () => {
+  const extracted = {
+    themeName: "My Theme",
+    themeVariables: {
+      primaryColor: "#112233",
+      primaryTextColor: "#ffeedd",
+      lineColor: "#99aabb",
+    },
+    classDefs: [],
+    sourceFormat: "init-directive" as const,
+  };
+
+  const palette = paletteFromExtracted(extracted, "Test Label");
+
+  it("palette name matches the provided label", () => {
+    expect(palette.name).toBe("Test Label");
+  });
+
+  it("palette id starts with 'extracted-'", () => {
+    expect(palette.id).toMatch(/^extracted-/);
+  });
+
+  it("palette has a colors array", () => {
+    expect(Array.isArray(palette.colors)).toBe(true);
+  });
+
+  it("maps primaryColor from extracted vars", () => {
+    const entry = palette.colors.find((c) => c.key === "primaryColor");
+    expect(entry?.value).toBe("#112233");
+  });
+
+  it("maps primaryTextColor from extracted vars", () => {
+    const entry = palette.colors.find((c) => c.key === "primaryTextColor");
+    expect(entry?.value).toBe("#ffeedd");
+  });
+
+  it("maps lineColor from extracted vars", () => {
+    const entry = palette.colors.find((c) => c.key === "lineColor");
+    expect(entry?.value).toBe("#99aabb");
+  });
+
+  it("falls back to default for keys not present in extracted vars", () => {
+    const entry = palette.colors.find((c) => c.key === "background");
+    expect(entry?.value).toBe("#ffffff");
+  });
+
+  it("every ThemeColor entry has a non-empty key", () => {
+    for (const c of palette.colors) {
+      expect(c.key).toBeTruthy();
+    }
+  });
+
+  it("every ThemeColor entry has a non-empty label", () => {
+    for (const c of palette.colors) {
+      expect(c.label).toBeTruthy();
+    }
+  });
+
+  it("every ThemeColor entry has a non-empty value", () => {
+    for (const c of palette.colors) {
+      expect(c.value, `key ${c.key} should have a value`).toBeTruthy();
+    }
+  });
+
+  it("all expected palette keys are present", () => {
+    const keys = palette.colors.map((c) => c.key);
+    const expectedKeys = [
+      "primaryColor",
+      "primaryTextColor",
+      "primaryBorderColor",
+      "lineColor",
+      "secondaryColor",
+      "tertiaryColor",
+      "background",
+      "mainBkg",
+      "nodeBorder",
+      "clusterBkg",
+      "titleColor",
+      "edgeLabelBackground",
+      "fontFamily",
+    ];
+    for (const k of expectedKeys) {
+      expect(keys, `expected key "${k}" in palette colors`).toContain(k);
+    }
+  });
+});
+
+describe("paletteFromExtracted — default label", () => {
+  const extracted = {
+    themeVariables: {},
+    classDefs: [],
+    sourceFormat: "none" as const,
+  };
+
+  it("uses 'Extracted theme' as default label when none provided", () => {
+    const palette = paletteFromExtracted(extracted);
+    expect(palette.name).toBe("Extracted theme");
+  });
+});
+
+describe("paletteFromExtracted — empty themeVariables uses all fallbacks", () => {
+  const extracted = {
+    themeVariables: {},
+    classDefs: [],
+    sourceFormat: "none" as const,
+  };
+  const palette = paletteFromExtracted(extracted);
+
+  it("primaryColor falls back to #1f2937", () => {
+    const entry = palette.colors.find((c) => c.key === "primaryColor");
+    expect(entry?.value).toBe("#1f2937");
+  });
+
+  it("fontFamily falls back to 'DM Sans, system-ui, sans-serif'", () => {
+    const entry = palette.colors.find((c) => c.key === "fontFamily");
+    expect(entry?.value).toBe("DM Sans, system-ui, sans-serif");
+  });
+});
+
+describe("paletteFromExtracted — attribution block", () => {
+  const extracted = {
+    themeVariables: { primaryColor: "#aabbcc" },
+    classDefs: [],
+    sourceFormat: "init-directive" as const,
+  };
+  const palette = paletteFromExtracted(extracted, "My Extracted");
+
+  it("attribution.enabledByDefault is true", () => {
+    expect(palette.attribution?.enabledByDefault).toBe(true);
+  });
+
+  it("attribution.themeName matches the label", () => {
+    expect(palette.attribution?.themeName).toBe("My Extracted");
+  });
+
+  it("attribution.toolName is 'Mermaid Theme Builder'", () => {
+    expect(palette.attribution?.toolName).toBe("Mermaid Theme Builder");
+  });
+});
+
+describe("paletteFromExtracted — extracted vars override fallbacks", () => {
+  it("provided value beats the fallback for every key", () => {
+    const extracted = {
+      themeVariables: {
+        primaryColor: "#custom1",
+        primaryTextColor: "#custom2",
+        primaryBorderColor: "#custom3",
+        lineColor: "#custom4",
+        secondaryColor: "#custom5",
+        tertiaryColor: "#custom6",
+        background: "#custom7",
+        mainBkg: "#custom8",
+        nodeBorder: "#custom9",
+        clusterBkg: "#custom10",
+        titleColor: "#custom11",
+        edgeLabelBackground: "#custom12",
+        fontFamily: "Comic Sans",
+      },
+      classDefs: [],
+      sourceFormat: "frontmatter" as const,
+    };
+    const palette = paletteFromExtracted(extracted, "All Custom");
+    for (const c of palette.colors) {
+      expect(
+        c.value,
+        `key ${c.key} should use the provided value`,
+      ).toBe(extracted.themeVariables[c.key as keyof typeof extracted.themeVariables]);
+    }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// isExtractedPaletteId / makeExtractedPaletteId
+// ---------------------------------------------------------------------------
+
+describe("isExtractedPaletteId", () => {
+  it("returns true for IDs starting with 'extracted-'", () => {
+    expect(isExtractedPaletteId("extracted-abc123")).toBe(true);
+  });
+
+  it("returns false for built-in palette IDs", () => {
+    expect(isExtractedPaletteId("overkill-hill")).toBe(false);
+  });
+
+  it("returns false for empty string", () => {
+    expect(isExtractedPaletteId("")).toBe(false);
+  });
+
+  it("returns false for a string that contains but does not start with 'extracted-'", () => {
+    expect(isExtractedPaletteId("my-extracted-palette")).toBe(false);
+  });
+});
+
+describe("makeExtractedPaletteId", () => {
+  it("generates an ID starting with 'extracted-'", () => {
+    expect(makeExtractedPaletteId()).toMatch(/^extracted-/);
+  });
+
+  it("generated ID suffix is a non-empty base-36 string", () => {
+    const id = makeExtractedPaletteId();
+    const suffix = id.replace(/^extracted-/, "");
+    expect(suffix.length).toBeGreaterThan(0);
+    expect(/^[0-9a-z]+$/.test(suffix)).toBe(true);
+  });
+});
