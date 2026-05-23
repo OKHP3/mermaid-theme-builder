@@ -39,6 +39,34 @@ const BASE_STATE: PersistedState = {
   recentPaletteIds: [],
 };
 
+describe("PersistedState — lastSelectedExampleId round-trip", () => {
+  it("round-trips a valid example ID", () => {
+    savePersistedState({ ...BASE_STATE, lastSelectedExampleId: "showcase" });
+    const loaded = loadPersistedState();
+    expect(loaded?.lastSelectedExampleId).toBe("showcase");
+  });
+
+  it("round-trips a brand-palette example ID", () => {
+    savePersistedState({ ...BASE_STATE, lastSelectedExampleId: "brand-overkill-hill-flow" });
+    const loaded = loadPersistedState();
+    expect(loaded?.lastSelectedExampleId).toBe("brand-overkill-hill-flow");
+  });
+
+  it("round-trips an empty string (cleared selection)", () => {
+    savePersistedState({ ...BASE_STATE, lastSelectedExampleId: "" });
+    const loaded = loadPersistedState();
+    expect(loaded?.lastSelectedExampleId).toBe("");
+  });
+
+  it("returns undefined lastSelectedExampleId when field is absent (legacy state)", () => {
+    const legacy = { ...BASE_STATE } as Partial<PersistedState>;
+    delete legacy.lastSelectedExampleId;
+    savePersistedState(legacy as PersistedState);
+    const loaded = loadPersistedState();
+    expect(loaded?.lastSelectedExampleId).toBeUndefined();
+  });
+});
+
 describe("PersistedState — previewMode round-trip", () => {
   it("round-trips previewMode: themed", () => {
     savePersistedState({ ...BASE_STATE, previewMode: "themed" });
