@@ -362,17 +362,32 @@ export function ClassBrowser({ classDefs, supportsClassDef = true, usedClassName
             <span className="text-[10px] font-medium text-[#d4c9b5]/60 uppercase tracking-wider font-mono">
               Preview — {sortedClassDefs.length} classDef{sortedClassDefs.length !== 1 ? "s" : ""}
             </span>
-            <button
-              type="button"
-              onClick={() => setShowPreview(false)}
-              aria-label="Close preview"
-              className="text-[#d4c9b5]/40 hover:text-[#d4c9b5]/80 transition-colors focus:outline-none focus:ring-1 focus:ring-white/30 rounded"
-            >
-              <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-3 h-3">
-                <line x1="2" y1="2" x2="12" y2="12" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-                <line x1="12" y1="2" x2="2" y2="12" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-              </svg>
-            </button>
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={handleCopyAll}
+                aria-label="Copy all classDefs"
+                title="Copy all classDefs"
+                className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium text-[#d4c9b5]/60 hover:text-[#d4c9b5] border border-white/10 hover:border-white/25 hover:bg-white/8 transition-colors focus:outline-none focus:ring-1 focus:ring-white/30"
+              >
+                <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-3 h-3">
+                  <rect x="4.5" y="1" width="7.5" height="9" rx="1.2" stroke="currentColor" strokeWidth="1.2" />
+                  <rect x="2" y="4" width="7.5" height="9" rx="1.2" fill="currentColor" fillOpacity="0.12" stroke="currentColor" strokeWidth="1.2" />
+                </svg>
+                Copy
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowPreview(false)}
+                aria-label="Close preview"
+                className="text-[#d4c9b5]/40 hover:text-[#d4c9b5]/80 transition-colors focus:outline-none focus:ring-1 focus:ring-white/30 rounded"
+              >
+                <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-3 h-3">
+                  <line x1="2" y1="2" x2="12" y2="12" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+                  <line x1="12" y1="2" x2="2" y2="12" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+                </svg>
+              </button>
+            </div>
           </div>
           <pre className="px-3 py-2.5 text-[11px] font-mono text-[#d4c9b5] leading-relaxed overflow-x-auto whitespace-pre select-all">
             {previewBlock}
