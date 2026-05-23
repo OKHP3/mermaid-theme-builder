@@ -37,7 +37,7 @@ function extractYamlField(frontmatter, key) {
 const skillContent = readFileSync(skillMdPath, "utf8");
 const frontmatter = parseSkillFrontmatter(skillContent);
 
-// ── Frontmatter structure ──────────────────────────────────────────────────
+// ── Frontmatter structure — flat Agent Skills format ──────────────────────
 
 test("SKILL.md contains a frontmatter block", () => {
   assert.ok(frontmatter !== null, "Expected --- frontmatter --- block at top of SKILL.md");
@@ -53,43 +53,50 @@ test("frontmatter name is correct", () => {
   assert.equal(name, "okhp3-mermaid-theme-builder");
 });
 
+test("frontmatter contains top-level version field", () => {
+  assert.ok(frontmatter.match(/^version:/m), "Missing top-level 'version:' in frontmatter — must be flat, not nested under metadata:");
+});
+
+test("frontmatter contains top-level author field", () => {
+  assert.ok(frontmatter.match(/^author:/m), "Missing top-level 'author:' in frontmatter");
+});
+
 test("frontmatter contains license field", () => {
-  assert.ok(frontmatter.includes("license:"), "Missing 'license' in frontmatter");
+  assert.ok(frontmatter.match(/^license:/m), "Missing 'license' in frontmatter");
 });
 
-test("frontmatter contains metadata block", () => {
-  assert.ok(frontmatter.includes("metadata:"), "Missing 'metadata:' block in frontmatter");
+test("frontmatter contains top-level homepage field", () => {
+  assert.ok(frontmatter.match(/^homepage:/m), "Missing top-level 'homepage:' in frontmatter");
 });
 
-test("frontmatter metadata contains version", () => {
-  assert.ok(frontmatter.includes("version:"), "Missing 'version' under metadata");
+test("frontmatter contains top-level repository field", () => {
+  assert.ok(frontmatter.match(/^repository:/m), "Missing top-level 'repository:' in frontmatter");
 });
 
-test("frontmatter metadata contains author", () => {
-  assert.ok(frontmatter.includes("author:"), "Missing 'author' under metadata");
+test("frontmatter contains top-level category field", () => {
+  assert.ok(frontmatter.match(/^category:/m), "Missing top-level 'category:' in frontmatter");
 });
 
-test("frontmatter metadata contains homepage", () => {
-  assert.ok(frontmatter.includes("homepage:"), "Missing 'homepage' under metadata");
+test("frontmatter contains top-level tags field", () => {
+  assert.ok(frontmatter.match(/^tags:/m), "Missing top-level 'tags:' in frontmatter");
 });
 
-test("frontmatter metadata contains repository", () => {
-  assert.ok(frontmatter.includes("repository:"), "Missing 'repository' under metadata");
+test("frontmatter contains top-level tools field", () => {
+  assert.ok(frontmatter.match(/^tools:/m), "Missing top-level 'tools:' in frontmatter — required by Agent Skills standard");
 });
 
-test("frontmatter metadata contains category", () => {
-  assert.ok(frontmatter.includes("category:"), "Missing 'category' under metadata");
-});
-
-test("frontmatter metadata contains tags", () => {
-  assert.ok(frontmatter.includes("tags:"), "Missing 'tags' under metadata");
+test("frontmatter does NOT use deprecated nested metadata block", () => {
+  assert.ok(
+    !frontmatter.includes("metadata:"),
+    "Frontmatter must not contain a nested 'metadata:' block — all fields must be top-level (Agent Skills standard)"
+  );
 });
 
 // ── Version alignment ──────────────────────────────────────────────────────
 
 test("skill version is not stale 0.3.0", () => {
   assert.ok(
-    !skillContent.includes('"0.3.0"') && !skillContent.includes("'0.3.0'"),
+    !skillContent.includes('"0.3.0"') && !skillContent.includes("'0.3.0'") && !skillContent.includes("version: 0.3.0"),
     "Stale version '0.3.0' found in SKILL.md — update to current version"
   );
 });
@@ -97,7 +104,7 @@ test("skill version is not stale 0.3.0", () => {
 test("skill version is 0.5.0", () => {
   assert.ok(
     skillContent.includes('"0.5.0"') || skillContent.includes("version: 0.5.0"),
-    "Expected version '0.5.0' in SKILL.md metadata"
+    "Expected version '0.5.0' in SKILL.md frontmatter"
   );
 });
 
@@ -150,7 +157,44 @@ test("SKILL.md documents Format C output mode", () => {
 });
 
 test("SKILL.md documents Format F (renderer compatibility notes)", () => {
-  assert.ok(skillContent.includes("Format F"), "Missing Format F (Renderer Compatibility Notes) in Output Modes");
+  assert.ok(
+    skillContent.includes("Format F"),
+    "Missing Format F (Renderer Compatibility Notes) in Output Modes"
+  );
+});
+
+// ── look API (Mermaid v11.15.0+) ──────────────────────────────────────────
+
+test("SKILL.md documents the look parameter", () => {
+  assert.ok(
+    skillContent.includes("look parameter") || skillContent.includes('"look"'),
+    "Missing look parameter documentation in SKILL.md"
+  );
+});
+
+test("SKILL.md documents neo look value", () => {
+  assert.ok(skillContent.includes('"look": "neo"') || skillContent.includes("neo"), "Missing 'neo' look value");
+});
+
+test("SKILL.md documents handDrawn look value", () => {
+  assert.ok(
+    skillContent.includes("handDrawn") || skillContent.includes("Hand-Drawn"),
+    "Missing 'handDrawn' look value documentation"
+  );
+});
+
+test("SKILL.md renderer table includes Look support column", () => {
+  assert.ok(
+    skillContent.includes("Look support"),
+    "Renderer compatibility table is missing the 'Look support' column"
+  );
+});
+
+test("SKILL.md Output Rules includes look validation rule", () => {
+  assert.ok(
+    skillContent.includes("look parameter is requested") || skillContent.includes("look.*renderer"),
+    "Output Rules must include look parameter renderer validation rule"
+  );
 });
 
 // ── References ─────────────────────────────────────────────────────────────
@@ -218,6 +262,20 @@ test("assets/theme-variable-map.json exists", () => {
   );
 });
 
+test("assets/fixtures/er-basic.mmd exists", () => {
+  assert.ok(
+    existsSync(join(skillRoot, "assets/fixtures/er-basic.mmd")),
+    "assets/fixtures/er-basic.mmd not found — required fixture file"
+  );
+});
+
+test("assets/fixtures/flowchart-basic.mmd exists", () => {
+  assert.ok(
+    existsSync(join(skillRoot, "assets/fixtures/flowchart-basic.mmd")),
+    "assets/fixtures/flowchart-basic.mmd not found"
+  );
+});
+
 // ── Asset validity ─────────────────────────────────────────────────────────
 
 test("assets/palettes.json is valid JSON", () => {
@@ -230,18 +288,42 @@ test("assets/palettes.json contains all 7 canonical palette IDs", () => {
   const paletteIds = Array.isArray(palettes)
     ? palettes.map((p) => p.id)
     : Object.keys(palettes);
-  const expected = ["overkill-hill", "askjamie", "glee-fully", "ocean-depth", "forest-sage", "slate-ember", "violet-mist"];
+  const expected = [
+    "overkill-hill", "askjamie", "glee-fully",
+    "ocean-depth", "forest-sage", "slate-ember", "violet-mist",
+  ];
   for (const id of expected) {
-    assert.ok(
-      paletteIds.includes(id),
-      `Palette '${id}' missing from assets/palettes.json`
-    );
+    assert.ok(paletteIds.includes(id), `Palette '${id}' missing from assets/palettes.json`);
   }
 });
 
 test("assets/renderer-profiles.json is valid JSON", () => {
   const raw = readFileSync(join(skillRoot, "assets/renderer-profiles.json"), "utf8");
   assert.doesNotThrow(() => JSON.parse(raw), "assets/renderer-profiles.json is not valid JSON");
+});
+
+test("assets/renderer-profiles.json every renderer has lookSupport field", () => {
+  const profiles = JSON.parse(
+    readFileSync(join(skillRoot, "assets/renderer-profiles.json"), "utf8")
+  );
+  const list = Array.isArray(profiles) ? profiles : Object.values(profiles);
+  for (const profile of list) {
+    assert.ok(
+      Array.isArray(profile.lookSupport),
+      `Renderer '${profile.id}' is missing lookSupport array in renderer-profiles.json`
+    );
+  }
+});
+
+test("assets/renderer-profiles.json contains all 7 renderer IDs", () => {
+  const profiles = JSON.parse(
+    readFileSync(join(skillRoot, "assets/renderer-profiles.json"), "utf8")
+  );
+  const ids = Array.isArray(profiles) ? profiles.map((r) => r.id) : Object.keys(profiles);
+  const expected = ["mermaid-live", "github", "gitlab", "notion", "obsidian", "confluence", "cli"];
+  for (const id of expected) {
+    assert.ok(ids.includes(id), `Renderer '${id}' missing from assets/renderer-profiles.json`);
+  }
 });
 
 // ── Output rules completeness ─────────────────────────────────────────────

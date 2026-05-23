@@ -1,32 +1,25 @@
 ---
 name: okhp3-mermaid-theme-builder
-description: >
-  Apply reusable color palettes and visual governance to Mermaid diagram code.
-  Use this skill when the user wants to style, theme, color, or brand a Mermaid
-  diagram; when they ask for themeVariables, an %%{init}%% config block, or YAML
-  frontmatter for Mermaid; when they want renderer-safe output for GitHub,
-  GitLab, Obsidian, Notion, Confluence, or the Mermaid CLI; when they want a
-  prompt scaffold that enforces consistent diagram styling for AI-generated
-  Mermaid; when they want to make Mermaid output renderer-safe or
-  renderer-compatible; when they mention Mermaid colors, palettes, CSS
-  variables, diagram cleanup, or on-brand diagrams; or when they want to extract
-  and re-theme existing styled Mermaid code.
+version: 0.5.0
+description: Apply reusable color palettes and visual governance to Mermaid diagram code. Use this skill when the user wants to style, theme, color, or brand a Mermaid diagram; when they want a themeVariables block or %%{init}%% configuration; when they ask for a prompt scaffold that enforces consistent diagram styling for future AI-generated Mermaid; when they want renderer-safe output for GitHub, GitLab, Obsidian, Notion, Confluence, or the Mermaid CLI; when they want to make Mermaid output renderer-safe or renderer-compatible; when they mention Mermaid colors, palettes, CSS variables, diagram cleanup, or on-brand diagrams; or when they want to extract and re-theme existing styled Mermaid code.
+author: OverKill Hill P³
 license: MIT
-metadata:
-  version: "0.5.0"
-  author: OverKill Hill P³
-  homepage: https://okhp3.github.io/mermaid-theme-builder
-  repository: https://github.com/OKHP3/mermaid-theme-builder
-  category: diagram-governance
-  tags:
-    - mermaid
-    - diagram
-    - theme
-    - palette
-    - themeVariables
-    - prompt-scaffold
-    - renderer-profiles
-    - visual-governance
+homepage: https://okhp3.github.io/mermaid-theme-builder
+repository: https://github.com/OKHP3/mermaid-theme-builder
+category: diagram-governance
+tags:
+  - mermaid
+  - diagram
+  - theme
+  - palette
+  - themeVariables
+  - prompt-scaffold
+  - renderer-profiles
+  - look-api
+tools:
+  - read_file
+  - write_file
+  - run_command
 ---
 
 # okhp3-mermaid-theme-builder
@@ -185,9 +178,23 @@ Rules:
 - Hex values must match `/#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{6})$/` — no RGB, HSL, or named colors
 - `fontSize` must end in `px` — example: `"14px"`, not `14` or `"14"`
 
-**Example (Ocean Depth, flowchart):**
+**Example (Ocean Depth, flowchart — Classic look, no `look` key):**
 ```
 %%{init: {"theme": "base", "themeVariables": {"primaryColor": "#1a4f8a", "primaryTextColor": "#ffffff", "primaryBorderColor": "#0d3060", "lineColor": "#2563eb", "secondaryColor": "#0ea5e9", "tertiaryColor": "#e0f2fe", "background": "#f0f9ff", "mainBkg": "#dbeafe", "nodeBorder": "#1d4ed8", "clusterBkg": "#e0f2fe", "titleColor": "#1e3a5f", "edgeLabelBackground": "#f0f9ff", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+```
+
+**Optional: look parameter (Mermaid v11.15.0+)**
+
+The `look` parameter controls the visual rendering style. It is optional. When included, it must be placed **before** `themeVariables` in the init object.
+
+Supported values:
+- Omit the key entirely → Classic look (universal renderer support)
+- `"look": "neo"` → Neo flat style (mermaid.live full, GitHub partial, GitLab partial, Obsidian partial, CLI full; NOT supported in Notion or Confluence)
+- `"look": "handDrawn"` → Hand-drawn Rough.js style (mermaid.live full, CLI full, Obsidian partial; NOT supported in GitHub, GitLab, Notion, or Confluence)
+
+Example with look parameter included (Neo, Ocean Depth, flowchart):
+```
+%%{init: {"look": "neo", "theme": "base", "themeVariables": {"primaryColor": "#1a4f8a", "primaryTextColor": "#ffffff", "primaryBorderColor": "#0d3060", "lineColor": "#2563eb", "secondaryColor": "#0ea5e9", "tertiaryColor": "#e0f2fe", "background": "#f0f9ff", "mainBkg": "#dbeafe", "nodeBorder": "#1d4ed8", "clusterBkg": "#e0f2fe", "titleColor": "#1e3a5f", "edgeLabelBackground": "#f0f9ff", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
 ```
 
 ### Step 6 — Produce styled output
@@ -277,6 +284,7 @@ Use when the user asks "will this work in X?" or "is this safe for Y?" without r
 **themeVariables:** {full | partial | none}
 **classDef:** {full | partial | none}
 **Custom fonts:** {full | partial | none}
+**Look support:** {Classic, Neo, Drawn | Classic, Neo partial | Classic only}
 **Risk level:** {low | medium | high}
 
 **Caveats:**
@@ -290,15 +298,15 @@ Use when the user asks "will this work in X?" or "is this safe for Y?" without r
 
 ## Renderer Compatibility Summary
 
-| Renderer | `%%{init}%%` | themeVars | classDef | CSS inject | Custom fonts | Risk |
-|---|---|---|---|---|---|---|
-| mermaid.live | Full | Full | Full | Full | Full | Low |
-| GitHub | Full | Full | Full | None | None | Low |
-| GitLab | Full | Full | Full | None | None | Low |
-| Notion | Partial | Partial | Full | None | None | Medium |
-| Obsidian | Full | Full | Full | Partial | Partial | Low |
-| Confluence | Partial | Partial | Partial | None | None | High |
-| CLI (mmdc) | Full | Full | Full | Full | Full | Low |
+| Renderer | `%%{init}%%` | themeVars | classDef | CSS inject | Custom fonts | Look support | Risk |
+|---|---|---|---|---|---|---|---|
+| mermaid.live | Full | Full | Full | Full | Full | Classic, Neo, Drawn | Low |
+| GitHub | Full | Full | Full | None | None | Classic, Neo partial | Low |
+| GitLab | Full | Full | Full | None | None | Classic, Neo partial | Low |
+| Notion | Partial | Partial | Full | None | None | Classic only | Medium |
+| Obsidian | Full | Full | Full | Partial | Partial | Classic, Neo/Drawn partial | Low |
+| Confluence | Partial | Partial | Partial | None | None | Classic only | High |
+| CLI (mmdc) | Full | Full | Full | Full | Full | Classic, Neo, Drawn | Low |
 
 Full compatibility matrix and renderer-specific workarounds: `references/renderer-profiles.md`
 
@@ -412,8 +420,9 @@ sequenceDiagram
 7. **`fontSize` must end in `px`.** Example: `"14px"`, not `14` or `"14"`.
 8. **No unrelated employer branding or corporate entity names** in any skill output. See `references/scope-firewall.md`.
 9. **No hallucinated palette names.** Only the 7 palettes in `assets/palettes.json` are canonical.
-10. **For experimental families**, always include a caveat that the output may not render in all environments.
-11. **For beta diagram families in Notion or Confluence**, warn that rendering is not guaranteed and validate before publishing.
+10. **If a look parameter is requested, validate against the renderer's look support before including it.** If the target renderer does not support the requested look, warn the user and default to Classic (omit the key). Never silently include a look value that will be ignored or cause rendering failure.
+11. **For experimental families**, always include a caveat that the output may not render in all environments.
+12. **For beta diagram families in Notion or Confluence**, warn that rendering is not guaranteed and validate before publishing.
 
 ---
 
