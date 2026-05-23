@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import type { Palette } from "@/lib/palettes";
 import { BRAND_PALETTES } from "@/lib/palettes";
 import { generateThemedCode, type ExportOptions } from "@/lib/themeEngine";
@@ -112,14 +112,44 @@ export function ExamplesTab({ selectedPalette, onLoadExample, initialSelectedId,
   const [searchQuery, setSearchQuery] = useState("");
   const [copiedRaw, setCopiedRaw] = useState(false);
 
+  const sidebarRef = useRef<HTMLDivElement>(null);
+  // Tracks which example ID still needs to be scrolled into view as part of
+  // the initial restore. Set at mount (if an ID is already known) and updated
+  // when the parent hydrates initialSelectedId after mount. Cleared to null
+  // once the scroll has fired so user-driven selection changes are never
+  // auto-scrolled (the user can see what they just clicked).
+  const pendingScrollIdRef = useRef<string | null>(
+    initialSelectedId && ALL_EXAMPLES.some((e) => e.id === initialSelectedId)
+      ? initialSelectedId
+      : null,
+  );
+
   // Sync with hydrated initialSelectedId that arrives after first render (e.g.,
   // when the app opens directly on the Examples tab and localStorage is read in
   // a useEffect in App.tsx after this component has already mounted).
   useEffect(() => {
     if (initialSelectedId && ALL_EXAMPLES.some((e) => e.id === initialSelectedId)) {
       setSelectedId(initialSelectedId);
+      // Ensure the scroll target is updated to the final restored ID even if
+      // it arrives after the initial render.
+      pendingScrollIdRef.current = initialSelectedId;
     }
   }, [initialSelectedId]);
+
+  // Once selectedId has caught up to the pending restore target, scroll that
+  // item into view and clear the target so subsequent user clicks are unaffected.
+  useEffect(() => {
+    if (!pendingScrollIdRef.current) return;
+    if (selectedId !== pendingScrollIdRef.current) return;
+    if (!sidebarRef.current) return;
+    const btn = sidebarRef.current.querySelector<HTMLElement>(
+      `[data-example-id="${CSS.escape(selectedId)}"]`,
+    );
+    if (btn) {
+      btn.scrollIntoView({ block: "nearest" });
+      pendingScrollIdRef.current = null;
+    }
+  }, [selectedId]);
   const [showMobilePreview, setShowMobilePreview] = useState(false);
   const [showInventory, setShowInventory] = useState(false);
 
@@ -184,6 +214,7 @@ export function ExamplesTab({ selectedPalette, onLoadExample, initialSelectedId,
     <div className="flex flex-col h-full overflow-hidden">
       <div className="flex-1 overflow-hidden flex flex-col md:flex-row min-h-0">
         <div
+          ref={sidebarRef}
           className={`flex flex-col w-full md:w-64 border-b md:border-b-0 md:border-r border-border overflow-y-auto shrink-0 ${
             showMobilePreview ? "hidden md:flex" : "flex"
           }`}
@@ -275,6 +306,7 @@ export function ExamplesTab({ selectedPalette, onLoadExample, initialSelectedId,
                     {entries.map((entry) => (
                       <li key={entry.id}>
                         <button
+                          data-example-id={entry.id}
                           onClick={() => {
                             setSelectedId(entry.id);
                             onExampleSelect?.(entry.id);
