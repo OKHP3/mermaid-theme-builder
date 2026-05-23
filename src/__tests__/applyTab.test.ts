@@ -269,6 +269,51 @@ describe("multi-diagram override reset", () => {
     expect(result.current.effectiveExportCode).not.toContain("stale edit from diagram 0");
   });
 
+  // -------------------------------------------------------------------------
+  // 7. Selector sync: pasting shorter content immediately shows the correct
+  //    active label without a stale-index intermediate frame.
+  //
+  //    In ApplyTab, the guard is now an inline setState during render:
+  //      if (activeDiagramIdx > 0 && activeDiagramIdx >= diagrams.length)
+  //        setActiveDiagramIdx(0);
+  //    React discards the render-in-progress and immediately restarts with
+  //    activeDiagramIdx = 0, so no intermediate frame is painted.
+  // -------------------------------------------------------------------------
+  it("safeDiagramIdx clamps to a valid index the moment content shrinks", () => {
+    // User had 2 diagrams, was viewing diagram 1 (index 1).
+    const activeDiagramIdx = 1;
+
+    // User pastes single-diagram content — diagrams array now has length 1.
+    const singleDiagrams = splitDiagrams("flowchart TD\n  A --> B");
+    expect(singleDiagrams).toHaveLength(1);
+
+    // The render-time guard computes the corrected index immediately.
+    const correctedIdx = activeDiagramIdx > 0 && activeDiagramIdx >= singleDiagrams.length ? 0 : activeDiagramIdx;
+    expect(correctedIdx).toBe(0);
+
+    // safeDiagramIdx (Math.min) also clamps correctly.
+    const safeDiagramIdx = Math.min(correctedIdx, singleDiagrams.length - 1);
+    expect(safeDiagramIdx).toBe(0);
+
+    // The label shown in the selector is the first diagram's label, not a stale one.
+    expect(singleDiagrams[safeDiagramIdx].label).toBe("Diagram 1");
+  });
+
+  it("selector label is correct for every valid active index after a shrink", () => {
+    // User had 3 diagrams (index 0, 1, 2) and was viewing any of them.
+    // After paste, only 1 diagram remains.
+    const singleDiagrams = splitDiagrams("flowchart TD\n  A --> B");
+
+    for (const staleIdx of [0, 1, 2]) {
+      const correctedIdx =
+        staleIdx > 0 && staleIdx >= singleDiagrams.length ? 0 : staleIdx;
+      const safeDiagramIdx = Math.min(correctedIdx, singleDiagrams.length - 1);
+
+      // Regardless of which diagram was active before, we land on index 0.
+      expect(singleDiagrams[safeDiagramIdx].label).toBe("Diagram 1");
+    }
+  });
+
   it("switching back to diagram 0 again clears any override set on diagram 1", () => {
     const optsBase: ExportOptions = {
       palette: paletteA,

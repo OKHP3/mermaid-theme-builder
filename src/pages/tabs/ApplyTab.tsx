@@ -171,12 +171,16 @@ export function ApplyTab({
 
   const diagrams = useMemo(() => splitDiagrams(inputCode), [inputCode]);
   const isMultiDiagram = diagrams.length > 1;
+
+  // Inline reset: calling setState during render causes React to discard this
+  // render and immediately re-render with the corrected index — no async effect
+  // cycle, no intermediate frame where a stale selector label is visible.
+  if (activeDiagramIdx > 0 && activeDiagramIdx >= diagrams.length) {
+    setActiveDiagramIdx(0);
+  }
+
   const safeDiagramIdx = Math.min(activeDiagramIdx, diagrams.length - 1);
   const activeDiagramCode = diagrams[safeDiagramIdx]?.content ?? inputCode;
-
-  useEffect(() => {
-    if (activeDiagramIdx >= diagrams.length) setActiveDiagramIdx(0);
-  }, [diagrams.length, activeDiagramIdx]);
 
   // Reset the advisory banner whenever the user picks a different target renderer.
   useEffect(() => {
