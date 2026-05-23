@@ -178,11 +178,36 @@ export function familyThemeOverlay(palette: Palette, family: DiagramFamily): Rec
         xyChart: [primary, secondary, tertiary, lineColor, nodeBorder, mainBkg].join(","),
       };
 
-    case "flowchart":
     case "block":
+      // block-beta uses the same themeVariable keys as flowchart — no unique
+      // vars exist. Returning an explicit set ensures the node fill, border,
+      // and connector colors from the palette are applied even when Mermaid's
+      // default theme differs from the selected palette's base values.
+      return {
+        mainBkg: mainBkg,
+        nodeBorder: nodeBorder,
+        lineColor: lineColor,
+        clusterBkg: clusterBkg,
+        titleColor: titleColor,
+      };
+
+    case "c4Diagram":
+      // C4 diagrams have partial themeVariable support. personBkg and
+      // personBorder are the only C4-specific themeVariables (used for Person
+      // and Person_Ext shapes). System and boundary shapes fall back to the
+      // standard mainBkg/nodeBorder/lineColor keys, which are also set here.
+      return {
+        personBkg: primary,
+        personBorder: primaryBorder,
+        mainBkg: mainBkg,
+        nodeBorder: nodeBorder,
+        lineColor: lineColor,
+        titleColor: titleColor,
+      };
+
+    case "flowchart":
     case "mindmap":
     case "requirementDiagram":
-    case "c4Diagram":
     case "architectureBeta":
     case "sankey":
     case "packet":
