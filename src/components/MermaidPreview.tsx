@@ -121,7 +121,9 @@ export function MermaidPreview({ code, className, typography }: MermaidPreviewPr
   const zoomIn = useCallback(() => zoomBy(ZOOM_STEP), [zoomBy]);
   const zoomOut = useCallback(() => zoomBy(-ZOOM_STEP), [zoomBy]);
 
-  // Wheel zoom — must be non-passive to call preventDefault
+  // Wheel zoom — must be non-passive to call preventDefault.
+  // Depends on svgContent so the listener re-attaches each time the
+  // canvas div mounts (containerRef is null until SVG renders).
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
@@ -132,10 +134,15 @@ export function MermaidPreview({ code, className, typography }: MermaidPreviewPr
     };
     el.addEventListener("wheel", handler, { passive: false });
     return () => el.removeEventListener("wheel", handler);
-  }, []);
+  }, [svgContent]);
 
-  // Mouse pan start
+  // Mouse pan start; middle-button (button 1) resets view
   const onMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.button === 1) {
+      e.preventDefault(); // prevent browser auto-scroll mode
+      resetView();
+      return;
+    }
     if (e.button !== 0) return;
     e.preventDefault();
     panAnchor.current = {
@@ -145,7 +152,7 @@ export function MermaidPreview({ code, className, typography }: MermaidPreviewPr
       ty: translateRef.current.y,
     };
     setIsPanning(true);
-  }, []);
+  }, [resetView]);
 
   // Mouse pan move/end at window level so dragging outside container still works
   useEffect(() => {

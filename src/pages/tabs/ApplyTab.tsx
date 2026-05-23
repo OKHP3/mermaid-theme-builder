@@ -17,7 +17,6 @@ import {
 } from "@/lib/themeEngine";
 import { readScaffoldFormat } from "@/lib/scaffoldPrefs";
 import { MermaidPreview } from "@/components/MermaidPreview";
-import { MermaidReferral } from "@/components/MermaidReferral";
 import { ColorSwatch } from "@/components/ColorSwatch";
 import { WarningBanner } from "@/components/WarningBanner";
 import { CapabilityNote } from "@/components/CapabilityNote";
@@ -980,9 +979,6 @@ export function ApplyTab({
               )}
             </div>
           )}
-          <div className="flex-none border-t border-border px-3 py-1.5 bg-card/20 print-hide">
-            <MermaidReferral variant="ai" />
-          </div>
         </div>
       </div>
 
