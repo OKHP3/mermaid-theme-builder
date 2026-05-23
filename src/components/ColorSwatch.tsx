@@ -14,6 +14,7 @@ interface ColorSwatchProps {
 export function ColorSwatch({ color, onChange, isOverridden = false, onReset }: ColorSwatchProps) {
   const [localValue, setLocalValue] = useState(color.value);
   const hiddenPickerRef = useRef<HTMLInputElement>(null);
+  const rowRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setLocalValue(color.value);
@@ -41,7 +42,17 @@ export function ColorSwatch({ color, onChange, isOverridden = false, onReset }: 
   );
 
   const openPicker = useCallback(() => {
-    hiddenPickerRef.current?.click();
+    const row = rowRef.current;
+    const picker = hiddenPickerRef.current;
+    if (!row || !picker) return;
+    const rect = row.getBoundingClientRect();
+    // position: fixed escapes overflow containers, so the browser anchors the
+    // native picker to the element's actual viewport coordinates.
+    // Offset upward by ~120px (half of Chrome's ~240px picker height) so the
+    // picker's vertical center lands on the row's vertical center.
+    picker.style.top = `${rect.top + rect.height / 2 - 120}px`;
+    picker.style.left = `${rect.right}px`;
+    picker.click();
   }, []);
 
   if (isFontValue) {
@@ -68,7 +79,7 @@ export function ColorSwatch({ color, onChange, isOverridden = false, onReset }: 
   }
 
   return (
-    <div className="relative flex items-center gap-2 py-1.5 px-2 rounded-md hover:bg-muted/50 transition-colors group">
+    <div ref={rowRef} className="relative flex items-center gap-2 py-1.5 px-2 rounded-md hover:bg-muted/50 transition-colors group">
       {/* Visual swatch — clicking triggers the right-anchored hidden picker */}
       <button
         type="button"
@@ -116,8 +127,10 @@ export function ColorSwatch({ color, onChange, isOverridden = false, onReset }: 
         </button>
       )}
 
-      {/* Hidden color input anchored at the right edge of the row so the
-          browser opens its picker popup on the right, not over the swatch list */}
+      {/* Hidden color input rendered at position:fixed so overflow containers
+          don't clip it. Position is set imperatively in openPicker() before
+          .click() is called, placing it to the right of the panel and
+          vertically centered on the clicked row. */}
       {isHexColor && (
         <input
           ref={hiddenPickerRef}
@@ -126,7 +139,7 @@ export function ColorSwatch({ color, onChange, isOverridden = false, onReset }: 
           onChange={handleColorPicker}
           aria-hidden="true"
           tabIndex={-1}
-          className="absolute right-0 top-1/2 -translate-y-1/2 w-px h-px opacity-0 pointer-events-none"
+          style={{ position: "fixed", top: 0, left: 0, width: 1, height: 1, opacity: 0, pointerEvents: "none" }}
         />
       )}
     </div>
