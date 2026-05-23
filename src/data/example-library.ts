@@ -1296,10 +1296,13 @@ export const EXAMPLE_CATALOG: ExampleEntry[] = [
   },
   {
     id: "quadrant-opportunity",
-    label: "Quadrant chart",
+    label: "Quadrant — diagram theme confidence vs. demand",
     family: "quadrant",
     category: "data-viz",
     content: QUADRANT_OPPORTUNITY,
+    description:
+      "Quadrant chart plotting Mermaid diagram families by user demand (x-axis) vs. theme confidence (y-axis). Demonstrates how palette colors apply to axis labels, data point markers, and quadrant titles.",
+    tags: ["quadrant", "data visualization", "prioritization", "OKH", "theme confidence", "demand"],
   },
   {
     id: "sankey-effort-to-output",
@@ -1325,17 +1328,23 @@ export const EXAMPLE_CATALOG: ExampleEntry[] = [
   },
   {
     id: "timeline-overkill-theme-builder-history",
-    label: "Timeline",
+    label: "Timeline — Mermaid Theme Builder project history",
     family: "timeline",
     category: "timeline",
     content: TIMELINE_PROJECT_HISTORY,
+    description:
+      "Timeline diagram tracing the Mermaid Theme Builder from origin through V0.2. Shows how palette section-header backgrounds and event-label colors respond to palette changes.",
+    tags: ["timeline", "project history", "OKH", "milestones", "chronological"],
   },
   {
     id: "journey-idea-to-shipped-tool",
-    label: "User journey",
+    label: "User journey — idea to shipped tool",
     family: "journey",
     category: "timeline",
     content: JOURNEY_IDEA_TO_SHIP,
+    description:
+      "User journey map tracing the complete arc from random idea to shipped tool, with satisfaction scores per step and multiple actors (Jamie, Claude, ChatGPT, Perplexity, Replit). Shows how palette colors theme the satisfaction bars and section headings.",
+    tags: ["journey", "user journey", "experience map", "actors", "satisfaction", "OKH", "AI council"],
   },
   {
     id: "gitgraph-repo-evolution",
@@ -1501,6 +1510,9 @@ export const EXAMPLE_CATALOG: ExampleEntry[] = [
     category: "data-viz",
     content: QUADRANT_MERMAID_BASIC,
     badge: "Canonical",
+    description:
+      "Canonical quadrantChart from the Mermaid docs: campaign reach vs. engagement. Good starting point for seeing how palette colors apply to quadrant backgrounds, axis labels, and point markers.",
+    tags: ["quadrant", "canonical", "campaigns", "reach", "engagement", "data visualization"],
   },
   {
     id: "sankey-mermaid-basic",
@@ -1542,6 +1554,9 @@ export const EXAMPLE_CATALOG: ExampleEntry[] = [
     category: "timeline",
     content: TIMELINE_MERMAID_BASIC,
     badge: "Canonical",
+    description:
+      "Canonical timeline from the Mermaid docs: industrial revolution eras. Clean two-section structure ideal for seeing how palette section headers and event-label colors respond to palette changes.",
+    tags: ["timeline", "canonical", "history", "eras", "chronological", "sections"],
   },
   {
     id: "gitgraph-mermaid-basic",
@@ -1594,6 +1609,9 @@ export const EXAMPLE_CATALOG: ExampleEntry[] = [
     category: "timeline",
     content: JOURNEY_MERMAID_BASIC,
     badge: "Canonical",
+    description:
+      "Canonical user journey from the Mermaid docs: a simple working-day experience map with satisfaction scores. Good baseline for seeing how palette colors theme the journey satisfaction bars and section headings.",
+    tags: ["journey", "canonical", "user journey", "experience map", "satisfaction", "actors"],
   },
   // data-viz
   {

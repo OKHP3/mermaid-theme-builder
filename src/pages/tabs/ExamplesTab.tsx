@@ -23,6 +23,8 @@ interface ExampleItem {
   badge?: string;
   section: string;
   family?: string;
+  description?: string;
+  tags?: string[];
 }
 
 async function writeToClipboard(text: string) {
@@ -81,6 +83,8 @@ function buildExampleList(): ExampleItem[] {
         badge: entry.badge,
         section: group.label,
         family: entry.family,
+        description: entry.description,
+        tags: entry.tags,
       });
     });
   });
@@ -161,7 +165,9 @@ export function ExamplesTab({ selectedPalette, onLoadExample, initialSelectedId,
         e.label.toLowerCase().includes(q) ||
         (e.family ?? "").toLowerCase().includes(q) ||
         (e.badge ?? "").toLowerCase().includes(q) ||
-        e.section.toLowerCase().includes(q),
+        e.section.toLowerCase().includes(q) ||
+        (e.description ?? "").toLowerCase().includes(q) ||
+        (e.tags ?? []).some((t) => t.toLowerCase().includes(q)),
     );
   }, [searchQuery]);
 
