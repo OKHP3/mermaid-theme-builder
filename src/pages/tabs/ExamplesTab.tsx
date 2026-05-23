@@ -90,6 +90,10 @@ function buildExampleList(): ExampleItem[] {
 
 const ALL_EXAMPLES = buildExampleList();
 const SECTIONS = Array.from(new Set(ALL_EXAMPLES.map((e) => e.section)));
+const ALL_FAMILIES = Array.from(
+  new Set(ALL_EXAMPLES.map((e) => e.family).filter((f): f is string => !!f)),
+).sort();
+const FAMILY_COUNT = ALL_FAMILIES.length;
 
 interface ExamplesTabProps {
   selectedPalette: Palette;
@@ -439,8 +443,11 @@ export function ExamplesTab({ selectedPalette, onLoadExample, initialSelectedId,
           {copiedRaw ? "Copied!" : "Copy Raw Code"}
         </button>
         <div className="flex-1" />
-        <span className="text-[10px] text-muted-foreground/50 hidden sm:block">
-          {ALL_EXAMPLES.length} examples · themed with {selectedPalette.name}
+        <span
+          className="text-[10px] text-muted-foreground/50 hidden sm:block"
+          title={`Families covered: ${ALL_FAMILIES.join(", ")}`}
+        >
+          {ALL_EXAMPLES.length} examples · {FAMILY_COUNT} families · themed with {selectedPalette.name}
         </span>
       </div>
     </div>
