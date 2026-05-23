@@ -97,9 +97,12 @@ function parseInitDirective(code: string): { theme?: string; vars: Record<string
   const objMatch = directiveBlock.match(/init\s*:\s*(\{[\s\S]*\})\s*\}\s*%%/);
   if (objMatch) payload = objMatch[1];
 
-  // Try to recover themeVariables by simple text search rather than full JSON parse
-  const tvMatch = payload.match(/themeVariables\s*:\s*\{([\s\S]*?)\}/);
-  const themeMatch = payload.match(/(?:^|[\s,{])theme\s*:\s*["']?([A-Za-z][\w-]*)["']?/);
+  // Try to recover themeVariables by simple text search rather than full JSON parse.
+  // Keys may be unquoted (JSON5-style) or double-quoted (strict JSON). Both forms are
+  // tolerated so that the extractor handles both hand-authored code and the output of
+  // generateThemedCode, which emits fully-quoted JSON.
+  const tvMatch = payload.match(/["']?themeVariables["']?\s*:\s*\{([\s\S]*?)\}/);
+  const themeMatch = payload.match(/(?:^|[\s,{])["']?theme["']?\s*:\s*["']?([A-Za-z][\w-]*)["']?/);
   const theme = themeMatch ? themeMatch[1] : undefined;
 
   if (!tvMatch) {

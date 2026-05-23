@@ -6,6 +6,9 @@ import {
   isExtractedPaletteId,
   makeExtractedPaletteId,
 } from "@/lib/extractor";
+import { generateThemedCode } from "@/lib/themeEngine";
+import type { ExportOptions } from "@/lib/themeEngine";
+import { BUILTIN_PALETTES } from "@/lib/palettes";
 
 // ---------------------------------------------------------------------------
 // extractTheme — init directive
@@ -571,4 +574,71 @@ describe("makeExtractedPaletteId", () => {
     expect(suffix.length).toBeGreaterThan(0);
     expect(/^[0-9a-z]+$/.test(suffix)).toBe(true);
   });
+});
+
+// ---------------------------------------------------------------------------
+// Round-trip: generateThemedCode → extractTheme
+//
+// For every built-in palette, applies the theme to a simple flowchart via
+// generateThemedCode and then re-extracts it with extractTheme. Asserts that
+// the init directive is preserved and the key hex color values survive
+// unchanged. This catches drift between the theme engine's output format and
+// the extractor's parser.
+// ---------------------------------------------------------------------------
+
+const ROUND_TRIP_DIAGRAM = "flowchart TD\n  A --> B --> C";
+const ROUND_TRIP_KEY_COLORS = ["primaryColor", "primaryTextColor", "lineColor"] as const;
+
+describe("round-trip: generateThemedCode → extractTheme", () => {
+  it.each(BUILTIN_PALETTES.map((p) => [p.name, p] as [string, (typeof BUILTIN_PALETTES)[number]]))(
+    "palette '%s' — sourceFormat is init-directive after round-trip",
+    (_name, palette) => {
+      const options: ExportOptions = {
+        palette,
+        diagramFamily: "flowchart",
+        includeMetaComments: false,
+        includeBadge: false,
+      };
+      const themedCode = generateThemedCode(ROUND_TRIP_DIAGRAM, options);
+      expect(extractTheme(themedCode).sourceFormat).toBe("init-directive");
+    },
+  );
+
+  it.each(BUILTIN_PALETTES.map((p) => [p.name, p] as [string, (typeof BUILTIN_PALETTES)[number]]))(
+    "palette '%s' — extracted theme name is 'base'",
+    (_name, palette) => {
+      const options: ExportOptions = {
+        palette,
+        diagramFamily: "flowchart",
+        includeMetaComments: false,
+        includeBadge: false,
+      };
+      const themedCode = generateThemedCode(ROUND_TRIP_DIAGRAM, options);
+      expect(extractTheme(themedCode).themeName).toBe("base");
+    },
+  );
+
+  it.each(
+    BUILTIN_PALETTES.flatMap((p) =>
+      ROUND_TRIP_KEY_COLORS.flatMap((colorKey) => {
+        const expected = p.colors.find((c) => c.key === colorKey)?.value;
+        return expected
+          ? ([[p.name, colorKey, p, expected]] as [string, string, (typeof BUILTIN_PALETTES)[number], string][])
+          : [];
+      }),
+    ),
+  )(
+    "palette '%s' — %s survives round-trip",
+    (_name, colorKey, palette, expected) => {
+      const options: ExportOptions = {
+        palette,
+        diagramFamily: "flowchart",
+        includeMetaComments: false,
+        includeBadge: false,
+      };
+      const themedCode = generateThemedCode(ROUND_TRIP_DIAGRAM, options);
+      const extracted = extractTheme(themedCode);
+      expect(extracted.themeVariables[colorKey]).toBe(expected);
+    },
+  );
 });
