@@ -164,6 +164,8 @@ export function ApplyTab({
   const [activeDiagramIdx, setActiveDiagramIdx] = useState(0);
   const [familyOverride, setFamilyOverride] = useState<DiagramFamily | null>(null);
   const [showFamilyMenu, setShowFamilyMenu] = useState(false);
+  const [familyMenuPos, setFamilyMenuPos] = useState({ top: 0, left: 0 });
+  const familyBtnRef = useRef<HTMLButtonElement>(null);
   const colorEditorRef = useRef<HTMLDivElement>(null);
   const colorEditorOpenerRef = useRef<HTMLButtonElement | null>(null);
 
@@ -637,10 +639,17 @@ export function ApplyTab({
 
       <div className="flex-none border-b border-border bg-card/20 px-3 py-1.5 flex items-center gap-x-1.5 sm:gap-x-3 overflow-x-auto print-hide">
         {/* Chart Type */}
-        <div className="relative shrink-0">
+        <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+          <span className="hidden sm:inline text-[10px] uppercase tracking-wide text-muted-foreground font-semibold">Type</span>
+          <div className="relative">
           <button
+            ref={familyBtnRef}
             type="button"
-            onClick={() => setShowFamilyMenu((v) => !v)}
+            onClick={() => {
+              const rect = familyBtnRef.current?.getBoundingClientRect();
+              if (rect) setFamilyMenuPos({ top: rect.bottom + 4, left: rect.left });
+              setShowFamilyMenu((v) => !v);
+            }}
             aria-haspopup="menu"
             aria-expanded={showFamilyMenu}
             title={
@@ -672,7 +681,8 @@ export function ApplyTab({
                 aria-hidden="true"
               />
               <div
-                className="absolute left-0 top-full mt-1 z-40 min-w-[200px] max-h-[320px] overflow-auto rounded-md border border-border bg-popover shadow-lg py-1"
+                style={{ top: familyMenuPos.top, left: familyMenuPos.left }}
+                className="fixed z-40 min-w-[200px] max-h-[320px] overflow-auto rounded-md border border-border bg-popover shadow-lg py-1"
                 role="menu"
                 aria-label="Override diagram family"
               >
@@ -715,6 +725,7 @@ export function ApplyTab({
               </div>
             </>
           )}
+          </div>
         </div>
 
         <div className="w-px h-3.5 bg-border/60 shrink-0 hidden sm:block" aria-hidden="true" />
