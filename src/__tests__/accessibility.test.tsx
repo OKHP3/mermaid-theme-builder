@@ -34,6 +34,8 @@ import axe from "axe-core";
 
 import { AppShell } from "@/App";
 import { ApplyTab } from "@/pages/tabs/ApplyTab";
+import { ComposeTab } from "@/pages/tabs/ComposeTab";
+import { ExtractTab } from "@/pages/tabs/ExtractTab";
 import { ColorSwatch } from "@/components/ColorSwatch";
 import { BRAND_PALETTES } from "@/lib/palettes";
 import { DEFAULT_TYPOGRAPHY } from "@/lib/typography";
@@ -233,6 +235,90 @@ describe("ColorSwatch (overridden, reset button)", () => {
     expect(
       blocking,
       `Critical/serious violations: ${blocking.map((v) => `${v.id}: ${v.description}`).join("; ")}`,
+    ).toHaveLength(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 6. ComposeTab — typography controls, palette editor, class browser
+//
+// Renders the full Compose tab with a realistic palette and default
+// typography settings. The color editor grid, font-size tier controls,
+// and palette selector are all present in this render.
+// ---------------------------------------------------------------------------
+describe("ComposeTab (color editor and palette editor)", () => {
+  const palette = BRAND_PALETTES[0];
+  const noop = vi.fn();
+
+  const composeTabProps = {
+    selectedPalette: palette,
+    selectedPaletteId: palette.id,
+    onSelectPalette: noop,
+    customColors: {},
+    onColorChange: noop,
+    onResetPalette: noop,
+    hasCustomizations: false,
+    includeMetaComments: true,
+    onIncludeMetaCommentsChange: noop,
+    includeBadge: true,
+    onIncludeBadgeChange: noop,
+    customThemeName: "",
+    onCustomThemeNameChange: noop,
+    effectiveThemeName: palette.name,
+    userPalettes: [],
+    onSavePalette: noop,
+    onImportPalette: noop,
+    onDeleteUserPalette: noop,
+    onShowToast: noop,
+    look: "classic" as const,
+    onLookChange: noop,
+    fontSize: "",
+    onFontSizeChange: noop,
+    typography: DEFAULT_TYPOGRAPHY,
+    onTypographyChange: noop,
+    rendererTarget: "",
+    onRendererTargetChange: noop,
+    onUseExtractedTheme: noop,
+    onSwitchTab: noop,
+  };
+
+  it("has zero critical/serious axe violations on initial render", async () => {
+    const { container } = render(createElement(ComposeTab, composeTabProps));
+    const { blocking, all } = await runAxe(container);
+    logViolations("ComposeTab", all);
+    expect(
+      blocking,
+      `Critical/serious violations:\n${blocking
+        .map((v) => `  [${v.impact}] ${v.id}: ${v.description}\n  Nodes: ${v.nodes.map((n) => n.html).slice(0, 2).join(", ")}`)
+        .join("\n")}`,
+    ).toHaveLength(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 7. ExtractTab — paste input area, extract button, idle state
+//
+// Renders the Extract tab in its initial idle state (no code pasted yet).
+// The textarea, extract button, and empty-state message are all present.
+// ---------------------------------------------------------------------------
+describe("ExtractTab (input area, idle state)", () => {
+  const noop = vi.fn();
+
+  const extractTabProps = {
+    onUseExtractedTheme: noop,
+    onSwitchTab: noop,
+    onShowToast: noop,
+  };
+
+  it("has zero critical/serious axe violations on initial render", async () => {
+    const { container } = render(createElement(ExtractTab, extractTabProps));
+    const { blocking, all } = await runAxe(container);
+    logViolations("ExtractTab (idle)", all);
+    expect(
+      blocking,
+      `Critical/serious violations:\n${blocking
+        .map((v) => `  [${v.impact}] ${v.id}: ${v.description}\n  Nodes: ${v.nodes.map((n) => n.html).slice(0, 2).join(", ")}`)
+        .join("\n")}`,
     ).toHaveLength(0);
   });
 });

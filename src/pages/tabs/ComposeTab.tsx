@@ -851,6 +851,7 @@ export function ComposeTab({
             type="file"
             accept=".json,application/json"
             className="hidden"
+            aria-label="Import palette JSON file"
             onChange={handleFileChosen}
           />
           {importDiagnostics && (importDiagnostics.missingKeys.length > 0 || importDiagnostics.unknownKeys.length > 0) && (
