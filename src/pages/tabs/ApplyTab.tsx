@@ -631,31 +631,6 @@ export function ApplyTab({
         </div>
       </div>
 
-      {canExtract && !isExtracted && (
-        <div className="flex-none border-b border-amber-500/30 bg-amber-500/8 px-3 py-2 flex items-center gap-3 print-hide">
-          <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0">
-            <path
-              fillRule="evenodd"
-              d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z"
-              clipRule="evenodd"
-            />
-          </svg>
-          <div className="flex-1 min-w-0">
-            <p className="text-xs font-medium text-amber-900 dark:text-amber-100">
-              This diagram has its own theme directive
-            </p>
-            <p className="text-[11px] text-amber-700 dark:text-amber-300/80 leading-tight">
-              Extract it into an editable palette to refine and re-export.
-            </p>
-          </div>
-          <button
-            onClick={() => onExtractTheme()}
-            className="text-xs px-3 py-1 rounded-md bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-amber-900 dark:text-amber-100 font-medium transition-colors"
-          >
-            Extract theme
-          </button>
-        </div>
-      )}
 
       {BRAND_EXAMPLES[selectedPaletteId] && (
         <div className="flex-none border-b border-border bg-card/20 px-3 py-1.5 flex items-center gap-2 print-hide">
@@ -688,14 +663,14 @@ export function ApplyTab({
         </div>
       )}
 
-      <div className="flex-none border-b border-border bg-card/20 px-3 py-1.5 flex flex-wrap items-center gap-x-3 gap-y-1.5 print-hide">
+      <div className="flex-none border-b border-border bg-card/20 px-3 py-1.5 flex items-center gap-x-1.5 sm:gap-x-3 overflow-x-auto print-hide">
         {/* Target */}
-        <div className="flex items-center gap-1.5 shrink-0">
-          <span className="text-[10px] uppercase tracking-wide text-muted-foreground font-semibold">Target</span>
+        <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+          <span className="hidden sm:inline text-[10px] uppercase tracking-wide text-muted-foreground font-semibold">Target</span>
           <select
             value={rendererTarget}
             onChange={(e) => onRendererTargetChange(e.target.value)}
-            className="text-[10px] bg-background border border-border rounded-md px-1.5 py-0.5 text-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 cursor-pointer"
+            className="text-[10px] bg-background border border-border rounded-md px-1.5 py-0.5 text-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 cursor-pointer max-w-[80px] sm:max-w-none"
             aria-label="Select target renderer"
           >
             <option value="">Generic (most compatible)</option>
@@ -706,7 +681,7 @@ export function ApplyTab({
             ))}
           </select>
           {rendererLookWarning ? (
-            <span className="text-[10px] text-amber-600 dark:text-amber-400 flex items-center gap-1">
+            <span className="hidden sm:flex text-[10px] text-amber-600 dark:text-amber-400 items-center gap-1">
               <svg viewBox="0 0 16 16" fill="currentColor" className="w-3 h-3 shrink-0">
                 <path d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM0 8a8 8 0 1116 0A8 8 0 010 8zm8-3a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 018 5zm0 8.25a1 1 0 110-2 1 1 0 010 2z" />
               </svg>
@@ -714,7 +689,7 @@ export function ApplyTab({
             </span>
           ) : (
             rendererProfile && (
-              <span className="text-[10px] text-muted-foreground/50 hidden sm:block">
+              <span className="hidden sm:block text-[10px] text-muted-foreground/50">
                 {rendererProfile.mermaidVersionApprox}
               </span>
             )
@@ -724,9 +699,9 @@ export function ApplyTab({
         <div className="w-px h-3.5 bg-border/60 shrink-0 hidden sm:block" aria-hidden="true" />
 
         {/* Look */}
-        <div className="flex items-center gap-1.5 shrink-0">
-          <span className="text-[10px] uppercase tracking-wide text-muted-foreground font-semibold">Look</span>
-          <div className="flex gap-1">
+        <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+          <span className="hidden sm:inline text-[10px] uppercase tracking-wide text-muted-foreground font-semibold">Look</span>
+          <div className="flex gap-1 shrink-0">
             {(
               [
                 { value: "classic" as MermaidLook, label: "Classic" },
@@ -749,7 +724,7 @@ export function ApplyTab({
             ))}
           </div>
           {look !== "classic" && (
-            <span className="text-[10px] text-muted-foreground/60">
+            <span className="hidden sm:block text-[10px] text-muted-foreground/60">
               {look === "neo" ? "v11+ required" : "sketch style"}
             </span>
           )}
