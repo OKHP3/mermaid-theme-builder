@@ -772,6 +772,174 @@ describe("generatePromptScaffoldWithFormat", () => {
     expect(result).toContain("Person(user,");
     expect(result).toContain("Rel(user, app,");
   });
+
+  it("includes sankey-specific section when diagramFamily is sankey", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "sankey" },
+      "both",
+    );
+    expect(result).toContain("Sankey diagram");
+    expect(result).toContain("source,target,value");
+    expect(result).toContain("sankey-beta");
+  });
+
+  it("does not include classDef library section for sankey", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "sankey" },
+      "both",
+    );
+    expect(result).not.toContain("## Semantic classDef library");
+  });
+
+  it("sankey scaffold rules forbid :::className and note styling is theme-only", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "sankey" },
+      "both",
+    );
+    expect(result).toContain(":::className");
+    expect(result).toContain("sankey-beta does not support per-flow or per-node classDef styling");
+  });
+
+  it("sankey scaffold explains implicit node creation from labels", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "sankey" },
+      "both",
+    );
+    expect(result).toContain("Nodes are implicit");
+    expect(result).toContain("source");
+    expect(result).toContain("target");
+    expect(result).toContain("value");
+  });
+
+  it("sankey scaffold example output contains CSV link syntax", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "sankey" },
+      "both",
+    );
+    expect(result).toContain("sankey-beta\n");
+    expect(result).toContain("Renewable,Wind,45");
+  });
+
+  it("includes packet-specific section when diagramFamily is packet", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "packet" },
+      "both",
+    );
+    expect(result).toContain("Packet diagram");
+    expect(result).toContain("packet-beta");
+    expect(result).toContain("startBit");
+    expect(result).toContain("endBit");
+  });
+
+  it("does not include classDef library section for packet", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "packet" },
+      "both",
+    );
+    expect(result).not.toContain("## Semantic classDef library");
+  });
+
+  it("packet scaffold rules forbid :::className and note styling is theme-only", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "packet" },
+      "both",
+    );
+    expect(result).toContain(":::className");
+    expect(result).toContain("packet-beta does not support per-field classDef styling");
+  });
+
+  it("packet scaffold explains bit-range field declaration syntax", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "packet" },
+      "both",
+    );
+    expect(result).toContain("startBit-endBit");
+    expect(result).toContain("zero-based");
+  });
+
+  it("packet scaffold example output contains bit-range field entries", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "packet" },
+      "both",
+    );
+    expect(result).toContain("packet-beta\n");
+    expect(result).toContain('0-3: "Version"');
+  });
+
+  it("includes requirementDiagram-specific section when diagramFamily is requirementDiagram", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "requirementDiagram" },
+      "both",
+    );
+    expect(result).toContain("Requirement diagram");
+    expect(result).toContain("requirementDiagram");
+    expect(result).toContain("requirement");
+    expect(result).toContain("element");
+  });
+
+  it("does not include classDef library section for requirementDiagram", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "requirementDiagram" },
+      "both",
+    );
+    expect(result).not.toContain("## Semantic classDef library");
+  });
+
+  it("requirementDiagram scaffold rules forbid :::className", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "requirementDiagram" },
+      "both",
+    );
+    expect(result).toContain(":::className");
+    expect(result).toContain("requirementDiagram does not support per-requirement or per-element classDef styling");
+  });
+
+  it("requirementDiagram scaffold explains requirement type keywords", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "requirementDiagram" },
+      "both",
+    );
+    expect(result).toContain("functionalRequirement");
+    expect(result).toContain("performanceRequirement");
+    expect(result).toContain("designConstraint");
+  });
+
+  it("requirementDiagram scaffold explains relationship syntax", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "requirementDiagram" },
+      "both",
+    );
+    expect(result).toContain("satisfies");
+    expect(result).toContain("traces");
+    expect(result).toContain("verifies");
+  });
+
+  it("requirementDiagram scaffold example output contains requirement and element declarations", () => {
+    const result = generatePromptScaffoldWithFormat(
+      palette,
+      { ...BASE_OPTIONS, diagramFamily: "requirementDiagram" },
+      "both",
+    );
+    expect(result).toContain("requirementDiagram\n");
+    expect(result).toContain("requirement AuthRequirement");
+    expect(result).toContain("element AuthService");
+    expect(result).toContain("satisfies -> AuthService");
+  });
 });
 
 describe("typography → init directive mapping", () => {

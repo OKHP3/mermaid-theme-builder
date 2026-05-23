@@ -756,6 +756,49 @@ ${frontmatterBlock}
     System_Ext(ext, "External Service", "Third-party API provider")
     Rel(user, app, "Uses", "HTTPS")
     Rel(app, ext, "Calls", "REST/HTTPS")`
+      : diagramFamily === "sankey"
+      ? `sankey-beta
+Energy Source,Transmission,120
+Energy Source,Direct Use,30
+Transmission,Industrial,75
+Transmission,Residential,45
+Direct Use,Commercial,30`
+      : diagramFamily === "packet"
+      ? `packet-beta
+0-7: "Version"
+8-15: "Header Length"
+16-31: "Total Length"
+32-47: "Identification"
+48-63: "Flags + Fragment Offset"
+64-71: "TTL"
+72-79: "Protocol"
+80-95: "Header Checksum"
+96-127: "Source Address"
+128-159: "Destination Address"`
+      : diagramFamily === "requirementDiagram"
+      ? `requirementDiagram
+
+requirement AuthRequirement {
+    id: 1
+    text: Users must authenticate before accessing protected resources
+    risk: high
+    verifyMethod: test
+}
+
+functionalRequirement SessionRequirement {
+    id: 2
+    text: Sessions must expire after 30 minutes of inactivity
+    risk: medium
+    verifyMethod: inspection
+}
+
+element AuthService {
+    type: system
+    docref: /docs/auth-service
+}
+
+AuthRequirement - satisfies -> AuthService
+SessionRequirement - traces -> AuthRequirement`
       : diagramFamily === "flowchart" || diagramFamily === "unknown"
       ? `flowchart TD
     A[Start] --> B[Process]
@@ -1461,7 +1504,151 @@ C4Context
 
 ## C4 diagram: theming note
 
-All C4 element colors (person icons, system/container boxes, boundary lines) are controlled by the theme directive. themeVariable support is partial — some tokens may not apply to all element types. No per-element style overrides are possible with classDef or inline styling.` : `## Semantic classDef library
+All C4 element colors (person icons, system/container boxes, boundary lines) are controlled by the theme directive. themeVariable support is partial — some tokens may not apply to all element types. No per-element style overrides are possible with classDef or inline styling.` : diagramFamily === "sankey" ? `## Sankey diagram: CSV link syntax
+
+\`sankey-beta\` styling is controlled entirely by the theme directive above — flow band colors, node label fonts, and background all come from the theme variables. There is **no** \`:::className\` syntax in sankey diagrams; individual flows cannot be styled with classDef.
+
+### Link declaration syntax
+
+Each line declares one flow as \`source,target,value\` (comma-separated, no spaces around commas). The \`value\` is a positive number representing the flow magnitude:
+
+\`\`\`mermaid
+${exampleDirective}
+sankey-beta
+Renewable,Wind,45
+Renewable,Solar,55
+Wind,Grid,45
+Solar,Grid,40
+Solar,Storage,15
+Grid,Industrial,60
+Grid,Residential,25
+\`\`\`
+
+### Link format reference
+
+| Field | Description |
+|-------|-------------|
+| \`source\` | Origin node label (bare text, no quotes required) |
+| \`target\` | Destination node label |
+| \`value\` | Flow magnitude (positive number; relative widths are auto-scaled) |
+
+Nodes are created automatically from the unique source and target labels — there is no separate node declaration syntax. Duplicate labels are merged into the same node.
+
+---
+
+## Sankey diagram: theming note
+
+All sankey band colors and node fill colors come from the theme directive. Flow band widths are proportional to values — they are not affected by theme styling. No per-flow or per-node style overrides are possible with classDef or inline styling.` : diagramFamily === "packet" ? `## Packet diagram: block and field syntax
+
+\`packet-beta\` styling is controlled entirely by the theme directive above — field block colors, label fonts, and background all come from the theme variables. There is **no** \`:::className\` syntax in packet diagrams; individual fields cannot be styled with classDef.
+
+### Field declaration syntax
+
+Each field occupies a bit range declared as \`startBit-endBit: "Label"\`. Fields are rendered left-to-right in ascending bit order across a fixed-width row (default 32 bits per row):
+
+\`\`\`mermaid
+${exampleDirective}
+packet-beta
+0-3: "Version"
+4-7: "IHL"
+8-15: "DSCP+ECN"
+16-31: "Total Length"
+32-47: "Identification"
+48-50: "Flags"
+51-63: "Fragment Offset"
+64-71: "TTL"
+72-79: "Protocol"
+80-95: "Header Checksum"
+96-127: "Source IP"
+128-159: "Destination IP"
+\`\`\`
+
+### Field format reference
+
+| Field | Description |
+|-------|-------------|
+| \`startBit\` | Zero-based bit index of the field's first bit |
+| \`endBit\` | Zero-based bit index of the field's last bit (inclusive) |
+| \`"Label"\` | Quoted display label for the field block |
+
+Fields that span more than one row are automatically wrapped. Multi-word labels should be quoted.
+
+---
+
+## Packet diagram: theming note
+
+All field block colors, border colors, and label fonts come from the theme directive. Field widths are proportional to bit-range sizes — they are not affected by theme styling. No per-field style overrides are possible with classDef or inline styling.` : diagramFamily === "requirementDiagram" ? `## Requirement diagram: declaration and relationship syntax
+
+\`requirementDiagram\` styling is controlled entirely by the theme directive above — requirement box colors, element box colors, and label fonts all come from the theme variables. There is **no** \`:::className\` syntax in requirement diagrams; individual requirements or elements cannot be styled with classDef.
+
+### Requirement declaration syntax
+
+Declare requirements with a type keyword, a name, and a body block. The type keyword controls the visual label on the box:
+
+\`\`\`mermaid
+${exampleDirective}
+requirementDiagram
+
+requirement DataIntegrity {
+    id: 1
+    text: All data writes must be validated before persistence
+    risk: high
+    verifyMethod: test
+}
+
+performanceRequirement ResponseTime {
+    id: 2
+    text: API responses must complete within 200ms at p95
+    risk: medium
+    verifyMethod: analysis
+}
+
+element APIService {
+    type: system
+    docref: /docs/api-service
+}
+
+DataIntegrity - satisfies -> APIService
+ResponseTime - traces -> DataIntegrity
+\`\`\`
+
+### Requirement type keywords
+
+| Keyword | Meaning |
+|---------|---------|
+| \`requirement\` | General requirement |
+| \`functionalRequirement\` | Functional requirement |
+| \`performanceRequirement\` | Performance requirement |
+| \`interfaceRequirement\` | Interface / integration requirement |
+| \`physicalRequirement\` | Physical / hardware requirement |
+| \`designConstraint\` | Design constraint |
+
+### Requirement body fields
+
+| Field | Values |
+|-------|--------|
+| \`id\` | Unique identifier (number or string) |
+| \`text\` | Human-readable description |
+| \`risk\` | \`low\`, \`medium\`, or \`high\` |
+| \`verifyMethod\` | \`analysis\`, \`demonstration\`, \`inspection\`, or \`test\` |
+
+### Relationship syntax
+
+| Syntax | Meaning |
+|--------|---------|
+| \`A - contains -> B\` | A contains B |
+| \`A - copies -> B\` | A copies B |
+| \`A - derives -> B\` | A is derived from B |
+| \`A - satisfies -> B\` | A satisfies B (element satisfies requirement) |
+| \`A - traces -> B\` | A traces to B |
+| \`A - refines -> B\` | A refines B |
+| \`A - verifies -> B\` | A verifies B |
+
+---
+
+## Requirement diagram: theming note
+
+All requirement and element box colors, border styles, and label fonts come from the theme directive. No per-requirement or per-element style overrides are possible with classDef or inline styling.` : `## Semantic classDef library
 
 ${classDefCaveatNote ? classDefCaveatNote : `This is the complete styling vocabulary for this theme. Apply these classDef classes to nodes using \`:::className\` syntax. Do NOT add any other fill, stroke, or color values — use only these classes.
 
@@ -1669,6 +1856,37 @@ ${diagramFamily === "sequenceDiagram" ? `1. ${formatRuleText}
 9. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values — the theme directive handles all styling.
 10. Do NOT change any color values — reproduce them exactly as shown.
 11. themeVariable support is partial — validate the output in your target renderer before publishing.
+12. If the diagram type changes, preserve the exact same theme directive.` : diagramFamily === "sankey" ? `1. ${formatRuleText}
+2. Add the metadata comment block immediately after the theme directive.
+3. Use \`sankey-beta\` as the diagram type keyword.
+4. Each line must be exactly \`source,target,value\` — comma-separated with no spaces around the commas.
+5. The \`value\` must be a positive number (integer or decimal); Mermaid auto-scales flow band widths.
+6. Nodes are implicit — they are created from unique source and target labels; do not declare nodes separately.
+7. Duplicate node labels are merged into the same node — spelling and capitalization must be consistent.
+8. Do NOT use \`:::className\` syntax — sankey-beta does not support per-flow or per-node classDef styling.
+9. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values — the theme directive handles all styling.
+10. Do NOT change any color values — reproduce them exactly as shown.
+11. If the diagram type changes, preserve the exact same theme directive.` : diagramFamily === "packet" ? `1. ${formatRuleText}
+2. Add the metadata comment block immediately after the theme directive.
+3. Use \`packet-beta\` as the diagram type keyword.
+4. Each field is declared as \`startBit-endBit: "Label"\` — bit indices are zero-based and end-inclusive.
+5. Fields must not overlap in bit range — ensure ranges are contiguous and non-overlapping.
+6. Labels should be quoted strings; keep them concise (under 30 characters each).
+7. Fields that span more than one row width (default 32 bits) are automatically wrapped — no special syntax needed.
+8. Do NOT use \`:::className\` syntax — packet-beta does not support per-field classDef styling.
+9. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values — the theme directive handles all styling.
+10. Do NOT change any color values — reproduce them exactly as shown.
+11. If the diagram type changes, preserve the exact same theme directive.` : diagramFamily === "requirementDiagram" ? `1. ${formatRuleText}
+2. Add the metadata comment block immediately after the theme directive.
+3. Use \`requirementDiagram\` as the diagram type keyword.
+4. Declare all requirements before elements, and all elements before relationships.
+5. Each requirement body must include \`id\`, \`text\`, \`risk\` (low/medium/high), and \`verifyMethod\` (analysis/demonstration/inspection/test).
+6. Use the appropriate type keyword for each requirement: \`requirement\`, \`functionalRequirement\`, \`performanceRequirement\`, \`interfaceRequirement\`, \`physicalRequirement\`, or \`designConstraint\`.
+7. Each element body must include \`type\` and optionally \`docref\`.
+8. Relationship syntax: \`A - relationshipType -> B\` — valid types are \`contains\`, \`copies\`, \`derives\`, \`satisfies\`, \`traces\`, \`refines\`, \`verifies\`.
+9. Do NOT use \`:::className\` syntax — requirementDiagram does not support per-requirement or per-element classDef styling.
+10. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values — the theme directive handles all styling.
+11. Do NOT change any color values — reproduce them exactly as shown.
 12. If the diagram type changes, preserve the exact same theme directive.` : `1. ${formatRuleText}
 2. Add the metadata comment block immediately after the theme directive.
 3. Use \`${diagramFamily === "unknown" ? "flowchart TD" : diagramFamily === "flowchart" ? "flowchart TD" : diagramFamily}\` as the diagram type unless the user specifies otherwise.
