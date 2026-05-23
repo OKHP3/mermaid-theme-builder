@@ -502,38 +502,6 @@ export function ApplyTab({
 
   return (
     <div className="flex flex-col md:h-full md:overflow-hidden">
-      {recentPalettes.length > 1 && (
-        <div className="flex-none border-b border-border bg-muted/20 px-3 py-1.5 flex items-center gap-2 print-hide">
-          <span className="text-[10px] uppercase tracking-wide text-muted-foreground font-semibold shrink-0">
-            Recent
-          </span>
-          <div className="flex gap-1 overflow-x-auto scrollbar-thin">
-            {recentPalettes.map((p) => {
-              const isSelected = selectedPaletteId === p.id;
-              return (
-                <button
-                  key={p.id}
-                  type="button"
-                  onClick={() => onSelectPalette(p.id)}
-                  title={`Switch to ${p.name}`}
-                  className={`shrink-0 inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border text-[10px] font-medium transition-all ${
-                    isSelected
-                      ? "border-primary/50 bg-primary/10 text-primary"
-                      : "border-border bg-background hover:border-primary/40 hover:bg-muted text-muted-foreground"
-                  }`}
-                >
-                  <span
-                    className="w-2 h-2 rounded-full border border-black/10"
-                    style={{ backgroundColor: p.colors[3]?.value ?? p.colors[0]?.value ?? "#888" }}
-                    aria-hidden="true"
-                  />
-                  {p.name.length > 14 ? p.name.slice(0, 13) + "…" : p.name}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
       <div className="flex-none border-b border-border bg-card/30 px-3 py-2 print-hide">
         <div
           role="radiogroup"
@@ -615,11 +583,6 @@ export function ApplyTab({
                 >
                   {p.name.length > 12 ? p.name.slice(0, 11) + "…" : p.name}
                 </span>
-                {p.isBrandPreset && (
-                  <span className="text-[8px] leading-none px-1 py-0.5 rounded bg-primary/10 text-primary font-semibold uppercase tracking-wide">
-                    OKHP3
-                  </span>
-                )}
                 {isUserExtracted && (
                   <span className="text-[8px] leading-none px-1 py-0.5 rounded bg-amber-500/15 text-amber-700 dark:text-amber-400 font-semibold uppercase tracking-wide">
                     Extracted

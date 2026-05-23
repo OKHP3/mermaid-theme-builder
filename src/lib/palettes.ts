@@ -143,7 +143,7 @@ export const BUILTIN_PALETTES: Palette[] = [
   },
   {
     id: "overkill-hill",
-    name: "OverKill Hill P³",
+    name: "OKHP3",
     brandFamily: "okhp3",
     isBrandPreset: true,
     description: "Industrial dark mode with teal and amber forge accents — bold, high-contrast, built for architecture diagrams",
