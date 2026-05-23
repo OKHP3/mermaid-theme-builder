@@ -238,6 +238,7 @@ function ClassNode({
 export function ClassBrowser({ classDefs, supportsClassDef = true, usedClassNames }: ClassBrowserProps) {
   const [copiedState, setCopiedState] = useState<CopiedState>(null);
   const [showPreview, setShowPreview] = useState(false);
+  const [previewMode, setPreviewMode] = useState<"all" | "used">("all");
   const previewRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -323,6 +324,21 @@ export function ClassBrowser({ classDefs, supportsClassDef = true, usedClassName
     () => classDefs.map((def) => buildClassDefString(def)).join("\n"),
     [classDefs]
   );
+
+  // Used-only preview block: matches the "Copy used" output order (sortedClassDefs
+  // filtered to used entries, preserving used-first sort from sortedClassDefs).
+  const usedPreviewBlock = useMemo(() => {
+    if (!usedClassNames || usedClassNames.size === 0) return "";
+    return sortedClassDefs
+      .filter((def) => usedClassNames.has(def.name))
+      .map((def) => buildClassDefString(def))
+      .join("\n");
+  }, [sortedClassDefs, usedClassNames]);
+
+  const hasUsed = (usedClassNames?.size ?? 0) > 0;
+  const activePreviewBlock = previewMode === "used" && hasUsed ? usedPreviewBlock : previewBlock;
+  const activePreviewCount =
+    previewMode === "used" && hasUsed ? (usedClassNames?.size ?? 0) : classDefs.length;
 
   const toastLabel =
     copiedState?.kind === "all"
@@ -444,14 +460,55 @@ export function ClassBrowser({ classDefs, supportsClassDef = true, usedClassName
         <div className="mt-2 rounded-md border border-border/50 bg-[#0f1f1c] overflow-hidden">
           <div className="flex items-center justify-between px-3 py-1.5 border-b border-white/8">
             <span className="text-[10px] font-medium text-[#d4c9b5]/60 uppercase tracking-wider font-mono">
-              Preview — {sortedClassDefs.length} classDef{sortedClassDefs.length !== 1 ? "s" : ""}
+              Preview —{" "}
+              {previewMode === "used" && hasUsed
+                ? `${activePreviewCount} classDef${activePreviewCount !== 1 ? "s" : ""} (used only)`
+                : `${activePreviewCount} classDef${activePreviewCount !== 1 ? "s" : ""}`}
             </span>
             <div className="flex items-center gap-1.5">
+              {hasUsed && (
+                <div
+                  role="group"
+                  aria-label="Preview mode"
+                  className="inline-flex items-center rounded border border-white/10 overflow-hidden"
+                >
+                  <button
+                    type="button"
+                    onClick={() => setPreviewMode("all")}
+                    aria-pressed={previewMode === "all"}
+                    title="Show all classDefs"
+                    className={`px-1.5 py-0.5 text-[10px] font-medium transition-colors focus:outline-none focus:ring-1 focus:ring-white/30 ${
+                      previewMode === "all"
+                        ? "bg-white/12 text-[#d4c9b5]"
+                        : "text-[#d4c9b5]/45 hover:text-[#d4c9b5]/80 hover:bg-white/6"
+                    }`}
+                  >
+                    All
+                  </button>
+                  <span className="w-px h-3 bg-white/10" aria-hidden="true" />
+                  <button
+                    type="button"
+                    onClick={() => setPreviewMode("used")}
+                    aria-pressed={previewMode === "used"}
+                    title={`Show only the ${usedClassNames?.size} classDef${usedClassNames?.size !== 1 ? "s" : ""} used in the current diagram`}
+                    className={`inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium transition-colors focus:outline-none focus:ring-1 focus:ring-emerald-500/40 ${
+                      previewMode === "used"
+                        ? "bg-emerald-500/20 text-emerald-300"
+                        : "text-[#d4c9b5]/45 hover:text-emerald-300/80 hover:bg-emerald-500/10"
+                    }`}
+                  >
+                    <svg viewBox="0 0 10 10" fill="none" className="w-2 h-2">
+                      <path d="M2 5.2l2 2 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                    Used
+                  </button>
+                </div>
+              )}
               <button
                 type="button"
-                onClick={handleCopyAll}
-                aria-label="Copy all classDefs"
-                title="Copy all classDefs"
+                onClick={previewMode === "used" && hasUsed ? handleCopyUsed : handleCopyAll}
+                aria-label={previewMode === "used" && hasUsed ? "Copy used classDefs" : "Copy all classDefs"}
+                title={previewMode === "used" && hasUsed ? "Copy used classDefs" : "Copy all classDefs"}
                 className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium text-[#d4c9b5]/60 hover:text-[#d4c9b5] border border-white/10 hover:border-white/25 hover:bg-white/8 transition-colors focus:outline-none focus:ring-1 focus:ring-white/30"
               >
                 <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-3 h-3">
@@ -474,7 +531,7 @@ export function ClassBrowser({ classDefs, supportsClassDef = true, usedClassName
             </div>
           </div>
           <pre className="px-3 py-2.5 text-[11px] font-mono text-[#d4c9b5] leading-relaxed overflow-x-auto whitespace-pre select-all">
-            {highlightClassDefBlock(previewBlock)}
+            {highlightClassDefBlock(activePreviewBlock)}
           </pre>
         </div>
       )}
