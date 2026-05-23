@@ -13,6 +13,7 @@ import { MermaidPreview } from "@/components/MermaidPreview";
 import { ColorSwatch } from "@/components/ColorSwatch";
 import { PromptScaffoldModal } from "@/components/PromptScaffoldModal";
 import { GENERIC_EXAMPLE } from "@/data/examples";
+import { EXAMPLE_CATALOG, EXAMPLE_GROUPS } from "@/data/example-library";
 import { isExtractedPaletteId } from "@/lib/extractor";
 import { ExtractTab } from "@/pages/tabs/ExtractTab";
 import type { AppTab } from "@/App";
@@ -236,9 +237,29 @@ export function ComposeTab({
     [selectedPalette, includeMetaComments, effectiveThemeName, look, fontSize, typography, rendererTarget],
   );
 
+  const [selectedSampleId, setSelectedSampleId] = useState<string>(() => {
+    try {
+      return localStorage.getItem("mtb.compose.previewSampleId") ?? "flowchart-basic";
+    } catch {
+      return "flowchart-basic";
+    }
+  });
+
+  const handleSampleIdChange = useCallback((id: string) => {
+    setSelectedSampleId(id);
+    try {
+      localStorage.setItem("mtb.compose.previewSampleId", id);
+    } catch { /* ignore */ }
+  }, []);
+
+  const sampleEntry = useMemo(
+    () => EXAMPLE_CATALOG.find((e) => e.id === selectedSampleId) ?? EXAMPLE_CATALOG[0],
+    [selectedSampleId],
+  );
+
   const sampleThemedCode = useMemo(
-    () => generateThemedCode(GENERIC_EXAMPLE, exportOptions),
-    [exportOptions],
+    () => generateThemedCode(sampleEntry.content, exportOptions),
+    [sampleEntry, exportOptions],
   );
 
   const handleCopyBootstrap = useCallback(async () => {
@@ -915,10 +936,25 @@ export function ComposeTab({
       </div>
 
       <div className="flex-1 flex flex-col overflow-hidden min-h-[280px] md:min-h-0">
-        <div className="flex items-center px-4 py-2 border-b border-border bg-card/20 flex-none gap-2">
-          <span className="text-xs font-medium text-muted-foreground">Theme Preview</span>
-          <span className="text-xs text-muted-foreground/60">— sample flowchart</span>
-          <span className="ml-auto text-xs font-medium text-foreground">
+        <div className="flex items-center px-4 py-2 border-b border-border bg-card/20 flex-none gap-2 min-w-0">
+          <span className="text-xs font-medium text-muted-foreground shrink-0">Theme Preview</span>
+          <select
+            value={selectedSampleId}
+            onChange={(e) => handleSampleIdChange(e.target.value)}
+            className="text-xs text-muted-foreground/70 bg-transparent border-0 outline-none cursor-pointer min-w-0 truncate max-w-[180px] md:max-w-[260px]"
+            aria-label="Preview diagram"
+          >
+            {EXAMPLE_GROUPS.map((group) => (
+              <optgroup key={group.category} label={group.label}>
+                {group.entries.map((entry) => (
+                  <option key={entry.id} value={entry.id}>
+                    {entry.label}
+                  </option>
+                ))}
+              </optgroup>
+            ))}
+          </select>
+          <span className="ml-auto text-xs font-medium text-foreground shrink-0">
             {effectiveThemeName}
           </span>
         </div>
