@@ -357,7 +357,7 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
       "Software architecture documentation, system context mapping, microservice topology.",
     warning:
       "Mermaid C4 support may vary by renderer and version. Treat as partial unless verified.",
-    exampleFile: "c4-context-overkill-ecosystem.mmd",
+    exampleFile: "basic-c4.mmd",
     examplePending: false,
     minMermaidVersion: "10.0.0",
     supportedLooks: ["classic"],
@@ -481,7 +481,7 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
     bestUsedFor: "Metric dashboards, velocity tracking, performance comparisons, trend charts.",
     warning:
       "Beta or renderer-dependent. Validate in target renderer before publication.",
-    exampleFile: "xychart-clarity-velocity.mmd",
+    exampleFile: "basic-xy.mmd",
     examplePending: false,
     minMermaidVersion: "10.9.0",
     supportedLooks: ["classic"],
@@ -506,7 +506,7 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
     bestUsedFor: "UI layout wireframes, product module maps, spatial system diagrams.",
     warning:
       "Beta or renderer-dependent. Validate in target renderer before publication.",
-    exampleFile: "block-product-modules.mmd",
+    exampleFile: "basic-block.mmd",
     examplePending: false,
     minMermaidVersion: "11.0.0",
     supportedLooks: ["classic"],
@@ -532,7 +532,7 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
       "Network protocol documentation, data packet structure visualization, payload mapping.",
     warning:
       "Use `packet` (not `packet-beta`) for Mermaid v11.0+. Validate in target renderer before publication.",
-    exampleFile: "packet-theme-bootstrap-payload.mmd",
+    exampleFile: "basic-packet.mmd",
     examplePending: false,
     minMermaidVersion: "11.0.0",
     supportedLooks: ["classic"],
@@ -556,7 +556,7 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
       "Kanban boards with columns and cards for visualizing work-in-progress across workflow stages.",
     bestUsedFor: "Sprint boards, backlog visualization, WIP tracking, task status boards.",
     warning: null,
-    exampleFile: "kanban-public-alpha-board.mmd",
+    exampleFile: "basic-kanban.mmd",
     examplePending: false,
     minMermaidVersion: "11.4.0",
     supportedLooks: ["classic"],
@@ -582,7 +582,7 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
       "Infrastructure topology, cloud architecture docs, service mesh visualization.",
     warning:
       "Architecture diagrams may be beta or renderer-dependent depending on Mermaid version.",
-    exampleFile: "architecture-static-app.mmd",
+    exampleFile: "basic-architecture.mmd",
     examplePending: false,
     minMermaidVersion: "11.1.0",
     supportedLooks: ["classic"],
@@ -608,7 +608,7 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
       "Skill assessment, product maturity scoring, multi-criteria analysis, team capability mapping.",
     warning:
       "Beta or renderer-dependent. Validate in target renderer before publication.",
-    exampleFile: "radar-product-maturity.mmd",
+    exampleFile: "basic-radar.mmd",
     examplePending: false,
     minMermaidVersion: "11.6.0",
     supportedLooks: ["classic"],
