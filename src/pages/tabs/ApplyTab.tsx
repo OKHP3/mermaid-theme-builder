@@ -635,106 +635,7 @@ export function ApplyTab({
       </div>
 
 
-      {BRAND_EXAMPLES[selectedPaletteId] && (
-        <div className="flex-none border-b border-border bg-card/20 px-3 py-1.5 flex items-center gap-2 print-hide">
-          <span className="text-[10px] uppercase tracking-wide text-muted-foreground font-semibold shrink-0">
-            Example
-          </span>
-          <div className="flex gap-1">
-            {(["flowchart", "sequence"] as const).map((type) => {
-              const isActive = (lastExampleType[selectedPaletteId] ?? "flowchart") === type;
-              return (
-                <button
-                  key={type}
-                  type="button"
-                  onClick={() => {
-                    onInputChange(BRAND_EXAMPLES[selectedPaletteId][type]);
-                    onRecordExampleType(selectedPaletteId, type);
-                    onShowToast(`Loaded ${selectedPalette.name} ${type} example`);
-                  }}
-                  className={`text-[10px] px-2 py-0.5 rounded-full border font-medium transition-all ${
-                    isActive
-                      ? "border-primary/50 bg-primary/10 text-primary"
-                      : "border-border bg-background hover:border-primary/40 hover:bg-muted text-muted-foreground"
-                  }`}
-                >
-                  {type === "flowchart" ? "Flowchart" : "Sequence"}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
       <div className="flex-none border-b border-border bg-card/20 px-3 py-1.5 flex items-center gap-x-1.5 sm:gap-x-3 overflow-x-auto print-hide">
-        {/* Target */}
-        <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
-          <span className="hidden sm:inline text-[10px] uppercase tracking-wide text-muted-foreground font-semibold">Target</span>
-          <select
-            value={rendererTarget}
-            onChange={(e) => onRendererTargetChange(e.target.value)}
-            className="text-[10px] bg-background border border-border rounded-md px-1.5 py-0.5 text-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 cursor-pointer max-w-[80px] sm:max-w-none"
-            aria-label="Select target renderer"
-          >
-            <option value="">Generic (most compatible)</option>
-            {RENDERER_PROFILES.map((r) => (
-              <option key={r.id} value={r.id}>
-                {r.displayName}
-              </option>
-            ))}
-          </select>
-          {rendererLookWarning ? (
-            <span className="hidden sm:flex text-[10px] text-amber-600 dark:text-amber-400 items-center gap-1">
-              <svg viewBox="0 0 16 16" fill="currentColor" className="w-3 h-3 shrink-0">
-                <path d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM0 8a8 8 0 1116 0A8 8 0 010 8zm8-3a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 018 5zm0 8.25a1 1 0 110-2 1 1 0 010 2z" />
-              </svg>
-              {rendererLookWarning}
-            </span>
-          ) : (
-            rendererProfile && (
-              <span className="hidden sm:block text-[10px] text-muted-foreground/50">
-                {rendererProfile.mermaidVersionApprox}
-              </span>
-            )
-          )}
-        </div>
-
-        <div className="w-px h-3.5 bg-border/60 shrink-0 hidden sm:block" aria-hidden="true" />
-
-        {/* Look */}
-        <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
-          <span className="hidden sm:inline text-[10px] uppercase tracking-wide text-muted-foreground font-semibold">Look</span>
-          <div className="flex gap-1 shrink-0">
-            {(
-              [
-                { value: "classic" as MermaidLook, label: "Classic" },
-                { value: "neo" as MermaidLook, label: "Neo" },
-                { value: "handDrawn" as MermaidLook, label: "Hand Drawn" },
-              ] as const
-            ).map((opt) => (
-              <button
-                key={opt.value}
-                type="button"
-                onClick={() => onLookChange(opt.value)}
-                className={`text-[10px] px-2 py-0.5 rounded-full border font-medium transition-all ${
-                  look === opt.value
-                    ? "border-primary/50 bg-primary/10 text-primary"
-                    : "border-border bg-background hover:border-primary/40 hover:bg-muted text-muted-foreground"
-                }`}
-              >
-                {opt.label}
-              </button>
-            ))}
-          </div>
-          {look !== "classic" && (
-            <span className="hidden sm:block text-[10px] text-muted-foreground/60">
-              {look === "neo" ? "v11+ required" : "sketch style"}
-            </span>
-          )}
-        </div>
-
-        <div className="w-px h-3.5 bg-border/60 shrink-0 hidden sm:block" aria-hidden="true" />
-
         {/* Chart Type */}
         <div className="relative shrink-0">
           <button
@@ -813,6 +714,74 @@ export function ApplyTab({
                 })}
               </div>
             </>
+          )}
+        </div>
+
+        <div className="w-px h-3.5 bg-border/60 shrink-0 hidden sm:block" aria-hidden="true" />
+
+        {/* Target */}
+        <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+          <span className="hidden sm:inline text-[10px] uppercase tracking-wide text-muted-foreground font-semibold">Target</span>
+          <select
+            value={rendererTarget}
+            onChange={(e) => onRendererTargetChange(e.target.value)}
+            className="text-[10px] bg-background border border-border rounded-md px-1.5 py-0.5 text-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 cursor-pointer max-w-[80px] sm:max-w-none"
+            aria-label="Select target renderer"
+          >
+            <option value="">Generic (most compatible)</option>
+            {RENDERER_PROFILES.map((r) => (
+              <option key={r.id} value={r.id}>
+                {r.displayName}
+              </option>
+            ))}
+          </select>
+          {rendererLookWarning ? (
+            <span className="hidden sm:flex text-[10px] text-amber-600 dark:text-amber-400 items-center gap-1">
+              <svg viewBox="0 0 16 16" fill="currentColor" className="w-3 h-3 shrink-0">
+                <path d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM0 8a8 8 0 1116 0A8 8 0 010 8zm8-3a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 018 5zm0 8.25a1 1 0 110-2 1 1 0 010 2z" />
+              </svg>
+              {rendererLookWarning}
+            </span>
+          ) : (
+            rendererProfile && (
+              <span className="hidden sm:block text-[10px] text-muted-foreground/50">
+                {rendererProfile.mermaidVersionApprox}
+              </span>
+            )
+          )}
+        </div>
+
+        <div className="w-px h-3.5 bg-border/60 shrink-0 hidden sm:block" aria-hidden="true" />
+
+        {/* Look */}
+        <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+          <span className="hidden sm:inline text-[10px] uppercase tracking-wide text-muted-foreground font-semibold">Look</span>
+          <div className="flex gap-1 shrink-0">
+            {(
+              [
+                { value: "classic" as MermaidLook, label: "Classic" },
+                { value: "neo" as MermaidLook, label: "Neo" },
+                { value: "handDrawn" as MermaidLook, label: "Hand Drawn" },
+              ] as const
+            ).map((opt) => (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => onLookChange(opt.value)}
+                className={`text-[10px] px-2 py-0.5 rounded-full border font-medium transition-all ${
+                  look === opt.value
+                    ? "border-primary/50 bg-primary/10 text-primary"
+                    : "border-border bg-background hover:border-primary/40 hover:bg-muted text-muted-foreground"
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+          {look !== "classic" && (
+            <span className="hidden sm:block text-[10px] text-muted-foreground/60">
+              {look === "neo" ? "v11+ required" : "sketch style"}
+            </span>
           )}
         </div>
       </div>
