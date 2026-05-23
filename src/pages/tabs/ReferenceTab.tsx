@@ -12,8 +12,8 @@ interface ReferenceTabProps {
   inputCode?: string;
 }
 
-const NOTION_TAXONOMY_URL =
-  "https://www.notion.so/overkillhill/Visual-Language-Diagram-Taxonomy-Mermaid-Theme-Builder-34e812e0ced481fb9e31d0fe47562684";
+const TAXONOMY_DOCS_URL =
+  "https://github.com/OKHP3/mermaid-theme-builder/blob/main/docs/visual-language-diagram-taxonomy.md";
 const GITHUB_REPO_URL = "https://github.com/OKHP3/mermaid-theme-builder";
 
 const LOOK_COLS = [
@@ -212,7 +212,7 @@ export function ReferenceTab({ selectedPalette, supportsClassDef, inputCode = ""
           Further reading
         </span>
         <a
-          href={NOTION_TAXONOMY_URL}
+          href={TAXONOMY_DOCS_URL}
           target="_blank"
           rel="noreferrer noopener"
           className="text-xs text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1"
@@ -221,7 +221,7 @@ export function ReferenceTab({ selectedPalette, supportsClassDef, inputCode = ""
             <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
             <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
           </svg>
-          Visual Language Diagram Taxonomy (Notion)
+          Visual Language Diagram Taxonomy
         </a>
         <a
           href={GITHUB_REPO_URL}

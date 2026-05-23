@@ -847,7 +847,7 @@ function AppShell() {
         <div className="flex items-center gap-4">
           <a href="https://github.com/OKHP3/mermaid-theme-builder" target="_blank" rel="noopener noreferrer" className="forge-footer-link">GitHub</a>
           <a href="https://overkillhill.com/projects/mermaid-theme-builder/" target="_blank" rel="noopener noreferrer" className="forge-footer-link">Project Page</a>
-          <a href="https://mermaid.live" target="_blank" rel="noopener noreferrer" className="forge-footer-link">Mermaid Live</a>
+          <a href="https://mermaidchart.cello.so/UhVlNtC2MlS" target="_blank" rel="noopener noreferrer" className="forge-footer-link">Mermaid.ai</a>
         </div>
       </footer>
 
