@@ -22,6 +22,7 @@ interface ExampleItem {
   content: string;
   badge?: string;
   section: string;
+  family?: string;
 }
 
 async function writeToClipboard(text: string) {
@@ -49,6 +50,7 @@ function buildExampleList(): ExampleItem[] {
       content: ex.flowchart,
       badge: "Brand",
       section: "OKHP3 Brand",
+      family: "flowchart",
     });
     if (ex.sequence) {
       items.push({
@@ -57,6 +59,7 @@ function buildExampleList(): ExampleItem[] {
         content: ex.sequence,
         badge: "Brand",
         section: "OKHP3 Brand",
+        family: "sequence",
       });
     }
   });
@@ -77,6 +80,7 @@ function buildExampleList(): ExampleItem[] {
         content: entry.content,
         badge: entry.badge,
         section: group.label,
+        family: entry.family,
       });
     });
   });
@@ -101,6 +105,7 @@ export function ExamplesTab({ selectedPalette, onLoadExample, initialSelectedId,
     }
     return ALL_EXAMPLES[0]?.id ?? "";
   });
+  const [searchQuery, setSearchQuery] = useState("");
   const [copiedRaw, setCopiedRaw] = useState(false);
 
   // Sync with hydrated initialSelectedId that arrives after first render (e.g.,
@@ -113,6 +118,24 @@ export function ExamplesTab({ selectedPalette, onLoadExample, initialSelectedId,
   }, [initialSelectedId]);
   const [showMobilePreview, setShowMobilePreview] = useState(false);
   const [showInventory, setShowInventory] = useState(false);
+
+  const filteredExamples = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return ALL_EXAMPLES;
+    return ALL_EXAMPLES.filter(
+      (e) =>
+        e.label.toLowerCase().includes(q) ||
+        (e.family ?? "").toLowerCase().includes(q) ||
+        (e.badge ?? "").toLowerCase().includes(q) ||
+        e.section.toLowerCase().includes(q),
+    );
+  }, [searchQuery]);
+
+  const filteredSections = useMemo(() => {
+    return SECTIONS.filter((section) =>
+      filteredExamples.some((e) => e.section === section),
+    );
+  }, [filteredExamples]);
 
   const selectedExample = useMemo(
     () => ALL_EXAMPLES.find((e) => e.id === selectedId) ?? ALL_EXAMPLES[0],
@@ -161,7 +184,7 @@ export function ExamplesTab({ selectedPalette, onLoadExample, initialSelectedId,
             showMobilePreview ? "hidden md:flex" : "flex"
           }`}
         >
-          <div className="px-2 pt-2 pb-1 border-b border-border/50 bg-card/40">
+          <div className="px-2 pt-2 pb-1 border-b border-border/50 bg-card/40 space-y-1.5">
             <button
               type="button"
               onClick={() => setShowInventory(true)}
@@ -183,44 +206,96 @@ export function ExamplesTab({ selectedPalette, onLoadExample, initialSelectedId,
                 />
               </svg>
             </button>
+            <div className="relative">
+              <svg
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground/60 pointer-events-none"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              <input
+                type="search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search by name, family, badge…"
+                className="w-full pl-8 pr-7 py-1.5 text-xs rounded-md border border-border bg-background placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/50 focus:border-primary/50 transition-colors"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery("")}
+                  aria-label="Clear search"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground/60 hover:text-foreground transition-colors"
+                >
+                  <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5">
+                    <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+                  </svg>
+                </button>
+              )}
+            </div>
           </div>
-          {SECTIONS.map((section) => {
-            const entries = ALL_EXAMPLES.filter((e) => e.section === section);
-            return (
-              <div key={section}>
-                <div className="px-3 pt-3 pb-1.5 sticky top-0 bg-card/90 backdrop-blur z-10 border-b border-border/50">
-                  <p className="forge-eyebrow">
-                    {section}
-                  </p>
+          {filteredSections.length === 0 ? (
+            <div className="flex flex-col items-center justify-center gap-2 py-10 px-4 text-center">
+              <svg viewBox="0 0 20 20" fill="currentColor" className="w-6 h-6 text-muted-foreground/30">
+                <path
+                  fillRule="evenodd"
+                  d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              <p className="text-xs text-muted-foreground/60">No examples match <span className="font-medium text-muted-foreground">"{searchQuery}"</span></p>
+              <button
+                type="button"
+                onClick={() => setSearchQuery("")}
+                className="text-xs text-primary hover:underline"
+              >
+                Clear search
+              </button>
+            </div>
+          ) : (
+            filteredSections.map((section) => {
+              const entries = filteredExamples.filter((e) => e.section === section);
+              return (
+                <div key={section}>
+                  <div className="px-3 pt-3 pb-1.5 sticky top-0 bg-card/90 backdrop-blur z-10 border-b border-border/50">
+                    <p className="forge-eyebrow">
+                      {section}
+                    </p>
+                  </div>
+                  <ul className="px-1.5 py-1">
+                    {entries.map((entry) => (
+                      <li key={entry.id}>
+                        <button
+                          onClick={() => {
+                            setSelectedId(entry.id);
+                            onExampleSelect?.(entry.id);
+                            setShowMobilePreview(true);
+                          }}
+                          className={`w-full text-left px-2.5 py-2 rounded-md text-xs transition-all flex items-start gap-2 ${
+                            selectedId === entry.id
+                              ? "bg-primary/10 text-primary font-medium"
+                              : "text-foreground hover:bg-muted"
+                          }`}
+                        >
+                          <span className="flex-1 leading-snug">{entry.label}</span>
+                          {entry.badge && (
+                            <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground border border-border shrink-0 mt-0.5">
+                              {entry.badge}
+                            </span>
+                          )}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <ul className="px-1.5 py-1">
-                  {entries.map((entry) => (
-                    <li key={entry.id}>
-                      <button
-                        onClick={() => {
-                          setSelectedId(entry.id);
-                          onExampleSelect?.(entry.id);
-                          setShowMobilePreview(true);
-                        }}
-                        className={`w-full text-left px-2.5 py-2 rounded-md text-xs transition-all flex items-start gap-2 ${
-                          selectedId === entry.id
-                            ? "bg-primary/10 text-primary font-medium"
-                            : "text-foreground hover:bg-muted"
-                        }`}
-                      >
-                        <span className="flex-1 leading-snug">{entry.label}</span>
-                        {entry.badge && (
-                          <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground border border-border shrink-0 mt-0.5">
-                            {entry.badge}
-                          </span>
-                        )}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            );
-          })}
+              );
+            })
+          )}
         </div>
 
         <div
