@@ -40,7 +40,7 @@ export const BUILTIN_PALETTES: Palette[] = [
     version: "0.1.0",
     colors: [
       { key: "primaryColor", label: "Primary (nodes)", value: "#1a4f8a" },
-      { key: "primaryTextColor", label: "Primary text", value: "#ffffff" },
+      { key: "primaryTextColor", label: "Primary text", value: "#3d3937" },
       { key: "primaryBorderColor", label: "Primary border", value: "#0d3060" },
       { key: "lineColor", label: "Lines & arrows", value: "#2563eb" },
       { key: "secondaryColor", label: "Secondary nodes", value: "#0ea5e9" },
@@ -67,7 +67,7 @@ export const BUILTIN_PALETTES: Palette[] = [
     version: "0.1.0",
     colors: [
       { key: "primaryColor", label: "Primary (nodes)", value: "#1a5c38" },
-      { key: "primaryTextColor", label: "Primary text", value: "#ffffff" },
+      { key: "primaryTextColor", label: "Primary text", value: "#3d3937" },
       { key: "primaryBorderColor", label: "Primary border", value: "#0f3d25" },
       { key: "lineColor", label: "Lines & arrows", value: "#2d6a4f" },
       { key: "secondaryColor", label: "Secondary nodes", value: "#52b788" },
@@ -121,7 +121,7 @@ export const BUILTIN_PALETTES: Palette[] = [
     version: "0.1.0",
     colors: [
       { key: "primaryColor", label: "Primary (nodes)", value: "#6d28d9" },
-      { key: "primaryTextColor", label: "Primary text", value: "#ffffff" },
+      { key: "primaryTextColor", label: "Primary text", value: "#3d3937" },
       { key: "primaryBorderColor", label: "Primary border", value: "#4c1d95" },
       { key: "lineColor", label: "Lines & arrows", value: "#7c3aed" },
       { key: "secondaryColor", label: "Secondary nodes", value: "#a78bfa" },
