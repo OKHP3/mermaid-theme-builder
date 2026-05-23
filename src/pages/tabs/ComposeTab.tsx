@@ -10,7 +10,6 @@ import {
   type MermaidLook,
 } from "@/lib/themeEngine";
 import { MermaidPreview } from "@/components/MermaidPreview";
-import { MermaidReferral } from "@/components/MermaidReferral";
 import { ColorSwatch } from "@/components/ColorSwatch";
 import { PromptScaffoldModal } from "@/components/PromptScaffoldModal";
 import { GENERIC_EXAMPLE } from "@/data/examples";
@@ -718,9 +717,6 @@ export function ComposeTab({
         </div>
         <div className="flex-1 overflow-auto p-4">
           <MermaidPreview code={sampleThemedCode} className="w-full h-full" typography={typography} />
-        </div>
-        <div className="flex-none border-t border-border px-4 py-1.5 bg-card/20 print-hide">
-          <MermaidReferral variant="chart" />
         </div>
         {selectedPalette.themeIntent && (
           <div className="flex-none border-t border-border px-4 py-2.5 bg-card/20">
