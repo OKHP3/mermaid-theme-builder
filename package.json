@@ -14,6 +14,7 @@
     "lint": "tsc --noEmit"
   },
   "devDependencies": {
+    "@napi-rs/canvas": "^1.0.0",
     "@replit/vite-plugin-cartographer": "catalog:",
     "@replit/vite-plugin-dev-banner": "catalog:",
     "@replit/vite-plugin-runtime-error-modal": "catalog:",
