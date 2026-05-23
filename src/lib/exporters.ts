@@ -1,4 +1,5 @@
 import type { Palette } from "./palettes";
+import { REQUIRED_COLOR_KEYS, KNOWN_COLOR_KEYS } from "./palettes";
 import { type TypographySettings, generateTypographyCss, isDefaultTypography } from "./typography";
 
 /**
@@ -198,6 +199,10 @@ export function paletteToPortableJson(palette: Palette): string {
 export interface PortablePaletteImport {
   ok: true;
   palette: Palette;
+  /** Required color keys that are absent — diagram may render incorrectly. */
+  missingKeys: string[];
+  /** Color keys present in the file that MTB does not recognize. */
+  unknownKeys: string[];
 }
 export interface PortablePaletteError {
   ok: false;
@@ -216,7 +221,7 @@ export function parsePortablePalette(json: string): PortablePaletteImport | Port
     if (!Array.isArray(data.colors) || data.colors.length === 0) {
       return { ok: false, error: "Missing or empty `colors` array." };
     }
-    const colors = data.colors.map((c: unknown) => {
+    const colors: { key: string; label: string; value: string }[] = data.colors.map((c: unknown) => {
       if (typeof c !== "object" || c === null) throw new Error("Invalid color entry");
       const cc = c as Record<string, unknown>;
       if (typeof cc.key !== "string" || typeof cc.label !== "string" || typeof cc.value !== "string") {
@@ -228,8 +233,15 @@ export function parsePortablePalette(json: string): PortablePaletteImport | Port
     const name = typeof data.name === "string" ? data.name : "Imported palette";
     const description = typeof data.description === "string" ? data.description : "Imported palette.";
     const version = typeof data.version === "string" ? data.version : "0.0.0";
+
+    const presentKeys = new Set(colors.map((c) => c.key));
+    const missingKeys = (REQUIRED_COLOR_KEYS as readonly string[]).filter((k) => !presentKeys.has(k));
+    const unknownKeys = colors.map((c) => c.key).filter((k) => !KNOWN_COLOR_KEYS.has(k));
+
     return {
       ok: true,
+      missingKeys,
+      unknownKeys,
       palette: {
         id,
         name,

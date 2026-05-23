@@ -26,6 +26,39 @@ export interface Palette {
   attribution: PaletteAttribution;
 }
 
+/**
+ * The 11 color keys that every MTB palette must supply.
+ * Missing keys cause silent rendering gaps in Mermaid diagrams.
+ */
+export const REQUIRED_COLOR_KEYS = [
+  "primaryColor",
+  "primaryTextColor",
+  "primaryBorderColor",
+  "lineColor",
+  "secondaryColor",
+  "tertiaryColor",
+  "background",
+  "mainBkg",
+  "nodeBorder",
+  "clusterBkg",
+  "titleColor",
+] as const;
+
+/**
+ * All color keys recognized by MTB (required + optional).
+ * Keys outside this set are flagged as unknown on import.
+ */
+export const KNOWN_COLOR_KEYS = new Set<string>([
+  ...REQUIRED_COLOR_KEYS,
+  "edgeLabelBackground",
+  "fontFamily",
+  "secondaryTextColor",
+  "secondaryBorderColor",
+  "tertiaryTextColor",
+  "tertiaryBorderColor",
+  "textColor",
+]);
+
 const TOOL_ATTRIBUTION_BASE: Pick<PaletteAttribution, "toolName" | "toolVersion" | "url"> = {
   toolName: "Mermaid Theme Builder",
   toolVersion: "0.3.0",

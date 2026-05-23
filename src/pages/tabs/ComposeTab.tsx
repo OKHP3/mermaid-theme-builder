@@ -171,6 +171,7 @@ export function ComposeTab({
   const [savePaletteName, setSavePaletteName] = useState("");
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [importDiagnostics, setImportDiagnostics] = useState<{ missingKeys: string[]; unknownKeys: string[] } | null>(null);
   const [tierDraftSizes, setTierDraftSizes] = useState<Partial<Record<TypographyTierKey, string>>>({});
   const [clampedTiers, setClampedTiers] = useState<Set<TypographyTierKey>>(new Set());
   const clampTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
@@ -288,6 +289,7 @@ export function ComposeTab({
       const file = e.target.files?.[0];
       e.target.value = "";
       if (!file) return;
+      setImportDiagnostics(null);
       try {
         const text = await file.text();
         const result = parsePortablePalette(text);
@@ -296,6 +298,9 @@ export function ComposeTab({
           return;
         }
         onImportPalette(result.palette);
+        if (result.missingKeys.length > 0 || result.unknownKeys.length > 0) {
+          setImportDiagnostics({ missingKeys: result.missingKeys, unknownKeys: result.unknownKeys });
+        }
       } catch (err) {
         onShowToast(`Import failed: ${err instanceof Error ? err.message : String(err)}`);
       }
@@ -827,6 +832,45 @@ export function ComposeTab({
             className="hidden"
             onChange={handleFileChosen}
           />
+          {importDiagnostics && (importDiagnostics.missingKeys.length > 0 || importDiagnostics.unknownKeys.length > 0) && (
+            <div className="mt-2 rounded-md border border-amber-400/40 bg-amber-50/60 dark:bg-amber-950/20 dark:border-amber-500/30 p-2.5 text-xs space-y-1.5">
+              <div className="flex items-start justify-between gap-1">
+                <span className="font-semibold text-amber-700 dark:text-amber-400">Palette import warnings</span>
+                <button
+                  type="button"
+                  onClick={() => setImportDiagnostics(null)}
+                  className="text-amber-600/70 dark:text-amber-400/60 hover:text-amber-800 dark:hover:text-amber-300 leading-none mt-px"
+                  aria-label="Dismiss import warnings"
+                >
+                  ✕
+                </button>
+              </div>
+              {importDiagnostics.missingKeys.length > 0 && (
+                <div>
+                  <p className="text-amber-700 dark:text-amber-400 font-medium mb-0.5">
+                    Missing required {importDiagnostics.missingKeys.length === 1 ? "key" : "keys"} — diagram may render with Mermaid defaults:
+                  </p>
+                  <ul className="list-none space-y-0.5 pl-0">
+                    {importDiagnostics.missingKeys.map((k) => (
+                      <li key={k} className="font-mono text-amber-800 dark:text-amber-300 bg-amber-100/60 dark:bg-amber-900/30 rounded px-1.5 py-0.5 inline-block mr-1">{k}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {importDiagnostics.unknownKeys.length > 0 && (
+                <div>
+                  <p className="text-amber-600 dark:text-amber-500 mb-0.5">
+                    Unrecognized {importDiagnostics.unknownKeys.length === 1 ? "key" : "keys"} — will be passed through but may have no effect:
+                  </p>
+                  <ul className="list-none space-y-0.5 pl-0">
+                    {importDiagnostics.unknownKeys.map((k) => (
+                      <li key={k} className="font-mono text-amber-700 dark:text-amber-400 bg-amber-100/40 dark:bg-amber-900/20 rounded px-1.5 py-0.5 inline-block mr-1">{k}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          )}
           </div>
         </div>
 

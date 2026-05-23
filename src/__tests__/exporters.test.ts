@@ -233,6 +233,89 @@ describe("parsePortablePalette", () => {
       }
     }
   });
+
+  it("returns empty missingKeys and unknownKeys for a complete valid palette", () => {
+    const fullPalette: Palette = {
+      ...MINIMAL_PALETTE,
+      colors: [
+        { key: "primaryColor", label: "Primary", value: "#1a4f8a" },
+        { key: "primaryTextColor", label: "Primary text", value: "#ffffff" },
+        { key: "primaryBorderColor", label: "Primary border", value: "#0d3060" },
+        { key: "lineColor", label: "Lines", value: "#2563eb" },
+        { key: "secondaryColor", label: "Secondary", value: "#0ea5e9" },
+        { key: "tertiaryColor", label: "Tertiary", value: "#e0f2fe" },
+        { key: "background", label: "Background", value: "#f0f9ff" },
+        { key: "mainBkg", label: "Main background", value: "#dbeafe" },
+        { key: "nodeBorder", label: "Node border", value: "#1d4ed8" },
+        { key: "clusterBkg", label: "Cluster background", value: "#e0f2fe" },
+        { key: "titleColor", label: "Title color", value: "#1e3a5f" },
+      ],
+    };
+    const result = parsePortablePalette(paletteToPortableJson(fullPalette));
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.missingKeys).toHaveLength(0);
+      expect(result.unknownKeys).toHaveLength(0);
+    }
+  });
+
+  it("reports missing required keys when a palette is incomplete", () => {
+    const json = paletteToPortableJson(MINIMAL_PALETTE);
+    const result = parsePortablePalette(json);
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.missingKeys).toContain("primaryBorderColor");
+      expect(result.missingKeys).toContain("secondaryColor");
+      expect(result.missingKeys).toContain("tertiaryColor");
+      expect(result.missingKeys).not.toContain("primaryColor");
+      expect(result.missingKeys).not.toContain("lineColor");
+    }
+  });
+
+  it("reports unknown keys not in the recognized set", () => {
+    const paletteWithUnknown: Palette = {
+      ...MINIMAL_PALETTE,
+      colors: [
+        ...MINIMAL_PALETTE.colors,
+        { key: "weirdCustomProp", label: "Custom", value: "#abcdef" },
+        { key: "anotherUnknownKey", label: "Also custom", value: "#fedcba" },
+      ],
+    };
+    const result = parsePortablePalette(paletteToPortableJson(paletteWithUnknown));
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.unknownKeys).toContain("weirdCustomProp");
+      expect(result.unknownKeys).toContain("anotherUnknownKey");
+      expect(result.unknownKeys).not.toContain("primaryColor");
+    }
+  });
+
+  it("known optional keys (fontFamily, edgeLabelBackground) do not appear in unknownKeys", () => {
+    const paletteWithOptionals: Palette = {
+      ...MINIMAL_PALETTE,
+      colors: [
+        ...MINIMAL_PALETTE.colors,
+        { key: "fontFamily", label: "Font family", value: "DM Sans, sans-serif" },
+        { key: "edgeLabelBackground", label: "Edge label bg", value: "#ffffff" },
+      ],
+    };
+    const result = parsePortablePalette(paletteToPortableJson(paletteWithOptionals));
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.unknownKeys).not.toContain("fontFamily");
+      expect(result.unknownKeys).not.toContain("edgeLabelBackground");
+    }
+  });
+
+  it("round-tripped BUILTIN_PALETTES have no missingKeys or unknownKeys", () => {
+    for (const palette of BUILTIN_PALETTES) {
+      const result = parsePortablePalette(paletteToPortableJson(palette));
+      if (result.ok) {
+        expect(result.missingKeys, `${palette.id} should have no missing required keys`).toHaveLength(0);
+        expect(result.unknownKeys, `${palette.id} should have no unknown keys`).toHaveLength(0);
+      }
+    }
+  });
 });
 
 // ── palettesToBundleJson ─────────────────────────────────────────────────────

@@ -1,19 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { BUILTIN_PALETTES } from "@/lib/palettes";
-
-const REQUIRED_COLOR_KEYS = [
-  "primaryColor",
-  "primaryTextColor",
-  "primaryBorderColor",
-  "lineColor",
-  "secondaryColor",
-  "tertiaryColor",
-  "background",
-  "mainBkg",
-  "nodeBorder",
-  "clusterBkg",
-  "titleColor",
-] as const;
+import { BUILTIN_PALETTES, REQUIRED_COLOR_KEYS } from "@/lib/palettes";
 
 const HEX_COLOR_RE = /^#[0-9a-fA-F]{3}$|^#[0-9a-fA-F]{4}$|^#[0-9a-fA-F]{6}$|^#[0-9a-fA-F]{8}$/;
 const FONT_FAMILY_KEY = "fontFamily";
