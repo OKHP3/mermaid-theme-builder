@@ -1037,7 +1037,7 @@ export function ApplyTab({
                     title="This diagram type uses theme-level colors only — per-node classDef classes are not supported"
                     className="ml-0.5 px-1.5 py-px rounded text-[10px] font-semibold leading-none bg-muted text-muted-foreground border border-border"
                   >
-                    Theme-only
+                    No classDef
                   </span>
                 )}
               </button>
