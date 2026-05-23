@@ -53,6 +53,24 @@ const HINTS: FamilySyntaxHint[] = [
     classDefStatus: "no",
     themingNote: "Actor styling via actorBkg, actorBorder; activation boxes via activationBkgColor.",
   },
+  {
+    family: "flowchart",
+    keyIdiom: "A[Start] --> B{Choice?}\nB -- Yes --> C([End])\nB -- No --> D[/Input/]\nclassDef hot fill:#c46a2c,color:#fff",
+    classDefStatus: "yes",
+    themingNote: "classDef colors individual nodes — append :::styleName to any node id. Edge color follows lineColor.",
+  },
+  {
+    family: "block",
+    keyIdiom: 'block:group\n  A["Step 1"]\n  B["Step 2"]\nend\nA --> B\nclassDef accent fill:#c46a2c',
+    classDefStatus: "yes",
+    themingNote: "Block is the newest Mermaid layout engine. classDef works the same as flowchart — append :::styleName to a block id.",
+  },
+  {
+    family: "timeline",
+    keyIdiom: "title Project Milestones\nsection Q1\n  Kickoff : 2024-01-15\n  Alpha   : 2024-02-28\nsection Q2\n  Beta    : 2024-05-01",
+    classDefStatus: "no",
+    themingNote: "Period (section) bands cycle through cScale0–cScale11 themeVariables — override up to 12 sections.",
+  },
 ];
 
 const HINT_MAP = new Map<DiagramFamily, FamilySyntaxHint>(HINTS.map((h) => [h.family, h]));
