@@ -46,7 +46,14 @@ export function ReferenceTab({ selectedPalette, supportsClassDef, inputCode = ""
     [inputCode],
   );
 
+  const rendererParityRef = useRef<HTMLDetailsElement>(null);
   const classLibraryRef = useRef<HTMLDetailsElement>(null);
+
+  useEffect(() => {
+    const el = rendererParityRef.current;
+    if (!el) return;
+    el.open = supportsClassDef;
+  }, [supportsClassDef]);
 
   useEffect(() => {
     const el = classLibraryRef.current;
@@ -65,7 +72,7 @@ export function ReferenceTab({ selectedPalette, supportsClassDef, inputCode = ""
       </div>
 
       <div className="flex-none border-t border-border">
-        <details className="group">
+        <details ref={rendererParityRef} className="group">
           <summary className="flex items-center justify-between px-4 py-2.5 cursor-pointer list-none hover:bg-muted/40 transition-colors select-none">
             <div className="flex items-center gap-2">
               <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 text-muted-foreground">
