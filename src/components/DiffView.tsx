@@ -19,6 +19,14 @@ export function DiffView({ oldText, newText, className }: DiffViewProps) {
     );
   }
 
+  if (summary.added === 0 && summary.removed === 0) {
+    return (
+      <div className={`flex items-center justify-center text-muted-foreground ${className ?? ""}`}>
+        <p className="text-sm">No changes — select a palette to theme your diagram</p>
+      </div>
+    );
+  }
+
   return (
     <div className={`flex flex-col ${className ?? ""}`}>
       <div className="flex-none flex items-center gap-3 px-3 py-1.5 border-b border-border bg-card/20 text-[11px] font-mono">
