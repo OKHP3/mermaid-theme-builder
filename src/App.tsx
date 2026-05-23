@@ -841,18 +841,15 @@ export function AppShell() {
 
       <footer className="forge-footer flex-none hidden md:flex items-center justify-between px-4 py-1.5 print-hide" style={{minHeight: '34px'}}>
         <div className="flex items-center gap-2 forge-footer-meta">
-          <span className="forge-footer-slug">mermaid-theme-builder</span>
+          <a href="https://okhp3.github.io/mermaid-theme-builder" target="_blank" rel="noopener noreferrer" className="forge-footer-slug forge-footer-link">mermaid-theme-builder</a>
           <span>·</span>
-          <span>visual governance utility</span>
-          <span>·</span>
-          <span className="forge-footer-brand">OverKill Hill P³</span>
+          <a href="https://overkillhill.com/" target="_blank" rel="noopener noreferrer" className="forge-footer-brand forge-footer-link">OverKill Hill P³</a>
         </div>
         <div className="flex items-center gap-2 forge-footer-meta" style={{opacity: 0.45, fontSize: '9px'}}>
           Not affiliated with Mermaid, Mermaid Chart, or Mermaid.ai
         </div>
         <div className="flex items-center gap-4">
-          <a href="https://github.com/OKHP3/mermaid-theme-builder" target="_blank" rel="noopener noreferrer" className="forge-footer-link">GitHub</a>
-          <a href="https://overkillhill.com/projects/mermaid-theme-builder/" target="_blank" rel="noopener noreferrer" className="forge-footer-link">Project Page</a>
+          <a href="https://replit.com/refer/overkillhillp3/" target="_blank" rel="noopener noreferrer" className="forge-footer-link" style={{ color: "#FF3C00" }}>Replit</a>
           <a href="https://mermaidchart.cello.so/UhVlNtC2MlS" target="_blank" rel="noopener noreferrer" className="forge-footer-link" style={{ color: "#FF3670" }}>Mermaid.ai</a>
         </div>
       </footer>
