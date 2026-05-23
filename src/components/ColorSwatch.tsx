@@ -16,6 +16,7 @@ export function ColorSwatch({ color, onChange, isOverridden = false, onReset }: 
   const [localValue, setLocalValue] = useState(color.value);
   const hiddenPickerRef = useRef<HTMLInputElement>(null);
   const rowRef = useRef<HTMLDivElement>(null);
+  const labelSpanRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     setLocalValue(color.value);
@@ -52,10 +53,11 @@ export function ColorSwatch({ color, onChange, isOverridden = false, onReset }: 
     // shift it. Set coords imperatively right before .click() so the browser
     // anchors the native picker popup here.
     //
-    // Horizontal: right edge of the swatch panel row.
-    // Vertical: row center minus ~120px (half of Chrome's ~240px picker height)
-    // so the picker popup opens with its center aligned with the row center.
-    picker.style.left = `${rect.right}px`;
+    // Horizontal: right edge of the label text span (inline element, so
+    // getBoundingClientRect().right = end of actual characters, not container edge).
+    // Fall back to rect.right if the span ref isn't populated yet.
+    const labelRight = labelSpanRef.current?.getBoundingClientRect().right ?? rect.right;
+    picker.style.left = `${labelRight}px`;
     picker.style.top = `${rect.top + rect.height / 2 - 120}px`;
     picker.click();
   }, []);
@@ -101,7 +103,7 @@ export function ColorSwatch({ color, onChange, isOverridden = false, onReset }: 
 
       <div className="flex-1 min-w-0">
         <label className="text-xs font-medium text-foreground" htmlFor={`swatch-text-${color.key}`}>
-          {color.label}
+          <span ref={labelSpanRef}>{color.label}</span>
         </label>
         <input
           id={`swatch-text-${color.key}`}
