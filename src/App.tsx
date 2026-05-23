@@ -599,6 +599,12 @@ export function AppShell() {
 
   return (
     <div className="forge-shell">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:rounded-md focus:bg-card focus:text-foreground focus:shadow-lg focus:ring-2 focus:ring-primary focus:outline-none text-sm font-medium"
+      >
+        Skip to main content
+      </a>
       <header className="forge-header sticky top-0 z-20 px-4 md:px-6 py-3 flex items-center justify-between gap-4 shrink-0 print-hide">
         <div className="flex items-center gap-3">
           <AppIcon size={28} aria-hidden="true" />
@@ -687,7 +693,7 @@ export function AppShell() {
         })}
       </nav>
 
-      <main className="flex-1 md:overflow-hidden pb-20 md:pb-0 md:min-h-0">
+      <main id="main-content" className="flex-1 md:overflow-hidden pb-20 md:pb-0 md:min-h-0">
         {/* ApplyTab is always mounted so its local state (activeDiagramIdx,
             showColorEditor, textareaExpanded, familyOverride, etc.) survives
             tab switches. It is visually hidden via the HTML `hidden` attribute

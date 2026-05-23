@@ -103,6 +103,30 @@ describe("AppShell (real component)", () => {
         .join("\n")}`,
     ).toHaveLength(0);
   });
+
+  it("has a skip-to-main-content link as the first focusable element", () => {
+    const { container } = render(createElement(AppShell, null));
+    const skipLink = container.querySelector<HTMLAnchorElement>('a[href="#main-content"]');
+    expect(skipLink, "skip link <a href='#main-content'> must exist").toBeTruthy();
+    expect(skipLink?.textContent?.trim()).toBe("Skip to main content");
+  });
+
+  it("has a main element with id='main-content' for the skip link target", () => {
+    const { container } = render(createElement(AppShell, null));
+    const main = container.querySelector("#main-content");
+    expect(main, "element with id='main-content' must exist").toBeTruthy();
+    expect(main?.tagName.toLowerCase()).toBe("main");
+  });
+
+  it("skip link precedes the header in DOM order", () => {
+    const { container } = render(createElement(AppShell, null));
+    const skipLink = container.querySelector('a[href="#main-content"]');
+    const header = container.querySelector("header");
+    expect(skipLink).toBeTruthy();
+    expect(header).toBeTruthy();
+    const position = skipLink!.compareDocumentPosition(header!);
+    expect(position & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
 });
 
 // ---------------------------------------------------------------------------
