@@ -1070,7 +1070,10 @@ export function ApplyTab({
                 )}
                 {copied ? "Copied!" : EXPORT_LABELS[type]}
                 {type === "prompt" && !copied && rendererProfile && (
-                  <span className="ml-0.5 px-1.5 py-px rounded text-[10px] font-semibold leading-none bg-[#c46a2c]/15 text-[#c46a2c] border border-[#c46a2c]/30">
+                  <span
+                    title={`Scaffold is tailored for ${rendererProfile.shortName} — clear the renderer target for a portable generic version`}
+                    className="ml-0.5 px-1.5 py-px rounded text-[10px] font-semibold leading-none bg-[#c46a2c]/15 text-[#c46a2c] border border-[#c46a2c]/30 cursor-help"
+                  >
                     {rendererProfile.shortName}
                   </span>
                 )}
