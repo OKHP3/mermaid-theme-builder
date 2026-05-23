@@ -1,14 +1,21 @@
 C4Context
-    title System Context Diagram for E-commerce Platform
+    title System Context — Online Learning Platform
 
-    Enterprise_Boundary(ecommerce, "E-commerce Platform Boundary") {
-        Person(user, "User", "A customer using the e-commerce platform")
-        System(ecomSystem, "E-commerce Platform", "Manages products, user accounts, orders, etc.")
+    Person(learner, "Learner", "Enrolls in courses and tracks progress")
+    Person(instructor, "Instructor", "Creates and manages course content")
 
-        System_Ext(paymentGateway, "Payment Gateway", "Processes payments securely")
-        System_Ext(notificationService, "Notification Service", "Sends notifications to users")
-
-        Rel(user, ecomSystem, "Uses")
-        Rel(ecomSystem, paymentGateway, "Processes payments via")
-        Rel(ecomSystem, notificationService, "Notifies users via")
+    Enterprise_Boundary(platform, "Learning Platform") {
+        System(lms, "LMS Core", "Manages courses, enrollments, and progress")
+        System(video, "Video Service", "Streams and stores course videos")
+        System(notify, "Notification Hub", "Sends emails and push alerts")
     }
+
+    System_Ext(payment, "Payment Gateway", "Handles course purchases")
+    System_Ext(idp, "Identity Provider", "Single sign-on via OAuth 2.0")
+
+    Rel(learner, lms, "Browses and takes courses")
+    Rel(instructor, lms, "Publishes courses")
+    Rel(lms, video, "Fetches video assets")
+    Rel(lms, notify, "Triggers notifications")
+    Rel(lms, payment, "Processes payments via")
+    Rel(learner, idp, "Authenticates with")

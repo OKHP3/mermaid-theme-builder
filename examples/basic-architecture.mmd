@@ -1,11 +1,17 @@
 architecture-beta
-    group api(cloud)[API]
+    group client(internet)[Client Zone]
+    group backend(cloud)[Backend Services]
 
-    service db(database)[Database] in api
-    service disk1(disk)[Storage] in api
-    service disk2(disk)[Storage] in api
-    service server(server)[Server] in api
+    service browser(browser)[Browser] in client
+    service app(server)[Mobile App] in client
 
-    db:L -- R:server
-    disk1:T -- B:server
-    disk2:T -- B:db
+    service gateway(server)[API Gateway] in backend
+    service auth(server)[Auth Service] in backend
+    service cache(disk)[Cache Layer] in backend
+    service db(database)[Primary DB] in backend
+
+    browser:R -- L:gateway
+    app:B -- T:gateway
+    gateway:R -- L:auth
+    gateway:B -- T:cache
+    cache:B -- T:db

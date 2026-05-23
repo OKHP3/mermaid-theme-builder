@@ -628,46 +628,58 @@ type: simulation
 test_entity - satisfies -> test_req`;
 
 const BLOCK_MERMAID_BASIC = `block-beta
-        columns 1
-          db(("DB"))
-          blockArrowId6<["&nbsp;&nbsp;&nbsp;"]>(down)
-          block:ID
-            A
-            B["A wide one in the middle"]
-            C
-          end
-          space
-          D
-          ID --> D
-          C --> D
-          style B fill:#d6dadd,stroke:#333,stroke-width:4px`;
+  columns 1
+  in["Raw Input"]
+  blockArrowId1<["ingest"]>(down)
+  block:transform
+    columns 3
+    validate["Validate"] process["Process"] enrich["Enrich"]
+  end
+  blockArrowId2<["store"]>(down)
+  out(("Data Store"))
+
+  validate --> process
+  process --> enrich`;
 
 const C4_MERMAID_BASIC = `C4Context
-    title System Context Diagram for E-commerce Platform
+    title System Context — Online Learning Platform
 
-    Enterprise_Boundary(ecommerce, "E-commerce Platform Boundary") {
-        Person(user, "User", "A customer using the e-commerce platform")
-        System(ecomSystem, "E-commerce Platform", "Manages products, user accounts, orders, etc.")
+    Person(learner, "Learner", "Enrolls in courses and tracks progress")
+    Person(instructor, "Instructor", "Creates and manages course content")
 
-        System_Ext(paymentGateway, "Payment Gateway", "Processes payments securely")
-        System_Ext(notificationService, "Notification Service", "Sends notifications to users")
+    Enterprise_Boundary(platform, "Learning Platform") {
+        System(lms, "LMS Core", "Manages courses, enrollments, and progress")
+        System(video, "Video Service", "Streams and stores course videos")
+        System(notify, "Notification Hub", "Sends emails and push alerts")
+    }
 
-        Rel(user, ecomSystem, "Uses")
-        Rel(ecomSystem, paymentGateway, "Processes payments via")
-        Rel(ecomSystem, notificationService, "Notifies users via")
-    }`;
+    System_Ext(payment, "Payment Gateway", "Handles course purchases")
+    System_Ext(idp, "Identity Provider", "Single sign-on via OAuth 2.0")
+
+    Rel(learner, lms, "Browses and takes courses")
+    Rel(instructor, lms, "Publishes courses")
+    Rel(lms, video, "Fetches video assets")
+    Rel(lms, notify, "Triggers notifications")
+    Rel(lms, payment, "Processes payments via")
+    Rel(learner, idp, "Authenticates with")`;
 
 const ARCHITECTURE_MERMAID_BASIC = `architecture-beta
-    group api(cloud)[API]
+    group client(internet)[Client Zone]
+    group backend(cloud)[Backend Services]
 
-    service db(database)[Database] in api
-    service disk1(disk)[Storage] in api
-    service disk2(disk)[Storage] in api
-    service server(server)[Server] in api
+    service browser(browser)[Browser] in client
+    service app(server)[Mobile App] in client
 
-    db:L -- R:server
-    disk1:T -- B:server
-    disk2:T -- B:db`;
+    service gateway(server)[API Gateway] in backend
+    service auth(server)[Auth Service] in backend
+    service cache(disk)[Cache Layer] in backend
+    service db(database)[Primary DB] in backend
+
+    browser:R -- L:gateway
+    app:B -- T:gateway
+    gateway:R -- L:auth
+    gateway:B -- T:cache
+    cache:B -- T:db`;
 
 const PIE_MERMAID_BASIC = `pie title Pets adopted by volunteers
 "Dogs" : 386
@@ -710,20 +722,22 @@ const GANTT_MERMAID_BASIC = `gantt
     another task      : 24d`;
 
 const RADAR_MERMAID_BASIC = `radar-beta
-  axis m["Math"], s["Science"], e["English"]
-  axis h["History"], g["Geography"], a["Art"]
-  curve a["Alice"]{85, 90, 80, 70, 75, 90}
-  curve b["Bob"]{70, 75, 85, 80, 90, 85}
+  title Team Capability Matrix
+  axis be["Backend"], fe["Frontend"], ux["UX Design"]
+  axis da["Data"], ops["DevOps"], qa["Quality"]
+  curve a["Alice"]{90, 70, 60, 75, 80, 85}
+  curve b["Bob"]{65, 85, 75, 70, 60, 70}
+  curve c["Charlie"]{80, 65, 90, 85, 75, 80}
 
   max 100
   min 0`;
 
 const XYCHART_MERMAID_BASIC = `xychart-beta
-  title "Training progress"
-  x-axis [mon, tues, wed, thur, fri, sat, sun]
-  y-axis "Time trained (minutes)" 0 --> 300
-  bar [60, 0, 120, 180, 230, 300, 0]
-  line [60, 0, 120, 180, 230, 300, 0]`;
+  title "Monthly Revenue vs Target"
+  x-axis ["Jan", "Feb", "Mar", "Apr", "May", "Jun"]
+  y-axis "Amount ($k)" 0 --> 120
+  bar [45, 52, 68, 74, 83, 91]
+  line [60, 60, 70, 70, 80, 90]`;
 
 const TIMELINE_MERMAID_BASIC = `timeline
     title Timeline of Industrial Revolution
@@ -765,37 +779,34 @@ const MINDMAP_MERMAID_BASIC = `mindmap
       Pen and paper
       Mermaid`;
 
-const KANBAN_MERMAID_BASIC = `---
-config:
-  kanban:
-    ticketBaseUrl: 'https://org.atlassian.net/browse/#TICKET#'
----
-kanban
-  Todo
-    [Create Documentation]
-    docs[Create Blog about the new diagram]
-  [In progress]
-    id6[Create renderer so that it works in all cases. We also add som extra text here for testing purposes. And some more just for the extra flare.]
-  id9[Ready for deploy]
-    id8[Design grammar]@{ assigned: 'knsv' }
-  id10[Ready for test]
-    id4[Create parsing tests]@{ ticket: MC-2038, assigned: 'K.Sveidqvist', priority: 'High' }
-    id66[last item]@{ priority: 'Very Low', assigned: 'knsv' }
-  id11[Done]
-    id5[define getData]
-    id2[Title of diagram is more than 100 chars when user duplicates diagram with 100 char]@{ ticket: MC-2036, priority: 'Very High'}
-    id3[Update DB function]@{ ticket: MC-2037, assigned: knsv, priority: 'High' }
-
-  id12[Can't reproduce]
-    id3[Weird flickering in Firefox]`;
+const KANBAN_MERMAID_BASIC = `kanban
+  todo["To Do"]
+    t1["Research competitor tools"]
+    t2["Write user interview guide"]
+    t3["Draft onboarding flow"]
+  doing["In Progress"]
+    t4["Implement search filter"]@{ assigned: 'alice', priority: 'High' }
+    t5["Design color token system"]@{ assigned: 'bob' }
+  review["In Review"]
+    t6["Accessibility audit"]@{ priority: 'High' }
+  done["Done"]
+    t7["Set up CI/CD pipeline"]
+    t8["Export palette as JSON"]
+    t9["Add dark mode support"]`;
 
 const PACKET_MERMAID_BASIC = `packet-beta
-title UDP Packet
+title TCP Segment
 0-15: "Source Port"
 16-31: "Destination Port"
-32-47: "Length"
-48-63: "Checksum"
-64-95: "Data (variable length)"`;
+32-63: "Sequence Number"
+64-95: "Acknowledgment Number"
+96-99: "Data Offset"
+100-102: "Reserved"
+103-111: "Control Flags"
+112-127: "Window Size"
+128-143: "Checksum"
+144-159: "Urgent Pointer"
+160-191: "Options (if present)"`;
 
 // ── Batch #3: OKH contextual + emulation + new families ──────────────────────
 
@@ -1488,7 +1499,7 @@ export const EXAMPLE_CATALOG: ExampleEntry[] = [
   },
   {
     id: "c4-mermaid-basic",
-    label: "C4 context — e-commerce",
+    label: "C4 context — online learning",
     family: "c4",
     category: "structural",
     content: C4_MERMAID_BASIC,
@@ -1532,7 +1543,7 @@ export const EXAMPLE_CATALOG: ExampleEntry[] = [
   },
   {
     id: "radar-mermaid-basic",
-    label: "Radar — student scores",
+    label: "Radar — team capabilities",
     family: "radar",
     category: "data-viz",
     content: RADAR_MERMAID_BASIC,
@@ -1540,7 +1551,7 @@ export const EXAMPLE_CATALOG: ExampleEntry[] = [
   },
   {
     id: "xychart-mermaid-basic",
-    label: "XY chart — training progress",
+    label: "XY chart — revenue vs target",
     family: "xychart",
     category: "data-viz",
     content: XYCHART_MERMAID_BASIC,
@@ -1577,7 +1588,7 @@ export const EXAMPLE_CATALOG: ExampleEntry[] = [
   },
   {
     id: "architecture-mermaid-basic",
-    label: "Architecture — cloud API",
+    label: "Architecture — client and backend",
     family: "architectureBeta",
     category: "specialty",
     content: ARCHITECTURE_MERMAID_BASIC,
@@ -1593,7 +1604,7 @@ export const EXAMPLE_CATALOG: ExampleEntry[] = [
   },
   {
     id: "packet-mermaid-basic",
-    label: "Packet — UDP",
+    label: "Packet — TCP segment",
     family: "packet",
     category: "specialty",
     content: PACKET_MERMAID_BASIC,

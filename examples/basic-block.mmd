@@ -1,14 +1,13 @@
 block-beta
-        columns 1
-          db(("DB"))
-          blockArrowId6<["&nbsp;&nbsp;&nbsp;"]>(down)
-          block:ID
-            A
-            B["A wide one in the middle"]
-            C
-          end
-          space
-          D
-          ID --> D
-          C --> D
-          style B fill:#d6dadd,stroke:#333,stroke-width:4px
+  columns 1
+  in["Raw Input"]
+  blockArrowId1<["ingest"]>(down)
+  block:transform
+    columns 3
+    validate["Validate"] process["Process"] enrich["Enrich"]
+  end
+  blockArrowId2<["store"]>(down)
+  out(("Data Store"))
+
+  validate --> process
+  process --> enrich
