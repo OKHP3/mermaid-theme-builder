@@ -446,7 +446,7 @@ export function ApplyTab({
           );
           onShowToast("Downloaded .theme.json file.");
         } else if (type === "svg") {
-          const svg = await renderToSvg(themedCode);
+          const svg = await renderToSvg(themedCode, typography);
           downloadTextFile(
             makeFilename(effectiveThemeName, "diagram", "svg"),
             svg,
@@ -454,7 +454,7 @@ export function ApplyTab({
           );
           onShowToast("Downloaded .svg file.");
         } else if (type === "png") {
-          const svg = await renderToSvg(themedCode);
+          const svg = await renderToSvg(themedCode, typography);
           const blob = await svgStringToPngBlob(svg, 2);
           downloadBlob(makeFilename(effectiveThemeName, "diagram", "png"), blob);
           onShowToast("Downloaded .png file.");
@@ -495,7 +495,7 @@ export function ApplyTab({
         setDownloadingType(null);
       }
     },
-    [downloadingType, effectiveExportCode, themedCode, selectedPalette, effectiveThemeName, allPalettes, exportOptions, onShowToast],
+    [downloadingType, effectiveExportCode, themedCode, typography, selectedPalette, effectiveThemeName, allPalettes, exportOptions, onShowToast],
   );
 
   return (

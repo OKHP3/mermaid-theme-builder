@@ -1,4 +1,5 @@
 import type { Palette } from "./palettes";
+import { type TypographySettings, generateTypographyCss, isDefaultTypography } from "./typography";
 
 /**
  * Trigger a browser download for a string blob. Same-origin, no backend.
@@ -27,8 +28,12 @@ function triggerDownload(filename: string, blob: Blob): void {
  * Render a Mermaid diagram to an SVG string off-screen.
  * Reuses the singleton mermaid instance loaded by MermaidPreview, but does its
  * own initialize() call to avoid coupling.
+ *
+ * When `typography` is supplied, the generated typography CSS is embedded in a
+ * `<style>` block inside the SVG so that downloaded files visually match the
+ * live preview at all 5 typography tiers.
  */
-export async function renderToSvg(code: string): Promise<string> {
+export async function renderToSvg(code: string, typography?: TypographySettings): Promise<string> {
   const mod = await import("mermaid");
   const mermaid = mod.default;
   mermaid.initialize({
@@ -38,8 +43,12 @@ export async function renderToSvg(code: string): Promise<string> {
   });
   const id = `mtb-export-${Date.now().toString(36)}`;
   const { svg } = await mermaid.render(id, code);
-  // Mermaid renders into a document, then sanitises. Return the raw SVG string.
-  return svg;
+  if (!typography || isDefaultTypography(typography)) return svg;
+  const css = generateTypographyCss(typography);
+  if (!css.trim()) return svg;
+  // Embed a <style> block just before </svg> so the rules apply to the
+  // diagram elements that Mermaid has already emitted.
+  return svg.replace(/<\/svg>\s*$/, `<style>/* MTB typography */\n${css}\n</style></svg>`);
 }
 
 /**

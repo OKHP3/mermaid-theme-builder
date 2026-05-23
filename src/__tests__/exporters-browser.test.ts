@@ -20,6 +20,7 @@ vi.mock("mermaid", () => ({
 }));
 
 import { downloadTextFile, downloadBlob, renderToSvg, svgStringToPngBlob } from "@/lib/exporters";
+import { type TypographySettings, DEFAULT_TYPOGRAPHY } from "@/lib/typography";
 import mermaid from "mermaid";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -79,6 +80,50 @@ describe("renderToSvg", () => {
   it("propagates errors thrown by mermaid.render", async () => {
     vi.mocked(mermaid.render).mockRejectedValueOnce(new Error("parse error"));
     await expect(renderToSvg("not valid mermaid!")).rejects.toThrow("parse error");
+  });
+
+  it("returns unmodified SVG when no typography is supplied", async () => {
+    const result = await renderToSvg("flowchart LR\n  A --> B");
+    expect(result).toBe("<svg><text>mock</text></svg>");
+  });
+
+  it("embeds a <style> block when non-default typography is supplied", async () => {
+    vi.mocked(mermaid.render).mockResolvedValueOnce({
+      svg: '<svg><text>mock</text></svg>',
+      bindFunctions: undefined,
+    });
+    const typography: TypographySettings = {
+      ...DEFAULT_TYPOGRAPHY,
+      nodeLabel: { fontSize: 18, fontFamily: "" },
+    };
+    const result = await renderToSvg("flowchart LR\n  A --> B", typography);
+    expect(result).toContain("<style>");
+    expect(result).toContain("font-size: 18px");
+    expect(result).toMatch(/<\/style><\/svg>$/);
+  });
+
+  it("returns unmodified SVG when all typography tiers match defaults", async () => {
+    vi.mocked(mermaid.render).mockResolvedValueOnce({
+      svg: '<svg><text>mock</text></svg>',
+      bindFunctions: undefined,
+    });
+    const result = await renderToSvg("flowchart LR\n  A --> B", DEFAULT_TYPOGRAPHY);
+    expect(result).toBe('<svg><text>mock</text></svg>');
+  });
+
+  it("preserves the closing </svg> tag after injecting typography CSS", async () => {
+    vi.mocked(mermaid.render).mockResolvedValueOnce({
+      svg: '<svg width="200" height="100"><text>hi</text></svg>',
+      bindFunctions: undefined,
+    });
+    const typography: TypographySettings = {
+      ...DEFAULT_TYPOGRAPHY,
+      edgeLabel: { fontSize: 10, fontFamily: "Arial" },
+    };
+    const result = await renderToSvg("flowchart LR\n  A --> B", typography);
+    expect(result.endsWith("</svg>")).toBe(true);
+    expect(result).toContain("font-size: 10px");
+    expect(result).toContain("font-family: Arial");
   });
 });
 
