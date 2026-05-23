@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import type { ThemeColor } from "@/lib/palettes";
 
 interface ColorSwatchProps {
@@ -46,12 +47,16 @@ export function ColorSwatch({ color, onChange, isOverridden = false, onReset }: 
     const picker = hiddenPickerRef.current;
     if (!row || !picker) return;
     const rect = row.getBoundingClientRect();
-    // position: fixed escapes overflow containers, so the browser anchors the
-    // native picker to the element's actual viewport coordinates.
-    // Offset upward by ~120px (half of Chrome's ~240px picker height) so the
-    // picker's vertical center lands on the row's vertical center.
-    picker.style.top = `${rect.top + rect.height / 2 - 120}px`;
+    // The portal renders the input directly in document.body, so position:fixed
+    // is always relative to the true viewport — no ancestor CSS transforms can
+    // shift it. Set coords imperatively right before .click() so the browser
+    // anchors the native picker popup here.
+    //
+    // Horizontal: right edge of the swatch panel row.
+    // Vertical: row center minus ~120px (half of Chrome's ~240px picker height)
+    // so the picker popup opens with its center aligned with the row center.
     picker.style.left = `${rect.right}px`;
+    picker.style.top = `${rect.top + rect.height / 2 - 120}px`;
     picker.click();
   }, []);
 
@@ -80,7 +85,7 @@ export function ColorSwatch({ color, onChange, isOverridden = false, onReset }: 
 
   return (
     <div ref={rowRef} className="relative flex items-center gap-2 py-1.5 px-2 rounded-md hover:bg-muted/50 transition-colors group">
-      {/* Visual swatch — clicking triggers the right-anchored hidden picker */}
+      {/* Visual swatch button */}
       <button
         type="button"
         onClick={isHexColor ? openPicker : undefined}
@@ -127,11 +132,10 @@ export function ColorSwatch({ color, onChange, isOverridden = false, onReset }: 
         </button>
       )}
 
-      {/* Hidden color input rendered at position:fixed so overflow containers
-          don't clip it. Position is set imperatively in openPicker() before
-          .click() is called, placing it to the right of the panel and
-          vertically centered on the clicked row. */}
-      {isHexColor && (
+      {/* Portaled color input — rendered directly in document.body so no
+          ancestor CSS transform can displace position:fixed coordinates.
+          Position is set imperatively in openPicker() before .click(). */}
+      {isHexColor && createPortal(
         <input
           ref={hiddenPickerRef}
           type="color"
@@ -139,8 +143,17 @@ export function ColorSwatch({ color, onChange, isOverridden = false, onReset }: 
           onChange={handleColorPicker}
           aria-hidden="true"
           tabIndex={-1}
-          style={{ position: "fixed", top: 0, left: 0, width: 1, height: 1, opacity: 0, pointerEvents: "none" }}
-        />
+          style={{
+            position: "fixed",
+            top: 0,
+            left: "-9999px",
+            width: 1,
+            height: 1,
+            opacity: 0,
+            pointerEvents: "none",
+          }}
+        />,
+        document.body,
       )}
     </div>
   );
