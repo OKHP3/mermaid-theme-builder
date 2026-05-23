@@ -1399,6 +1399,7 @@ title Order Processing System
     family: "flowchart",
     category: "flow",
     content: FLOWCHART_MERMAID_BASIC,
+    badge: "Canonical",
   },
   {
     id: "sequence-mermaid-basic",
@@ -1406,6 +1407,7 @@ title Order Processing System
     family: "sequence",
     category: "flow",
     content: SEQUENCE_MERMAID_BASIC,
+    badge: "Canonical",
   },
   // structural
   {
@@ -1414,6 +1416,7 @@ title Order Processing System
     family: "class",
     category: "structural",
     content: CLASS_MERMAID_BASIC,
+    badge: "Canonical",
   },
   {
     id: "er-mermaid-basic",
@@ -1421,6 +1424,7 @@ title Order Processing System
     family: "er",
     category: "structural",
     content: ER_MERMAID_BASIC,
+    badge: "Canonical",
   },
   {
     id: "state-mermaid-basic",
@@ -1428,6 +1432,7 @@ title Order Processing System
     family: "state",
     category: "structural",
     content: STATE_MERMAID_BASIC,
+    badge: "Canonical",
   },
   {
     id: "requirement-mermaid-basic",
@@ -1435,6 +1440,7 @@ title Order Processing System
     family: "requirement",
     category: "structural",
     content: REQUIREMENT_MERMAID_BASIC,
+    badge: "Canonical",
   },
   {
     id: "block-mermaid-basic",
@@ -1442,6 +1448,7 @@ title Order Processing System
     family: "block",
     category: "structural",
     content: BLOCK_MERMAID_BASIC,
+    badge: "Canonical",
   },
   {
     id: "c4-mermaid-basic",
@@ -1449,6 +1456,7 @@ title Order Processing System
     family: "c4",
     category: "structural",
     content: C4_MERMAID_BASIC,
+    badge: "Canonical",
   },
   // data-viz
   {
@@ -1457,6 +1465,7 @@ title Order Processing System
     family: "pie",
     category: "data-viz",
     content: PIE_MERMAID_BASIC,
+    badge: "Canonical",
   },
   {
     id: "quadrant-mermaid-basic",
@@ -1464,6 +1473,7 @@ title Order Processing System
     family: "quadrant",
     category: "data-viz",
     content: QUADRANT_MERMAID_BASIC,
+    badge: "Canonical",
   },
   {
     id: "sankey-mermaid-basic",
@@ -1471,7 +1481,7 @@ title Order Processing System
     family: "sankey",
     category: "data-viz",
     content: SANKEY_MERMAID_BASIC,
-    badge: "Beta",
+    badge: "Canonical · Beta",
   },
   {
     id: "gantt-mermaid-basic",
@@ -1479,6 +1489,7 @@ title Order Processing System
     family: "gantt",
     category: "data-viz",
     content: GANTT_MERMAID_BASIC,
+    badge: "Canonical",
   },
   {
     id: "radar-mermaid-basic",
@@ -1486,7 +1497,7 @@ title Order Processing System
     family: "radar",
     category: "data-viz",
     content: RADAR_MERMAID_BASIC,
-    badge: "Beta",
+    badge: "Canonical · Beta",
   },
   {
     id: "xychart-mermaid-basic",
@@ -1494,7 +1505,7 @@ title Order Processing System
     family: "xychart",
     category: "data-viz",
     content: XYCHART_MERMAID_BASIC,
-    badge: "Beta",
+    badge: "Canonical · Beta",
   },
   // timeline
   {
@@ -1503,6 +1514,7 @@ title Order Processing System
     family: "timeline",
     category: "timeline",
     content: TIMELINE_MERMAID_BASIC,
+    badge: "Canonical",
   },
   {
     id: "gitgraph-mermaid-basic",
@@ -1510,6 +1522,7 @@ title Order Processing System
     family: "gitgraph",
     category: "timeline",
     content: GITGRAPH_MERMAID_BASIC,
+    badge: "Canonical",
   },
   // specialty
   {
@@ -1518,6 +1531,7 @@ title Order Processing System
     family: "mindmap",
     category: "specialty",
     content: MINDMAP_MERMAID_BASIC,
+    badge: "Canonical",
   },
   {
     id: "architecture-mermaid-basic",
@@ -1525,7 +1539,7 @@ title Order Processing System
     family: "architectureBeta",
     category: "specialty",
     content: ARCHITECTURE_MERMAID_BASIC,
-    badge: "Beta",
+    badge: "Canonical · Beta",
   },
   {
     id: "kanban-mermaid-basic",
@@ -1533,7 +1547,7 @@ title Order Processing System
     family: "kanban",
     category: "specialty",
     content: KANBAN_MERMAID_BASIC,
-    badge: "Beta",
+    badge: "Canonical · Beta",
   },
   {
     id: "packet-mermaid-basic",
@@ -1541,7 +1555,7 @@ title Order Processing System
     family: "packet",
     category: "specialty",
     content: PACKET_MERMAID_BASIC,
-    badge: "Beta",
+    badge: "Canonical · Beta",
   },
 
   // ── Batch #2 ────────────────────────────────────────────────────────────────
@@ -1552,6 +1566,7 @@ title Order Processing System
     family: "journey",
     category: "timeline",
     content: JOURNEY_MERMAID_BASIC,
+    badge: "Canonical",
   },
   // data-viz
   {
@@ -1560,7 +1575,7 @@ title Order Processing System
     family: "treemap",
     category: "data-viz",
     content: TREEMAP_MERMAID_BASIC,
-    badge: "Beta",
+    badge: "Canonical · Beta",
   },
   // flow — showcase & contextual examples
   {
