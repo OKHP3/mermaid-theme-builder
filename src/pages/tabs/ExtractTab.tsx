@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import type { Palette, ThemeColor } from "@/lib/palettes";
 import { ColorSwatch } from "@/components/ColorSwatch";
 import { DiffView } from "@/components/DiffView";
@@ -44,6 +44,19 @@ const KEY_LABELS: Record<string, string> = {
   edgeLabelBackground: "Edge label bg",
   fontFamily: "Font family",
 };
+
+async function writeToClipboard(text: string) {
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch {
+    const el = document.createElement("textarea");
+    el.value = text;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand("copy");
+    document.body.removeChild(el);
+  }
+}
 
 function labelForKey(key: string): string {
   return KEY_LABELS[key] ?? key;
@@ -107,6 +120,8 @@ export function ExtractTab({ onUseExtractedTheme, onSwitchTab, onShowToast }: Ex
   const [status, setStatus] = useState<ExtractStatus>("idle");
   const [previewMode, setPreviewMode] = useState<"preview" | "diff">("preview");
   const [themeName, setThemeName] = useState("Extracted theme");
+  const [copiedCode, setCopiedCode] = useState(false);
+  const copyCodeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleExtract = useCallback(() => {
     const code = pastedCode.trim();
@@ -226,6 +241,21 @@ export function ExtractTab({ onUseExtractedTheme, onSwitchTab, onShowToast }: Ex
     setStatus("idle");
     setThemeName("Extracted theme");
     setPreviewMode("preview");
+  }, []);
+
+  const handleCopyCode = useCallback(async () => {
+    if (!rethemedCode) return;
+    await writeToClipboard(rethemedCode);
+    onShowToast("Copied!");
+    setCopiedCode(true);
+    if (copyCodeTimeoutRef.current) clearTimeout(copyCodeTimeoutRef.current);
+    copyCodeTimeoutRef.current = setTimeout(() => setCopiedCode(false), 2000);
+  }, [rethemedCode, onShowToast]);
+
+  useEffect(() => {
+    return () => {
+      if (copyCodeTimeoutRef.current) clearTimeout(copyCodeTimeoutRef.current);
+    };
   }, []);
 
   const sourceLabel =
@@ -469,6 +499,15 @@ export function ExtractTab({ onUseExtractedTheme, onSwitchTab, onShowToast }: Ex
               <div className="space-y-3">
                 <div className="flex items-center gap-1">
                   <p className="forge-eyebrow flex-1">Preview</p>
+                  <button
+                    type="button"
+                    onClick={handleCopyCode}
+                    disabled={!rethemedCode}
+                    className="px-2.5 py-1 rounded-md border border-border text-[10px] font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed bg-background text-muted-foreground hover:bg-muted hover:text-foreground"
+                    title="Copy re-themed code to clipboard"
+                  >
+                    {copiedCode ? "Copied!" : "Copy themed code"}
+                  </button>
                   <div className="flex rounded-md border border-border overflow-hidden text-[10px] font-medium">
                     <button
                       type="button"
