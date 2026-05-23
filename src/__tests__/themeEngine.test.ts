@@ -1047,3 +1047,92 @@ describe("buildClassDefLibrary — font-size rule in scaffold classDef block", (
     }
   });
 });
+
+// ── sequence.fontSize sync rule ───────────────────────────────────────────────
+// When typography + an explicit fontSize override are both active on a sequence
+// diagram, buildInitDirective must resolve the effective size and write it to
+// BOTH themeVariables.fontSize AND sequence.fontSize.  The two numeric values
+// must always match — any split-brain would silently desync actor font sizes
+// from node label sizes.
+describe("sequence.fontSize sync rule", () => {
+  const SEQUENCE_DIAGRAM = "sequenceDiagram\n  Alice->>Bob: Hello";
+
+  const TYPOGRAPHY_14 = {
+    ...DEFAULT_TYPOGRAPHY,
+    nodeLabel: { fontSize: 14, fontFamily: "" },
+  };
+
+  it("sequence.fontSize equals the explicit fontSize override (20), not the typography value (14)", () => {
+    const result = generateThemedCode(SEQUENCE_DIAGRAM, {
+      ...BASE_OPTIONS,
+      diagramFamily: "sequenceDiagram",
+      typography: TYPOGRAPHY_14,
+      fontSize: "20px",
+    });
+    // sequence.fontSize must be 20, not 14
+    expect(result).toContain('"sequence": {"fontSize": 20}');
+    const sequenceMatch = result.match(/"sequence":\s*\{"fontSize":\s*(\d+)\}/);
+    expect(sequenceMatch).not.toBeNull();
+    expect(Number(sequenceMatch![1])).toBe(20);
+  });
+
+  it("themeVariables.fontSize and sequence.fontSize carry the same numeric value", () => {
+    const result = generateThemedCode(SEQUENCE_DIAGRAM, {
+      ...BASE_OPTIONS,
+      diagramFamily: "sequenceDiagram",
+      typography: TYPOGRAPHY_14,
+      fontSize: "20px",
+    });
+    // themeVariables.fontSize must be "20px"
+    expect(result).toContain('"fontSize": "20px"');
+
+    // sequence.fontSize must be numeric 20
+    const sequenceMatch = result.match(/"sequence":\s*\{"fontSize":\s*(\d+)\}/);
+    expect(sequenceMatch).not.toBeNull();
+    const sequenceSize = Number(sequenceMatch![1]);
+
+    // Both values must agree
+    expect(sequenceSize).toBe(20);
+  });
+
+  it("both sequence and themeVariables fontSize keys appear in the same init directive", () => {
+    const result = generateThemedCode(SEQUENCE_DIAGRAM, {
+      ...BASE_OPTIONS,
+      diagramFamily: "sequenceDiagram",
+      typography: TYPOGRAPHY_14,
+      fontSize: "20px",
+    });
+    // Extract the init directive line
+    const initLine = result.split("\n").find((l) => l.startsWith("%%{init:"));
+    expect(initLine).toBeDefined();
+    expect(initLine).toContain('"fontSize": "20px"');
+    expect(initLine).toContain('"sequence"');
+    expect(initLine).toContain('"fontSize": 20');
+  });
+
+  it("sequence.fontSize tracks typography fontSize (18px) when no explicit override is set", () => {
+    const typography18 = {
+      ...DEFAULT_TYPOGRAPHY,
+      nodeLabel: { fontSize: 18, fontFamily: "" },
+    };
+    const result = generateThemedCode(SEQUENCE_DIAGRAM, {
+      ...BASE_OPTIONS,
+      diagramFamily: "sequenceDiagram",
+      typography: typography18,
+    });
+    expect(result).toContain('"fontSize": "18px"');
+    const sequenceMatch = result.match(/"sequence":\s*\{"fontSize":\s*(\d+)\}/);
+    expect(sequenceMatch).not.toBeNull();
+    expect(Number(sequenceMatch![1])).toBe(18);
+  });
+
+  it("does NOT emit sequence.fontSize when typography is absent", () => {
+    const result = generateThemedCode(SEQUENCE_DIAGRAM, {
+      ...BASE_OPTIONS,
+      diagramFamily: "sequenceDiagram",
+      fontSize: "20px",
+    });
+    // Without typography, sequence config block must not appear
+    expect(result).not.toContain('"sequence"');
+  });
+});
