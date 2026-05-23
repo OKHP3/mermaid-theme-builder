@@ -253,7 +253,7 @@ function ThemeModeToggle({ mode, cycle, className }: { mode: ThemeMode; cycle: (
   );
 }
 
-function AppShell() {
+export function AppShell() {
   const [activeTab, setActiveTab] = useState<AppTab>(() => {
     const h = window.location.hash.slice(1);
     const TABS: AppTab[] = ["apply", "compose", "examples", "reference", "extract"];
