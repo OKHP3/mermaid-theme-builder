@@ -1,2 +1,30 @@
 eventmodeling
-title Order Processing — Event Modeling (Mermaid 11.15)
+  title Order Lifecycle — Place to Deliver
+
+  Command PlaceOrder
+  Event OrderPlaced
+  Command ProcessPayment
+  Event PaymentProcessed
+  Event PaymentFailed
+  Command ShipOrder
+  Event OrderShipped
+  Event OrderDelivered
+  Command CancelOrder
+  Event OrderCanceled
+  View OrderStatus
+
+  PlaceOrder --> OrderPlaced
+  OrderPlaced --> ProcessPayment
+  ProcessPayment --> PaymentProcessed
+  ProcessPayment --> PaymentFailed
+  PaymentProcessed --> ShipOrder
+  ShipOrder --> OrderShipped
+  OrderShipped --> OrderDelivered
+  OrderPlaced --> CancelOrder
+  CancelOrder --> OrderCanceled
+  OrderPlaced --> OrderStatus
+  PaymentProcessed --> OrderStatus
+  PaymentFailed --> OrderStatus
+  OrderShipped --> OrderStatus
+  OrderDelivered --> OrderStatus
+  OrderCanceled --> OrderStatus

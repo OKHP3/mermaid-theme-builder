@@ -1364,8 +1364,35 @@ export const EXAMPLE_CATALOG: ExampleEntry[] = [
     family: "eventModeling",
     category: "specialty",
     content: `eventmodeling
-title Order Processing System
-`,
+  title Order Lifecycle — Place to Deliver
+
+  Command PlaceOrder
+  Event OrderPlaced
+  Command ProcessPayment
+  Event PaymentProcessed
+  Event PaymentFailed
+  Command ShipOrder
+  Event OrderShipped
+  Event OrderDelivered
+  Command CancelOrder
+  Event OrderCanceled
+  View OrderStatus
+
+  PlaceOrder --> OrderPlaced
+  OrderPlaced --> ProcessPayment
+  ProcessPayment --> PaymentProcessed
+  ProcessPayment --> PaymentFailed
+  PaymentProcessed --> ShipOrder
+  ShipOrder --> OrderShipped
+  OrderShipped --> OrderDelivered
+  OrderPlaced --> CancelOrder
+  CancelOrder --> OrderCanceled
+  OrderPlaced --> OrderStatus
+  PaymentProcessed --> OrderStatus
+  PaymentFailed --> OrderStatus
+  OrderShipped --> OrderStatus
+  OrderDelivered --> OrderStatus
+  OrderCanceled --> OrderStatus`,
     badge: "Experimental",
   },
   {
