@@ -376,6 +376,10 @@ export function ApplyTab({
       effectiveDetection.capability.themeConfidence === "not-applicable" ||
       effectiveDetection.capability.stability !== "stable");
 
+  const promptIsThemeOnly =
+    effectiveDetection.family !== "unknown" &&
+    !CLASSDEF_CAPABLE_FAMILIES.includes(effectiveDetection.family);
+
   const handleCopy = useCallback(
     async (type: ExportType) => {
       if (type === "prompt") {
@@ -1079,6 +1083,14 @@ export function ApplyTab({
                 {type === "prompt" && !copied && rendererProfile && (
                   <span className="ml-0.5 px-1.5 py-px rounded text-[10px] font-semibold leading-none bg-[#c46a2c]/15 text-[#c46a2c] border border-[#c46a2c]/30">
                     {rendererProfile.shortName}
+                  </span>
+                )}
+                {type === "prompt" && !copied && promptIsThemeOnly && (
+                  <span
+                    title="This diagram type uses theme-level colors only — per-node classDef classes are not supported"
+                    className="ml-0.5 px-1.5 py-px rounded text-[10px] font-semibold leading-none bg-muted text-muted-foreground border border-border"
+                  >
+                    Theme-only
                   </span>
                 )}
               </button>
