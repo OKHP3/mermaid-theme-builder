@@ -329,9 +329,6 @@ export function AppShell() {
       if (Array.isArray(persisted.recentPaletteIds)) {
         setRecentPaletteIds(persisted.recentPaletteIds.filter((s): s is string => typeof s === "string").slice(0, RECENT_PALETTES_MAX));
       }
-      if (persisted.look === "neo" || persisted.look === "handDrawn" || persisted.look === "classic") {
-        setLook(persisted.look as MermaidLook);
-      }
       if (typeof persisted.fontSize === "string") setFontSize(persisted.fontSize);
       if (persisted.typography && typeof persisted.typography === "object") {
         const t = persisted.typography as TypographySettings;
@@ -339,7 +336,6 @@ export function AppShell() {
           setTypography(t);
         }
       }
-      if (typeof persisted.rendererTarget === "string") setRendererTarget(persisted.rendererTarget);
       const VALID_PREVIEW_MODES = ["original", "themed", "diff", "code"] as const;
       if (typeof persisted.previewMode === "string" && (VALID_PREVIEW_MODES as readonly string[]).includes(persisted.previewMode)) {
         setPreviewMode(persisted.previewMode as "original" | "themed" | "diff" | "code");
