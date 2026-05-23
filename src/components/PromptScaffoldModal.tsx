@@ -337,7 +337,9 @@ export function PromptScaffoldModal({ open, onClose, onCopy, generatePreview, re
                 <button
                   onClick={(e) => togglePreview(opt.format, e)}
                   className={`w-full flex items-center justify-between px-3 py-1.5 border-t text-[10px] font-medium transition-colors ${
-                    isPreviewing
+                    copied
+                      ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                      : isPreviewing
                       ? "border-primary/20 bg-primary/5 text-primary/80 hover:bg-primary/10"
                       : "border-border/60 bg-muted/20 text-muted-foreground/60 hover:text-muted-foreground hover:bg-muted/40"
                   }`}
