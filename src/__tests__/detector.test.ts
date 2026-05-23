@@ -108,6 +108,18 @@ describe("detectDiagram — family detection", () => {
     expect(detectDiagram("C4Container\n  Person(user, User)").family).toBe("c4Diagram");
   });
 
+  it("detects C4Component as c4Diagram family", () => {
+    expect(detectDiagram("C4Component\n  Container(api, \"API Server\", \"Node.js\")").family).toBe("c4Diagram");
+  });
+
+  it("detects C4Dynamic as c4Diagram family", () => {
+    expect(detectDiagram("C4Dynamic\n  title Login flow\n  Rel(user, spa, \"Navigates to\")").family).toBe("c4Diagram");
+  });
+
+  it("detects C4Deployment as c4Diagram family", () => {
+    expect(detectDiagram("C4Deployment\n  Deployment_Node(prod, \"Production\", \"AWS\")").family).toBe("c4Diagram");
+  });
+
   it("detects wardley-beta as wardley family", () => {
     expect(detectDiagram("wardley-beta\n  title Online Shopping").family).toBe("wardley");
   });
