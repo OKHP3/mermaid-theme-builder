@@ -311,12 +311,15 @@ export function ClassBrowser({ classDefs, supportsClassDef = true, usedClassName
 
   const handleCopyUsed = useCallback(async () => {
     if (!usedClassNames || usedClassNames.size === 0) return;
-    const usedDefs = sortedClassDefs.filter((def) => usedClassNames.has(def.name));
+    // Use `classDefs` (definition order from getClassDefs) so "Copy used" output
+    // matches the export engine order exactly — consistent with "Copy all".
+    // sortedClassDefs uses a visual used-first sort that must not affect the copy.
+    const usedDefs = classDefs.filter((def) => usedClassNames.has(def.name));
     const block = usedDefs.map((def) => buildClassDefString(def)).join("\n");
     await writeToClipboard(block);
     setCopiedState({ name: String(usedDefs.length), kind: "used" });
     setTimeout(() => setCopiedState(null), 1800);
-  }, [sortedClassDefs, usedClassNames, writeToClipboard]);
+  }, [classDefs, usedClassNames, writeToClipboard]);
 
   // Preview block mirrors what "Copy all" copies: definition order (classDefs),
   // not the visual sort order (sortedClassDefs), so the preview is a true preview.
@@ -325,15 +328,15 @@ export function ClassBrowser({ classDefs, supportsClassDef = true, usedClassName
     [classDefs]
   );
 
-  // Used-only preview block: matches the "Copy used" output order (sortedClassDefs
-  // filtered to used entries, preserving used-first sort from sortedClassDefs).
+  // Used-only preview block: matches the "Copy used" output order — definition
+  // order (classDefs) filtered to used entries, consistent with handleCopyUsed.
   const usedPreviewBlock = useMemo(() => {
     if (!usedClassNames || usedClassNames.size === 0) return "";
-    return sortedClassDefs
+    return classDefs
       .filter((def) => usedClassNames.has(def.name))
       .map((def) => buildClassDefString(def))
       .join("\n");
-  }, [sortedClassDefs, usedClassNames]);
+  }, [classDefs, usedClassNames]);
 
   const hasUsed = (usedClassNames?.size ?? 0) > 0;
   const activePreviewBlock = previewMode === "used" && hasUsed ? usedPreviewBlock : previewBlock;

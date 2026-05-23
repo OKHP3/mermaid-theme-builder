@@ -16,7 +16,7 @@ import type { ClassDef } from "@/lib/themeEngine";
  * Copy actions tested:
  *   - "Copy all"      → all classDef lines in definition order, joined by "\n"
  *   - "Copy used"     → only the subset of classDefs whose names are in
- *                        usedClassNames, in sortedClassDefs order
+ *                        usedClassNames, in definition order (same as "Copy all")
  *   - Per-card usage  → ":::className"
  *   - Per-card def    → single "classDef …" line for that card
  */
@@ -223,12 +223,60 @@ describe("ClassBrowser — 'Copy used' clipboard write", () => {
     expect(written).toContain("primary");
   });
 
+  it("preserves definition order when the used subset is non-contiguous", async () => {
+    const THREE_DEFS: ClassDef[] = [
+      {
+        name: "alpha",
+        fill: "#aaaaaa",
+        stroke: "#111111",
+        color: "#ffffff",
+        extra: "",
+        description: "",
+      },
+      {
+        name: "beta",
+        fill: "#bbbbbb",
+        stroke: "#222222",
+        color: "#eeeeee",
+        extra: "",
+        description: "",
+      },
+      {
+        name: "gamma",
+        fill: "#cccccc",
+        stroke: "#333333",
+        color: "#dddddd",
+        extra: "",
+        description: "",
+      },
+    ];
+    // alpha (index 0) and gamma (index 2) are used; beta (index 1) is not.
+    // Definition order must be preserved: alpha line before gamma line.
+    render(
+      createElement(ClassBrowser, {
+        classDefs: THREE_DEFS,
+        supportsClassDef: true,
+        usedClassNames: new Set<string>(["gamma", "alpha"]),
+      })
+    );
+    const btn = screen.getByTitle("Copy only the 2 classDefs used in the current diagram");
+    await act(async () => {
+      fireEvent.click(btn);
+    });
+    const written = clipboardWriteText.mock.calls[0][0] as string;
+    const lines = written.split("\n");
+    expect(lines).toHaveLength(2);
+    expect(lines[0]).toMatch(/^classDef alpha /);
+    expect(lines[1]).toMatch(/^classDef gamma /);
+    expect(written).not.toContain("beta");
+  });
+
   it("'Copy used' button is absent when usedClassNames is empty (no clipboard call possible)", () => {
     render(
       createElement(ClassBrowser, {
         classDefs: SAMPLE_CLASS_DEFS,
         supportsClassDef: true,
-        usedClassNames: new Set(),
+        usedClassNames: new Set<string>(),
       })
     );
     expect(
