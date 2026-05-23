@@ -168,6 +168,11 @@ export function ComposeTab({
   const [tierDraftSizes, setTierDraftSizes] = useState<Partial<Record<TypographyTierKey, string>>>({});
   const [clampedTiers, setClampedTiers] = useState<Set<TypographyTierKey>>(new Set());
   const clampTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
+  const [colorsOpen, setColorsOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [typographyOpen, setTypographyOpen] = useState(false);
+  const [myPalettesOpen, setMyPalettesOpen] = useState(false);
+  const [bootstrapOpen, setBootstrapOpen] = useState(false);
 
   const handleTypographyChangeWithClamp = useCallback(
     (proposed: TypographySettings) => {
@@ -406,39 +411,60 @@ export function ComposeTab({
 
         <div className="p-3 border-b border-border">
           <div className="flex items-center justify-between mb-1">
-            <p className="forge-eyebrow">
-              Colors
-            </p>
-            {hasCustomizations && (
+            <p className="forge-eyebrow">Colors</p>
+            <div className="flex items-center gap-2">
+              {hasCustomizations && (
+                <button
+                  onClick={onResetPalette}
+                  aria-label={`Reset ${selectedPalette.name} colors to defaults`}
+                  className="text-xs text-muted-foreground hover:text-destructive transition-colors"
+                >
+                  Reset
+                </button>
+              )}
               <button
-                onClick={onResetPalette}
-                aria-label={`Reset ${selectedPalette.name} colors to defaults`}
-                className="text-xs text-muted-foreground hover:text-destructive transition-colors"
+                type="button"
+                onClick={() => setColorsOpen(v => !v)}
+                className="md:hidden p-0.5 text-muted-foreground"
+                aria-expanded={colorsOpen}
+                aria-label="Toggle Colors"
               >
-                Reset
+                <svg viewBox="0 0 12 12" fill="currentColor" className={`w-3.5 h-3.5 transition-transform ${colorsOpen ? "rotate-180" : ""}`} aria-hidden="true"><path d="M3 4.5l3 3 3-3z" /></svg>
               </button>
-            )}
+            </div>
           </div>
-          <p className="text-xs text-muted-foreground mb-2 leading-relaxed">
-            {selectedPalette.description}
-          </p>
-          <div className="grid grid-cols-2 md:grid-cols-1 gap-x-1">
-            {selectedPalette.colors.map((color) => (
-              <ColorSwatch
-                key={color.key}
-                color={
-                  customColors[selectedPaletteId]?.find((c) => c.key === color.key) ?? color
-                }
-                onChange={onColorChange}
-              />
-            ))}
+          <div className={`md:block ${colorsOpen ? "" : "hidden"}`}>
+            <p className="text-xs text-muted-foreground mb-2 leading-relaxed">
+              {selectedPalette.description}
+            </p>
+            <div className="grid grid-cols-2 md:grid-cols-1 gap-x-1">
+              {selectedPalette.colors.map((color) => (
+                <ColorSwatch
+                  key={color.key}
+                  color={
+                    customColors[selectedPaletteId]?.find((c) => c.key === color.key) ?? color
+                  }
+                  onChange={onColorChange}
+                />
+              ))}
+            </div>
           </div>
         </div>
 
         <div className="p-3 border-b border-border">
-          <p className="forge-eyebrow mb-2">
-            Settings
-          </p>
+          <div className="flex items-center justify-between mb-2">
+            <p className="forge-eyebrow">Settings</p>
+            <button
+              type="button"
+              onClick={() => setSettingsOpen(v => !v)}
+              className="md:hidden p-0.5 text-muted-foreground"
+              aria-expanded={settingsOpen}
+              aria-label="Toggle Settings"
+            >
+              <svg viewBox="0 0 12 12" fill="currentColor" className={`w-3.5 h-3.5 transition-transform ${settingsOpen ? "rotate-180" : ""}`} aria-hidden="true"><path d="M3 4.5l3 3 3-3z" /></svg>
+            </button>
+          </div>
+          <div className={`md:block ${settingsOpen ? "" : "hidden"}`}>
           <div className="space-y-3">
             <div>
               <label className="text-xs font-medium text-foreground block mb-1.5">Look</label>
@@ -508,23 +534,35 @@ export function ComposeTab({
               <span className="text-xs text-foreground">Include attribution watermark</span>
             </label>
           </div>
+          </div>
         </div>
 
         <div className="p-3 border-b border-border">
           <div className="flex items-center justify-between mb-1.5">
             <p className="forge-eyebrow">Typography</p>
-            {!isDefaultTypography(typography) && (
+            <div className="flex items-center gap-2">
+              {!isDefaultTypography(typography) && (
+                <button
+                  type="button"
+                  onClick={() => onTypographyChange(DEFAULT_TYPOGRAPHY)}
+                  aria-label="Reset typography to defaults"
+                  className="text-[10px] text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Reset
+                </button>
+              )}
               <button
                 type="button"
-                onClick={() => onTypographyChange(DEFAULT_TYPOGRAPHY)}
-                aria-label="Reset typography to defaults"
-                className="text-[10px] text-muted-foreground hover:text-foreground transition-colors"
+                onClick={() => setTypographyOpen(v => !v)}
+                className="md:hidden p-0.5 text-muted-foreground"
+                aria-expanded={typographyOpen}
+                aria-label="Toggle Typography"
               >
-                Reset
+                <svg viewBox="0 0 12 12" fill="currentColor" className={`w-3.5 h-3.5 transition-transform ${typographyOpen ? "rotate-180" : ""}`} aria-hidden="true"><path d="M3 4.5l3 3 3-3z" /></svg>
               </button>
-            )}
+            </div>
           </div>
-
+          <div className={`md:block ${typographyOpen ? "" : "hidden"}`}>
           <div className="mb-3">
             <label className="text-xs font-medium text-foreground block mb-1">Diagram body font</label>
             <FontFamilySelect
@@ -694,12 +732,23 @@ export function ComposeTab({
           <p className="text-[10px] text-muted-foreground mt-2 leading-relaxed">
             Hierarchy enforced: each tier cannot exceed the tier above. Node Body size maps to the Mermaid <code className="font-mono bg-muted rounded px-0.5">fontSize</code> themeVariable. Other tiers and per-tier font overrides are included in the Prompt Scaffold export.
           </p>
+          </div>
         </div>
 
         <div className="p-3 border-b border-border">
-          <p className="forge-eyebrow mb-1">
-            My Palettes
-          </p>
+          <div className="flex items-center justify-between mb-1">
+            <p className="forge-eyebrow">My Palettes</p>
+            <button
+              type="button"
+              onClick={() => setMyPalettesOpen(v => !v)}
+              className="md:hidden p-0.5 text-muted-foreground"
+              aria-expanded={myPalettesOpen}
+              aria-label="Toggle My Palettes"
+            >
+              <svg viewBox="0 0 12 12" fill="currentColor" className={`w-3.5 h-3.5 transition-transform ${myPalettesOpen ? "rotate-180" : ""}`} aria-hidden="true"><path d="M3 4.5l3 3 3-3z" /></svg>
+            </button>
+          </div>
+          <div className={`md:block ${myPalettesOpen ? "" : "hidden"}`}>
           <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
             Save the current colors as a named palette, share it via URL, or import/export JSON.
           </p>
@@ -748,12 +797,23 @@ export function ComposeTab({
             className="hidden"
             onChange={handleFileChosen}
           />
+          </div>
         </div>
 
         <div className="p-3">
-          <p className="forge-eyebrow mb-1">
-            Bootstrap Export
-          </p>
+          <div className="flex items-center justify-between mb-1">
+            <p className="forge-eyebrow">Bootstrap Export</p>
+            <button
+              type="button"
+              onClick={() => setBootstrapOpen(v => !v)}
+              className="md:hidden p-0.5 text-muted-foreground"
+              aria-expanded={bootstrapOpen}
+              aria-label="Toggle Bootstrap Export"
+            >
+              <svg viewBox="0 0 12 12" fill="currentColor" className={`w-3.5 h-3.5 transition-transform ${bootstrapOpen ? "rotate-180" : ""}`} aria-hidden="true"><path d="M3 4.5l3 3 3-3z" /></svg>
+            </button>
+          </div>
+          <div className={`md:block ${bootstrapOpen ? "" : "hidden"}`}>
           <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
             Paste into your AI before generating diagrams to pre-load the theme.
           </p>
@@ -774,6 +834,7 @@ export function ComposeTab({
             >
               Copy Prompt Scaffold
             </button>
+          </div>
           </div>
         </div>
       </div>
