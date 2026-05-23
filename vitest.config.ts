@@ -13,6 +13,7 @@ export default defineConfig({
       ["src/__tests__/classBrowserClipboard.test.tsx", "happy-dom"],
       ["src/__tests__/accessibility.test.tsx", "happy-dom"],
       ["src/__tests__/examplesTabPersistence.test.tsx", "happy-dom"],
+      ["src/__tests__/familySyntaxHint.test.tsx", "happy-dom"],
     ],
     include: ["src/__tests__/**/*.test.ts", "src/__tests__/**/*.test.tsx"],
     globals: false,
