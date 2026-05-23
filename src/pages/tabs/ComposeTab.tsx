@@ -376,7 +376,7 @@ export function ComposeTab({
           <p className="text-xs text-muted-foreground mb-2 leading-relaxed">
             {selectedPalette.description}
           </p>
-          <div className="space-y-0.5">
+          <div className="grid grid-cols-2 md:grid-cols-1 gap-x-1">
             {selectedPalette.colors.map((color) => (
               <ColorSwatch
                 key={color.key}
