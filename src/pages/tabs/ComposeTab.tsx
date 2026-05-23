@@ -366,6 +366,7 @@ export function ComposeTab({
             {hasCustomizations && (
               <button
                 onClick={onResetPalette}
+                aria-label={`Reset ${selectedPalette.name} colors to defaults`}
                 className="text-xs text-muted-foreground hover:text-destructive transition-colors"
               >
                 Reset
@@ -395,7 +396,7 @@ export function ComposeTab({
           <div className="space-y-3">
             <div>
               <label className="text-xs font-medium text-foreground block mb-1.5">Look</label>
-              <div className="flex gap-1">
+              <div className="flex gap-1" role="group" aria-label="Look style">
                 {(
                   [
                     { value: "classic" as MermaidLook, label: "Classic", desc: "Standard rendering" },
@@ -408,6 +409,7 @@ export function ComposeTab({
                     type="button"
                     onClick={() => onLookChange(opt.value)}
                     title={opt.desc}
+                    aria-pressed={look === opt.value}
                     className={`flex-1 text-[11px] px-1 py-1.5 rounded-md border font-medium transition-all ${
                       look === opt.value
                         ? "border-primary bg-primary/10 text-primary"
@@ -469,6 +471,7 @@ export function ComposeTab({
               <button
                 type="button"
                 onClick={() => onTypographyChange(DEFAULT_TYPOGRAPHY)}
+                aria-label="Reset typography to defaults"
                 className="text-[10px] text-muted-foreground hover:text-foreground transition-colors"
               >
                 Reset
@@ -496,20 +499,22 @@ export function ComposeTab({
               Global base size
               <span className="text-[10px] text-muted-foreground font-normal ml-1">(Mermaid <code className="font-mono bg-muted rounded px-0.5">fontSize</code>)</span>
             </label>
-            <div className="flex gap-1 mb-1.5">
+            <div className="flex gap-1 mb-1.5" role="group" aria-label="Global base font size preset">
               {(
                 [
-                  { label: "XS", value: "12px" },
-                  { label: "S", value: "14px" },
-                  { label: "M", value: "16px" },
-                  { label: "L", value: "18px" },
-                  { label: "XL", value: "20px" },
+                  { label: "XS", value: "12px", desc: "Extra small — 12px" },
+                  { label: "S", value: "14px", desc: "Small — 14px" },
+                  { label: "M", value: "16px", desc: "Medium — 16px (default)" },
+                  { label: "L", value: "18px", desc: "Large — 18px" },
+                  { label: "XL", value: "20px", desc: "Extra large — 20px" },
                 ] as const
               ).map((opt) => (
                 <button
                   key={opt.value}
                   type="button"
                   onClick={() => onFontSizeChange(fontSize === opt.value ? "" : opt.value)}
+                  aria-pressed={(fontSize || "16px") === opt.value}
+                  title={opt.desc}
                   className={`flex-1 text-xs py-1 rounded-md border font-medium transition-all ${
                     (fontSize || "16px") === opt.value
                       ? "border-primary bg-primary/10 text-primary"
@@ -559,7 +564,11 @@ export function ComposeTab({
                         {meta.label}
                       </span>
                       {isClamped && (
-                        <span className="shrink-0 text-[9px] font-semibold text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-900/30 rounded px-1 py-0.5 leading-tight">
+                        <span
+                          role="status"
+                          aria-live="polite"
+                          className="shrink-0 text-[9px] font-semibold text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-900/30 rounded px-1 py-0.5 leading-tight"
+                        >
                           clamped to max
                         </span>
                       )}
@@ -742,9 +751,15 @@ export function ComposeTab({
           <div
             className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"
             onClick={() => setShowSaveDialog(false)}
+            aria-hidden="true"
           />
-          <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-sm bg-card border border-border rounded-lg shadow-2xl p-5">
-            <p className="text-sm font-semibold text-foreground mb-1">Save as new palette</p>
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="save-palette-dialog-title"
+            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-sm bg-card border border-border rounded-lg shadow-2xl p-5"
+          >
+            <p id="save-palette-dialog-title" className="text-sm font-semibold text-foreground mb-1">Save as new palette</p>
             <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
               Saves the current colors and theme name as a named palette in your local browser.
             </p>
@@ -803,6 +818,8 @@ function PaletteRow({ palette, selected, customized, onSelect, swatchIndices, on
     >
       <button
         onClick={onSelect}
+        aria-pressed={selected}
+        aria-label={`Select ${palette.name} palette${customized ? " (customized)" : ""}`}
         className={`flex-1 text-left px-2.5 py-2 text-xs font-medium ${
           selected ? "text-primary" : "text-muted-foreground hover:text-foreground"
         }`}
