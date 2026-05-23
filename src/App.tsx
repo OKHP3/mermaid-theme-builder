@@ -845,11 +845,12 @@ export function AppShell() {
           <span>·</span>
           <a href="https://overkillhill.com/" target="_blank" rel="noopener noreferrer" className="forge-footer-brand forge-footer-link">OverKill Hill P³</a>
         </div>
-        <div className="flex items-center gap-2 forge-footer-meta" style={{opacity: 0.45, fontSize: '9px'}}>
+        <div className="flex items-center gap-2 forge-footer-meta" style={{opacity: 0.7, fontSize: '9px'}}>
           Not affiliated with Mermaid, Mermaid Chart, or Mermaid.ai
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
           <a href="https://replit.com/refer/overkillhillp3/" target="_blank" rel="noopener noreferrer" className="forge-footer-link" style={{ color: "#FF3C00" }}>Replit</a>
+          <span className="forge-footer-meta">·</span>
           <a href="https://mermaidchart.cello.so/UhVlNtC2MlS" target="_blank" rel="noopener noreferrer" className="forge-footer-link" style={{ color: "#FF3670" }}>Mermaid.ai</a>
         </div>
       </footer>
