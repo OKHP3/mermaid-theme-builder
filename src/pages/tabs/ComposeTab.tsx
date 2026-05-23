@@ -307,9 +307,8 @@ export function ComposeTab({
   const isCurrentUserPalette = userPalettes.some((p) => p.id === selectedPaletteId);
 
   return (
-    <div className="flex flex-col md:flex-row h-full overflow-hidden">
-      <div className="flex flex-col w-full md:w-[35%] border-b md:border-b-0 md:border-r border-border overflow-y-auto shrink-0">
-        <div className="flex-none border-b border-border bg-card/30 px-3 py-2">
+    <div className="flex flex-col h-full overflow-hidden">
+      <div className="flex-none border-b border-border bg-card/30 px-3 py-2">
           <div
             role="radiogroup"
             aria-label="Palette selector"
@@ -401,6 +400,9 @@ export function ComposeTab({
             })}
           </div>
         </div>
+
+      <div className="flex flex-col md:flex-row flex-1 overflow-hidden min-h-0">
+        <div className="flex flex-col w-full md:w-[35%] border-b md:border-b-0 md:border-r border-border overflow-y-auto shrink-0">
 
         <div className="p-3 border-b border-border">
           <div className="flex items-center justify-between mb-1">
@@ -795,6 +797,7 @@ export function ComposeTab({
             </p>
           </div>
         )}
+      </div>
       </div>
 
       <PromptScaffoldModal
