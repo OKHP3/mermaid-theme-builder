@@ -108,11 +108,12 @@ interface ExtractTabProps {
   onUseExtractedTheme: (palette: Palette, codeWithClassDefs?: string) => void;
   onSwitchTab: (tab: AppTab) => void;
   onShowToast: (msg: string) => void;
+  embedded?: boolean;
 }
 
 type ExtractStatus = "idle" | "found" | "empty" | "no-vars";
 
-export function ExtractTab({ onUseExtractedTheme, onSwitchTab, onShowToast }: ExtractTabProps) {
+export function ExtractTab({ onUseExtractedTheme, onSwitchTab, onShowToast, embedded = false }: ExtractTabProps) {
   const [pastedCode, setPastedCode] = useState("");
   const [extracted, setExtracted] = useState<ExtractedTheme | null>(null);
   const [editedVars, setEditedVars] = useState<Record<string, string>>({});
@@ -271,11 +272,9 @@ export function ExtractTab({ onUseExtractedTheme, onSwitchTab, onShowToast }: Ex
     return [...known, ...extra];
   }, [editedVars]);
 
-  return (
-    <div className="h-full overflow-auto">
-      <div className="max-w-5xl mx-auto px-4 py-6 space-y-6">
-
-        {/* Header */}
+  const innerContent = (
+    <div className={embedded ? "space-y-4" : "max-w-5xl mx-auto px-4 py-6 space-y-6"}>
+      {!embedded && (
         <div>
           <p className="forge-eyebrow mb-1">Extract mode</p>
           <h2 className="text-base font-semibold text-foreground leading-snug">
@@ -288,8 +287,9 @@ export function ExtractTab({ onUseExtractedTheme, onSwitchTab, onShowToast }: Ex
             editable swatches, then lets you load the result into Apply mode.
           </p>
         </div>
+      )}
 
-        {/* Input area */}
+      {/* Input area */}
         <div className="space-y-3">
           <label className="forge-eyebrow" htmlFor="extract-paste-area">
             Paste your themed diagram
@@ -558,8 +558,9 @@ export function ExtractTab({ onUseExtractedTheme, onSwitchTab, onShowToast }: Ex
           </div>
         )}
       </div>
-    </div>
   );
+  if (embedded) return innerContent;
+  return <div className="h-full overflow-auto">{innerContent}</div>;
 }
 
 interface ClassDefListProps {

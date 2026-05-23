@@ -14,7 +14,6 @@ import { ApplyTab } from "@/pages/tabs/ApplyTab";
 import { ComposeTab } from "@/pages/tabs/ComposeTab";
 import { ExamplesTab } from "@/pages/tabs/ExamplesTab";
 import { ReferenceTab } from "@/pages/tabs/ReferenceTab";
-import { ExtractTab } from "@/pages/tabs/ExtractTab";
 import {
   loadPersistedState,
   savePersistedState,
@@ -31,7 +30,7 @@ import {
   hasExtractableTheme,
 } from "@/lib/extractor";
 
-export type AppTab = "apply" | "compose" | "examples" | "reference" | "extract";
+export type AppTab = "apply" | "compose" | "examples" | "reference";
 
 class ErrorBoundary extends Component<
   { children: ReactNode },
@@ -106,19 +105,6 @@ const TAB_CONFIG: {
     icon: (
       <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
         <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-      </svg>
-    ),
-  },
-  {
-    id: "extract",
-    label: "Extract",
-    icon: (
-      <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
-        <path
-          fillRule="evenodd"
-          d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
-          clipRule="evenodd"
-        />
       </svg>
     ),
   },
@@ -256,7 +242,7 @@ function ThemeModeToggle({ mode, cycle, className }: { mode: ThemeMode; cycle: (
 export function AppShell() {
   const [activeTab, setActiveTab] = useState<AppTab>(() => {
     const h = window.location.hash.slice(1);
-    const TABS: AppTab[] = ["apply", "compose", "examples", "reference", "extract"];
+    const TABS: AppTab[] = ["apply", "compose", "examples", "reference"];
     return TABS.includes(h as AppTab) ? (h as AppTab) : "apply";
   });
   const [hydrated, setHydrated] = useState(false);
@@ -764,6 +750,8 @@ export function AppShell() {
             onTypographyChange={setTypography}
             rendererTarget={rendererTarget}
             onRendererTargetChange={setRendererTarget}
+            onUseExtractedTheme={handleUseExtractedTheme}
+            onSwitchTab={setActiveTab}
           />
         )}
         {activeTab === "examples" && (
@@ -776,13 +764,6 @@ export function AppShell() {
         )}
         {activeTab === "reference" && (
           <ReferenceTab selectedPalette={selectedPalette} supportsClassDef={supportsClassDef} inputCode={inputCode} />
-        )}
-        {activeTab === "extract" && (
-          <ExtractTab
-            onUseExtractedTheme={handleUseExtractedTheme}
-            onSwitchTab={setActiveTab}
-            onShowToast={showToast}
-          />
         )}
         </div>
       </main>

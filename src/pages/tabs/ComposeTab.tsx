@@ -14,6 +14,8 @@ import { ColorSwatch } from "@/components/ColorSwatch";
 import { PromptScaffoldModal } from "@/components/PromptScaffoldModal";
 import { GENERIC_EXAMPLE } from "@/data/examples";
 import { isExtractedPaletteId } from "@/lib/extractor";
+import { ExtractTab } from "@/pages/tabs/ExtractTab";
+import type { AppTab } from "@/App";
 import {
   paletteToPortableJson,
   parsePortablePalette,
@@ -128,6 +130,8 @@ interface ComposeTabProps {
   onTypographyChange: (t: TypographySettings) => void;
   rendererTarget: string;
   onRendererTargetChange: (v: string) => void;
+  onUseExtractedTheme: (palette: Palette, codeWithClassDefs?: string) => void;
+  onSwitchTab: (tab: AppTab) => void;
 }
 
 export function ComposeTab({
@@ -158,6 +162,8 @@ export function ComposeTab({
   onTypographyChange,
   rendererTarget,
   onRendererTargetChange,
+  onUseExtractedTheme,
+  onSwitchTab,
 }: ComposeTabProps) {
   const [copiedBootstrap, setCopiedBootstrap] = useState(false);
   const [copiedShare, setCopiedShare] = useState(false);
@@ -173,6 +179,7 @@ export function ComposeTab({
   const [typographyOpen, setTypographyOpen] = useState(false);
   const [myPalettesOpen, setMyPalettesOpen] = useState(false);
   const [bootstrapOpen, setBootstrapOpen] = useState(false);
+  const [extractOpen, setExtractOpen] = useState(false);
 
   const handleTypographyChangeWithClamp = useCallback(
     (proposed: TypographySettings) => {
@@ -800,7 +807,7 @@ export function ComposeTab({
           </div>
         </div>
 
-        <div className="p-3">
+        <div className="p-3 border-b border-border">
           <div className="flex items-center justify-between mb-1">
             <p className="forge-eyebrow">Bootstrap Export</p>
             <button
@@ -835,6 +842,29 @@ export function ComposeTab({
               Copy Prompt Scaffold
             </button>
           </div>
+          </div>
+        </div>
+
+        <div className="p-3">
+          <div className="flex items-center justify-between mb-1">
+            <p className="forge-eyebrow">Extract Theme</p>
+            <button
+              type="button"
+              onClick={() => setExtractOpen(v => !v)}
+              className="p-0.5 text-muted-foreground"
+              aria-expanded={extractOpen}
+              aria-label="Toggle Extract Theme"
+            >
+              <svg viewBox="0 0 12 12" fill="currentColor" className={`w-3.5 h-3.5 transition-transform ${extractOpen ? "rotate-180" : ""}`} aria-hidden="true"><path d="M3 4.5l3 3 3-3z" /></svg>
+            </button>
+          </div>
+          <div className={`${extractOpen ? "" : "hidden"}`}>
+            <ExtractTab
+              embedded
+              onUseExtractedTheme={onUseExtractedTheme}
+              onSwitchTab={onSwitchTab}
+              onShowToast={onShowToast}
+            />
           </div>
         </div>
       </div>
