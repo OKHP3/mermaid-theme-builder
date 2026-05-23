@@ -9,6 +9,8 @@ import {
 
 interface FamilySyntaxHintProps {
   family: DiagramFamily;
+  resetToken?: number;
+  onDismiss?: () => void;
 }
 
 const CLASSDEF_LABEL: Record<ClassDefStatus, string> = {
@@ -23,7 +25,7 @@ const CLASSDEF_CLASSES: Record<ClassDefStatus, string> = {
   limited: "bg-amber-500/12 text-amber-700 dark:text-amber-400 border-amber-500/30",
 };
 
-export function FamilySyntaxHint({ family }: FamilySyntaxHintProps) {
+export function FamilySyntaxHint({ family, resetToken, onDismiss }: FamilySyntaxHintProps) {
   const hint = getFamilySyntaxHint(family);
 
   const [dismissed, setDismissed] = useState<boolean>(() => {
@@ -34,13 +36,14 @@ export function FamilySyntaxHint({ family }: FamilySyntaxHintProps) {
   useEffect(() => {
     if (!hint) return;
     setDismissed(isHintDismissed(family));
-  }, [family, hint]);
+  }, [family, hint, resetToken]);
 
   if (!hint || dismissed) return null;
 
   const handleDismiss = () => {
     dismissHint(family);
     setDismissed(true);
+    onDismiss?.();
   };
 
   return (

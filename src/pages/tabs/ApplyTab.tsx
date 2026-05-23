@@ -36,6 +36,11 @@ import { openInLiveEditor } from "@/lib/liveEditor";
 import { BRAND_EXAMPLES } from "@/data/examples";
 import { RENDERER_PROFILES, getRendererById } from "@/data/renderer-parity";
 import { FamilySyntaxHint } from "@/components/FamilySyntaxHint";
+import {
+  getFamilySyntaxHint,
+  isHintDismissed,
+  clearAllDismissals,
+} from "@/lib/familySyntaxHints";
 import { type TypographySettings } from "@/lib/typography";
 import type { AppTab } from "@/App";
 
@@ -142,6 +147,8 @@ export function ApplyTab({
   const [copiedType, setCopiedType] = useState<ExportType | null>(null);
   const [downloadingType, setDownloadingType] = useState<DownloadType | null>(null);
   const [advisoryDismissed, setAdvisoryDismissed] = useState(false);
+  const [hintResetToken, setHintResetToken] = useState(0);
+  const [familyHintDismissed, setFamilyHintDismissed] = useState(false);
 
   const rendererProfile = useMemo(() => getRendererById(rendererTarget), [rendererTarget]);
   const rendererLookWarning = useMemo((): string | null => {
@@ -267,6 +274,18 @@ export function ApplyTab({
       capability: cap ?? null,
     };
   }, [detection, familyOverride]);
+
+  // Track whether the current family's syntax hint is dismissed so we can
+  // offer a "Show tip" restore affordance. Re-evaluates when the family
+  // changes or when the user resets dismissals (hintResetToken increment).
+  useEffect(() => {
+    const hint = getFamilySyntaxHint(effectiveDetection.family);
+    if (!hint) {
+      setFamilyHintDismissed(true);
+      return;
+    }
+    setFamilyHintDismissed(isHintDismissed(effectiveDetection.family));
+  }, [effectiveDetection.family, hintResetToken]);
 
   const exportAdvisories = useMemo((): string[] => {
     if (!inputCode.trim() || !rendererTarget) return [];
@@ -788,7 +807,30 @@ export function ApplyTab({
         </div>
       )}
 
-      <FamilySyntaxHint family={effectiveDetection.family} />
+      <FamilySyntaxHint
+        family={effectiveDetection.family}
+        resetToken={hintResetToken}
+        onDismiss={() => setFamilyHintDismissed(true)}
+      />
+      {familyHintDismissed && getFamilySyntaxHint(effectiveDetection.family) && (
+        <div className="flex-none border-b border-border/40 bg-transparent px-3 py-1 print-hide flex items-center justify-end">
+          <button
+            type="button"
+            onClick={() => {
+              clearAllDismissals();
+              setHintResetToken((t) => t + 1);
+              setFamilyHintDismissed(false);
+            }}
+            className="text-[10px] text-muted-foreground/50 hover:text-sky-500 dark:hover:text-sky-400 transition-colors inline-flex items-center gap-1"
+            aria-label="Show syntax tip for this diagram type"
+          >
+            <svg viewBox="0 0 16 16" fill="currentColor" className="w-3 h-3" aria-hidden="true">
+              <path d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM0 8a8 8 0 1116 0A8 8 0 010 8zm6.5-1.5A.75.75 0 017.25 6h1a.75.75 0 01.75.75v3.75h.25a.75.75 0 010 1.5h-2a.75.75 0 010-1.5h.25V7.5h-.25a.75.75 0 01-.75-.75zM8 4a1 1 0 110 2 1 1 0 010-2z" />
+            </svg>
+            Show syntax tip
+          </button>
+        </div>
+      )}
 
       <div className="md:flex-1 md:overflow-hidden flex flex-col md:flex-row md:min-h-0">
         <div className="flex flex-col md:flex-none md:w-[35%] border-b md:border-b-0 md:border-r border-border md:min-h-0 print-hide">
