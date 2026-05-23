@@ -425,7 +425,7 @@ export function ComposeTab({
               <button
                 type="button"
                 onClick={() => setColorsOpen(v => !v)}
-                className="md:hidden p-0.5 text-muted-foreground"
+                className="p-0.5 text-muted-foreground"
                 aria-expanded={colorsOpen}
                 aria-label="Toggle Colors"
               >
@@ -433,7 +433,7 @@ export function ComposeTab({
               </button>
             </div>
           </div>
-          <div className={`md:block ${colorsOpen ? "" : "hidden"}`}>
+          <div className={`${colorsOpen ? "" : "hidden"}`}>
             <p className="text-xs text-muted-foreground mb-2 leading-relaxed">
               {selectedPalette.description}
             </p>
@@ -457,14 +457,14 @@ export function ComposeTab({
             <button
               type="button"
               onClick={() => setSettingsOpen(v => !v)}
-              className="md:hidden p-0.5 text-muted-foreground"
+              className="p-0.5 text-muted-foreground"
               aria-expanded={settingsOpen}
               aria-label="Toggle Settings"
             >
               <svg viewBox="0 0 12 12" fill="currentColor" className={`w-3.5 h-3.5 transition-transform ${settingsOpen ? "rotate-180" : ""}`} aria-hidden="true"><path d="M3 4.5l3 3 3-3z" /></svg>
             </button>
           </div>
-          <div className={`md:block ${settingsOpen ? "" : "hidden"}`}>
+          <div className={`${settingsOpen ? "" : "hidden"}`}>
           <div className="space-y-3">
             <div>
               <label className="text-xs font-medium text-foreground block mb-1.5">Look</label>
@@ -554,7 +554,7 @@ export function ComposeTab({
               <button
                 type="button"
                 onClick={() => setTypographyOpen(v => !v)}
-                className="md:hidden p-0.5 text-muted-foreground"
+                className="p-0.5 text-muted-foreground"
                 aria-expanded={typographyOpen}
                 aria-label="Toggle Typography"
               >
@@ -562,7 +562,7 @@ export function ComposeTab({
               </button>
             </div>
           </div>
-          <div className={`md:block ${typographyOpen ? "" : "hidden"}`}>
+          <div className={`${typographyOpen ? "" : "hidden"}`}>
           <div className="mb-3">
             <label className="text-xs font-medium text-foreground block mb-1">Diagram body font</label>
             <FontFamilySelect
@@ -741,14 +741,14 @@ export function ComposeTab({
             <button
               type="button"
               onClick={() => setMyPalettesOpen(v => !v)}
-              className="md:hidden p-0.5 text-muted-foreground"
+              className="p-0.5 text-muted-foreground"
               aria-expanded={myPalettesOpen}
               aria-label="Toggle My Palettes"
             >
               <svg viewBox="0 0 12 12" fill="currentColor" className={`w-3.5 h-3.5 transition-transform ${myPalettesOpen ? "rotate-180" : ""}`} aria-hidden="true"><path d="M3 4.5l3 3 3-3z" /></svg>
             </button>
           </div>
-          <div className={`md:block ${myPalettesOpen ? "" : "hidden"}`}>
+          <div className={`${myPalettesOpen ? "" : "hidden"}`}>
           <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
             Save the current colors as a named palette, share it via URL, or import/export JSON.
           </p>
@@ -806,14 +806,14 @@ export function ComposeTab({
             <button
               type="button"
               onClick={() => setBootstrapOpen(v => !v)}
-              className="md:hidden p-0.5 text-muted-foreground"
+              className="p-0.5 text-muted-foreground"
               aria-expanded={bootstrapOpen}
               aria-label="Toggle Bootstrap Export"
             >
               <svg viewBox="0 0 12 12" fill="currentColor" className={`w-3.5 h-3.5 transition-transform ${bootstrapOpen ? "rotate-180" : ""}`} aria-hidden="true"><path d="M3 4.5l3 3 3-3z" /></svg>
             </button>
           </div>
-          <div className={`md:block ${bootstrapOpen ? "" : "hidden"}`}>
+          <div className={`${bootstrapOpen ? "" : "hidden"}`}>
           <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
             Paste into your AI before generating diagrams to pre-load the theme.
           </p>
