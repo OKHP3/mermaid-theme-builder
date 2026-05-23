@@ -5,7 +5,6 @@ import { DiffView } from "@/components/DiffView";
 import { MermaidPreview } from "@/components/MermaidPreview";
 import {
   extractTheme,
-  paletteFromExtracted,
   makeExtractedPaletteId,
   type ExtractedTheme,
   type ExtractedClassDef,
@@ -50,8 +49,50 @@ function labelForKey(key: string): string {
   return KEY_LABELS[key] ?? key;
 }
 
+/**
+ * Re-serialize a classDef entry back into `key:value,...` style string.
+ * Only emits properties that are present (non-empty).
+ */
+function serializeClassDef(def: ExtractedClassDef): string {
+  const parts: string[] = [];
+  if (def.fill) parts.push(`fill:${def.fill}`);
+  if (def.stroke) parts.push(`stroke:${def.stroke}`);
+  if (def.color) parts.push(`color:${def.color}`);
+  if (def.strokeWidth) parts.push(`stroke-width:${def.strokeWidth}`);
+  return parts.join(",");
+}
+
+/**
+ * Strip the %%{init}%% directive and YAML frontmatter from code so the Apply
+ * tab can receive clean diagram source and add its own theme directive.
+ */
+function stripThemeDirective(code: string): string {
+  let result = code.replace(/^\s*%%\s*\{[\s\S]*?init\s*:[\s\S]*?\}\s*%%\s*\n?/m, "");
+  result = result.replace(/^---\s*\n[\s\S]*?\n---\s*\n?/, "");
+  return result.trimStart();
+}
+
+/**
+ * Replace every `classDef <name> <styles>` line in `code` with the edited
+ * version from `edits`. Lines whose name is not in `edits` are left unchanged.
+ */
+function applyEditedClassDefs(
+  code: string,
+  edits: Record<string, ExtractedClassDef>,
+): string {
+  return code.replace(
+    /^(\s*classDef\s+)([A-Za-z_][\w-]*)(\s+[^\n]+)$/gm,
+    (match, prefix: string, name: string) => {
+      const edit = edits[name];
+      if (!edit) return match;
+      const serialized = serializeClassDef(edit);
+      return serialized ? `${prefix}${name} ${serialized}` : match;
+    },
+  );
+}
+
 interface ExtractTabProps {
-  onUseExtractedTheme: (palette: Palette) => void;
+  onUseExtractedTheme: (palette: Palette, codeWithClassDefs?: string) => void;
   onSwitchTab: (tab: AppTab) => void;
   onShowToast: (msg: string) => void;
 }
@@ -62,6 +103,7 @@ export function ExtractTab({ onUseExtractedTheme, onSwitchTab, onShowToast }: Ex
   const [pastedCode, setPastedCode] = useState("");
   const [extracted, setExtracted] = useState<ExtractedTheme | null>(null);
   const [editedVars, setEditedVars] = useState<Record<string, string>>({});
+  const [editedClassDefs, setEditedClassDefs] = useState<Record<string, ExtractedClassDef>>({});
   const [status, setStatus] = useState<ExtractStatus>("idle");
   const [previewMode, setPreviewMode] = useState<"preview" | "diff">("preview");
   const [themeName, setThemeName] = useState("Extracted theme");
@@ -74,9 +116,15 @@ export function ExtractTab({ onUseExtractedTheme, onSwitchTab, onShowToast }: Ex
     const hasVars = Object.keys(result.themeVariables).length > 0;
     const hasDefs = result.classDefs.length > 0;
 
+    const defsMap: Record<string, ExtractedClassDef> = {};
+    result.classDefs.forEach((d) => {
+      defsMap[d.name] = { ...d };
+    });
+
     if (!hasVars && !hasDefs && result.sourceFormat === "none") {
       setExtracted(null);
       setEditedVars({});
+      setEditedClassDefs({});
       setStatus("empty");
       return;
     }
@@ -84,18 +132,30 @@ export function ExtractTab({ onUseExtractedTheme, onSwitchTab, onShowToast }: Ex
     if (!hasVars && result.sourceFormat !== "none") {
       setExtracted(result);
       setEditedVars({});
+      setEditedClassDefs(defsMap);
       setStatus("no-vars");
       return;
     }
 
     setExtracted(result);
     setEditedVars({ ...result.themeVariables });
+    setEditedClassDefs(defsMap);
     setStatus("found");
   }, [pastedCode]);
 
   const handleVarChange = useCallback((key: string, value: string) => {
     setEditedVars((prev) => ({ ...prev, [key]: value }));
   }, []);
+
+  const handleClassDefChange = useCallback(
+    (name: string, prop: "fill" | "stroke" | "color", value: string) => {
+      setEditedClassDefs((prev) => ({
+        ...prev,
+        [name]: { ...prev[name], [prop]: value },
+      }));
+    },
+    [],
+  );
 
   const effectivePalette = useMemo((): Palette | null => {
     if (!extracted || status !== "found") return null;
@@ -131,28 +191,38 @@ export function ExtractTab({ onUseExtractedTheme, onSwitchTab, onShowToast }: Ex
 
   const rethemedCode = useMemo(() => {
     if (!effectivePalette || !pastedCode.trim()) return "";
-    const detection = detectDiagram(pastedCode);
-    return generateThemedCode(pastedCode, {
+    const codeWithClassDefs = applyEditedClassDefs(pastedCode, editedClassDefs);
+    const detection = detectDiagram(codeWithClassDefs);
+    return generateThemedCode(codeWithClassDefs, {
       palette: effectivePalette,
       diagramFamily: detection.family,
       includeMetaComments: false,
       includeBadge: false,
     });
-  }, [effectivePalette, pastedCode]);
+  }, [effectivePalette, pastedCode, editedClassDefs]);
 
   const handleUseTheme = useCallback(() => {
     if (!effectivePalette) return;
     const name = themeName.trim() || "Extracted theme";
     const finalPalette: Palette = { ...effectivePalette, name };
-    onUseExtractedTheme(finalPalette);
-    onShowToast(`Loaded "${name}" — edit colors in the Apply or Compose tab`);
+    const hasClassDefs = Object.keys(editedClassDefs).length > 0;
+    const codeForApply = hasClassDefs
+      ? applyEditedClassDefs(stripThemeDirective(pastedCode), editedClassDefs)
+      : undefined;
+    onUseExtractedTheme(finalPalette, codeForApply);
+    onShowToast(
+      hasClassDefs
+        ? `Loaded "${name}" — ${Object.keys(editedClassDefs).length} classDef override${Object.keys(editedClassDefs).length !== 1 ? "s" : ""} applied to Apply tab code`
+        : `Loaded "${name}" — edit colors in the Apply or Compose tab`,
+    );
     onSwitchTab("apply");
-  }, [effectivePalette, themeName, onUseExtractedTheme, onShowToast, onSwitchTab]);
+  }, [effectivePalette, themeName, editedClassDefs, pastedCode, onUseExtractedTheme, onShowToast, onSwitchTab]);
 
   const handleClearAll = useCallback(() => {
     setPastedCode("");
     setExtracted(null);
     setEditedVars({});
+    setEditedClassDefs({});
     setStatus("idle");
     setThemeName("Extracted theme");
     setPreviewMode("preview");
@@ -301,13 +371,16 @@ export function ExtractTab({ onUseExtractedTheme, onSwitchTab, onShowToast }: Ex
                   {extracted.themeName ? ` (theme: ${extracted.themeName})` : ""}, but it contains no
                   color or font themeVariables to extract.
                   {extracted.classDefs.length > 0
-                    ? " ClassDef colors were detected — see below."
+                    ? " ClassDef colors were detected — edit them below."
                     : " Try pasting a diagram with an explicit themeVariables block."}
                 </p>
               </div>
             </div>
             {extracted.classDefs.length > 0 && (
-              <ClassDefList classDefs={extracted.classDefs} />
+              <ClassDefList
+                classDefs={editedClassDefs}
+                onChange={handleClassDefChange}
+              />
             )}
           </div>
         )}
@@ -353,7 +426,10 @@ export function ExtractTab({ onUseExtractedTheme, onSwitchTab, onShowToast }: Ex
                 </div>
 
                 {extracted.classDefs.length > 0 && (
-                  <ClassDefList classDefs={extracted.classDefs} />
+                  <ClassDefList
+                    classDefs={editedClassDefs}
+                    onChange={handleClassDefChange}
+                  />
                 )}
 
                 {/* Theme name + use action */}
@@ -382,6 +458,9 @@ export function ExtractTab({ onUseExtractedTheme, onSwitchTab, onShowToast }: Ex
                   <p className="text-[10px] text-muted-foreground leading-snug">
                     The extracted colors become the active palette. You can then edit
                     individual swatches in Apply or Compose, and re-export.
+                    {extracted.classDefs.length > 0 && (
+                      <> Your classDef color edits are already baked into the re-themed code shown in the preview — copy it from there to use in your diagram.</>
+                    )}
                   </p>
                 </div>
               </div>
@@ -444,58 +523,72 @@ export function ExtractTab({ onUseExtractedTheme, onSwitchTab, onShowToast }: Ex
   );
 }
 
-function ClassDefList({ classDefs }: { classDefs: ExtractedClassDef[] }) {
+interface ClassDefListProps {
+  classDefs: Record<string, ExtractedClassDef>;
+  onChange: (name: string, prop: "fill" | "stroke" | "color", value: string) => void;
+}
+
+function ClassDefList({ classDefs, onChange }: ClassDefListProps) {
+  const entries = Object.values(classDefs);
+  if (entries.length === 0) return null;
+
   return (
     <div>
-      <p className="forge-eyebrow mb-2">Detected class colors</p>
+      <p className="forge-eyebrow mb-3">Extracted class colors</p>
       <div className="rounded-lg border border-border bg-card divide-y divide-border">
-        {classDefs.map((def) => (
-          <div key={def.name} className="px-3 py-2.5">
-            <p className="text-xs font-mono font-medium text-foreground mb-1.5">.{def.name}</p>
-            <div className="flex flex-wrap gap-3">
-              {def.fill && (
-                <ColorChip label="fill" value={def.fill} />
-              )}
-              {def.stroke && (
-                <ColorChip label="stroke" value={def.stroke} />
-              )}
-              {def.color && (
-                <ColorChip label="color" value={def.color} />
-              )}
-              {def.strokeWidth && (
-                <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground">
-                  <span className="font-mono">stroke-width:</span>
-                  <span className="font-mono text-foreground">{def.strokeWidth}</span>
-                </span>
-              )}
-              {!def.fill && !def.stroke && !def.color && !def.strokeWidth && (
-                <span className="text-[10px] text-muted-foreground italic">No color properties</span>
-              )}
-            </div>
-          </div>
+        {entries.map((def) => (
+          <ClassDefRow key={def.name} def={def} onChange={onChange} />
         ))}
       </div>
       <p className="text-[10px] text-muted-foreground mt-1.5 leading-snug">
-        ClassDef colors are read-only in Extract mode. After using this theme, you can add or
-        edit classDef rules directly in your diagram code.
+        Edit classDef swatches to adjust per-node colors. Changes are reflected in the re-themed preview and diff.
       </p>
     </div>
   );
 }
 
-function ColorChip({ label, value }: { label: string; value: string }) {
-  const isHex = /^#[0-9a-fA-F]{3,8}$/.test(value);
+interface ClassDefRowProps {
+  def: ExtractedClassDef;
+  onChange: (name: string, prop: "fill" | "stroke" | "color", value: string) => void;
+}
+
+function ClassDefRow({ def, onChange }: ClassDefRowProps) {
+  const hasColors = def.fill !== undefined || def.stroke !== undefined || def.color !== undefined;
+
   return (
-    <span className="inline-flex items-center gap-1.5 text-[10px]">
-      {isHex && (
-        <span
-          className="inline-block w-3.5 h-3.5 rounded-sm border border-border shrink-0"
-          style={{ backgroundColor: value }}
-          aria-hidden="true"
-        />
+    <div className="px-3 py-2.5 space-y-0.5">
+      <div className="flex items-center gap-2 mb-1">
+        <span className="text-xs font-mono font-semibold text-foreground">.{def.name}</span>
+        {def.strokeWidth && (
+          <span className="text-[10px] text-muted-foreground font-mono">
+            stroke-width: {def.strokeWidth}
+          </span>
+        )}
+      </div>
+      {hasColors ? (
+        <div className="space-y-0">
+          {def.fill !== undefined && (
+            <ColorSwatch
+              color={{ key: `${def.name}.fill`, label: "fill", value: def.fill }}
+              onChange={(_key, val) => onChange(def.name, "fill", val)}
+            />
+          )}
+          {def.stroke !== undefined && (
+            <ColorSwatch
+              color={{ key: `${def.name}.stroke`, label: "stroke", value: def.stroke }}
+              onChange={(_key, val) => onChange(def.name, "stroke", val)}
+            />
+          )}
+          {def.color !== undefined && (
+            <ColorSwatch
+              color={{ key: `${def.name}.color`, label: "color", value: def.color }}
+              onChange={(_key, val) => onChange(def.name, "color", val)}
+            />
+          )}
+        </div>
+      ) : (
+        <span className="text-[10px] text-muted-foreground italic">No color properties</span>
       )}
-      <span className="text-muted-foreground font-mono">{label}:</span>
-      <span className="font-mono text-foreground">{value}</span>
-    </span>
+    </div>
   );
 }

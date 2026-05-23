@@ -527,8 +527,11 @@ function AppShell() {
     [inputCode],
   );
 
-  /** Extract tab: accept a pre-built Palette from the Extract tab and activate it. */
-  const handleUseExtractedTheme = useCallback((palette: Palette) => {
+  /** Extract tab: accept a pre-built Palette from the Extract tab and activate it.
+   *  When codeWithClassDefs is provided (classDef overrides were edited), populate
+   *  the Apply tab's input code so the overrides are immediately visible.
+   */
+  const handleUseExtractedTheme = useCallback((palette: Palette, codeWithClassDefs?: string) => {
     const taken = new Set<string>([
       ...BUILTIN_PALETTES.map((p) => p.id),
       ...userPalettes.map((p) => p.id),
@@ -538,6 +541,9 @@ function AppShell() {
     setUserPalettes((prev) => [...prev, safe]);
     setSelectedPaletteId(safeId);
     setCustomThemeName("");
+    if (codeWithClassDefs?.trim()) {
+      setInputCode(codeWithClassDefs);
+    }
   }, [userPalettes]);
 
   /** Theme C: save the current effective palette (with edits) as a named user palette. */

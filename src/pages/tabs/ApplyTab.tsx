@@ -841,6 +841,16 @@ export function ApplyTab({
 
       <div className="md:flex-1 md:overflow-hidden flex flex-col md:flex-row md:min-h-0">
         <div className="flex flex-col md:flex-none md:w-1/2 border-b md:border-b-0 md:border-r border-border md:min-h-0 print-hide">
+          {isExtracted && /^\s*classDef\s+/m.test(inputCode) && (
+            <div className="px-3 py-1.5 flex items-start gap-1.5 bg-primary/5 border-b border-primary/20">
+              <svg viewBox="0 0 16 16" fill="currentColor" className="w-3 h-3 text-primary shrink-0 mt-0.5" aria-hidden="true">
+                <path d="M8 1a7 7 0 100 14A7 7 0 008 1zm.75 10.5h-1.5v-5h1.5v5zm0-6.5h-1.5V3.5h1.5V5z" />
+              </svg>
+              <p className="text-[10px] text-primary/80 leading-snug">
+                classDef overrides from Extract are in this code — edit them here or re-extract to tweak further.
+              </p>
+            </div>
+          )}
           <div className="flex items-center justify-between px-3 py-1.5 border-b border-border bg-card/20 flex-none gap-2">
             <span className="text-xs font-medium text-muted-foreground">Diagram Code</span>
             <button
