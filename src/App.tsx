@@ -295,10 +295,13 @@ export function AppShell() {
       clearShareToken();
       didApplyShare = true;
 
-      // Validate the decoded palette keys so the amber banner can flag problems.
-      const presentKeys = new Set(palette.colors.map((c) => c.key));
-      const missingKeys = (REQUIRED_COLOR_KEYS as readonly string[]).filter((k) => !presentKeys.has(k));
-      const unknownKeys = palette.colors.map((c) => c.key).filter((k) => !KNOWN_COLOR_KEYS.has(k));
+      // Validate raw decoded keys BEFORE buildPaletteFromShare canonicalizes
+      // them onto BRAND_PALETTES[0]. After canonicalization every required key
+      // is present regardless of what the sharer sent, so the check must run
+      // on the original themeVariables payload.
+      const sharedKeys = new Set(Object.keys(share.themeVariables));
+      const missingKeys = (REQUIRED_COLOR_KEYS as readonly string[]).filter((k) => !sharedKeys.has(k));
+      const unknownKeys = Object.keys(share.themeVariables).filter((k) => !KNOWN_COLOR_KEYS.has(k));
       if (missingKeys.length > 0 || unknownKeys.length > 0) {
         setImportDiagnostics({ missingKeys, unknownKeys });
       }
