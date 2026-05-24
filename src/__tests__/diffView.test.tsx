@@ -95,9 +95,9 @@ describe("DiffView — no changes (original equals themed)", () => {
     expect(screen.getByText(/no changes/i)).toBeTruthy();
   });
 
-  it("the no-changes message mentions selecting a palette", () => {
+  it("the no-changes message mentions picking a palette", () => {
     render(createElement(DiffView, { oldText: SIMPLE_DIAGRAM, newText: SIMPLE_DIAGRAM }));
-    expect(screen.getByText(/select a palette/i)).toBeTruthy();
+    expect(screen.getByText(/pick a palette/i)).toBeTruthy();
   });
 
   it("does not render the diff table when there are no changes", () => {
