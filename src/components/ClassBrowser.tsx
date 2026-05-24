@@ -339,6 +339,17 @@ export function ClassBrowser({ classDefs, supportsClassDef = true, usedClassName
   }, [classDefs, usedClassNames]);
 
   const hasUsed = (usedClassNames?.size ?? 0) > 0;
+
+  // Class names referenced via :::name in the diagram that have no matching
+  // classDef in the current palette. Only meaningful when classDef is supported.
+  const unknownClassNames = useMemo<string[]>(() => {
+    if (!usedClassNames || usedClassNames.size === 0 || !supportsClassDef) return [];
+    const definedNames = new Set(classDefs.map((d) => d.name));
+    return Array.from(usedClassNames)
+      .filter((name) => !definedNames.has(name))
+      .sort();
+  }, [usedClassNames, classDefs, supportsClassDef]);
+
   const activePreviewBlock = previewMode === "used" && hasUsed ? usedPreviewBlock : previewBlock;
   // Derive count directly from the block so the header always reflects the exact
   // content that will be copied — never an independently-maintained variable.
@@ -552,6 +563,29 @@ export function ClassBrowser({ classDefs, supportsClassDef = true, usedClassName
             <span className="font-semibold">classDef styles don't apply to this diagram type.</span>{" "}
             Switch to a flowchart, class, state, or block diagram to use these{" "}
             <span className="font-mono">:::className</span> tokens.
+          </span>
+        </div>
+      )}
+
+      {unknownClassNames.length > 0 && (
+        <div
+          role="alert"
+          className="mb-3 flex items-start gap-2 rounded-md border border-amber-500/30 bg-amber-500/8 px-3 py-2.5 text-[11px] text-amber-700 dark:text-amber-400"
+        >
+          <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 mt-0.5 shrink-0 opacity-80" aria-hidden="true">
+            <path fillRule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+          </svg>
+          <span>
+            <span className="font-semibold">
+              {`Unrecognized class ${unknownClassNames.length === 1 ? "name" : "names"}:`}
+            </span>{" "}
+            {unknownClassNames.map((n, i) => (
+              <span key={n}>
+                <span className="font-mono">{`:::${n}`}</span>
+                {i < unknownClassNames.length - 1 && ", "}
+              </span>
+            ))}
+            {" "}— not defined in the current palette. Check for typos.
           </span>
         </div>
       )}

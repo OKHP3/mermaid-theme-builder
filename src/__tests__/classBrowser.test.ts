@@ -367,3 +367,107 @@ describe("ClassBrowser — Copy used button", () => {
     expect(html).toContain("border-emerald-500");
   });
 });
+
+describe("ClassBrowser — unrecognized class name warning", () => {
+  it("shows warning when a used class name has no matching classDef", () => {
+    const html = render({
+      supportsClassDef: true,
+      usedClassNames: new Set(["typo"]),
+    });
+    expect(html).toContain("Unrecognized class name");
+  });
+
+  it("lists the unrecognized name with ::: prefix in the warning", () => {
+    const html = render({
+      supportsClassDef: true,
+      usedClassNames: new Set(["typo"]),
+    });
+    expect(html).toContain(":::typo");
+  });
+
+  it("includes 'Check for typos' copy in the warning", () => {
+    const html = render({
+      supportsClassDef: true,
+      usedClassNames: new Set(["typo"]),
+    });
+    expect(html).toContain("Check for typos");
+  });
+
+  it("warning has role='alert' for screen reader accessibility", () => {
+    const html = render({
+      supportsClassDef: true,
+      usedClassNames: new Set(["typo"]),
+    });
+    expect(html).toContain('role="alert"');
+  });
+
+  it("uses plural 'names' heading when multiple unrecognized names are present", () => {
+    const html = render({
+      supportsClassDef: true,
+      usedClassNames: new Set(["typo", "misspelled"]),
+    });
+    expect(html).toContain("Unrecognized class names");
+  });
+
+  it("uses singular 'name' heading when exactly one unrecognized name is present", () => {
+    const html = render({
+      supportsClassDef: true,
+      usedClassNames: new Set(["typo"]),
+    });
+    expect(html).toContain("Unrecognized class name:");
+    expect(html).not.toContain("Unrecognized class names:");
+  });
+
+  it("lists all unrecognized names when multiple are present", () => {
+    const html = render({
+      supportsClassDef: true,
+      usedClassNames: new Set(["typo", "misspelled"]),
+    });
+    expect(html).toContain(":::typo");
+    expect(html).toContain(":::misspelled");
+  });
+
+  it("does NOT show warning when all used class names match classDefs", () => {
+    const html = render({
+      supportsClassDef: true,
+      usedClassNames: new Set(["primary", "secondary"]),
+    });
+    expect(html).not.toContain("Unrecognized class");
+    expect(html).not.toContain("Check for typos");
+  });
+
+  it("does NOT show warning when usedClassNames is empty", () => {
+    const html = render({
+      supportsClassDef: true,
+      usedClassNames: new Set(),
+    });
+    expect(html).not.toContain("Unrecognized class");
+  });
+
+  it("does NOT show warning when usedClassNames is omitted", () => {
+    const html = render({ supportsClassDef: true });
+    expect(html).not.toContain("Unrecognized class");
+  });
+
+  it("does NOT show warning when supportsClassDef={false} even if used names are unrecognized", () => {
+    const html = render({
+      supportsClassDef: false,
+      usedClassNames: new Set(["typo"]),
+    });
+    expect(html).not.toContain("Unrecognized class");
+    expect(html).not.toContain("Check for typos");
+  });
+
+  it("shows warning only for the unrecognized subset when some names match and some do not", () => {
+    const html = render({
+      supportsClassDef: true,
+      usedClassNames: new Set(["primary", "ghost"]),
+    });
+    expect(html).toContain("Unrecognized class name:");
+    // Scope assertions to the alert banner only — the card grid also contains
+    // :::primary in its title attributes, so checking the full HTML is too broad.
+    const alertSection = html.split('role="alert"')[1]?.split("</div>")[0] ?? "";
+    expect(alertSection).toContain(":::ghost");
+    expect(alertSection).not.toContain(":::primary");
+  });
+});
