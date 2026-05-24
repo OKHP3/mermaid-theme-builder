@@ -1303,4 +1303,81 @@ describe("sequence.fontSize sync rule", () => {
     // Without typography, sequence config block must not appear
     expect(result).not.toContain('"sequence"');
   });
+
+  it("both themeVariables.fontSize and sequence.fontSize agree for DEFAULT_TYPOGRAPHY nodeLabel (14px, no override)", () => {
+    // DEFAULT_TYPOGRAPHY.nodeLabel.fontSize is 14. Without an explicit fontSize
+    // override both the themeVariable string and the sequence numeric must be 14.
+    const result = generateThemedCode(SEQUENCE_DIAGRAM, {
+      ...BASE_OPTIONS,
+      diagramFamily: "sequenceDiagram",
+      typography: DEFAULT_TYPOGRAPHY,
+    });
+    expect(result).toContain('"fontSize": "14px"');
+    const seqMatch = result.match(/"sequence":\s*\{"fontSize":\s*(\d+)\}/);
+    expect(seqMatch).not.toBeNull();
+    expect(Number(seqMatch![1])).toBe(14);
+  });
+
+  it("override lower than typography wins both fields (explicit 12px beats 18px typography)", () => {
+    // Explicit fontSize is the highest-priority source. Even when the override
+    // is smaller than the typography value, both fields must use the override.
+    const typography18 = { ...DEFAULT_TYPOGRAPHY, nodeLabel: { fontSize: 18, fontFamily: "" } };
+    const result = generateThemedCode(SEQUENCE_DIAGRAM, {
+      ...BASE_OPTIONS,
+      diagramFamily: "sequenceDiagram",
+      typography: typography18,
+      fontSize: "12px",
+    });
+    expect(result).toContain('"fontSize": "12px"');
+    expect(result).not.toContain('"fontSize": "18px"');
+    const seqMatch = result.match(/"sequence":\s*\{"fontSize":\s*(\d+)\}/);
+    expect(seqMatch).not.toBeNull();
+    expect(Number(seqMatch![1])).toBe(12);
+  });
+
+  it("override equal to typography value: both fields still agree (no spurious mismatch)", () => {
+    // Edge case: explicit override happens to equal the typography-derived value.
+    // Result should be identical to the no-override case — no split-brain.
+    const typography14 = { ...DEFAULT_TYPOGRAPHY, nodeLabel: { fontSize: 14, fontFamily: "" } };
+    const result = generateThemedCode(SEQUENCE_DIAGRAM, {
+      ...BASE_OPTIONS,
+      diagramFamily: "sequenceDiagram",
+      typography: typography14,
+      fontSize: "14px",
+    });
+    expect(result).toContain('"fontSize": "14px"');
+    const seqMatch = result.match(/"sequence":\s*\{"fontSize":\s*(\d+)\}/);
+    expect(seqMatch).not.toBeNull();
+    expect(Number(seqMatch![1])).toBe(14);
+  });
+
+  it("no-drift across multiple (typography, override) combinations", () => {
+    // Parameterized sweep: for each pair both fields must carry the same numeric
+    // value (override when present, typography otherwise).
+    const cases: Array<{ typographySize: number; override?: string; expectedSize: number }> = [
+      { typographySize: 12, override: "16px",  expectedSize: 16 },
+      { typographySize: 20, override: "14px",  expectedSize: 14 },
+      { typographySize: 18, override: "18px",  expectedSize: 18 },
+      { typographySize: 16, override: undefined, expectedSize: 16 },
+      { typographySize: 10, override: "24px",  expectedSize: 24 },
+    ];
+
+    for (const { typographySize, override, expectedSize } of cases) {
+      const typography = { ...DEFAULT_TYPOGRAPHY, nodeLabel: { fontSize: typographySize, fontFamily: "" } };
+      const result = generateThemedCode(SEQUENCE_DIAGRAM, {
+        ...BASE_OPTIONS,
+        diagramFamily: "sequenceDiagram",
+        typography,
+        ...(override ? { fontSize: override } : {}),
+      });
+
+      // themeVariables.fontSize string
+      expect(result).toContain(`"fontSize": "${expectedSize}px"`);
+
+      // sequence.fontSize numeric
+      const seqMatch = result.match(/"sequence":\s*\{"fontSize":\s*(\d+)\}/);
+      expect(seqMatch, `no sequence block for typography=${typographySize} override=${override}`).not.toBeNull();
+      expect(Number(seqMatch![1]), `drift for typography=${typographySize} override=${override}`).toBe(expectedSize);
+    }
+  });
 });
