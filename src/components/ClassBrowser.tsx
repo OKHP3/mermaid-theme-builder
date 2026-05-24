@@ -15,7 +15,7 @@ const HL = {
   punct:   "#7a7060",   // dimmed — commas, colons, punctuation
 } as const;
 
-function highlightPropsSegment(props: string, baseKey: string): ReactNode[] {
+export function highlightPropsSegment(props: string, baseKey: string): ReactNode[] {
   const nodes: ReactNode[] = [];
   // Match key:value pairs separated by commas; values may include non-hex tokens
   const re = /([\w-]+)(:)(#[0-9a-fA-F]{3,8}|[\w.%-]+(?:\s+[\w.%-]+)*)/g;
@@ -52,7 +52,7 @@ function highlightPropsSegment(props: string, baseKey: string): ReactNode[] {
   return nodes;
 }
 
-function highlightClassDefLine(line: string, lineIdx: number): ReactNode {
+export function highlightClassDefLine(line: string, lineIdx: number): ReactNode {
   try {
     // Expected format: classDef <name> key:val,key:val,...
     const m = line.match(/^(classDef)(\s+)(\S+)(\s+)(.+)$/);
@@ -75,7 +75,7 @@ function highlightClassDefLine(line: string, lineIdx: number): ReactNode {
   }
 }
 
-function highlightClassDefBlock(text: string): ReactNode {
+export function highlightClassDefBlock(text: string): ReactNode {
   const lines = text.split("\n");
   return lines.map((line, i) => (
     <span key={i}>

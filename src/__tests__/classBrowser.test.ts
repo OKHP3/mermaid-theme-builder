@@ -1,7 +1,12 @@
 import { describe, it, expect } from "vitest";
 import { createElement } from "react";
 import { renderToString } from "react-dom/server";
-import { ClassBrowser } from "@/components/ClassBrowser";
+import {
+  ClassBrowser,
+  highlightPropsSegment,
+  highlightClassDefLine,
+  highlightClassDefBlock,
+} from "@/components/ClassBrowser";
 import type { ClassDef } from "@/lib/themeEngine";
 
 /**
@@ -469,5 +474,397 @@ describe("ClassBrowser — unrecognized class name warning", () => {
     const alertSection = html.split('role="alert"')[1]?.split("</div>")[0] ?? "";
     expect(alertSection).toContain(":::ghost");
     expect(alertSection).not.toContain(":::primary");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Highlight functions — unit tests
+// These functions are exported from ClassBrowser.tsx specifically for testing.
+// renderToString converts their ReactNode output to HTML for assertion.
+// ---------------------------------------------------------------------------
+
+/** Render a single ReactNode (or array) to an HTML string. */
+function hl(node: import("react").ReactNode): string {
+  return renderToString(createElement("span", null, node));
+}
+
+/** Render highlightPropsSegment (returns ReactNode[]) to HTML. */
+function hlProps(props: string): string {
+  return renderToString(
+    createElement("span", null, ...highlightPropsSegment(props, "t")),
+  );
+}
+
+// ---------------------------------------------------------------------------
+// highlightClassDefLine
+// ---------------------------------------------------------------------------
+
+describe("highlightClassDefLine — keyword color", () => {
+  it("renders the 'classDef' keyword in rust-orange (#c46a2c)", () => {
+    const html = hl(highlightClassDefLine("classDef foo fill:#1e3a5f", 0));
+    expect(html).toContain("color:#c46a2c");
+    expect(html).toContain("classDef");
+  });
+
+  it("keyword color is distinct from the class name color", () => {
+    const html = hl(highlightClassDefLine("classDef myClass fill:#ffffff", 0));
+    expect(html).toContain("color:#c46a2c"); // keyword
+    expect(html).toContain("color:#e8d9c0"); // name — different span
+  });
+});
+
+describe("highlightClassDefLine — class name color", () => {
+  it("renders the class name in bright cream (#e8d9c0)", () => {
+    const html = hl(highlightClassDefLine("classDef primary fill:#1e3a5f", 0));
+    expect(html).toContain("color:#e8d9c0");
+    expect(html).toContain("primary");
+  });
+
+  it("class name with hyphen renders in cream (#e8d9c0)", () => {
+    const html = hl(
+      highlightClassDefLine("classDef my-class fill:#3b82f6", 0),
+    );
+    expect(html).toContain("color:#e8d9c0");
+    expect(html).toContain("my-class");
+  });
+});
+
+describe("highlightClassDefLine — property key color", () => {
+  it("renders 'fill' key in forge teal (#5fa89a)", () => {
+    const html = hl(highlightClassDefLine("classDef foo fill:#1e3a5f", 0));
+    expect(html).toContain("color:#5fa89a");
+    expect(html).toContain("fill");
+  });
+
+  it("renders 'stroke' key in forge teal (#5fa89a)", () => {
+    const html = hl(
+      highlightClassDefLine(
+        "classDef foo fill:#1e3a5f,stroke:#3b82f6",
+        0,
+      ),
+    );
+    const keyColorCount = (html.match(/color:#5fa89a/g) ?? []).length;
+    // Two property keys: fill and stroke
+    expect(keyColorCount).toBeGreaterThanOrEqual(2);
+  });
+
+  it("renders 'color' key in forge teal (#5fa89a)", () => {
+    const html = hl(
+      highlightClassDefLine("classDef foo color:#ffffff", 0),
+    );
+    expect(html).toContain("color:#5fa89a");
+  });
+
+  it("renders hyphenated key 'stroke-width' in forge teal (#5fa89a)", () => {
+    const html = hl(
+      highlightClassDefLine("classDef foo stroke-width:2px", 0),
+    );
+    expect(html).toContain("color:#5fa89a");
+    expect(html).toContain("stroke-width");
+  });
+
+  it("renders hyphenated key 'font-weight' in forge teal (#5fa89a)", () => {
+    const html = hl(
+      highlightClassDefLine("classDef foo font-weight:bold", 0),
+    );
+    expect(html).toContain("color:#5fa89a");
+    expect(html).toContain("font-weight");
+  });
+});
+
+describe("highlightClassDefLine — hex value color", () => {
+  it("renders a 6-digit hex value in sky blue (#9ecfe8)", () => {
+    const html = hl(
+      highlightClassDefLine("classDef foo fill:#1e3a5f", 0),
+    );
+    expect(html).toContain("color:#9ecfe8");
+    expect(html).toContain("#1e3a5f");
+  });
+
+  it("renders a 3-digit short hex value in sky blue (#9ecfe8)", () => {
+    const html = hl(
+      highlightClassDefLine("classDef foo fill:#fff", 0),
+    );
+    expect(html).toContain("color:#9ecfe8");
+    expect(html).toContain("#fff");
+  });
+
+  it("renders an 8-digit hex value (alpha) in sky blue (#9ecfe8)", () => {
+    const html = hl(
+      highlightClassDefLine("classDef foo fill:#1e3a5fff", 0),
+    );
+    expect(html).toContain("color:#9ecfe8");
+    expect(html).toContain("#1e3a5fff");
+  });
+
+  it("multiple hex values each get sky blue (#9ecfe8)", () => {
+    const html = hl(
+      highlightClassDefLine(
+        "classDef foo fill:#1e3a5f,stroke:#3b82f6,color:#ffffff",
+        0,
+      ),
+    );
+    const hexColorCount = (html.match(/color:#9ecfe8/g) ?? []).length;
+    expect(hexColorCount).toBeGreaterThanOrEqual(3);
+  });
+});
+
+describe("highlightClassDefLine — non-hex value color", () => {
+  it("renders 'bold' (non-hex) in warm beige (#c8b89a)", () => {
+    const html = hl(
+      highlightClassDefLine("classDef foo font-weight:bold", 0),
+    );
+    expect(html).toContain("color:#c8b89a");
+    expect(html).toContain("bold");
+  });
+
+  it("renders '2px' (non-hex) in warm beige (#c8b89a)", () => {
+    const html = hl(
+      highlightClassDefLine("classDef foo stroke-width:2px", 0),
+    );
+    expect(html).toContain("color:#c8b89a");
+    expect(html).toContain("2px");
+  });
+
+  it("renders 'normal' (non-hex) in warm beige (#c8b89a)", () => {
+    const html = hl(
+      highlightClassDefLine("classDef foo font-style:normal", 0),
+    );
+    expect(html).toContain("color:#c8b89a");
+    expect(html).toContain("normal");
+  });
+});
+
+describe("highlightClassDefLine — punctuation dim color", () => {
+  it("renders the colon separator in dimmed color (#7a7060)", () => {
+    const html = hl(
+      highlightClassDefLine("classDef foo fill:#1e3a5f", 0),
+    );
+    expect(html).toContain("color:#7a7060");
+  });
+
+  it("renders the comma separator in dimmed color (#7a7060)", () => {
+    const html = hl(
+      highlightClassDefLine(
+        "classDef foo fill:#1e3a5f,stroke:#3b82f6",
+        0,
+      ),
+    );
+    // At least one dimmed span for commas/colons
+    expect(html).toContain("color:#7a7060");
+  });
+});
+
+describe("highlightClassDefLine — malformed / non-standard lines", () => {
+  it("a line not matching the classDef pattern renders entirely dimmed (#7a7060)", () => {
+    const html = hl(highlightClassDefLine("not-a-classdef-line", 0));
+    expect(html).toContain("color:#7a7060");
+    expect(html).toContain("not-a-classdef-line");
+    // Must NOT contain any of the active highlight colors
+    expect(html).not.toContain("color:#c46a2c");
+    expect(html).not.toContain("color:#e8d9c0");
+    expect(html).not.toContain("color:#5fa89a");
+    expect(html).not.toContain("color:#9ecfe8");
+    expect(html).not.toContain("color:#c8b89a");
+  });
+
+  it("'classDef' alone (no name or props) renders dimmed", () => {
+    const html = hl(highlightClassDefLine("classDef", 0));
+    expect(html).toContain("color:#7a7060");
+    expect(html).not.toContain("color:#c46a2c");
+  });
+
+  it("'classDef name' (missing props) renders dimmed", () => {
+    const html = hl(highlightClassDefLine("classDef myClass", 0));
+    expect(html).toContain("color:#7a7060");
+    expect(html).not.toContain("color:#c46a2c");
+  });
+
+  it("empty string renders a dimmed span containing empty text", () => {
+    const html = hl(highlightClassDefLine("", 0));
+    // Empty input has no classDef match → dimmed fallback
+    expect(html).toContain("color:#7a7060");
+    expect(html).not.toContain("color:#c46a2c");
+  });
+});
+
+describe("highlightClassDefLine — extra/compound properties", () => {
+  it("stroke-dasharray with multi-token value highlights key and value", () => {
+    const html = hl(
+      highlightClassDefLine("classDef dashed stroke-dasharray:5 3", 0),
+    );
+    expect(html).toContain("color:#5fa89a");   // key
+    expect(html).toContain("stroke-dasharray");
+    expect(html).toContain("color:#c8b89a");   // non-hex value "5 3"
+  });
+
+  it("multiple mixed props (hex + non-hex) produce both value colors", () => {
+    const html = hl(
+      highlightClassDefLine(
+        "classDef mixed fill:#abc123,font-weight:bold,stroke-width:2px",
+        0,
+      ),
+    );
+    expect(html).toContain("color:#9ecfe8");   // hex value
+    expect(html).toContain("color:#c8b89a");   // non-hex values
+    expect(html).toContain("color:#5fa89a");   // keys
+  });
+
+  it("different lineIdx values produce non-overlapping React keys (no duplicate key warning)", () => {
+    // Two calls with different lineIdx — if keys were shared React would warn.
+    // We can only verify no throw from renderToString.
+    expect(() => {
+      hl(highlightClassDefLine("classDef a fill:#111", 0));
+      hl(highlightClassDefLine("classDef b fill:#222", 1));
+    }).not.toThrow();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// highlightPropsSegment
+// ---------------------------------------------------------------------------
+
+describe("highlightPropsSegment — key color", () => {
+  it("renders property key in forge teal (#5fa89a)", () => {
+    const html = hlProps("fill:#1e3a5f");
+    expect(html).toContain("color:#5fa89a");
+    expect(html).toContain("fill");
+  });
+
+  it("renders hyphenated key 'stroke-width' in forge teal", () => {
+    const html = hlProps("stroke-width:2px");
+    expect(html).toContain("color:#5fa89a");
+    expect(html).toContain("stroke-width");
+  });
+
+  it("multiple keys all get teal color", () => {
+    const html = hlProps("fill:#111,stroke:#222,color:#333");
+    const count = (html.match(/color:#5fa89a/g) ?? []).length;
+    expect(count).toBeGreaterThanOrEqual(3);
+  });
+});
+
+describe("highlightPropsSegment — hex value color", () => {
+  it("renders a hex value in sky blue (#9ecfe8)", () => {
+    const html = hlProps("fill:#1e3a5f");
+    expect(html).toContain("color:#9ecfe8");
+    expect(html).toContain("#1e3a5f");
+  });
+
+  it("a short 3-digit hex is sky blue (#9ecfe8)", () => {
+    const html = hlProps("fill:#fff");
+    expect(html).toContain("color:#9ecfe8");
+  });
+
+  it("non-hex values do NOT get sky blue (#9ecfe8)", () => {
+    const html = hlProps("font-weight:bold");
+    expect(html).not.toContain("color:#9ecfe8");
+  });
+});
+
+describe("highlightPropsSegment — non-hex value color", () => {
+  it("renders 'bold' in warm beige (#c8b89a)", () => {
+    const html = hlProps("font-weight:bold");
+    expect(html).toContain("color:#c8b89a");
+    expect(html).toContain("bold");
+  });
+
+  it("renders '2px' in warm beige (#c8b89a)", () => {
+    const html = hlProps("stroke-width:2px");
+    expect(html).toContain("color:#c8b89a");
+    expect(html).toContain("2px");
+  });
+
+  it("renders a multi-token value ('5 3') in warm beige (#c8b89a)", () => {
+    const html = hlProps("stroke-dasharray:5 3");
+    expect(html).toContain("color:#c8b89a");
+    expect(html).toContain("5 3");
+  });
+});
+
+describe("highlightPropsSegment — punctuation dim color", () => {
+  it("colon separator gets dim color (#7a7060)", () => {
+    const html = hlProps("fill:#1e3a5f");
+    expect(html).toContain("color:#7a7060");
+  });
+
+  it("comma between pairs gets dim color (#7a7060)", () => {
+    const html = hlProps("fill:#1e3a5f,stroke:#3b82f6");
+    expect(html).toContain("color:#7a7060");
+  });
+});
+
+describe("highlightPropsSegment — empty and edge inputs", () => {
+  it("empty string returns an empty array (no nodes to render)", () => {
+    const nodes = highlightPropsSegment("", "k");
+    expect(nodes).toHaveLength(0);
+  });
+
+  it("string with no key:value pairs renders as a dim tail span", () => {
+    // Only punctuation / garbage text
+    const html = hlProps(",,,");
+    // No match → entire string is a tail span in punct color
+    expect(html).toContain("color:#7a7060");
+    expect(html).not.toContain("color:#5fa89a");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// highlightClassDefBlock
+// ---------------------------------------------------------------------------
+
+describe("highlightClassDefBlock — multi-line rendering", () => {
+  it("renders a single valid classDef line correctly", () => {
+    const html = hl(highlightClassDefBlock("classDef foo fill:#1e3a5f"));
+    expect(html).toContain("color:#c46a2c");  // keyword
+    expect(html).toContain("color:#e8d9c0");  // name
+    expect(html).toContain("color:#5fa89a");  // key
+    expect(html).toContain("color:#9ecfe8");  // hex value
+  });
+
+  it("renders multiple valid lines — all four colors present", () => {
+    const block = [
+      "classDef primary fill:#1e3a5f,stroke:#3b82f6",
+      "classDef secondary fill:#374151,stroke:#6b7280",
+    ].join("\n");
+    const html = hl(highlightClassDefBlock(block));
+    expect(html).toContain("color:#c46a2c");
+    expect(html).toContain("color:#e8d9c0");
+    expect(html).toContain("color:#5fa89a");
+    expect(html).toContain("color:#9ecfe8");
+  });
+
+  it("renders a mix of valid and invalid lines without throwing", () => {
+    const block = [
+      "classDef foo fill:#abc",
+      "not-a-classdef-line",
+      "classDef bar stroke:#def",
+    ].join("\n");
+    expect(() => hl(highlightClassDefBlock(block))).not.toThrow();
+    const html = hl(highlightClassDefBlock(block));
+    expect(html).toContain("color:#c46a2c");  // from valid lines
+    expect(html).toContain("color:#7a7060");  // from invalid line
+  });
+
+  it("invalid lines in a block render dimmed (#7a7060), not as keyword color", () => {
+    const block = "not-valid\nclassDef ok fill:#111";
+    const html = hl(highlightClassDefBlock(block));
+    expect(html).toContain("color:#7a7060");   // invalid line dimmed
+    expect(html).toContain("color:#c46a2c");   // valid line highlighted
+  });
+
+  it("empty string input returns a block with one dimmed empty span", () => {
+    expect(() => hl(highlightClassDefBlock(""))).not.toThrow();
+    const html = hl(highlightClassDefBlock(""));
+    // The single empty line falls through to the dimmed fallback
+    expect(html).toContain("color:#7a7060");
+  });
+
+  it("newline separators appear between lines (not inside highlight spans)", () => {
+    const block = "classDef a fill:#111\nclassDef b fill:#222";
+    const html = hl(highlightClassDefBlock(block));
+    // Both class names must appear in the output
+    expect(html).toContain(">a<");
+    expect(html).toContain(">b<");
   });
 });
