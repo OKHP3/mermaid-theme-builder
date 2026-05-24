@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from "react";
-import type { Palette } from "@/lib/palettes";
+import type { Palette, ThemeColor } from "@/lib/palettes";
 import { BRAND_PALETTES } from "@/lib/palettes";
+import { PaletteSelectorBar } from "@/components/PaletteSelectorBar";
 import { generateThemedCode, type ExportOptions } from "@/lib/themeEngine";
 import { detectDiagram } from "@/lib/detector";
 import { MermaidPreview } from "@/components/MermaidPreview";
@@ -101,12 +102,16 @@ const FAMILY_COUNT = ALL_FAMILIES.length;
 
 interface ExamplesTabProps {
   selectedPalette: Palette;
+  selectedPaletteId: string;
+  allPalettes: Palette[];
+  customColors: Record<string, ThemeColor[]>;
+  onSelectPalette: (id: string) => void;
   onLoadExample: (code: string) => void;
   initialSelectedId?: string;
   onExampleSelect?: (id: string) => void;
 }
 
-export function ExamplesTab({ selectedPalette, onLoadExample, initialSelectedId, onExampleSelect }: ExamplesTabProps) {
+export function ExamplesTab({ selectedPalette, selectedPaletteId, allPalettes, customColors, onSelectPalette, onLoadExample, initialSelectedId, onExampleSelect }: ExamplesTabProps) {
   const [selectedId, setSelectedId] = useState(() => {
     if (initialSelectedId && ALL_EXAMPLES.some((e) => e.id === initialSelectedId)) {
       return initialSelectedId;
@@ -218,6 +223,13 @@ export function ExamplesTab({ selectedPalette, onLoadExample, initialSelectedId,
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
+      <PaletteSelectorBar
+        allPalettes={allPalettes}
+        selectedPaletteId={selectedPaletteId}
+        customColors={customColors}
+        onSelectPalette={onSelectPalette}
+        tileIdPrefix="examples-palette-tile"
+      />
       <div className="flex-1 overflow-hidden flex flex-col md:flex-row min-h-0">
         <div
           ref={sidebarRef}

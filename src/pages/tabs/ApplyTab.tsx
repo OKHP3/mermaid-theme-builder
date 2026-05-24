@@ -1,7 +1,8 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { useCodeEditorOverride } from "@/hooks/useCodeEditorOverride";
 import type { Palette, ThemeColor } from "@/lib/palettes";
-import { BUILTIN_PALETTES, BRAND_PALETTES, UTILITY_PALETTES } from "@/lib/palettes";
+import { BRAND_PALETTES, UTILITY_PALETTES } from "@/lib/palettes";
+import { PaletteSelectorBar } from "@/components/PaletteSelectorBar";
 import { detectDiagram, type DetectionResult } from "@/lib/detector";
 import { DIAGRAM_CAPABILITIES, getCapabilityById, type DiagramFamily } from "@/data/mermaid-capabilities";
 import { splitDiagrams } from "@/lib/diagramSplit";
@@ -44,7 +45,7 @@ import {
 import { type TypographySettings } from "@/lib/typography";
 import type { AppTab } from "@/App";
 
-const SWATCH_INDICES = [0, 3, 4, 6];
+
 
 type PreviewMode = "original" | "themed" | "diff" | "code";
 type ExportType = "code" | "markdown" | "prompt";
@@ -525,102 +526,13 @@ export function ApplyTab({
 
   return (
     <div className="flex flex-col md:h-full md:overflow-hidden">
-      <div className="flex-none border-b border-border bg-card/30 px-3 py-2 print-hide">
-        <div
-          role="radiogroup"
-          aria-label="Palette selector"
-          className="flex gap-1 overflow-x-auto pb-0.5 scrollbar-thin"
-          onKeyDown={(e) => {
-            // Arrow keys / Home / End navigate the palette tiles. We move
-            // selection (not just focus) so the preview updates immediately —
-            // matches the "radiogroup with roving tabindex" ARIA pattern.
-            const idx = allPalettes.findIndex((p) => p.id === selectedPaletteId);
-            if (idx < 0) return;
-            let nextIdx: number | null = null;
-            if (e.key === "ArrowRight" || e.key === "ArrowDown") {
-              nextIdx = (idx + 1) % allPalettes.length;
-            } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
-              nextIdx = (idx - 1 + allPalettes.length) % allPalettes.length;
-            } else if (e.key === "Home") {
-              nextIdx = 0;
-            } else if (e.key === "End") {
-              nextIdx = allPalettes.length - 1;
-            }
-            if (nextIdx !== null) {
-              e.preventDefault();
-              const next = allPalettes[nextIdx];
-              if (next) {
-                onSelectPalette(next.id);
-                // Roving focus to the newly-selected tile.
-                requestAnimationFrame(() => {
-                  const el = document.getElementById(`palette-tile-${next.id}`);
-                  el?.focus();
-                  el?.scrollIntoView({ block: "nearest", inline: "nearest" });
-                });
-              }
-            }
-          }}
-        >
-          {allPalettes.map((p) => {
-            const builtin = BUILTIN_PALETTES.find((b) => b.id === p.id);
-            const baseColors = builtin?.colors ?? p.colors;
-            const effectiveColors =
-              customColors[p.id]
-                ? baseColors.map((c) => {
-                    const override = customColors[p.id].find((o) => o.key === c.key);
-                    return override ?? c;
-                  })
-                : p.colors;
-            const swatchColors = SWATCH_INDICES.map((i) => effectiveColors[i]?.value ?? "#888");
-            const isSelected = selectedPaletteId === p.id;
-            const isUserExtracted = isExtractedPaletteId(p.id);
-            const isUserSaved = !builtin && !isUserExtracted;
-            return (
-              <button
-                key={p.id}
-                id={`palette-tile-${p.id}`}
-                role="radio"
-                aria-checked={isSelected}
-                tabIndex={isSelected ? 0 : -1}
-                onClick={() => onSelectPalette(p.id)}
-                title={p.description}
-                className={`flex-none flex flex-col items-center gap-1 px-2 py-1.5 rounded-lg transition-all border focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
-                  isSelected
-                    ? "border-primary/60 bg-primary/8 shadow-sm"
-                    : "border-transparent hover:border-border hover:bg-muted/40"
-                }`}
-              >
-                <div className="flex gap-0.5">
-                  {swatchColors.map((color, i) => (
-                    <span
-                      key={i}
-                      className="w-4 h-4 rounded-full border border-black/10"
-                      style={{ backgroundColor: color }}
-                    />
-                  ))}
-                </div>
-                <span
-                  className={`text-[10px] leading-none whitespace-nowrap font-medium ${
-                    isSelected ? "text-primary" : "text-muted-foreground"
-                  }`}
-                >
-                  {p.name.length > 12 ? p.name.slice(0, 11) + "…" : p.name}
-                </span>
-                {isUserExtracted && (
-                  <span className="text-[8px] leading-none px-1 py-0.5 rounded bg-amber-500/15 text-amber-700 dark:text-amber-400 font-semibold uppercase tracking-wide">
-                    Extracted
-                  </span>
-                )}
-                {isUserSaved && (
-                  <span className="text-[8px] leading-none px-1 py-0.5 rounded bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 font-semibold uppercase tracking-wide">
-                    Saved
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </div>
-      </div>
+      <PaletteSelectorBar
+        allPalettes={allPalettes}
+        selectedPaletteId={selectedPaletteId}
+        customColors={customColors}
+        onSelectPalette={onSelectPalette}
+        tileIdPrefix="apply-palette-tile"
+      />
 
 
       <div className="flex-none border-b border-border bg-card/20 px-3 py-1.5 flex items-center gap-x-1.5 sm:gap-x-3 overflow-x-auto print-hide">

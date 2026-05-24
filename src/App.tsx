@@ -798,13 +798,25 @@ export function AppShell() {
         {activeTab === "examples" && (
           <ExamplesTab
             selectedPalette={selectedPalette}
+            selectedPaletteId={selectedPaletteId}
+            allPalettes={allPalettes}
+            customColors={customColors}
+            onSelectPalette={handleSelectPalette}
             onLoadExample={handleLoadExample}
             initialSelectedId={lastSelectedExampleId}
             onExampleSelect={setLastSelectedExampleId}
           />
         )}
         {activeTab === "reference" && (
-          <ReferenceTab selectedPalette={selectedPalette} supportsClassDef={supportsClassDef} inputCode={inputCode} />
+          <ReferenceTab
+            selectedPalette={selectedPalette}
+            selectedPaletteId={selectedPaletteId}
+            allPalettes={allPalettes}
+            customColors={customColors}
+            onSelectPalette={handleSelectPalette}
+            supportsClassDef={supportsClassDef}
+            inputCode={inputCode}
+          />
         )}
         </div>
       </main>

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef } from "react";
-import type { Palette } from "@/lib/palettes";
+import type { Palette, ThemeColor } from "@/lib/palettes";
+import { PaletteSelectorBar } from "@/components/PaletteSelectorBar";
 import { getClassDefs } from "@/lib/themeEngine";
 import { extractUsedClasses } from "@/lib/usedClasses";
 import { DiagramInventory } from "@/components/DiagramInventory";
@@ -8,6 +9,10 @@ import { RENDERER_PROFILES, supportLabel, supportColor } from "@/data/renderer-p
 
 interface ReferenceTabProps {
   selectedPalette: Palette;
+  selectedPaletteId: string;
+  allPalettes: Palette[];
+  customColors: Record<string, ThemeColor[]>;
+  onSelectPalette: (id: string) => void;
   supportsClassDef: boolean;
   inputCode?: string;
 }
@@ -38,7 +43,7 @@ function SupportBadge({ support }: { support: import("@/data/renderer-parity").R
   );
 }
 
-export function ReferenceTab({ selectedPalette, supportsClassDef, inputCode = "" }: ReferenceTabProps) {
+export function ReferenceTab({ selectedPalette, selectedPaletteId, allPalettes, customColors, onSelectPalette, supportsClassDef, inputCode = "" }: ReferenceTabProps) {
   const classDefs = useMemo(() => getClassDefs(selectedPalette), [selectedPalette]);
 
   const usedClassNames = useMemo<ReadonlySet<string>>(
@@ -67,6 +72,13 @@ export function ReferenceTab({ selectedPalette, supportsClassDef, inputCode = ""
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
+      <PaletteSelectorBar
+        allPalettes={allPalettes}
+        selectedPaletteId={selectedPaletteId}
+        customColors={customColors}
+        onSelectPalette={onSelectPalette}
+        tileIdPrefix="reference-palette-tile"
+      />
       <div className="flex-1 overflow-hidden">
         <DiagramInventory embedded />
       </div>

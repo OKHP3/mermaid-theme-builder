@@ -36,6 +36,10 @@ vi.mock("@/components/DiagramInventory", () => ({
   DiagramInventory: () => createElement("div", { "data-testid": "diagram-inventory" }),
 }));
 
+vi.mock("@/components/PaletteSelectorBar", () => ({
+  PaletteSelectorBar: () => null,
+}));
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -51,6 +55,13 @@ const NON_DEFAULT_EXAMPLE_ID = `brand-${BRAND_PALETTES[1].id}-flow`;
 const NON_DEFAULT_EXAMPLE_LABEL = `${BRAND_PALETTES[1].name} \u2014 Flowchart`;
 
 function noop() {}
+
+const COMMON_PALETTE_PROPS = {
+  selectedPaletteId: DEFAULT_PALETTE.id,
+  allPalettes: BRAND_PALETTES,
+  customColors: {} as Record<string, import("@/lib/palettes").ThemeColor[]>,
+  onSelectPalette: noop,
+};
 
 /**
  * Returns the text content of the currently-selected sidebar button.
@@ -91,6 +102,7 @@ describe("ExamplesTab — initialSelectedId hydration", () => {
   it("uses a valid initialSelectedId as the active example on first render", () => {
     const { container } = render(
       createElement(ExamplesTab, {
+        ...COMMON_PALETTE_PROPS,
         selectedPalette: DEFAULT_PALETTE,
         onLoadExample: noop,
         initialSelectedId: NON_DEFAULT_EXAMPLE_ID,
@@ -104,6 +116,7 @@ describe("ExamplesTab — initialSelectedId hydration", () => {
   it("marks only the matching sidebar button as selected — others are unselected", () => {
     const { container } = render(
       createElement(ExamplesTab, {
+        ...COMMON_PALETTE_PROPS,
         selectedPalette: DEFAULT_PALETTE,
         onLoadExample: noop,
         initialSelectedId: NON_DEFAULT_EXAMPLE_ID,
@@ -130,6 +143,7 @@ describe("ExamplesTab — stale ID fallback", () => {
   it("falls back to the first example when initialSelectedId is unrecognized", () => {
     const { container } = render(
       createElement(ExamplesTab, {
+        ...COMMON_PALETTE_PROPS,
         selectedPalette: DEFAULT_PALETTE,
         onLoadExample: noop,
         initialSelectedId: "this-id-does-not-exist-in-the-catalog",
@@ -143,6 +157,7 @@ describe("ExamplesTab — stale ID fallback", () => {
   it("falls back to the first example when initialSelectedId is an empty string", () => {
     const { container } = render(
       createElement(ExamplesTab, {
+        ...COMMON_PALETTE_PROPS,
         selectedPalette: DEFAULT_PALETTE,
         onLoadExample: noop,
         initialSelectedId: "",
@@ -156,6 +171,7 @@ describe("ExamplesTab — stale ID fallback", () => {
   it("falls back to the first example when initialSelectedId is undefined", () => {
     const { container } = render(
       createElement(ExamplesTab, {
+        ...COMMON_PALETTE_PROPS,
         selectedPalette: DEFAULT_PALETTE,
         onLoadExample: noop,
         onExampleSelect: noop,
@@ -176,6 +192,7 @@ describe("ExamplesTab — onExampleSelect callback", () => {
 
     const { container } = render(
       createElement(ExamplesTab, {
+        ...COMMON_PALETTE_PROPS,
         selectedPalette: DEFAULT_PALETTE,
         onLoadExample: noop,
         onExampleSelect,
@@ -195,6 +212,7 @@ describe("ExamplesTab — onExampleSelect callback", () => {
 
     const { container } = render(
       createElement(ExamplesTab, {
+        ...COMMON_PALETTE_PROPS,
         selectedPalette: DEFAULT_PALETTE,
         onLoadExample: noop,
         onExampleSelect,
@@ -218,6 +236,7 @@ describe("ExamplesTab — late-hydration via useEffect", () => {
   it("updates the selection when initialSelectedId arrives after first render", () => {
     const { container, rerender } = render(
       createElement(ExamplesTab, {
+        ...COMMON_PALETTE_PROPS,
         selectedPalette: DEFAULT_PALETTE,
         onLoadExample: noop,
         initialSelectedId: undefined,
@@ -232,6 +251,7 @@ describe("ExamplesTab — late-hydration via useEffect", () => {
     act(() => {
       rerender(
         createElement(ExamplesTab, {
+          ...COMMON_PALETTE_PROPS,
           selectedPalette: DEFAULT_PALETTE,
           onLoadExample: noop,
           initialSelectedId: NON_DEFAULT_EXAMPLE_ID,
@@ -247,6 +267,7 @@ describe("ExamplesTab — late-hydration via useEffect", () => {
   it("ignores a late-arriving stale ID and keeps the current selection", () => {
     const { container, rerender } = render(
       createElement(ExamplesTab, {
+        ...COMMON_PALETTE_PROPS,
         selectedPalette: DEFAULT_PALETTE,
         onLoadExample: noop,
         initialSelectedId: undefined,
@@ -257,6 +278,7 @@ describe("ExamplesTab — late-hydration via useEffect", () => {
     act(() => {
       rerender(
         createElement(ExamplesTab, {
+          ...COMMON_PALETTE_PROPS,
           selectedPalette: DEFAULT_PALETTE,
           onLoadExample: noop,
           initialSelectedId: "stale-nonexistent-id",
