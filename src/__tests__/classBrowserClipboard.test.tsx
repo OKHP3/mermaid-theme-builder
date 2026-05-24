@@ -766,3 +766,143 @@ describe("ClassBrowser — preview panel 'Copy' button: mode switch changes clip
     expect(clipboardWriteText).toHaveBeenCalledOnce();
   });
 });
+
+// ---------------------------------------------------------------------------
+// Cross-comparison: 'Copy used' output matches 'Copy all' when all classes used
+// ---------------------------------------------------------------------------
+// handleCopyAll and handleCopyUsed both call buildClassDefString internally but
+// through separate code paths. When every classDef is in usedClassNames both
+// handlers must produce the same string. These tests catch any divergence
+// between the two paths — e.g. a bug in the filter, a different sort applied
+// to one but not the other, or a formatting difference in the line builder.
+// ---------------------------------------------------------------------------
+
+describe("ClassBrowser — 'Copy used' output matches 'Copy all' when all classes are in use", () => {
+  it("writes identical text from both buttons when all classDefs are used", async () => {
+    render(
+      createElement(ClassBrowser, {
+        classDefs: SAMPLE_CLASS_DEFS,
+        supportsClassDef: true,
+        usedClassNames: new Set(["primary", "secondary"]),
+      })
+    );
+
+    // Fire "Copy used" first (top-level button)
+    const copyUsedBtn = screen.getByTitle(
+      "Copy only the 2 classDefs used in the current diagram"
+    );
+    await act(async () => {
+      fireEvent.click(copyUsedBtn);
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    const writtenByUsed = clipboardWriteText.mock.calls[0][0] as string;
+
+    // Fire "Copy all" second (top-level button)
+    const copyAllBtn = screen.getByTitle("Copy all classDefs as a single block");
+    await act(async () => {
+      fireEvent.click(copyAllBtn);
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    const writtenByAll = clipboardWriteText.mock.calls[1][0] as string;
+
+    expect(writtenByUsed).toBe(writtenByAll);
+  });
+
+  it("both writes have the same number of lines", async () => {
+    render(
+      createElement(ClassBrowser, {
+        classDefs: SAMPLE_CLASS_DEFS,
+        supportsClassDef: true,
+        usedClassNames: new Set(["primary", "secondary"]),
+      })
+    );
+
+    const copyUsedBtn = screen.getByTitle(
+      "Copy only the 2 classDefs used in the current diagram"
+    );
+    await act(async () => {
+      fireEvent.click(copyUsedBtn);
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    const linesFromUsed = (clipboardWriteText.mock.calls[0][0] as string).split("\n");
+
+    const copyAllBtn = screen.getByTitle("Copy all classDefs as a single block");
+    await act(async () => {
+      fireEvent.click(copyAllBtn);
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    const linesFromAll = (clipboardWriteText.mock.calls[1][0] as string).split("\n");
+
+    expect(linesFromUsed).toHaveLength(linesFromAll.length);
+    expect(linesFromUsed).toHaveLength(2);
+  });
+
+  it("both writes contain the same lines in the same order", async () => {
+    render(
+      createElement(ClassBrowser, {
+        classDefs: SAMPLE_CLASS_DEFS,
+        supportsClassDef: true,
+        usedClassNames: new Set(["primary", "secondary"]),
+      })
+    );
+
+    const copyUsedBtn = screen.getByTitle(
+      "Copy only the 2 classDefs used in the current diagram"
+    );
+    await act(async () => {
+      fireEvent.click(copyUsedBtn);
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    const linesFromUsed = (clipboardWriteText.mock.calls[0][0] as string).split("\n");
+
+    const copyAllBtn = screen.getByTitle("Copy all classDefs as a single block");
+    await act(async () => {
+      fireEvent.click(copyAllBtn);
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    const linesFromAll = (clipboardWriteText.mock.calls[1][0] as string).split("\n");
+
+    linesFromUsed.forEach((line, i) => {
+      expect(line).toBe(linesFromAll[i]);
+    });
+  });
+
+  it("neither write contains extra whitespace or formatting differences", async () => {
+    render(
+      createElement(ClassBrowser, {
+        classDefs: SAMPLE_CLASS_DEFS,
+        supportsClassDef: true,
+        usedClassNames: new Set(["primary", "secondary"]),
+      })
+    );
+
+    const copyUsedBtn = screen.getByTitle(
+      "Copy only the 2 classDefs used in the current diagram"
+    );
+    await act(async () => {
+      fireEvent.click(copyUsedBtn);
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    const writtenByUsed = clipboardWriteText.mock.calls[0][0] as string;
+
+    const copyAllBtn = screen.getByTitle("Copy all classDefs as a single block");
+    await act(async () => {
+      fireEvent.click(copyAllBtn);
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    const writtenByAll = clipboardWriteText.mock.calls[1][0] as string;
+
+    // Exact byte-for-byte equality catches any trailing-space, tab, or
+    // line-ending divergence between the two handlers
+    expect(writtenByUsed.length).toBe(writtenByAll.length);
+    expect(writtenByUsed).toBe(writtenByAll);
+  });
+});
