@@ -438,3 +438,331 @@ describe("ClassBrowser — per-card classDef copy (full classDef line)", () => {
     expect(clipboardWriteText).not.toHaveBeenCalled();
   });
 });
+
+// ---------------------------------------------------------------------------
+// Preview panel "Copy" button
+// ---------------------------------------------------------------------------
+// The preview panel (opened via the eye-icon) has its own "Copy" button that
+// routes to handleCopyAll or handleCopyUsed based on the active previewMode.
+// The panel Copy button title is "Copy all classDefs" or "Copy used classDefs"
+// — intentionally distinct from the top-level "Copy all classDefs as a single
+// block" and "Copy only the N classDef..." button titles.
+// Note: per task #193, opening the panel with non-empty usedClassNames defaults
+// to "used" mode, so tests that need "all" mode switch to it first.
+// ---------------------------------------------------------------------------
+
+/** Click the eye-icon button to open the preview panel. */
+function openPreviewPanel() {
+  const eyeBtn = screen.getByLabelText("Preview all classDefs");
+  act(() => {
+    fireEvent.click(eyeBtn);
+  });
+}
+
+/** Click the "All" toggle button inside the open preview panel. */
+function switchToAllMode() {
+  const allBtn = screen.getByTitle("Show all classDefs");
+  act(() => {
+    fireEvent.click(allBtn);
+  });
+}
+
+/** Click the "Used" toggle button inside the open preview panel. */
+function switchToUsedMode() {
+  const usedBtn = screen.getByTitle(/^Show only the \d+ classDef/);
+  act(() => {
+    fireEvent.click(usedBtn);
+  });
+}
+
+describe("ClassBrowser — preview panel 'Copy' button: 'all' mode writes full block", () => {
+  it("writes the full ALL_BLOCK when Copy is clicked in 'all' mode", async () => {
+    render(
+      createElement(ClassBrowser, {
+        classDefs: SAMPLE_CLASS_DEFS,
+        supportsClassDef: true,
+        usedClassNames: new Set(["primary"]),
+      })
+    );
+    openPreviewPanel();
+    // Panel opens in "used" mode (task #193) → switch to "all"
+    switchToAllMode();
+    const copyBtn = screen.getByTitle("Copy all classDefs");
+    await act(async () => {
+      fireEvent.click(copyBtn);
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    expect(clipboardWriteText).toHaveBeenCalledOnce();
+    expect(clipboardWriteText).toHaveBeenCalledWith(ALL_BLOCK);
+  });
+
+  it("writes both classDef lines separated by a newline in 'all' mode", async () => {
+    render(
+      createElement(ClassBrowser, {
+        classDefs: SAMPLE_CLASS_DEFS,
+        supportsClassDef: true,
+        usedClassNames: new Set(["secondary"]),
+      })
+    );
+    openPreviewPanel();
+    switchToAllMode();
+    const copyBtn = screen.getByTitle("Copy all classDefs");
+    await act(async () => {
+      fireEvent.click(copyBtn);
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    const written = clipboardWriteText.mock.calls[0][0] as string;
+    const lines = written.split("\n");
+    expect(lines).toHaveLength(2);
+    expect(lines[0]).toBe(PRIMARY_LINE);
+    expect(lines[1]).toBe(SECONDARY_LINE);
+  });
+
+  it("preserves definition order in 'all' mode even when a used class sorts visually first", async () => {
+    // "secondary" is used → visual grid shows secondary before primary,
+    // but "Copy all" via the panel must still emit definition order.
+    render(
+      createElement(ClassBrowser, {
+        classDefs: SAMPLE_CLASS_DEFS,
+        supportsClassDef: true,
+        usedClassNames: new Set(["secondary"]),
+      })
+    );
+    openPreviewPanel();
+    switchToAllMode();
+    const copyBtn = screen.getByTitle("Copy all classDefs");
+    await act(async () => {
+      fireEvent.click(copyBtn);
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    const written = clipboardWriteText.mock.calls[0][0] as string;
+    const lines = written.split("\n");
+    // primary (index 0 in classDefs) must appear before secondary (index 1)
+    expect(lines[0]).toBe(PRIMARY_LINE);
+    expect(lines[1]).toBe(SECONDARY_LINE);
+  });
+
+  it("writes full block when no classes are used (panel stays in 'all' mode)", async () => {
+    render(
+      createElement(ClassBrowser, {
+        classDefs: SAMPLE_CLASS_DEFS,
+        supportsClassDef: true,
+        usedClassNames: new Set<string>(),
+      })
+    );
+    openPreviewPanel();
+    // No toggle group → panel stays in "all" mode; button title is "Copy all classDefs"
+    const copyBtn = screen.getByTitle("Copy all classDefs");
+    await act(async () => {
+      fireEvent.click(copyBtn);
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    expect(clipboardWriteText).toHaveBeenCalledOnce();
+    expect(clipboardWriteText).toHaveBeenCalledWith(ALL_BLOCK);
+  });
+
+  it("writes full block when usedClassNames is omitted (panel stays in 'all' mode)", async () => {
+    render(
+      createElement(ClassBrowser, {
+        classDefs: SAMPLE_CLASS_DEFS,
+        supportsClassDef: true,
+      })
+    );
+    openPreviewPanel();
+    const copyBtn = screen.getByTitle("Copy all classDefs");
+    await act(async () => {
+      fireEvent.click(copyBtn);
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    expect(clipboardWriteText).toHaveBeenCalledOnce();
+    expect(clipboardWriteText).toHaveBeenCalledWith(ALL_BLOCK);
+  });
+});
+
+describe("ClassBrowser — preview panel 'Copy' button: 'used' mode writes subset", () => {
+  it("writes only the used classDef line when previewMode='used' with one used class", async () => {
+    render(
+      createElement(ClassBrowser, {
+        classDefs: SAMPLE_CLASS_DEFS,
+        supportsClassDef: true,
+        usedClassNames: new Set(["primary"]),
+      })
+    );
+    openPreviewPanel();
+    // Panel opens in "used" mode by default (task #193)
+    const copyBtn = screen.getByTitle("Copy used classDefs");
+    await act(async () => {
+      fireEvent.click(copyBtn);
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    expect(clipboardWriteText).toHaveBeenCalledOnce();
+    expect(clipboardWriteText).toHaveBeenCalledWith(PRIMARY_LINE);
+  });
+
+  it("does not include unused classes when previewMode='used'", async () => {
+    render(
+      createElement(ClassBrowser, {
+        classDefs: SAMPLE_CLASS_DEFS,
+        supportsClassDef: true,
+        usedClassNames: new Set(["primary"]),
+      })
+    );
+    openPreviewPanel();
+    const copyBtn = screen.getByTitle("Copy used classDefs");
+    await act(async () => {
+      fireEvent.click(copyBtn);
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    const written = clipboardWriteText.mock.calls[0][0] as string;
+    expect(written).not.toContain("secondary");
+    expect(written).toContain("primary");
+  });
+
+  it("writes the secondary line when only secondary is used", async () => {
+    render(
+      createElement(ClassBrowser, {
+        classDefs: SAMPLE_CLASS_DEFS,
+        supportsClassDef: true,
+        usedClassNames: new Set(["secondary"]),
+      })
+    );
+    openPreviewPanel();
+    const copyBtn = screen.getByTitle("Copy used classDefs");
+    await act(async () => {
+      fireEvent.click(copyBtn);
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    expect(clipboardWriteText).toHaveBeenCalledOnce();
+    expect(clipboardWriteText).toHaveBeenCalledWith(SECONDARY_LINE);
+  });
+
+  it("writes both lines in definition order when both classes are used", async () => {
+    render(
+      createElement(ClassBrowser, {
+        classDefs: SAMPLE_CLASS_DEFS,
+        supportsClassDef: true,
+        usedClassNames: new Set(["primary", "secondary"]),
+      })
+    );
+    openPreviewPanel();
+    const copyBtn = screen.getByTitle("Copy used classDefs");
+    await act(async () => {
+      fireEvent.click(copyBtn);
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    expect(clipboardWriteText).toHaveBeenCalledOnce();
+    const written = clipboardWriteText.mock.calls[0][0] as string;
+    const lines = written.split("\n");
+    expect(lines).toHaveLength(2);
+    expect(lines[0]).toBe(PRIMARY_LINE);
+    expect(lines[1]).toBe(SECONDARY_LINE);
+  });
+
+  it("written line starts with 'classDef <name>' in correct format", async () => {
+    render(
+      createElement(ClassBrowser, {
+        classDefs: SAMPLE_CLASS_DEFS,
+        supportsClassDef: true,
+        usedClassNames: new Set(["secondary"]),
+      })
+    );
+    openPreviewPanel();
+    const copyBtn = screen.getByTitle("Copy used classDefs");
+    await act(async () => {
+      fireEvent.click(copyBtn);
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    const written = clipboardWriteText.mock.calls[0][0] as string;
+    expect(written).toMatch(/^classDef secondary /);
+    expect(written).toContain("fill:#374151");
+    expect(written).toContain("stroke:#6b7280");
+    expect(written).toContain("color:#f3f4f6");
+  });
+});
+
+describe("ClassBrowser — preview panel 'Copy' button: mode switch changes clipboard output", () => {
+  it("switching from 'used' to 'all' changes the written block", async () => {
+    // primary is used, secondary is not — so "used" writes 1 line, "all" writes 2
+    render(
+      createElement(ClassBrowser, {
+        classDefs: SAMPLE_CLASS_DEFS,
+        supportsClassDef: true,
+        usedClassNames: new Set(["primary"]),
+      })
+    );
+    openPreviewPanel();
+
+    // "Used" mode Copy → PRIMARY_LINE only
+    const copyUsedBtn = screen.getByTitle("Copy used classDefs");
+    await act(async () => {
+      fireEvent.click(copyUsedBtn);
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    expect(clipboardWriteText).toHaveBeenNthCalledWith(1, PRIMARY_LINE);
+
+    // Switch to "all" → Copy → full ALL_BLOCK
+    switchToAllMode();
+    const copyAllBtn = screen.getByTitle("Copy all classDefs");
+    await act(async () => {
+      fireEvent.click(copyAllBtn);
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    expect(clipboardWriteText).toHaveBeenNthCalledWith(2, ALL_BLOCK);
+  });
+
+  it("switching from 'all' back to 'used' restores the subset copy", async () => {
+    render(
+      createElement(ClassBrowser, {
+        classDefs: SAMPLE_CLASS_DEFS,
+        supportsClassDef: true,
+        usedClassNames: new Set(["secondary"]),
+      })
+    );
+    openPreviewPanel();
+
+    // Start in "used" mode → switch to "all" then back to "used"
+    switchToAllMode();
+    switchToUsedMode();
+
+    const copyBtn = screen.getByTitle("Copy used classDefs");
+    await act(async () => {
+      fireEvent.click(copyBtn);
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    expect(clipboardWriteText).toHaveBeenCalledOnce();
+    expect(clipboardWriteText).toHaveBeenCalledWith(SECONDARY_LINE);
+  });
+
+  it("clipboard is called exactly once per Copy click regardless of mode switches", async () => {
+    render(
+      createElement(ClassBrowser, {
+        classDefs: SAMPLE_CLASS_DEFS,
+        supportsClassDef: true,
+        usedClassNames: new Set(["primary"]),
+      })
+    );
+    openPreviewPanel();
+    switchToAllMode();
+
+    const copyAllBtn = screen.getByTitle("Copy all classDefs");
+    await act(async () => {
+      fireEvent.click(copyAllBtn);
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    expect(clipboardWriteText).toHaveBeenCalledOnce();
+  });
+});
