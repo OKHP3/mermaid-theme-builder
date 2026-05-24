@@ -520,3 +520,158 @@ describe("share URL validation against REQUIRED_COLOR_KEYS", () => {
     expect(unknownKeys).toHaveLength(0);
   });
 });
+
+// ── parsePortablePalette — invalidValues ──────────────────────────────────────
+
+describe("parsePortablePalette — invalidValues", () => {
+  function makePaletteJson(overrideColors: Array<{ key: string; label: string; value: string }>) {
+    return JSON.stringify({
+      type: "mtb-palette",
+      schemaVersion: 1,
+      id: "test",
+      name: "Test",
+      description: "d",
+      version: "1.0.0",
+      colors: overrideColors,
+    });
+  }
+
+  it("returns empty invalidValues for a palette with all valid hex colors", () => {
+    const result = parsePortablePalette(makePaletteJson([
+      { key: "primaryColor", label: "Primary", value: "#1a2b3c" },
+      { key: "lineColor", label: "Line", value: "#fff" },
+    ]));
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.invalidValues).toHaveLength(0);
+  });
+
+  it("reports an entry for a non-hex, non-keyword value", () => {
+    const result = parsePortablePalette(makePaletteJson([
+      { key: "primaryColor", label: "Primary", value: "notacolor" },
+    ]));
+    expect(result.ok).toBe(true);
+    if (!result.ok) throw new Error("Expected ok:true");
+    expect(result.invalidValues).toHaveLength(1);
+    expect(result.invalidValues[0].key).toBe("primaryColor");
+    expect(result.invalidValues[0].value).toBe("notacolor");
+  });
+
+  it("reports an entry for an empty string value", () => {
+    const result = parsePortablePalette(makePaletteJson([
+      { key: "lineColor", label: "Line", value: "" },
+    ]));
+    expect(result.ok).toBe(true);
+    if (!result.ok) throw new Error("Expected ok:true");
+    expect(result.invalidValues.map((e) => e.key)).toContain("lineColor");
+  });
+
+  it("accepts valid 3-digit hex (#fff)", () => {
+    const result = parsePortablePalette(makePaletteJson([
+      { key: "primaryColor", label: "Primary", value: "#fff" },
+    ]));
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.invalidValues).toHaveLength(0);
+  });
+
+  it("accepts valid 4-digit hex (#ffff)", () => {
+    const result = parsePortablePalette(makePaletteJson([
+      { key: "primaryColor", label: "Primary", value: "#abcd" },
+    ]));
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.invalidValues).toHaveLength(0);
+  });
+
+  it("accepts valid 8-digit hex (#aabbccdd)", () => {
+    const result = parsePortablePalette(makePaletteJson([
+      { key: "primaryColor", label: "Primary", value: "#1a2b3c4d" },
+    ]));
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.invalidValues).toHaveLength(0);
+  });
+
+  it("accepts CSS keyword 'transparent'", () => {
+    const result = parsePortablePalette(makePaletteJson([
+      { key: "background", label: "BG", value: "transparent" },
+    ]));
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.invalidValues).toHaveLength(0);
+  });
+
+  it("accepts CSS keyword 'inherit' (case-insensitive)", () => {
+    const result = parsePortablePalette(makePaletteJson([
+      { key: "background", label: "BG", value: "Inherit" },
+    ]));
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.invalidValues).toHaveLength(0);
+  });
+
+  it("accepts CSS keyword 'currentColor'", () => {
+    const result = parsePortablePalette(makePaletteJson([
+      { key: "lineColor", label: "Line", value: "currentColor" },
+    ]));
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.invalidValues).toHaveLength(0);
+  });
+
+  it("exempts fontFamily from hex validation — any non-empty string is valid", () => {
+    const result = parsePortablePalette(makePaletteJson([
+      { key: "fontFamily", label: "Font", value: "DM Sans, Arial, sans-serif" },
+    ]));
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.invalidValues).toHaveLength(0);
+  });
+
+  it("reports fontFamily as invalid when the value is an empty string", () => {
+    const result = parsePortablePalette(makePaletteJson([
+      { key: "fontFamily", label: "Font", value: "" },
+    ]));
+    expect(result.ok).toBe(true);
+    if (!result.ok) throw new Error("Expected ok:true");
+    expect(result.invalidValues.map((e) => e.key)).toContain("fontFamily");
+  });
+
+  it("reports multiple invalid entries when several values are bad", () => {
+    const result = parsePortablePalette(makePaletteJson([
+      { key: "primaryColor", label: "P", value: "red" },
+      { key: "lineColor", label: "L", value: "" },
+      { key: "background", label: "B", value: "#abc" },
+    ]));
+    expect(result.ok).toBe(true);
+    if (!result.ok) throw new Error("Expected ok:true");
+    const badKeys = result.invalidValues.map((e) => e.key);
+    expect(badKeys).toContain("primaryColor");
+    expect(badKeys).toContain("lineColor");
+    expect(badKeys).not.toContain("background");
+  });
+
+  it("BUILTIN_PALETTES round-tripped through parsePortablePalette have no invalidValues", () => {
+    for (const palette of BUILTIN_PALETTES) {
+      const result = parsePortablePalette(paletteToPortableJson(palette));
+      expect(result.ok, `${palette.id} failed to parse`).toBe(true);
+      if (result.ok) {
+        expect(
+          result.invalidValues,
+          `${palette.id} has invalid color values: ${result.invalidValues.map((e) => `${e.key}=${e.value}`).join(", ")}`,
+        ).toHaveLength(0);
+      }
+    }
+  });
+
+  it("rejects a hex-like value with wrong digit count (e.g. #12)", () => {
+    const result = parsePortablePalette(makePaletteJson([
+      { key: "primaryColor", label: "P", value: "#12" },
+    ]));
+    expect(result.ok).toBe(true);
+    if (!result.ok) throw new Error("Expected ok:true");
+    expect(result.invalidValues.map((e) => e.key)).toContain("primaryColor");
+  });
+
+  it("rejects a hex-like value with wrong digit count (e.g. #12345)", () => {
+    const result = parsePortablePalette(makePaletteJson([
+      { key: "primaryColor", label: "P", value: "#12345" },
+    ]));
+    expect(result.ok).toBe(true);
+    if (!result.ok) throw new Error("Expected ok:true");
+    expect(result.invalidValues.map((e) => e.key)).toContain("primaryColor");
+  });
+});

@@ -196,6 +196,25 @@ export function paletteToPortableJson(palette: Palette): string {
   return JSON.stringify(payload, null, 2);
 }
 
+/** Matches 3-, 4-, 6-, and 8-digit hex color strings (e.g. #fff, #1a2b3c). */
+const HEX_COLOR_RE = /^#[0-9a-fA-F]{3}$|^#[0-9a-fA-F]{4}$|^#[0-9a-fA-F]{6}$|^#[0-9a-fA-F]{8}$/;
+/** CSS color keywords accepted by Mermaid's theme engine. */
+const CSS_KEYWORD_RE = /^transparent$|^inherit$|^currentColor$/i;
+
+/**
+ * Returns true when `value` is acceptable for `key`.
+ * - `fontFamily` keys accept any non-empty string (font stacks can contain
+ *   spaces, commas, and quotes that would fail a hex check).
+ * - All other keys must be a valid hex color or one of the three CSS keywords
+ *   Mermaid's theming layer understands.
+ * - Empty strings are always invalid.
+ */
+function isValidColorValue(key: string, value: string): boolean {
+  if (value.length === 0) return false;
+  if (key === "fontFamily") return true;
+  return HEX_COLOR_RE.test(value) || CSS_KEYWORD_RE.test(value);
+}
+
 export interface PortablePaletteImport {
   ok: true;
   palette: Palette;
@@ -203,6 +222,12 @@ export interface PortablePaletteImport {
   missingKeys: string[];
   /** Color keys present in the file that MTB does not recognize. */
   unknownKeys: string[];
+  /**
+   * Color entries whose `value` field is not a valid hex string, CSS keyword,
+   * or (for `fontFamily`) a non-empty string. These pass through unchanged so
+   * the user can correct them, but diagram rendering will likely be broken.
+   */
+  invalidValues: Array<{ key: string; value: string }>;
 }
 export interface PortablePaletteError {
   ok: false;
@@ -287,11 +312,15 @@ export function parsePortablePalette(json: string): PortablePaletteImport | Port
     const presentKeys = new Set(colors.map((c) => c.key));
     const missingKeys = (REQUIRED_COLOR_KEYS as readonly string[]).filter((k) => !presentKeys.has(k));
     const unknownKeys = colors.map((c) => c.key).filter((k) => !KNOWN_COLOR_KEYS.has(k));
+    const invalidValues = colors
+      .filter((c) => !isValidColorValue(c.key, c.value))
+      .map((c) => ({ key: c.key, value: c.value }));
 
     return {
       ok: true,
       missingKeys,
       unknownKeys,
+      invalidValues,
       palette: {
         id,
         name,

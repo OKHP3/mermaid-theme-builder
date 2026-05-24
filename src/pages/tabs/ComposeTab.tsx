@@ -134,8 +134,8 @@ interface ComposeTabProps {
   onRendererTargetChange: (v: string) => void;
   onUseExtractedTheme: (palette: Palette, codeWithClassDefs?: string) => void;
   onSwitchTab: (tab: AppTab) => void;
-  importDiagnostics: { missingKeys: string[]; unknownKeys: string[] } | null;
-  onImportDiagnosticsChange: (d: { missingKeys: string[]; unknownKeys: string[] } | null) => void;
+  importDiagnostics: { missingKeys: string[]; unknownKeys: string[]; invalidValues: Array<{ key: string; value: string }> } | null;
+  onImportDiagnosticsChange: (d: { missingKeys: string[]; unknownKeys: string[]; invalidValues: Array<{ key: string; value: string }> } | null) => void;
 }
 
 export function ComposeTab({
@@ -338,14 +338,16 @@ export function ComposeTab({
           }
           const combinedMissing: string[] = [];
           const combinedUnknown: string[] = [];
+          const combinedInvalid: Array<{ key: string; value: string }> = [];
           for (const imp of result.palettes) {
             onImportPalette(imp.palette);
             for (const k of imp.missingKeys) if (!combinedMissing.includes(k)) combinedMissing.push(k);
             for (const k of imp.unknownKeys) if (!combinedUnknown.includes(k)) combinedUnknown.push(k);
+            for (const iv of imp.invalidValues) if (!combinedInvalid.some((e) => e.key === iv.key)) combinedInvalid.push(iv);
           }
           onShowToast(`Imported ${result.palettes.length} palette${result.palettes.length === 1 ? "" : "s"} from bundle.`);
-          if (combinedMissing.length > 0 || combinedUnknown.length > 0) {
-            onImportDiagnosticsChange({ missingKeys: combinedMissing, unknownKeys: combinedUnknown });
+          if (combinedMissing.length > 0 || combinedUnknown.length > 0 || combinedInvalid.length > 0) {
+            onImportDiagnosticsChange({ missingKeys: combinedMissing, unknownKeys: combinedUnknown, invalidValues: combinedInvalid });
           }
         } else {
           const result = parsePortablePalette(text);
@@ -354,8 +356,8 @@ export function ComposeTab({
             return;
           }
           onImportPalette(result.palette);
-          if (result.missingKeys.length > 0 || result.unknownKeys.length > 0) {
-            onImportDiagnosticsChange({ missingKeys: result.missingKeys, unknownKeys: result.unknownKeys });
+          if (result.missingKeys.length > 0 || result.unknownKeys.length > 0 || result.invalidValues.length > 0) {
+            onImportDiagnosticsChange({ missingKeys: result.missingKeys, unknownKeys: result.unknownKeys, invalidValues: result.invalidValues });
           }
         }
       } catch (err) {
@@ -890,7 +892,7 @@ export function ComposeTab({
             aria-label="Import palette JSON file"
             onChange={handleFileChosen}
           />
-          {importDiagnostics && (importDiagnostics.missingKeys.length > 0 || importDiagnostics.unknownKeys.length > 0) && (
+          {importDiagnostics && (importDiagnostics.missingKeys.length > 0 || importDiagnostics.unknownKeys.length > 0 || importDiagnostics.invalidValues.length > 0) && (
             <div className="mt-2 rounded-md border border-amber-400/40 bg-amber-50/60 dark:bg-amber-950/20 dark:border-amber-500/30 p-2.5 text-xs space-y-1.5">
               <div className="flex items-start justify-between gap-1">
                 <span className="font-semibold text-amber-700 dark:text-amber-400">Palette import warnings</span>
@@ -923,6 +925,25 @@ export function ComposeTab({
                   <ul className="list-none space-y-0.5 pl-0">
                     {importDiagnostics.unknownKeys.map((k) => (
                       <li key={k} className="font-mono text-amber-700 dark:text-amber-400 bg-amber-100/40 dark:bg-amber-900/20 rounded px-1.5 py-0.5 inline-block mr-1">{k}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {importDiagnostics.invalidValues.length > 0 && (
+                <div>
+                  <p className="text-amber-700 dark:text-amber-400 font-medium mb-0.5">
+                    Invalid color {importDiagnostics.invalidValues.length === 1 ? "value" : "values"} — diagram may render incorrectly:
+                  </p>
+                  <ul className="list-none space-y-0.5 pl-0">
+                    {importDiagnostics.invalidValues.map(({ key, value }) => (
+                      <li key={key} className="font-mono text-amber-800 dark:text-amber-300 bg-amber-100/60 dark:bg-amber-900/30 rounded px-1.5 py-0.5 inline-block mr-1">
+                        {key}
+                        {value === "" ? (
+                          <span className="text-amber-600 dark:text-amber-500 not-italic"> (empty)</span>
+                        ) : (
+                          <span className="text-amber-600 dark:text-amber-500 not-italic">: "{value}"</span>
+                        )}
+                      </li>
                     ))}
                   </ul>
                 </div>

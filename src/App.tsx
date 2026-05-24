@@ -266,7 +266,7 @@ export function AppShell() {
   const [previewMode, setPreviewMode] = useState<"original" | "themed" | "diff" | "code">("themed");
   const [lastExampleType, setLastExampleType] = useState<Record<string, "flowchart" | "sequence">>({});
   const [lastSelectedExampleId, setLastSelectedExampleId] = useState<string>("");
-  const [importDiagnostics, setImportDiagnostics] = useState<{ missingKeys: string[]; unknownKeys: string[] } | null>(null);
+  const [importDiagnostics, setImportDiagnostics] = useState<{ missingKeys: string[]; unknownKeys: string[]; invalidValues: Array<{ key: string; value: string }> } | null>(null);
 
   const supportsClassDef = useMemo(
     () => CLASSDEF_CAPABLE_FAMILIES.includes(detectDiagram(inputCode).family),
@@ -303,7 +303,7 @@ export function AppShell() {
       const missingKeys = (REQUIRED_COLOR_KEYS as readonly string[]).filter((k) => !sharedKeys.has(k));
       const unknownKeys = Object.keys(share.themeVariables).filter((k) => !KNOWN_COLOR_KEYS.has(k));
       if (missingKeys.length > 0 || unknownKeys.length > 0) {
-        setImportDiagnostics({ missingKeys, unknownKeys });
+        setImportDiagnostics({ missingKeys, unknownKeys, invalidValues: [] });
       }
     }
 
