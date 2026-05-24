@@ -421,7 +421,13 @@ export function ClassBrowser({ classDefs, supportsClassDef = true, usedClassName
           )}
           <button
             type="button"
-            onClick={() => setShowPreview((v) => !v)}
+            onClick={() => {
+              setShowPreview((v) => {
+                // When opening, default to "used" mode if any classes are in use
+                if (!v && hasUsed) setPreviewMode("used");
+                return !v;
+              });
+            }}
             disabled={!supportsClassDef}
             title={showPreview ? "Hide classDef preview" : "Preview what 'Copy all' will paste"}
             aria-pressed={showPreview}
