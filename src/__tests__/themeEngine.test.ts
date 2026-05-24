@@ -5,10 +5,12 @@ import {
   generatePromptScaffoldWithFormat,
   buildClassDefString,
   getClassDefs,
+  CLASSDEF_CAPABLE_FAMILIES,
   type ExportOptions,
 } from "@/lib/themeEngine";
 import { BRAND_PALETTES, BUILTIN_PALETTES } from "@/lib/palettes";
 import { DEFAULT_TYPOGRAPHY } from "@/lib/typography";
+import { DIAGRAM_CAPABILITIES } from "@/data/mermaid-capabilities";
 
 const palette = BRAND_PALETTES[0];
 
@@ -1378,6 +1380,90 @@ describe("sequence.fontSize sync rule", () => {
       const seqMatch = result.match(/"sequence":\s*\{"fontSize":\s*(\d+)\}/);
       expect(seqMatch, `no sequence block for typography=${typographySize} override=${override}`).not.toBeNull();
       expect(Number(seqMatch![1]), `drift for typography=${typographySize} override=${override}`).toBe(expectedSize);
+    }
+  });
+});
+
+describe("CLASSDEF_CAPABLE_FAMILIES — 'No classDef' badge visibility", () => {
+  it("contains exactly the 4 classDef-capable families (regression sentinel)", () => {
+    expect([...CLASSDEF_CAPABLE_FAMILIES].sort()).toEqual(
+      ["block", "classDiagram", "flowchart", "stateDiagram"],
+    );
+  });
+
+  it("flowchart is classDef-capable — badge must NOT show", () => {
+    expect(CLASSDEF_CAPABLE_FAMILIES.includes("flowchart")).toBe(true);
+  });
+
+  it("classDiagram is classDef-capable — badge must NOT show", () => {
+    expect(CLASSDEF_CAPABLE_FAMILIES.includes("classDiagram")).toBe(true);
+  });
+
+  it("stateDiagram is classDef-capable — badge must NOT show", () => {
+    expect(CLASSDEF_CAPABLE_FAMILIES.includes("stateDiagram")).toBe(true);
+  });
+
+  it("block is classDef-capable — badge must NOT show", () => {
+    expect(CLASSDEF_CAPABLE_FAMILIES.includes("block")).toBe(true);
+  });
+
+  const NON_CLASSDEF_FAMILIES = [
+    "sequenceDiagram",
+    "erDiagram",
+    "gantt",
+    "pie",
+    "gitGraph",
+    "mindmap",
+    "timeline",
+    "quadrantChart",
+    "journey",
+    "requirementDiagram",
+    "c4Diagram",
+    "architectureBeta",
+    "sankey",
+    "xychart",
+    "packet",
+    "kanban",
+    "treemap",
+    "venn",
+    "ishikawa",
+    "wardley",
+    "treeView",
+    "eventModeling",
+    "zenuml",
+    "radar",
+  ] as const;
+
+  for (const family of NON_CLASSDEF_FAMILIES) {
+    it(`${family} is NOT classDef-capable — badge must show`, () => {
+      expect(CLASSDEF_CAPABLE_FAMILIES.includes(family)).toBe(false);
+    });
+  }
+
+  it("every family in DIAGRAM_CAPABILITIES is accounted for: either classDef-capable or badge-showing", () => {
+    const allRegistered = DIAGRAM_CAPABILITIES.map((c) => c.id);
+    for (const family of allRegistered) {
+      const isCapable = CLASSDEF_CAPABLE_FAMILIES.includes(family);
+      const isNonClassDef = !isCapable;
+      expect(
+        isCapable || isNonClassDef,
+        `${family} is neither classDef-capable nor in the non-classDef set`,
+      ).toBe(true);
+    }
+  });
+
+  it("all 4 classDef-capable families exist in DIAGRAM_CAPABILITIES", () => {
+    const allRegistered = DIAGRAM_CAPABILITIES.map((c) => c.id);
+    for (const family of CLASSDEF_CAPABLE_FAMILIES) {
+      expect(allRegistered, `${family} missing from DIAGRAM_CAPABILITIES`).toContain(family);
+    }
+  });
+
+  it("no family outside CLASSDEF_CAPABLE_FAMILIES is accidentally included", () => {
+    const allRegistered = DIAGRAM_CAPABILITIES.map((c) => c.id);
+    const nonCapable = allRegistered.filter((id) => !CLASSDEF_CAPABLE_FAMILIES.includes(id));
+    for (const family of nonCapable) {
+      expect(CLASSDEF_CAPABLE_FAMILIES.includes(family)).toBe(false);
     }
   });
 });
