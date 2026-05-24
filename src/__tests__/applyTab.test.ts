@@ -230,7 +230,7 @@ describe("multi-diagram override reset", () => {
     expect(codeForDiagram1).toContain("sequenceDiagram");
   });
 
-  it("switching activeDiagramIdx clears a stale override (mirrors the useEffect path)", () => {
+  it("base code change (e.g. palette switch) clears the override for the current diagram", () => {
     const optsBase: ExportOptions = {
       palette: paletteA,
       diagramFamily: "flowchart",
@@ -245,7 +245,7 @@ describe("multi-diagram override reset", () => {
       diagramFamily: "sequence",
     });
 
-    // Start on diagram 0.
+    // Start on diagram 0 (no activeDiagramIdx arg — defaults to 0).
     let currentExportCode = exportCodeDiagram0;
     const { result, rerender } = renderHook(() =>
       useCodeEditorOverride(currentExportCode),
@@ -258,13 +258,16 @@ describe("multi-diagram override reset", () => {
     expect(result.current.codeEditorOverride).toBe("stale edit from diagram 0");
     expect(result.current.effectiveExportCode).toBe("stale edit from diagram 0");
 
-    // User switches to diagram 1 → activeDiagramCode changes → exportCode changes.
+    // Simulate a palette/option change: exportCode changes while the diagram
+    // index stays the same (idx stays at default 0 throughout this test).
+    // This represents any action that causes the base code to change for the
+    // currently active diagram — the stored override must be cleared.
     currentExportCode = exportCodeDiagram1;
     rerender();
 
-    // The stale override from diagram 0 must be gone.
+    // The override is gone because the base code it was derived from changed.
     expect(result.current.codeEditorOverride).toBeNull();
-    // The panel now shows diagram 1's fresh themed output.
+    // The panel now shows the fresh computed output.
     expect(result.current.effectiveExportCode).toBe(exportCodeDiagram1);
     expect(result.current.effectiveExportCode).not.toContain("stale edit from diagram 0");
   });
@@ -353,13 +356,13 @@ describe("multi-diagram override reset", () => {
     expect(result.current.effectiveExportCode).toBe("edit on diagram 0");
 
     // Switch to diagram 1 — exportCode is identical, but index changes.
-    // Without the activeDiagramIdx fix the effect would NOT fire and the
-    // override would bleed through.
+    // Diagram 1 has never been edited, so its slot in the per-diagram override
+    // map is empty, even though diagram 0's edit is still stored at key 0.
     currentIdx = 1;
     // exportCode stays the same — this is the edge case.
     rerender();
 
-    // The override from diagram 0 must be gone.
+    // Diagram 1 has no stored override, so the panel shows fresh themed output.
     expect(result.current.codeEditorOverride).toBeNull();
     expect(result.current.effectiveExportCode).toBe(identicalCode);
     expect(result.current.effectiveExportCode).not.toBe("edit on diagram 0");
@@ -399,5 +402,200 @@ describe("multi-diagram override reset", () => {
 
     expect(result.current.codeEditorOverride).toBeNull();
     expect(result.current.effectiveExportCode).toBe(exportCodeDiagram0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Per-diagram override isolation (Task #200)
+//
+// useCodeEditorOverride stores overrides keyed by activeDiagramIdx so that
+// switching back to a previously edited diagram restores that edit rather than
+// showing a blank reset.
+// ---------------------------------------------------------------------------
+describe("per-diagram override isolation", () => {
+  const MULTI_INPUT = [
+    "flowchart TD",
+    "  A --> B",
+    "  B --> C",
+    "",
+    "sequenceDiagram",
+    "  Alice->>Bob: Hello",
+    "  Bob-->>Alice: Hi",
+  ].join("\n");
+
+  const diagrams = splitDiagrams(MULTI_INPUT);
+
+  const optsBase: ExportOptions = {
+    palette: paletteA,
+    diagramFamily: "flowchart",
+    includeMetaComments: false,
+    includeBadge: false,
+  };
+
+  const exportCodeDiagram0 = generateThemedCode(diagrams[0].content, optsBase);
+  const exportCodeDiagram1 = generateThemedCode(diagrams[1].content, {
+    ...optsBase,
+    diagramFamily: "sequence",
+  });
+
+  it("switching to a new diagram index shows themed output when no override exists there", () => {
+    let currentExportCode = exportCodeDiagram0;
+    let currentIdx = 0;
+    const { result, rerender } = renderHook(() =>
+      useCodeEditorOverride(currentExportCode, currentIdx),
+    );
+
+    // User edits diagram 0.
+    act(() => {
+      result.current.setCodeEditorOverride("edit on diagram 0");
+    });
+    expect(result.current.effectiveExportCode).toBe("edit on diagram 0");
+
+    // Switch to diagram 1 (no prior edit there).
+    currentExportCode = exportCodeDiagram1;
+    currentIdx = 1;
+    rerender();
+
+    // Diagram 1 has no stored override — panel shows fresh themed output.
+    expect(result.current.codeEditorOverride).toBeNull();
+    expect(result.current.effectiveExportCode).toBe(exportCodeDiagram1);
+  });
+
+  it("switching back to a previously edited diagram restores the stored edit", () => {
+    let currentExportCode = exportCodeDiagram0;
+    let currentIdx = 0;
+    const { result, rerender } = renderHook(() =>
+      useCodeEditorOverride(currentExportCode, currentIdx),
+    );
+
+    // User edits diagram 0.
+    act(() => {
+      result.current.setCodeEditorOverride("edit on diagram 0");
+    });
+
+    // Switch to diagram 1 (no edit there).
+    currentExportCode = exportCodeDiagram1;
+    currentIdx = 1;
+    rerender();
+    expect(result.current.codeEditorOverride).toBeNull();
+
+    // Switch back to diagram 0 — the stored edit must be restored.
+    currentExportCode = exportCodeDiagram0;
+    currentIdx = 0;
+    rerender();
+
+    expect(result.current.codeEditorOverride).toBe("edit on diagram 0");
+    expect(result.current.effectiveExportCode).toBe("edit on diagram 0");
+  });
+
+  it("independent edits on two diagrams are stored and restored separately", () => {
+    let currentExportCode = exportCodeDiagram0;
+    let currentIdx = 0;
+    const { result, rerender } = renderHook(() =>
+      useCodeEditorOverride(currentExportCode, currentIdx),
+    );
+
+    // Edit diagram 0.
+    act(() => {
+      result.current.setCodeEditorOverride("edit on diagram 0");
+    });
+
+    // Switch to diagram 1, edit it too.
+    currentExportCode = exportCodeDiagram1;
+    currentIdx = 1;
+    rerender();
+    act(() => {
+      result.current.setCodeEditorOverride("edit on diagram 1");
+    });
+    expect(result.current.effectiveExportCode).toBe("edit on diagram 1");
+
+    // Switch back to diagram 0 — its own edit is restored.
+    currentExportCode = exportCodeDiagram0;
+    currentIdx = 0;
+    rerender();
+    expect(result.current.codeEditorOverride).toBe("edit on diagram 0");
+    expect(result.current.effectiveExportCode).toBe("edit on diagram 0");
+
+    // Switch back to diagram 1 — its own edit is restored.
+    currentExportCode = exportCodeDiagram1;
+    currentIdx = 1;
+    rerender();
+    expect(result.current.codeEditorOverride).toBe("edit on diagram 1");
+    expect(result.current.effectiveExportCode).toBe("edit on diagram 1");
+  });
+
+  it("palette change on current diagram clears its override without affecting the other diagram's edit", () => {
+    // A different palette applied to diagram 0 produces a different base code.
+    const exportCodeDiagram0PaletteB = generateThemedCode(diagrams[0].content, {
+      ...optsBase,
+      palette: paletteB,
+    });
+
+    let currentExportCode = exportCodeDiagram0;
+    let currentIdx = 0;
+    const { result, rerender } = renderHook(() =>
+      useCodeEditorOverride(currentExportCode, currentIdx),
+    );
+
+    // Edit diagram 0.
+    act(() => {
+      result.current.setCodeEditorOverride("edit on diagram 0");
+    });
+
+    // Switch to diagram 1, edit it.
+    currentExportCode = exportCodeDiagram1;
+    currentIdx = 1;
+    rerender();
+    act(() => {
+      result.current.setCodeEditorOverride("edit on diagram 1");
+    });
+
+    // Return to diagram 0, but the palette has changed — base code is different.
+    currentExportCode = exportCodeDiagram0PaletteB;
+    currentIdx = 0;
+    rerender();
+
+    // Diagram 0's override is cleared (the base it was derived from changed).
+    expect(result.current.codeEditorOverride).toBeNull();
+    expect(result.current.effectiveExportCode).toBe(exportCodeDiagram0PaletteB);
+
+    // Switch to diagram 1 — its edit is still there (palette only changed diagram 0's output).
+    currentExportCode = exportCodeDiagram1;
+    currentIdx = 1;
+    rerender();
+    expect(result.current.codeEditorOverride).toBe("edit on diagram 1");
+    expect(result.current.effectiveExportCode).toBe("edit on diagram 1");
+  });
+
+  it("setCodeEditorOverride(null) clears only the current diagram's override", () => {
+    let currentExportCode = exportCodeDiagram0;
+    let currentIdx = 0;
+    const { result, rerender } = renderHook(() =>
+      useCodeEditorOverride(currentExportCode, currentIdx),
+    );
+
+    // Edit both diagrams.
+    act(() => {
+      result.current.setCodeEditorOverride("edit on diagram 0");
+    });
+    currentExportCode = exportCodeDiagram1;
+    currentIdx = 1;
+    rerender();
+    act(() => {
+      result.current.setCodeEditorOverride("edit on diagram 1");
+    });
+
+    // Explicitly reset diagram 1 (simulates the Reset button).
+    act(() => {
+      result.current.setCodeEditorOverride(null);
+    });
+    expect(result.current.codeEditorOverride).toBeNull();
+    expect(result.current.effectiveExportCode).toBe(exportCodeDiagram1);
+
+    // Diagram 0's edit is unaffected.
+    currentExportCode = exportCodeDiagram0;
+    currentIdx = 0;
+    rerender();
+    expect(result.current.codeEditorOverride).toBe("edit on diagram 0");
   });
 });
