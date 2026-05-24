@@ -42,6 +42,7 @@ import {
   isHintDismissed,
   clearAllDismissals,
 } from "@/lib/familySyntaxHints";
+import { HighlightedCode } from "@/components/HighlightedCode";
 import { type TypographySettings } from "@/lib/typography";
 import type { AppTab } from "@/App";
 
@@ -824,6 +825,16 @@ export function ApplyTab({
                 );
               })}
             </div>
+            {previewMode === "code" && codeEditorOverride === null && effectiveExportCode && (
+              <button
+                type="button"
+                onClick={() => setCodeEditorOverride(effectiveExportCode)}
+                title="Edit the styled code before copying"
+                className="text-[10px] px-2 py-0.5 rounded border border-border/40 bg-muted/50 text-muted-foreground font-medium hover:bg-muted hover:text-foreground transition-colors"
+              >
+                Edit
+              </button>
+            )}
             {previewMode === "code" && codeEditorOverride !== null && (
               <button
                 type="button"
@@ -877,14 +888,21 @@ export function ApplyTab({
             )}
           </div>
           {previewMode === "code" ? (
-            <textarea
-              className="forge-code-panel flex-1 min-h-[160px] md:min-h-0 w-full p-3 text-xs font-mono resize-none overflow-auto focus:outline-none"
-              value={effectiveExportCode}
-              onChange={(e) => setCodeEditorOverride(e.target.value)}
-              spellCheck={false}
-              aria-label="Styled code output — edit to customise before copying"
-              placeholder="Paste a diagram above to see the styled output…"
-            />
+            codeEditorOverride !== null ? (
+              <textarea
+                className="forge-code-panel flex-1 min-h-[160px] md:min-h-0 w-full p-3 text-xs font-mono resize-none overflow-auto focus:outline-none"
+                value={effectiveExportCode}
+                onChange={(e) => setCodeEditorOverride(e.target.value)}
+                spellCheck={false}
+                aria-label="Styled code output — edit before copying"
+                autoFocus
+              />
+            ) : (
+              <HighlightedCode
+                code={effectiveExportCode}
+                aria-label="Styled code output"
+              />
+            )
           ) : (
             <div className="md:flex-1 overflow-auto p-3 md:p-4 min-h-[260px]" data-print-only>
               {previewMode === "diff" ? (
