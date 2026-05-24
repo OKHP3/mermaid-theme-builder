@@ -57,6 +57,7 @@ afterEach(() => {
 
 describe("FamilySyntaxHint — renders for supported families", () => {
   const SUPPORTED_FAMILIES: DiagramFamily[] = [
+    "flowchart",
     "gantt",
     "pie",
     "mindmap",
@@ -99,7 +100,6 @@ describe("FamilySyntaxHint — renders for supported families", () => {
 
 describe("FamilySyntaxHint — does not render for unsupported families", () => {
   const UNSUPPORTED_FAMILIES: DiagramFamily[] = [
-    "flowchart",
     "unknown",
     "gitGraph",
     "journey",

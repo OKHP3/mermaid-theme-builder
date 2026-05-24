@@ -24,6 +24,7 @@ import type { DiagramFamily } from "@/data/mermaid-capabilities";
 
 describe("getFamilySyntaxHint — returns non-null for all registered families", () => {
   const HINT_FAMILIES: DiagramFamily[] = [
+    "flowchart",
     "gantt",
     "pie",
     "mindmap",
@@ -44,8 +45,8 @@ describe("getFamilySyntaxHint — returns non-null for all registered families",
     });
   }
 
-  it("exact-set sentinel — list has exactly 12 entries and all return non-null", () => {
-    expect(HINT_FAMILIES).toHaveLength(12);
+  it("exact-set sentinel — list has exactly 13 entries and all return non-null", () => {
+    expect(HINT_FAMILIES).toHaveLength(13);
     const missingHints = HINT_FAMILIES.filter((f) => getFamilySyntaxHint(f) === null);
     expect(missingHints).toEqual([]);
   });
@@ -57,7 +58,6 @@ describe("getFamilySyntaxHint — returns non-null for all registered families",
 
 describe("getFamilySyntaxHint — returns null for families without a hint", () => {
   const NO_HINT_FAMILIES: DiagramFamily[] = [
-    "flowchart",
     "unknown",
     "gitGraph",
     "journey",
@@ -75,6 +75,10 @@ describe("getFamilySyntaxHint — returns null for families without a hint", () 
 // ---------------------------------------------------------------------------
 
 describe("getFamilySyntaxHint — classDefStatus matches CLASSDEF_CAPABLE_FAMILIES", () => {
+  it('flowchart classDefStatus is "yes" (full classDef support)', () => {
+    expect(getFamilySyntaxHint("flowchart")?.classDefStatus).toBe("yes");
+  });
+
   it('classDiagram classDefStatus is "yes" (full classDef support)', () => {
     expect(getFamilySyntaxHint("classDiagram")?.classDefStatus).toBe("yes");
   });
@@ -108,7 +112,7 @@ describe("getFamilySyntaxHint — classDefStatus matches CLASSDEF_CAPABLE_FAMILI
 
   it('every hinted family with "yes" or "limited" classDefStatus is in CLASSDEF_CAPABLE_FAMILIES', () => {
     const HINT_FAMILIES: DiagramFamily[] = [
-      "gantt", "pie", "mindmap", "erDiagram", "classDiagram",
+      "flowchart", "gantt", "pie", "mindmap", "erDiagram", "classDiagram",
       "stateDiagram", "sequenceDiagram", "block", "timeline",
       "xychart", "quadrantChart", "sankey",
     ];
@@ -146,6 +150,7 @@ describe("getFamilySyntaxHint — classDefStatus matches CLASSDEF_CAPABLE_FAMILI
 
 describe("getFamilySyntaxHint — shape integrity for all registered hints", () => {
   const HINT_FAMILIES: DiagramFamily[] = [
+    "flowchart",
     "gantt",
     "pie",
     "mindmap",

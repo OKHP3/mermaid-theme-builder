@@ -11,6 +11,13 @@ export interface FamilySyntaxHint {
 
 const HINTS: FamilySyntaxHint[] = [
   {
+    family: "flowchart",
+    keyIdiom: 'flowchart LR\n  A([Start]) --> B{Decision}\n  B -- Yes --> C[Action]\n  B -- No  --> D[/Input/]\n  C --> E((End))\n  classDef accent fill:#c46a2c,color:#fff\n  class C accent',
+    classDefStatus: "yes",
+    themingNote:
+      "Node fill/border use primaryColor and primaryBorderColor; edge labels use edgeLabelBackground. classDef lets you color individual nodes — append :::styleName after a node id.",
+  },
+  {
     family: "gantt",
     keyIdiom: "dateFormat YYYY-MM-DD\nsection Phase\n  Task name :done, id, 2024-01-01, 7d",
     classDefStatus: "no",
