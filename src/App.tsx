@@ -3,6 +3,7 @@ import { useThemeMode, type ThemeMode } from "@/lib/themeMode";
 import {
   BUILTIN_PALETTES,
   BRAND_PALETTES,
+  UTILITY_PALETTES,
   REQUIRED_COLOR_KEYS,
   KNOWN_COLOR_KEYS,
   type Palette,
@@ -385,7 +386,10 @@ export function AppShell() {
     return () => clearTimeout(t);
   }, [toast]);
 
-  const allPalettes = useMemo<Palette[]>(() => [...BUILTIN_PALETTES, ...userPalettes], [userPalettes]);
+  const allPalettes = useMemo<Palette[]>(
+    () => [...BRAND_PALETTES, ...UTILITY_PALETTES, ...userPalettes],
+    [userPalettes],
+  );
 
   const selectedPalette = useMemo((): Palette => {
     const base = allPalettes.find((p) => p.id === selectedPaletteId) ?? BRAND_PALETTES[0];
