@@ -1,199 +1,249 @@
 // @vitest-environment happy-dom
 
 /**
- * Tests for the Theme Preview diagram picker logic (ComposeTab.tsx lines 244–271).
+ * Tests for the Theme Preview diagram picker (ComposeTab.tsx lines 244–271).
  *
  * Behaviors covered:
- *   1. localStorage persistence — stored id is read on mount and written on change.
- *   2. Catalog fallback — unknown/missing id resolves to EXAMPLE_CATALOG[0].
- *   3. isBetaPreview hint — fires for "Beta" and "Experimental" badges, not for
- *      "Canonical" or absent badges.
+ *   1. Default selection resolves to "flowchart-basic" when localStorage is empty.
+ *   2. Changing the selection writes to localStorage key "mtb.compose.previewSampleId".
+ *   3. An unknown stored id falls back gracefully to EXAMPLE_CATALOG[0] without throwing.
+ *   4. The beta render-confidence hint appears/disappears based on the selected entry's badge.
  *
- * Tests mirror the exact logic in ComposeTab so that any behavioral change in
- * the component breaks these tests immediately.
+ * Strategy: render the real ComposeTab with heavily-mocked children so the
+ * picker state, localStorage wiring, and isBetaPreview hint are exercised
+ * through actual component paths rather than duplicated helper logic.
  */
 
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { render, cleanup } from "@testing-library/react";
+import { fireEvent } from "@testing-library/dom";
+import { createElement } from "react";
+import { ComposeTab } from "@/pages/tabs/ComposeTab";
+import { BRAND_PALETTES } from "@/lib/palettes";
+import { DEFAULT_TYPOGRAPHY } from "@/lib/typography";
 import { EXAMPLE_CATALOG } from "@/data/example-library";
+import { generateThemedCode } from "@/lib/themeEngine";
+import type { AppTab } from "@/App";
+import type { ThemeColor } from "@/lib/palettes";
 
 // ---------------------------------------------------------------------------
-// Helpers that mirror ComposeTab logic exactly
+// Mocks — silence heavy child components that don't affect picker behavior
+// ---------------------------------------------------------------------------
+
+vi.mock("@/components/MermaidPreview", () => ({
+  MermaidPreview: ({ code }: { code: string }) =>
+    createElement("div", { "data-testid": "mermaid-preview", "data-code": code }),
+}));
+
+vi.mock("@/components/PromptScaffoldModal", () => ({
+  PromptScaffoldModal: () => null,
+}));
+
+vi.mock("@/components/PaletteSelectorBar", () => ({
+  PaletteSelectorBar: () => null,
+}));
+
+vi.mock("@/components/ColorSwatch", () => ({
+  ColorSwatch: () => null,
+}));
+
+vi.mock("@/pages/tabs/ExtractTab", () => ({
+  ExtractTab: () => null,
+}));
+
+// ---------------------------------------------------------------------------
+// Shared fixtures
 // ---------------------------------------------------------------------------
 
 const LS_KEY = "mtb.compose.previewSampleId";
-const DEFAULT_ID = "flowchart-basic";
+const SELECTED_PALETTE = BRAND_PALETTES[0];
 
-/** Mirrors the useState initializer in ComposeTab (line 244–249). */
-function readStoredId(): string {
-  try {
-    return localStorage.getItem(LS_KEY) ?? DEFAULT_ID;
-  } catch {
-    return DEFAULT_ID;
-  }
+function noop() {}
+
+const BASE_PROPS = {
+  selectedPalette: SELECTED_PALETTE,
+  selectedPaletteId: SELECTED_PALETTE.id,
+  onSelectPalette: noop,
+  customColors: {} as Record<string, ThemeColor[]>,
+  onColorChange: noop,
+  onResetPalette: noop,
+  hasCustomizations: false,
+  includeMetaComments: false,
+  onIncludeMetaCommentsChange: noop,
+  includeBadge: false,
+  onIncludeBadgeChange: noop,
+  customThemeName: "",
+  onCustomThemeNameChange: noop,
+  effectiveThemeName: SELECTED_PALETTE.name,
+  userPalettes: [],
+  onSavePalette: noop,
+  onImportPalette: noop,
+  onDeleteUserPalette: noop,
+  onShowToast: noop,
+  look: "classic" as const,
+  onLookChange: noop,
+  fontSize: "16px",
+  onFontSizeChange: noop,
+  typography: DEFAULT_TYPOGRAPHY,
+  onTypographyChange: noop,
+  rendererTarget: "mermaid.js",
+  onRendererTargetChange: noop,
+  onUseExtractedTheme: noop,
+  onSwitchTab: noop as (tab: AppTab) => void,
+  importDiagnostics: null,
+  onImportDiagnosticsChange: noop,
+};
+
+function renderTab() {
+  return render(createElement(ComposeTab, BASE_PROPS));
 }
 
-/** Mirrors handleSampleIdChange's localStorage.setItem call (line 255). */
-function writeStoredId(id: string): void {
-  try {
-    localStorage.setItem(LS_KEY, id);
-  } catch { /* ignore */ }
+function getPickerSelect(container: HTMLElement): HTMLSelectElement {
+  const el = container.querySelector<HTMLSelectElement>('[aria-label="Preview diagram"]');
+  if (!el) throw new Error("Preview diagram select not found in rendered output");
+  return el;
 }
 
-/** Mirrors the sampleEntry useMemo (line 259–262). */
-function resolveSampleEntry(id: string) {
-  return EXAMPLE_CATALOG.find((e) => e.id === id) ?? EXAMPLE_CATALOG[0];
+function getMermaidPreview(container: HTMLElement): HTMLElement {
+  const el = container.querySelector<HTMLElement>("[data-testid='mermaid-preview']");
+  if (!el) throw new Error("Mocked mermaid-preview not found");
+  return el;
 }
 
-/** Mirrors isBetaPreview (line 265–268). */
-function isBetaEntry(badge: string | undefined): boolean {
-  return Boolean(badge && (badge.includes("Beta") || badge.includes("Experimental")));
-}
-
-/** Mirrors previewBadgeLabel (line 269–271). */
-function badgeLabel(badge: string | undefined): string {
-  return badge?.includes("Experimental") ? "Experimental" : "Beta";
-}
+beforeEach(() => localStorage.clear());
+afterEach(() => {
+  cleanup();
+  localStorage.clear();
+  vi.restoreAllMocks();
+});
 
 // ---------------------------------------------------------------------------
-// Suite 1 — localStorage persistence
+// 1. Default selection — empty localStorage → flowchart-basic
 // ---------------------------------------------------------------------------
 
-describe("previewPicker — localStorage persistence", () => {
-  beforeEach(() => localStorage.clear());
-  afterEach(() => localStorage.clear());
-
-  it("returns 'flowchart-basic' when localStorage is empty (null fallback)", () => {
-    expect(readStoredId()).toBe("flowchart-basic");
+describe("previewPicker — default selection", () => {
+  it("the preview select defaults to 'flowchart-basic' when localStorage is empty", () => {
+    const { container } = renderTab();
+    expect(getPickerSelect(container).value).toBe("flowchart-basic");
   });
 
-  it("returns 'flowchart-basic' when the key was explicitly removed", () => {
-    localStorage.removeItem(LS_KEY);
-    expect(readStoredId()).toBe("flowchart-basic");
+  it("the default id matches EXAMPLE_CATALOG[0].id", () => {
+    const { container } = renderTab();
+    expect(getPickerSelect(container).value).toBe(EXAMPLE_CATALOG[0].id);
   });
 
-  it("returns the stored id when a valid value is present", () => {
-    localStorage.setItem(LS_KEY, "sankey-effort-to-output");
-    expect(readStoredId()).toBe("sankey-effort-to-output");
-  });
-
-  it("writeStoredId writes the id under the correct localStorage key", () => {
-    writeStoredId("class-software-architecture");
-    expect(localStorage.getItem(LS_KEY)).toBe("class-software-architecture");
-  });
-
-  it("writeStoredId overwrites a previous value", () => {
-    writeStoredId("sequence-basic");
-    writeStoredId("er-basic");
-    expect(localStorage.getItem(LS_KEY)).toBe("er-basic");
-  });
-
-  it("round-trip: write then read returns the same id", () => {
-    writeStoredId("gantt-basic");
-    expect(readStoredId()).toBe("gantt-basic");
+  it("the mocked preview receives the themed code for flowchart-basic on initial render", () => {
+    const { container } = renderTab();
+    const preview = getMermaidPreview(container);
+    // The code attr is non-empty and begins with the %%{init expected from theming.
+    expect(preview.getAttribute("data-code")).toContain("%%{init:");
   });
 });
 
 // ---------------------------------------------------------------------------
-// Suite 2 — catalog lookup and fallback
+// 2. localStorage write — selection change persists to the correct key
 // ---------------------------------------------------------------------------
 
-describe("previewPicker — sampleEntry catalog lookup", () => {
-  it("EXAMPLE_CATALOG[0] has id 'flowchart-basic' (fallback target)", () => {
-    expect(EXAMPLE_CATALOG[0].id).toBe("flowchart-basic");
+describe("previewPicker — localStorage write on selection change", () => {
+  it("writes the selected id to the correct key after a change event", () => {
+    const { container } = renderTab();
+    fireEvent.change(getPickerSelect(container), {
+      target: { value: "sankey-effort-to-output" },
+    });
+    expect(localStorage.getItem(LS_KEY)).toBe("sankey-effort-to-output");
   });
 
-  it("resolves to the matching entry for a known id", () => {
-    const entry = resolveSampleEntry("flowchart-basic");
-    expect(entry.id).toBe("flowchart-basic");
+  it("uses exactly the key 'mtb.compose.previewSampleId' — not a shortened variant", () => {
+    const { container } = renderTab();
+    fireEvent.change(getPickerSelect(container), {
+      target: { value: "flowchart-basic" },
+    });
+    expect(localStorage.getItem(LS_KEY)).toBe("flowchart-basic");
+    expect(localStorage.getItem("previewSampleId")).toBeNull();
+    expect(localStorage.getItem("compose.previewSampleId")).toBeNull();
   });
 
-  it("falls back to EXAMPLE_CATALOG[0] for a completely unknown id without throwing", () => {
-    expect(() => resolveSampleEntry("this-id-does-not-exist-anywhere")).not.toThrow();
-    const entry = resolveSampleEntry("this-id-does-not-exist-anywhere");
-    expect(entry).toBe(EXAMPLE_CATALOG[0]);
+  it("overwrites the previous stored value on a second change", () => {
+    const { container } = renderTab();
+    const select = getPickerSelect(container);
+    fireEvent.change(select, { target: { value: "sankey-effort-to-output" } });
+    fireEvent.change(select, { target: { value: "flowchart-basic" } });
+    expect(localStorage.getItem(LS_KEY)).toBe("flowchart-basic");
   });
 
-  it("falls back to EXAMPLE_CATALOG[0] for an empty string", () => {
-    const entry = resolveSampleEntry("");
-    expect(entry).toBe(EXAMPLE_CATALOG[0]);
-  });
-
-  it("falls back gracefully for a stale localStorage id that no longer exists in catalog", () => {
-    localStorage.setItem(LS_KEY, "old-removed-diagram-id");
-    const id = readStoredId();
-    const entry = resolveSampleEntry(id);
-    expect(entry).toBe(EXAMPLE_CATALOG[0]);
-  });
-
-  it("resolves a known beta entry by its real catalog id", () => {
-    const entry = resolveSampleEntry("sankey-effort-to-output");
-    expect(entry.id).toBe("sankey-effort-to-output");
+  it("localStorage is empty before any change (confirming write only on change)", () => {
+    renderTab(); // mount without interacting
+    expect(localStorage.getItem(LS_KEY)).toBeNull();
   });
 });
 
 // ---------------------------------------------------------------------------
-// Suite 3 — isBetaPreview hint logic
+// 3. Unknown stored id fallback — EXAMPLE_CATALOG[0] used, no throw
 // ---------------------------------------------------------------------------
 
-describe("previewPicker — isBetaPreview hint logic", () => {
-  it("returns false when badge is undefined", () => {
-    expect(isBetaEntry(undefined)).toBe(false);
+describe("previewPicker — unknown stored id fallback", () => {
+  it("renders without throwing when localStorage holds an unrecognized id", () => {
+    localStorage.setItem(LS_KEY, "completely-unknown-diagram-id-xyz");
+    expect(() => renderTab()).not.toThrow();
   });
 
-  it("returns false for empty badge string", () => {
-    expect(isBetaEntry("")).toBe(false);
+  it("the mocked preview receives non-empty themed code from the EXAMPLE_CATALOG[0] fallback", () => {
+    localStorage.setItem(LS_KEY, "completely-unknown-diagram-id-xyz");
+    const { container } = renderTab();
+    const preview = getMermaidPreview(container);
+    // sampleEntry falls back to EXAMPLE_CATALOG[0] (flowchart-basic) via the ?? operator.
+    // generateThemedCode always prepends %%{init:...} so the code is non-empty and themed.
+    const code = preview.getAttribute("data-code") ?? "";
+    expect(code.length).toBeGreaterThan(0);
+    expect(code).toContain("%%{init:");
+    // Confirm the fallback used flowchart content from EXAMPLE_CATALOG[0], not an error string.
+    expect(code).toContain("flowchart");
   });
 
-  it("returns false for 'Canonical' badge", () => {
-    expect(isBetaEntry("Canonical")).toBe(false);
+  it("the select snaps to the first available option when the stale id has no matching <option>", () => {
+    localStorage.setItem(LS_KEY, "completely-unknown-diagram-id-xyz");
+    const { container } = renderTab();
+    // Browser behavior: a controlled <select> whose value prop doesn't match any
+    // <option> renders as if the first option is selected. happy-dom matches this.
+    // So select.value is the first catalog entry, not the unknown string.
+    const select = getPickerSelect(container);
+    expect(select.value).toBe(EXAMPLE_CATALOG[0].id);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 4. Beta render-confidence hint — rendered via real ComposeTab
+// ---------------------------------------------------------------------------
+
+describe("previewPicker — beta render-confidence hint (rendered)", () => {
+  it("no role='note' hint when the default flowchart-basic is selected", () => {
+    const { container } = renderTab();
+    expect(container.querySelector('[role="note"]')).toBeNull();
   });
 
-  it("returns true for plain 'Beta' badge", () => {
-    expect(isBetaEntry("Beta")).toBe(true);
+  it("hint appears after switching to a beta diagram (sankey-effort-to-output)", () => {
+    const { container } = renderTab();
+    fireEvent.change(getPickerSelect(container), {
+      target: { value: "sankey-effort-to-output" },
+    });
+    const hint = container.querySelector('[role="note"]');
+    expect(hint).not.toBeNull();
+    expect(hint!.textContent).toContain("Beta");
   });
 
-  it("returns true for 'Canonical · Beta' badge", () => {
-    expect(isBetaEntry("Canonical · Beta")).toBe(true);
+  it("hint text mentions limited theme variable support", () => {
+    const { container } = renderTab();
+    fireEvent.change(getPickerSelect(container), {
+      target: { value: "sankey-effort-to-output" },
+    });
+    expect(container.querySelector('[role="note"]')!.textContent).toContain("limited");
   });
 
-  it("returns true for 'Experimental' badge", () => {
-    expect(isBetaEntry("Experimental")).toBe(true);
-  });
-
-  it("returns true for 'Beta — may not render in all environments'", () => {
-    expect(isBetaEntry("Beta — may not render in all environments")).toBe(true);
-  });
-
-  it("badgeLabel returns 'Experimental' when badge includes Experimental", () => {
-    expect(badgeLabel("Experimental")).toBe("Experimental");
-  });
-
-  it("badgeLabel returns 'Beta' for plain Beta badge", () => {
-    expect(badgeLabel("Beta")).toBe("Beta");
-  });
-
-  it("badgeLabel returns 'Beta' for 'Canonical · Beta'", () => {
-    expect(badgeLabel("Canonical · Beta")).toBe("Beta");
-  });
-
-  it("badgeLabel returns 'Beta' (default) when badge is undefined", () => {
-    expect(badgeLabel(undefined)).toBe("Beta");
-  });
-
-  it("at least one catalog entry triggers isBetaPreview (catalog sanity check)", () => {
-    const betaEntries = EXAMPLE_CATALOG.filter((e) => isBetaEntry(e.badge));
-    expect(betaEntries.length).toBeGreaterThan(0);
-  });
-
-  it("flowchart-basic does NOT trigger isBetaPreview", () => {
-    const entry = EXAMPLE_CATALOG.find((e) => e.id === "flowchart-basic");
-    expect(entry).toBeDefined();
-    expect(isBetaEntry(entry!.badge)).toBe(false);
-  });
-
-  it("sankey-effort-to-output DOES trigger isBetaPreview", () => {
-    const entry = EXAMPLE_CATALOG.find((e) => e.id === "sankey-effort-to-output");
-    expect(entry).toBeDefined();
-    expect(isBetaEntry(entry!.badge)).toBe(true);
+  it("hint disappears when switching back to a non-beta diagram", () => {
+    const { container } = renderTab();
+    const select = getPickerSelect(container);
+    fireEvent.change(select, { target: { value: "sankey-effort-to-output" } });
+    fireEvent.change(select, { target: { value: "flowchart-basic" } });
+    expect(container.querySelector('[role="note"]')).toBeNull();
   });
 });
