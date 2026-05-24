@@ -197,3 +197,199 @@ describe("svgStringToPngBlob — real canvas integration", () => {
     expect(URL.revokeObjectURL).toHaveBeenCalledWith("blob:node-mock");
   });
 });
+
+// ── Content pixel preservation ─────────────────────────────────────────────
+//
+// The tests above verify dimensions and the white background fill. They can't
+// check foreground content because StubImage has no pixel data — drawImage is
+// silently swallowed in makeNodeCanvas when it receives a zero-size stub.
+//
+// These tests close that gap by:
+//   1. Pre-rendering a solid-color source canvas with @napi-rs/canvas.
+//   2. Wrapping it in a SourceImage stub that exposes the canvas via
+//      `_sourceCanvas` so drawImage can receive real pixel data.
+//   3. Using a canvas factory (makeContentCanvas) that unwraps `_sourceCanvas`
+//      and forwards it to the real @napi-rs/canvas drawImage — no silent catch.
+//   4. Asserting that interior pixels reflect the source color, not just white.
+//
+// The beforeEach URL stubs (createObjectURL → "blob:node-mock", revokeObjectURL)
+// remain active; only Image and document are re-stubbed inside each test.
+// ──────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Canvas factory for content pixel tests.
+ *
+ * Unlike makeNodeCanvas, drawImage here:
+ *  - Unwraps the `_sourceCanvas` property on a SourceImage (if present)
+ *    so the underlying @napi-rs/canvas Canvas reaches the real drawImage call.
+ *  - Does NOT swallow errors — any draw failure surfaces as a test failure.
+ */
+function makeContentCanvas() {
+  let w = 1;
+  let h = 1;
+  let nc: ReturnType<typeof createCanvas> | null = null;
+
+  function ensure() {
+    const ew = Math.max(1, w);
+    const eh = Math.max(1, h);
+    if (!nc || nc.width !== ew || nc.height !== eh) nc = createCanvas(ew, eh);
+    return nc;
+  }
+
+  return {
+    get width() {
+      return w;
+    },
+    set width(v: number) {
+      w = v;
+      nc = null;
+    },
+    get height() {
+      return h;
+    },
+    set height(v: number) {
+      h = v;
+      nc = null;
+    },
+    getContext(type: string) {
+      const ctx = ensure().getContext(type as "2d") as unknown as Record<string, unknown>;
+      const origDraw = (ctx.drawImage as (...a: unknown[]) => void).bind(ctx);
+      ctx.drawImage = (imgArg: unknown, ...rest: unknown[]) => {
+        // Unwrap SourceImage wrapper → the underlying @napi-rs/canvas Canvas.
+        const src = (imgArg as { _sourceCanvas?: unknown })?._sourceCanvas ?? imgArg;
+        origDraw(src, ...rest);
+      };
+      return ctx;
+    },
+    toBlob(cb: (b: Blob | null) => void, _mimeType?: string) {
+      ensure()
+        .encode("png")
+        .then((buf) => cb(new Blob([buf], { type: "image/png" })))
+        .catch(() => cb(null));
+    },
+  };
+}
+
+describe("svgStringToPngBlob — content pixel preservation", () => {
+  it("non-white foreground pixels are preserved when drawImage receives real pixel data", async () => {
+    // Pre-render a solid-red 10×10 source canvas to simulate diagram content.
+    const source = createCanvas(10, 10);
+    const srcCtx = source.getContext("2d");
+    srcCtx.fillStyle = "#ff0000";
+    srcCtx.fillRect(0, 0, 10, 10);
+
+    // Image stub: reports 10×10 dimensions and carries the red canvas as
+    // _sourceCanvas. makeContentCanvas.getContext.drawImage unwraps it so the
+    // real @napi-rs/canvas drawImage receives a Canvas instance with pixel data.
+    class SourceImage {
+      readonly width = 10;
+      readonly height = 10;
+      readonly _sourceCanvas = source;
+      onload: (() => void) | null = null;
+      onerror: ((e: unknown) => void) | null = null;
+      set src(_url: string) {
+        Promise.resolve().then(() => this.onload?.());
+      }
+    }
+
+    // Override Image and document stubs for this test only.
+    // URL stubs (createObjectURL / revokeObjectURL) remain from beforeEach.
+    vi.stubGlobal("Image", SourceImage);
+    vi.stubGlobal("document", {
+      createElement: (tag: string) => {
+        if (tag === "canvas") return makeContentCanvas();
+        throw new Error(`Unsupported tag in content pixel test: ${tag}`);
+      },
+    });
+
+    // scale=1 so the output PNG is 10×10 — same dimensions as the source canvas.
+    const blob = await svgStringToPngBlob('<svg width="10" height="10"></svg>', 1);
+    const png = await parsePng(blob);
+
+    expect(png.width).toBe(10);
+    expect(png.height).toBe(10);
+
+    // Interior pixel (5, 5): pipeline is fillRect(white) then drawImage(red source).
+    // drawImage paints red over white so the pixel must be red, not white.
+    const stride = png.width * 4; // 40 bytes per row at 10px wide
+    const offset = 5 * stride + 5 * 4; // row 5, col 5
+    expect(png.data[offset],     "R should be 255 (red foreground)").toBe(255);
+    expect(png.data[offset + 1], "G should be 0 (red foreground)").toBe(0);
+    expect(png.data[offset + 2], "B should be 0 (red foreground)").toBe(0);
+    expect(png.data[offset + 3], "Alpha should be fully opaque").toBe(255);
+  });
+
+  it("blue foreground source produces blue interior pixels (color fidelity)", async () => {
+    // Verify color fidelity with a second hue to rule out coincidental red output.
+    const source = createCanvas(20, 20);
+    const srcCtx = source.getContext("2d");
+    srcCtx.fillStyle = "#0000ff";
+    srcCtx.fillRect(0, 0, 20, 20);
+
+    class SourceImage {
+      readonly width = 20;
+      readonly height = 20;
+      readonly _sourceCanvas = source;
+      onload: (() => void) | null = null;
+      onerror: ((e: unknown) => void) | null = null;
+      set src(_url: string) {
+        Promise.resolve().then(() => this.onload?.());
+      }
+    }
+
+    vi.stubGlobal("Image", SourceImage);
+    vi.stubGlobal("document", {
+      createElement: (tag: string) => {
+        if (tag === "canvas") return makeContentCanvas();
+        throw new Error(`Unsupported tag in content pixel test: ${tag}`);
+      },
+    });
+
+    const blob = await svgStringToPngBlob('<svg width="20" height="20"></svg>', 1);
+    const png = await parsePng(blob);
+
+    const stride = png.width * 4;
+    const offset = 10 * stride + 10 * 4; // interior pixel (10, 10)
+    expect(png.data[offset],     "R should be 0 (blue foreground)").toBe(0);
+    expect(png.data[offset + 1], "G should be 0 (blue foreground)").toBe(0);
+    expect(png.data[offset + 2], "B should be 255 (blue foreground)").toBe(255);
+    expect(png.data[offset + 3], "Alpha should be fully opaque").toBe(255);
+  });
+
+  it("drawImage runs after the white background fill (foreground overpaints background)", async () => {
+    // A corner pixel (0,0) should also be the foreground color, confirming
+    // drawImage painted the full canvas (not just the interior).
+    const source = createCanvas(8, 8);
+    const srcCtx = source.getContext("2d");
+    srcCtx.fillStyle = "#00cc44"; // green
+    srcCtx.fillRect(0, 0, 8, 8);
+
+    class SourceImage {
+      readonly width = 8;
+      readonly height = 8;
+      readonly _sourceCanvas = source;
+      onload: (() => void) | null = null;
+      onerror: ((e: unknown) => void) | null = null;
+      set src(_url: string) {
+        Promise.resolve().then(() => this.onload?.());
+      }
+    }
+
+    vi.stubGlobal("Image", SourceImage);
+    vi.stubGlobal("document", {
+      createElement: (tag: string) => {
+        if (tag === "canvas") return makeContentCanvas();
+        throw new Error(`Unsupported tag in content pixel test: ${tag}`);
+      },
+    });
+
+    const blob = await svgStringToPngBlob('<svg width="8" height="8"></svg>', 1);
+    const png = await parsePng(blob);
+
+    // Corner pixel (0, 0)
+    expect(png.data[0], "R should match green foreground").toBe(0x00);
+    expect(png.data[1], "G should match green foreground").toBe(0xcc);
+    expect(png.data[2], "B should match green foreground").toBe(0x44);
+    expect(png.data[3], "Alpha should be fully opaque").toBe(255);
+  });
+});
