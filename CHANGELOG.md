@@ -1,13 +1,37 @@
 # Changelog
 
-All notable changes to Mermaid Theme Builder are documented here.
+All notable changes to **Mermaid Theme Builder** are documented here.
 
-Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
-Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
+Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
+Versions follow [Semantic Versioning](https://semver.org/).
 
 ---
 
-## [0.5.0] — 2026-05-06
+## [Unreleased] — v0.6.0
+
+Palette authoring, smarter Prompt Scaffold, and Mermaid 11.14–11.15 coverage.
+
+### Planned — Palette
+- User palette CRUD — save, rename, delete, and reorder custom palettes (localStorage)
+- "Copy share link" button — surface URL-encoded palette sharing in the palette editor UI
+- 3–5 additional community palettes (not brand-locked)
+
+### Planned — Export
+- Export preview pane — read-only pane showing all three export formats before copy/download
+- Family-specific Prompt Scaffold templates — per-family scaffold sections (flowchart, sequence, class, ER)
+
+### Planned — Mermaid 11.14–11.15 Coverage
+- Event Modeling example — add `.mmd` for the new 11.15 diagram type; update capability registry
+- Look mode per-family warnings — warn in Apply tab when `look: handDrawn` or `look: neo` is unsupported for the detected family
+- Renderer compatibility warnings — surface "CSS injection blocked on GitHub" and "classDef unsupported for sequence/Gantt" as contextual export-bar warnings
+- Root-level `htmlLabels` — emit at root config level in `%%{init}%%` exports (11.13+ migration: deprecated `flowchart.htmlLabels`)
+
+### Planned — Testing
+- Playwright smoke tests — core pipeline: paste → detect → themed preview renders → Styled Code export contains `%%{init}%%`
+
+---
+
+## [0.5.0] — 2026-05-12
 
 ### Added
 - **OKH Forge UI System v0.1.0** — `src/index.css` restructured into 8 labelled sections (raw palette tokens, Tailwind bridge, semantic light/dark tokens, base layer, forge utility classes, elevation helpers, print). New canonical design tokens: `--okh-forge-*`, `--forge-header-*`, `--forge-footer-*`, `--forge-mobile-nav-*`. New utility classes: `.forge-shell`, `.forge-footer`, `.forge-mobile-nav`, `.forge-card`, `.forge-tabs`, `.forge-tab`, `.forge-tab-active`
@@ -109,12 +133,9 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ---
 
-## [Unreleased]
-
-### Planned for v0.6.0
-- Complete user palette CRUD (save, rename, delete, reorder in Compose tab)
-- Export preview pane (read-only code pane showing all three export formats before copy)
-- Playwright smoke tests for core pipeline
-- "Copy share link" button surfaced in palette editor UI
-- Family-specific Prompt Scaffold templates
-- WCAG 2.1 AA accessibility audit
+[Unreleased]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.4.0...v0.5.0
+[0.4.0]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.3.0...v0.4.0
+[0.3.0]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.2.0...v0.3.0
+[0.2.0]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.1.0...v0.2.0
+[0.1.0]: https://github.com/OKHP3/mermaid-theme-builder/releases/tag/v0.1.0
