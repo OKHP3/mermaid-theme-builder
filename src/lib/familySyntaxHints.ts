@@ -65,6 +65,28 @@ const HINTS: FamilySyntaxHint[] = [
     classDefStatus: "no",
     themingNote: "Period (section) bands cycle through cScale0–cScale11 themeVariables — override up to 12 sections.",
   },
+  {
+    family: "xychart",
+    keyIdiom: 'xychart-beta\n  title "Revenue"\n  x-axis ["Q1", "Q2", "Q3", "Q4"]\n  y-axis "USD" 0 --> 100\n  bar [30, 45, 60, 80]\n  line [25, 40, 55, 75]',
+    classDefStatus: "no",
+    themingNote:
+      "Bar/line colors come from xyChart.plotColorPalette (comma-separated hex list). Background and axis labels use xyChart.backgroundColor and xyChart.plotColorPalette.",
+  },
+  {
+    family: "quadrantChart",
+    keyIdiom:
+      'quadrantChart\n  title "Priority Matrix"\n  x-axis "Low Effort" --> "High Effort"\n  y-axis "Low Impact" --> "High Impact"\n  quadrant-1 Quick Wins\n  quadrant-2 Major Projects\n  quadrant-3 Fill-ins\n  quadrant-4 Consider\n  Feature A: [0.3, 0.6]',
+    classDefStatus: "no",
+    themingNote:
+      "Quadrant backgrounds use quadrant1–quadrant4 themeVariables; point fill uses quadrantPointFill; axis labels use primaryTextColor.",
+  },
+  {
+    family: "sankey",
+    keyIdiom: "sankey-beta\nSource,Target A,10\nSource,Target B,6\nTarget A,Sink,10\nTarget B,Sink,6",
+    classDefStatus: "no",
+    themingNote:
+      "Node and link colors inherit from the palette's primaryColor and lineColor. Individual node color is not configurable via themeVariables — palette selection is the main lever.",
+  },
 ];
 
 const HINT_MAP = new Map<DiagramFamily, FamilySyntaxHint>(HINTS.map((h) => [h.family, h]));

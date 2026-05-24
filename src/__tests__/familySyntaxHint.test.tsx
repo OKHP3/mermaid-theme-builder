@@ -66,6 +66,9 @@ describe("FamilySyntaxHint — renders for supported families", () => {
     "sequenceDiagram",
     "block",
     "timeline",
+    "xychart",
+    "quadrantChart",
+    "sankey",
   ];
 
   for (const family of SUPPORTED_FAMILIES) {
@@ -100,7 +103,6 @@ describe("FamilySyntaxHint — does not render for unsupported families", () => 
     "unknown",
     "gitGraph",
     "journey",
-    "quadrantChart",
   ];
 
   for (const family of UNSUPPORTED_FAMILIES) {
