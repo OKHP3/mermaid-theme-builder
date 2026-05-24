@@ -906,3 +906,177 @@ describe("ClassBrowser — 'Copy used' output matches 'Copy all' when all classe
     expect(writtenByUsed).toBe(writtenByAll);
   });
 });
+
+// ---------------------------------------------------------------------------
+// Preview panel displayed text matches clipboard write (sync test)
+// ---------------------------------------------------------------------------
+// usedPreviewBlock and handleCopyUsed both derive from the same memo over
+// classDefs filtered by usedClassNames. A regression (e.g. one path gets a
+// different sort, one path uses sortedClassDefs instead of classDefs) would
+// cause the user to see one ordering in the preview but paste a different
+// one from the clipboard. These tests lock both surfaces to the same string
+// via a non-contiguous used subset (alpha=index 0, gamma=index 2, beta
+// skipped) so any ordering divergence shows up immediately.
+// ---------------------------------------------------------------------------
+
+const ALPHA_DEF: ClassDef = {
+  name: "alpha",
+  fill: "#aaaaaa",
+  stroke: "#111111",
+  color: "#ffffff",
+  extra: "",
+  description: "",
+};
+const BETA_DEF: ClassDef = {
+  name: "beta",
+  fill: "#bbbbbb",
+  stroke: "#222222",
+  color: "#eeeeee",
+  extra: "",
+  description: "",
+};
+const GAMMA_DEF: ClassDef = {
+  name: "gamma",
+  fill: "#cccccc",
+  stroke: "#333333",
+  color: "#dddddd",
+  extra: "",
+  description: "",
+};
+const NON_CONTIGUOUS_DEFS: ClassDef[] = [ALPHA_DEF, BETA_DEF, GAMMA_DEF];
+const ALPHA_LINE = "classDef alpha fill:#aaaaaa,stroke:#111111,color:#ffffff";
+const GAMMA_LINE = "classDef gamma fill:#cccccc,stroke:#333333,color:#dddddd";
+
+describe("ClassBrowser — preview panel displayed text matches 'Copy used' clipboard write", () => {
+  it("preview text exactly matches clipboard write for a non-contiguous used subset", async () => {
+    const { container } = render(
+      createElement(ClassBrowser, {
+        classDefs: NON_CONTIGUOUS_DEFS,
+        supportsClassDef: true,
+        usedClassNames: new Set(["alpha", "gamma"]),
+      })
+    );
+    openPreviewPanel();
+    // Panel defaults to "used" mode (task #193) since usedClassNames is non-empty
+    const pre = container.querySelector("pre");
+    const previewText = pre?.textContent ?? "";
+
+    const copyBtn = screen.getByTitle("Copy used classDefs");
+    await act(async () => {
+      fireEvent.click(copyBtn);
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    const writtenToClipboard = clipboardWriteText.mock.calls[0][0] as string;
+
+    expect(previewText).toBe(writtenToClipboard);
+  });
+
+  it("preview text is in definition order (alpha before gamma) regardless of Set iteration order", async () => {
+    const { container } = render(
+      createElement(ClassBrowser, {
+        classDefs: NON_CONTIGUOUS_DEFS,
+        supportsClassDef: true,
+        // Pass gamma first in the Set to confirm definition order wins
+        usedClassNames: new Set(["gamma", "alpha"]),
+      })
+    );
+    openPreviewPanel();
+    const pre = container.querySelector("pre");
+    const lines = (pre?.textContent ?? "").split("\n");
+
+    expect(lines).toHaveLength(2);
+    expect(lines[0]).toMatch(/^classDef alpha /);
+    expect(lines[1]).toMatch(/^classDef gamma /);
+  });
+
+  it("preview text does not include the unused middle class (beta)", async () => {
+    const { container } = render(
+      createElement(ClassBrowser, {
+        classDefs: NON_CONTIGUOUS_DEFS,
+        supportsClassDef: true,
+        usedClassNames: new Set(["alpha", "gamma"]),
+      })
+    );
+    openPreviewPanel();
+    const pre = container.querySelector("pre");
+    const previewText = pre?.textContent ?? "";
+
+    expect(previewText).not.toContain("beta");
+    expect(previewText).toContain("alpha");
+    expect(previewText).toContain("gamma");
+  });
+
+  it("preview text and clipboard write both have exactly 2 lines for a 2-of-3 used subset", async () => {
+    const { container } = render(
+      createElement(ClassBrowser, {
+        classDefs: NON_CONTIGUOUS_DEFS,
+        supportsClassDef: true,
+        usedClassNames: new Set(["alpha", "gamma"]),
+      })
+    );
+    openPreviewPanel();
+    const pre = container.querySelector("pre");
+    const previewLines = (pre?.textContent ?? "").split("\n");
+
+    const copyBtn = screen.getByTitle("Copy used classDefs");
+    await act(async () => {
+      fireEvent.click(copyBtn);
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    const clipboardLines = (clipboardWriteText.mock.calls[0][0] as string).split("\n");
+
+    expect(previewLines).toHaveLength(2);
+    expect(clipboardLines).toHaveLength(2);
+  });
+
+  it("each preview line exactly matches its corresponding clipboard line", async () => {
+    const { container } = render(
+      createElement(ClassBrowser, {
+        classDefs: NON_CONTIGUOUS_DEFS,
+        supportsClassDef: true,
+        usedClassNames: new Set(["alpha", "gamma"]),
+      })
+    );
+    openPreviewPanel();
+    const pre = container.querySelector("pre");
+    const previewLines = (pre?.textContent ?? "").split("\n");
+
+    const copyBtn = screen.getByTitle("Copy used classDefs");
+    await act(async () => {
+      fireEvent.click(copyBtn);
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    const clipboardLines = (clipboardWriteText.mock.calls[0][0] as string).split("\n");
+
+    expect(previewLines[0]).toBe(ALPHA_LINE);
+    expect(previewLines[1]).toBe(GAMMA_LINE);
+    previewLines.forEach((line, i) => {
+      expect(line).toBe(clipboardLines[i]);
+    });
+  });
+
+  it("switching to 'all' mode updates the preview text to the full block", async () => {
+    const BETA_LINE = "classDef beta fill:#bbbbbb,stroke:#222222,color:#eeeeee";
+    const { container } = render(
+      createElement(ClassBrowser, {
+        classDefs: NON_CONTIGUOUS_DEFS,
+        supportsClassDef: true,
+        usedClassNames: new Set(["alpha", "gamma"]),
+      })
+    );
+    openPreviewPanel();
+    // Start in "used" mode — switch to "all"
+    switchToAllMode();
+    const pre = container.querySelector("pre");
+    const previewText = pre?.textContent ?? "";
+    const lines = previewText.split("\n");
+
+    expect(lines).toHaveLength(3);
+    expect(lines[0]).toBe(ALPHA_LINE);
+    expect(lines[1]).toBe(BETA_LINE);
+    expect(lines[2]).toBe(GAMMA_LINE);
+  });
+});
