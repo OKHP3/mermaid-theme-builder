@@ -209,6 +209,56 @@ export interface PortablePaletteError {
   error: string;
 }
 
+export interface PortableBundleImport {
+  ok: true;
+  palettes: PortablePaletteImport[];
+}
+
+/**
+ * Parse a multi-palette bundle JSON (`type: "mtb-bundle"`).
+ *
+ * Each palette entry in the `palettes` array is validated with the same
+ * per-key rules as `parsePortablePalette`. Returns `ok: true` with a list of
+ * `PortablePaletteImport` records (each carrying its own `missingKeys` /
+ * `unknownKeys` diagnostic lists) so the caller can surface per-palette
+ * warnings in the same amber banner used for single imports.
+ *
+ * The bundle format matches `palettesToBundleJson` output:
+ * ```json
+ * {
+ *   "type": "mtb-palette-bundle",
+ *   "schemaVersion": 1,
+ *   "palettes": [ { "type": "mtb-palette", ... }, ... ]
+ * }
+ * ```
+ */
+export function parsePaletteBundle(json: string): PortableBundleImport | PortablePaletteError {
+  try {
+    const data = JSON.parse(json);
+    if (typeof data !== "object" || data === null) {
+      return { ok: false, error: "Not a JSON object." };
+    }
+    if (data.type !== "mtb-palette-bundle") {
+      return { ok: false, error: "Missing or wrong `type` field — expected `mtb-palette-bundle`." };
+    }
+    if (!Array.isArray(data.palettes) || data.palettes.length === 0) {
+      return { ok: false, error: "Missing or empty `palettes` array." };
+    }
+    const results: PortablePaletteImport[] = [];
+    for (let i = 0; i < data.palettes.length; i++) {
+      const entry = data.palettes[i];
+      const result = parsePortablePalette(JSON.stringify(entry));
+      if (!result.ok) {
+        return { ok: false, error: `Palette ${i + 1}: ${result.error}` };
+      }
+      results.push(result);
+    }
+    return { ok: true, palettes: results };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : String(err) };
+  }
+}
+
 export function parsePortablePalette(json: string): PortablePaletteImport | PortablePaletteError {
   try {
     const data = JSON.parse(json);

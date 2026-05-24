@@ -20,6 +20,7 @@ import type { AppTab } from "@/App";
 import {
   paletteToPortableJson,
   parsePortablePalette,
+  parsePaletteBundle,
   downloadTextFile,
   makeFilename,
 } from "@/lib/exporters";
@@ -133,6 +134,8 @@ interface ComposeTabProps {
   onRendererTargetChange: (v: string) => void;
   onUseExtractedTheme: (palette: Palette, codeWithClassDefs?: string) => void;
   onSwitchTab: (tab: AppTab) => void;
+  importDiagnostics: { missingKeys: string[]; unknownKeys: string[] } | null;
+  onImportDiagnosticsChange: (d: { missingKeys: string[]; unknownKeys: string[] } | null) => void;
 }
 
 export function ComposeTab({
@@ -165,6 +168,8 @@ export function ComposeTab({
   onRendererTargetChange,
   onUseExtractedTheme,
   onSwitchTab,
+  importDiagnostics,
+  onImportDiagnosticsChange,
 }: ComposeTabProps) {
   const [copiedBootstrap, setCopiedBootstrap] = useState(false);
   const [copiedShare, setCopiedShare] = useState(false);
@@ -172,7 +177,6 @@ export function ComposeTab({
   const [savePaletteName, setSavePaletteName] = useState("");
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [importDiagnostics, setImportDiagnostics] = useState<{ missingKeys: string[]; unknownKeys: string[] } | null>(null);
   const [tierDraftSizes, setTierDraftSizes] = useState<Partial<Record<TypographyTierKey, string>>>({});
   const [clampedTiers, setClampedTiers] = useState<Set<TypographyTierKey>>(new Set());
   const clampTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
@@ -310,23 +314,55 @@ export function ComposeTab({
       const file = e.target.files?.[0];
       e.target.value = "";
       if (!file) return;
-      setImportDiagnostics(null);
+      onImportDiagnosticsChange(null);
       try {
         const text = await file.text();
-        const result = parsePortablePalette(text);
-        if (!result.ok) {
-          onShowToast(`Import failed: ${result.error}`);
-          return;
+
+        // Peek at the top-level `type` field to route single vs bundle.
+        let topLevelType: string | undefined;
+        try {
+          const peek = JSON.parse(text) as unknown;
+          if (typeof peek === "object" && peek !== null && "type" in peek) {
+            const t = (peek as Record<string, unknown>).type;
+            if (typeof t === "string") topLevelType = t;
+          }
+        } catch {
+          // parsePortablePalette will surface the JSON error below
         }
-        onImportPalette(result.palette);
-        if (result.missingKeys.length > 0 || result.unknownKeys.length > 0) {
-          setImportDiagnostics({ missingKeys: result.missingKeys, unknownKeys: result.unknownKeys });
+
+        if (topLevelType === "mtb-palette-bundle") {
+          const result = parsePaletteBundle(text);
+          if (!result.ok) {
+            onShowToast(`Bundle import failed: ${result.error}`);
+            return;
+          }
+          const combinedMissing: string[] = [];
+          const combinedUnknown: string[] = [];
+          for (const imp of result.palettes) {
+            onImportPalette(imp.palette);
+            for (const k of imp.missingKeys) if (!combinedMissing.includes(k)) combinedMissing.push(k);
+            for (const k of imp.unknownKeys) if (!combinedUnknown.includes(k)) combinedUnknown.push(k);
+          }
+          onShowToast(`Imported ${result.palettes.length} palette${result.palettes.length === 1 ? "" : "s"} from bundle.`);
+          if (combinedMissing.length > 0 || combinedUnknown.length > 0) {
+            onImportDiagnosticsChange({ missingKeys: combinedMissing, unknownKeys: combinedUnknown });
+          }
+        } else {
+          const result = parsePortablePalette(text);
+          if (!result.ok) {
+            onShowToast(`Import failed: ${result.error}`);
+            return;
+          }
+          onImportPalette(result.palette);
+          if (result.missingKeys.length > 0 || result.unknownKeys.length > 0) {
+            onImportDiagnosticsChange({ missingKeys: result.missingKeys, unknownKeys: result.unknownKeys });
+          }
         }
       } catch (err) {
         onShowToast(`Import failed: ${err instanceof Error ? err.message : String(err)}`);
       }
     },
-    [onImportPalette, onShowToast],
+    [onImportPalette, onImportDiagnosticsChange, onShowToast],
   );
 
   const handleConfirmSave = useCallback(() => {
@@ -860,7 +896,7 @@ export function ComposeTab({
                 <span className="font-semibold text-amber-700 dark:text-amber-400">Palette import warnings</span>
                 <button
                   type="button"
-                  onClick={() => setImportDiagnostics(null)}
+                  onClick={() => onImportDiagnosticsChange(null)}
                   className="text-amber-600/70 dark:text-amber-400/60 hover:text-amber-800 dark:hover:text-amber-300 leading-none mt-px"
                   aria-label="Dismiss import warnings"
                 >

@@ -4,10 +4,12 @@ import {
   paletteToCssVariables,
   paletteToPortableJson,
   parsePortablePalette,
+  parsePaletteBundle,
   palettesToBundleJson,
 } from "@/lib/exporters";
 import type { Palette } from "@/lib/palettes";
-import { BUILTIN_PALETTES } from "@/lib/palettes";
+import { BUILTIN_PALETTES, REQUIRED_COLOR_KEYS, KNOWN_COLOR_KEYS } from "@/lib/palettes";
+import type { ShareablePayload } from "@/lib/persistence";
 
 const MINIMAL_PALETTE: Palette = {
   id: "test-palette",
@@ -355,5 +357,166 @@ describe("palettesToBundleJson", () => {
     const parsed = JSON.parse(result);
     expect(parsed.count).toBe(0);
     expect(parsed.palettes).toHaveLength(0);
+  });
+});
+
+// ── parsePaletteBundle ────────────────────────────────────────────────────────
+
+describe("parsePaletteBundle", () => {
+  const FULL_PALETTE: Palette = {
+    ...MINIMAL_PALETTE,
+    id: "full-palette",
+    name: "Full Palette",
+    colors: [
+      { key: "primaryColor", label: "Primary", value: "#1a4f8a" },
+      { key: "primaryTextColor", label: "Primary text", value: "#ffffff" },
+      { key: "primaryBorderColor", label: "Primary border", value: "#0d3060" },
+      { key: "lineColor", label: "Lines", value: "#2563eb" },
+      { key: "secondaryColor", label: "Secondary", value: "#0ea5e9" },
+      { key: "tertiaryColor", label: "Tertiary", value: "#e0f2fe" },
+      { key: "background", label: "Background", value: "#f0f9ff" },
+      { key: "mainBkg", label: "Main background", value: "#dbeafe" },
+      { key: "nodeBorder", label: "Node border", value: "#1d4ed8" },
+      { key: "clusterBkg", label: "Cluster background", value: "#e0f2fe" },
+      { key: "titleColor", label: "Title color", value: "#1e3a5f" },
+    ],
+  };
+
+  it("returns ok:true for a valid bundle produced by palettesToBundleJson", () => {
+    const json = palettesToBundleJson([FULL_PALETTE]);
+    const result = parsePaletteBundle(json);
+    expect(result.ok).toBe(true);
+  });
+
+  it("returns the correct number of palettes for a multi-palette bundle", () => {
+    const json = palettesToBundleJson([FULL_PALETTE, { ...FULL_PALETTE, id: "pal-2", name: "Palette 2" }]);
+    const result = parsePaletteBundle(json);
+    if (!result.ok) throw new Error("Expected ok:true");
+    expect(result.palettes).toHaveLength(2);
+  });
+
+  it("round-trips all BUILTIN_PALETTES through bundle format without error", () => {
+    const json = palettesToBundleJson(BUILTIN_PALETTES);
+    const result = parsePaletteBundle(json);
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.palettes).toHaveLength(BUILTIN_PALETTES.length);
+  });
+
+  it("returns ok:false for invalid JSON", () => {
+    const result = parsePaletteBundle("not json");
+    expect(result.ok).toBe(false);
+  });
+
+  it("returns ok:false for a JSON object with the wrong type field", () => {
+    const bad = JSON.stringify({ type: "mtb-palette", palettes: [] });
+    const result = parsePaletteBundle(bad);
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error).toContain("mtb-palette-bundle");
+  });
+
+  it("returns ok:false when the palettes array is missing", () => {
+    const bad = JSON.stringify({ type: "mtb-palette-bundle" });
+    const result = parsePaletteBundle(bad);
+    expect(result.ok).toBe(false);
+  });
+
+  it("returns ok:false when a palette entry inside the bundle is invalid", () => {
+    const bundle = {
+      type: "mtb-palette-bundle",
+      schemaVersion: 1,
+      palettes: [
+        { type: "mtb-palette", id: "ok", name: "OK", description: "d", version: "1",
+          colors: [{ key: "primaryColor", label: "P", value: "#fff" }] },
+        { type: "wrong-type", colors: [] },
+      ],
+    };
+    const result = parsePaletteBundle(JSON.stringify(bundle));
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error).toContain("2");
+  });
+
+  it("each palette in the result carries its own missingKeys and unknownKeys", () => {
+    const incompleteBundle = {
+      type: "mtb-palette-bundle",
+      schemaVersion: 1,
+      palettes: [
+        {
+          type: "mtb-palette",
+          id: "incomplete",
+          name: "Incomplete",
+          description: "Missing most required keys.",
+          version: "1",
+          colors: [
+            { key: "primaryColor", label: "Primary", value: "#111" },
+            { key: "weirdCustomProp", label: "Custom", value: "#abc" },
+          ],
+        },
+      ],
+    };
+    const result = parsePaletteBundle(JSON.stringify(incompleteBundle));
+    expect(result.ok).toBe(true);
+    if (!result.ok) throw new Error("Expected ok:true");
+    const imp = result.palettes[0];
+    expect(imp.missingKeys).toContain("primaryBorderColor");
+    expect(imp.missingKeys).toContain("lineColor");
+    expect(imp.unknownKeys).toContain("weirdCustomProp");
+  });
+
+  it("BUILTIN_PALETTES round-tripped through bundle have no missingKeys or unknownKeys", () => {
+    const json = palettesToBundleJson(BUILTIN_PALETTES);
+    const result = parsePaletteBundle(json);
+    if (!result.ok) throw new Error("Expected ok:true");
+    for (const imp of result.palettes) {
+      expect(imp.missingKeys).toHaveLength(0);
+      expect(imp.unknownKeys).toHaveLength(0);
+    }
+  });
+});
+
+// ── share URL key validation (decodeShareableTheme → REQUIRED_COLOR_KEYS) ─────
+
+describe("share URL validation against REQUIRED_COLOR_KEYS", () => {
+  // We test the validation logic directly (the same logic App.tsx applies after
+  // buildPaletteFromShare) rather than mounting the full App component.
+  function validateSharePayloadKeys(payload: ShareablePayload) {
+    const presentKeys = new Set(Object.keys(payload.themeVariables));
+    const missingKeys = (REQUIRED_COLOR_KEYS as readonly string[]).filter((k) => !presentKeys.has(k));
+    const unknownKeys = Object.keys(payload.themeVariables).filter((k) => !KNOWN_COLOR_KEYS.has(k));
+    return { missingKeys, unknownKeys };
+  }
+
+  it("returns no warnings for a payload with all required keys", () => {
+    const themeVariables: Record<string, string> = Object.fromEntries(
+      (REQUIRED_COLOR_KEYS as readonly string[]).map((k) => [k, "#ffffff"]),
+    );
+    const { missingKeys, unknownKeys } = validateSharePayloadKeys({ v: 1, themeVariables });
+    expect(missingKeys).toHaveLength(0);
+    expect(unknownKeys).toHaveLength(0);
+  });
+
+  it("reports missing keys when required keys are absent", () => {
+    const { missingKeys } = validateSharePayloadKeys({
+      v: 1,
+      themeVariables: { primaryColor: "#111" },
+    });
+    expect(missingKeys).toContain("lineColor");
+    expect(missingKeys).toContain("secondaryColor");
+    expect(missingKeys).not.toContain("primaryColor");
+  });
+
+  it("reports unknown keys that are not in KNOWN_COLOR_KEYS", () => {
+    const themeVariables: Record<string, string> = {
+      ...Object.fromEntries((REQUIRED_COLOR_KEYS as readonly string[]).map((k) => [k, "#fff"])),
+      weirdUnknownKey: "#abc",
+    };
+    const { unknownKeys } = validateSharePayloadKeys({ v: 1, themeVariables });
+    expect(unknownKeys).toContain("weirdUnknownKey");
+    expect(unknownKeys).not.toContain("primaryColor");
+  });
+
+  it("reports no warnings for an empty themeVariables object except missing keys", () => {
+    const { missingKeys, unknownKeys } = validateSharePayloadKeys({ v: 1, themeVariables: {} });
+    expect(missingKeys.length).toBeGreaterThan(0);
+    expect(unknownKeys).toHaveLength(0);
   });
 });

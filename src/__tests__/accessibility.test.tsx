@@ -304,6 +304,8 @@ describe("ComposeTab (color editor and palette editor)", () => {
     onRendererTargetChange: noop,
     onUseExtractedTheme: noop,
     onSwitchTab: noop,
+    importDiagnostics: null,
+    onImportDiagnosticsChange: noop,
   };
 
   it("has zero critical/serious axe violations on initial render", async () => {

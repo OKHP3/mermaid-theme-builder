@@ -3,6 +3,8 @@ import { useThemeMode, type ThemeMode } from "@/lib/themeMode";
 import {
   BUILTIN_PALETTES,
   BRAND_PALETTES,
+  REQUIRED_COLOR_KEYS,
+  KNOWN_COLOR_KEYS,
   type Palette,
   type ThemeColor,
   getEffectiveThemeName,
@@ -264,6 +266,7 @@ export function AppShell() {
   const [previewMode, setPreviewMode] = useState<"original" | "themed" | "diff" | "code">("themed");
   const [lastExampleType, setLastExampleType] = useState<Record<string, "flowchart" | "sequence">>({});
   const [lastSelectedExampleId, setLastSelectedExampleId] = useState<string>("");
+  const [importDiagnostics, setImportDiagnostics] = useState<{ missingKeys: string[]; unknownKeys: string[] } | null>(null);
 
   const supportsClassDef = useMemo(
     () => CLASSDEF_CAPABLE_FAMILIES.includes(detectDiagram(inputCode).family),
@@ -291,6 +294,14 @@ export function AppShell() {
       setToast(`Loaded shared theme: ${palette.name}`);
       clearShareToken();
       didApplyShare = true;
+
+      // Validate the decoded palette keys so the amber banner can flag problems.
+      const presentKeys = new Set(palette.colors.map((c) => c.key));
+      const missingKeys = (REQUIRED_COLOR_KEYS as readonly string[]).filter((k) => !presentKeys.has(k));
+      const unknownKeys = palette.colors.map((c) => c.key).filter((k) => !KNOWN_COLOR_KEYS.has(k));
+      if (missingKeys.length > 0 || unknownKeys.length > 0) {
+        setImportDiagnostics({ missingKeys, unknownKeys });
+      }
     }
 
     const persisted = loadPersistedState();
@@ -777,6 +788,8 @@ export function AppShell() {
             onRendererTargetChange={setRendererTarget}
             onUseExtractedTheme={handleUseExtractedTheme}
             onSwitchTab={setActiveTab}
+            importDiagnostics={importDiagnostics}
+            onImportDiagnosticsChange={setImportDiagnostics}
           />
         )}
         {activeTab === "examples" && (
