@@ -91,6 +91,11 @@ export function ReferenceTab({ selectedPalette, selectedPaletteId, allPalettes, 
                 <path d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h6a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h3a1 1 0 110 2H4a1 1 0 01-1-1z" />
               </svg>
               <span className="text-xs font-medium text-foreground">Renderer Parity Matrix</span>
+              {!supportsClassDef && (
+                <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                  inactive for this diagram type
+                </span>
+              )}
               <span className="text-[10px] text-muted-foreground">{RENDERER_PROFILES.length} renderers · look + theming support</span>
             </div>
             <svg
