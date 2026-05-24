@@ -261,6 +261,15 @@ export function ComposeTab({
     [selectedSampleId],
   );
 
+  // True when the selected preview diagram has limited theme-variable support.
+  const isBetaPreview = Boolean(
+    sampleEntry.badge &&
+      (sampleEntry.badge.includes("Beta") || sampleEntry.badge.includes("Experimental")),
+  );
+  const previewBadgeLabel = sampleEntry.badge?.includes("Experimental")
+    ? "Experimental"
+    : "Beta";
+
   const sampleThemedCode = useMemo(
     () => generateThemedCode(sampleEntry.content, exportOptions),
     [sampleEntry, exportOptions],
@@ -930,6 +939,29 @@ export function ComposeTab({
             {effectiveThemeName}
           </span>
         </div>
+        {isBetaPreview && (
+          <div
+            role="note"
+            className="flex-none flex items-start gap-2 px-4 py-2 border-b border-amber-500/20 bg-amber-500/5 text-[11px] text-amber-700 dark:text-amber-400"
+          >
+            <svg
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              className="w-3.5 h-3.5 mt-0.5 shrink-0 opacity-80"
+              aria-hidden="true"
+            >
+              <path
+                fillRule="evenodd"
+                d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z"
+                clipRule="evenodd"
+              />
+            </svg>
+            <span>
+              <span className="font-semibold">{previewBadgeLabel} diagram type</span>
+              {" — "}theme variable support is limited for this family. The preview may not reflect all palette colors.
+            </span>
+          </div>
+        )}
         <div className="flex-1 overflow-auto p-4">
           <MermaidPreview code={sampleThemedCode} className="w-full h-full" typography={typography} />
         </div>
