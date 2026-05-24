@@ -134,6 +134,12 @@ These will never be added regardless of version:
 
 ---
 
+## Detailed Planning Documents
+
+- [v0.5–v0.7 Detailed Release Plan](roadmap/mermaid-theme-builder-v0.5-v0.7-plan.md)
+
+---
+
 ## Requests and suggestions
 
 Open an issue at [github.com/OKHP3/mermaid-theme-builder](https://github.com/OKHP3/mermaid-theme-builder) or reach out via [overkillhill.com](https://overkillhill.com).
