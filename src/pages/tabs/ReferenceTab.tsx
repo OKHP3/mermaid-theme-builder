@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Palette, ThemeColor } from "@/lib/palettes";
 import { PaletteSelectorBar } from "@/components/PaletteSelectorBar";
 import { getClassDefs } from "@/lib/themeEngine";
@@ -54,10 +54,16 @@ export function ReferenceTab({ selectedPalette, selectedPaletteId, allPalettes, 
   const rendererParityRef = useRef<HTMLDetailsElement>(null);
   const classLibraryRef = useRef<HTMLDetailsElement>(null);
 
+  // Tracks whether the Renderer Parity Matrix <details> is currently open so
+  // the inactive badge can hide itself when the user manually expands the section.
+  const [rendererParityOpen, setRendererParityOpen] = useState(false);
+
   useEffect(() => {
     const el = rendererParityRef.current;
     if (!el) return;
-    el.open = supportsClassDef;
+    const nextOpen = supportsClassDef;
+    el.open = nextOpen;
+    setRendererParityOpen(nextOpen);
   }, [supportsClassDef]);
 
   useEffect(() => {
@@ -84,14 +90,18 @@ export function ReferenceTab({ selectedPalette, selectedPaletteId, allPalettes, 
       </div>
 
       <div className="flex-none border-t border-border">
-        <details ref={rendererParityRef} className="group">
+        <details
+          ref={rendererParityRef}
+          className="group"
+          onToggle={(e) => setRendererParityOpen((e.currentTarget as HTMLDetailsElement).open)}
+        >
           <summary className="flex items-center justify-between px-4 py-2.5 cursor-pointer list-none hover:bg-muted/40 transition-colors select-none">
             <div className="flex items-center gap-2">
               <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 text-muted-foreground">
                 <path d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h6a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h3a1 1 0 110 2H4a1 1 0 01-1-1z" />
               </svg>
               <span className="text-xs font-medium text-foreground">Renderer Parity Matrix</span>
-              {!supportsClassDef && (
+              {!supportsClassDef && !rendererParityOpen && (
                 <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
                   inactive for this diagram type
                 </span>
