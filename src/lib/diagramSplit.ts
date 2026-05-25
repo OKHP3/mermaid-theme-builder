@@ -44,7 +44,7 @@ const DIAGRAM_KEYWORDS = [
 ];
 
 const KEYWORD_RE = new RegExp(
-  `^(?:${DIAGRAM_KEYWORDS.map((k) => k.replace(/[-]/g, "\\-")).join("|")})\\b`,
+  `^(?:${DIAGRAM_KEYWORDS.map((k) => k.replace(/[-]/g, "\\-")).join("|")})\\b`
 );
 
 export interface SplitDiagram {

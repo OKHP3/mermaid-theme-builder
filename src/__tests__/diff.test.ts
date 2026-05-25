@@ -59,9 +59,7 @@ describe("diffLines — init directive insertion", () => {
 
   it("includes the init directive text as an addition", () => {
     const result = diffLines(SIMPLE_DIAGRAM, THEMED_DIAGRAM);
-    const addedTexts = result
-      .filter((l) => l.op === "add")
-      .map((l) => l.text);
+    const addedTexts = result.filter((l) => l.op === "add").map((l) => l.text);
     expect(addedTexts).toContain(INIT_DIRECTIVE);
   });
 
@@ -73,9 +71,7 @@ describe("diffLines — init directive insertion", () => {
 
   it("preserves the original diagram lines as context", () => {
     const result = diffLines(SIMPLE_DIAGRAM, THEMED_DIAGRAM);
-    const ctxTexts = result
-      .filter((l) => l.op === "ctx")
-      .map((l) => l.text);
+    const ctxTexts = result.filter((l) => l.op === "ctx").map((l) => l.text);
     for (const line of SIMPLE_DIAGRAM.split("\n")) {
       expect(ctxTexts).toContain(line);
     }

@@ -24,11 +24,7 @@ import { render, screen, act, cleanup } from "@testing-library/react";
 import { fireEvent } from "@testing-library/dom";
 import { createElement } from "react";
 import { FamilySyntaxHint } from "@/components/FamilySyntaxHint";
-import {
-  clearAllDismissals,
-  dismissHint,
-  isHintDismissed,
-} from "@/lib/familySyntaxHints";
+import { clearAllDismissals, dismissHint, isHintDismissed } from "@/lib/familySyntaxHints";
 import type { DiagramFamily } from "@/data/mermaid-capabilities";
 
 // ---------------------------------------------------------------------------
@@ -36,9 +32,7 @@ import type { DiagramFamily } from "@/data/mermaid-capabilities";
 // ---------------------------------------------------------------------------
 
 function renderHint(family: DiagramFamily, resetToken?: number) {
-  return render(
-    createElement(FamilySyntaxHint, { family, resetToken }),
-  );
+  return render(createElement(FamilySyntaxHint, { family, resetToken }));
 }
 
 function hintIsVisible(): boolean {
@@ -89,15 +83,13 @@ describe("FamilySyntaxHint — renders for supported families", () => {
 
   it('hint panel for "gantt" carries the correct aria-label', () => {
     renderHint("gantt");
-    expect(screen.getByRole("note").getAttribute("aria-label")).toBe(
-      "Syntax tips for gantt",
-    );
+    expect(screen.getByRole("note").getAttribute("aria-label")).toBe("Syntax tips for gantt");
   });
 
   it('hint panel for "sequenceDiagram" carries the correct aria-label', () => {
     renderHint("sequenceDiagram");
     expect(screen.getByRole("note").getAttribute("aria-label")).toBe(
-      "Syntax tips for sequenceDiagram",
+      "Syntax tips for sequenceDiagram"
     );
   });
 });
@@ -107,11 +99,7 @@ describe("FamilySyntaxHint — renders for supported families", () => {
 // ---------------------------------------------------------------------------
 
 describe("FamilySyntaxHint — does not render for unsupported families", () => {
-  const UNSUPPORTED_FAMILIES: DiagramFamily[] = [
-    "unknown",
-    "gitGraph",
-    "journey",
-  ];
+  const UNSUPPORTED_FAMILIES: DiagramFamily[] = ["unknown", "gitGraph", "journey"];
 
   for (const family of UNSUPPORTED_FAMILIES) {
     it(`returns null for "${family}"`, () => {
@@ -169,9 +157,7 @@ describe("FamilySyntaxHint — dismiss behavior", () => {
 
   it("fires the optional onDismiss callback", async () => {
     const onDismiss = vi.fn();
-    render(
-      createElement(FamilySyntaxHint, { family: "classDiagram", onDismiss }),
-    );
+    render(createElement(FamilySyntaxHint, { family: "classDiagram", onDismiss }));
     const dismissBtn = screen.getByRole("button", {
       name: "Dismiss classDiagram syntax tip",
     });
@@ -234,9 +220,7 @@ describe("FamilySyntaxHint — resetToken re-evaluates dismissed state", () => {
     localStorage.removeItem("mtb.hint-dismissed.timeline");
 
     act(() => {
-      rerender(
-        createElement(FamilySyntaxHint, { family: "timeline", resetToken: 1 }),
-      );
+      rerender(createElement(FamilySyntaxHint, { family: "timeline", resetToken: 1 }));
     });
 
     expect(hintIsVisible()).toBe(true);
@@ -254,9 +238,7 @@ describe("FamilySyntaxHint — resetToken re-evaluates dismissed state", () => {
     expect(hintIsVisible()).toBe(false);
 
     act(() => {
-      rerender(
-        createElement(FamilySyntaxHint, { family: "block", resetToken: 1 }),
-      );
+      rerender(createElement(FamilySyntaxHint, { family: "block", resetToken: 1 }));
     });
 
     expect(hintIsVisible()).toBe(false);

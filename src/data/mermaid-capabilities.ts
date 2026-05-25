@@ -255,7 +255,8 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
     notationCompliance: "mermaid-native",
     description:
       "Simple proportional pie/donut charts showing categorical distribution with labeled slices.",
-    bestUsedFor: "Effort allocation, budget breakdowns, categorical composition, quick data snapshots.",
+    bestUsedFor:
+      "Effort allocation, budget breakdowns, categorical composition, quick data snapshots.",
     warning: null,
     exampleFile: "pie-effort-allocation.mmd",
     examplePending: false,
@@ -453,7 +454,8 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
     notationCompliance: "mermaid-native",
     description:
       "Flow diagrams showing proportional transfer of quantities between source and target nodes.",
-    bestUsedFor: "Resource flow visualization, effort-to-output mapping, budget allocation analysis.",
+    bestUsedFor:
+      "Resource flow visualization, effort-to-output mapping, budget allocation analysis.",
     warning:
       "Mermaid 11.15 improved Sankey styling controls (nodeWidth, nodePadding, node colors). Still beta — validate in target renderer before publication.",
     exampleFile: "sankey-effort-to-output.mmd",
@@ -476,11 +478,9 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
     supportStatus: "partial",
     themeConfidence: "medium",
     notationCompliance: "mermaid-native",
-    description:
-      "Bar and line charts with labeled axes for visualizing quantitative data series.",
+    description: "Bar and line charts with labeled axes for visualizing quantitative data series.",
     bestUsedFor: "Metric dashboards, velocity tracking, performance comparisons, trend charts.",
-    warning:
-      "Beta or renderer-dependent. Validate in target renderer before publication.",
+    warning: "Beta or renderer-dependent. Validate in target renderer before publication.",
     exampleFile: "basic-xy.mmd",
     examplePending: false,
     minMermaidVersion: "10.9.0",
@@ -504,8 +504,7 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
     description:
       "Grid-based block diagrams for UI wireframes, system module layouts, and spatial component arrangements.",
     bestUsedFor: "UI layout wireframes, product module maps, spatial system diagrams.",
-    warning:
-      "Beta or renderer-dependent. Validate in target renderer before publication.",
+    warning: "Beta or renderer-dependent. Validate in target renderer before publication.",
     exampleFile: "basic-block.mmd",
     examplePending: false,
     minMermaidVersion: "11.0.0",
@@ -578,8 +577,7 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
     notationCompliance: "mermaid-native",
     description:
       "Cloud-style architecture diagrams with service icons, groups, and directional edges.",
-    bestUsedFor:
-      "Infrastructure topology, cloud architecture docs, service mesh visualization.",
+    bestUsedFor: "Infrastructure topology, cloud architecture docs, service mesh visualization.",
     warning:
       "Architecture diagrams may be beta or renderer-dependent depending on Mermaid version.",
     exampleFile: "basic-architecture.mmd",
@@ -606,8 +604,7 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
       "Spider/radar charts for multi-dimensional comparison of values across named axes.",
     bestUsedFor:
       "Skill assessment, product maturity scoring, multi-criteria analysis, team capability mapping.",
-    warning:
-      "Beta or renderer-dependent. Validate in target renderer before publication.",
+    warning: "Beta or renderer-dependent. Validate in target renderer before publication.",
     exampleFile: "basic-radar.mmd",
     examplePending: false,
     minMermaidVersion: "11.6.0",
@@ -628,11 +625,10 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
     supportStatus: "partial",
     themeConfidence: "low",
     notationCompliance: "mermaid-native",
-    description:
-      "Hierarchical area charts where nested rectangles represent proportional values.",
-    bestUsedFor: "Project value breakdown, budget visualization, code size analysis, portfolio maps.",
-    warning:
-      "Beta or renderer-dependent. Validate in target renderer before publication.",
+    description: "Hierarchical area charts where nested rectangles represent proportional values.",
+    bestUsedFor:
+      "Project value breakdown, budget visualization, code size analysis, portfolio maps.",
+    warning: "Beta or renderer-dependent. Validate in target renderer before publication.",
     exampleFile: "treemap-project-value.mmd",
     examplePending: false,
     minMermaidVersion: "11.4.0",
@@ -653,11 +649,9 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
     supportStatus: "partial",
     themeConfidence: "low",
     notationCompliance: "mermaid-native",
-    description:
-      "Overlapping circle diagrams showing set relationships and intersections.",
+    description: "Overlapping circle diagrams showing set relationships and intersections.",
     bestUsedFor: "Concept overlap analysis, feature comparison, skill set mapping, taxonomy.",
-    warning:
-      "Beta or renderer-dependent. Validate in target renderer before publication.",
+    warning: "Beta or renderer-dependent. Validate in target renderer before publication.",
     exampleFile: "venn-measure-document-diagram.mmd",
     examplePending: false,
     minMermaidVersion: "11.12.3",
@@ -682,8 +676,7 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
       "Cause-and-effect fishbone diagrams showing contributing factors to a root problem or effect.",
     bestUsedFor:
       "Root cause analysis, quality control, incident post-mortems, engineering failure modes.",
-    warning:
-      "Beta or renderer-dependent. Validate in target renderer before publication.",
+    warning: "Beta or renderer-dependent. Validate in target renderer before publication.",
     exampleFile: "ishikawa-premature-rendering-root-cause.mmd",
     examplePending: false,
     minMermaidVersion: "11.12.3",
@@ -731,7 +724,8 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
     notationCompliance: "mermaid-native",
     description:
       "Hierarchical tree/directory view for representing nested structures such as file trees or taxonomies.",
-    bestUsedFor: "File structure docs, taxonomy display, org chart approximation, content hierarchy.",
+    bestUsedFor:
+      "File structure docs, taxonomy display, org chart approximation, content hierarchy.",
     warning:
       "Experimental. May not render consistently across all Mermaid-compatible environments.",
     exampleFile: "treeview-example-index.mmd",
@@ -875,7 +869,8 @@ export const CAPABILITY_GAPS: GapEntry[] = [
     notationCompliance: "approximation-only",
     description:
       "Hierarchical alignment diagrams showing Objectives, Key Results, and their organizational linkage across teams.",
-    bestUsedFor: "Strategic alignment documentation, OKR rollout visualization, goal hierarchy mapping.",
+    bestUsedFor:
+      "Strategic alignment documentation, OKR rollout visualization, goal hierarchy mapping.",
     warning:
       "OKR alignment maps can be approximated using Mermaid flowcharts or mindmaps, but dedicated OKR tooling (Lattice, Betterworks) provides richer semantic modeling.",
     approximatedBy: "mindmap",

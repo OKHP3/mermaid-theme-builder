@@ -4,7 +4,11 @@ import type { Palette, ThemeColor } from "@/lib/palettes";
 import { BRAND_PALETTES, UTILITY_PALETTES } from "@/lib/palettes";
 import { PaletteSelectorBar } from "@/components/PaletteSelectorBar";
 import { detectDiagram, type DetectionResult } from "@/lib/detector";
-import { DIAGRAM_CAPABILITIES, getCapabilityById, type DiagramFamily } from "@/data/mermaid-capabilities";
+import {
+  DIAGRAM_CAPABILITIES,
+  getCapabilityById,
+  type DiagramFamily,
+} from "@/data/mermaid-capabilities";
 import { splitDiagrams } from "@/lib/diagramSplit";
 import { DiffView } from "@/components/DiffView";
 import {
@@ -37,15 +41,10 @@ import { openInLiveEditor } from "@/lib/liveEditor";
 import { BRAND_EXAMPLES } from "@/data/examples";
 import { RENDERER_PROFILES, getRendererById } from "@/data/renderer-parity";
 import { FamilySyntaxHint } from "@/components/FamilySyntaxHint";
-import {
-  getFamilySyntaxHint,
-  isHintDismissed,
-} from "@/lib/familySyntaxHints";
+import { getFamilySyntaxHint, isHintDismissed } from "@/lib/familySyntaxHints";
 import { HighlightedCode } from "@/components/HighlightedCode";
 import { type TypographySettings } from "@/lib/typography";
 import type { AppTab } from "@/App";
-
-
 
 type PreviewMode = "original" | "themed" | "diff" | "code";
 type ExportType = "code" | "markdown" | "prompt";
@@ -157,7 +156,8 @@ export function ApplyTab({
   const rendererProfile = useMemo(() => getRendererById(rendererTarget), [rendererTarget]);
   const rendererLookWarning = useMemo((): string | null => {
     if (!rendererProfile) return null;
-    const support = rendererProfile.looksSupported[look as keyof typeof rendererProfile.looksSupported];
+    const support =
+      rendererProfile.looksSupported[look as keyof typeof rendererProfile.looksSupported];
     if (support === "none") {
       const label = look === "neo" ? "Neo" : look === "handDrawn" ? "Hand Drawn" : "Classic";
       return `${rendererProfile.shortName} does not support ${label} look`;
@@ -218,13 +218,14 @@ export function ApplyTab({
     const dialog = colorEditorRef.current;
     if (!dialog) return;
     const previouslyFocused = document.activeElement as HTMLElement | null;
-    colorEditorOpenerRef.current = previouslyFocused instanceof HTMLButtonElement ? previouslyFocused : null;
+    colorEditorOpenerRef.current =
+      previouslyFocused instanceof HTMLButtonElement ? previouslyFocused : null;
 
     const focusable = () =>
       Array.from(
         dialog.querySelectorAll<HTMLElement>(
-          'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
-        ),
+          'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        )
       ).filter((el) => !el.hasAttribute("aria-hidden"));
 
     const list = focusable();
@@ -298,28 +299,28 @@ export function ApplyTab({
 
     const advisories: string[] = [];
     const hasCustomFont = selectedPalette.colors.some(
-      (c) => c.key === "fontFamily" && c.value && c.value.trim() !== "",
+      (c) => c.key === "fontFamily" && c.value && c.value.trim() !== ""
     );
     const classDefActive = CLASSDEF_CAPABLE_FAMILIES.includes(effectiveDetection.family);
 
     if (r.initDirectiveSupport !== "full") {
       advisories.push(
-        `%%{init}%% directive has partial support on ${r.shortName} — some theme colors may differ`,
+        `%%{init}%% directive has partial support on ${r.shortName} — some theme colors may differ`
       );
     }
     if (r.themeVariableSupport !== "full") {
       advisories.push(
-        `themeVariables partially applied on ${r.shortName} — only a subset of colors will take effect`,
+        `themeVariables partially applied on ${r.shortName} — only a subset of colors will take effect`
       );
     }
     if (classDefActive && r.classDefSupport !== "full") {
       advisories.push(
-        `classDef node styles may render differently on ${r.shortName} — validate before publishing`,
+        `classDef node styles may render differently on ${r.shortName} — validate before publishing`
       );
     }
     if (hasCustomFont && r.customFontSupport === "none") {
       advisories.push(
-        `Custom fontFamily is blocked on ${r.shortName} — system font fallback will apply`,
+        `Custom fontFamily is blocked on ${r.shortName} — system font fallback will apply`
       );
     }
 
@@ -331,7 +332,7 @@ export function ApplyTab({
 
   const allPalettes = useMemo(
     () => [...BRAND_PALETTES, ...UTILITY_PALETTES, ...userPalettes],
-    [userPalettes],
+    [userPalettes]
   );
 
   const recentPalettes = useMemo(() => {
@@ -346,32 +347,44 @@ export function ApplyTab({
       diagramFamily: effectiveDetection.family,
       includeMetaComments,
       includeBadge,
-      customThemeName:
-        effectiveThemeName !== selectedPalette.name ? effectiveThemeName : undefined,
+      customThemeName: effectiveThemeName !== selectedPalette.name ? effectiveThemeName : undefined,
       look,
       fontSize: fontSize || undefined,
       typography,
       rendererTarget,
     }),
-    [selectedPalette, effectiveDetection.family, includeMetaComments, includeBadge, effectiveThemeName, look, fontSize, typography, rendererTarget],
+    [
+      selectedPalette,
+      effectiveDetection.family,
+      includeMetaComments,
+      includeBadge,
+      effectiveThemeName,
+      look,
+      fontSize,
+      typography,
+      rendererTarget,
+    ]
   );
 
   const previewOptions = useMemo(
     (): ExportOptions => ({ ...exportOptions, includeBadge: false }),
-    [exportOptions],
+    [exportOptions]
   );
 
   const themedCode = useMemo(
     () => (activeDiagramCode.trim() ? generateThemedCode(activeDiagramCode, previewOptions) : ""),
-    [activeDiagramCode, previewOptions],
+    [activeDiagramCode, previewOptions]
   );
 
   const exportCode = useMemo(
     () => (activeDiagramCode.trim() ? generateThemedCode(activeDiagramCode, exportOptions) : ""),
-    [activeDiagramCode, exportOptions],
+    [activeDiagramCode, exportOptions]
   );
 
-  const { codeEditorOverride, setCodeEditorOverride, effectiveExportCode } = useCodeEditorOverride(exportCode, safeDiagramIdx);
+  const { codeEditorOverride, setCodeEditorOverride, effectiveExportCode } = useCodeEditorOverride(
+    exportCode,
+    safeDiagramIdx
+  );
 
   const previewCode = previewMode === "themed" ? themedCode : activeDiagramCode;
 
@@ -392,7 +405,7 @@ export function ApplyTab({
     }
     if (familyOverride && detection.family !== "unknown" && detection.family !== familyOverride) {
       w.push(
-        `Manual family override active — auto-detect saw “${detection.label}”, you selected “${effectiveDetection.label}”. Clear the override from the family chip to restore auto-detect.`,
+        `Manual family override active — auto-detect saw “${detection.label}”, you selected “${effectiveDetection.label}”. Clear the override from the family chip to restore auto-detect.`
       );
     }
     return w;
@@ -423,7 +436,7 @@ export function ApplyTab({
       setCopiedType(type);
       setTimeout(() => setCopiedType(null), 2000);
     },
-    [effectiveExportCode, selectedPalette, exportOptions],
+    [effectiveExportCode, selectedPalette, exportOptions]
   );
 
   // Global keyboard shortcut: Ctrl/Cmd+Shift+C copies the Styled Code.
@@ -446,12 +459,13 @@ export function ApplyTab({
       const text = generatePromptScaffoldWithFormat(selectedPalette, exportOptions, format);
       await writeToClipboard(text);
     },
-    [selectedPalette, exportOptions],
+    [selectedPalette, exportOptions]
   );
 
   const handleScaffoldPreview = useCallback(
-    (format: ScaffoldFormat) => generatePromptScaffoldWithFormat(selectedPalette, exportOptions, format),
-    [selectedPalette, exportOptions],
+    (format: ScaffoldFormat) =>
+      generatePromptScaffoldWithFormat(selectedPalette, exportOptions, format),
+    [selectedPalette, exportOptions]
   );
 
   const handleDownload = useCallback(
@@ -464,14 +478,14 @@ export function ApplyTab({
           downloadTextFile(
             makeFilename(effectiveThemeName, "themed", "mermaid"),
             effectiveExportCode,
-            "text/plain;charset=utf-8",
+            "text/plain;charset=utf-8"
           );
           onShowToast("Downloaded .mermaid file.");
         } else if (type === "json") {
           downloadTextFile(
             makeFilename(effectiveThemeName, "theme", "json"),
             paletteToPortableJson(selectedPalette),
-            "application/json;charset=utf-8",
+            "application/json;charset=utf-8"
           );
           onShowToast("Downloaded .theme.json file.");
         } else if (type === "svg") {
@@ -479,7 +493,7 @@ export function ApplyTab({
           downloadTextFile(
             makeFilename(effectiveThemeName, "diagram", "svg"),
             svg,
-            "image/svg+xml;charset=utf-8",
+            "image/svg+xml;charset=utf-8"
           );
           onShowToast("Downloaded .svg file.");
         } else if (type === "png") {
@@ -491,7 +505,7 @@ export function ApplyTab({
           downloadTextFile(
             makeFilename(effectiveThemeName, "themed", "md"),
             generateMarkdownExport(effectiveExportCode, selectedPalette, exportOptions),
-            "text/markdown;charset=utf-8",
+            "text/markdown;charset=utf-8"
           );
           onShowToast("Downloaded .md file.");
         } else if (type === "scaffold") {
@@ -499,21 +513,21 @@ export function ApplyTab({
           downloadTextFile(
             makeFilename(effectiveThemeName, "scaffold", "txt"),
             generatePromptScaffoldWithFormat(selectedPalette, exportOptions, scaffoldFormat),
-            "text/plain;charset=utf-8",
+            "text/plain;charset=utf-8"
           );
           onShowToast("Downloaded .txt scaffold file.");
         } else if (type === "css") {
           downloadTextFile(
             makeFilename(effectiveThemeName, "theme", "css"),
             paletteToCssVariables(selectedPalette),
-            "text/css;charset=utf-8",
+            "text/css;charset=utf-8"
           );
           onShowToast("Downloaded .css variables file.");
         } else if (type === "bundle") {
           downloadTextFile(
             makeFilename("mermaid-theme-builder", "palettes", "bundle.json"),
             palettesToBundleJson(allPalettes),
-            "application/json;charset=utf-8",
+            "application/json;charset=utf-8"
           );
           onShowToast(`Downloaded bundle of ${allPalettes.length} palettes.`);
         }
@@ -524,7 +538,17 @@ export function ApplyTab({
         setDownloadingType(null);
       }
     },
-    [downloadingType, effectiveExportCode, themedCode, typography, selectedPalette, effectiveThemeName, allPalettes, exportOptions, onShowToast],
+    [
+      downloadingType,
+      effectiveExportCode,
+      themedCode,
+      typography,
+      selectedPalette,
+      effectiveThemeName,
+      allPalettes,
+      exportOptions,
+      onShowToast,
+    ]
   );
 
   return (
@@ -537,95 +561,105 @@ export function ApplyTab({
         tileIdPrefix="apply-palette-tile"
       />
 
-
       <div className="flex-none border-b border-border bg-card/20 px-3 py-1.5 flex items-center gap-x-1.5 sm:gap-x-3 overflow-x-auto print-hide">
         {/* Chart Type */}
         <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
-          <span className="hidden sm:inline text-[10px] uppercase tracking-wide text-muted-foreground font-semibold">Type</span>
+          <span className="hidden sm:inline text-[10px] uppercase tracking-wide text-muted-foreground font-semibold">
+            Type
+          </span>
           <div className="relative">
-          <button
-            ref={familyBtnRef}
-            type="button"
-            onClick={() => {
-              const rect = familyBtnRef.current?.getBoundingClientRect();
-              if (rect) setFamilyMenuPos({ top: rect.bottom + 4, left: rect.left });
-              setShowFamilyMenu((v) => !v);
-            }}
-            aria-haspopup="menu"
-            aria-expanded={showFamilyMenu}
-            title={
-              familyOverride
-                ? `Family override: ${effectiveDetection.label} (auto-detected: ${detection.label}). Click to change or clear.`
-                : detection.family === "unknown"
-                ? "Diagram family not auto-detected — click to set manually."
-                : `Auto-detected family: ${detection.label}. Click to override.`
-            }
-            className={`px-2 py-0.5 rounded-full text-[11px] font-medium inline-flex items-center gap-1 transition-colors ${
-              familyOverride
-                ? "bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/40 hover:bg-amber-500/25"
-                : effectiveDetection.family === "unknown"
-                ? "bg-muted text-muted-foreground border border-border hover:bg-muted/70"
-                : "bg-primary/10 text-primary hover:bg-primary/20"
-            }`}
-          >
-            <span>{effectiveDetection.family === "unknown" ? "Set family…" : effectiveDetection.label}</span>
-            {familyOverride && <span className="text-[9px] opacity-70">override</span>}
-            <svg viewBox="0 0 12 12" className="w-2.5 h-2.5 opacity-60" fill="currentColor" aria-hidden="true">
-              <path d="M3 4.5l3 3 3-3z" />
-            </svg>
-          </button>
-          {showFamilyMenu && (
-            <>
-              <div
-                className="fixed inset-0 z-30"
-                onClick={() => setShowFamilyMenu(false)}
+            <button
+              ref={familyBtnRef}
+              type="button"
+              onClick={() => {
+                const rect = familyBtnRef.current?.getBoundingClientRect();
+                if (rect) setFamilyMenuPos({ top: rect.bottom + 4, left: rect.left });
+                setShowFamilyMenu((v) => !v);
+              }}
+              aria-haspopup="menu"
+              aria-expanded={showFamilyMenu}
+              title={
+                familyOverride
+                  ? `Family override: ${effectiveDetection.label} (auto-detected: ${detection.label}). Click to change or clear.`
+                  : detection.family === "unknown"
+                    ? "Diagram family not auto-detected — click to set manually."
+                    : `Auto-detected family: ${detection.label}. Click to override.`
+              }
+              className={`px-2 py-0.5 rounded-full text-[11px] font-medium inline-flex items-center gap-1 transition-colors ${
+                familyOverride
+                  ? "bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/40 hover:bg-amber-500/25"
+                  : effectiveDetection.family === "unknown"
+                    ? "bg-muted text-muted-foreground border border-border hover:bg-muted/70"
+                    : "bg-primary/10 text-primary hover:bg-primary/20"
+              }`}
+            >
+              <span>
+                {effectiveDetection.family === "unknown" ? "Set family…" : effectiveDetection.label}
+              </span>
+              {familyOverride && <span className="text-[9px] opacity-70">override</span>}
+              <svg
+                viewBox="0 0 12 12"
+                className="w-2.5 h-2.5 opacity-60"
+                fill="currentColor"
                 aria-hidden="true"
-              />
-              <div
-                style={{ top: familyMenuPos.top, left: familyMenuPos.left }}
-                className="fixed z-40 min-w-[200px] max-h-[320px] overflow-auto rounded-md border border-border bg-popover shadow-lg py-1"
-                role="menu"
-                aria-label="Override diagram family"
               >
-                <button
-                  role="menuitemradio"
-                  aria-checked={!familyOverride}
-                  onClick={() => {
-                    setFamilyOverride(null);
-                    setShowFamilyMenu(false);
-                  }}
-                  className={`w-full text-left px-3 py-1.5 text-xs hover:bg-muted transition-colors flex items-center justify-between gap-2 ${
-                    !familyOverride ? "font-medium text-foreground" : "text-muted-foreground"
-                  }`}
+                <path d="M3 4.5l3 3 3-3z" />
+              </svg>
+            </button>
+            {showFamilyMenu && (
+              <>
+                <div
+                  className="fixed inset-0 z-30"
+                  onClick={() => setShowFamilyMenu(false)}
+                  aria-hidden="true"
+                />
+                <div
+                  style={{ top: familyMenuPos.top, left: familyMenuPos.left }}
+                  className="fixed z-40 min-w-[200px] max-h-[320px] overflow-auto rounded-md border border-border bg-popover shadow-lg py-1"
+                  role="menu"
+                  aria-label="Override diagram family"
                 >
-                  <span>Auto-detect</span>
-                  <span className="text-[10px] opacity-60">
-                    {detection.family === "unknown" ? "unknown" : detection.label}
-                  </span>
-                </button>
-                <div className="border-t border-border my-1" aria-hidden="true" />
-                {DIAGRAM_CAPABILITIES.map((cap) => {
-                  const active = familyOverride === cap.id;
-                  return (
-                    <button
-                      key={cap.id}
-                      role="menuitemradio"
-                      aria-checked={active}
-                      onClick={() => {
-                        setFamilyOverride(cap.id);
-                        setShowFamilyMenu(false);
-                      }}
-                      className={`w-full text-left px-3 py-1.5 text-xs hover:bg-muted transition-colors ${
-                        active ? "bg-primary/10 text-primary font-medium" : "text-muted-foreground"
-                      }`}
-                    >
-                      {cap.displayName}
-                    </button>
-                  );
-                })}
-              </div>
-            </>
-          )}
+                  <button
+                    role="menuitemradio"
+                    aria-checked={!familyOverride}
+                    onClick={() => {
+                      setFamilyOverride(null);
+                      setShowFamilyMenu(false);
+                    }}
+                    className={`w-full text-left px-3 py-1.5 text-xs hover:bg-muted transition-colors flex items-center justify-between gap-2 ${
+                      !familyOverride ? "font-medium text-foreground" : "text-muted-foreground"
+                    }`}
+                  >
+                    <span>Auto-detect</span>
+                    <span className="text-[10px] opacity-60">
+                      {detection.family === "unknown" ? "unknown" : detection.label}
+                    </span>
+                  </button>
+                  <div className="border-t border-border my-1" aria-hidden="true" />
+                  {DIAGRAM_CAPABILITIES.map((cap) => {
+                    const active = familyOverride === cap.id;
+                    return (
+                      <button
+                        key={cap.id}
+                        role="menuitemradio"
+                        aria-checked={active}
+                        onClick={() => {
+                          setFamilyOverride(cap.id);
+                          setShowFamilyMenu(false);
+                        }}
+                        className={`w-full text-left px-3 py-1.5 text-xs hover:bg-muted transition-colors ${
+                          active
+                            ? "bg-primary/10 text-primary font-medium"
+                            : "text-muted-foreground"
+                        }`}
+                      >
+                        {cap.displayName}
+                      </button>
+                    );
+                  })}
+                </div>
+              </>
+            )}
           </div>
         </div>
 
@@ -633,7 +667,9 @@ export function ApplyTab({
 
         {/* Target */}
         <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
-          <span className="hidden sm:inline text-[10px] uppercase tracking-wide text-muted-foreground font-semibold">Target</span>
+          <span className="hidden sm:inline text-[10px] uppercase tracking-wide text-muted-foreground font-semibold">
+            Target
+          </span>
           <select
             value={rendererTarget}
             onChange={(e) => onRendererTargetChange(e.target.value)}
@@ -667,7 +703,9 @@ export function ApplyTab({
 
         {/* Look */}
         <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
-          <span className="hidden sm:inline text-[10px] uppercase tracking-wide text-muted-foreground font-semibold">Look</span>
+          <span className="hidden sm:inline text-[10px] uppercase tracking-wide text-muted-foreground font-semibold">
+            Look
+          </span>
           <div className="flex gap-1 shrink-0">
             {(
               [
@@ -700,13 +738,23 @@ export function ApplyTab({
 
       {exportAdvisories.length > 0 && !advisoryDismissed && (
         <div className="flex-none border-b border-sky-500/25 bg-sky-500/6 px-3 py-1.5 flex items-center gap-2 print-hide">
-          <svg viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3 text-sky-600 dark:text-sky-400 shrink-0">
-            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z" clipRule="evenodd" />
+          <svg
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            className="w-3 h-3 text-sky-600 dark:text-sky-400 shrink-0"
+          >
+            <path
+              fillRule="evenodd"
+              d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z"
+              clipRule="evenodd"
+            />
           </svg>
           <span className="flex-1 min-w-0 text-[10px] text-sky-800 dark:text-sky-200/80 leading-snug truncate">
             {exportAdvisories[0]}
             {exportAdvisories.length > 1 && (
-              <span className="text-sky-600 dark:text-sky-400 ml-1">+{exportAdvisories.length - 1} more</span>
+              <span className="text-sky-600 dark:text-sky-400 ml-1">
+                +{exportAdvisories.length - 1} more
+              </span>
             )}
           </span>
           <button
@@ -747,11 +795,17 @@ export function ApplyTab({
         <div className="flex flex-col md:flex-none md:w-[35%] border-b md:border-b-0 md:border-r border-border md:min-h-0 print-hide">
           {isExtracted && /^\s*classDef\s+/m.test(inputCode) && (
             <div className="px-3 py-1.5 flex items-start gap-1.5 bg-primary/5 border-b border-primary/20">
-              <svg viewBox="0 0 16 16" fill="currentColor" className="w-3 h-3 text-primary shrink-0 mt-0.5" aria-hidden="true">
+              <svg
+                viewBox="0 0 16 16"
+                fill="currentColor"
+                className="w-3 h-3 text-primary shrink-0 mt-0.5"
+                aria-hidden="true"
+              >
                 <path d="M8 1a7 7 0 100 14A7 7 0 008 1zm.75 10.5h-1.5v-5h1.5v5zm0-6.5h-1.5V3.5h1.5V5z" />
               </svg>
               <p className="text-[10px] text-primary/80 leading-snug">
-                classDef overrides from Extract are in this code — edit them here or re-extract to tweak further.
+                classDef overrides from Extract are in this code — edit them here or re-extract to
+                tweak further.
               </p>
             </div>
           )}
@@ -796,7 +850,9 @@ export function ApplyTab({
                   e.preventDefault();
                   setPreviewMode(modes[next]);
                   requestAnimationFrame(() => {
-                    const btn = document.querySelector<HTMLButtonElement>(`[data-preview-mode="${modes[next!]}"]`);
+                    const btn = document.querySelector<HTMLButtonElement>(
+                      `[data-preview-mode="${modes[next!]}"]`
+                    );
                     btn?.focus();
                   });
                 }
@@ -855,8 +911,17 @@ export function ApplyTab({
                   className="p-1 rounded border border-border hover:bg-muted disabled:opacity-30 disabled:cursor-not-allowed"
                   aria-label="Previous diagram"
                 >
-                  <svg viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3" aria-hidden="true">
-                    <path fillRule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clipRule="evenodd" />
+                  <svg
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    className="w-3 h-3"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z"
+                      clipRule="evenodd"
+                    />
                   </svg>
                 </button>
                 <select
@@ -878,8 +943,17 @@ export function ApplyTab({
                   className="p-1 rounded border border-border hover:bg-muted disabled:opacity-30 disabled:cursor-not-allowed"
                   aria-label="Next diagram"
                 >
-                  <svg viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3" aria-hidden="true">
-                    <path fillRule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clipRule="evenodd" />
+                  <svg
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    className="w-3 h-3"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
+                      clipRule="evenodd"
+                    />
                   </svg>
                 </button>
               </div>
@@ -896,17 +970,22 @@ export function ApplyTab({
                 autoFocus
               />
             ) : (
-              <HighlightedCode
-                code={effectiveExportCode}
-                aria-label="Styled code output"
-              />
+              <HighlightedCode code={effectiveExportCode} aria-label="Styled code output" />
             )
           ) : (
             <div className="md:flex-1 overflow-auto p-3 md:p-4 min-h-[260px]" data-print-only>
               {previewMode === "diff" ? (
-                <DiffView oldText={activeDiagramCode} newText={themedCode} className="w-full h-full" />
+                <DiffView
+                  oldText={activeDiagramCode}
+                  newText={themedCode}
+                  className="w-full h-full"
+                />
               ) : (
-                <MermaidPreview code={previewCode} className="w-full h-full" typography={typography} />
+                <MermaidPreview
+                  code={previewCode}
+                  className="w-full h-full"
+                  typography={typography}
+                />
               )}
             </div>
           )}
@@ -954,9 +1033,21 @@ export function ApplyTab({
             title="Open themed diagram in Mermaid Live Editor (mermaid.live)"
             className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-md border border-border bg-background hover:bg-muted hover:border-primary/40 font-medium transition-all disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 text-muted-foreground">
-              <path fillRule="evenodd" d="M4.25 5.5a.75.75 0 00-.75.75v8.5c0 .414.336.75.75.75h8.5a.75.75 0 00.75-.75v-4a.75.75 0 011.5 0v4A2.25 2.25 0 0112.75 17h-8.5A2.25 2.25 0 012 14.75v-8.5A2.25 2.25 0 014.25 4h5a.75.75 0 010 1.5h-5z" clipRule="evenodd" />
-              <path fillRule="evenodd" d="M6.194 12.753a.75.75 0 001.06.053L16.5 4.44v2.81a.75.75 0 001.5 0v-4.5a.75.75 0 00-.75-.75h-4.5a.75.75 0 000 1.5h2.553l-9.056 8.194a.75.75 0 00-.053 1.06z" clipRule="evenodd" />
+            <svg
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              className="w-3.5 h-3.5 text-muted-foreground"
+            >
+              <path
+                fillRule="evenodd"
+                d="M4.25 5.5a.75.75 0 00-.75.75v8.5c0 .414.336.75.75.75h8.5a.75.75 0 00.75-.75v-4a.75.75 0 011.5 0v4A2.25 2.25 0 0112.75 17h-8.5A2.25 2.25 0 012 14.75v-8.5A2.25 2.25 0 014.25 4h5a.75.75 0 010 1.5h-5z"
+                clipRule="evenodd"
+              />
+              <path
+                fillRule="evenodd"
+                d="M6.194 12.753a.75.75 0 001.06.053L16.5 4.44v2.81a.75.75 0 001.5 0v-4.5a.75.75 0 00-.75-.75h-4.5a.75.75 0 000 1.5h2.553l-9.056 8.194a.75.75 0 00-.053 1.06z"
+                clipRule="evenodd"
+              />
             </svg>
             Live Editor
           </button>
@@ -976,10 +1067,10 @@ export function ApplyTab({
                   copied
                     ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
                     : isPrimary
-                    ? "border-primary bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
-                    : isAccent
-                    ? "border-primary/35 bg-primary/8 text-primary hover:bg-primary/14 disabled:opacity-40 disabled:cursor-not-allowed"
-                    : "border-border bg-card text-foreground hover:bg-muted hover:border-primary/30 disabled:opacity-40 disabled:cursor-not-allowed"
+                      ? "border-primary bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
+                      : isAccent
+                        ? "border-primary/35 bg-primary/8 text-primary hover:bg-primary/14 disabled:opacity-40 disabled:cursor-not-allowed"
+                        : "border-border bg-card text-foreground hover:bg-muted hover:border-primary/30 disabled:opacity-40 disabled:cursor-not-allowed"
                 }`}
               >
                 {copied ? (
@@ -991,7 +1082,11 @@ export function ApplyTab({
                     />
                   </svg>
                 ) : (
-                  <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 text-muted-foreground">
+                  <svg
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    className="w-3.5 h-3.5 text-muted-foreground"
+                  >
                     <path d="M7 3.5A1.5 1.5 0 018.5 2h3.879a1.5 1.5 0 011.06.44l3.122 3.12A1.5 1.5 0 0117 6.622V12.5a1.5 1.5 0 01-1.5 1.5h-1v-3.379a3 3 0 00-.879-2.121L10.5 5.379A3 3 0 008.379 4.5H7v-1z" />
                     <path d="M4.5 6A1.5 1.5 0 003 7.5v9A1.5 1.5 0 004.5 18h7a1.5 1.5 0 001.5-1.5v-5.879a1.5 1.5 0 00-.44-1.06L9.44 6.44A1.5 1.5 0 008.378 6H4.5z" />
                   </svg>
@@ -1023,12 +1118,20 @@ export function ApplyTab({
               disabled={!inputCode.trim() || !!downloadingType}
               className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-md border border-border bg-background hover:bg-muted hover:border-primary/40 font-medium transition-all disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 text-muted-foreground">
+              <svg
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                className="w-3.5 h-3.5 text-muted-foreground"
+              >
                 <path d="M10.75 2.75a.75.75 0 00-1.5 0v8.614L6.295 8.235a.75.75 0 10-1.09 1.03l4.25 4.5a.75.75 0 001.09 0l4.25-4.5a.75.75 0 00-1.09-1.03l-2.955 3.129V2.75z" />
                 <path d="M3.5 12.75a.75.75 0 00-1.5 0v2.5A2.75 2.75 0 004.75 18h10.5A2.75 2.75 0 0018 15.25v-2.5a.75.75 0 00-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5z" />
               </svg>
               {downloadingType ? `Saving ${DOWNLOAD_LABELS[downloadingType]}…` : "Download"}
-              <svg viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3 text-muted-foreground">
+              <svg
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                className="w-3 h-3 text-muted-foreground"
+              >
                 <path
                   fillRule="evenodd"
                   d="M5.22 8.22a.75.75 0 011.06 0L10 11.94l3.72-3.72a.75.75 0 111.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 9.28a.75.75 0 010-1.06z"
@@ -1040,7 +1143,18 @@ export function ApplyTab({
               <>
                 <div className="fixed inset-0 z-30" onClick={() => setShowDownloadMenu(false)} />
                 <div className="absolute right-0 bottom-full mb-1 z-40 min-w-[180px] rounded-md border border-border bg-popover shadow-lg overflow-hidden">
-                  {(["mermaid", "markdown", "scaffold", "svg", "png", "json", "css", "bundle"] as DownloadType[]).map((t) => (
+                  {(
+                    [
+                      "mermaid",
+                      "markdown",
+                      "scaffold",
+                      "svg",
+                      "png",
+                      "json",
+                      "css",
+                      "bundle",
+                    ] as DownloadType[]
+                  ).map((t) => (
                     <button
                       key={t}
                       onClick={() => handleDownload(t)}
@@ -1123,7 +1237,12 @@ export function ApplyTab({
                   aria-label="Close color editor"
                   className="p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
                 >
-                  <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4" aria-hidden="true">
+                  <svg
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    className="w-4 h-4"
+                    aria-hidden="true"
+                  >
                     <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
                   </svg>
                 </button>
@@ -1135,7 +1254,9 @@ export function ApplyTab({
               </p>
               <div className="space-y-0.5">
                 {selectedPalette.colors.map((color) => {
-                  const override = customColors[selectedPaletteId]?.find((c) => c.key === color.key);
+                  const override = customColors[selectedPaletteId]?.find(
+                    (c) => c.key === color.key
+                  );
                   const isOverridden = !!override && override.value !== color.value;
                   return (
                     <ColorSwatch

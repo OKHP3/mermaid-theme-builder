@@ -65,7 +65,7 @@ describe("RENDERER_PROFILES", () => {
       for (const [key, val] of Object.entries(r.looksSupported)) {
         expect(
           VALID_SUPPORT_VALUES.includes(val as RendererSupport),
-          `${r.id}.looksSupported.${key} = "${val}" is not a valid RendererSupport`,
+          `${r.id}.looksSupported.${key} = "${val}" is not a valid RendererSupport`
         ).toBe(true);
       }
     }
@@ -75,7 +75,7 @@ describe("RENDERER_PROFILES", () => {
     for (const r of RENDERER_PROFILES) {
       expect(
         VALID_SUPPORT_VALUES.includes(r.themeVariableSupport),
-        `${r.id}.themeVariableSupport = "${r.themeVariableSupport}" is invalid`,
+        `${r.id}.themeVariableSupport = "${r.themeVariableSupport}" is invalid`
       ).toBe(true);
     }
   });
@@ -84,7 +84,7 @@ describe("RENDERER_PROFILES", () => {
     for (const r of RENDERER_PROFILES) {
       expect(
         VALID_SUPPORT_VALUES.includes(r.cssInjectionSupport),
-        `${r.id}.cssInjectionSupport = "${r.cssInjectionSupport}" is invalid`,
+        `${r.id}.cssInjectionSupport = "${r.cssInjectionSupport}" is invalid`
       ).toBe(true);
     }
   });
@@ -92,7 +92,10 @@ describe("RENDERER_PROFILES", () => {
   it("mermaidVersionApprox is a non-empty string for every renderer", () => {
     for (const r of RENDERER_PROFILES) {
       expect(typeof r.mermaidVersionApprox).toBe("string");
-      expect(r.mermaidVersionApprox.length, `${r.id}.mermaidVersionApprox must be non-empty`).toBeGreaterThan(0);
+      expect(
+        r.mermaidVersionApprox.length,
+        `${r.id}.mermaidVersionApprox must be non-empty`
+      ).toBeGreaterThan(0);
     }
   });
 
@@ -264,7 +267,7 @@ describe("buildRendererHeaderComment", () => {
 
     it("matches the expected full comment string", () => {
       expect(buildRendererHeaderComment("github")).toBe(
-        "<!-- Target renderer: GitHub — CSS injection not supported, custom fonts not supported -->",
+        "<!-- Target renderer: GitHub — CSS injection not supported, custom fonts not supported -->"
       );
     });
   });
@@ -288,7 +291,7 @@ describe("buildRendererHeaderComment", () => {
 
     it("matches the expected full comment string", () => {
       expect(buildRendererHeaderComment("obsidian")).toBe(
-        "<!-- Target renderer: Obsidian — CSS injection is partial -->",
+        "<!-- Target renderer: Obsidian — CSS injection is partial -->"
       );
     });
   });
@@ -311,7 +314,7 @@ describe("buildRendererHeaderComment", () => {
 
     it("matches the expected full comment string", () => {
       expect(buildRendererHeaderComment("notion")).toBe(
-        "<!-- Target renderer: Notion — themeVariable support is partial, CSS injection not supported, custom fonts not supported -->",
+        "<!-- Target renderer: Notion — themeVariable support is partial, CSS injection not supported, custom fonts not supported -->"
       );
     });
   });
@@ -321,7 +324,7 @@ describe("buildRendererHeaderComment", () => {
       for (const renderer of RENDERER_PROFILES) {
         const result = buildRendererHeaderComment(renderer.id);
         expect(result, `${renderer.id} should produce a non-empty comment`).toMatch(
-          /^<!-- Target renderer:/,
+          /^<!-- Target renderer:/
         );
       }
     });
@@ -340,7 +343,7 @@ describe("buildRendererHeaderComment", () => {
           r.themeVariableSupport !== "partial" &&
           r.cssInjectionSupport !== "none" &&
           r.cssInjectionSupport !== "partial" &&
-          r.customFontSupport !== "none",
+          r.customFontSupport !== "none"
       );
       for (const renderer of fullRenderers) {
         const result = buildRendererHeaderComment(renderer.id);

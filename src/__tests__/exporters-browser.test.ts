@@ -48,7 +48,10 @@ function interceptAnchors(): { anchors: HTMLAnchorElement[]; restore: () => void
 
 describe("renderToSvg", () => {
   beforeEach(() => {
-    vi.mocked(mermaid.render).mockResolvedValue({ svg: "<svg><text>mock</text></svg>", bindFunctions: undefined });
+    vi.mocked(mermaid.render).mockResolvedValue({
+      svg: "<svg><text>mock</text></svg>",
+      bindFunctions: undefined,
+    });
   });
 
   afterEach(() => {
@@ -63,12 +66,12 @@ describe("renderToSvg", () => {
   it("calls mermaid.initialize before render", async () => {
     await renderToSvg("graph TD\n  A --> B");
     expect(mermaid.initialize).toHaveBeenCalledWith(
-      expect.objectContaining({ startOnLoad: false }),
+      expect.objectContaining({ startOnLoad: false })
     );
   });
 
   it("passes the diagram code to mermaid.render", async () => {
-    const code = "pie\n  title Test\n  \"A\" : 50\n  \"B\" : 50";
+    const code = 'pie\n  title Test\n  "A" : 50\n  "B" : 50';
     await renderToSvg(code);
     expect(mermaid.render).toHaveBeenCalledWith(expect.any(String), code);
   });
@@ -92,7 +95,7 @@ describe("renderToSvg", () => {
 
   it("embeds a <style> block when non-default typography is supplied", async () => {
     vi.mocked(mermaid.render).mockResolvedValueOnce({
-      svg: '<svg><text>mock</text></svg>',
+      svg: "<svg><text>mock</text></svg>",
       bindFunctions: undefined,
     });
     const typography: TypographySettings = {
@@ -107,11 +110,11 @@ describe("renderToSvg", () => {
 
   it("returns unmodified SVG when all typography tiers match defaults", async () => {
     vi.mocked(mermaid.render).mockResolvedValueOnce({
-      svg: '<svg><text>mock</text></svg>',
+      svg: "<svg><text>mock</text></svg>",
       bindFunctions: undefined,
     });
     const result = await renderToSvg("flowchart LR\n  A --> B", DEFAULT_TYPOGRAPHY);
-    expect(result).toBe('<svg><text>mock</text></svg>');
+    expect(result).toBe("<svg><text>mock</text></svg>");
   });
 
   it("preserves the closing </svg> tag after injecting typography CSS", async () => {
@@ -180,10 +183,12 @@ describe("svgStringToPngBlob", () => {
     };
 
     const origCreateElement = document.createElement.bind(document);
-    const spy = vi.spyOn(document, "createElement").mockImplementation((tag: string, opts?: ElementCreationOptions) => {
-      if (tag === "canvas") return mockCanvas as unknown as HTMLCanvasElement;
-      return origCreateElement(tag, opts);
-    });
+    const spy = vi
+      .spyOn(document, "createElement")
+      .mockImplementation((tag: string, opts?: ElementCreationOptions) => {
+        if (tag === "canvas") return mockCanvas as unknown as HTMLCanvasElement;
+        return origCreateElement(tag, opts);
+      });
     restoreCreateElement = () => spy.mockRestore();
   });
 

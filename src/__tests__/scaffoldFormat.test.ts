@@ -1,8 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  generatePromptScaffoldWithFormat,
-  type ExportOptions,
-} from "@/lib/themeEngine";
+import { generatePromptScaffoldWithFormat, type ExportOptions } from "@/lib/themeEngine";
 import { resolveScaffoldFormat } from "@/lib/scaffoldPrefs";
 import { BRAND_PALETTES } from "@/lib/palettes";
 
@@ -95,7 +92,9 @@ describe("generatePromptScaffoldWithFormat — format-specific output", () => {
 
     it("instructs AI to always start with the YAML frontmatter directive", () => {
       const result = generatePromptScaffoldWithFormat(palette, BASE_OPTIONS, "formatB");
-      expect(result).toContain("ALWAYS start the diagram with the YAML frontmatter theme directive");
+      expect(result).toContain(
+        "ALWAYS start the diagram with the YAML frontmatter theme directive"
+      );
     });
 
     it("update-prompt restore text references YAML frontmatter specifically", () => {

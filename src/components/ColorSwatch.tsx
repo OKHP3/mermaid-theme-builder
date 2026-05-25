@@ -31,7 +31,7 @@ export function ColorSwatch({ color, onChange, isOverridden = false, onReset }: 
       setLocalValue(val);
       onChange(color.key, val);
     },
-    [color.key, onChange],
+    [color.key, onChange]
   );
 
   const handleTextInput = useCallback(
@@ -40,7 +40,7 @@ export function ColorSwatch({ color, onChange, isOverridden = false, onReset }: 
       setLocalValue(val);
       onChange(color.key, val);
     },
-    [color.key, onChange],
+    [color.key, onChange]
   );
 
   const openPicker = useCallback(() => {
@@ -66,10 +66,15 @@ export function ColorSwatch({ color, onChange, isOverridden = false, onReset }: 
     return (
       <div className="flex items-center gap-2 py-1.5 px-2 rounded-md hover:bg-muted/50 transition-colors group">
         <div className="w-7 h-7 rounded border border-border bg-secondary flex items-center justify-center shrink-0">
-          <span className="text-[10px] font-bold text-muted-foreground" aria-hidden="true">Aa</span>
+          <span className="text-[10px] font-bold text-muted-foreground" aria-hidden="true">
+            Aa
+          </span>
         </div>
         <div className="flex-1 min-w-0">
-          <label className="text-xs font-medium text-foreground" htmlFor={`swatch-font-${color.key}`}>
+          <label
+            className="text-xs font-medium text-foreground"
+            htmlFor={`swatch-font-${color.key}`}
+          >
             {color.label}
           </label>
           <input
@@ -86,7 +91,10 @@ export function ColorSwatch({ color, onChange, isOverridden = false, onReset }: 
   }
 
   return (
-    <div ref={rowRef} className="relative flex items-center gap-2 py-1.5 px-2 rounded-md hover:bg-muted/50 transition-colors group">
+    <div
+      ref={rowRef}
+      className="relative flex items-center gap-2 py-1.5 px-2 rounded-md hover:bg-muted/50 transition-colors group"
+    >
       {/* Visual swatch button */}
       <button
         type="button"
@@ -137,26 +145,27 @@ export function ColorSwatch({ color, onChange, isOverridden = false, onReset }: 
       {/* Portaled color input — rendered directly in document.body so no
           ancestor CSS transform can displace position:fixed coordinates.
           Position is set imperatively in openPicker() before .click(). */}
-      {isHexColor && createPortal(
-        <input
-          ref={hiddenPickerRef}
-          type="color"
-          value={localValue.length === 7 ? localValue : "#1a4f8a"}
-          onChange={handleColorPicker}
-          aria-hidden="true"
-          tabIndex={-1}
-          style={{
-            position: "fixed",
-            top: 0,
-            left: "-9999px",
-            width: 1,
-            height: 1,
-            opacity: 0,
-            pointerEvents: "none",
-          }}
-        />,
-        document.body,
-      )}
+      {isHexColor &&
+        createPortal(
+          <input
+            ref={hiddenPickerRef}
+            type="color"
+            value={localValue.length === 7 ? localValue : "#1a4f8a"}
+            onChange={handleColorPicker}
+            aria-hidden="true"
+            tabIndex={-1}
+            style={{
+              position: "fixed",
+              top: 0,
+              left: "-9999px",
+              width: 1,
+              height: 1,
+              opacity: 0,
+              pointerEvents: "none",
+            }}
+          />,
+          document.body
+        )}
     </div>
   );
 }

@@ -12,21 +12,40 @@ export interface TypographySettings {
 }
 
 export const DEFAULT_TYPOGRAPHY: TypographySettings = {
-  diagramTitle:        { fontSize: 20, fontFamily: "" },
-  subgraphTitle:       { fontSize: 16, fontFamily: "" },
+  diagramTitle: { fontSize: 20, fontFamily: "" },
+  subgraphTitle: { fontSize: 16, fontFamily: "" },
   nestedSubgraphTitle: { fontSize: 14, fontFamily: "" },
-  nodeLabel:           { fontSize: 14, fontFamily: "" },
-  edgeLabel:           { fontSize: 12, fontFamily: "" },
+  nodeLabel: { fontSize: 14, fontFamily: "" },
+  edgeLabel: { fontSize: 12, fontFamily: "" },
 };
 
 export type TypographyTierKey = keyof TypographySettings;
 
-export const TIER_META: Record<TypographyTierKey, { label: string; description: string; cssProp: string }> = {
-  diagramTitle:        { label: "Diagram Title",        description: "%%{init}%% title / diagram heading",          cssProp: ".label" },
-  subgraphTitle:       { label: "Subgraph Title",        description: "Top-level subgraph / cluster header",         cssProp: ".cluster-label" },
-  nestedSubgraphTitle: { label: "Nested Subgraph",       description: "Inner subgraph header labels",                cssProp: ".cluster-label .nodeLabel" },
-  nodeLabel:           { label: "Node Label",            description: "Text inside nodes and shapes",                cssProp: ".node .label" },
-  edgeLabel:           { label: "Edge Label",            description: "Text on edge connectors",                     cssProp: ".edgeLabel" },
+export const TIER_META: Record<
+  TypographyTierKey,
+  { label: string; description: string; cssProp: string }
+> = {
+  diagramTitle: {
+    label: "Diagram Title",
+    description: "%%{init}%% title / diagram heading",
+    cssProp: ".label",
+  },
+  subgraphTitle: {
+    label: "Subgraph Title",
+    description: "Top-level subgraph / cluster header",
+    cssProp: ".cluster-label",
+  },
+  nestedSubgraphTitle: {
+    label: "Nested Subgraph",
+    description: "Inner subgraph header labels",
+    cssProp: ".cluster-label .nodeLabel",
+  },
+  nodeLabel: {
+    label: "Node Label",
+    description: "Text inside nodes and shapes",
+    cssProp: ".node .label",
+  },
+  edgeLabel: { label: "Edge Label", description: "Text on edge connectors", cssProp: ".edgeLabel" },
 };
 
 export const TIER_ORDER: TypographyTierKey[] = [
@@ -70,14 +89,13 @@ export function isDefaultTypography(settings: TypographySettings): boolean {
 }
 
 export function generateTypographyCss(settings: TypographySettings): string {
-  const lines: string[] = [
-    "/* Mermaid typography hierarchy — flowchart/subgraph targets */",
-  ];
+  const lines: string[] = ["/* Mermaid typography hierarchy — flowchart/subgraph targets */"];
   for (const key of TIER_ORDER) {
     const tier = settings[key];
     const meta = TIER_META[key];
     const rules: string[] = [];
-    if (tier.fontSize !== DEFAULT_TYPOGRAPHY[key].fontSize) rules.push(`font-size: ${tier.fontSize}px;`);
+    if (tier.fontSize !== DEFAULT_TYPOGRAPHY[key].fontSize)
+      rules.push(`font-size: ${tier.fontSize}px;`);
     if (tier.fontFamily) rules.push(`font-family: ${tier.fontFamily};`);
     if (rules.length > 0) {
       lines.push(`/* ${meta.label} */`);

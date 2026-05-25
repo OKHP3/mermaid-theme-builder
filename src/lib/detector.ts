@@ -22,7 +22,13 @@ export function detectDiagram(code: string): DetectionResult {
   const trimmed = code.trim();
 
   if (!trimmed) {
-    return { family: "unknown", label: "Unknown", hasThemeInit: false, warnings: [], capability: null };
+    return {
+      family: "unknown",
+      label: "Unknown",
+      hasThemeInit: false,
+      warnings: [],
+      capability: null,
+    };
   }
 
   const hasThemeInit = /%%\s*\{.*?init.*?\}.*?%%/s.test(trimmed);
@@ -42,15 +48,21 @@ export function detectDiagram(code: string): DetectionResult {
   const capability = family !== "unknown" ? getCapabilityById(family) : null;
 
   if (family === "unknown") {
-    warnings.push("Could not detect diagram type. Paste a valid Mermaid diagram to enable theming.");
+    warnings.push(
+      "Could not detect diagram type. Paste a valid Mermaid diagram to enable theming."
+    );
   }
 
   if (hasThemeInit) {
-    warnings.push("Existing %%{init:...}%% directive detected — applying this theme will replace it.");
+    warnings.push(
+      "Existing %%{init:...}%% directive detected — applying this theme will replace it."
+    );
   }
 
   if (hasYamlFrontmatter) {
-    warnings.push("YAML frontmatter detected — config directives (layout, theme) will be replaced when this palette theme is applied.");
+    warnings.push(
+      "YAML frontmatter detected — config directives (layout, theme) will be replaced when this palette theme is applied."
+    );
   }
 
   const hasUnsupportedChars = /[\u0000-\u001F]/.test(trimmed.replace(/\n/g, ""));
@@ -60,7 +72,9 @@ export function detectDiagram(code: string): DetectionResult {
 
   const longLabel = trimmed.split("\n").find((line) => line.length > 200);
   if (longLabel) {
-    warnings.push("One or more labels exceed 200 characters — long labels may cause layout issues.");
+    warnings.push(
+      "One or more labels exceed 200 characters — long labels may cause layout issues."
+    );
   }
 
   // ── Diagram Breaker #1: bare `end` keyword used as a node ID ─────────────
@@ -102,7 +116,7 @@ export function detectDiagram(code: string): DetectionResult {
     });
     if (bareEndAsNode) {
       warnings.push(
-        "Diagram Breaker: 'end' used as a bare node ID. Mermaid reserves 'end' to close subgraph/alt/loop blocks — using it as a node identifier will break the parser. Rename the node or wrap it in quotes: [\"end\"].",
+        "Diagram Breaker: 'end' used as a bare node ID. Mermaid reserves 'end' to close subgraph/alt/loop blocks — using it as a node identifier will break the parser. Rename the node or wrap it in quotes: [\"end\"]."
       );
     }
   }
@@ -114,7 +128,7 @@ export function detectDiagram(code: string): DetectionResult {
   const curliesInComment = /^\s*%%(?!\s*\{)[^\n]*[{}]/m.test(trimmed);
   if (curliesInComment) {
     warnings.push(
-      "Diagram Breaker: curly brace { or } found inside a %% comment line. Mermaid may interpret {} in comments as a directive fragment, causing parse errors. Move the brace outside the comment or remove it.",
+      "Diagram Breaker: curly brace { or } found inside a %% comment line. Mermaid may interpret {} in comments as a directive fragment, causing parse errors. Move the brace outside the comment or remove it."
     );
   }
 
@@ -126,11 +140,10 @@ export function detectDiagram(code: string): DetectionResult {
   // Detection: a node-like token followed by [ or ( where the interior
   // contains another unquoted [ or ( before the closing delimiter.
   const nestedUnquotedNode =
-    /\b\w[\w\s]*\[(?:[^"\]\n]*\[)/.test(trimmed) ||
-    /\b\w[\w\s]*\((?:[^"\)\n]*\()/.test(trimmed);
+    /\b\w[\w\s]*\[(?:[^"\]\n]*\[)/.test(trimmed) || /\b\w[\w\s]*\((?:[^"\)\n]*\()/.test(trimmed);
   if (nestedUnquotedNode) {
     warnings.push(
-      "Diagram Breaker: possible nested node definition without quotes. If a node label contains [ or ( characters, wrap the entire label in double quotes to prevent parse errors — e.g. A[\"label with [brackets]\"].",
+      'Diagram Breaker: possible nested node definition without quotes. If a node label contains [ or ( characters, wrap the entire label in double quotes to prevent parse errors — e.g. A["label with [brackets]"].'
     );
   }
 

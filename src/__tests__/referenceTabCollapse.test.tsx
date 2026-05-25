@@ -150,7 +150,7 @@ describe("Reference tab auto-collapse — supportsClassDef=true", () => {
 describe("Reference tab auto-collapse — transitions on rerender", () => {
   it("RPM collapses when supportsClassDef transitions from true to false", () => {
     const { rerender } = render(
-      createElement(ReferenceTab, { ...BASE_PROPS, supportsClassDef: true }),
+      createElement(ReferenceTab, { ...BASE_PROPS, supportsClassDef: true })
     );
     expect(getRpmDetails().open).toBe(true);
 
@@ -160,7 +160,7 @@ describe("Reference tab auto-collapse — transitions on rerender", () => {
 
   it("Class Library collapses when supportsClassDef transitions from true to false", () => {
     const { rerender } = render(
-      createElement(ReferenceTab, { ...BASE_PROPS, supportsClassDef: true }),
+      createElement(ReferenceTab, { ...BASE_PROPS, supportsClassDef: true })
     );
     expect(getClassLibraryDetails().open).toBe(true);
 
@@ -170,7 +170,7 @@ describe("Reference tab auto-collapse — transitions on rerender", () => {
 
   it("RPM expands when supportsClassDef transitions from false to true", () => {
     const { rerender } = render(
-      createElement(ReferenceTab, { ...BASE_PROPS, supportsClassDef: false }),
+      createElement(ReferenceTab, { ...BASE_PROPS, supportsClassDef: false })
     );
     expect(getRpmDetails().open).toBe(false);
 
@@ -180,7 +180,7 @@ describe("Reference tab auto-collapse — transitions on rerender", () => {
 
   it("Class Library expands when supportsClassDef transitions from false to true", () => {
     const { rerender } = render(
-      createElement(ReferenceTab, { ...BASE_PROPS, supportsClassDef: false }),
+      createElement(ReferenceTab, { ...BASE_PROPS, supportsClassDef: false })
     );
     expect(getClassLibraryDetails().open).toBe(false);
 
@@ -190,7 +190,7 @@ describe("Reference tab auto-collapse — transitions on rerender", () => {
 
   it("both sections track multiple rapid transitions correctly", () => {
     const { rerender } = render(
-      createElement(ReferenceTab, { ...BASE_PROPS, supportsClassDef: true }),
+      createElement(ReferenceTab, { ...BASE_PROPS, supportsClassDef: true })
     );
     rerender(createElement(ReferenceTab, { ...BASE_PROPS, supportsClassDef: false }));
     expect(getRpmDetails().open).toBe(false);
@@ -223,7 +223,7 @@ describe("Reference tab — RPM inactive badge visibility", () => {
 
   it("badge appears when supportsClassDef transitions from true to false", () => {
     const { rerender } = render(
-      createElement(ReferenceTab, { ...BASE_PROPS, supportsClassDef: true }),
+      createElement(ReferenceTab, { ...BASE_PROPS, supportsClassDef: true })
     );
     expect(hasBadgeIn(getRpmDetails())).toBe(false);
 
@@ -233,7 +233,7 @@ describe("Reference tab — RPM inactive badge visibility", () => {
 
   it("badge disappears when supportsClassDef transitions from false to true", () => {
     const { rerender } = render(
-      createElement(ReferenceTab, { ...BASE_PROPS, supportsClassDef: false }),
+      createElement(ReferenceTab, { ...BASE_PROPS, supportsClassDef: false })
     );
     expect(hasBadgeIn(getRpmDetails())).toBe(true);
 
@@ -278,7 +278,7 @@ describe("Reference tab — Class Library inactive badge visibility", () => {
 
   it("Class Library badge appears when supportsClassDef transitions to false", () => {
     const { rerender } = render(
-      createElement(ReferenceTab, { ...BASE_PROPS, supportsClassDef: true }),
+      createElement(ReferenceTab, { ...BASE_PROPS, supportsClassDef: true })
     );
     expect(hasBadgeIn(getClassLibraryDetails())).toBe(false);
 

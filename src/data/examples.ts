@@ -224,7 +224,7 @@ export const BRAND_EXAMPLES: Record<string, PaletteExamples> = {
     flowchart: OVERKILL_HILL_FLOWCHART,
     sequence: OVERKILL_HILL_SEQUENCE,
   },
-  "askjamie": {
+  askjamie: {
     flowchart: ASKJAMIE_FLOWCHART,
     sequence: ASKJAMIE_SEQUENCE,
   },

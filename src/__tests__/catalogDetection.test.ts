@@ -19,8 +19,7 @@ const CATALOG_TO_DIAGRAM_FAMILY: Record<string, DiagramFamily> = {
 };
 
 function expectedFamily(catalogFamily: string): DiagramFamily {
-  return (CATALOG_TO_DIAGRAM_FAMILY[catalogFamily] ??
-    catalogFamily) as DiagramFamily;
+  return (CATALOG_TO_DIAGRAM_FAMILY[catalogFamily] ?? catalogFamily) as DiagramFamily;
 }
 
 // Entries whose content is legitimately undetectable at parse time are listed
@@ -32,7 +31,7 @@ const KNOWN_UNDETECTABLE = new Set<string>([
 
 describe("EXAMPLE_CATALOG — every entry detects to its declared family", () => {
   const detectable = EXAMPLE_CATALOG.filter(
-    (e) => e.family && e.family !== "unknown" && !KNOWN_UNDETECTABLE.has(e.id),
+    (e) => e.family && e.family !== "unknown" && !KNOWN_UNDETECTABLE.has(e.id)
   );
 
   it("has entries to test", () => {
@@ -45,7 +44,7 @@ describe("EXAMPLE_CATALOG — every entry detects to its declared family", () =>
       const result = detectDiagram(entry.content);
       expect(
         result.family,
-        `Entry "${entry.id}" — expected detectDiagram to return "${expected}" but got "${result.family}". Check that the content starts with the correct diagram keyword.`,
+        `Entry "${entry.id}" — expected detectDiagram to return "${expected}" but got "${result.family}". Check that the content starts with the correct diagram keyword.`
       ).toBe(expected);
     });
   }

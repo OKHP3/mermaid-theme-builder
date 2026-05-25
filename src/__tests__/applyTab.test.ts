@@ -101,9 +101,7 @@ describe("useCodeEditorOverride — override set by user edit", () => {
 describe("useCodeEditorOverride — override reset on exportCode change", () => {
   it("override is cleared when exportCode prop changes", () => {
     let currentExportCode = exportCodeA;
-    const { result, rerender } = renderHook(() =>
-      useCodeEditorOverride(currentExportCode),
-    );
+    const { result, rerender } = renderHook(() => useCodeEditorOverride(currentExportCode));
 
     // Set an override (user edits the panel).
     act(() => {
@@ -121,9 +119,7 @@ describe("useCodeEditorOverride — override reset on exportCode change", () => 
 
   it("effectiveExportCode reflects fresh exportCode after palette change clears override", () => {
     let currentExportCode = exportCodeA;
-    const { result, rerender } = renderHook(() =>
-      useCodeEditorOverride(currentExportCode),
-    );
+    const { result, rerender } = renderHook(() => useCodeEditorOverride(currentExportCode));
 
     act(() => {
       result.current.setCodeEditorOverride("overridden by user");
@@ -139,9 +135,7 @@ describe("useCodeEditorOverride — override reset on exportCode change", () => 
   });
 
   it("override is NOT cleared when exportCode stays the same", () => {
-    const { result, rerender } = renderHook(() =>
-      useCodeEditorOverride(exportCodeA),
-    );
+    const { result, rerender } = renderHook(() => useCodeEditorOverride(exportCodeA));
 
     act(() => {
       result.current.setCodeEditorOverride("still valid edit");
@@ -156,9 +150,7 @@ describe("useCodeEditorOverride — override reset on exportCode change", () => 
 
   it("copy/download path uses stale override until a new exportCode is produced", () => {
     let currentExportCode = exportCodeA;
-    const { result, rerender } = renderHook(() =>
-      useCodeEditorOverride(currentExportCode),
-    );
+    const { result, rerender } = renderHook(() => useCodeEditorOverride(currentExportCode));
 
     const userEdit = "manually tweaked diagram";
     act(() => {
@@ -247,9 +239,7 @@ describe("multi-diagram override reset", () => {
 
     // Start on diagram 0 (no activeDiagramIdx arg — defaults to 0).
     let currentExportCode = exportCodeDiagram0;
-    const { result, rerender } = renderHook(() =>
-      useCodeEditorOverride(currentExportCode),
-    );
+    const { result, rerender } = renderHook(() => useCodeEditorOverride(currentExportCode));
 
     // User edits the code panel while viewing diagram 0.
     act(() => {
@@ -291,7 +281,8 @@ describe("multi-diagram override reset", () => {
     expect(singleDiagrams).toHaveLength(1);
 
     // The render-time guard computes the corrected index immediately.
-    const correctedIdx = activeDiagramIdx > 0 && activeDiagramIdx >= singleDiagrams.length ? 0 : activeDiagramIdx;
+    const correctedIdx =
+      activeDiagramIdx > 0 && activeDiagramIdx >= singleDiagrams.length ? 0 : activeDiagramIdx;
     expect(correctedIdx).toBe(0);
 
     // safeDiagramIdx (Math.min) also clamps correctly.
@@ -308,8 +299,7 @@ describe("multi-diagram override reset", () => {
     const singleDiagrams = splitDiagrams("flowchart TD\n  A --> B");
 
     for (const staleIdx of [0, 1, 2]) {
-      const correctedIdx =
-        staleIdx > 0 && staleIdx >= singleDiagrams.length ? 0 : staleIdx;
+      const correctedIdx = staleIdx > 0 && staleIdx >= singleDiagrams.length ? 0 : staleIdx;
       const safeDiagramIdx = Math.min(correctedIdx, singleDiagrams.length - 1);
 
       // Regardless of which diagram was active before, we land on index 0.
@@ -346,7 +336,7 @@ describe("multi-diagram override reset", () => {
     let currentExportCode = identicalCode;
     let currentIdx = 0;
     const { result, rerender } = renderHook(() =>
-      useCodeEditorOverride(currentExportCode, currentIdx),
+      useCodeEditorOverride(currentExportCode, currentIdx)
     );
 
     // User edits the panel while viewing diagram 0.
@@ -384,9 +374,7 @@ describe("multi-diagram override reset", () => {
 
     // Start on diagram 0, no override.
     let currentExportCode = exportCodeDiagram0;
-    const { result, rerender } = renderHook(() =>
-      useCodeEditorOverride(currentExportCode),
-    );
+    const { result, rerender } = renderHook(() => useCodeEditorOverride(currentExportCode));
 
     // Switch to diagram 1, set an override there.
     currentExportCode = exportCodeDiagram1;
@@ -442,7 +430,7 @@ describe("per-diagram override isolation", () => {
     let currentExportCode = exportCodeDiagram0;
     let currentIdx = 0;
     const { result, rerender } = renderHook(() =>
-      useCodeEditorOverride(currentExportCode, currentIdx),
+      useCodeEditorOverride(currentExportCode, currentIdx)
     );
 
     // User edits diagram 0.
@@ -465,7 +453,7 @@ describe("per-diagram override isolation", () => {
     let currentExportCode = exportCodeDiagram0;
     let currentIdx = 0;
     const { result, rerender } = renderHook(() =>
-      useCodeEditorOverride(currentExportCode, currentIdx),
+      useCodeEditorOverride(currentExportCode, currentIdx)
     );
 
     // User edits diagram 0.
@@ -492,7 +480,7 @@ describe("per-diagram override isolation", () => {
     let currentExportCode = exportCodeDiagram0;
     let currentIdx = 0;
     const { result, rerender } = renderHook(() =>
-      useCodeEditorOverride(currentExportCode, currentIdx),
+      useCodeEditorOverride(currentExportCode, currentIdx)
     );
 
     // Edit diagram 0.
@@ -534,7 +522,7 @@ describe("per-diagram override isolation", () => {
     let currentExportCode = exportCodeDiagram0;
     let currentIdx = 0;
     const { result, rerender } = renderHook(() =>
-      useCodeEditorOverride(currentExportCode, currentIdx),
+      useCodeEditorOverride(currentExportCode, currentIdx)
     );
 
     // Edit diagram 0.
@@ -571,7 +559,7 @@ describe("per-diagram override isolation", () => {
     let currentExportCode = exportCodeDiagram0;
     let currentIdx = 0;
     const { result, rerender } = renderHook(() =>
-      useCodeEditorOverride(currentExportCode, currentIdx),
+      useCodeEditorOverride(currentExportCode, currentIdx)
     );
 
     // Edit both diagrams.

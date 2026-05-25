@@ -112,7 +112,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, typography: DEFAULT_TYPOGRAPHY },
-      "both",
+      "both"
     );
     expect(result).toContain("Typography Hierarchy");
   });
@@ -136,7 +136,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, rendererTarget: "mermaid-live" },
-      "both",
+      "both"
     );
     expect(result).toContain("Target Renderer");
   });
@@ -145,7 +145,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, rendererTarget: "github" },
-      "both",
+      "both"
     );
     expect(result).toContain("GitHub");
   });
@@ -159,7 +159,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, rendererTarget: "mermaid-live" },
-      "both",
+      "both"
     );
     expect(result).toContain("Look compatibility");
   });
@@ -168,7 +168,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, rendererTarget: "notion", look: "neo" },
-      "both",
+      "both"
     );
     expect(result).toContain("Warning");
   });
@@ -182,7 +182,7 @@ describe("generatePromptScaffoldWithFormat", () => {
         typography: DEFAULT_TYPOGRAPHY,
         rendererTarget: "mermaid-live",
       },
-      "both",
+      "both"
     );
     expect(result).toContain(palette.name);
     expect(result).toContain("neo");
@@ -194,7 +194,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "erDiagram" },
-      "both",
+      "both"
     );
     expect(result).toContain("ER diagram");
     expect(result).toContain("cardinality");
@@ -205,7 +205,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "erDiagram" },
-      "both",
+      "both"
     );
     expect(result).not.toContain("## Semantic classDef library");
   });
@@ -214,7 +214,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "erDiagram" },
-      "both",
+      "both"
     );
     expect(result).toContain(":::className");
     expect(result).toContain("erDiagram does not support per-entity classDef styling");
@@ -224,7 +224,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "classDiagram" },
-      "both",
+      "both"
     );
     expect(result).toContain("Class diagram");
     expect(result).toContain("Relationship arrow types");
@@ -235,7 +235,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "classDiagram" },
-      "both",
+      "both"
     );
     expect(result).toContain("## Semantic classDef library");
     expect(result).toContain("classDef");
@@ -245,7 +245,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "classDiagram" },
-      "both",
+      "both"
     );
     expect(result).not.toContain("Subgraph tier patterns");
   });
@@ -254,7 +254,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "stateDiagram" },
-      "both",
+      "both"
     );
     expect(result).toContain("State diagram");
     expect(result).toContain("stateDiagram-v2");
@@ -265,7 +265,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "stateDiagram" },
-      "both",
+      "both"
     );
     expect(result).toContain("limited renderer support");
   });
@@ -274,7 +274,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "stateDiagram" },
-      "both",
+      "both"
     );
     expect(result).not.toContain("Subgraph tier patterns");
   });
@@ -283,7 +283,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "gantt" },
-      "both",
+      "both"
     );
     expect(result).toContain("Gantt diagram");
     expect(result).toContain("dateFormat");
@@ -295,7 +295,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "gantt" },
-      "both",
+      "both"
     );
     expect(result).not.toContain("## Semantic classDef library");
   });
@@ -304,7 +304,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "gantt" },
-      "both",
+      "both"
     );
     expect(result).toContain(":::className");
     expect(result).toContain("gantt does not support per-task classDef styling");
@@ -314,7 +314,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "gantt" },
-      "both",
+      "both"
     );
     expect(result).toContain("milestone");
     expect(result).toContain("YYYY-MM-DD");
@@ -324,7 +324,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "pie" },
-      "both",
+      "both"
     );
     expect(result).toContain("Pie chart");
     expect(result).toContain("pie title");
@@ -335,7 +335,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "pie" },
-      "both",
+      "both"
     );
     expect(result).not.toContain("## Semantic classDef library");
   });
@@ -344,7 +344,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "pie" },
-      "both",
+      "both"
     );
     expect(result).toContain(":::className");
     expect(result).toContain("pie does not support per-slice classDef styling");
@@ -354,7 +354,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "pie" },
-      "both",
+      "both"
     );
     expect(result).toContain('"Label" : value');
   });
@@ -363,7 +363,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "mindmap" },
-      "both",
+      "both"
     );
     expect(result).toContain("Mindmap");
     expect(result).toContain("indented");
@@ -374,7 +374,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "mindmap" },
-      "both",
+      "both"
     );
     expect(result).not.toContain("## Semantic classDef library");
   });
@@ -383,7 +383,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "mindmap" },
-      "both",
+      "both"
     );
     expect(result).toContain(":::className");
     expect(result).toContain("mindmap does not support per-node classDef styling");
@@ -393,7 +393,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "mindmap" },
-      "both",
+      "both"
     );
     expect(result).toContain("((text))");
     expect(result).toContain("[text]");
@@ -404,7 +404,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "gitGraph" },
-      "both",
+      "both"
     );
     expect(result).toContain("Git graph");
     expect(result).toContain("gitGraph");
@@ -418,7 +418,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "gitGraph" },
-      "both",
+      "both"
     );
     expect(result).not.toContain("## Semantic classDef library");
   });
@@ -427,7 +427,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "gitGraph" },
-      "both",
+      "both"
     );
     expect(result).toContain(":::className");
     expect(result).toContain("gitGraph does not support per-commit or per-branch classDef styling");
@@ -437,7 +437,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "gitGraph" },
-      "both",
+      "both"
     );
     expect(result).toContain("git0");
     expect(result).toContain("git7");
@@ -447,7 +447,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "gitGraph" },
-      "both",
+      "both"
     );
     expect(result).toContain('id: "');
     expect(result).toContain("tag:");
@@ -457,7 +457,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "xychart" },
-      "both",
+      "both"
     );
     expect(result).toContain("XY chart");
     expect(result).toContain("xychart-beta");
@@ -471,7 +471,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "xychart" },
-      "both",
+      "both"
     );
     expect(result).not.toContain("## Semantic classDef library");
   });
@@ -480,7 +480,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "xychart" },
-      "both",
+      "both"
     );
     expect(result).toContain(":::className");
     expect(result).toContain("xychart-beta does not support per-bar or per-point classDef styling");
@@ -490,7 +490,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "xychart" },
-      "both",
+      "both"
     );
     expect(result).toContain("bar [v1, v2");
     expect(result).toContain("line [v1, v2");
@@ -500,7 +500,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "xychart" },
-      "both",
+      "both"
     );
     expect(result).toContain("target renderer");
   });
@@ -509,7 +509,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "journey" },
-      "both",
+      "both"
     );
     expect(result).toContain("Journey diagram");
     expect(result).toContain("section");
@@ -520,7 +520,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "journey" },
-      "both",
+      "both"
     );
     expect(result).not.toContain("## Semantic classDef library");
   });
@@ -529,7 +529,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "journey" },
-      "both",
+      "both"
     );
     expect(result).toContain(":::className");
     expect(result).toContain("journey does not support per-task classDef styling");
@@ -539,7 +539,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "journey" },
-      "both",
+      "both"
     );
     expect(result).toContain("score");
     expect(result).toContain("1–5");
@@ -549,7 +549,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "journey" },
-      "both",
+      "both"
     );
     expect(result).toContain(": 5: ");
     expect(result).toContain(": 3: ");
@@ -559,7 +559,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "timeline" },
-      "both",
+      "both"
     );
     expect(result).toContain("Timeline diagram");
     expect(result).toContain("period");
@@ -570,7 +570,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "timeline" },
-      "both",
+      "both"
     );
     expect(result).not.toContain("## Semantic classDef library");
   });
@@ -579,7 +579,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "timeline" },
-      "both",
+      "both"
     );
     expect(result).toContain(":::className");
     expect(result).toContain("timeline does not support per-event classDef styling");
@@ -589,7 +589,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "timeline" },
-      "both",
+      "both"
     );
     expect(result).toContain("section");
     expect(result).toContain("title");
@@ -599,7 +599,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "timeline" },
-      "both",
+      "both"
     );
     expect(result).toContain("timeline\n");
     expect(result).toContain(": UNIVAC I");
@@ -609,7 +609,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "quadrantChart" },
-      "both",
+      "both"
     );
     expect(result).toContain("Quadrant chart");
     expect(result).toContain("x-axis");
@@ -621,7 +621,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "quadrantChart" },
-      "both",
+      "both"
     );
     expect(result).not.toContain("## Semantic classDef library");
   });
@@ -630,7 +630,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "quadrantChart" },
-      "both",
+      "both"
     );
     expect(result).toContain(":::className");
     expect(result).toContain("quadrantChart does not support per-point classDef styling");
@@ -640,7 +640,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "quadrantChart" },
-      "both",
+      "both"
     );
     expect(result).toContain("[x, y]");
     expect(result).toContain("quadrant-1");
@@ -651,7 +651,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "quadrantChart" },
-      "both",
+      "both"
     );
     expect(result).toContain("quadrantChart\n");
     expect(result).toContain("Feature A: [0.3, 0.8]");
@@ -661,7 +661,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "block" },
-      "both",
+      "both"
     );
     expect(result).toContain("Block diagram");
     expect(result).toContain("columns");
@@ -673,7 +673,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "block" },
-      "both",
+      "both"
     );
     expect(result).toContain("## Semantic classDef library");
     expect(result).toContain("classDef");
@@ -683,7 +683,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "block" },
-      "both",
+      "both"
     );
     expect(result).toContain('id["label"]');
     expect(result).toContain('id(["label"])');
@@ -694,7 +694,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "block" },
-      "both",
+      "both"
     );
     expect(result).toContain(":::className");
     expect(result).toContain("block-beta");
@@ -705,7 +705,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "block" },
-      "both",
+      "both"
     );
     expect(result).toContain("block-beta\n");
     expect(result).toContain("columns 3");
@@ -715,7 +715,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "c4Diagram" },
-      "both",
+      "both"
     );
     expect(result).toContain("C4 diagram");
     expect(result).toContain("Person");
@@ -728,7 +728,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "c4Diagram" },
-      "both",
+      "both"
     );
     expect(result).not.toContain("## Semantic classDef library");
   });
@@ -737,7 +737,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "c4Diagram" },
-      "both",
+      "both"
     );
     expect(result).toContain(":::className");
     expect(result).toContain("c4Diagram does not support per-element classDef styling");
@@ -747,7 +747,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "c4Diagram" },
-      "both",
+      "both"
     );
     expect(result).toContain("partial");
     expect(result).toContain("themeVariable");
@@ -757,7 +757,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "c4Diagram" },
-      "both",
+      "both"
     );
     expect(result).toContain("Container");
     expect(result).toContain("Component");
@@ -768,7 +768,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "c4Diagram" },
-      "both",
+      "both"
     );
     expect(result).toContain("C4Context\n");
     expect(result).toContain("Person(user,");
@@ -779,7 +779,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "sankey" },
-      "both",
+      "both"
     );
     expect(result).toContain("Sankey diagram");
     expect(result).toContain("source,target,value");
@@ -790,7 +790,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "sankey" },
-      "both",
+      "both"
     );
     expect(result).not.toContain("## Semantic classDef library");
   });
@@ -799,7 +799,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "sankey" },
-      "both",
+      "both"
     );
     expect(result).toContain(":::className");
     expect(result).toContain("sankey-beta does not support per-flow or per-node classDef styling");
@@ -809,7 +809,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "sankey" },
-      "both",
+      "both"
     );
     expect(result).toContain("Nodes are implicit");
     expect(result).toContain("source");
@@ -821,7 +821,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "sankey" },
-      "both",
+      "both"
     );
     expect(result).toContain("sankey-beta\n");
     expect(result).toContain("Renewable,Wind,45");
@@ -831,7 +831,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "packet" },
-      "both",
+      "both"
     );
     expect(result).toContain("Packet diagram");
     expect(result).toContain("packet-beta");
@@ -843,7 +843,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "packet" },
-      "both",
+      "both"
     );
     expect(result).not.toContain("## Semantic classDef library");
   });
@@ -852,7 +852,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "packet" },
-      "both",
+      "both"
     );
     expect(result).toContain(":::className");
     expect(result).toContain("packet-beta does not support per-field classDef styling");
@@ -862,7 +862,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "packet" },
-      "both",
+      "both"
     );
     expect(result).toContain("startBit-endBit");
     expect(result).toContain("zero-based");
@@ -872,7 +872,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "packet" },
-      "both",
+      "both"
     );
     expect(result).toContain("packet-beta\n");
     expect(result).toContain('0-3: "Version"');
@@ -882,7 +882,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "requirementDiagram" },
-      "both",
+      "both"
     );
     expect(result).toContain("Requirement diagram");
     expect(result).toContain("requirementDiagram");
@@ -894,7 +894,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "requirementDiagram" },
-      "both",
+      "both"
     );
     expect(result).not.toContain("## Semantic classDef library");
   });
@@ -903,17 +903,19 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "requirementDiagram" },
-      "both",
+      "both"
     );
     expect(result).toContain(":::className");
-    expect(result).toContain("requirementDiagram does not support per-requirement or per-element classDef styling");
+    expect(result).toContain(
+      "requirementDiagram does not support per-requirement or per-element classDef styling"
+    );
   });
 
   it("requirementDiagram scaffold explains requirement type keywords", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "requirementDiagram" },
-      "both",
+      "both"
     );
     expect(result).toContain("functionalRequirement");
     expect(result).toContain("performanceRequirement");
@@ -924,7 +926,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "requirementDiagram" },
-      "both",
+      "both"
     );
     expect(result).toContain("satisfies");
     expect(result).toContain("traces");
@@ -935,7 +937,7 @@ describe("generatePromptScaffoldWithFormat", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...BASE_OPTIONS, diagramFamily: "requirementDiagram" },
-      "both",
+      "both"
     );
     expect(result).toContain("requirementDiagram\n");
     expect(result).toContain("requirement AuthRequirement");
@@ -1020,7 +1022,10 @@ describe("typography → init directive mapping", () => {
     const result = generateThemedCode(SIMPLE_FLOWCHART, {
       ...BASE_OPTIONS,
       palette: paletteWithoutFontFamily,
-      typography: { ...DEFAULT_TYPOGRAPHY, nodeLabel: { fontSize: 14, fontFamily: "Georgia, serif" } },
+      typography: {
+        ...DEFAULT_TYPOGRAPHY,
+        nodeLabel: { fontSize: 14, fontFamily: "Georgia, serif" },
+      },
     });
     const init = extractInitDirective(result);
     expect(init).toContain('"fontFamily": "Georgia, serif"');
@@ -1029,7 +1034,10 @@ describe("typography → init directive mapping", () => {
   it("palette fontFamily wins over typography nodeLabel.fontFamily", () => {
     const result = generateThemedCode(SIMPLE_FLOWCHART, {
       ...BASE_OPTIONS,
-      typography: { ...DEFAULT_TYPOGRAPHY, nodeLabel: { fontSize: 14, fontFamily: "Georgia, serif" } },
+      typography: {
+        ...DEFAULT_TYPOGRAPHY,
+        nodeLabel: { fontSize: 14, fontFamily: "Georgia, serif" },
+      },
     });
     const init = extractInitDirective(result);
     expect(init).toContain("DM Sans");
@@ -1039,37 +1047,94 @@ describe("typography → init directive mapping", () => {
 
 describe("buildClassDefString", () => {
   it("returns a line starting with 'classDef '", () => {
-    const def = { name: "primary", fill: "#111827", stroke: "#888888", color: "#f0f0f0", extra: "", description: "" };
+    const def = {
+      name: "primary",
+      fill: "#111827",
+      stroke: "#888888",
+      color: "#f0f0f0",
+      extra: "",
+      description: "",
+    };
     expect(buildClassDefString(def)).toMatch(/^classDef /);
   });
 
   it("formats name, fill, stroke, and color in the correct order", () => {
-    const def = { name: "accent", fill: "#aabbcc", stroke: "#112233", color: "#ffffff", extra: "", description: "" };
-    expect(buildClassDefString(def)).toBe("classDef accent fill:#aabbcc,stroke:#112233,color:#ffffff");
+    const def = {
+      name: "accent",
+      fill: "#aabbcc",
+      stroke: "#112233",
+      color: "#ffffff",
+      extra: "",
+      description: "",
+    };
+    expect(buildClassDefString(def)).toBe(
+      "classDef accent fill:#aabbcc,stroke:#112233,color:#ffffff"
+    );
   });
 
   it("appends extra when present", () => {
-    const def = { name: "boundary", fill: "#111", stroke: "#222", color: "#333", extra: "stroke-dasharray:5", description: "" };
-    expect(buildClassDefString(def)).toBe("classDef boundary fill:#111,stroke:#222,color:#333,stroke-dasharray:5");
+    const def = {
+      name: "boundary",
+      fill: "#111",
+      stroke: "#222",
+      color: "#333",
+      extra: "stroke-dasharray:5",
+      description: "",
+    };
+    expect(buildClassDefString(def)).toBe(
+      "classDef boundary fill:#111,stroke:#222,color:#333,stroke-dasharray:5"
+    );
   });
 
   it("appends fontSizeRule when provided", () => {
-    const def = { name: "primary", fill: "#111", stroke: "#222", color: "#333", extra: "", description: "" };
-    expect(buildClassDefString(def, "font-size:14px")).toBe("classDef primary fill:#111,stroke:#222,color:#333,font-size:14px");
+    const def = {
+      name: "primary",
+      fill: "#111",
+      stroke: "#222",
+      color: "#333",
+      extra: "",
+      description: "",
+    };
+    expect(buildClassDefString(def, "font-size:14px")).toBe(
+      "classDef primary fill:#111,stroke:#222,color:#333,font-size:14px"
+    );
   });
 
   it("appends both extra and fontSizeRule when both are present", () => {
-    const def = { name: "actor", fill: "#111", stroke: "#222", color: "#333", extra: "font-weight:bold", description: "" };
-    expect(buildClassDefString(def, "font-size:18px")).toBe("classDef actor fill:#111,stroke:#222,color:#333,font-weight:bold,font-size:18px");
+    const def = {
+      name: "actor",
+      fill: "#111",
+      stroke: "#222",
+      color: "#333",
+      extra: "font-weight:bold",
+      description: "",
+    };
+    expect(buildClassDefString(def, "font-size:18px")).toBe(
+      "classDef actor fill:#111,stroke:#222,color:#333,font-weight:bold,font-size:18px"
+    );
   });
 
   it("omits fontSizeRule when not provided", () => {
-    const def = { name: "slate", fill: "#eee", stroke: "#ccc", color: "#111", extra: "", description: "" };
+    const def = {
+      name: "slate",
+      fill: "#eee",
+      stroke: "#ccc",
+      color: "#111",
+      extra: "",
+      description: "",
+    };
     expect(buildClassDefString(def)).not.toContain("font-size");
   });
 
   it("produces no leading whitespace (copy format is indent-free)", () => {
-    const def = { name: "primary", fill: "#111827", stroke: "#888888", color: "#f0f0f0", extra: "", description: "" };
+    const def = {
+      name: "primary",
+      fill: "#111827",
+      stroke: "#888888",
+      color: "#f0f0f0",
+      extra: "",
+      description: "",
+    };
     expect(buildClassDefString(def)).not.toMatch(/^\s/);
   });
 
@@ -1128,9 +1193,22 @@ describe("buildClassDefString", () => {
  */
 describe("buildClassDefLibrary — font-size rule in scaffold classDef block", () => {
   const CLASSDEF_NAMES = [
-    "primary", "secondary", "tertiary", "platform", "boundary", "actor",
-    "gate", "control", "log", "question", "accent", "deepBlue", "slate",
-    "scope", "outOfScope", "redDash",
+    "primary",
+    "secondary",
+    "tertiary",
+    "platform",
+    "boundary",
+    "actor",
+    "gate",
+    "control",
+    "log",
+    "question",
+    "accent",
+    "deepBlue",
+    "slate",
+    "scope",
+    "outOfScope",
+    "redDash",
   ] as const;
 
   const SCAFFOLD_OPTIONS: ExportOptions = {
@@ -1150,8 +1228,11 @@ describe("buildClassDefLibrary — font-size rule in scaffold classDef block", (
   it("adds font-size:Npx to every classDef when nodeLabel.fontSize differs from Mermaid default (16px)", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
-      { ...SCAFFOLD_OPTIONS, typography: { ...DEFAULT_TYPOGRAPHY, nodeLabel: { fontSize: 14, fontFamily: "" } } },
-      "both",
+      {
+        ...SCAFFOLD_OPTIONS,
+        typography: { ...DEFAULT_TYPOGRAPHY, nodeLabel: { fontSize: 14, fontFamily: "" } },
+      },
+      "both"
     );
     const lines = getClassDefLines(result);
     expect(lines.length).toBeGreaterThanOrEqual(16);
@@ -1163,8 +1244,11 @@ describe("buildClassDefLibrary — font-size rule in scaffold classDef block", (
   it("does NOT add a font-size rule when nodeLabel.fontSize equals the Mermaid default (16px)", () => {
     const result = generatePromptScaffoldWithFormat(
       palette,
-      { ...SCAFFOLD_OPTIONS, typography: { ...DEFAULT_TYPOGRAPHY, nodeLabel: { fontSize: 16, fontFamily: "" } } },
-      "both",
+      {
+        ...SCAFFOLD_OPTIONS,
+        typography: { ...DEFAULT_TYPOGRAPHY, nodeLabel: { fontSize: 16, fontFamily: "" } },
+      },
+      "both"
     );
     const lines = getClassDefLines(result);
     expect(lines.length).toBeGreaterThanOrEqual(16);
@@ -1174,11 +1258,7 @@ describe("buildClassDefLibrary — font-size rule in scaffold classDef block", (
   });
 
   it("does NOT add a font-size rule when no typography option is provided", () => {
-    const result = generatePromptScaffoldWithFormat(
-      palette,
-      { ...SCAFFOLD_OPTIONS },
-      "both",
-    );
+    const result = generatePromptScaffoldWithFormat(palette, { ...SCAFFOLD_OPTIONS }, "both");
     const lines = getClassDefLines(result);
     expect(lines.length).toBeGreaterThanOrEqual(16);
     for (const line of lines) {
@@ -1190,8 +1270,11 @@ describe("buildClassDefLibrary — font-size rule in scaffold classDef block", (
     const CUSTOM_SIZE = 20;
     const result = generatePromptScaffoldWithFormat(
       palette,
-      { ...SCAFFOLD_OPTIONS, typography: { ...DEFAULT_TYPOGRAPHY, nodeLabel: { fontSize: CUSTOM_SIZE, fontFamily: "" } } },
-      "both",
+      {
+        ...SCAFFOLD_OPTIONS,
+        typography: { ...DEFAULT_TYPOGRAPHY, nodeLabel: { fontSize: CUSTOM_SIZE, fontFamily: "" } },
+      },
+      "both"
     );
     const lines = getClassDefLines(result);
     expect(lines).toHaveLength(16);
@@ -1200,7 +1283,9 @@ describe("buildClassDefLibrary — font-size rule in scaffold classDef block", (
     }
     for (const name of CLASSDEF_NAMES) {
       const matchingLine = lines.find((l) => l.includes(`classDef ${name} `));
-      expect(matchingLine, `classDef ${name} should carry font-size:${CUSTOM_SIZE}px`).toContain(`font-size:${CUSTOM_SIZE}px`);
+      expect(matchingLine, `classDef ${name} should carry font-size:${CUSTOM_SIZE}px`).toContain(
+        `font-size:${CUSTOM_SIZE}px`
+      );
     }
   });
 
@@ -1208,7 +1293,7 @@ describe("buildClassDefLibrary — font-size rule in scaffold classDef block", (
     const result = generatePromptScaffoldWithFormat(
       palette,
       { ...SCAFFOLD_OPTIONS, typography: DEFAULT_TYPOGRAPHY },
-      "both",
+      "both"
     );
     const lines = getClassDefLines(result);
     expect(lines.length).toBeGreaterThanOrEqual(16);
@@ -1357,15 +1442,18 @@ describe("sequence.fontSize sync rule", () => {
     // Parameterized sweep: for each pair both fields must carry the same numeric
     // value (override when present, typography otherwise).
     const cases: Array<{ typographySize: number; override?: string; expectedSize: number }> = [
-      { typographySize: 12, override: "16px",  expectedSize: 16 },
-      { typographySize: 20, override: "14px",  expectedSize: 14 },
-      { typographySize: 18, override: "18px",  expectedSize: 18 },
+      { typographySize: 12, override: "16px", expectedSize: 16 },
+      { typographySize: 20, override: "14px", expectedSize: 14 },
+      { typographySize: 18, override: "18px", expectedSize: 18 },
       { typographySize: 16, override: undefined, expectedSize: 16 },
-      { typographySize: 10, override: "24px",  expectedSize: 24 },
+      { typographySize: 10, override: "24px", expectedSize: 24 },
     ];
 
     for (const { typographySize, override, expectedSize } of cases) {
-      const typography = { ...DEFAULT_TYPOGRAPHY, nodeLabel: { fontSize: typographySize, fontFamily: "" } };
+      const typography = {
+        ...DEFAULT_TYPOGRAPHY,
+        nodeLabel: { fontSize: typographySize, fontFamily: "" },
+      };
       const result = generateThemedCode(SEQUENCE_DIAGRAM, {
         ...BASE_OPTIONS,
         diagramFamily: "sequenceDiagram",
@@ -1378,8 +1466,14 @@ describe("sequence.fontSize sync rule", () => {
 
       // sequence.fontSize numeric
       const seqMatch = result.match(/"sequence":\s*\{"fontSize":\s*(\d+)\}/);
-      expect(seqMatch, `no sequence block for typography=${typographySize} override=${override}`).not.toBeNull();
-      expect(Number(seqMatch![1]), `drift for typography=${typographySize} override=${override}`).toBe(expectedSize);
+      expect(
+        seqMatch,
+        `no sequence block for typography=${typographySize} override=${override}`
+      ).not.toBeNull();
+      expect(
+        Number(seqMatch![1]),
+        `drift for typography=${typographySize} override=${override}`
+      ).toBe(expectedSize);
     }
   });
 });
@@ -1391,7 +1485,7 @@ describe("sequence.fontSize sync rule", () => {
 describe("architectureBeta config block", () => {
   const ARCH_DIAGRAM = "architecture-beta\n  service db(database)[Database]";
 
-  it("emits \"architecture\": {\"randomize\": false} in the init directive for architectureBeta", () => {
+  it('emits "architecture": {"randomize": false} in the init directive for architectureBeta', () => {
     const result = generateThemedCode(ARCH_DIAGRAM, {
       ...BASE_OPTIONS,
       diagramFamily: "architectureBeta",
@@ -1456,9 +1550,12 @@ describe("architectureBeta config block", () => {
 
 describe("CLASSDEF_CAPABLE_FAMILIES — 'No classDef' badge visibility", () => {
   it("contains exactly the 4 classDef-capable families (regression sentinel)", () => {
-    expect([...CLASSDEF_CAPABLE_FAMILIES].sort()).toEqual(
-      ["block", "classDiagram", "flowchart", "stateDiagram"],
-    );
+    expect([...CLASSDEF_CAPABLE_FAMILIES].sort()).toEqual([
+      "block",
+      "classDiagram",
+      "flowchart",
+      "stateDiagram",
+    ]);
   });
 
   it("flowchart is classDef-capable — badge must NOT show", () => {
@@ -1517,7 +1614,7 @@ describe("CLASSDEF_CAPABLE_FAMILIES — 'No classDef' badge visibility", () => {
       const isNonClassDef = !isCapable;
       expect(
         isCapable || isNonClassDef,
-        `${family} is neither classDef-capable nor in the non-classDef set`,
+        `${family} is neither classDef-capable nor in the non-classDef set`
       ).toBe(true);
     }
   });

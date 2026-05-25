@@ -199,9 +199,7 @@ describe("ApplyTab — diagram selector sync: selector hidden after content shri
     });
 
     expect(screen.getByLabelText("Select diagram")).toBeTruthy();
-    const options = Array.from(
-      screen.getByLabelText("Select diagram").querySelectorAll("option")
-    );
+    const options = Array.from(screen.getByLabelText("Select diagram").querySelectorAll("option"));
     expect(options).toHaveLength(2);
   });
 });

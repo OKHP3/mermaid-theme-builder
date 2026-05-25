@@ -107,7 +107,7 @@ describe("ExamplesTab — initialSelectedId hydration", () => {
         onLoadExample: noop,
         initialSelectedId: NON_DEFAULT_EXAMPLE_ID,
         onExampleSelect: noop,
-      }),
+      })
     );
 
     expect(getSelectedLabel(container)).toBe(NON_DEFAULT_EXAMPLE_LABEL);
@@ -121,16 +121,16 @@ describe("ExamplesTab — initialSelectedId hydration", () => {
         onLoadExample: noop,
         initialSelectedId: NON_DEFAULT_EXAMPLE_ID,
         onExampleSelect: noop,
-      }),
+      })
     );
 
     const selectedButtons = Array.from(
-      container.querySelectorAll<HTMLButtonElement>("button"),
+      container.querySelectorAll<HTMLButtonElement>("button")
     ).filter((btn) => btn.className.includes("bg-primary/10"));
 
     expect(selectedButtons).toHaveLength(1);
     expect(selectedButtons[0].querySelector("span.flex-1")?.textContent?.trim()).toBe(
-      NON_DEFAULT_EXAMPLE_LABEL,
+      NON_DEFAULT_EXAMPLE_LABEL
     );
   });
 });
@@ -148,7 +148,7 @@ describe("ExamplesTab — stale ID fallback", () => {
         onLoadExample: noop,
         initialSelectedId: "this-id-does-not-exist-in-the-catalog",
         onExampleSelect: noop,
-      }),
+      })
     );
 
     expect(getSelectedLabel(container)).toBe(FIRST_EXAMPLE_LABEL);
@@ -162,7 +162,7 @@ describe("ExamplesTab — stale ID fallback", () => {
         onLoadExample: noop,
         initialSelectedId: "",
         onExampleSelect: noop,
-      }),
+      })
     );
 
     expect(getSelectedLabel(container)).toBe(FIRST_EXAMPLE_LABEL);
@@ -175,7 +175,7 @@ describe("ExamplesTab — stale ID fallback", () => {
         selectedPalette: DEFAULT_PALETTE,
         onLoadExample: noop,
         onExampleSelect: noop,
-      }),
+      })
     );
 
     expect(getSelectedLabel(container)).toBe(FIRST_EXAMPLE_LABEL);
@@ -196,7 +196,7 @@ describe("ExamplesTab — onExampleSelect callback", () => {
         selectedPalette: DEFAULT_PALETTE,
         onLoadExample: noop,
         onExampleSelect,
-      }),
+      })
     );
 
     const targetButton = findExampleButton(container, NON_DEFAULT_EXAMPLE_LABEL);
@@ -216,7 +216,7 @@ describe("ExamplesTab — onExampleSelect callback", () => {
         selectedPalette: DEFAULT_PALETTE,
         onLoadExample: noop,
         onExampleSelect,
-      }),
+      })
     );
 
     const showcaseButton = findExampleButton(container, SHOWCASE_META.title);
@@ -241,7 +241,7 @@ describe("ExamplesTab — late-hydration via useEffect", () => {
         onLoadExample: noop,
         initialSelectedId: undefined,
         onExampleSelect: noop,
-      }),
+      })
     );
 
     // Initially falls back to the first example.
@@ -256,7 +256,7 @@ describe("ExamplesTab — late-hydration via useEffect", () => {
           onLoadExample: noop,
           initialSelectedId: NON_DEFAULT_EXAMPLE_ID,
           onExampleSelect: noop,
-        }),
+        })
       );
     });
 
@@ -272,7 +272,7 @@ describe("ExamplesTab — late-hydration via useEffect", () => {
         onLoadExample: noop,
         initialSelectedId: undefined,
         onExampleSelect: noop,
-      }),
+      })
     );
 
     act(() => {
@@ -283,7 +283,7 @@ describe("ExamplesTab — late-hydration via useEffect", () => {
           onLoadExample: noop,
           initialSelectedId: "stale-nonexistent-id",
           onExampleSelect: noop,
-        }),
+        })
       );
     });
 

@@ -279,9 +279,7 @@ describe("ClassBrowser — 'Copy used' clipboard write", () => {
         usedClassNames: new Set<string>(),
       })
     );
-    expect(
-      screen.queryByTitle(/Copy only the \d+ classDef/)
-    ).toBeNull();
+    expect(screen.queryByTitle(/Copy only the \d+ classDef/)).toBeNull();
   });
 
   it("'Copy used' button is absent when usedClassNames is omitted", () => {
@@ -291,9 +289,7 @@ describe("ClassBrowser — 'Copy used' clipboard write", () => {
         supportsClassDef: true,
       })
     );
-    expect(
-      screen.queryByTitle(/Copy only the \d+ classDef/)
-    ).toBeNull();
+    expect(screen.queryByTitle(/Copy only the \d+ classDef/)).toBeNull();
   });
 });
 
@@ -788,9 +784,7 @@ describe("ClassBrowser — 'Copy used' output matches 'Copy all' when all classe
     );
 
     // Fire "Copy used" first (top-level button)
-    const copyUsedBtn = screen.getByTitle(
-      "Copy only the 2 classDefs used in the current diagram"
-    );
+    const copyUsedBtn = screen.getByTitle("Copy only the 2 classDefs used in the current diagram");
     await act(async () => {
       fireEvent.click(copyUsedBtn);
       await Promise.resolve();
@@ -819,9 +813,7 @@ describe("ClassBrowser — 'Copy used' output matches 'Copy all' when all classe
       })
     );
 
-    const copyUsedBtn = screen.getByTitle(
-      "Copy only the 2 classDefs used in the current diagram"
-    );
+    const copyUsedBtn = screen.getByTitle("Copy only the 2 classDefs used in the current diagram");
     await act(async () => {
       fireEvent.click(copyUsedBtn);
       await Promise.resolve();
@@ -850,9 +842,7 @@ describe("ClassBrowser — 'Copy used' output matches 'Copy all' when all classe
       })
     );
 
-    const copyUsedBtn = screen.getByTitle(
-      "Copy only the 2 classDefs used in the current diagram"
-    );
+    const copyUsedBtn = screen.getByTitle("Copy only the 2 classDefs used in the current diagram");
     await act(async () => {
       fireEvent.click(copyUsedBtn);
       await Promise.resolve();
@@ -882,9 +872,7 @@ describe("ClassBrowser — 'Copy used' output matches 'Copy all' when all classe
       })
     );
 
-    const copyUsedBtn = screen.getByTitle(
-      "Copy only the 2 classDefs used in the current diagram"
-    );
+    const copyUsedBtn = screen.getByTitle("Copy only the 2 classDefs used in the current diagram");
     await act(async () => {
       fireEvent.click(copyUsedBtn);
       await Promise.resolve();

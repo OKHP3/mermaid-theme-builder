@@ -55,13 +55,12 @@ export function PaletteSelectorBar({
         {allPalettes.map((p) => {
           const builtin = BUILTIN_PALETTES.find((b) => b.id === p.id);
           const baseColors = builtin?.colors ?? p.colors;
-          const effectiveColors =
-            customColors[p.id]
-              ? baseColors.map((c) => {
-                  const override = customColors[p.id].find((o) => o.key === c.key);
-                  return override ?? c;
-                })
-              : p.colors;
+          const effectiveColors = customColors[p.id]
+            ? baseColors.map((c) => {
+                const override = customColors[p.id].find((o) => o.key === c.key);
+                return override ?? c;
+              })
+            : p.colors;
           const swatchColors = SWATCH_INDICES.map((i) => effectiveColors[i]?.value ?? "#888");
           const isSelected = selectedPaletteId === p.id;
           const isUserExtracted = isExtractedPaletteId(p.id);

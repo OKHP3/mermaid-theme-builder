@@ -76,9 +76,22 @@ describe("extractUsedClasses", () => {
 
   it("returns all 16 known semantic class names when all are present", () => {
     const classes = [
-      "primary", "secondary", "tertiary", "platform", "boundary",
-      "actor", "gate", "control", "log", "question",
-      "accent", "deepBlue", "slate", "scope", "outOfScope", "redDash",
+      "primary",
+      "secondary",
+      "tertiary",
+      "platform",
+      "boundary",
+      "actor",
+      "gate",
+      "control",
+      "log",
+      "question",
+      "accent",
+      "deepBlue",
+      "slate",
+      "scope",
+      "outOfScope",
+      "redDash",
     ];
     const code = classes.map((c) => `  Node:::${c}`).join("\n");
     const result = extractUsedClasses(code);

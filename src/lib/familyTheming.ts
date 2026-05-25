@@ -17,7 +17,10 @@ function pick(palette: Palette, key: string, fallback: string): string {
  * All keys here are documented Mermaid theme variables. See:
  *   https://mermaid.js.org/config/theming.html
  */
-export function familyThemeOverlay(palette: Palette, family: DiagramFamily): Record<string, string> {
+export function familyThemeOverlay(
+  palette: Palette,
+  family: DiagramFamily
+): Record<string, string> {
   const primary = pick(palette, "primaryColor", "#1f2937");
   const primaryText = pick(palette, "primaryTextColor", "#ffffff");
   const primaryBorder = pick(palette, "primaryBorderColor", "#6b7280");

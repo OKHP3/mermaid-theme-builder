@@ -58,7 +58,7 @@ describe("DiffView — theme applied (original vs themed)", () => {
     // At minimum the %%{init:...}%% directive must appear as an added line.
     // The marker cell for an added row contains "+".
     const markerCells = rows.flatMap((row) =>
-      Array.from(row.querySelectorAll("td")).filter((td) => td.textContent === "+"),
+      Array.from(row.querySelectorAll("td")).filter((td) => td.textContent === "+")
     );
     expect(markerCells.length).toBeGreaterThan(0);
   });
@@ -149,11 +149,11 @@ describe("DiffView — wiring contract: palette application produces changes", (
     for (const palette of BRAND_PALETTES) {
       const themed = generateThemedCode(SIMPLE_DIAGRAM, { ...BASE_OPTIONS, palette });
       const { unmount } = render(
-        createElement(DiffView, { oldText: SIMPLE_DIAGRAM, newText: themed }),
+        createElement(DiffView, { oldText: SIMPLE_DIAGRAM, newText: themed })
       );
       const table = screen.getByRole("table");
       const markerCells = Array.from(table.querySelectorAll("td")).filter(
-        (td) => td.textContent === "+",
+        (td) => td.textContent === "+"
       );
       expect(markerCells.length).toBeGreaterThan(0);
       unmount();

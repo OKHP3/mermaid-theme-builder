@@ -46,7 +46,8 @@ export const RENDERER_PROFILES: RendererProfile[] = [
     displayName: "GitHub",
     shortName: "GitHub",
     url: "https://github.com",
-    sourceUrl: "https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-diagrams",
+    sourceUrl:
+      "https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-diagrams",
     notes:
       "Renders Mermaid in issues, PRs, markdown files, and wikis. The %%{init}%% directive is respected and themeVariables apply. Mermaid version is pinned to a stable release — neo look may work depending on pinned version; handDrawn requires Rough.js which GitHub does not bundle. Custom web fonts are blocked by CSP.",
     looksSupported: { classic: "full", neo: "partial", handDrawn: "none" },
@@ -246,7 +247,7 @@ export function rendererToScaffoldSection(rendererId: string, look?: string): st
   };
 
   const rows = LOOK_KEYS.map(
-    (k) => `| ${LOOK_NAMES[k]} | ${supportLabel(renderer.looksSupported[k])} |`,
+    (k) => `| ${LOOK_NAMES[k]} | ${supportLabel(renderer.looksSupported[k])} |`
   );
 
   const lines: string[] = [
@@ -265,12 +266,12 @@ export function rendererToScaffoldSection(rendererId: string, look?: string): st
   if (lookSupport === "none") {
     lines.push(
       "",
-      `> ⚠ **Warning:** The selected **${lookLabel}** look is NOT supported by ${renderer.displayName}. Revert to Classic look to ensure correct rendering in this environment.`,
+      `> ⚠ **Warning:** The selected **${lookLabel}** look is NOT supported by ${renderer.displayName}. Revert to Classic look to ensure correct rendering in this environment.`
     );
   } else if (lookSupport === "partial") {
     lines.push(
       "",
-      `> ⚠ **Caution:** The selected **${lookLabel}** look has only partial support in ${renderer.displayName}. Validate in the target environment before publishing.`,
+      `> ⚠ **Caution:** The selected **${lookLabel}** look has only partial support in ${renderer.displayName}. Validate in the target environment before publishing.`
     );
   }
 

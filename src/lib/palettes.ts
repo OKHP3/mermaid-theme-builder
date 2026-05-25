@@ -123,7 +123,8 @@ export const BUILTIN_PALETTES: Palette[] = [
   {
     id: "slate-ember",
     name: "Slate Ember",
-    description: "Dark grays with warm orange accents — high contrast, modern, striking for architecture diagrams",
+    description:
+      "Dark grays with warm orange accents — high contrast, modern, striking for architecture diagrams",
     version: "0.1.0",
     colors: [
       { key: "primaryColor", label: "Primary (nodes)", value: "#1e2330" },
@@ -179,8 +180,10 @@ export const BUILTIN_PALETTES: Palette[] = [
     name: "OKHP3",
     brandFamily: "okhp3",
     isBrandPreset: true,
-    description: "Industrial dark mode with teal and amber forge accents — bold, high-contrast, built for architecture diagrams",
-    themeIntent: "Technical, architectural, systems, AI tooling, strategy, and executive-facing diagrams",
+    description:
+      "Industrial dark mode with teal and amber forge accents — bold, high-contrast, built for architecture diagrams",
+    themeIntent:
+      "Technical, architectural, systems, AI tooling, strategy, and executive-facing diagrams",
     sourceUrls: [
       "https://overkillhill.com",
       "https://github.com/OKHP3/OverKill-Hill/blob/main/assets/css/theme.css",
@@ -218,8 +221,10 @@ export const BUILTIN_PALETTES: Palette[] = [
     name: "Glee-fully",
     brandFamily: "okhp3",
     isBrandPreset: true,
-    description: "Warm and playful with coral and cream — approachable, energetic, great for how-to flows and tutorials",
-    themeIntent: "Life-organization, personal productivity, family-friendly, consumer-facing, and approachable explainer diagrams",
+    description:
+      "Warm and playful with coral and cream — approachable, energetic, great for how-to flows and tutorials",
+    themeIntent:
+      "Life-organization, personal productivity, family-friendly, consumer-facing, and approachable explainer diagrams",
     sourceUrls: [
       "https://glee-fully.tools",
       "https://github.com/OKHP3/Glee-fullyTools/blob/main/assets/css/theme.css",
@@ -257,8 +262,10 @@ export const BUILTIN_PALETTES: Palette[] = [
     name: "AskJamie",
     brandFamily: "okhp3",
     isBrandPreset: true,
-    description: "Calm mid-century tones with muted aquas and beige — clean, readable, ideal for guides and documentation",
-    themeIntent: "Support flows, helpdesk diagrams, explainers, user-assistance workflows, and friendly AI-generated step-by-step guides",
+    description:
+      "Calm mid-century tones with muted aquas and beige — clean, readable, ideal for guides and documentation",
+    themeIntent:
+      "Support flows, helpdesk diagrams, explainers, user-assistance workflows, and friendly AI-generated step-by-step guides",
     sourceUrls: [
       "https://askjamie.bot",
       "https://github.com/OKHP3/AskJamie/blob/main/assets/css/theme.css",
@@ -296,7 +303,11 @@ export const BUILTIN_PALETTES: Palette[] = [
 export const BRAND_PALETTES = BUILTIN_PALETTES.filter((p) => p.isBrandPreset);
 export const UTILITY_PALETTES = BUILTIN_PALETTES.filter((p) => !p.isBrandPreset);
 
-export function getEffectiveThemeName(palette: Palette, customName: string, isCustomized: boolean): string {
+export function getEffectiveThemeName(
+  palette: Palette,
+  customName: string,
+  isCustomized: boolean
+): string {
   if (customName.trim()) return customName.trim();
   if (isCustomized) return `Custom — based on ${palette.name}`;
   return palette.name;

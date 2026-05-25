@@ -1390,7 +1390,15 @@ export const EXAMPLE_CATALOG: ExampleEntry[] = [
     content: GANTT_ROADMAP,
     description:
       "Gantt chart showing the Mermaid Theme Builder project roadmap across four releases — V0.1 Alpha through V2.0 Two-Way. Illustrates how palette colors theme section headers, active task bars, and done task markers.",
-    tags: ["gantt", "roadmap", "OKH", "Mermaid Theme Builder", "milestones", "planning", "releases"],
+    tags: [
+      "gantt",
+      "roadmap",
+      "OKH",
+      "Mermaid Theme Builder",
+      "milestones",
+      "planning",
+      "releases",
+    ],
   },
   {
     id: "timeline-overkill-theme-builder-history",
@@ -1410,7 +1418,15 @@ export const EXAMPLE_CATALOG: ExampleEntry[] = [
     content: JOURNEY_IDEA_TO_SHIP,
     description:
       "User journey map tracing the complete arc from random idea to shipped tool, with satisfaction scores per step and multiple actors (Jamie, Claude, ChatGPT, Perplexity, Replit). Shows how palette colors theme the satisfaction bars and section headings.",
-    tags: ["journey", "user journey", "experience map", "actors", "satisfaction", "OKH", "AI council"],
+    tags: [
+      "journey",
+      "user journey",
+      "experience map",
+      "actors",
+      "satisfaction",
+      "OKH",
+      "AI council",
+    ],
   },
   {
     id: "gitgraph-repo-evolution",
@@ -1420,7 +1436,15 @@ export const EXAMPLE_CATALOG: ExampleEntry[] = [
     content: GITGRAPH_REPO_EVOLUTION,
     description:
       "Git graph tracing the Mermaid Theme Builder repository evolution from initial scaffold through v2.0 — three feature branches, merge commits, and release tags. Shows how palette colors theme branch lines and commit nodes.",
-    tags: ["git", "gitgraph", "OKH", "Mermaid Theme Builder", "branches", "version history", "repository"],
+    tags: [
+      "git",
+      "gitgraph",
+      "OKH",
+      "Mermaid Theme Builder",
+      "branches",
+      "version history",
+      "repository",
+    ],
   },
   {
     id: "mindmap-overkill-hill-system",
@@ -1731,7 +1755,16 @@ export const EXAMPLE_CATALOG: ExampleEntry[] = [
     content: FLOWCHART_MERMAID_AI_CONTEXTUAL,
     description:
       "Conceptual flowchart contrasting Think Mode (context-first synthesis before rendering) with Premature Rendering (speed-first surface coherence). A visual model for disciplined AI diagram generation from the OKH methodology.",
-    tags: ["flowchart", "AI", "methodology", "Think Mode", "OKH", "conceptual", "AI workflow", "rendering"],
+    tags: [
+      "flowchart",
+      "AI",
+      "methodology",
+      "Think Mode",
+      "OKH",
+      "conceptual",
+      "AI workflow",
+      "rendering",
+    ],
   },
 
   // ── Batch #3: OKH contextual + emulation + new families ────────────────────
@@ -1872,7 +1905,16 @@ export const EXAMPLE_CATALOG: ExampleEntry[] = [
     badge: "Beta — may not render in all environments",
     description:
       "Fishbone (Ishikawa) diagram using Mermaid's native fishbone syntax to analyze root causes of diagram rendering failures — covering Syntax, Renderer, Theme, Environment, and User Workflow categories.",
-    tags: ["ishikawa", "fishbone", "root cause", "beta", "quality", "rendering", "governance", "visual governance"],
+    tags: [
+      "ishikawa",
+      "fishbone",
+      "root cause",
+      "beta",
+      "quality",
+      "rendering",
+      "governance",
+      "visual governance",
+    ],
   },
 ];
 

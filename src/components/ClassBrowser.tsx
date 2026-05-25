@@ -7,12 +7,12 @@ import { buildClassDefString, type ClassDef } from "@/lib/themeEngine";
 // ---------------------------------------------------------------------------
 
 const HL = {
-  keyword: "#c46a2c",   // rust-orange — "classDef"
-  name:    "#e8d9c0",   // bright cream — class name identifier
-  key:     "#5fa89a",   // forge teal — property keys (fill, stroke, color…)
-  hex:     "#9ecfe8",   // sky blue — hex color values
-  value:   "#c8b89a",   // warm beige — non-hex values (bold, 2px, normal…)
-  punct:   "#7a7060",   // dimmed — commas, colons, punctuation
+  keyword: "#c46a2c", // rust-orange — "classDef"
+  name: "#e8d9c0", // bright cream — class name identifier
+  key: "#5fa89a", // forge teal — property keys (fill, stroke, color…)
+  hex: "#9ecfe8", // sky blue — hex color values
+  value: "#c8b89a", // warm beige — non-hex values (bold, 2px, normal…)
+  punct: "#7a7060", // dimmed — commas, colons, punctuation
 } as const;
 
 export function highlightPropsSegment(props: string, baseKey: string): ReactNode[] {
@@ -34,9 +34,15 @@ export function highlightPropsSegment(props: string, baseKey: string): ReactNode
     }
     const isHex = m[3].startsWith("#");
     nodes.push(
-      <span key={`${baseKey}-k${idx}`} style={{ color: HL.key }}>{m[1]}</span>,
-      <span key={`${baseKey}-c${idx}`} style={{ color: HL.punct }}>{m[2]}</span>,
-      <span key={`${baseKey}-v${idx}`} style={{ color: isHex ? HL.hex : HL.value }}>{m[3]}</span>
+      <span key={`${baseKey}-k${idx}`} style={{ color: HL.key }}>
+        {m[1]}
+      </span>,
+      <span key={`${baseKey}-c${idx}`} style={{ color: HL.punct }}>
+        {m[2]}
+      </span>,
+      <span key={`${baseKey}-v${idx}`} style={{ color: isHex ? HL.hex : HL.value }}>
+        {m[3]}
+      </span>
     );
     last = re.lastIndex;
     idx++;
@@ -58,7 +64,11 @@ export function highlightClassDefLine(line: string, lineIdx: number): ReactNode 
     const m = line.match(/^(classDef)(\s+)(\S+)(\s+)(.+)$/);
     if (!m) {
       // Not a standard classDef line — render dimmed
-      return <span key={lineIdx} style={{ color: HL.punct }}>{line}</span>;
+      return (
+        <span key={lineIdx} style={{ color: HL.punct }}>
+          {line}
+        </span>
+      );
     }
     const [, keyword, sp1, name, sp2, props] = m;
     return (
@@ -115,7 +125,6 @@ function parseFontStyle(extra: string): string | undefined {
   const m = extra.match(/font-style\s*:\s*([\w]+)/);
   return m ? m[1] : undefined;
 }
-
 
 type CopiedState = { name: string; kind: "usage" | "classdef" | "all" | "used" } | null;
 
@@ -200,7 +209,13 @@ function ClassNode({
               aria-label="Used in current diagram"
             >
               <svg viewBox="0 0 10 10" fill="none" className="w-2.5 h-2.5">
-                <path d="M2 5.2l2 2 4-4" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path
+                  d="M2 5.2l2 2 4-4"
+                  stroke="white"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
             </span>
           )}
@@ -210,7 +225,7 @@ function ClassNode({
             {def.description}
           </p>
           <p className="text-[9px] text-muted-foreground/50 font-mono mt-0.5 leading-none group-hover:text-primary/70 transition-colors">
-            :::{ def.name}
+            :::{def.name}
           </p>
         </div>
       </button>
@@ -228,21 +243,29 @@ function ClassNode({
         className="absolute top-1 right-1 z-20 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-150 flex items-center justify-center w-5 h-5 rounded bg-black/40 hover:bg-black/65 focus:outline-none focus:ring-1 focus:ring-white/60"
         aria-label={`Copy classDef ${def.name}`}
       >
-        <svg
-          viewBox="0 0 14 14"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="w-3 h-3"
-        >
+        <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-3 h-3">
           <rect x="4.5" y="1" width="7.5" height="9" rx="1.2" stroke="white" strokeWidth="1.2" />
-          <rect x="2" y="4" width="7.5" height="9" rx="1.2" fill="rgba(0,0,0,0.4)" stroke="white" strokeWidth="1.2" />
+          <rect
+            x="2"
+            y="4"
+            width="7.5"
+            height="9"
+            rx="1.2"
+            fill="rgba(0,0,0,0.4)"
+            stroke="white"
+            strokeWidth="1.2"
+          />
         </svg>
       </button>
     </div>
   );
 }
 
-export function ClassBrowser({ classDefs, supportsClassDef = true, usedClassNames }: ClassBrowserProps) {
+export function ClassBrowser({
+  classDefs,
+  supportsClassDef = true,
+  usedClassNames,
+}: ClassBrowserProps) {
   const [copiedState, setCopiedState] = useState<CopiedState>(null);
   const [showPreview, setShowPreview] = useState(false);
   const [previewMode, setPreviewMode] = useState<"all" | "used">("all");
@@ -368,209 +391,338 @@ export function ClassBrowser({ classDefs, supportsClassDef = true, usedClassName
     copiedState?.kind === "all"
       ? `Copied ${copiedState.name} classDefs`
       : copiedState?.kind === "used"
-      ? `Copied ${copiedState.name} classDef${copiedState.name !== "1" ? "s" : ""}`
-      : copiedState?.kind === "classdef"
-      ? `Copied classDef ${copiedState.name}`
-      : copiedState?.kind === "usage"
-      ? `Copied :::${copiedState.name}`
-      : null;
+        ? `Copied ${copiedState.name} classDef${copiedState.name !== "1" ? "s" : ""}`
+        : copiedState?.kind === "classdef"
+          ? `Copied classDef ${copiedState.name}`
+          : copiedState?.kind === "usage"
+            ? `Copied :::${copiedState.name}`
+            : null;
 
   return (
-    <div className={`flex flex-col h-full overflow-auto p-4 bg-muted/20 ${!supportsClassDef ? "opacity-60" : ""}`}>
-      <span
-        role="status"
-        aria-live="polite"
-        aria-atomic="true"
-        className="sr-only"
-      >
+    <div
+      className={`flex flex-col h-full overflow-auto p-4 bg-muted/20 ${!supportsClassDef ? "opacity-60" : ""}`}
+    >
+      <span role="status" aria-live="polite" aria-atomic="true" className="sr-only">
         {toastLabel ?? ""}
       </span>
       <div ref={previewRef} className="mb-3">
-      <div className="flex items-start justify-between gap-2">
-        <div>
-          <p className="text-xs font-semibold text-foreground flex items-center gap-2">
-            Class Library
-            <span
-              className={`inline-flex items-center text-[10px] font-semibold px-1.5 py-0.5 rounded-full tabular-nums ${
-                supportsClassDef
-                  ? "text-primary/80 bg-primary/10"
-                  : "text-muted-foreground/60 bg-muted/60"
-              }`}
-              title={
-                supportsClassDef
-                  ? `${classDefs.length} semantic class styles available for this diagram type`
-                  : `${classDefs.length} class styles exist but are inactive for this diagram type`
-              }
-              aria-label={`${classDefs.length} class styles`}
-            >
-              {classDefs.length} styles
-            </span>
-            {usedClassNames && usedClassNames.size > 0 && (
-              <span className="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-full">
-                <svg viewBox="0 0 10 10" fill="none" className="w-2.5 h-2.5">
-                  <path d="M2 5.2l2 2 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-                {usedClassNames.size} in use
+        <div className="flex items-start justify-between gap-2">
+          <div>
+            <p className="text-xs font-semibold text-foreground flex items-center gap-2">
+              Class Library
+              <span
+                className={`inline-flex items-center text-[10px] font-semibold px-1.5 py-0.5 rounded-full tabular-nums ${
+                  supportsClassDef
+                    ? "text-primary/80 bg-primary/10"
+                    : "text-muted-foreground/60 bg-muted/60"
+                }`}
+                title={
+                  supportsClassDef
+                    ? `${classDefs.length} semantic class styles available for this diagram type`
+                    : `${classDefs.length} class styles exist but are inactive for this diagram type`
+                }
+                aria-label={`${classDefs.length} class styles`}
+              >
+                {classDefs.length} styles
+              </span>
+              {usedClassNames && usedClassNames.size > 0 && (
+                <span className="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-full">
+                  <svg viewBox="0 0 10 10" fill="none" className="w-2.5 h-2.5">
+                    <path
+                      d="M2 5.2l2 2 4-4"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                  {usedClassNames.size} in use
+                </span>
+              )}
+            </p>
+            <p className="text-[10px] text-muted-foreground mt-0.5">
+              Click any node to copy its <span className="font-mono">:::className</span> syntax, or
+              hover for the full <span className="font-mono">classDef</span> block
+            </p>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            {supportsClassDef && toastLabel && (
+              <span className="text-[10px] bg-primary/10 text-primary px-2 py-1 rounded-full font-mono animate-in fade-in duration-150">
+                {toastLabel}
               </span>
             )}
-          </p>
-          <p className="text-[10px] text-muted-foreground mt-0.5">
-            Click any node to copy its{" "}
-            <span className="font-mono">:::className</span> syntax, or hover for the full{" "}
-            <span className="font-mono">classDef</span> block
-          </p>
-        </div>
-        <div className="flex items-center gap-2 shrink-0">
-          {supportsClassDef && toastLabel && (
-            <span className="text-[10px] bg-primary/10 text-primary px-2 py-1 rounded-full font-mono animate-in fade-in duration-150">
-              {toastLabel}
-            </span>
-          )}
-          <button
-            type="button"
-            onClick={() => {
-              setShowPreview((v) => {
-                // When opening, default to "used" mode if any classes are in use
-                if (!v && hasUsed) setPreviewMode("used");
-                return !v;
-              });
-            }}
-            disabled={!supportsClassDef}
-            title={showPreview ? "Hide classDef preview" : "Preview what 'Copy all' will paste"}
-            aria-pressed={showPreview}
-            aria-label="Preview all classDefs"
-            className={`inline-flex items-center justify-center w-[26px] h-[26px] rounded-md text-[10px] border transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus:ring-1 focus:ring-primary/60 ${
-              showPreview
-                ? "border-primary/50 bg-primary/10 text-primary"
-                : "border-border/50 bg-card/70 text-muted-foreground hover:text-foreground hover:border-primary/40 hover:bg-card"
-            }`}
-          >
-            <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5">
-              <ellipse cx="7" cy="7" rx="5.5" ry="3.5" stroke="currentColor" strokeWidth="1.2" />
-              <circle cx="7" cy="7" r="1.5" fill="currentColor" />
-              {showPreview && (
-                <>
-                  <line x1="2" y1="2" x2="12" y2="12" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
-                </>
-              )}
-            </svg>
-          </button>
-          {usedClassNames && usedClassNames.size > 0 && supportsClassDef && (
             <button
               type="button"
-              onClick={handleCopyUsed}
-              title={`Copy only the ${usedClassNames.size} classDef${usedClassNames.size !== 1 ? "s" : ""} used in the current diagram`}
-              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-medium border border-emerald-500/50 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/20 hover:border-emerald-500/70 transition-colors focus:outline-none focus:ring-1 focus:ring-emerald-500/60"
+              onClick={() => {
+                setShowPreview((v) => {
+                  // When opening, default to "used" mode if any classes are in use
+                  if (!v && hasUsed) setPreviewMode("used");
+                  return !v;
+                });
+              }}
+              disabled={!supportsClassDef}
+              title={showPreview ? "Hide classDef preview" : "Preview what 'Copy all' will paste"}
+              aria-pressed={showPreview}
+              aria-label="Preview all classDefs"
+              className={`inline-flex items-center justify-center w-[26px] h-[26px] rounded-md text-[10px] border transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus:ring-1 focus:ring-primary/60 ${
+                showPreview
+                  ? "border-primary/50 bg-primary/10 text-primary"
+                  : "border-border/50 bg-card/70 text-muted-foreground hover:text-foreground hover:border-primary/40 hover:bg-card"
+              }`}
             >
-              <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-3 h-3">
-                <rect x="4.5" y="1" width="7.5" height="9" rx="1.2" stroke="currentColor" strokeWidth="1.2" />
-                <rect x="2" y="4" width="7.5" height="9" rx="1.2" fill="currentColor" fillOpacity="0.12" stroke="currentColor" strokeWidth="1.2" />
-                <path d="M5.5 9.5l1.5 1.5 3-3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+              <svg
+                viewBox="0 0 14 14"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-3.5 h-3.5"
+              >
+                <ellipse cx="7" cy="7" rx="5.5" ry="3.5" stroke="currentColor" strokeWidth="1.2" />
+                <circle cx="7" cy="7" r="1.5" fill="currentColor" />
+                {showPreview && (
+                  <>
+                    <line
+                      x1="2"
+                      y1="2"
+                      x2="12"
+                      y2="12"
+                      stroke="currentColor"
+                      strokeWidth="1.2"
+                      strokeLinecap="round"
+                    />
+                  </>
+                )}
               </svg>
-              Copy used ({usedClassNames.size})
             </button>
-          )}
-          <button
-            type="button"
-            onClick={handleCopyAll}
-            disabled={!supportsClassDef}
-            title="Copy all classDefs as a single block"
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-medium border border-border/50 bg-card/70 text-muted-foreground hover:text-foreground hover:border-primary/40 hover:bg-card transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus:ring-1 focus:ring-primary/60"
-          >
-            <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-3 h-3">
-              <rect x="4.5" y="1" width="7.5" height="9" rx="1.2" stroke="currentColor" strokeWidth="1.2" />
-              <rect x="2" y="4" width="7.5" height="9" rx="1.2" fill="currentColor" fillOpacity="0.12" stroke="currentColor" strokeWidth="1.2" />
-            </svg>
-            Copy all
-          </button>
-        </div>
-      </div>
-
-      {showPreview && supportsClassDef && (
-        <div className="mt-2 rounded-md border border-border/50 bg-[#0f1f1c] overflow-hidden">
-          <div className="flex items-center justify-between px-3 py-1.5 border-b border-white/8">
-            <span className="text-[10px] font-medium text-[#d4c9b5]/60 uppercase tracking-wider font-mono">
-              Preview —{" "}
-              {previewMode === "used" && hasUsed
-                ? `${activePreviewCount} classDef${activePreviewCount !== 1 ? "s" : ""} (used only)`
-                : `${activePreviewCount} classDef${activePreviewCount !== 1 ? "s" : ""}`}
-            </span>
-            <div className="flex items-center gap-1.5">
-              {hasUsed && (
-                <div
-                  role="group"
-                  aria-label="Preview mode"
-                  className="inline-flex items-center rounded border border-white/10 overflow-hidden"
+            {usedClassNames && usedClassNames.size > 0 && supportsClassDef && (
+              <button
+                type="button"
+                onClick={handleCopyUsed}
+                title={`Copy only the ${usedClassNames.size} classDef${usedClassNames.size !== 1 ? "s" : ""} used in the current diagram`}
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-medium border border-emerald-500/50 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/20 hover:border-emerald-500/70 transition-colors focus:outline-none focus:ring-1 focus:ring-emerald-500/60"
+              >
+                <svg
+                  viewBox="0 0 14 14"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-3 h-3"
                 >
-                  <button
-                    type="button"
-                    onClick={() => setPreviewMode("all")}
-                    aria-pressed={previewMode === "all"}
-                    title="Show all classDefs"
-                    className={`px-1.5 py-0.5 text-[10px] font-medium transition-colors focus:outline-none focus:ring-1 focus:ring-white/30 ${
-                      previewMode === "all"
-                        ? "bg-white/12 text-[#d4c9b5]"
-                        : "text-[#d4c9b5]/45 hover:text-[#d4c9b5]/80 hover:bg-white/6"
-                    }`}
-                  >
-                    All
-                  </button>
-                  <span className="w-px h-3 bg-white/10" aria-hidden="true" />
-                  <button
-                    type="button"
-                    onClick={() => setPreviewMode("used")}
-                    aria-pressed={previewMode === "used"}
-                    title={`Show only the ${usedClassNames?.size} classDef${usedClassNames?.size !== 1 ? "s" : ""} used in the current diagram`}
-                    className={`inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium transition-colors focus:outline-none focus:ring-1 focus:ring-emerald-500/40 ${
-                      previewMode === "used"
-                        ? "bg-emerald-500/20 text-emerald-300"
-                        : "text-[#d4c9b5]/45 hover:text-emerald-300/80 hover:bg-emerald-500/10"
-                    }`}
-                  >
-                    <svg viewBox="0 0 10 10" fill="none" className="w-2 h-2">
-                      <path d="M2 5.2l2 2 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                    Used
-                  </button>
-                </div>
-              )}
-              <button
-                type="button"
-                onClick={previewMode === "used" && hasUsed ? handleCopyUsed : handleCopyAll}
-                aria-label={previewMode === "used" && hasUsed ? "Copy used classDefs" : "Copy all classDefs"}
-                title={previewMode === "used" && hasUsed ? "Copy used classDefs" : "Copy all classDefs"}
-                className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium text-[#d4c9b5]/60 hover:text-[#d4c9b5] border border-white/10 hover:border-white/25 hover:bg-white/8 transition-colors focus:outline-none focus:ring-1 focus:ring-white/30"
-              >
-                <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-3 h-3">
-                  <rect x="4.5" y="1" width="7.5" height="9" rx="1.2" stroke="currentColor" strokeWidth="1.2" />
-                  <rect x="2" y="4" width="7.5" height="9" rx="1.2" fill="currentColor" fillOpacity="0.12" stroke="currentColor" strokeWidth="1.2" />
+                  <rect
+                    x="4.5"
+                    y="1"
+                    width="7.5"
+                    height="9"
+                    rx="1.2"
+                    stroke="currentColor"
+                    strokeWidth="1.2"
+                  />
+                  <rect
+                    x="2"
+                    y="4"
+                    width="7.5"
+                    height="9"
+                    rx="1.2"
+                    fill="currentColor"
+                    fillOpacity="0.12"
+                    stroke="currentColor"
+                    strokeWidth="1.2"
+                  />
+                  <path
+                    d="M5.5 9.5l1.5 1.5 3-3"
+                    stroke="currentColor"
+                    strokeWidth="1.2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
-                Copy
+                Copy used ({usedClassNames.size})
               </button>
-              <button
-                type="button"
-                onClick={() => setShowPreview(false)}
-                aria-label="Close preview"
-                className="text-[#d4c9b5]/40 hover:text-[#d4c9b5]/80 transition-colors focus:outline-none focus:ring-1 focus:ring-white/30 rounded"
+            )}
+            <button
+              type="button"
+              onClick={handleCopyAll}
+              disabled={!supportsClassDef}
+              title="Copy all classDefs as a single block"
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-medium border border-border/50 bg-card/70 text-muted-foreground hover:text-foreground hover:border-primary/40 hover:bg-card transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus:ring-1 focus:ring-primary/60"
+            >
+              <svg
+                viewBox="0 0 14 14"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-3 h-3"
               >
-                <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-3 h-3">
-                  <line x1="2" y1="2" x2="12" y2="12" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-                  <line x1="12" y1="2" x2="2" y2="12" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-                </svg>
-              </button>
-            </div>
+                <rect
+                  x="4.5"
+                  y="1"
+                  width="7.5"
+                  height="9"
+                  rx="1.2"
+                  stroke="currentColor"
+                  strokeWidth="1.2"
+                />
+                <rect
+                  x="2"
+                  y="4"
+                  width="7.5"
+                  height="9"
+                  rx="1.2"
+                  fill="currentColor"
+                  fillOpacity="0.12"
+                  stroke="currentColor"
+                  strokeWidth="1.2"
+                />
+              </svg>
+              Copy all
+            </button>
           </div>
-          <pre className="px-3 py-2.5 text-[11px] font-mono text-[#d4c9b5] leading-relaxed overflow-x-auto whitespace-pre select-all">
-            {highlightClassDefBlock(activePreviewBlock)}
-          </pre>
         </div>
-      )}
+
+        {showPreview && supportsClassDef && (
+          <div className="mt-2 rounded-md border border-border/50 bg-[#0f1f1c] overflow-hidden">
+            <div className="flex items-center justify-between px-3 py-1.5 border-b border-white/8">
+              <span className="text-[10px] font-medium text-[#d4c9b5]/60 uppercase tracking-wider font-mono">
+                Preview —{" "}
+                {previewMode === "used" && hasUsed
+                  ? `${activePreviewCount} classDef${activePreviewCount !== 1 ? "s" : ""} (used only)`
+                  : `${activePreviewCount} classDef${activePreviewCount !== 1 ? "s" : ""}`}
+              </span>
+              <div className="flex items-center gap-1.5">
+                {hasUsed && (
+                  <div
+                    role="group"
+                    aria-label="Preview mode"
+                    className="inline-flex items-center rounded border border-white/10 overflow-hidden"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => setPreviewMode("all")}
+                      aria-pressed={previewMode === "all"}
+                      title="Show all classDefs"
+                      className={`px-1.5 py-0.5 text-[10px] font-medium transition-colors focus:outline-none focus:ring-1 focus:ring-white/30 ${
+                        previewMode === "all"
+                          ? "bg-white/12 text-[#d4c9b5]"
+                          : "text-[#d4c9b5]/45 hover:text-[#d4c9b5]/80 hover:bg-white/6"
+                      }`}
+                    >
+                      All
+                    </button>
+                    <span className="w-px h-3 bg-white/10" aria-hidden="true" />
+                    <button
+                      type="button"
+                      onClick={() => setPreviewMode("used")}
+                      aria-pressed={previewMode === "used"}
+                      title={`Show only the ${usedClassNames?.size} classDef${usedClassNames?.size !== 1 ? "s" : ""} used in the current diagram`}
+                      className={`inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium transition-colors focus:outline-none focus:ring-1 focus:ring-emerald-500/40 ${
+                        previewMode === "used"
+                          ? "bg-emerald-500/20 text-emerald-300"
+                          : "text-[#d4c9b5]/45 hover:text-emerald-300/80 hover:bg-emerald-500/10"
+                      }`}
+                    >
+                      <svg viewBox="0 0 10 10" fill="none" className="w-2 h-2">
+                        <path
+                          d="M2 5.2l2 2 4-4"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                      Used
+                    </button>
+                  </div>
+                )}
+                <button
+                  type="button"
+                  onClick={previewMode === "used" && hasUsed ? handleCopyUsed : handleCopyAll}
+                  aria-label={
+                    previewMode === "used" && hasUsed ? "Copy used classDefs" : "Copy all classDefs"
+                  }
+                  title={
+                    previewMode === "used" && hasUsed ? "Copy used classDefs" : "Copy all classDefs"
+                  }
+                  className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium text-[#d4c9b5]/60 hover:text-[#d4c9b5] border border-white/10 hover:border-white/25 hover:bg-white/8 transition-colors focus:outline-none focus:ring-1 focus:ring-white/30"
+                >
+                  <svg
+                    viewBox="0 0 14 14"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-3 h-3"
+                  >
+                    <rect
+                      x="4.5"
+                      y="1"
+                      width="7.5"
+                      height="9"
+                      rx="1.2"
+                      stroke="currentColor"
+                      strokeWidth="1.2"
+                    />
+                    <rect
+                      x="2"
+                      y="4"
+                      width="7.5"
+                      height="9"
+                      rx="1.2"
+                      fill="currentColor"
+                      fillOpacity="0.12"
+                      stroke="currentColor"
+                      strokeWidth="1.2"
+                    />
+                  </svg>
+                  Copy
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowPreview(false)}
+                  aria-label="Close preview"
+                  className="text-[#d4c9b5]/40 hover:text-[#d4c9b5]/80 transition-colors focus:outline-none focus:ring-1 focus:ring-white/30 rounded"
+                >
+                  <svg
+                    viewBox="0 0 14 14"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-3 h-3"
+                  >
+                    <line
+                      x1="2"
+                      y1="2"
+                      x2="12"
+                      y2="12"
+                      stroke="currentColor"
+                      strokeWidth="1.4"
+                      strokeLinecap="round"
+                    />
+                    <line
+                      x1="12"
+                      y1="2"
+                      x2="2"
+                      y2="12"
+                      stroke="currentColor"
+                      strokeWidth="1.4"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <pre className="px-3 py-2.5 text-[11px] font-mono text-[#d4c9b5] leading-relaxed overflow-x-auto whitespace-pre select-all">
+              {highlightClassDefBlock(activePreviewBlock)}
+            </pre>
+          </div>
+        )}
       </div>
 
       {!supportsClassDef && (
         <div className="mb-3 flex items-start gap-2 rounded-md border border-amber-500/30 bg-amber-500/8 px-3 py-2.5 text-[11px] text-amber-700 dark:text-amber-400">
-          <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 mt-0.5 shrink-0 opacity-80">
-            <path fillRule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+          <svg
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            className="w-3.5 h-3.5 mt-0.5 shrink-0 opacity-80"
+          >
+            <path
+              fillRule="evenodd"
+              d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z"
+              clipRule="evenodd"
+            />
           </svg>
           <span>
             <span className="font-semibold">classDef styles don't apply to this diagram type.</span>{" "}
@@ -585,8 +737,17 @@ export function ClassBrowser({ classDefs, supportsClassDef = true, usedClassName
           role="alert"
           className="mb-3 flex items-start gap-2 rounded-md border border-amber-500/30 bg-amber-500/8 px-3 py-2.5 text-[11px] text-amber-700 dark:text-amber-400"
         >
-          <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 mt-0.5 shrink-0 opacity-80" aria-hidden="true">
-            <path fillRule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+          <svg
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            className="w-3.5 h-3.5 mt-0.5 shrink-0 opacity-80"
+            aria-hidden="true"
+          >
+            <path
+              fillRule="evenodd"
+              d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z"
+              clipRule="evenodd"
+            />
           </svg>
           <span>
             <span className="font-semibold">
@@ -597,8 +758,8 @@ export function ClassBrowser({ classDefs, supportsClassDef = true, usedClassName
                 <span className="font-mono">{`:::${n}`}</span>
                 {i < unknownClassNames.length - 1 && ", "}
               </span>
-            ))}
-            {" "}— not defined in the current palette. Check for typos.
+            ))}{" "}
+            — not defined in the current palette. Check for typos.
           </span>
         </div>
       )}

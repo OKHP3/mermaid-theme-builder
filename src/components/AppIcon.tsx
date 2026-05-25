@@ -5,11 +5,7 @@ interface AppIconProps {
   "aria-label"?: string;
 }
 
-export function AppIcon({
-  size = 32,
-  className,
-  ...ariaProps
-}: AppIconProps) {
+export function AppIcon({ size = 32, className, ...ariaProps }: AppIconProps) {
   return (
     <svg
       width={size}

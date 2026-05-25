@@ -90,7 +90,9 @@ describe("detectDiagram — Diagram Breaker #2: curly braces in %% comments", ()
   %% This is a {bad} comment
   A --> B`;
     const result = detectDiagram(code);
-    const breaker = result.warnings.find((w) => w.includes("Diagram Breaker") && w.includes("curly"));
+    const breaker = result.warnings.find(
+      (w) => w.includes("Diagram Breaker") && w.includes("curly")
+    );
     expect(breaker).toBeDefined();
   });
 
@@ -99,7 +101,9 @@ describe("detectDiagram — Diagram Breaker #2: curly braces in %% comments", ()
 flowchart TD
   A --> B`;
     const result = detectDiagram(code);
-    const breaker = result.warnings.find((w) => w.includes("Diagram Breaker") && w.includes("curly"));
+    const breaker = result.warnings.find(
+      (w) => w.includes("Diagram Breaker") && w.includes("curly")
+    );
     expect(breaker).toBeUndefined();
   });
 
@@ -108,7 +112,9 @@ flowchart TD
   %% This is a safe comment
   A --> B`;
     const result = detectDiagram(code);
-    const breaker = result.warnings.find((w) => w.includes("Diagram Breaker") && w.includes("curly"));
+    const breaker = result.warnings.find(
+      (w) => w.includes("Diagram Breaker") && w.includes("curly")
+    );
     expect(breaker).toBeUndefined();
   });
 });
@@ -118,7 +124,9 @@ describe("detectDiagram — Diagram Breaker #3: nested node definitions without 
     const code = `flowchart TD
   A[outer [inner]] --> B`;
     const result = detectDiagram(code);
-    const breaker = result.warnings.find((w) => w.includes("Diagram Breaker") && w.includes("nested"));
+    const breaker = result.warnings.find(
+      (w) => w.includes("Diagram Breaker") && w.includes("nested")
+    );
     expect(breaker).toBeDefined();
   });
 
@@ -126,7 +134,9 @@ describe("detectDiagram — Diagram Breaker #3: nested node definitions without 
     const code = `flowchart TD
   A["label with [brackets]"] --> B`;
     const result = detectDiagram(code);
-    const breaker = result.warnings.find((w) => w.includes("Diagram Breaker") && w.includes("nested"));
+    const breaker = result.warnings.find(
+      (w) => w.includes("Diagram Breaker") && w.includes("nested")
+    );
     expect(breaker).toBeUndefined();
   });
 });

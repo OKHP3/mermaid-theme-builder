@@ -102,7 +102,7 @@ describe("ApplyTab → DiffView — direct render with previewMode='diff'", () =
     render(createElement(ApplyTab, { ...BASE_PROPS, previewMode: "diff" }));
     const table = screen.getByRole("table");
     const addMarkers = Array.from(table.querySelectorAll("td")).filter(
-      (td) => td.textContent === "+",
+      (td) => td.textContent === "+"
     );
     expect(addMarkers.length).toBeGreaterThan(0);
   });
@@ -151,7 +151,7 @@ describe("ApplyTab → DiffView — switching to diff mode via Diff tab button",
   it("clicking the Diff tab button calls onPreviewModeChange with 'diff'", () => {
     const onPreviewModeChange = vi.fn();
     render(
-      createElement(ApplyTab, { ...BASE_PROPS, previewMode: "original", onPreviewModeChange }),
+      createElement(ApplyTab, { ...BASE_PROPS, previewMode: "original", onPreviewModeChange })
     );
     const diffBtn = screen.getByRole("tab", { name: /^diff$/i });
     fireEvent.click(diffBtn);
@@ -162,27 +162,23 @@ describe("ApplyTab → DiffView — switching to diff mode via Diff tab button",
   it("re-rendering with previewMode='diff' shows the diff table", () => {
     const onPreviewModeChange = vi.fn();
     const { rerender } = render(
-      createElement(ApplyTab, { ...BASE_PROPS, previewMode: "original", onPreviewModeChange }),
+      createElement(ApplyTab, { ...BASE_PROPS, previewMode: "original", onPreviewModeChange })
     );
     // No table yet.
     expect(screen.queryByRole("table")).toBeNull();
 
     // Simulate App.tsx applying the state change after onPreviewModeChange fires.
-    rerender(
-      createElement(ApplyTab, { ...BASE_PROPS, previewMode: "diff", onPreviewModeChange }),
-    );
+    rerender(createElement(ApplyTab, { ...BASE_PROPS, previewMode: "diff", onPreviewModeChange }));
 
     const table = screen.getByRole("table");
     const addMarkers = Array.from(table.querySelectorAll("td")).filter(
-      (td) => td.textContent === "+",
+      (td) => td.textContent === "+"
     );
     expect(addMarkers.length).toBeGreaterThan(0);
   });
 
   it("re-rendering back to 'themed' hides the diff table", () => {
-    const { rerender } = render(
-      createElement(ApplyTab, { ...BASE_PROPS, previewMode: "diff" }),
-    );
+    const { rerender } = render(createElement(ApplyTab, { ...BASE_PROPS, previewMode: "diff" }));
     expect(screen.getByRole("table")).toBeTruthy();
 
     rerender(createElement(ApplyTab, { ...BASE_PROPS, previewMode: "themed" }));
@@ -205,16 +201,15 @@ describe("ApplyTab → DiffView — all brand palettes produce add rows", () => 
           selectedPaletteId: palette.id,
           effectiveThemeName: palette.name,
           previewMode: "diff",
-        }),
+        })
       );
       const table = screen.getByRole("table");
       const addMarkers = Array.from(table.querySelectorAll("td")).filter(
-        (td) => td.textContent === "+",
+        (td) => td.textContent === "+"
       );
-      expect(
-        addMarkers.length,
-        `palette "${palette.name}" produced no add rows`,
-      ).toBeGreaterThan(0);
+      expect(addMarkers.length, `palette "${palette.name}" produced no add rows`).toBeGreaterThan(
+        0
+      );
       unmount();
     }
   });
@@ -228,11 +223,11 @@ describe("ApplyTab → DiffView — all brand palettes produce add rows", () => 
           selectedPaletteId: palette.id,
           effectiveThemeName: palette.name,
           previewMode: "diff",
-        }),
+        })
       );
       expect(
         screen.getByRole("table").textContent,
-        `palette "${palette.name}" did not produce an %%{init…}%% directive`,
+        `palette "${palette.name}" did not produce an %%{init…}%% directive`
       ).toContain("%%{init:");
       unmount();
     }
@@ -253,9 +248,7 @@ describe("ApplyTab → DiffView — diff direction (old=original, new=themed)", 
     const rows = Array.from(table.querySelectorAll("tr"));
 
     // Find rows that contain an "A[User Request]" text cell.
-    const relevantRows = rows.filter((row) =>
-      row.textContent?.includes("A[User Request]"),
-    );
+    const relevantRows = rows.filter((row) => row.textContent?.includes("A[User Request]"));
     expect(relevantRows.length).toBeGreaterThan(0);
 
     for (const row of relevantRows) {

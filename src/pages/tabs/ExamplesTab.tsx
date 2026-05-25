@@ -96,7 +96,7 @@ function buildExampleList(): ExampleItem[] {
 const ALL_EXAMPLES = buildExampleList();
 const SECTIONS = Array.from(new Set(ALL_EXAMPLES.map((e) => e.section)));
 const ALL_FAMILIES = Array.from(
-  new Set(ALL_EXAMPLES.map((e) => e.family).filter((f): f is string => !!f)),
+  new Set(ALL_EXAMPLES.map((e) => e.family).filter((f): f is string => !!f))
 ).sort();
 const FAMILY_COUNT = ALL_FAMILIES.length;
 
@@ -111,7 +111,16 @@ interface ExamplesTabProps {
   onExampleSelect?: (id: string) => void;
 }
 
-export function ExamplesTab({ selectedPalette, selectedPaletteId, allPalettes, customColors, onSelectPalette, onLoadExample, initialSelectedId, onExampleSelect }: ExamplesTabProps) {
+export function ExamplesTab({
+  selectedPalette,
+  selectedPaletteId,
+  allPalettes,
+  customColors,
+  onSelectPalette,
+  onLoadExample,
+  initialSelectedId,
+  onExampleSelect,
+}: ExamplesTabProps) {
   const [selectedId, setSelectedId] = useState(() => {
     if (initialSelectedId && ALL_EXAMPLES.some((e) => e.id === initialSelectedId)) {
       return initialSelectedId;
@@ -130,7 +139,7 @@ export function ExamplesTab({ selectedPalette, selectedPaletteId, allPalettes, c
   const pendingScrollIdRef = useRef<string | null>(
     initialSelectedId && ALL_EXAMPLES.some((e) => e.id === initialSelectedId)
       ? initialSelectedId
-      : null,
+      : null
   );
 
   // Sync with hydrated initialSelectedId that arrives after first render (e.g.,
@@ -152,7 +161,7 @@ export function ExamplesTab({ selectedPalette, selectedPaletteId, allPalettes, c
     if (selectedId !== pendingScrollIdRef.current) return;
     if (!sidebarRef.current) return;
     const btn = sidebarRef.current.querySelector<HTMLElement>(
-      `[data-example-id="${CSS.escape(selectedId)}"]`,
+      `[data-example-id="${CSS.escape(selectedId)}"]`
     );
     if (btn) {
       btn.scrollIntoView({ block: "nearest" });
@@ -172,25 +181,20 @@ export function ExamplesTab({ selectedPalette, selectedPaletteId, allPalettes, c
         (e.badge ?? "").toLowerCase().includes(q) ||
         e.section.toLowerCase().includes(q) ||
         (e.description ?? "").toLowerCase().includes(q) ||
-        (e.tags ?? []).some((t) => t.toLowerCase().includes(q)),
+        (e.tags ?? []).some((t) => t.toLowerCase().includes(q))
     );
   }, [searchQuery]);
 
   const filteredSections = useMemo(() => {
-    return SECTIONS.filter((section) =>
-      filteredExamples.some((e) => e.section === section),
-    );
+    return SECTIONS.filter((section) => filteredExamples.some((e) => e.section === section));
   }, [filteredExamples]);
 
   const selectedExample = useMemo(
     () => ALL_EXAMPLES.find((e) => e.id === selectedId) ?? ALL_EXAMPLES[0],
-    [selectedId],
+    [selectedId]
   );
 
-  const detection = useMemo(
-    () => detectDiagram(selectedExample?.content ?? ""),
-    [selectedExample],
-  );
+  const detection = useMemo(() => detectDiagram(selectedExample?.content ?? ""), [selectedExample]);
 
   const previewOptions = useMemo(
     (): ExportOptions => ({
@@ -199,12 +203,12 @@ export function ExamplesTab({ selectedPalette, selectedPaletteId, allPalettes, c
       includeMetaComments: false,
       includeBadge: false,
     }),
-    [selectedPalette, detection],
+    [selectedPalette, detection]
   );
 
   const themedPreviewCode = useMemo(
     () => (selectedExample ? generateThemedCode(selectedExample.content, previewOptions) : ""),
-    [selectedExample, previewOptions],
+    [selectedExample, previewOptions]
   );
 
   const handleLoad = useCallback(() => {
@@ -251,7 +255,11 @@ export function ExamplesTab({ selectedPalette, selectedPaletteId, allPalettes, c
                 />
               </svg>
               <span className="flex-1 text-left font-medium">Browse all supported families</span>
-              <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 text-muted-foreground/60">
+              <svg
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                className="w-3.5 h-3.5 text-muted-foreground/60"
+              >
                 <path
                   fillRule="evenodd"
                   d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
@@ -295,14 +303,21 @@ export function ExamplesTab({ selectedPalette, selectedPaletteId, allPalettes, c
           </div>
           {filteredSections.length === 0 ? (
             <div className="flex flex-col items-center justify-center gap-2 py-10 px-4 text-center">
-              <svg viewBox="0 0 20 20" fill="currentColor" className="w-6 h-6 text-muted-foreground/30">
+              <svg
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                className="w-6 h-6 text-muted-foreground/30"
+              >
                 <path
                   fillRule="evenodd"
                   d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z"
                   clipRule="evenodd"
                 />
               </svg>
-              <p className="text-xs text-muted-foreground/60">No examples match <span className="font-medium text-muted-foreground">"{searchQuery}"</span></p>
+              <p className="text-xs text-muted-foreground/60">
+                No examples match{" "}
+                <span className="font-medium text-muted-foreground">"{searchQuery}"</span>
+              </p>
               <button
                 type="button"
                 onClick={() => setSearchQuery("")}
@@ -317,9 +332,7 @@ export function ExamplesTab({ selectedPalette, selectedPaletteId, allPalettes, c
               return (
                 <div key={section}>
                   <div className="px-3 pt-3 pb-1.5 sticky top-0 bg-card/90 backdrop-blur z-10 border-b border-border/50">
-                    <p className="forge-eyebrow">
-                      {section}
-                    </p>
+                    <p className="forge-eyebrow">{section}</p>
                   </div>
                   <ul className="px-1.5 py-1">
                     {entries.map((entry) => (
@@ -498,7 +511,8 @@ export function ExamplesTab({ selectedPalette, selectedPaletteId, allPalettes, c
           className="text-[10px] text-muted-foreground/50 hidden sm:block"
           title={`Families covered: ${ALL_FAMILIES.join(", ")}`}
         >
-          {ALL_EXAMPLES.length} examples · {FAMILY_COUNT} families · themed with {selectedPalette.name}
+          {ALL_EXAMPLES.length} examples · {FAMILY_COUNT} families · themed with{" "}
+          {selectedPalette.name}
         </span>
       </div>
     </div>

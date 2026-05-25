@@ -37,7 +37,7 @@ export function applyMode(mode: ThemeMode): void {
 
 export function useThemeMode() {
   const [mode, setMode] = useState<ThemeMode>(() =>
-    typeof window === "undefined" ? "light" : safeRead(),
+    typeof window === "undefined" ? "light" : safeRead()
   );
 
   useEffect(() => {

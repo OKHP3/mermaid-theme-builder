@@ -81,8 +81,12 @@ describe("makeFilename", () => {
 
   it("works for all three canonical export suffixes", () => {
     expect(makeFilename("Ocean Depth", "styled", "mmd")).toBe("ocean-depth-styled.mmd");
-    expect(makeFilename("Ocean Depth", "markdown-bootstrap", "md")).toBe("ocean-depth-markdown-bootstrap.md");
-    expect(makeFilename("Ocean Depth", "prompt-scaffold", "md")).toBe("ocean-depth-prompt-scaffold.md");
+    expect(makeFilename("Ocean Depth", "markdown-bootstrap", "md")).toBe(
+      "ocean-depth-markdown-bootstrap.md"
+    );
+    expect(makeFilename("Ocean Depth", "prompt-scaffold", "md")).toBe(
+      "ocean-depth-prompt-scaffold.md"
+    );
   });
 });
 
@@ -164,7 +168,11 @@ describe("paletteToPortableJson", () => {
     const result = JSON.parse(paletteToPortableJson(MINIMAL_PALETTE));
     expect(Array.isArray(result.colors)).toBe(true);
     expect(result.colors).toHaveLength(3);
-    expect(result.colors[0]).toMatchObject({ key: "primaryColor", label: "Primary", value: "#111827" });
+    expect(result.colors[0]).toMatchObject({
+      key: "primaryColor",
+      label: "Primary",
+      value: "#111827",
+    });
   });
 
   it("produces the same structure for all BUILTIN_PALETTES", () => {
@@ -207,7 +215,10 @@ describe("parsePortablePalette", () => {
   });
 
   it("returns ok:false for a JSON object with wrong type field", () => {
-    const bad = JSON.stringify({ type: "wrong-type", colors: [{ key: "a", label: "A", value: "#fff" }] });
+    const bad = JSON.stringify({
+      type: "wrong-type",
+      colors: [{ key: "a", label: "A", value: "#fff" }],
+    });
     const result = parsePortablePalette(bad);
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.error).toContain("type");
@@ -313,7 +324,10 @@ describe("parsePortablePalette", () => {
     for (const palette of BUILTIN_PALETTES) {
       const result = parsePortablePalette(paletteToPortableJson(palette));
       if (result.ok) {
-        expect(result.missingKeys, `${palette.id} should have no missing required keys`).toHaveLength(0);
+        expect(
+          result.missingKeys,
+          `${palette.id} should have no missing required keys`
+        ).toHaveLength(0);
         expect(result.unknownKeys, `${palette.id} should have no unknown keys`).toHaveLength(0);
       }
     }
@@ -389,7 +403,10 @@ describe("parsePaletteBundle", () => {
   });
 
   it("returns the correct number of palettes for a multi-palette bundle", () => {
-    const json = palettesToBundleJson([FULL_PALETTE, { ...FULL_PALETTE, id: "pal-2", name: "Palette 2" }]);
+    const json = palettesToBundleJson([
+      FULL_PALETTE,
+      { ...FULL_PALETTE, id: "pal-2", name: "Palette 2" },
+    ]);
     const result = parsePaletteBundle(json);
     if (!result.ok) throw new Error("Expected ok:true");
     expect(result.palettes).toHaveLength(2);
@@ -425,8 +442,14 @@ describe("parsePaletteBundle", () => {
       type: "mtb-palette-bundle",
       schemaVersion: 1,
       palettes: [
-        { type: "mtb-palette", id: "ok", name: "OK", description: "d", version: "1",
-          colors: [{ key: "primaryColor", label: "P", value: "#fff" }] },
+        {
+          type: "mtb-palette",
+          id: "ok",
+          name: "OK",
+          description: "d",
+          version: "1",
+          colors: [{ key: "primaryColor", label: "P", value: "#fff" }],
+        },
         { type: "wrong-type", colors: [] },
       ],
     };
@@ -480,14 +503,16 @@ describe("share URL validation against REQUIRED_COLOR_KEYS", () => {
   // buildPaletteFromShare) rather than mounting the full App component.
   function validateSharePayloadKeys(payload: ShareablePayload) {
     const presentKeys = new Set(Object.keys(payload.themeVariables));
-    const missingKeys = (REQUIRED_COLOR_KEYS as readonly string[]).filter((k) => !presentKeys.has(k));
+    const missingKeys = (REQUIRED_COLOR_KEYS as readonly string[]).filter(
+      (k) => !presentKeys.has(k)
+    );
     const unknownKeys = Object.keys(payload.themeVariables).filter((k) => !KNOWN_COLOR_KEYS.has(k));
     return { missingKeys, unknownKeys };
   }
 
   it("returns no warnings for a payload with all required keys", () => {
     const themeVariables: Record<string, string> = Object.fromEntries(
-      (REQUIRED_COLOR_KEYS as readonly string[]).map((k) => [k, "#ffffff"]),
+      (REQUIRED_COLOR_KEYS as readonly string[]).map((k) => [k, "#ffffff"])
     );
     const { missingKeys, unknownKeys } = validateSharePayloadKeys({ v: 1, themeVariables });
     expect(missingKeys).toHaveLength(0);
@@ -537,18 +562,20 @@ describe("parsePortablePalette — invalidValues", () => {
   }
 
   it("returns empty invalidValues for a palette with all valid hex colors", () => {
-    const result = parsePortablePalette(makePaletteJson([
-      { key: "primaryColor", label: "Primary", value: "#1a2b3c" },
-      { key: "lineColor", label: "Line", value: "#fff" },
-    ]));
+    const result = parsePortablePalette(
+      makePaletteJson([
+        { key: "primaryColor", label: "Primary", value: "#1a2b3c" },
+        { key: "lineColor", label: "Line", value: "#fff" },
+      ])
+    );
     expect(result.ok).toBe(true);
     if (result.ok) expect(result.invalidValues).toHaveLength(0);
   });
 
   it("reports an entry for a non-hex, non-keyword value", () => {
-    const result = parsePortablePalette(makePaletteJson([
-      { key: "primaryColor", label: "Primary", value: "notacolor" },
-    ]));
+    const result = parsePortablePalette(
+      makePaletteJson([{ key: "primaryColor", label: "Primary", value: "notacolor" }])
+    );
     expect(result.ok).toBe(true);
     if (!result.ok) throw new Error("Expected ok:true");
     expect(result.invalidValues).toHaveLength(1);
@@ -557,85 +584,87 @@ describe("parsePortablePalette — invalidValues", () => {
   });
 
   it("reports an entry for an empty string value", () => {
-    const result = parsePortablePalette(makePaletteJson([
-      { key: "lineColor", label: "Line", value: "" },
-    ]));
+    const result = parsePortablePalette(
+      makePaletteJson([{ key: "lineColor", label: "Line", value: "" }])
+    );
     expect(result.ok).toBe(true);
     if (!result.ok) throw new Error("Expected ok:true");
     expect(result.invalidValues.map((e) => e.key)).toContain("lineColor");
   });
 
   it("accepts valid 3-digit hex (#fff)", () => {
-    const result = parsePortablePalette(makePaletteJson([
-      { key: "primaryColor", label: "Primary", value: "#fff" },
-    ]));
+    const result = parsePortablePalette(
+      makePaletteJson([{ key: "primaryColor", label: "Primary", value: "#fff" }])
+    );
     expect(result.ok).toBe(true);
     if (result.ok) expect(result.invalidValues).toHaveLength(0);
   });
 
   it("accepts valid 4-digit hex (#ffff)", () => {
-    const result = parsePortablePalette(makePaletteJson([
-      { key: "primaryColor", label: "Primary", value: "#abcd" },
-    ]));
+    const result = parsePortablePalette(
+      makePaletteJson([{ key: "primaryColor", label: "Primary", value: "#abcd" }])
+    );
     expect(result.ok).toBe(true);
     if (result.ok) expect(result.invalidValues).toHaveLength(0);
   });
 
   it("accepts valid 8-digit hex (#aabbccdd)", () => {
-    const result = parsePortablePalette(makePaletteJson([
-      { key: "primaryColor", label: "Primary", value: "#1a2b3c4d" },
-    ]));
+    const result = parsePortablePalette(
+      makePaletteJson([{ key: "primaryColor", label: "Primary", value: "#1a2b3c4d" }])
+    );
     expect(result.ok).toBe(true);
     if (result.ok) expect(result.invalidValues).toHaveLength(0);
   });
 
   it("accepts CSS keyword 'transparent'", () => {
-    const result = parsePortablePalette(makePaletteJson([
-      { key: "background", label: "BG", value: "transparent" },
-    ]));
+    const result = parsePortablePalette(
+      makePaletteJson([{ key: "background", label: "BG", value: "transparent" }])
+    );
     expect(result.ok).toBe(true);
     if (result.ok) expect(result.invalidValues).toHaveLength(0);
   });
 
   it("accepts CSS keyword 'inherit' (case-insensitive)", () => {
-    const result = parsePortablePalette(makePaletteJson([
-      { key: "background", label: "BG", value: "Inherit" },
-    ]));
+    const result = parsePortablePalette(
+      makePaletteJson([{ key: "background", label: "BG", value: "Inherit" }])
+    );
     expect(result.ok).toBe(true);
     if (result.ok) expect(result.invalidValues).toHaveLength(0);
   });
 
   it("accepts CSS keyword 'currentColor'", () => {
-    const result = parsePortablePalette(makePaletteJson([
-      { key: "lineColor", label: "Line", value: "currentColor" },
-    ]));
+    const result = parsePortablePalette(
+      makePaletteJson([{ key: "lineColor", label: "Line", value: "currentColor" }])
+    );
     expect(result.ok).toBe(true);
     if (result.ok) expect(result.invalidValues).toHaveLength(0);
   });
 
   it("exempts fontFamily from hex validation — any non-empty string is valid", () => {
-    const result = parsePortablePalette(makePaletteJson([
-      { key: "fontFamily", label: "Font", value: "DM Sans, Arial, sans-serif" },
-    ]));
+    const result = parsePortablePalette(
+      makePaletteJson([{ key: "fontFamily", label: "Font", value: "DM Sans, Arial, sans-serif" }])
+    );
     expect(result.ok).toBe(true);
     if (result.ok) expect(result.invalidValues).toHaveLength(0);
   });
 
   it("reports fontFamily as invalid when the value is an empty string", () => {
-    const result = parsePortablePalette(makePaletteJson([
-      { key: "fontFamily", label: "Font", value: "" },
-    ]));
+    const result = parsePortablePalette(
+      makePaletteJson([{ key: "fontFamily", label: "Font", value: "" }])
+    );
     expect(result.ok).toBe(true);
     if (!result.ok) throw new Error("Expected ok:true");
     expect(result.invalidValues.map((e) => e.key)).toContain("fontFamily");
   });
 
   it("reports multiple invalid entries when several values are bad", () => {
-    const result = parsePortablePalette(makePaletteJson([
-      { key: "primaryColor", label: "P", value: "red" },
-      { key: "lineColor", label: "L", value: "" },
-      { key: "background", label: "B", value: "#abc" },
-    ]));
+    const result = parsePortablePalette(
+      makePaletteJson([
+        { key: "primaryColor", label: "P", value: "red" },
+        { key: "lineColor", label: "L", value: "" },
+        { key: "background", label: "B", value: "#abc" },
+      ])
+    );
     expect(result.ok).toBe(true);
     if (!result.ok) throw new Error("Expected ok:true");
     const badKeys = result.invalidValues.map((e) => e.key);
@@ -651,25 +680,25 @@ describe("parsePortablePalette — invalidValues", () => {
       if (result.ok) {
         expect(
           result.invalidValues,
-          `${palette.id} has invalid color values: ${result.invalidValues.map((e) => `${e.key}=${e.value}`).join(", ")}`,
+          `${palette.id} has invalid color values: ${result.invalidValues.map((e) => `${e.key}=${e.value}`).join(", ")}`
         ).toHaveLength(0);
       }
     }
   });
 
   it("rejects a hex-like value with wrong digit count (e.g. #12)", () => {
-    const result = parsePortablePalette(makePaletteJson([
-      { key: "primaryColor", label: "P", value: "#12" },
-    ]));
+    const result = parsePortablePalette(
+      makePaletteJson([{ key: "primaryColor", label: "P", value: "#12" }])
+    );
     expect(result.ok).toBe(true);
     if (!result.ok) throw new Error("Expected ok:true");
     expect(result.invalidValues.map((e) => e.key)).toContain("primaryColor");
   });
 
   it("rejects a hex-like value with wrong digit count (e.g. #12345)", () => {
-    const result = parsePortablePalette(makePaletteJson([
-      { key: "primaryColor", label: "P", value: "#12345" },
-    ]));
+    const result = parsePortablePalette(
+      makePaletteJson([{ key: "primaryColor", label: "P", value: "#12345" }])
+    );
     expect(result.ok).toBe(true);
     if (!result.ok) throw new Error("Expected ok:true");
     expect(result.invalidValues.map((e) => e.key)).toContain("primaryColor");

@@ -83,8 +83,7 @@ function makeNodeCanvas() {
         ctx.drawImage = (...args: unknown[]) => {
           try {
             origDrawImage(...args);
-          } catch {
-          }
+          } catch {}
         };
       }
       return ctx;
@@ -313,7 +312,7 @@ describe("svgStringToPngBlob — content pixel preservation", () => {
     // drawImage paints red over white so the pixel must be red, not white.
     const stride = png.width * 4; // 40 bytes per row at 10px wide
     const offset = 5 * stride + 5 * 4; // row 5, col 5
-    expect(png.data[offset],     "R should be 255 (red foreground)").toBe(255);
+    expect(png.data[offset], "R should be 255 (red foreground)").toBe(255);
     expect(png.data[offset + 1], "G should be 0 (red foreground)").toBe(0);
     expect(png.data[offset + 2], "B should be 0 (red foreground)").toBe(0);
     expect(png.data[offset + 3], "Alpha should be fully opaque").toBe(255);
@@ -350,7 +349,7 @@ describe("svgStringToPngBlob — content pixel preservation", () => {
 
     const stride = png.width * 4;
     const offset = 10 * stride + 10 * 4; // interior pixel (10, 10)
-    expect(png.data[offset],     "R should be 0 (blue foreground)").toBe(0);
+    expect(png.data[offset], "R should be 0 (blue foreground)").toBe(0);
     expect(png.data[offset + 1], "G should be 0 (blue foreground)").toBe(0);
     expect(png.data[offset + 2], "B should be 255 (blue foreground)").toBe(255);
     expect(png.data[offset + 3], "Alpha should be fully opaque").toBe(255);

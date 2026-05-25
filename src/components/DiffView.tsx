@@ -35,15 +35,15 @@ export function DiffView({ oldText, newText, className }: DiffViewProps) {
             aria-hidden="true"
           >
             <circle cx="12" cy="12" r="10" />
-            <circle cx="8"  cy="10" r="1.25" fill="currentColor" stroke="none" />
+            <circle cx="8" cy="10" r="1.25" fill="currentColor" stroke="none" />
             <circle cx="12" cy="7.5" r="1.25" fill="currentColor" stroke="none" />
             <circle cx="16" cy="10" r="1.25" fill="currentColor" stroke="none" />
             <path d="M7 15.5c1.333-1 5.667-1 7 0" />
           </svg>
           <p className="text-sm font-medium text-muted-foreground">No changes to show</p>
           <p className="text-xs text-muted-foreground/70 leading-relaxed">
-            Pick a palette from the row above — the diff will appear here showing exactly
-            what the theme directive adds to your diagram code.
+            Pick a palette from the row above — the diff will appear here showing exactly what the
+            theme directive adds to your diagram code.
           </p>
           {/* Upward nudge arrow */}
           <svg
@@ -62,10 +62,16 @@ export function DiffView({ oldText, newText, className }: DiffViewProps) {
   return (
     <div className={`flex flex-col ${className ?? ""}`}>
       <div className="flex-none flex items-center gap-3 px-3 py-1.5 border-b border-border bg-card/20 text-[11px] font-mono">
-        <span className="text-emerald-600 dark:text-emerald-400 font-semibold" aria-label={`${summary.added} lines added`}>
+        <span
+          className="text-emerald-600 dark:text-emerald-400 font-semibold"
+          aria-label={`${summary.added} lines added`}
+        >
           +{summary.added}
         </span>
-        <span className="text-rose-600 dark:text-rose-400 font-semibold" aria-label={`${summary.removed} lines removed`}>
+        <span
+          className="text-rose-600 dark:text-rose-400 font-semibold"
+          aria-label={`${summary.removed} lines removed`}
+        >
           −{summary.removed}
         </span>
         <span className="text-muted-foreground">original → themed</span>
@@ -82,15 +88,15 @@ export function DiffView({ oldText, newText, className }: DiffViewProps) {
                 line.op === "add"
                   ? "bg-emerald-500/8"
                   : line.op === "del"
-                  ? "bg-rose-500/8"
-                  : "bg-transparent";
+                    ? "bg-rose-500/8"
+                    : "bg-transparent";
               const marker = line.op === "add" ? "+" : line.op === "del" ? "−" : " ";
               const markerColor =
                 line.op === "add"
                   ? "text-emerald-600 dark:text-emerald-400"
                   : line.op === "del"
-                  ? "text-rose-600 dark:text-rose-400"
-                  : "text-muted-foreground/40";
+                    ? "text-rose-600 dark:text-rose-400"
+                    : "text-muted-foreground/40";
               return (
                 <tr key={i} className={bg}>
                   <td className="select-none w-8 text-right pr-1 text-muted-foreground/40 align-top">
@@ -99,7 +105,9 @@ export function DiffView({ oldText, newText, className }: DiffViewProps) {
                   <td className="select-none w-8 text-right pr-1 text-muted-foreground/40 align-top">
                     {line.newNum ?? ""}
                   </td>
-                  <td className={`select-none w-4 text-center align-top ${markerColor}`}>{marker}</td>
+                  <td className={`select-none w-4 text-center align-top ${markerColor}`}>
+                    {marker}
+                  </td>
                   <td className="whitespace-pre-wrap break-all pl-2 pr-3 text-foreground/90 align-top">
                     {line.text || "\u00A0"}
                   </td>

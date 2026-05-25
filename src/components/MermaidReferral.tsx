@@ -21,9 +21,7 @@ const LABELS: Record<NonNullable<MermaidReferralProps["variant"]>, string> = {
 export function MermaidReferral({ variant = "ai", className = "" }: MermaidReferralProps) {
   const label = LABELS[variant];
   return (
-    <p
-      className={`text-[11px] text-muted-foreground leading-relaxed print-hide ${className}`}
-    >
+    <p className={`text-[11px] text-muted-foreground leading-relaxed print-hide ${className}`}>
       Try{" "}
       <a
         href={REFERRAL_HREF}

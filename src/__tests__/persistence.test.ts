@@ -1,17 +1,19 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import {
-  loadPersistedState,
-  savePersistedState,
-  type PersistedState,
-} from "@/lib/persistence";
+import { loadPersistedState, savePersistedState, type PersistedState } from "@/lib/persistence";
 
 function makeLocalStorageMock() {
   const store: Record<string, string> = {};
   return {
     getItem: (key: string) => store[key] ?? null,
-    setItem: (key: string, value: string) => { store[key] = value; },
-    removeItem: (key: string) => { delete store[key]; },
-    clear: () => { Object.keys(store).forEach((k) => delete store[k]); },
+    setItem: (key: string, value: string) => {
+      store[key] = value;
+    },
+    removeItem: (key: string) => {
+      delete store[key];
+    },
+    clear: () => {
+      Object.keys(store).forEach((k) => delete store[k]);
+    },
   };
 }
 

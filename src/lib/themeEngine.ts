@@ -2,7 +2,11 @@ import type { Palette } from "./palettes";
 import type { DiagramFamily } from "./detector";
 import { familyThemeOverlay } from "./familyTheming";
 import { typographyToScaffoldSection, type TypographySettings } from "./typography";
-import { rendererToScaffoldSection, buildRendererHeaderComment, getRendererById } from "../data/renderer-parity";
+import {
+  rendererToScaffoldSection,
+  buildRendererHeaderComment,
+  getRendererById,
+} from "../data/renderer-parity";
 
 // ── Markdown output sanitizers ──────────────────────────────────────────────
 // These helpers prevent attacker-controlled palette metadata (imported via
@@ -80,9 +84,19 @@ export interface ExportOptions {
 const TOOL_URL = "https://overkillhill.com/projects/mermaid-theme-builder/";
 const TOOL_VERSION = "0.5.0";
 
-const BADGE_SAFE_FAMILIES: DiagramFamily[] = ["flowchart", "sequenceDiagram", "stateDiagram", "classDiagram"];
+const BADGE_SAFE_FAMILIES: DiagramFamily[] = [
+  "flowchart",
+  "sequenceDiagram",
+  "stateDiagram",
+  "classDiagram",
+];
 
-export const CLASSDEF_CAPABLE_FAMILIES: DiagramFamily[] = ["flowchart", "classDiagram", "stateDiagram", "block"];
+export const CLASSDEF_CAPABLE_FAMILIES: DiagramFamily[] = [
+  "flowchart",
+  "classDiagram",
+  "stateDiagram",
+  "block",
+];
 
 function buildThemeVars(palette: Palette): Record<string, string> {
   const vars: Record<string, string> = {};
@@ -118,10 +132,7 @@ function buildThemeVars(palette: Palette): Record<string, string> {
  *
  * Keys unsupported by a diagram family are silently omitted.
  */
-function applyTypographyToVars(
-  vars: Record<string, string>,
-  typography: TypographySettings,
-): void {
+function applyTypographyToVars(vars: Record<string, string>, typography: TypographySettings): void {
   // nodeLabel.fontSize → universal `fontSize` themeVariable (lower priority than
   // explicit fontSize override — caller applies the explicit override after this).
   vars["fontSize"] = `${typography.nodeLabel.fontSize}px`;
@@ -138,7 +149,7 @@ function buildInitDirective(
   family: DiagramFamily = "flowchart",
   look?: MermaidLook,
   fontSize?: string,
-  typography?: TypographySettings,
+  typography?: TypographySettings
 ): string {
   const baseVars = buildThemeVars(palette);
   const overlay = familyThemeOverlay(palette, family);
@@ -197,7 +208,10 @@ function buildMetaComments(palette: Palette, themeName: string): string {
     `%% Theme Created: ${now}`,
     `%% Theme Updated: ${now}`,
   ];
-  const safeBrandUrl = palette.isBrandPreset && palette.sourceUrls?.[0] ? sanitizeSourceUrl(palette.sourceUrls[0]) : null;
+  const safeBrandUrl =
+    palette.isBrandPreset && palette.sourceUrls?.[0]
+      ? sanitizeSourceUrl(palette.sourceUrls[0])
+      : null;
   if (safeBrandUrl) {
     lines.push(`%% Brand source: ${safeBrandUrl}`);
   }
@@ -239,7 +253,13 @@ export function generateThemedCode(originalCode: string, options: ExportOptions)
     .replace(/\n\s*click MTB_ATTR.*\n?/g, "")
     .trimStart();
 
-  const initDirective = buildInitDirective(palette, diagramFamily, options.look, options.fontSize, options.typography);
+  const initDirective = buildInitDirective(
+    palette,
+    diagramFamily,
+    options.look,
+    options.fontSize,
+    options.typography
+  );
   const metaComments = includeMetaComments ? buildMetaComments(palette, themeName) : null;
   const badge = includeBadge ? buildBadgeNode(palette, themeName, diagramFamily) : null;
 
@@ -251,16 +271,24 @@ export function generateThemedCode(originalCode: string, options: ExportOptions)
   return parts.join("\n");
 }
 
-export function generateMarkdownExport(themedCode: string, palette: Palette, options: ExportOptions): string {
+export function generateMarkdownExport(
+  themedCode: string,
+  palette: Palette,
+  options: ExportOptions
+): string {
   const { customThemeName } = options;
   const rawThemeName = customThemeName?.trim() || palette.name;
   const themeName = sanitizeMdText(rawThemeName);
   const isCustom = !!customThemeName?.trim() && customThemeName.trim() !== palette.name;
-  const displayLabel = sanitizeMdText(isCustom ? `Custom — based on ${palette.name}` : palette.name);
+  const displayLabel = sanitizeMdText(
+    isCustom ? `Custom — based on ${palette.name}` : palette.name
+  );
   const paletteId = sanitizeMdCode(palette.id);
   const now = new Date().toISOString().split("T")[0];
 
-  const safeSourceUrls = (palette.sourceUrls ?? []).map(sanitizeSourceUrl).filter((u): u is string => u !== null);
+  const safeSourceUrls = (palette.sourceUrls ?? [])
+    .map(sanitizeSourceUrl)
+    .filter((u): u is string => u !== null);
   const sourceSection = safeSourceUrls.length
     ? `\n**Brand sources:** ${safeSourceUrls.map((u) => `<${u}>`).join(" · ")}`
     : "";
@@ -317,7 +345,7 @@ Do NOT use this theme for:
 - Consumer-facing or casual content
 - Playful or lightweight explainers`,
 
-    "askjamie": `
+    askjamie: `
 ## Brand Guidance — AskJamie
 
 Use this theme for:
@@ -376,7 +404,13 @@ ${themeLines}
  *                      export path when a non-default node font size is set).
  */
 export function buildClassDefString(def: ClassDef, fontSizeRule?: string): string {
-  const parts = [`fill:${def.fill}`, `stroke:${def.stroke}`, `color:${def.color}`, def.extra, fontSizeRule ?? ""].filter(Boolean);
+  const parts = [
+    `fill:${def.fill}`,
+    `stroke:${def.stroke}`,
+    `color:${def.color}`,
+    def.extra,
+    fontSizeRule ?? "",
+  ].filter(Boolean);
   return `classDef ${def.name} ${parts.join(",")}`;
 }
 
@@ -422,35 +456,147 @@ export function getClassDefs(palette: Palette): ClassDef[] {
   const c = (key: string, fallback: string) =>
     palette.colors.find((cl) => cl.key === key)?.value ?? fallback;
 
-  const primary        = c("primaryColor",       "#111827");
-  const primaryText    = c("primaryTextColor",    "#f0f0f0");
-  const primaryBorder  = c("primaryBorderColor",  "#888888");
-  const secondary      = c("secondaryColor",      "#1f2937");
-  const tertiary       = c("tertiaryColor",       "#374151");
-  const background     = c("background",          "#ffffff");
-  const mainBkg        = c("mainBkg",             "#1e2330");
-  const nodeBorder     = c("nodeBorder",          "#888888");
-  const clusterBkg     = c("clusterBkg",          "#111827");
-  const titleColor     = c("titleColor",          "#e0e0e0");
-  const lineColor      = c("lineColor",           "#888888");
+  const primary = c("primaryColor", "#111827");
+  const primaryText = c("primaryTextColor", "#f0f0f0");
+  const primaryBorder = c("primaryBorderColor", "#888888");
+  const secondary = c("secondaryColor", "#1f2937");
+  const tertiary = c("tertiaryColor", "#374151");
+  const background = c("background", "#ffffff");
+  const mainBkg = c("mainBkg", "#1e2330");
+  const nodeBorder = c("nodeBorder", "#888888");
+  const clusterBkg = c("clusterBkg", "#111827");
+  const titleColor = c("titleColor", "#e0e0e0");
+  const lineColor = c("lineColor", "#888888");
 
   return [
-    { name: "primary",    fill: primary,       stroke: primaryBorder, color: primaryText, extra: "",                          description: "Main action / entity" },
-    { name: "secondary",  fill: secondary,     stroke: primaryBorder, color: primaryText, extra: "",                          description: "Supporting entity" },
-    { name: "tertiary",   fill: tertiary,      stroke: nodeBorder,    color: primaryText, extra: "",                          description: "Background / context" },
-    { name: "platform",   fill: mainBkg,       stroke: lineColor,     color: primaryText, extra: "",                          description: "Infrastructure layer" },
-    { name: "boundary",   fill: clusterBkg,    stroke: lineColor,     color: titleColor,  extra: "stroke-dasharray:5",        description: "System limits" },
-    { name: "actor",      fill: primary,       stroke: primaryBorder, color: primaryText, extra: "font-weight:bold",          description: "Human roles" },
-    { name: "gate",       fill: primaryBorder, stroke: nodeBorder,    color: background,  extra: "",                          description: "Decision / gateway" },
-    { name: "control",    fill: tertiary,      stroke: nodeBorder,    color: primaryText, extra: "",                          description: "Management / orchestration" },
-    { name: "log",        fill: secondary,     stroke: lineColor,     color: primaryText, extra: "font-style:italic",         description: "Audit records" },
-    { name: "question",   fill: mainBkg,       stroke: lineColor,     color: titleColor,  extra: "stroke-dasharray:3",        description: "Unknowns / TBD" },
-    { name: "accent",     fill: lineColor,     stroke: nodeBorder,    color: background,  extra: "",                          description: "Highlighted results" },
-    { name: "deepBlue",   fill: primary,       stroke: nodeBorder,    color: primaryText, extra: "stroke-width:2px",          description: "Emphasis variant" },
-    { name: "slate",      fill: background,    stroke: lineColor,     color: primary,     extra: "",                          description: "Neutral / muted details" },
-    { name: "scope",      fill: clusterBkg,    stroke: primaryBorder, color: titleColor,  extra: "stroke-width:2px",          description: "Items in scope" },
-    { name: "outOfScope", fill: background,    stroke: nodeBorder,    color: primaryText, extra: "stroke-dasharray:8,opacity:0.6", description: "Excluded items" },
-    { name: "redDash",    fill: "#3b0e0e",     stroke: "#b91c1c",     color: "#fecaca",   extra: "stroke-dasharray:4",        description: "Warning / error" },
+    {
+      name: "primary",
+      fill: primary,
+      stroke: primaryBorder,
+      color: primaryText,
+      extra: "",
+      description: "Main action / entity",
+    },
+    {
+      name: "secondary",
+      fill: secondary,
+      stroke: primaryBorder,
+      color: primaryText,
+      extra: "",
+      description: "Supporting entity",
+    },
+    {
+      name: "tertiary",
+      fill: tertiary,
+      stroke: nodeBorder,
+      color: primaryText,
+      extra: "",
+      description: "Background / context",
+    },
+    {
+      name: "platform",
+      fill: mainBkg,
+      stroke: lineColor,
+      color: primaryText,
+      extra: "",
+      description: "Infrastructure layer",
+    },
+    {
+      name: "boundary",
+      fill: clusterBkg,
+      stroke: lineColor,
+      color: titleColor,
+      extra: "stroke-dasharray:5",
+      description: "System limits",
+    },
+    {
+      name: "actor",
+      fill: primary,
+      stroke: primaryBorder,
+      color: primaryText,
+      extra: "font-weight:bold",
+      description: "Human roles",
+    },
+    {
+      name: "gate",
+      fill: primaryBorder,
+      stroke: nodeBorder,
+      color: background,
+      extra: "",
+      description: "Decision / gateway",
+    },
+    {
+      name: "control",
+      fill: tertiary,
+      stroke: nodeBorder,
+      color: primaryText,
+      extra: "",
+      description: "Management / orchestration",
+    },
+    {
+      name: "log",
+      fill: secondary,
+      stroke: lineColor,
+      color: primaryText,
+      extra: "font-style:italic",
+      description: "Audit records",
+    },
+    {
+      name: "question",
+      fill: mainBkg,
+      stroke: lineColor,
+      color: titleColor,
+      extra: "stroke-dasharray:3",
+      description: "Unknowns / TBD",
+    },
+    {
+      name: "accent",
+      fill: lineColor,
+      stroke: nodeBorder,
+      color: background,
+      extra: "",
+      description: "Highlighted results",
+    },
+    {
+      name: "deepBlue",
+      fill: primary,
+      stroke: nodeBorder,
+      color: primaryText,
+      extra: "stroke-width:2px",
+      description: "Emphasis variant",
+    },
+    {
+      name: "slate",
+      fill: background,
+      stroke: lineColor,
+      color: primary,
+      extra: "",
+      description: "Neutral / muted details",
+    },
+    {
+      name: "scope",
+      fill: clusterBkg,
+      stroke: primaryBorder,
+      color: titleColor,
+      extra: "stroke-width:2px",
+      description: "Items in scope",
+    },
+    {
+      name: "outOfScope",
+      fill: background,
+      stroke: nodeBorder,
+      color: primaryText,
+      extra: "stroke-dasharray:8,opacity:0.6",
+      description: "Excluded items",
+    },
+    {
+      name: "redDash",
+      fill: "#3b0e0e",
+      stroke: "#b91c1c",
+      color: "#fecaca",
+      extra: "stroke-dasharray:4",
+      description: "Warning / error",
+    },
   ];
 }
 
@@ -459,14 +605,14 @@ function buildSubgraphTiers(palette: Palette): string {
   const c = (key: string, fallback: string) =>
     palette.colors.find((cl) => cl.key === key)?.value ?? fallback;
 
-  const primary      = c("primaryColor",      "#111827");
-  const secondary    = c("secondaryColor",    "#1f2937");
-  const tertiary     = c("tertiaryColor",     "#374151");
-  const clusterBkg   = c("clusterBkg",        "#111827");
-  const background   = c("background",        "#ffffff");
-  const lineColor    = c("lineColor",         "#888888");
+  const primary = c("primaryColor", "#111827");
+  const secondary = c("secondaryColor", "#1f2937");
+  const tertiary = c("tertiaryColor", "#374151");
+  const clusterBkg = c("clusterBkg", "#111827");
+  const background = c("background", "#ffffff");
+  const lineColor = c("lineColor", "#888888");
   const primaryBorder = c("primaryBorderColor", "#888888");
-  const titleColor   = c("titleColor",        "#e0e0e0");
+  const titleColor = c("titleColor", "#e0e0e0");
 
   return `    %% Tier 1 — Primary system boundary (most prominent)
     style SubgraphName fill:${primary},stroke:${primaryBorder},color:${titleColor}
@@ -489,15 +635,23 @@ function buildSubgraphTiers(palette: Palette): string {
 
 export type ScaffoldFormat = "formatA" | "formatB" | "both";
 
-function buildScaffold(palette: Palette, options: ExportOptions, scaffoldFormat: ScaffoldFormat): string {
+function buildScaffold(
+  palette: Palette,
+  options: ExportOptions,
+  scaffoldFormat: ScaffoldFormat
+): string {
   const { diagramFamily, customThemeName } = options;
   const themeName = sanitizeMdText(customThemeName?.trim() || palette.name);
   const isCustom = !!customThemeName?.trim() && customThemeName.trim() !== palette.name;
-  const displayLabel = sanitizeMdText(isCustom ? `Custom — based on ${palette.name}` : palette.name);
+  const displayLabel = sanitizeMdText(
+    isCustom ? `Custom — based on ${palette.name}` : palette.name
+  );
   const familyName = diagramFamily === "unknown" ? "Mermaid" : diagramFamily;
   const supportsClassDef = CLASSDEF_CAPABLE_FAMILIES.includes(diagramFamily);
 
-  const rendererProfile = options.rendererTarget ? getRendererById(options.rendererTarget) : undefined;
+  const rendererProfile = options.rendererTarget
+    ? getRendererById(options.rendererTarget)
+    : undefined;
   const rendererInitPartial = rendererProfile?.initDirectiveSupport === "partial";
   const rendererInitNone = rendererProfile?.initDirectiveSupport === "none";
   const rendererThemeVarsPartial = rendererProfile?.themeVariableSupport === "partial";
@@ -509,7 +663,13 @@ function buildScaffold(palette: Palette, options: ExportOptions, scaffoldFormat:
     .map((c) => `  - ${c.label}: \`${c.value}\``)
     .join("\n");
 
-  const initBlock = buildInitDirective(palette, diagramFamily, options.look, options.fontSize, options.typography);
+  const initBlock = buildInitDirective(
+    palette,
+    diagramFamily,
+    options.look,
+    options.fontSize,
+    options.typography
+  );
   const frontmatterBlock = buildFrontmatter(palette);
   const classDefBlock = buildClassDefLibrary(palette, options.typography);
   const subgraphBlock = buildSubgraphTiers(palette);
@@ -521,8 +681,8 @@ function buildScaffold(palette: Palette, options: ExportOptions, scaffoldFormat:
     rendererInitNone && rendererProfile
       ? `\n\n> ✗ **Not supported on ${rendererProfile.shortName}:** The \`%%{init}%%\` directive is not supported on this renderer. Use Format B (YAML frontmatter) if it is available, or contact your rendering environment for an alternative.`
       : rendererInitPartial && rendererProfile
-      ? `\n\n> ⚠ **Partial support on ${rendererProfile.shortName}:** The \`%%{init}%%\` directive is recognized but only a subset of \`themeVariables\` are applied — some color tokens may be ignored. Validate the themed output in this renderer before publishing.`
-      : "";
+        ? `\n\n> ⚠ **Partial support on ${rendererProfile.shortName}:** The \`%%{init}%%\` directive is recognized but only a subset of \`themeVariables\` are applied — some color tokens may be ignored. Validate the themed output in this renderer before publishing.`
+        : "";
 
   const rendererThemeVarCaveat =
     rendererThemeVarsPartial && rendererProfile && !rendererInitPartial && !rendererInitNone
@@ -539,14 +699,14 @@ Use the \`%%{init}%%\` directive (Format A) — compatible with Mermaid v9+, Mic
 ${initBlock}
 \`\`\`${rendererInitCaveat}${rendererThemeVarCaveat}`
       : scaffoldFormat === "formatB"
-      ? `## Required: Theme directive
+        ? `## Required: Theme directive
 
 Use YAML frontmatter (Format B) — the preferred format for Mermaid v10.5+, Mermaid Live Editor, VS Code, and GitHub (where supported).
 
 \`\`\`
 ${frontmatterBlock}
 \`\`\`${rendererThemeVarCaveat}`
-      : `## Required: Theme directive
+        : `## Required: Theme directive
 
 Choose ONE of the two formats below based on your renderer. Never use both in the same diagram.
 
@@ -570,24 +730,24 @@ ${frontmatterBlock}
     scaffoldFormat === "formatA"
       ? "ALWAYS start the diagram with the `%%{init}%%` theme directive — no exceptions."
       : scaffoldFormat === "formatB"
-      ? "ALWAYS start the diagram with the YAML frontmatter theme directive — no exceptions."
-      : "ALWAYS start the diagram with the theme directive (Format A or Format B above) — no exceptions.";
+        ? "ALWAYS start the diagram with the YAML frontmatter theme directive — no exceptions."
+        : "ALWAYS start the diagram with the theme directive (Format A or Format B above) — no exceptions.";
 
   const updateRestoreText =
     scaffoldFormat === "formatA"
       ? "Restore the `%%{init}%%` theme directive at the very top (do not omit it)."
       : scaffoldFormat === "formatB"
-      ? "Restore the YAML frontmatter theme directive at the very top (do not omit it)."
-      : "Restore the theme directive at the very top (use Format A or B from the original scaffold — do not omit it).";
+        ? "Restore the YAML frontmatter theme directive at the very top (do not omit it)."
+        : "Restore the theme directive at the very top (use Format A or B from the original scaffold — do not omit it).";
 
   const metaBlock = `%% Theme: ${sanitizeFenceContent(themeName)}
 %% Theme ID: ${sanitizeFenceContent(palette.id)}
 %% Tool: ${TOOL_URL}`;
 
-  const safeFirstSourceUrl = palette.sourceUrls?.length ? sanitizeSourceUrl(palette.sourceUrls[0]) : null;
-  const sourceNote = safeFirstSourceUrl
-    ? `\n**Source:** <${safeFirstSourceUrl}>`
-    : "";
+  const safeFirstSourceUrl = palette.sourceUrls?.length
+    ? sanitizeSourceUrl(palette.sourceUrls[0])
+    : null;
+  const sourceNote = safeFirstSourceUrl ? `\n**Source:** <${safeFirstSourceUrl}>` : "";
 
   const diagramTypeExample =
     diagramFamily === "sequenceDiagram"
@@ -603,7 +763,7 @@ ${frontmatterBlock}
     deactivate App
     App-->>User: Show result`
       : diagramFamily === "erDiagram"
-      ? `erDiagram
+        ? `erDiagram
     CUSTOMER {
         int customerId PK
         string name
@@ -621,8 +781,8 @@ ${frontmatterBlock}
     }
     CUSTOMER ||--o{ ORDER : "places"
     ORDER }o--|{ PRODUCT : "contains"`
-      : diagramFamily === "classDiagram"
-      ? `classDiagram
+        : diagramFamily === "classDiagram"
+          ? `classDiagram
     class User {
         +int userId
         +String email
@@ -638,15 +798,15 @@ ${frontmatterBlock}
     }
     User:::actor --> Service:::primary : calls
     Service:::primary --> Database:::platform : reads`
-      : diagramFamily === "stateDiagram"
-      ? `stateDiagram-v2
+          : diagramFamily === "stateDiagram"
+            ? `stateDiagram-v2
     [*] --> Idle
     Idle --> Active : start
     Active --> Paused : pause
     Paused --> Active : resume
     Active --> [*] : complete`
-      : diagramFamily === "gantt"
-      ? `gantt
+            : diagramFamily === "gantt"
+              ? `gantt
     title Project Timeline
     dateFormat YYYY-MM-DD
     section Planning
@@ -657,14 +817,14 @@ ${frontmatterBlock}
         Frontend     : fe, 2024-01-22, 14d
     section Release
         Launch       : milestone, m1, 2024-02-05, 0d`
-      : diagramFamily === "pie"
-      ? `pie title Distribution
+              : diagramFamily === "pie"
+                ? `pie title Distribution
     "Category A" : 40
     "Category B" : 30
     "Category C" : 20
     "Category D" : 10`
-      : diagramFamily === "mindmap"
-      ? `mindmap
+                : diagramFamily === "mindmap"
+                  ? `mindmap
   root((Project))
     Planning
       Requirements
@@ -675,8 +835,8 @@ ${frontmatterBlock}
     Release
       Testing
       Launch`
-      : diagramFamily === "gitGraph"
-      ? `gitGraph
+                  : diagramFamily === "gitGraph"
+                    ? `gitGraph
    commit id: "init"
    branch feature/login
    checkout feature/login
@@ -687,15 +847,15 @@ ${frontmatterBlock}
    branch release/1.0
    checkout release/1.0
    commit id: "bump-version" tag: "v1.0.0"`
-      : diagramFamily === "xychart"
-      ? `xychart-beta
+                    : diagramFamily === "xychart"
+                      ? `xychart-beta
     title "Monthly Active Users"
     x-axis [Jan, Feb, Mar, Apr, May, Jun]
     y-axis "Users (thousands)" 0 --> 120
     bar [42, 58, 74, 91, 105, 118]
     line [42, 58, 74, 91, 105, 118]`
-      : diagramFamily === "journey"
-      ? `journey
+                      : diagramFamily === "journey"
+                        ? `journey
     title My Working Day
     section Morning
         Wake up       : 5: Me
@@ -708,8 +868,8 @@ ${frontmatterBlock}
     section Evening
         Wind down     : 4: Me
         Dinner        : 5: Me, Family`
-      : diagramFamily === "timeline"
-      ? `timeline
+                        : diagramFamily === "timeline"
+                          ? `timeline
     title History of Technology
     section 1950s
         1951 : UNIVAC I
@@ -722,8 +882,8 @@ ${frontmatterBlock}
         1991 : World Wide Web
         1995 : JavaScript
              : Java`
-      : diagramFamily === "quadrantChart"
-      ? `quadrantChart
+                          : diagramFamily === "quadrantChart"
+                            ? `quadrantChart
     title Feature Prioritization
     x-axis Low Effort --> High Effort
     y-axis Low Impact --> High Impact
@@ -735,8 +895,8 @@ ${frontmatterBlock}
     Feature B: [0.7, 0.7]
     Feature C: [0.4, 0.3]
     Feature D: [0.8, 0.2]`
-      : diagramFamily === "block"
-      ? `block-beta
+                            : diagramFamily === "block"
+                              ? `block-beta
     columns 3
     A["Input"]:::actor
     B["Process"]:::primary
@@ -748,23 +908,23 @@ ${frontmatterBlock}
     A --> B
     B --> C
     B --> D`
-      : diagramFamily === "c4Diagram"
-      ? `C4Context
+                              : diagramFamily === "c4Diagram"
+                                ? `C4Context
     title System Context — My Application
     Person(user, "User", "A person using the system")
     System(app, "My Application", "Core application system")
     System_Ext(ext, "External Service", "Third-party API provider")
     Rel(user, app, "Uses", "HTTPS")
     Rel(app, ext, "Calls", "REST/HTTPS")`
-      : diagramFamily === "sankey"
-      ? `sankey-beta
+                                : diagramFamily === "sankey"
+                                  ? `sankey-beta
 Energy Source,Transmission,120
 Energy Source,Direct Use,30
 Transmission,Industrial,75
 Transmission,Residential,45
 Direct Use,Commercial,30`
-      : diagramFamily === "packet"
-      ? `packet-beta
+                                  : diagramFamily === "packet"
+                                    ? `packet-beta
 0-7: "Version"
 8-15: "Header Length"
 16-31: "Total Length"
@@ -775,8 +935,8 @@ Direct Use,Commercial,30`
 80-95: "Header Checksum"
 96-127: "Source Address"
 128-159: "Destination Address"`
-      : diagramFamily === "requirementDiagram"
-      ? `requirementDiagram
+                                    : diagramFamily === "requirementDiagram"
+                                      ? `requirementDiagram
 
 requirement AuthRequirement {
     id: 1
@@ -799,13 +959,13 @@ element AuthService {
 
 AuthRequirement - satisfies -> AuthService
 SessionRequirement - traces -> AuthRequirement`
-      : diagramFamily === "flowchart" || diagramFamily === "unknown"
-      ? `flowchart TD
+                                      : diagramFamily === "flowchart" || diagramFamily === "unknown"
+                                        ? `flowchart TD
     A[Start] --> B[Process]
     B:::primary --> C{Decision}:::gate
     C -->|Yes| D[End]:::accent
     C -->|No| B`
-      : `${diagramFamily}
+                                        : `${diagramFamily}
     %% Your diagram here`;
 
   const scaffoldPaletteId = sanitizeMdCode(palette.id);
@@ -817,8 +977,8 @@ SessionRequirement - traces -> AuthRequirement`
     rendererClassDefBlocked && rendererProfile
       ? `> ✗ **Not supported on ${rendererProfile.shortName}:** \`classDef\` / \`:::className\` styling is not available on this renderer. Rely only on the theme directive for all visual styling — omit any \`:::className\` annotations.`
       : rendererClassDefPartial && rendererProfile
-      ? `> ⚠ **Partial support on ${rendererProfile.shortName}:** \`classDef\` / \`:::className\` rendering quality varies on this renderer. Test before relying on per-node class styles; the theme directive is the safer primary styling mechanism.`
-      : null;
+        ? `> ⚠ **Partial support on ${rendererProfile.shortName}:** \`classDef\` / \`:::className\` rendering quality varies on this renderer. Test before relying on per-node class styles; the theme directive is the safer primary styling mechanism.`
+        : null;
 
   return `# Mermaid Diagram Prompt Scaffold — ${themeName}
 
@@ -855,7 +1015,9 @@ ${metaBlock}
 
 ---
 
-${diagramFamily === "sequenceDiagram" ? `## Sequence diagram: participant syntax & theming
+${
+  diagramFamily === "sequenceDiagram"
+    ? `## Sequence diagram: participant syntax & theming
 
 SequenceDiagram styling is controlled entirely by the theme directive above — all participant box colors, arrow colors, and label fonts come from the theme variables. There is **no** \`:::className\` syntax in sequence diagrams; nodes cannot be individually styled.
 
@@ -933,7 +1095,9 @@ sequenceDiagram
     and
         Client->>ServiceB: GET /b
     end
-\`\`\`` : diagramFamily === "erDiagram" ? `## ER diagram: entity syntax & theming
+\`\`\``
+    : diagramFamily === "erDiagram"
+      ? `## ER diagram: entity syntax & theming
 
 \`erDiagram\` styling is controlled entirely by the theme directive above — entity header colors, attribute row styles, and relationship line colors all come from the theme variables. There is **no** \`:::className\` syntax in ER diagrams; entities cannot be individually styled.
 
@@ -970,7 +1134,9 @@ Relationship statement format: \`ENTITY_A cardinality ENTITY_B : "label"\`
 
 ## ER diagram: theming note
 
-All ER diagram colors come from the theme directive. No per-entity style overrides are possible with classDef or inline styling.` : diagramFamily === "classDiagram" ? `## Class diagram: declaration syntax & classDef theming
+All ER diagram colors come from the theme directive. No per-entity style overrides are possible with classDef or inline styling.`
+      : diagramFamily === "classDiagram"
+        ? `## Class diagram: declaration syntax & classDef theming
 
 \`classDiagram\` supports \`:::className\` styling — apply the semantic classDef vocabulary below to class nodes. The theme directive controls default colors; classDef adds per-node variation.
 
@@ -1015,7 +1181,10 @@ Cardinality on each end: \`Dog "1" --> "0..*" Owner : owns\`
 
 ## Semantic classDef library
 
-${classDefCaveatNote ? classDefCaveatNote : `Apply these classDef classes to class nodes using \`:::className\` syntax. Do NOT add any other fill, stroke, or color values — use only these classes.
+${
+  classDefCaveatNote
+    ? classDefCaveatNote
+    : `Apply these classDef classes to class nodes using \`:::className\` syntax. Do NOT add any other fill, stroke, or color values — use only these classes.
 
 \`\`\`mermaid
 ${exampleDirective}
@@ -1045,7 +1214,10 @@ ${classDefBlock}
 | \`slate\` | Neutral / muted | Supporting detail classes |
 | \`scope\` | In-scope boundary | Classes explicitly in scope |
 | \`outOfScope\` | Out-of-scope (faded, dashed) | Excluded classes |
-| \`redDash\` | Warning / error / blocker | Error or exception classes |`}` : diagramFamily === "stateDiagram" ? `## State diagram: declaration syntax & theming
+| \`redDash\` | Warning / error / blocker | Error or exception classes |`
+}`
+        : diagramFamily === "stateDiagram"
+          ? `## State diagram: declaration syntax & theming
 
 \`stateDiagram-v2\` styling is primarily controlled by the theme directive above — state box colors, transition arrow colors, and label fonts all come from the theme variables. classDef is available but renderer support varies; test in your target renderer before relying on per-state styling.
 
@@ -1094,7 +1266,9 @@ classDef is technically available in state diagrams but support varies by render
 stateDiagram-v2
     classDef active fill:#abc,stroke:#def
     class Processing active
-\`\`\`` : diagramFamily === "gantt" ? `## Gantt diagram: section and task syntax
+\`\`\``
+          : diagramFamily === "gantt"
+            ? `## Gantt diagram: section and task syntax
 
 \`gantt\` styling is controlled entirely by the theme directive above — bar colors, section backgrounds, and label fonts all come from the theme variables. There is **no** \`:::className\` syntax in Gantt diagrams; tasks cannot be individually styled.
 
@@ -1131,7 +1305,9 @@ Task status keywords: \`done\` (completed), \`active\` (in progress), \`crit\` (
 
 ## Gantt diagram: theming note
 
-All Gantt colors come from the theme directive. No per-task style overrides are possible with classDef or inline styling.` : diagramFamily === "pie" ? `## Pie chart: title and slice syntax
+All Gantt colors come from the theme directive. No per-task style overrides are possible with classDef or inline styling.`
+            : diagramFamily === "pie"
+              ? `## Pie chart: title and slice syntax
 
 \`pie\` styling is controlled entirely by the theme directive above — slice colors, label fonts, and background all come from the theme variables. There is **no** \`:::className\` syntax in pie charts; individual slices cannot be independently styled beyond the palette color sequence.
 
@@ -1152,7 +1328,9 @@ The \`title\` keyword is optional but recommended. Each slice is \`"Label" : val
 
 ## Pie chart: theming note
 
-All pie chart colors come from the theme directive and are assigned in palette sequence order. No per-slice style overrides are possible with classDef or inline styling.` : diagramFamily === "mindmap" ? `## Mindmap: indented node syntax & shape notation
+All pie chart colors come from the theme directive and are assigned in palette sequence order. No per-slice style overrides are possible with classDef or inline styling.`
+              : diagramFamily === "mindmap"
+                ? `## Mindmap: indented node syntax & shape notation
 
 \`mindmap\` styling is controlled entirely by the theme directive above — node colors, border styles, and label fonts all come from the theme variables. There is **no** \`:::className\` syntax in mindmaps; nodes cannot be individually styled.
 
@@ -1188,7 +1366,9 @@ The root node is at the first indentation level. Each deeper indentation level c
 
 ## Mindmap: theming note
 
-All mindmap colors come from the theme directive. No per-node style overrides are possible with classDef or inline styling.` : diagramFamily === "gitGraph" ? `## Git graph: commit and branch syntax
+All mindmap colors come from the theme directive. No per-node style overrides are possible with classDef or inline styling.`
+                : diagramFamily === "gitGraph"
+                  ? `## Git graph: commit and branch syntax
 
 \`gitGraph\` styling is controlled by the theme directive and gitGraph-specific config options. There is **no** \`:::className\` syntax in git graphs; commits and branches cannot be individually styled via classDef.
 
@@ -1233,7 +1413,9 @@ The theme directive's \`primaryColor\` and \`primaryBorderColor\` influence the 
 
 ## Git graph: theming note
 
-All global colors (background, text, label boxes) come from the theme directive. Branch rail colors (\`git0\`–\`git7\`) are renderer-assigned and cannot be individually overridden with classDef or inline styles. Use the theme directive to control the overall visual palette.` : diagramFamily === "xychart" ? `## XY chart: axis and data series syntax
+All global colors (background, text, label boxes) come from the theme directive. Branch rail colors (\`git0\`–\`git7\`) are renderer-assigned and cannot be individually overridden with classDef or inline styles. Use the theme directive to control the overall visual palette.`
+                  : diagramFamily === "xychart"
+                    ? `## XY chart: axis and data series syntax
 
 \`xychart-beta\` styling is partially controlled by the theme directive — background, axis labels, title fonts, and bar/line colors respond to themeVariables. There is **no** \`:::className\` syntax in XY charts; individual bars or points cannot be styled via classDef.
 
@@ -1264,7 +1446,9 @@ Both \`bar\` and \`line\` can appear together in the same chart. The number of v
 
 ## XY chart: theming note
 
-Background, axis labels, title, and grid colors come from the theme directive. Bar and line series colors partially respond to \`primaryColor\` and related palette tokens — validate in your target renderer, as xychart-beta color application can vary. No per-bar or per-point style overrides are possible with classDef or inline styling.` : diagramFamily === "journey" ? `## Journey diagram: section and task syntax
+Background, axis labels, title, and grid colors come from the theme directive. Bar and line series colors partially respond to \`primaryColor\` and related palette tokens — validate in your target renderer, as xychart-beta color application can vary. No per-bar or per-point style overrides are possible with classDef or inline styling.`
+                    : diagramFamily === "journey"
+                      ? `## Journey diagram: section and task syntax
 
 \`journey\` styling is controlled entirely by the theme directive above — section backgrounds, task bars, and label fonts all come from the theme variables. There is **no** \`:::className\` syntax in journey diagrams; individual tasks cannot be styled with classDef.
 
@@ -1304,7 +1488,9 @@ Multiple actors separated by commas (\`Actor1, Actor2\`) are all shown on the sa
 
 ## Journey diagram: theming note
 
-All journey colors come from the theme directive. Scores (1–5) control task bar height on the experience curve — they are not affected by theme styling. No per-task style overrides are possible with classDef or inline styling.` : diagramFamily === "timeline" ? `## Timeline diagram: period and event syntax
+All journey colors come from the theme directive. Scores (1–5) control task bar height on the experience curve — they are not affected by theme styling. No per-task style overrides are possible with classDef or inline styling.`
+                      : diagramFamily === "timeline"
+                        ? `## Timeline diagram: period and event syntax
 
 \`timeline\` styling is controlled entirely by the theme directive above — period headers, event blocks, and label fonts all come from the theme variables. There is **no** \`:::className\` syntax in timeline diagrams; individual events cannot be styled with classDef.
 
@@ -1334,7 +1520,9 @@ Periods (the date or label before the first \`:\`) appear as section headers on 
 
 ## Timeline diagram: theming note
 
-All timeline colors come from the theme directive. Period header colors, event block backgrounds, and connector lines are all theme-controlled. No per-event style overrides are possible with classDef or inline styling.` : diagramFamily === "quadrantChart" ? `## Quadrant chart: axis and point syntax
+All timeline colors come from the theme directive. Period header colors, event block backgrounds, and connector lines are all theme-controlled. No per-event style overrides are possible with classDef or inline styling.`
+                        : diagramFamily === "quadrantChart"
+                          ? `## Quadrant chart: axis and point syntax
 
 \`quadrantChart\` styling is controlled entirely by the theme directive above — quadrant backgrounds, axis labels, and point colors all come from the theme variables. There is **no** \`:::className\` syntax in quadrant charts; individual points cannot be styled with classDef.
 
@@ -1375,7 +1563,9 @@ Points are declared as \`Label: [x, y]\` where \`x\` and \`y\` are decimal value
 
 ## Quadrant chart: theming note
 
-All quadrant colors come from the theme directive. Point colors, quadrant backgrounds, and axis line colors are theme-controlled. No per-point style overrides are possible with classDef or inline styling.` : diagramFamily === "block" ? `## Block diagram: columns/space/block syntax & classDef theming
+All quadrant colors come from the theme directive. Point colors, quadrant backgrounds, and axis line colors are theme-controlled. No per-point style overrides are possible with classDef or inline styling.`
+                          : diagramFamily === "block"
+                            ? `## Block diagram: columns/space/block syntax & classDef theming
 
 \`block-beta\` supports \`:::className\` styling — apply the semantic classDef vocabulary below to block nodes. The theme directive controls default colors; classDef adds per-block color variation.
 
@@ -1425,7 +1615,10 @@ block-beta
 
 ## Semantic classDef library
 
-${classDefCaveatNote ? classDefCaveatNote : `Apply these classDef classes to block nodes using \`:::className\` syntax. Do NOT add any other fill, stroke, or color values — use only these classes.
+${
+  classDefCaveatNote
+    ? classDefCaveatNote
+    : `Apply these classDef classes to block nodes using \`:::className\` syntax. Do NOT add any other fill, stroke, or color values — use only these classes.
 
 \`\`\`mermaid
 ${exampleDirective}
@@ -1455,13 +1648,16 @@ ${classDefBlock}
 | \`slate\` | Neutral / muted | Supporting detail blocks |
 | \`scope\` | In-scope boundary | Blocks explicitly in scope |
 | \`outOfScope\` | Out-of-scope (faded, dashed) | Excluded blocks |
-| \`redDash\` | Warning / error / blocker | Error states, blockers |`}
+| \`redDash\` | Warning / error / blocker | Error states, blockers |`
+}
 
 ---
 
 ## Block diagram: theming note
 
-The theme directive controls background, border, and text colors for all blocks. Use \`:::className\` with the classDef vocabulary for per-block color variation. \`space\` cells are invisible layout-only placeholders — they cannot be styled.` : diagramFamily === "c4Diagram" ? `## C4 diagram: architecture vocabulary & theming
+The theme directive controls background, border, and text colors for all blocks. Use \`:::className\` with the classDef vocabulary for per-block color variation. \`space\` cells are invisible layout-only placeholders — they cannot be styled.`
+                            : diagramFamily === "c4Diagram"
+                              ? `## C4 diagram: architecture vocabulary & theming
 
 \`c4Diagram\` styling is partially controlled by the theme directive — background, border, and label fonts respond to some themeVariables, but not all tokens are applied consistently across element types. There is **no** \`:::className\` syntax in C4 diagrams; elements cannot be individually styled with classDef.
 
@@ -1504,7 +1700,9 @@ C4Context
 
 ## C4 diagram: theming note
 
-All C4 element colors (person icons, system/container boxes, boundary lines) are controlled by the theme directive. themeVariable support is partial — some tokens may not apply to all element types. No per-element style overrides are possible with classDef or inline styling.` : diagramFamily === "sankey" ? `## Sankey diagram: CSV link syntax
+All C4 element colors (person icons, system/container boxes, boundary lines) are controlled by the theme directive. themeVariable support is partial — some tokens may not apply to all element types. No per-element style overrides are possible with classDef or inline styling.`
+                              : diagramFamily === "sankey"
+                                ? `## Sankey diagram: CSV link syntax
 
 \`sankey-beta\` styling is controlled entirely by the theme directive above — flow band colors, node label fonts, and background all come from the theme variables. There is **no** \`:::className\` syntax in sankey diagrams; individual flows cannot be styled with classDef.
 
@@ -1538,7 +1736,9 @@ Nodes are created automatically from the unique source and target labels — the
 
 ## Sankey diagram: theming note
 
-All sankey band colors and node fill colors come from the theme directive. Flow band widths are proportional to values — they are not affected by theme styling. No per-flow or per-node style overrides are possible with classDef or inline styling.` : diagramFamily === "packet" ? `## Packet diagram: block and field syntax
+All sankey band colors and node fill colors come from the theme directive. Flow band widths are proportional to values — they are not affected by theme styling. No per-flow or per-node style overrides are possible with classDef or inline styling.`
+                                : diagramFamily === "packet"
+                                  ? `## Packet diagram: block and field syntax
 
 \`packet-beta\` styling is controlled entirely by the theme directive above — field block colors, label fonts, and background all come from the theme variables. There is **no** \`:::className\` syntax in packet diagrams; individual fields cannot be styled with classDef.
 
@@ -1577,7 +1777,9 @@ Fields that span more than one row are automatically wrapped. Multi-word labels 
 
 ## Packet diagram: theming note
 
-All field block colors, border colors, and label fonts come from the theme directive. Field widths are proportional to bit-range sizes — they are not affected by theme styling. No per-field style overrides are possible with classDef or inline styling.` : diagramFamily === "requirementDiagram" ? `## Requirement diagram: declaration and relationship syntax
+All field block colors, border colors, and label fonts come from the theme directive. Field widths are proportional to bit-range sizes — they are not affected by theme styling. No per-field style overrides are possible with classDef or inline styling.`
+                                  : diagramFamily === "requirementDiagram"
+                                    ? `## Requirement diagram: declaration and relationship syntax
 
 \`requirementDiagram\` styling is controlled entirely by the theme directive above — requirement box colors, element box colors, and label fonts all come from the theme variables. There is **no** \`:::className\` syntax in requirement diagrams; individual requirements or elements cannot be styled with classDef.
 
@@ -1648,9 +1850,13 @@ ResponseTime - traces -> DataIntegrity
 
 ## Requirement diagram: theming note
 
-All requirement and element box colors, border styles, and label fonts come from the theme directive. No per-requirement or per-element style overrides are possible with classDef or inline styling.` : `## Semantic classDef library
+All requirement and element box colors, border styles, and label fonts come from the theme directive. No per-requirement or per-element style overrides are possible with classDef or inline styling.`
+                                    : `## Semantic classDef library
 
-${classDefCaveatNote ? classDefCaveatNote : `This is the complete styling vocabulary for this theme. Apply these classDef classes to nodes using \`:::className\` syntax. Do NOT add any other fill, stroke, or color values — use only these classes.
+${
+  classDefCaveatNote
+    ? classDefCaveatNote
+    : `This is the complete styling vocabulary for this theme. Apply these classDef classes to nodes using \`:::className\` syntax. Do NOT add any other fill, stroke, or color values — use only these classes.
 
 \`\`\`mermaid
 ${exampleDirective}
@@ -1681,7 +1887,8 @@ ${classDefBlock}
 | \`slate\` | Neutral / muted | Low-priority nodes, supporting details |
 | \`scope\` | In-scope boundary | Items explicitly in scope |
 | \`outOfScope\` | Out-of-scope (faded, dashed) | Explicitly excluded items |
-| \`redDash\` | Warning / error / blocker | Error states, blockers, known failures |`}
+| \`redDash\` | Warning / error / blocker | Error states, blockers, known failures |`
+}
 
 ---
 
@@ -1693,7 +1900,8 @@ Use \`style SubgraphName ...\` statements to apply visual hierarchy to subgraphs
 ${exampleDirective}
 flowchart TD
 ${subgraphBlock}
-\`\`\``}
+\`\`\``
+}
 
 ---
 
@@ -1712,7 +1920,9 @@ ${colorLines}
 
 ${options.typography ? typographyToScaffoldSection(options.typography) + "\n\n---\n\n" : ""}${options.rendererTarget ? rendererToScaffoldSection(options.rendererTarget, options.look) + "\n\n---\n\n" : ""}## Rules
 
-${diagramFamily === "sequenceDiagram" ? `1. ${formatRuleText}
+${
+  diagramFamily === "sequenceDiagram"
+    ? `1. ${formatRuleText}
 2. Add the metadata comment block immediately after the theme directive.
 3. Use \`sequenceDiagram\` as the diagram type.
 4. Declare all \`participant\` and \`actor\` labels at the top — before any messages.
@@ -1723,7 +1933,9 @@ ${diagramFamily === "sequenceDiagram" ? `1. ${formatRuleText}
 9. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values — the theme directive handles all styling.
 10. Do NOT change any color values — reproduce them exactly as shown.
 11. Keep message labels concise (under 60 characters).
-12. If the diagram type changes, preserve the exact same theme directive.` : diagramFamily === "erDiagram" ? `1. ${formatRuleText}
+12. If the diagram type changes, preserve the exact same theme directive.`
+    : diagramFamily === "erDiagram"
+      ? `1. ${formatRuleText}
 2. Add the metadata comment block immediately after the theme directive.
 3. Use \`erDiagram\` as the diagram type.
 4. Declare all entities with their attributes: \`ENTITY_NAME { dataType attrName PK|FK|UK "description" }\`.
@@ -1733,7 +1945,9 @@ ${diagramFamily === "sequenceDiagram" ? `1. ${formatRuleText}
 8. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values — the theme directive handles all styling.
 9. Do NOT change any color values — reproduce them exactly as shown.
 10. Attribute type names are descriptive only; Mermaid does not validate them against a schema.
-11. If the diagram type changes, preserve the exact same theme directive.` : diagramFamily === "classDiagram" ? `1. ${formatRuleText}
+11. If the diagram type changes, preserve the exact same theme directive.`
+      : diagramFamily === "classDiagram"
+        ? `1. ${formatRuleText}
 2. Add the metadata comment block immediately after the theme directive.
 3. Use \`classDiagram\` as the diagram type.
 4. Declare classes with their attributes and methods: \`class Name { +type attr method() ReturnType }\`.
@@ -1743,7 +1957,9 @@ ${diagramFamily === "sequenceDiagram" ? `1. ${formatRuleText}
 8. Style class nodes using \`:::className\` with the classDef vocabulary from the scaffold.
 9. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values — use classDef classes instead.
 10. Do NOT change any color values — reproduce them exactly as shown.
-11. If the diagram type changes, preserve the exact same theme directive.` : diagramFamily === "stateDiagram" ? `1. ${formatRuleText}
+11. If the diagram type changes, preserve the exact same theme directive.`
+        : diagramFamily === "stateDiagram"
+          ? `1. ${formatRuleText}
 2. Add the metadata comment block immediately after the theme directive.
 3. Use \`stateDiagram-v2\` as the diagram type.
 4. Use \`[*]\` for the initial state and terminal (end) states.
@@ -1753,7 +1969,9 @@ ${diagramFamily === "sequenceDiagram" ? `1. ${formatRuleText}
 8. classDef styling is available but support varies by renderer — test before relying on it.
 9. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values — the theme directive handles all styling.
 10. Do NOT change any color values — reproduce them exactly as shown.
-11. If the diagram type changes, preserve the exact same theme directive.` : diagramFamily === "gantt" ? `1. ${formatRuleText}
+11. If the diagram type changes, preserve the exact same theme directive.`
+          : diagramFamily === "gantt"
+            ? `1. ${formatRuleText}
 2. Add the metadata comment block immediately after the theme directive.
 3. Use \`gantt\` as the diagram type.
 4. Always declare \`dateFormat\` before any \`section\` or task entries.
@@ -1764,7 +1982,9 @@ ${diagramFamily === "sequenceDiagram" ? `1. ${formatRuleText}
 9. Do NOT use \`:::className\` syntax — gantt does not support per-task classDef styling.
 10. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values — the theme directive handles all styling.
 11. Do NOT change any color values — reproduce them exactly as shown.
-12. If the diagram type changes, preserve the exact same theme directive.` : diagramFamily === "pie" ? `1. ${formatRuleText}
+12. If the diagram type changes, preserve the exact same theme directive.`
+            : diagramFamily === "pie"
+              ? `1. ${formatRuleText}
 2. Add the metadata comment block immediately after the theme directive.
 3. Use \`pie\` as the diagram type.
 4. Add a \`title\` on the same line as \`pie\`: \`pie title My Title\`.
@@ -1773,7 +1993,9 @@ ${diagramFamily === "sequenceDiagram" ? `1. ${formatRuleText}
 7. Do NOT use \`:::className\` syntax — pie does not support per-slice classDef styling.
 8. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values — the theme directive handles all styling.
 9. Do NOT change any color values — reproduce them exactly as shown.
-10. If the diagram type changes, preserve the exact same theme directive.` : diagramFamily === "mindmap" ? `1. ${formatRuleText}
+10. If the diagram type changes, preserve the exact same theme directive.`
+              : diagramFamily === "mindmap"
+                ? `1. ${formatRuleText}
 2. Add the metadata comment block immediately after the theme directive.
 3. Use \`mindmap\` as the diagram type.
 4. The root node is at the first indentation level; each deeper level creates child nodes.
@@ -1783,7 +2005,9 @@ ${diagramFamily === "sequenceDiagram" ? `1. ${formatRuleText}
 8. Do NOT use \`:::className\` syntax — mindmap does not support per-node classDef styling.
 9. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values — the theme directive handles all styling.
 10. Do NOT change any color values — reproduce them exactly as shown.
-11. If the diagram type changes, preserve the exact same theme directive.` : diagramFamily === "gitGraph" ? `1. ${formatRuleText}
+11. If the diagram type changes, preserve the exact same theme directive.`
+                : diagramFamily === "gitGraph"
+                  ? `1. ${formatRuleText}
 2. Add the metadata comment block immediately after the theme directive.
 3. Use \`gitGraph\` as the diagram type.
 4. Always use \`checkout\` before adding commits to a branch — do not commit directly without checking out the branch first.
@@ -1794,7 +2018,9 @@ ${diagramFamily === "sequenceDiagram" ? `1. ${formatRuleText}
 9. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values — the theme directive handles all styling.
 10. Do NOT change any color values — reproduce them exactly as shown.
 11. Branch rail colors (\`git0\`–\`git7\`) are assigned by the renderer — do not attempt to override them with classDef.
-12. If the diagram type changes, preserve the exact same theme directive.` : diagramFamily === "xychart" ? `1. ${formatRuleText}
+12. If the diagram type changes, preserve the exact same theme directive.`
+                  : diagramFamily === "xychart"
+                    ? `1. ${formatRuleText}
 2. Add the metadata comment block immediately after the theme directive.
 3. Use \`xychart-beta\` as the diagram type keyword.
 4. Always declare \`title\`, \`x-axis\`, and \`y-axis\` before any data series (\`bar\` or \`line\`).
@@ -1805,7 +2031,9 @@ ${diagramFamily === "sequenceDiagram" ? `1. ${formatRuleText}
 9. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values — the theme directive handles all styling.
 10. Do NOT change any color values — reproduce them exactly as shown.
 11. Validate the output in your target renderer — xychart-beta color application varies across renderers.
-12. If the diagram type changes, preserve the exact same theme directive.` : diagramFamily === "journey" ? `1. ${formatRuleText}
+12. If the diagram type changes, preserve the exact same theme directive.`
+                    : diagramFamily === "journey"
+                      ? `1. ${formatRuleText}
 2. Add the metadata comment block immediately after the theme directive.
 3. Use \`journey\` as the diagram type.
 4. Each task follows the syntax \`Task label : score: Actor1, Actor2\` — the score (1–5) is required and controls vertical position on the experience curve.
@@ -1815,7 +2043,9 @@ ${diagramFamily === "sequenceDiagram" ? `1. ${formatRuleText}
 8. Do NOT use \`:::className\` syntax — journey does not support per-task classDef styling.
 9. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values — the theme directive handles all styling.
 10. Do NOT change any color values — reproduce them exactly as shown.
-11. If the diagram type changes, preserve the exact same theme directive.` : diagramFamily === "timeline" ? `1. ${formatRuleText}
+11. If the diagram type changes, preserve the exact same theme directive.`
+                      : diagramFamily === "timeline"
+                        ? `1. ${formatRuleText}
 2. Add the metadata comment block immediately after the theme directive.
 3. Use \`timeline\` as the diagram type.
 4. Use \`title\` to name the overall timeline.
@@ -1825,7 +2055,9 @@ ${diagramFamily === "sequenceDiagram" ? `1. ${formatRuleText}
 8. Do NOT use \`:::className\` syntax — timeline does not support per-event classDef styling; styling is theme-only.
 9. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values — the theme directive handles all styling.
 10. Do NOT change any color values — reproduce them exactly as shown.
-11. If the diagram type changes, preserve the exact same theme directive.` : diagramFamily === "quadrantChart" ? `1. ${formatRuleText}
+11. If the diagram type changes, preserve the exact same theme directive.`
+                        : diagramFamily === "quadrantChart"
+                          ? `1. ${formatRuleText}
 2. Add the metadata comment block immediately after the theme directive.
 3. Use \`quadrantChart\` as the diagram type keyword.
 4. Always declare \`x-axis\` and \`y-axis\` with labels and direction: \`x-axis Low Label --> High Label\`.
@@ -1835,7 +2067,9 @@ ${diagramFamily === "sequenceDiagram" ? `1. ${formatRuleText}
 8. Do NOT use \`:::className\` syntax — quadrantChart does not support per-point classDef styling.
 9. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values — the theme directive handles all styling.
 10. Do NOT change any color values — reproduce them exactly as shown.
-11. If the diagram type changes, preserve the exact same theme directive.` : diagramFamily === "block" ? `1. ${formatRuleText}
+11. If the diagram type changes, preserve the exact same theme directive.`
+                          : diagramFamily === "block"
+                            ? `1. ${formatRuleText}
 2. Add the metadata comment block immediately after the theme directive.
 3. Use \`block-beta\` as the diagram type.
 4. Declare \`columns N\` at the top to set the grid width — blocks fill left-to-right, top-to-bottom.
@@ -1845,7 +2079,9 @@ ${diagramFamily === "sequenceDiagram" ? `1. ${formatRuleText}
 8. Declare all edges (\`A --> B\`) after all block declarations.
 9. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values — use classDef classes instead.
 10. Do NOT change any color values — reproduce them exactly as shown.
-11. If the diagram type changes, preserve the exact same theme directive.` : diagramFamily === "c4Diagram" ? `1. ${formatRuleText}
+11. If the diagram type changes, preserve the exact same theme directive.`
+                            : diagramFamily === "c4Diagram"
+                              ? `1. ${formatRuleText}
 2. Add the metadata comment block immediately after the theme directive.
 3. Use the appropriate C4 diagram type keyword: \`C4Context\`, \`C4Container\`, \`C4Component\`, or \`C4Dynamic\`.
 4. Declare all elements before relationships: \`Person(id, "Label", "Description")\`, \`System(id, "Label", "Description")\`, etc.
@@ -1856,7 +2092,9 @@ ${diagramFamily === "sequenceDiagram" ? `1. ${formatRuleText}
 9. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values — the theme directive handles all styling.
 10. Do NOT change any color values — reproduce them exactly as shown.
 11. themeVariable support is partial — validate the output in your target renderer before publishing.
-12. If the diagram type changes, preserve the exact same theme directive.` : diagramFamily === "sankey" ? `1. ${formatRuleText}
+12. If the diagram type changes, preserve the exact same theme directive.`
+                              : diagramFamily === "sankey"
+                                ? `1. ${formatRuleText}
 2. Add the metadata comment block immediately after the theme directive.
 3. Use \`sankey-beta\` as the diagram type keyword.
 4. Each line must be exactly \`source,target,value\` — comma-separated with no spaces around the commas.
@@ -1866,7 +2104,9 @@ ${diagramFamily === "sequenceDiagram" ? `1. ${formatRuleText}
 8. Do NOT use \`:::className\` syntax — sankey-beta does not support per-flow or per-node classDef styling.
 9. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values — the theme directive handles all styling.
 10. Do NOT change any color values — reproduce them exactly as shown.
-11. If the diagram type changes, preserve the exact same theme directive.` : diagramFamily === "packet" ? `1. ${formatRuleText}
+11. If the diagram type changes, preserve the exact same theme directive.`
+                                : diagramFamily === "packet"
+                                  ? `1. ${formatRuleText}
 2. Add the metadata comment block immediately after the theme directive.
 3. Use \`packet-beta\` as the diagram type keyword.
 4. Each field is declared as \`startBit-endBit: "Label"\` — bit indices are zero-based and end-inclusive.
@@ -1876,7 +2116,9 @@ ${diagramFamily === "sequenceDiagram" ? `1. ${formatRuleText}
 8. Do NOT use \`:::className\` syntax — packet-beta does not support per-field classDef styling.
 9. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values — the theme directive handles all styling.
 10. Do NOT change any color values — reproduce them exactly as shown.
-11. If the diagram type changes, preserve the exact same theme directive.` : diagramFamily === "requirementDiagram" ? `1. ${formatRuleText}
+11. If the diagram type changes, preserve the exact same theme directive.`
+                                  : diagramFamily === "requirementDiagram"
+                                    ? `1. ${formatRuleText}
 2. Add the metadata comment block immediately after the theme directive.
 3. Use \`requirementDiagram\` as the diagram type keyword.
 4. Declare all requirements before elements, and all elements before relationships.
@@ -1887,7 +2129,8 @@ ${diagramFamily === "sequenceDiagram" ? `1. ${formatRuleText}
 9. Do NOT use \`:::className\` syntax — requirementDiagram does not support per-requirement or per-element classDef styling.
 10. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values — the theme directive handles all styling.
 11. Do NOT change any color values — reproduce them exactly as shown.
-12. If the diagram type changes, preserve the exact same theme directive.` : `1. ${formatRuleText}
+12. If the diagram type changes, preserve the exact same theme directive.`
+                                    : `1. ${formatRuleText}
 2. Add the metadata comment block immediately after the theme directive.
 3. Use \`${diagramFamily === "unknown" ? "flowchart TD" : diagramFamily === "flowchart" ? "flowchart TD" : diagramFamily}\` as the diagram type unless the user specifies otherwise.
 4. Keep node labels concise (under 60 characters each).
@@ -1896,7 +2139,8 @@ ${diagramFamily === "sequenceDiagram" ? `1. ${formatRuleText}
 7. Do NOT change any color values — reproduce them exactly as shown.
 8. Use subgraph tier styles for visual hierarchy — never leave subgraphs unstyled.
 9. If the diagram type changes, preserve the exact same theme directive.
-10. If the diagram type does not support classDef (e.g. sequenceDiagram, erDiagram), omit classDef statements entirely — the theme directive handles all styling.`}
+10. If the diagram type does not support classDef (e.g. sequenceDiagram, erDiagram), omit classDef statements entirely — the theme directive handles all styling.`
+}
 
 ---
 
@@ -1927,13 +2171,15 @@ The diagram above has drifted from the required visual theme. Please regenerate 
 
 1. ${updateRestoreText}
 2. Restore the metadata comment block immediately after the directive.
-${supportsClassDef
-  ? `3. Re-apply all node classes using the classDef vocabulary from the original scaffold (:::className syntax). Do not add any inline fill, stroke, or color values.
+${
+  supportsClassDef
+    ? `3. Re-apply all node classes using the classDef vocabulary from the original scaffold (:::className syntax). Do not add any inline fill, stroke, or color values.
 4. Do not change any logic, labels, or relationships — only restore the visual styling contract.
 5. Output the complete diagram from top to bottom — do not abbreviate or use "..." placeholders.`
-  : `3. Do not add classDef statements — this diagram type (${familyName}) does not support them. The theme directive handles all styling.
+    : `3. Do not add classDef statements — this diagram type (${familyName}) does not support them. The theme directive handles all styling.
 4. Do not change any logic, labels, or relationships — only restore the visual styling contract.
-5. Output the complete diagram from top to bottom — do not abbreviate or use "..." placeholders.`}
+5. Output the complete diagram from top to bottom — do not abbreviate or use "..." placeholders.`
+}
 
 Theme contract reference:
 - Theme: **${themeName}** (\`${scaffoldPaletteId}\`)
@@ -1988,7 +2234,7 @@ export function generatePromptScaffold(palette: Palette, options: ExportOptions)
 export function generatePromptScaffoldWithFormat(
   palette: Palette,
   options: ExportOptions,
-  format: ScaffoldFormat,
+  format: ScaffoldFormat
 ): string {
   return buildScaffold(palette, options, format);
 }

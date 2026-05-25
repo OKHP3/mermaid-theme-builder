@@ -5,7 +5,11 @@ import { type TypographySettings, generateTypographyCss, isDefaultTypography } f
 /**
  * Trigger a browser download for a string blob. Same-origin, no backend.
  */
-export function downloadTextFile(filename: string, content: string, mime = "text/plain;charset=utf-8"): void {
+export function downloadTextFile(
+  filename: string,
+  content: string,
+  mime = "text/plain;charset=utf-8"
+): void {
   const blob = new Blob([content], { type: mime });
   triggerDownload(filename, blob);
 }
@@ -96,7 +100,10 @@ export async function svgStringToPngBlob(svgString: string, scale = 2): Promise<
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
     return await new Promise<Blob>((resolve, reject) => {
-      canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("toBlob returned null"))), "image/png");
+      canvas.toBlob(
+        (b) => (b ? resolve(b) : reject(new Error("toBlob returned null"))),
+        "image/png"
+      );
     });
   } finally {
     URL.revokeObjectURL(url);
@@ -116,11 +123,12 @@ function loadImage(url: string): Promise<HTMLImageElement> {
  * Sanitize a label into a filename slug.
  */
 export function makeFilename(themeName: string, suffix: string, ext: string): string {
-  const slug = themeName
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 40) || "diagram";
+  const slug =
+    themeName
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 40) || "diagram";
   return `${slug}-${suffix}.${ext}`;
 }
 
@@ -136,8 +144,7 @@ export function makeFilename(themeName: string, suffix: string, ext: string): st
  * `%%{init}%%` exports for diagram theming.
  */
 export function paletteToCssVariables(palette: Palette): string {
-  const toKebab = (s: string): string =>
-    s.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
+  const toKebab = (s: string): string => s.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
   const lines: string[] = [];
   lines.push(`/* ${palette.name} — ${palette.description} */`);
   lines.push(`/* Static design tokens; not consumed by Mermaid at runtime. */`);
@@ -296,21 +303,30 @@ export function parsePortablePalette(json: string): PortablePaletteImport | Port
     if (!Array.isArray(data.colors) || data.colors.length === 0) {
       return { ok: false, error: "Missing or empty `colors` array." };
     }
-    const colors: { key: string; label: string; value: string }[] = data.colors.map((c: unknown) => {
-      if (typeof c !== "object" || c === null) throw new Error("Invalid color entry");
-      const cc = c as Record<string, unknown>;
-      if (typeof cc.key !== "string" || typeof cc.label !== "string" || typeof cc.value !== "string") {
-        throw new Error("Color entries must have key/label/value strings");
+    const colors: { key: string; label: string; value: string }[] = data.colors.map(
+      (c: unknown) => {
+        if (typeof c !== "object" || c === null) throw new Error("Invalid color entry");
+        const cc = c as Record<string, unknown>;
+        if (
+          typeof cc.key !== "string" ||
+          typeof cc.label !== "string" ||
+          typeof cc.value !== "string"
+        ) {
+          throw new Error("Color entries must have key/label/value strings");
+        }
+        return { key: cc.key, label: cc.label, value: cc.value };
       }
-      return { key: cc.key, label: cc.label, value: cc.value };
-    });
+    );
     const id = typeof data.id === "string" ? data.id : `imported-${Date.now().toString(36)}`;
     const name = typeof data.name === "string" ? data.name : "Imported palette";
-    const description = typeof data.description === "string" ? data.description : "Imported palette.";
+    const description =
+      typeof data.description === "string" ? data.description : "Imported palette.";
     const version = typeof data.version === "string" ? data.version : "0.0.0";
 
     const presentKeys = new Set(colors.map((c) => c.key));
-    const missingKeys = (REQUIRED_COLOR_KEYS as readonly string[]).filter((k) => !presentKeys.has(k));
+    const missingKeys = (REQUIRED_COLOR_KEYS as readonly string[]).filter(
+      (k) => !presentKeys.has(k)
+    );
     const unknownKeys = colors.map((c) => c.key).filter((k) => !KNOWN_COLOR_KEYS.has(k));
     const invalidValues = colors
       .filter((c) => !isValidColorValue(c.key, c.value))
@@ -326,7 +342,9 @@ export function parsePortablePalette(json: string): PortablePaletteImport | Port
         name,
         description,
         themeIntent: typeof data.themeIntent === "string" ? data.themeIntent : undefined,
-        sourceUrls: Array.isArray(data.sourceUrls) ? data.sourceUrls.filter((u: unknown) => typeof u === "string") : undefined,
+        sourceUrls: Array.isArray(data.sourceUrls)
+          ? data.sourceUrls.filter((u: unknown) => typeof u === "string")
+          : undefined,
         version,
         colors,
         attribution: {

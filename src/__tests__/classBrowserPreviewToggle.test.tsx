@@ -98,9 +98,12 @@ function getAllButton() {
 
 function getUsedButton() {
   // The "Used" button title includes the count, so we match by aria-pressed
-  return screen.getAllByRole("button").find(
-    (b) => b.textContent?.trim() === "Used" || b.getAttribute("title")?.startsWith("Show only the")
-  )!;
+  return screen
+    .getAllByRole("button")
+    .find(
+      (b) =>
+        b.textContent?.trim() === "Used" || b.getAttribute("title")?.startsWith("Show only the")
+    )!;
 }
 
 function getPanelCopyButton() {
@@ -253,9 +256,9 @@ describe("ClassBrowser preview — header label changes with mode", () => {
     );
     openPreview();
     // Default open = "used" mode
-    const header = document.querySelector(".forge-code-panel, [class*='bg-\\[#0f1f1c\\]'] span, pre")!
-      .closest("div")
-      ?.previousElementSibling;
+    const header = document
+      .querySelector(".forge-code-panel, [class*='bg-\\[#0f1f1c\\]'] span, pre")!
+      .closest("div")?.previousElementSibling;
     // The "(used only)" text should appear somewhere in the preview panel header
     expect(document.body.textContent).toContain("(used only)");
   });

@@ -133,8 +133,7 @@ describe("ExtractTab — no theme found (bare diagram)", () => {
 // ---------------------------------------------------------------------------
 
 // Directive with only a theme name, no themeVariables block.
-const DIRECTIVE_NO_VARS =
-  "%%{init: {'theme':'base'}}%%\nflowchart TD\n  A[Start] --> B[End]";
+const DIRECTIVE_NO_VARS = "%%{init: {'theme':'base'}}%%\nflowchart TD\n  A[Start] --> B[End]";
 
 describe("ExtractTab — theme directive found but no themeVariables", () => {
   it("shows the 'no color variables' heading", async () => {

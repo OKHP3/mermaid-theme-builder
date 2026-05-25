@@ -22,10 +22,7 @@ describe("example-library.ts ↔ examples/*.mmd sync guard", () => {
       expect(entry, `EXAMPLE_CATALOG entry "${catalogId}" not found`).toBeDefined();
 
       const filePath = path.join(EXAMPLES_DIR, mmdFile);
-      expect(
-        fs.existsSync(filePath),
-        `Source file examples/${mmdFile} does not exist`,
-      ).toBe(true);
+      expect(fs.existsSync(filePath), `Source file examples/${mmdFile} does not exist`).toBe(true);
 
       const fileContent = fs.readFileSync(filePath, "utf-8").trim();
       expect(entry!.content.trim()).toBe(fileContent);

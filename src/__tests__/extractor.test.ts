@@ -61,7 +61,7 @@ describe("extractTheme — init directive with quoted string values (strict JSON
 });
 
 describe("extractTheme — init directive with theme only (no themeVariables)", () => {
-  const CODE = '%%{init: {theme: dark}}%%\nflowchart LR\n  A --> B';
+  const CODE = "%%{init: {theme: dark}}%%\nflowchart LR\n  A --> B";
 
   it("returns sourceFormat 'init-directive'", () => {
     expect(extractTheme(CODE).sourceFormat).toBe("init-directive");
@@ -327,7 +327,7 @@ describe("round-trip: family overlays survive generateThemedCode → extractThem
       });
       expect(themed).toContain("%%{init:");
       expect(themed).toContain('"themeVariables"');
-    },
+    }
   );
 
   it.each(FAMILIES)(
@@ -340,60 +340,48 @@ describe("round-trip: family overlays survive generateThemedCode → extractThem
         includeBadge: false,
       });
       expect(extractTheme(themed).sourceFormat).toBe("init-directive");
-    },
+    }
   );
 
-  it.each(FAMILIES)(
-    "$family: primaryColor survives the round-trip",
-    ({ family, stub }) => {
-      const themed = generateThemedCode(stub, {
-        palette,
-        diagramFamily: family,
-        includeMetaComments: false,
-        includeBadge: false,
-      });
-      expect(extractTheme(themed).themeVariables.primaryColor).toBe(primaryColor);
-    },
-  );
+  it.each(FAMILIES)("$family: primaryColor survives the round-trip", ({ family, stub }) => {
+    const themed = generateThemedCode(stub, {
+      palette,
+      diagramFamily: family,
+      includeMetaComments: false,
+      includeBadge: false,
+    });
+    expect(extractTheme(themed).themeVariables.primaryColor).toBe(primaryColor);
+  });
 
-  it.each(FAMILIES)(
-    "$family: primaryTextColor survives the round-trip",
-    ({ family, stub }) => {
-      const themed = generateThemedCode(stub, {
-        palette,
-        diagramFamily: family,
-        includeMetaComments: false,
-        includeBadge: false,
-      });
-      expect(extractTheme(themed).themeVariables.primaryTextColor).toBe(primaryTextColor);
-    },
-  );
+  it.each(FAMILIES)("$family: primaryTextColor survives the round-trip", ({ family, stub }) => {
+    const themed = generateThemedCode(stub, {
+      palette,
+      diagramFamily: family,
+      includeMetaComments: false,
+      includeBadge: false,
+    });
+    expect(extractTheme(themed).themeVariables.primaryTextColor).toBe(primaryTextColor);
+  });
 
-  it.each(FAMILIES)(
-    "$family: lineColor survives the round-trip",
-    ({ family, stub }) => {
-      const themed = generateThemedCode(stub, {
-        palette,
-        diagramFamily: family,
-        includeMetaComments: false,
-        includeBadge: false,
-      });
-      expect(extractTheme(themed).themeVariables.lineColor).toBe(lineColor);
-    },
-  );
+  it.each(FAMILIES)("$family: lineColor survives the round-trip", ({ family, stub }) => {
+    const themed = generateThemedCode(stub, {
+      palette,
+      diagramFamily: family,
+      includeMetaComments: false,
+      includeBadge: false,
+    });
+    expect(extractTheme(themed).themeVariables.lineColor).toBe(lineColor);
+  });
 
-  it.each(FAMILIES)(
-    "$family: theme name is recovered as 'base'",
-    ({ family, stub }) => {
-      const themed = generateThemedCode(stub, {
-        palette,
-        diagramFamily: family,
-        includeMetaComments: false,
-        includeBadge: false,
-      });
-      expect(extractTheme(themed).themeName).toBe("base");
-    },
-  );
+  it.each(FAMILIES)("$family: theme name is recovered as 'base'", ({ family, stub }) => {
+    const themed = generateThemedCode(stub, {
+      palette,
+      diagramFamily: family,
+      includeMetaComments: false,
+      includeBadge: false,
+    });
+    expect(extractTheme(themed).themeName).toBe("base");
+  });
 
   it("sequenceDiagram: family-specific actorBkg is present in themed output", () => {
     const stub = "sequenceDiagram\n  Alice->>Bob: Hello";
@@ -672,8 +660,7 @@ flowchart TD
 
 describe("hasExtractableTheme", () => {
   it("returns true when init directive has themeVariables", () => {
-    const code =
-      '%%{init: {themeVariables: {primaryColor: "#ff0000"}}}%%\nflowchart TD\n  A --> B';
+    const code = '%%{init: {themeVariables: {primaryColor: "#ff0000"}}}%%\nflowchart TD\n  A --> B';
     expect(hasExtractableTheme(code)).toBe(true);
   });
 
@@ -697,7 +684,7 @@ describe("hasExtractableTheme", () => {
   });
 
   it("returns false for init directive with theme-only (no vars, no classDefs)", () => {
-    const code = '%%{init: {theme: dark}}%%\nflowchart TD\n  A --> B';
+    const code = "%%{init: {theme: dark}}%%\nflowchart TD\n  A --> B";
     expect(hasExtractableTheme(code)).toBe(false);
   });
 });
@@ -869,10 +856,9 @@ describe("paletteFromExtracted — extracted vars override fallbacks", () => {
     };
     const palette = paletteFromExtracted(extracted, "All Custom");
     for (const c of palette.colors) {
-      expect(
-        c.value,
-        `key ${c.key} should use the provided value`,
-      ).toBe(extracted.themeVariables[c.key as keyof typeof extracted.themeVariables]);
+      expect(c.value, `key ${c.key} should use the provided value`).toBe(
+        extracted.themeVariables[c.key as keyof typeof extracted.themeVariables]
+      );
     }
   });
 });
@@ -937,7 +923,7 @@ describe("round-trip: generateThemedCode → extractTheme", () => {
       };
       const themedCode = generateThemedCode(ROUND_TRIP_DIAGRAM, options);
       expect(extractTheme(themedCode).sourceFormat).toBe("init-directive");
-    },
+    }
   );
 
   it.each(BUILTIN_PALETTES.map((p) => [p.name, p] as [string, (typeof BUILTIN_PALETTES)[number]]))(
@@ -951,7 +937,7 @@ describe("round-trip: generateThemedCode → extractTheme", () => {
       };
       const themedCode = generateThemedCode(ROUND_TRIP_DIAGRAM, options);
       expect(extractTheme(themedCode).themeName).toBe("base");
-    },
+    }
   );
 
   it.each(
@@ -959,24 +945,26 @@ describe("round-trip: generateThemedCode → extractTheme", () => {
       ROUND_TRIP_KEY_COLORS.flatMap((colorKey) => {
         const expected = p.colors.find((c) => c.key === colorKey)?.value;
         return expected
-          ? ([[p.name, colorKey, p, expected]] as [string, string, (typeof BUILTIN_PALETTES)[number], string][])
+          ? ([[p.name, colorKey, p, expected]] as [
+              string,
+              string,
+              (typeof BUILTIN_PALETTES)[number],
+              string,
+            ][])
           : [];
-      }),
-    ),
-  )(
-    "palette '%s' — %s survives round-trip",
-    (_name, colorKey, palette, expected) => {
-      const options: ExportOptions = {
-        palette,
-        diagramFamily: "flowchart",
-        includeMetaComments: false,
-        includeBadge: false,
-      };
-      const themedCode = generateThemedCode(ROUND_TRIP_DIAGRAM, options);
-      const extracted = extractTheme(themedCode);
-      expect(extracted.themeVariables[colorKey]).toBe(expected);
-    },
-  );
+      })
+    )
+  )("palette '%s' — %s survives round-trip", (_name, colorKey, palette, expected) => {
+    const options: ExportOptions = {
+      palette,
+      diagramFamily: "flowchart",
+      includeMetaComments: false,
+      includeBadge: false,
+    };
+    const themedCode = generateThemedCode(ROUND_TRIP_DIAGRAM, options);
+    const extracted = extractTheme(themedCode);
+    expect(extracted.themeVariables[colorKey]).toBe(expected);
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -989,7 +977,7 @@ describe("integration: block family overrides are present in generateThemedCode 
   const nodeBorderExpected = palette.colors.find((c) => c.key === "nodeBorder")?.value ?? "";
   const lineColorExpected = palette.colors.find((c) => c.key === "lineColor")?.value ?? "";
 
-  const BLOCK_STUB = "block-beta\n  A[\"Node A\"]\n  B[\"Node B\"]\n  A --> B";
+  const BLOCK_STUB = 'block-beta\n  A["Node A"]\n  B["Node B"]\n  A --> B';
 
   const themedCode = generateThemedCode(BLOCK_STUB, {
     palette,
@@ -1022,10 +1010,11 @@ describe("integration: block family overrides are present in generateThemedCode 
 describe("integration: c4Diagram family overrides are present in generateThemedCode output", () => {
   const palette = BUILTIN_PALETTES[0];
   const primaryColorExpected = palette.colors.find((c) => c.key === "primaryColor")?.value ?? "";
-  const primaryBorderExpected = palette.colors.find((c) => c.key === "primaryBorderColor")?.value ?? "";
+  const primaryBorderExpected =
+    palette.colors.find((c) => c.key === "primaryBorderColor")?.value ?? "";
 
   const C4_STUB =
-    "C4Context\n  Person(personAlias, \"User\", \"A user\")\n  System(sys, \"System\", \"The system\")";
+    'C4Context\n  Person(personAlias, "User", "A user")\n  System(sys, "System", "The system")';
 
   const themedCode = generateThemedCode(C4_STUB, {
     palette,

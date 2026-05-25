@@ -10,7 +10,9 @@ const EXAMPLES_DIR = path.resolve(import.meta.dirname, "../../examples");
 
 describe("Registry-example consistency guard", () => {
   it("examples directory exists", () => {
-    expect(fs.existsSync(EXAMPLES_DIR), `examples/ directory must exist at ${EXAMPLES_DIR}`).toBe(true);
+    expect(fs.existsSync(EXAMPLES_DIR), `examples/ directory must exist at ${EXAMPLES_DIR}`).toBe(
+      true
+    );
   });
 
   it("every registry entry with examplePending:false has an existing example file", () => {
@@ -25,7 +27,7 @@ describe("Registry-example consistency guard", () => {
     }
     expect(
       missing,
-      `Registry entries marked examplePending:false but missing .mmd file:\n${missing.join("\n")}`,
+      `Registry entries marked examplePending:false but missing .mmd file:\n${missing.join("\n")}`
     ).toHaveLength(0);
   });
 
@@ -38,7 +40,7 @@ describe("Registry-example consistency guard", () => {
     }
     expect(
       nullFiles,
-      `Registry entries have examplePending:false but exampleFile:null:\n${nullFiles.join("\n")}`,
+      `Registry entries have examplePending:false but exampleFile:null:\n${nullFiles.join("\n")}`
     ).toHaveLength(0);
   });
 
@@ -80,41 +82,41 @@ describe("Registry-example consistency guard", () => {
 //
 const FAMILY_ALIAS_TO_REGISTRY_ID: Record<string, DiagramFamily> = {
   // aliases that differ from the canonical registry id
-  sequence:    "sequenceDiagram",
-  class:       "classDiagram",
-  er:          "erDiagram",
-  state:       "stateDiagram",
+  sequence: "sequenceDiagram",
+  class: "classDiagram",
+  er: "erDiagram",
+  state: "stateDiagram",
   requirement: "requirementDiagram",
-  quadrant:    "quadrantChart",
-  gitgraph:    "gitGraph",
+  quadrant: "quadrantChart",
+  gitgraph: "gitGraph",
 
   // aliases that ARE the canonical registry id (still listed for completeness)
-  flowchart:      "flowchart",
-  pie:            "pie",
-  sankey:         "sankey",
-  gantt:          "gantt",
-  timeline:       "timeline",
-  journey:        "journey",
-  mindmap:        "mindmap",
-  eventModeling:  "eventModeling",
-  wardley:        "wardley",
+  flowchart: "flowchart",
+  pie: "pie",
+  sankey: "sankey",
+  gantt: "gantt",
+  timeline: "timeline",
+  journey: "journey",
+  mindmap: "mindmap",
+  eventModeling: "eventModeling",
+  wardley: "wardley",
 
   // new families added in Batch #1
   architectureBeta: "architectureBeta",
-  block:            "block",
-  c4:               "c4Diagram",
-  kanban:           "kanban",
-  packet:           "packet",
-  radar:            "radar",
-  xychart:          "xychart",
+  block: "block",
+  c4: "c4Diagram",
+  kanban: "kanban",
+  packet: "packet",
+  radar: "radar",
+  xychart: "xychart",
 
   // new families added in Batch #2
-  treemap:          "treemap",
+  treemap: "treemap",
 
   // new families added in Batch #3
-  zenuml:           "zenuml",
-  venn:             "venn",
-  ishikawa:         "ishikawa",
+  zenuml: "zenuml",
+  venn: "venn",
+  ishikawa: "ishikawa",
 };
 
 describe("EXAMPLE_CATALOG — registry consistency guard", () => {
@@ -138,7 +140,7 @@ describe("EXAMPLE_CATALOG — registry consistency guard", () => {
     for (const entry of EXAMPLE_CATALOG) {
       expect(
         entry.content.trim().length,
-        `${entry.id} must have non-empty content`,
+        `${entry.id} must have non-empty content`
       ).toBeGreaterThan(0);
     }
   });
@@ -153,7 +155,7 @@ describe("EXAMPLE_CATALOG — registry consistency guard", () => {
     expect(
       unknownAliases,
       `EXAMPLE_CATALOG entries use unknown family aliases not in FAMILY_ALIAS_TO_REGISTRY_ID.\n` +
-      `Add the missing alias to the mapping in registryExamples.test.ts:\n${unknownAliases.join("\n")}`,
+        `Add the missing alias to the mapping in registryExamples.test.ts:\n${unknownAliases.join("\n")}`
     ).toHaveLength(0);
   });
 
@@ -164,13 +166,13 @@ describe("EXAMPLE_CATALOG — registry consistency guard", () => {
       const registryId = FAMILY_ALIAS_TO_REGISTRY_ID[entry.family];
       if (!registryId || !registryIds.has(registryId)) {
         broken.push(
-          `${entry.id}: family="${entry.family}" → registryId="${registryId ?? "(no mapping)"}" not found in DIAGRAM_CAPABILITIES`,
+          `${entry.id}: family="${entry.family}" → registryId="${registryId ?? "(no mapping)"}" not found in DIAGRAM_CAPABILITIES`
         );
       }
     }
     expect(
       broken,
-      `EXAMPLE_CATALOG entries whose family does not resolve to a registry entry:\n${broken.join("\n")}`,
+      `EXAMPLE_CATALOG entries whose family does not resolve to a registry entry:\n${broken.join("\n")}`
     ).toHaveLength(0);
   });
 
@@ -185,7 +187,7 @@ describe("EXAMPLE_CATALOG — registry consistency guard", () => {
     }
     expect(
       unmapped,
-      `These family aliases appear in EXAMPLE_CATALOG but are absent from FAMILY_ALIAS_TO_REGISTRY_ID:\n${unmapped.join("\n")}`,
+      `These family aliases appear in EXAMPLE_CATALOG but are absent from FAMILY_ALIAS_TO_REGISTRY_ID:\n${unmapped.join("\n")}`
     ).toHaveLength(0);
   });
 

@@ -146,7 +146,9 @@ describe("ApplyTab hint — dismiss and restore flow", () => {
       fireEvent.click(dismissBtn);
     });
 
-    const restoreBtn = screen.getByRole("button", { name: "Show syntax tip for this diagram type" });
+    const restoreBtn = screen.getByRole("button", {
+      name: "Show syntax tip for this diagram type",
+    });
     await act(async () => {
       fireEvent.click(restoreBtn);
     });
@@ -160,7 +162,7 @@ describe("ApplyTab hint — dismiss and restore flow", () => {
     });
 
     const { rerender } = render(
-      createElement(ApplyTab, { ...BASE_PROPS, hintResetToken: 0, onResetSyntaxHints }),
+      createElement(ApplyTab, { ...BASE_PROPS, hintResetToken: 0, onResetSyntaxHints })
     );
 
     // Dismiss the hint
@@ -172,16 +174,16 @@ describe("ApplyTab hint — dismiss and restore flow", () => {
     expect(restoreButtonVisible()).toBe(true);
 
     // Click restore — onResetSyntaxHints clears localStorage in this mock
-    const restoreBtn = screen.getByRole("button", { name: "Show syntax tip for this diagram type" });
+    const restoreBtn = screen.getByRole("button", {
+      name: "Show syntax tip for this diagram type",
+    });
     await act(async () => {
       fireEvent.click(restoreBtn);
     });
 
     // Simulate App.tsx responding by bumping hintResetToken
     act(() => {
-      rerender(
-        createElement(ApplyTab, { ...BASE_PROPS, hintResetToken: 1, onResetSyntaxHints }),
-      );
+      rerender(createElement(ApplyTab, { ...BASE_PROPS, hintResetToken: 1, onResetSyntaxHints }));
     });
 
     expect(hintPanelVisible()).toBe(true);

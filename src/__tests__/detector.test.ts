@@ -37,7 +37,9 @@ describe("detectDiagram — family detection", () => {
   });
 
   it("detects gantt", () => {
-    expect(detectDiagram("gantt\n  title My Project\n  section Setup\n    Task: 2024-01-01, 7d").family).toBe("gantt");
+    expect(
+      detectDiagram("gantt\n  title My Project\n  section Setup\n    Task: 2024-01-01, 7d").family
+    ).toBe("gantt");
   });
 
   it("detects pie", () => {
@@ -45,7 +47,9 @@ describe("detectDiagram — family detection", () => {
   });
 
   it("detects xychart-beta", () => {
-    expect(detectDiagram("xychart-beta\n  x-axis [Q1, Q2, Q3]\n  bar [10, 20, 30]").family).toBe("xychart");
+    expect(detectDiagram("xychart-beta\n  x-axis [Q1, Q2, Q3]\n  bar [10, 20, 30]").family).toBe(
+      "xychart"
+    );
   });
 
   it("detects quadrantChart", () => {
@@ -77,7 +81,9 @@ describe("detectDiagram — family detection", () => {
   });
 
   it("detects architecture-beta (architectureBeta family id)", () => {
-    expect(detectDiagram("architecture-beta\n  service API(internet)").family).toBe("architectureBeta");
+    expect(detectDiagram("architecture-beta\n  service API(internet)").family).toBe(
+      "architectureBeta"
+    );
   });
 
   it("detects kanban", () => {
@@ -85,15 +91,17 @@ describe("detectDiagram — family detection", () => {
   });
 
   it("detects packet (official v11.0+ syntax)", () => {
-    expect(detectDiagram("packet\n  0-7: \"Source Port\"").family).toBe("packet");
+    expect(detectDiagram('packet\n  0-7: "Source Port"').family).toBe("packet");
   });
 
   it("detects packet-beta (legacy fallback)", () => {
-    expect(detectDiagram("packet-beta\n  0-7: \"Source Port\"").family).toBe("packet");
+    expect(detectDiagram('packet-beta\n  0-7: "Source Port"').family).toBe("packet");
   });
 
   it("detects requirementDiagram", () => {
-    expect(detectDiagram("requirementDiagram\n  requirement R1 {").family).toBe("requirementDiagram");
+    expect(detectDiagram("requirementDiagram\n  requirement R1 {").family).toBe(
+      "requirementDiagram"
+    );
   });
 
   it("detects zenuml", () => {
@@ -109,15 +117,21 @@ describe("detectDiagram — family detection", () => {
   });
 
   it("detects C4Component as c4Diagram family", () => {
-    expect(detectDiagram("C4Component\n  Container(api, \"API Server\", \"Node.js\")").family).toBe("c4Diagram");
+    expect(detectDiagram('C4Component\n  Container(api, "API Server", "Node.js")').family).toBe(
+      "c4Diagram"
+    );
   });
 
   it("detects C4Dynamic as c4Diagram family", () => {
-    expect(detectDiagram("C4Dynamic\n  title Login flow\n  Rel(user, spa, \"Navigates to\")").family).toBe("c4Diagram");
+    expect(
+      detectDiagram('C4Dynamic\n  title Login flow\n  Rel(user, spa, "Navigates to")').family
+    ).toBe("c4Diagram");
   });
 
   it("detects C4Deployment as c4Diagram family", () => {
-    expect(detectDiagram("C4Deployment\n  Deployment_Node(prod, \"Production\", \"AWS\")").family).toBe("c4Diagram");
+    expect(detectDiagram('C4Deployment\n  Deployment_Node(prod, "Production", "AWS")').family).toBe(
+      "c4Diagram"
+    );
   });
 
   it("detects wardley-beta as wardley family", () => {
@@ -137,7 +151,9 @@ describe("detectDiagram — family detection", () => {
   });
 
   it("detects radar-beta as radar family", () => {
-    expect(detectDiagram("radar-beta\n  axis A,B,C\n  curve Candidate [5,3,4]").family).toBe("radar");
+    expect(detectDiagram("radar-beta\n  axis A,B,C\n  curve Candidate [5,3,4]").family).toBe(
+      "radar"
+    );
   });
 
   it("detects treemap-beta as treemap family", () => {
@@ -253,12 +269,16 @@ describe("DIAGRAM_CAPABILITIES registry", () => {
     for (const cap of DIAGRAM_CAPABILITIES) {
       if (cap.supportedLooks) {
         for (const look of cap.supportedLooks) {
-          expect(validLooks.has(look), `${cap.id}.supportedLooks has invalid look: ${look}`).toBe(true);
+          expect(validLooks.has(look), `${cap.id}.supportedLooks has invalid look: ${look}`).toBe(
+            true
+          );
         }
       }
       if (cap.unsupportedLooks) {
         for (const look of cap.unsupportedLooks) {
-          expect(validLooks.has(look), `${cap.id}.unsupportedLooks has invalid look: ${look}`).toBe(true);
+          expect(validLooks.has(look), `${cap.id}.unsupportedLooks has invalid look: ${look}`).toBe(
+            true
+          );
         }
       }
     }

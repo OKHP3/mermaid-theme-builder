@@ -94,7 +94,10 @@ function findBalancedClose(str: string, openIdx: number): number {
   for (let i = openIdx; i < str.length; i++) {
     const c = str[i];
     if (inStr) {
-      if (c === "\\" && i + 1 < str.length) { i++; continue; }
+      if (c === "\\" && i + 1 < str.length) {
+        i++;
+        continue;
+      }
       if (c === strChar) inStr = false;
     } else if (c === '"' || c === "'") {
       inStr = true;
@@ -147,7 +150,8 @@ function parseInitDirective(code: string): { theme?: string; vars: Record<string
   const inside = payload.slice(openBraceIdx + 1, closeBraceIdx);
   const vars: Record<string, string> = {};
   // Match key:value pairs. Keys may be quoted.
-  const kvRe = /(?:["']([A-Za-z_][\w-]*)["']|([A-Za-z_][\w-]*))\s*:\s*(?:"([^"]*)"|'([^']*)'|([^,}\n]+))/g;
+  const kvRe =
+    /(?:["']([A-Za-z_][\w-]*)["']|([A-Za-z_][\w-]*))\s*:\s*(?:"([^"]*)"|'([^']*)'|([^,}\n]+))/g;
   let m: RegExpExecArray | null;
   while ((m = kvRe.exec(inside)) !== null) {
     const key = m[1] ?? m[2];
@@ -287,7 +291,10 @@ const FALLBACK_COLORS: Record<string, string> = {
  * Convert an extracted theme into a synthetic Palette so it slots into the
  * existing color-editor and theme-engine pipeline without special-casing.
  */
-export function paletteFromExtracted(extracted: ExtractedTheme, label = "Extracted theme"): Palette {
+export function paletteFromExtracted(
+  extracted: ExtractedTheme,
+  label = "Extracted theme"
+): Palette {
   const colors: ThemeColor[] = PALETTE_KEY_LABELS.map(({ key, label: lbl }) => ({
     key,
     label: lbl,
@@ -297,7 +304,8 @@ export function paletteFromExtracted(extracted: ExtractedTheme, label = "Extract
   return {
     id: makeExtractedPaletteId(),
     name: label,
-    description: "Theme extracted from a pasted diagram. Edit any color to refine, then save it as a named palette.",
+    description:
+      "Theme extracted from a pasted diagram. Edit any color to refine, then save it as a named palette.",
     version: "0.0.0",
     colors,
     attribution: {

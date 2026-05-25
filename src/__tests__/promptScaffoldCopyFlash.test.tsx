@@ -81,7 +81,7 @@ function getMainCopyButton(container: HTMLElement, badge: string): HTMLButtonEle
     (b) =>
       b.classList.contains("text-left") &&
       b.textContent?.includes(badge) &&
-      !b.getAttribute("aria-label"),
+      !b.getAttribute("aria-label")
   );
   if (!btn) throw new Error(`Main copy button for "${badge}" not found`);
   return btn;
@@ -178,7 +178,7 @@ describe("PromptScaffoldModal — Path A: main card copy button", () => {
 
     // All main copy buttons are disabled while copiedFormat !== null.
     const allDisabledCopyBtns = Array.from(
-      container.querySelectorAll<HTMLButtonElement>("button.text-left"),
+      container.querySelectorAll<HTMLButtonElement>("button.text-left")
     ).every((btn) => btn.disabled);
     expect(allDisabledCopyBtns).toBe(true);
   });
@@ -209,7 +209,7 @@ describe("PromptScaffoldModal — Path B: in-preview copy button", () => {
 
     const allButtons = Array.from(container.querySelectorAll<HTMLButtonElement>("button"));
     const inPreviewBtn = allButtons.find(
-      (b) => b.getAttribute("aria-label") === "Copy Format A scaffold",
+      (b) => b.getAttribute("aria-label") === "Copy Format A scaffold"
     );
     expect(inPreviewBtn).toBeUndefined();
   });
@@ -241,9 +241,7 @@ describe("PromptScaffoldModal — Path B: in-preview copy button", () => {
     // The toggle bar (now with aria-label "Hide preview for Format A" because
     // it was open before the copy; after copy the aria-label might differ)
     // must have emerald class.
-    const barAfter = container.querySelector<HTMLButtonElement>(
-      'button[class*="bg-emerald-500"]',
-    );
+    const barAfter = container.querySelector<HTMLButtonElement>('button[class*="bg-emerald-500"]');
     expect(barAfter).not.toBeNull();
     expect(barAfter!.className).toMatch(/bg-emerald-500/);
   });
@@ -264,7 +262,7 @@ describe("PromptScaffoldModal — Path B: in-preview copy button", () => {
     // while the flash is active.
     const allButtons = Array.from(container.querySelectorAll<HTMLButtonElement>("button"));
     const copiedBtn = allButtons.find(
-      (b) => b.getAttribute("aria-label") === "Copied Format A scaffold",
+      (b) => b.getAttribute("aria-label") === "Copied Format A scaffold"
     );
     expect(copiedBtn).toBeDefined();
     expect(copiedBtn!.className).toMatch(/bg-emerald-500/);

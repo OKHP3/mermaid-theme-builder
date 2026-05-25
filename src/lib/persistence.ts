@@ -101,13 +101,15 @@ export interface ShareablePayload {
 function bytesToBase64Url(bytes: Uint8Array): string {
   let binary = "";
   for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
-  const b64 = typeof btoa !== "undefined" ? btoa(binary) : Buffer.from(binary, "binary").toString("base64");
+  const b64 =
+    typeof btoa !== "undefined" ? btoa(binary) : Buffer.from(binary, "binary").toString("base64");
   return b64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 
 function base64UrlToBytes(s: string): Uint8Array {
   const b64 = s.replace(/-/g, "+").replace(/_/g, "/") + "===".slice((s.length + 3) % 4);
-  const binary = typeof atob !== "undefined" ? atob(b64) : Buffer.from(b64, "base64").toString("binary");
+  const binary =
+    typeof atob !== "undefined" ? atob(b64) : Buffer.from(b64, "base64").toString("binary");
   const bytes = new Uint8Array(binary.length);
   for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
   return bytes;
@@ -137,7 +139,8 @@ export function decodeShareableTheme(token: string): ShareablePayload | null {
       themeVariables: cleanVars,
       paletteName: typeof parsed.paletteName === "string" ? parsed.paletteName : undefined,
       paletteId: typeof parsed.paletteId === "string" ? parsed.paletteId : undefined,
-      customThemeName: typeof parsed.customThemeName === "string" ? parsed.customThemeName : undefined,
+      customThemeName:
+        typeof parsed.customThemeName === "string" ? parsed.customThemeName : undefined,
     };
     return out;
   } catch (err) {
@@ -146,7 +149,10 @@ export function decodeShareableTheme(token: string): ShareablePayload | null {
   }
 }
 
-export function paletteToShareablePayload(palette: Palette, customThemeName: string): ShareablePayload {
+export function paletteToShareablePayload(
+  palette: Palette,
+  customThemeName: string
+): ShareablePayload {
   const themeVariables: Record<string, string> = {};
   for (const c of palette.colors) themeVariables[c.key] = c.value;
   return {

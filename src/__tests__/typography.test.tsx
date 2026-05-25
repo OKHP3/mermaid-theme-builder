@@ -50,14 +50,14 @@ function make(
   subgraphTitle: number,
   nestedSubgraphTitle: number,
   nodeLabel: number,
-  edgeLabel: number,
+  edgeLabel: number
 ): TypographySettings {
   return {
-    diagramTitle:        { fontSize: diagramTitle,        fontFamily: "" },
-    subgraphTitle:       { fontSize: subgraphTitle,       fontFamily: "" },
+    diagramTitle: { fontSize: diagramTitle, fontFamily: "" },
+    subgraphTitle: { fontSize: subgraphTitle, fontFamily: "" },
     nestedSubgraphTitle: { fontSize: nestedSubgraphTitle, fontFamily: "" },
-    nodeLabel:           { fontSize: nodeLabel,           fontFamily: "" },
-    edgeLabel:           { fontSize: edgeLabel,           fontFamily: "" },
+    nodeLabel: { fontSize: nodeLabel, fontFamily: "" },
+    edgeLabel: { fontSize: edgeLabel, fontFamily: "" },
   };
 }
 
@@ -126,11 +126,11 @@ describe("enforceHierarchy — cascade clamping", () => {
   it("cascades a mid-level reduction into lower tiers only", () => {
     // subgraphTitle reduced below nestedSubgraphTitle and below; nodeLabel, edgeLabel cascade.
     const result = enforceHierarchy(make(20, 10, 14, 14, 12));
-    expect(result.diagramTitle.fontSize).toBe(20);   // unchanged
-    expect(result.subgraphTitle.fontSize).toBe(10);  // clamped to diagramTitle limit? No — subgraphTitle=10 ≤ 20, fine
+    expect(result.diagramTitle.fontSize).toBe(20); // unchanged
+    expect(result.subgraphTitle.fontSize).toBe(10); // clamped to diagramTitle limit? No — subgraphTitle=10 ≤ 20, fine
     expect(result.nestedSubgraphTitle.fontSize).toBe(10); // clamped to subgraphTitle=10
-    expect(result.nodeLabel.fontSize).toBe(10);          // clamped to subgraphTitle=10
-    expect(result.edgeLabel.fontSize).toBe(10);          // clamped to nodeLabel=10
+    expect(result.nodeLabel.fontSize).toBe(10); // clamped to subgraphTitle=10
+    expect(result.edgeLabel.fontSize).toBe(10); // clamped to nodeLabel=10
   });
 });
 
@@ -144,11 +144,11 @@ describe("enforceHierarchy — immutability", () => {
 
   it("preserves fontFamily values through clamping", () => {
     const input: TypographySettings = {
-      diagramTitle:        { fontSize: 16, fontFamily: "Roboto" },
-      subgraphTitle:       { fontSize: 20, fontFamily: "DM Sans" },
+      diagramTitle: { fontSize: 16, fontFamily: "Roboto" },
+      subgraphTitle: { fontSize: 20, fontFamily: "DM Sans" },
       nestedSubgraphTitle: { fontSize: 14, fontFamily: "" },
-      nodeLabel:           { fontSize: 14, fontFamily: "" },
-      edgeLabel:           { fontSize: 12, fontFamily: "" },
+      nodeLabel: { fontSize: 14, fontFamily: "" },
+      edgeLabel: { fontSize: 12, fontFamily: "" },
     };
     const result = enforceHierarchy(input);
     // subgraphTitle is clamped but fontFamily is preserved
@@ -265,7 +265,9 @@ describe("ComposeTab — scale bar widths", () => {
    * then to the first child gives the bar container, whose first child is the bar.
    */
   function getScaleBarWidths(container: HTMLElement): string[] {
-    const aaSamples = Array.from(container.querySelectorAll('[aria-hidden="true"][title*="px sample"]'));
+    const aaSamples = Array.from(
+      container.querySelectorAll('[aria-hidden="true"][title*="px sample"]')
+    );
     return aaSamples.map((sample) => {
       const row = sample.parentElement!;
       const barContainer = row.firstElementChild as HTMLElement;
@@ -290,22 +292,22 @@ describe("ComposeTab — scale bar widths", () => {
     const { container } = render(createElement(ComposeTab, makeProps(DEFAULT_TYPOGRAPHY)));
     const widths = getScaleBarWidths(container);
     // diagramTitle=20, subgraph=16, nested=14, nodeLabel=14, edgeLabel=12
-    expect(widths[0]).toBe("100%");    // 20/20 = 100%
-    expect(widths[1]).toBe("80%");     // 16/20 = 80%
-    expect(widths[2]).toBe("70%");     // 14/20 = 70%
-    expect(widths[3]).toBe("70%");     // 14/20 = 70%
-    expect(widths[4]).toBe("60%");     // 12/20 = 60%
+    expect(widths[0]).toBe("100%"); // 20/20 = 100%
+    expect(widths[1]).toBe("80%"); // 16/20 = 80%
+    expect(widths[2]).toBe("70%"); // 14/20 = 70%
+    expect(widths[3]).toBe("70%"); // 14/20 = 70%
+    expect(widths[4]).toBe("60%"); // 12/20 = 60%
   });
 
   it("custom typography: larger diagramTitle shrinks all other bars proportionally", () => {
     const custom = make(40, 20, 14, 12, 8);
     const { container } = render(createElement(ComposeTab, makeProps(custom)));
     const widths = getScaleBarWidths(container);
-    expect(widths[0]).toBe("100%");    // 40/40
-    expect(widths[1]).toBe("50%");     // 20/40
-    expect(widths[2]).toBe("35%");     // 14/40
-    expect(widths[3]).toBe("30%");     // 12/40
-    expect(widths[4]).toBe("20%");     // 8/40
+    expect(widths[0]).toBe("100%"); // 40/40
+    expect(widths[1]).toBe("50%"); // 20/40
+    expect(widths[2]).toBe("35%"); // 14/40
+    expect(widths[3]).toBe("30%"); // 12/40
+    expect(widths[4]).toBe("20%"); // 8/40
   });
 
   it("all-equal tiers produce all-100% bars", () => {
@@ -324,15 +326,13 @@ describe("generateTypographyCss — header comment", () => {
   it("always includes the header comment line as the first line", () => {
     const result = generateTypographyCss(DEFAULT_TYPOGRAPHY);
     expect(result.split("\n")[0]).toBe(
-      "/* Mermaid typography hierarchy — flowchart/subgraph targets */",
+      "/* Mermaid typography hierarchy — flowchart/subgraph targets */"
     );
   });
 
   it("returns only the header comment when all tiers match defaults", () => {
     const result = generateTypographyCss(DEFAULT_TYPOGRAPHY);
-    expect(result).toBe(
-      "/* Mermaid typography hierarchy — flowchart/subgraph targets */",
-    );
+    expect(result).toBe("/* Mermaid typography hierarchy — flowchart/subgraph targets */");
   });
 });
 
@@ -391,16 +391,18 @@ describe("generateTypographyCss — font-family rules", () => {
 describe("generateTypographyCss — all tiers modified", () => {
   it("emits rules for all five tiers when every tier differs from defaults", () => {
     const settings: TypographySettings = {
-      diagramTitle:        { fontSize: 24, fontFamily: "Alfa Slab One" },
-      subgraphTitle:       { fontSize: 20, fontFamily: "DM Sans" },
+      diagramTitle: { fontSize: 24, fontFamily: "Alfa Slab One" },
+      subgraphTitle: { fontSize: 20, fontFamily: "DM Sans" },
       nestedSubgraphTitle: { fontSize: 16, fontFamily: "DM Sans" },
-      nodeLabel:           { fontSize: 13, fontFamily: "JetBrains Mono" },
-      edgeLabel:           { fontSize: 11, fontFamily: "JetBrains Mono" },
+      nodeLabel: { fontSize: 13, fontFamily: "JetBrains Mono" },
+      edgeLabel: { fontSize: 11, fontFamily: "JetBrains Mono" },
     };
     const result = generateTypographyCss(settings);
     expect(result).toContain(".label { font-size: 24px; font-family: Alfa Slab One; }");
     expect(result).toContain(".cluster-label { font-size: 20px; font-family: DM Sans; }");
-    expect(result).toContain(".cluster-label .nodeLabel { font-size: 16px; font-family: DM Sans; }");
+    expect(result).toContain(
+      ".cluster-label .nodeLabel { font-size: 16px; font-family: DM Sans; }"
+    );
     expect(result).toContain(".node .label { font-size: 13px; font-family: JetBrains Mono; }");
     expect(result).toContain(".edgeLabel { font-size: 11px; font-family: JetBrains Mono; }");
   });
@@ -453,7 +455,9 @@ describe("typographyToScaffoldSection — tier rows", () => {
 describe("typographyToScaffoldSection — font family column", () => {
   it("uses '(palette fontFamily)' placeholder when fontFamily is empty", () => {
     const result = typographyToScaffoldSection(DEFAULT_TYPOGRAPHY);
-    const lines = result.split("\n").filter((l) => l.startsWith("|") && !l.startsWith("|---") && !l.startsWith("| Tier"));
+    const lines = result
+      .split("\n")
+      .filter((l) => l.startsWith("|") && !l.startsWith("|---") && !l.startsWith("| Tier"));
     expect(lines.length).toBeGreaterThan(0);
     lines.forEach((line) => {
       expect(line).toContain("(palette fontFamily)");

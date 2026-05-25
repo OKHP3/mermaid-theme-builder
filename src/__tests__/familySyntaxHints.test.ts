@@ -57,11 +57,7 @@ describe("getFamilySyntaxHint — returns non-null for all registered families",
 // ---------------------------------------------------------------------------
 
 describe("getFamilySyntaxHint — returns null for families without a hint", () => {
-  const NO_HINT_FAMILIES: DiagramFamily[] = [
-    "unknown",
-    "gitGraph",
-    "journey",
-  ];
+  const NO_HINT_FAMILIES: DiagramFamily[] = ["unknown", "gitGraph", "journey"];
 
   for (const family of NO_HINT_FAMILIES) {
     it(`returns null for "${family}"`, () => {
@@ -112,9 +108,19 @@ describe("getFamilySyntaxHint — classDefStatus matches CLASSDEF_CAPABLE_FAMILI
 
   it('every hinted family with "yes" or "limited" classDefStatus is in CLASSDEF_CAPABLE_FAMILIES', () => {
     const HINT_FAMILIES: DiagramFamily[] = [
-      "flowchart", "gantt", "pie", "mindmap", "erDiagram", "classDiagram",
-      "stateDiagram", "sequenceDiagram", "block", "timeline",
-      "xychart", "quadrantChart", "sankey",
+      "flowchart",
+      "gantt",
+      "pie",
+      "mindmap",
+      "erDiagram",
+      "classDiagram",
+      "stateDiagram",
+      "sequenceDiagram",
+      "block",
+      "timeline",
+      "xychart",
+      "quadrantChart",
+      "sankey",
     ];
 
     const capable: DiagramFamily[] = [];
@@ -131,14 +137,14 @@ describe("getFamilySyntaxHint — classDefStatus matches CLASSDEF_CAPABLE_FAMILI
     for (const family of capable) {
       expect(
         CLASSDEF_CAPABLE_FAMILIES.includes(family),
-        `"${family}" has classDefStatus "yes"/"limited" but is not in CLASSDEF_CAPABLE_FAMILIES`,
+        `"${family}" has classDefStatus "yes"/"limited" but is not in CLASSDEF_CAPABLE_FAMILIES`
       ).toBe(true);
     }
 
     for (const family of notCapable) {
       expect(
         CLASSDEF_CAPABLE_FAMILIES.includes(family),
-        `"${family}" has classDefStatus "no" but is listed in CLASSDEF_CAPABLE_FAMILIES`,
+        `"${family}" has classDefStatus "no" but is listed in CLASSDEF_CAPABLE_FAMILIES`
       ).toBe(false);
     }
   });

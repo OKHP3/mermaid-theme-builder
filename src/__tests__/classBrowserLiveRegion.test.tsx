@@ -140,9 +140,7 @@ describe("ClassBrowser — live-region updates on copy (interactive)", () => {
         usedClassNames: new Set(["primary"]),
       })
     );
-    const copyUsedBtn = screen.getByTitle(
-      "Copy only the 1 classDef used in the current diagram"
-    );
+    const copyUsedBtn = screen.getByTitle("Copy only the 1 classDef used in the current diagram");
     await act(async () => {
       fireEvent.click(copyUsedBtn);
     });

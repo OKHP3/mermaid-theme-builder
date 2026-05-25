@@ -27,28 +27,47 @@ const LOOK_COLS = [
   { key: "handDrawn" as const, label: "Hand-Drawn" },
 ];
 
-const CAPABILITY_COLS: { key: "initDirectiveSupport" | "themeVariableSupport" | "classDefSupport" | "cssInjectionSupport" | "customFontSupport"; label: string; abbrev: string }[] = [
-  { key: "initDirectiveSupport",   label: "%%{init}%% directive", abbrev: "init" },
-  { key: "themeVariableSupport",   label: "themeVariables",       abbrev: "themeVars" },
-  { key: "classDefSupport",        label: "classDef styling",     abbrev: "classDef" },
-  { key: "cssInjectionSupport",    label: "CSS injection",        abbrev: "CSS" },
-  { key: "customFontSupport",      label: "Custom fonts",         abbrev: "fonts" },
+const CAPABILITY_COLS: {
+  key:
+    | "initDirectiveSupport"
+    | "themeVariableSupport"
+    | "classDefSupport"
+    | "cssInjectionSupport"
+    | "customFontSupport";
+  label: string;
+  abbrev: string;
+}[] = [
+  { key: "initDirectiveSupport", label: "%%{init}%% directive", abbrev: "init" },
+  { key: "themeVariableSupport", label: "themeVariables", abbrev: "themeVars" },
+  { key: "classDefSupport", label: "classDef styling", abbrev: "classDef" },
+  { key: "cssInjectionSupport", label: "CSS injection", abbrev: "CSS" },
+  { key: "customFontSupport", label: "Custom fonts", abbrev: "fonts" },
 ];
 
 function SupportBadge({ support }: { support: import("@/data/renderer-parity").RendererSupport }) {
   return (
-    <span className={`inline-block text-[9px] font-semibold px-1.5 py-0.5 rounded-full ${supportColor(support)}`}>
+    <span
+      className={`inline-block text-[9px] font-semibold px-1.5 py-0.5 rounded-full ${supportColor(support)}`}
+    >
       {supportLabel(support)}
     </span>
   );
 }
 
-export function ReferenceTab({ selectedPalette, selectedPaletteId, allPalettes, customColors, onSelectPalette, supportsClassDef, inputCode = "" }: ReferenceTabProps) {
+export function ReferenceTab({
+  selectedPalette,
+  selectedPaletteId,
+  allPalettes,
+  customColors,
+  onSelectPalette,
+  supportsClassDef,
+  inputCode = "",
+}: ReferenceTabProps) {
   const classDefs = useMemo(() => getClassDefs(selectedPalette), [selectedPalette]);
 
   const usedClassNames = useMemo<ReadonlySet<string>>(
     () => extractUsedClasses(inputCode),
-    [inputCode],
+    [inputCode]
   );
 
   const rendererParityRef = useRef<HTMLDetailsElement>(null);
@@ -97,7 +116,11 @@ export function ReferenceTab({ selectedPalette, selectedPaletteId, allPalettes, 
         >
           <summary className="flex items-center justify-between px-4 py-2.5 cursor-pointer list-none hover:bg-muted/40 transition-colors select-none">
             <div className="flex items-center gap-2">
-              <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 text-muted-foreground">
+              <svg
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                className="w-3.5 h-3.5 text-muted-foreground"
+              >
                 <path d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h6a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h3a1 1 0 110 2H4a1 1 0 01-1-1z" />
               </svg>
               <span className="text-xs font-medium text-foreground">Renderer Parity Matrix</span>
@@ -106,7 +129,9 @@ export function ReferenceTab({ selectedPalette, selectedPaletteId, allPalettes, 
                   inactive for this diagram type
                 </span>
               )}
-              <span className="text-[10px] text-muted-foreground">{RENDERER_PROFILES.length} renderers · look + theming support</span>
+              <span className="text-[10px] text-muted-foreground">
+                {RENDERER_PROFILES.length} renderers · look + theming support
+              </span>
             </div>
             <svg
               viewBox="0 0 20 20"
@@ -124,9 +149,14 @@ export function ReferenceTab({ selectedPalette, selectedPaletteId, allPalettes, 
             <table className="w-full text-[10px] border-collapse min-w-[640px]">
               <thead>
                 <tr className="bg-muted/40 sticky top-0 z-10">
-                  <th className="text-left px-3 py-1.5 font-semibold text-muted-foreground border-b border-border whitespace-nowrap">Renderer</th>
+                  <th className="text-left px-3 py-1.5 font-semibold text-muted-foreground border-b border-border whitespace-nowrap">
+                    Renderer
+                  </th>
                   {LOOK_COLS.map((c) => (
-                    <th key={c.key} className="text-center px-2 py-1.5 font-semibold text-muted-foreground border-b border-border whitespace-nowrap">
+                    <th
+                      key={c.key}
+                      className="text-center px-2 py-1.5 font-semibold text-muted-foreground border-b border-border whitespace-nowrap"
+                    >
                       {c.label}
                     </th>
                   ))}
@@ -140,7 +170,9 @@ export function ReferenceTab({ selectedPalette, selectedPaletteId, allPalettes, 
                       {c.abbrev}
                     </th>
                   ))}
-                  <th className="text-left px-2 py-1.5 font-semibold text-muted-foreground border-b border-border whitespace-nowrap">Version</th>
+                  <th className="text-left px-2 py-1.5 font-semibold text-muted-foreground border-b border-border whitespace-nowrap">
+                    Version
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -160,7 +192,12 @@ export function ReferenceTab({ selectedPalette, selectedPaletteId, allPalettes, 
                         {renderer.shortName}
                       </a>
                       {renderer.caveats.length > 0 && (
-                        <span className="ml-1 text-muted-foreground/50" title={renderer.caveats.join("\n")}>*</span>
+                        <span
+                          className="ml-1 text-muted-foreground/50"
+                          title={renderer.caveats.join("\n")}
+                        >
+                          *
+                        </span>
                       )}
                     </td>
                     {LOOK_COLS.map((c) => (
@@ -174,14 +211,20 @@ export function ReferenceTab({ selectedPalette, selectedPaletteId, allPalettes, 
                         <SupportBadge support={renderer[c.key]} />
                       </td>
                     ))}
-                    <td className="px-2 py-1.5 text-muted-foreground whitespace-nowrap">{renderer.mermaidVersionApprox}</td>
+                    <td className="px-2 py-1.5 text-muted-foreground whitespace-nowrap">
+                      {renderer.mermaidVersionApprox}
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
             <div className="px-3 py-2 flex flex-wrap gap-x-4 gap-y-0.5">
               <p className="text-[9px] text-muted-foreground/50 w-full">
-                * Hover renderer name for notes. Caveats marked with asterisk. Looks: Classic / Neo / Hand-Drawn. Capabilities: init = %%{"{"}init{"}"}%% directives, themeVars = themeVariables, classDef = inline node styling, CSS = external stylesheet injection, fonts = custom fontFamily. Data reflects research as of Mermaid 11.15.0 — validate in your target environment.
+                * Hover renderer name for notes. Caveats marked with asterisk. Looks: Classic / Neo
+                / Hand-Drawn. Capabilities: init = %%{"{"}init{"}"}%% directives, themeVars =
+                themeVariables, classDef = inline node styling, CSS = external stylesheet injection,
+                fonts = custom fontFamily. Data reflects research as of Mermaid 11.15.0 — validate
+                in your target environment.
               </p>
               <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-0.5">
                 {RENDERER_PROFILES.map((r) => (
@@ -206,7 +249,11 @@ export function ReferenceTab({ selectedPalette, selectedPaletteId, allPalettes, 
         <details ref={classLibraryRef} className="group">
           <summary className="flex items-center justify-between px-4 py-2.5 cursor-pointer list-none hover:bg-muted/40 transition-colors select-none">
             <div className="flex items-center gap-2">
-              <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 text-muted-foreground">
+              <svg
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                className="w-3.5 h-3.5 text-muted-foreground"
+              >
                 <path
                   fillRule="evenodd"
                   d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
@@ -236,15 +283,17 @@ export function ReferenceTab({ selectedPalette, selectedPaletteId, allPalettes, 
             </svg>
           </summary>
           <div className="border-t border-border max-h-72 overflow-y-auto">
-            <ClassBrowser classDefs={classDefs} supportsClassDef={supportsClassDef} usedClassNames={usedClassNames} />
+            <ClassBrowser
+              classDefs={classDefs}
+              supportsClassDef={supportsClassDef}
+              usedClassNames={usedClassNames}
+            />
           </div>
         </details>
       </div>
 
       <div className="flex-none border-t border-border bg-card/40 px-4 py-2 flex flex-wrap items-center gap-x-4 gap-y-1">
-        <span className="forge-eyebrow">
-          Further reading
-        </span>
+        <span className="forge-eyebrow">Further reading</span>
         <a
           href={TAXONOMY_DOCS_URL}
           target="_blank"

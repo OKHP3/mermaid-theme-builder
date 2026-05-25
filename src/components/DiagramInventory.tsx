@@ -43,7 +43,9 @@ function ThemeBadge({ confidence }: { confidence: string }) {
   const label =
     THEME_CONFIDENCE_LABELS[confidence as keyof typeof THEME_CONFIDENCE_LABELS] ?? confidence;
   return (
-    <span className={`inline-flex items-center text-[10px] font-medium px-1.5 py-0.5 rounded ${style}`}>
+    <span
+      className={`inline-flex items-center text-[10px] font-medium px-1.5 py-0.5 rounded ${style}`}
+    >
       {label}
     </span>
   );
@@ -73,7 +75,9 @@ function CapabilityRow({ cap }: { cap: DiagramCapability }) {
         <td className="px-3 py-2.5 align-top">
           <div className="flex items-center gap-1.5">
             <StabilityDot stability={cap.stability} />
-            <span className="text-xs font-medium text-foreground whitespace-nowrap">{cap.displayName}</span>
+            <span className="text-xs font-medium text-foreground whitespace-nowrap">
+              {cap.displayName}
+            </span>
           </div>
           <div className="text-[10px] text-muted-foreground mt-0.5 font-mono">{cap.id}</div>
         </td>
@@ -147,7 +151,9 @@ function GapRow({ gap }: { gap: GapEntry }) {
     <>
       <tr className="border-b border-border last:border-0 hover:bg-muted/30 transition-colors">
         <td className="px-3 py-2.5 align-top">
-          <span className="text-xs font-medium text-foreground whitespace-nowrap">{gap.displayName}</span>
+          <span className="text-xs font-medium text-foreground whitespace-nowrap">
+            {gap.displayName}
+          </span>
           <div className="text-[10px] text-muted-foreground mt-0.5 font-mono">{gap.id}</div>
         </td>
         <td className="px-3 py-2.5 align-top">
@@ -236,7 +242,7 @@ export function DiagramInventory({ onClose, embedded = false }: DiagramInventory
           c.displayName.toLowerCase().includes(q) ||
           c.id.toLowerCase().includes(q) ||
           c.description.toLowerCase().includes(q) ||
-          c.bestUsedFor.toLowerCase().includes(q),
+          c.bestUsedFor.toLowerCase().includes(q)
       );
     }
     return caps;
@@ -251,7 +257,7 @@ export function DiagramInventory({ onClose, embedded = false }: DiagramInventory
         (g) =>
           g.displayName.toLowerCase().includes(q) ||
           g.id.toLowerCase().includes(q) ||
-          g.description.toLowerCase().includes(q),
+          g.description.toLowerCase().includes(q)
       );
     }
     return gaps;
@@ -284,7 +290,13 @@ export function DiagramInventory({ onClose, embedded = false }: DiagramInventory
   );
 
   return (
-    <div className={embedded ? "flex flex-col h-full overflow-hidden bg-background" : "fixed inset-0 z-50 flex flex-col bg-background overflow-hidden"}>
+    <div
+      className={
+        embedded
+          ? "flex flex-col h-full overflow-hidden bg-background"
+          : "fixed inset-0 z-50 flex flex-col bg-background overflow-hidden"
+      }
+    >
       <div className="border-b border-border bg-card/80 backdrop-blur px-4 md:px-6 py-3 flex items-center justify-between gap-4 shrink-0">
         <div className="flex items-center gap-3">
           <div className="w-7 h-7 rounded-md bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
@@ -392,7 +404,11 @@ export function DiagramInventory({ onClose, embedded = false }: DiagramInventory
 
         {filteredCapabilities.length === 0 && filteredGaps.length === 0 && (
           <div className="flex flex-col items-center justify-center py-16 text-center px-4">
-            <svg viewBox="0 0 20 20" fill="currentColor" className="w-8 h-8 text-muted-foreground/30 mb-3">
+            <svg
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              className="w-8 h-8 text-muted-foreground/30 mb-3"
+            >
               <path
                 fillRule="evenodd"
                 d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z"

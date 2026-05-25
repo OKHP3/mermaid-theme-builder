@@ -74,7 +74,7 @@ async function runAxe(container: HTMLElement) {
     },
   });
   const blocking = results.violations.filter(
-    (v) => v.impact === "critical" || v.impact === "serious",
+    (v) => v.impact === "critical" || v.impact === "serious"
   );
   return { all: results.violations, blocking };
 }
@@ -83,7 +83,7 @@ function logViolations(label: string, violations: axe.Result[]) {
   if (violations.length > 0) {
     console.info(
       `[a11y] ${label} violations:`,
-      violations.map((v) => `${v.impact}: ${v.id} — ${v.description}`),
+      violations.map((v) => `${v.impact}: ${v.id} — ${v.description}`)
     );
   }
 }
@@ -164,10 +164,7 @@ function formatFocusViolators(vs: FocusViolator[]): string {
   return (
     "opacity-0 interactive elements without keyboard-visibility escape:\n" +
     vs
-      .map(
-        (v) =>
-          `  <${v.tag}${v.ariaLabel ? ` aria-label="${v.ariaLabel}"` : ""}> — ${v.reason}`,
-      )
+      .map((v) => `  <${v.tag}${v.ariaLabel ? ` aria-label="${v.ariaLabel}"` : ""}> — ${v.reason}`)
       .join("\n")
   );
 }
@@ -187,8 +184,14 @@ describe("AppShell (real component)", () => {
     expect(
       blocking,
       `Critical/serious violations:\n${blocking
-        .map((v) => `  [${v.impact}] ${v.id}: ${v.description}\n  Nodes: ${v.nodes.map((n) => n.html).slice(0, 2).join(", ")}`)
-        .join("\n")}`,
+        .map(
+          (v) =>
+            `  [${v.impact}] ${v.id}: ${v.description}\n  Nodes: ${v.nodes
+              .map((n) => n.html)
+              .slice(0, 2)
+              .join(", ")}`
+        )
+        .join("\n")}`
     ).toHaveLength(0);
   });
 
@@ -268,23 +271,27 @@ describe("ApplyTab (real component)", () => {
     expect(
       blocking,
       `Critical/serious violations:\n${blocking
-        .map((v) => `  [${v.impact}] ${v.id}: ${v.description}\n  Nodes: ${v.nodes.map((n) => n.html).slice(0, 2).join(", ")}`)
-        .join("\n")}`,
+        .map(
+          (v) =>
+            `  [${v.impact}] ${v.id}: ${v.description}\n  Nodes: ${v.nodes
+              .map((n) => n.html)
+              .slice(0, 2)
+              .join(", ")}`
+        )
+        .join("\n")}`
     ).toHaveLength(0);
   });
 
   it("has zero critical/serious axe violations with customized colors", async () => {
     const customColors = {
-      [palette.id]: palette.colors.map((c, i) =>
-        i === 0 ? { ...c, value: "#ff5500" } : c,
-      ),
+      [palette.id]: palette.colors.map((c, i) => (i === 0 ? { ...c, value: "#ff5500" } : c)),
     };
     const { container } = render(
       createElement(ApplyTab, {
         ...applyTabProps,
         customColors,
         hasCustomizations: true,
-      }),
+      })
     );
     const { blocking, all } = await runAxe(container);
     logViolations("ApplyTab (customized)", all);
@@ -292,7 +299,7 @@ describe("ApplyTab (real component)", () => {
       blocking,
       `Critical/serious violations:\n${blocking
         .map((v) => `  [${v.impact}] ${v.id}: ${v.description}`)
-        .join("\n")}`,
+        .join("\n")}`
     ).toHaveLength(0);
   });
 });
@@ -306,13 +313,13 @@ describe("ColorSwatch (hex color)", () => {
       createElement(ColorSwatch, {
         color: { key: "primaryColor", label: "Primary Color", value: "#1e3a5f" },
         onChange: vi.fn(),
-      }),
+      })
     );
     const { blocking, all } = await runAxe(container);
     logViolations("ColorSwatch hex", all);
     expect(
       blocking,
-      `Critical/serious violations: ${blocking.map((v) => `${v.id}: ${v.description}`).join("; ")}`,
+      `Critical/serious violations: ${blocking.map((v) => `${v.id}: ${v.description}`).join("; ")}`
     ).toHaveLength(0);
   });
 });
@@ -323,13 +330,13 @@ describe("ColorSwatch (font-family)", () => {
       createElement(ColorSwatch, {
         color: { key: "fontFamily", label: "Font Family", value: "trebuchet ms" },
         onChange: vi.fn(),
-      }),
+      })
     );
     const { blocking, all } = await runAxe(container);
     logViolations("ColorSwatch font", all);
     expect(
       blocking,
-      `Critical/serious violations: ${blocking.map((v) => `${v.id}: ${v.description}`).join("; ")}`,
+      `Critical/serious violations: ${blocking.map((v) => `${v.id}: ${v.description}`).join("; ")}`
     ).toHaveLength(0);
   });
 });
@@ -342,13 +349,13 @@ describe("ColorSwatch (overridden, reset button)", () => {
         onChange: vi.fn(),
         isOverridden: true,
         onReset: vi.fn(),
-      }),
+      })
     );
     const { blocking, all } = await runAxe(container);
     logViolations("ColorSwatch overridden", all);
     expect(
       blocking,
-      `Critical/serious violations: ${blocking.map((v) => `${v.id}: ${v.description}`).join("; ")}`,
+      `Critical/serious violations: ${blocking.map((v) => `${v.id}: ${v.description}`).join("; ")}`
     ).toHaveLength(0);
   });
 });
@@ -405,8 +412,14 @@ describe("ComposeTab (color editor and palette editor)", () => {
     expect(
       blocking,
       `Critical/serious violations:\n${blocking
-        .map((v) => `  [${v.impact}] ${v.id}: ${v.description}\n  Nodes: ${v.nodes.map((n) => n.html).slice(0, 2).join(", ")}`)
-        .join("\n")}`,
+        .map(
+          (v) =>
+            `  [${v.impact}] ${v.id}: ${v.description}\n  Nodes: ${v.nodes
+              .map((n) => n.html)
+              .slice(0, 2)
+              .join(", ")}`
+        )
+        .join("\n")}`
     ).toHaveLength(0);
   });
 });
@@ -433,8 +446,14 @@ describe("ExtractTab (input area, idle state)", () => {
     expect(
       blocking,
       `Critical/serious violations:\n${blocking
-        .map((v) => `  [${v.impact}] ${v.id}: ${v.description}\n  Nodes: ${v.nodes.map((n) => n.html).slice(0, 2).join(", ")}`)
-        .join("\n")}`,
+        .map(
+          (v) =>
+            `  [${v.impact}] ${v.id}: ${v.description}\n  Nodes: ${v.nodes
+              .map((n) => n.html)
+              .slice(0, 2)
+              .join(", ")}`
+        )
+        .join("\n")}`
     ).toHaveLength(0);
   });
 });
@@ -460,7 +479,7 @@ describe("Invisible button focus regression — ColorSwatch reset button", () =>
         onChange: vi.fn(),
         isOverridden: true,
         onReset: vi.fn(),
-      }),
+      })
     );
     const violations = findOpacity0WithoutFocusEscape(container);
     expect(violations, formatFocusViolators(violations)).toHaveLength(0);
@@ -509,7 +528,7 @@ describe("Invisible button focus regression — ComposeTab palette rows", () => 
         onSwitchTab: noop,
         importDiagnostics: null,
         onImportDiagnosticsChange: noop,
-      }),
+      })
     );
     const violations = findOpacity0WithoutFocusEscape(container);
     expect(violations, formatFocusViolators(violations)).toHaveLength(0);
@@ -522,7 +541,7 @@ describe("Invisible button focus regression — ClassBrowser copy button", () =>
   it("copy-class button (opacity-0) has a keyboard-visibility escape class", () => {
     const classDefs = getClassDefs(BRAND_PALETTES[0]);
     const { container } = render(
-      createElement(ClassBrowser, { classDefs, supportsClassDef: true }),
+      createElement(ClassBrowser, { classDefs, supportsClassDef: true })
     );
     const violations = findOpacity0WithoutFocusEscape(container);
     expect(violations, formatFocusViolators(violations)).toHaveLength(0);
@@ -556,8 +575,14 @@ describe("ExamplesTab (browse catalogue)", () => {
     expect(
       blocking,
       `Critical/serious violations:\n${blocking
-        .map((v) => `  [${v.impact}] ${v.id}: ${v.description}\n  Nodes: ${v.nodes.map((n) => n.html).slice(0, 2).join(", ")}`)
-        .join("\n")}`,
+        .map(
+          (v) =>
+            `  [${v.impact}] ${v.id}: ${v.description}\n  Nodes: ${v.nodes
+              .map((n) => n.html)
+              .slice(0, 2)
+              .join(", ")}`
+        )
+        .join("\n")}`
     ).toHaveLength(0);
   });
 });
@@ -590,8 +615,14 @@ describe("ReferenceTab (capabilities table)", () => {
     expect(
       blocking,
       `Critical/serious violations:\n${blocking
-        .map((v) => `  [${v.impact}] ${v.id}: ${v.description}\n  Nodes: ${v.nodes.map((n) => n.html).slice(0, 2).join(", ")}`)
-        .join("\n")}`,
+        .map(
+          (v) =>
+            `  [${v.impact}] ${v.id}: ${v.description}\n  Nodes: ${v.nodes
+              .map((n) => n.html)
+              .slice(0, 2)
+              .join(", ")}`
+        )
+        .join("\n")}`
     ).toHaveLength(0);
   });
 });

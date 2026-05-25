@@ -13,7 +13,7 @@ describe("BUILTIN_PALETTES — schema validation", () => {
     const duplicates = ids.filter((id, i) => ids.indexOf(id) !== i);
     expect(
       [...new Set(duplicates)],
-      `Duplicate palette ids: ${[...new Set(duplicates)].join(", ")}`,
+      `Duplicate palette ids: ${[...new Set(duplicates)].join(", ")}`
     ).toHaveLength(0);
   });
 
@@ -34,21 +34,20 @@ describe("BUILTIN_PALETTES — schema validation", () => {
       it("has a semver-formatted version", () => {
         expect(
           SEMVER_RE.test(palette.version),
-          `version "${palette.version}" does not match semver (e.g. 0.1.0)`,
+          `version "${palette.version}" does not match semver (e.g. 0.1.0)`
         ).toBe(true);
       });
 
       it("attribution has a non-empty label", () => {
-        expect(
-          palette.attribution.label.trim(),
-          "attribution.label must not be blank",
-        ).not.toBe("");
+        expect(palette.attribution.label.trim(), "attribution.label must not be blank").not.toBe(
+          ""
+        );
       });
 
       it("attribution has a non-empty themeName", () => {
         expect(
           palette.attribution.themeName.trim(),
-          "attribution.themeName must not be blank",
+          "attribution.themeName must not be blank"
         ).not.toBe("");
       });
     });
@@ -65,10 +64,7 @@ describe("BUILTIN_PALETTES — color token completeness", () => {
       it("contains all 11 required color keys", () => {
         const presentKeys = new Set(palette.colors.map((c) => c.key));
         const missingKeys = REQUIRED_COLOR_KEYS.filter((k) => !presentKeys.has(k));
-        expect(
-          missingKeys,
-          `Missing required keys: ${missingKeys.join(", ")}`,
-        ).toHaveLength(0);
+        expect(missingKeys, `Missing required keys: ${missingKeys.join(", ")}`).toHaveLength(0);
       });
 
       it("has no duplicate color keys", () => {
@@ -76,7 +72,7 @@ describe("BUILTIN_PALETTES — color token completeness", () => {
         const duplicates = keys.filter((k, i) => keys.indexOf(k) !== i);
         expect(
           [...new Set(duplicates)],
-          `Duplicate keys found: ${[...new Set(duplicates)].join(", ")}`,
+          `Duplicate keys found: ${[...new Set(duplicates)].join(", ")}`
         ).toHaveLength(0);
       });
 
@@ -91,10 +87,7 @@ describe("BUILTIN_PALETTES — color token completeness", () => {
             invalid.push(`${key}: "${value}"`);
           }
         }
-        expect(
-          invalid,
-          `Invalid color values:\n  ${invalid.join("\n  ")}`,
-        ).toHaveLength(0);
+        expect(invalid, `Invalid color values:\n  ${invalid.join("\n  ")}`).toHaveLength(0);
       });
     });
   }

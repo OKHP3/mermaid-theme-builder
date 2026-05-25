@@ -38,7 +38,17 @@ function clamp(value: number, min: number, max: number) {
 
 function IconZoomIn() {
   return (
-    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
       <circle cx="6.5" cy="6.5" r="4.5" />
       <line x1="10.5" y1="10.5" x2="14" y2="14" />
       <line x1="6.5" y1="4.5" x2="6.5" y2="8.5" />
@@ -49,7 +59,17 @@ function IconZoomIn() {
 
 function IconZoomOut() {
   return (
-    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
       <circle cx="6.5" cy="6.5" r="4.5" />
       <line x1="10.5" y1="10.5" x2="14" y2="14" />
       <line x1="4.5" y1="6.5" x2="8.5" y2="6.5" />
@@ -59,7 +79,17 @@ function IconZoomOut() {
 
 function IconReset() {
   return (
-    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
       <path d="M2.5 8a5.5 5.5 0 1 0 1.1-3.3" />
       <polyline points="2.5 3 2.5 6 5.5 6" />
     </svg>
@@ -137,22 +167,25 @@ export function MermaidPreview({ code, className, typography }: MermaidPreviewPr
   }, [svgContent]);
 
   // Mouse pan start; middle-button (button 1) resets view
-  const onMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.button === 1) {
-      e.preventDefault(); // prevent browser auto-scroll mode
-      resetView();
-      return;
-    }
-    if (e.button !== 0) return;
-    e.preventDefault();
-    panAnchor.current = {
-      mouseX: e.clientX,
-      mouseY: e.clientY,
-      tx: translateRef.current.x,
-      ty: translateRef.current.y,
-    };
-    setIsPanning(true);
-  }, [resetView]);
+  const onMouseDown = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (e.button === 1) {
+        e.preventDefault(); // prevent browser auto-scroll mode
+        resetView();
+        return;
+      }
+      if (e.button !== 0) return;
+      e.preventDefault();
+      panAnchor.current = {
+        mouseX: e.clientX,
+        mouseY: e.clientY,
+        tx: translateRef.current.x,
+        ty: translateRef.current.y,
+      };
+      setIsPanning(true);
+    },
+    [resetView]
+  );
 
   // Mouse pan move/end at window level so dragging outside container still works
   useEffect(() => {
@@ -270,7 +303,15 @@ export function MermaidPreview({ code, className, typography }: MermaidPreviewPr
 
       {isEmpty ? (
         <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground gap-2">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            aria-hidden="true"
+          >
             <rect x="3" y="3" width="18" height="18" rx="2" />
             <path d="M9 9h1M9 12h1M9 15h1M13 9h2M13 12h2M13 15h2" />
           </svg>
@@ -278,9 +319,25 @@ export function MermaidPreview({ code, className, typography }: MermaidPreviewPr
         </div>
       ) : isLoadingInitial ? (
         <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground gap-3">
-          <svg className="animate-spin w-8 h-8 text-primary/60" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+          <svg
+            className="animate-spin w-8 h-8 text-primary/60"
+            viewBox="0 0 24 24"
+            fill="none"
+            aria-hidden="true"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="3"
+            />
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+            />
           </svg>
           <p className="text-xs">Rendering diagram…</p>
         </div>
@@ -330,10 +387,7 @@ export function MermaidPreview({ code, className, typography }: MermaidPreviewPr
             >
               <IconZoomOut />
             </button>
-            <span
-              className="forge-preview-counter tabular-nums"
-              title="Current zoom level"
-            >
+            <span className="forge-preview-counter tabular-nums" title="Current zoom level">
               {Math.round(scale * 100)}%
             </span>
             <button

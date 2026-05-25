@@ -1,4 +1,12 @@
-import { Component, useState, useMemo, useCallback, useEffect, useRef, type ReactNode } from "react";
+import {
+  Component,
+  useState,
+  useMemo,
+  useCallback,
+  useEffect,
+  useRef,
+  type ReactNode,
+} from "react";
 import { useThemeMode, type ThemeMode } from "@/lib/themeMode";
 import {
   BUILTIN_PALETTES,
@@ -36,10 +44,7 @@ import {
 
 export type AppTab = "apply" | "compose" | "examples" | "reference";
 
-class ErrorBoundary extends Component<
-  { children: ReactNode },
-  { error: Error | null }
-> {
+class ErrorBoundary extends Component<{ children: ReactNode }, { error: Error | null }> {
   state: { error: Error | null } = { error: null };
 
   static getDerivedStateFromError(error: Error) {
@@ -164,7 +169,10 @@ function buildPaletteFromShare(payload: ShareablePayload): Palette {
     if (!merged.find((m) => m.key === c.key)) merged.push(c);
   }
   return {
-    id: payload.paletteId && payload.paletteId.startsWith("shared-") ? payload.paletteId : `shared-${Date.now().toString(36)}`,
+    id:
+      payload.paletteId && payload.paletteId.startsWith("shared-")
+        ? payload.paletteId
+        : `shared-${Date.now().toString(36)}`,
     name,
     description: "Theme loaded from a shared link.",
     version: "0.0.0",
@@ -206,20 +214,31 @@ function clearShareToken(): void {
 
 const RECENT_PALETTES_MAX = 5;
 
-function ThemeModeToggle({ mode, cycle, className }: { mode: ThemeMode; cycle: () => void; className?: string }) {
+function ThemeModeToggle({
+  mode,
+  cycle,
+  className,
+}: {
+  mode: ThemeMode;
+  cycle: () => void;
+  className?: string;
+}) {
   const label =
     mode === "system"
       ? "System theme (click to switch to light)"
       : mode === "light"
-      ? "Light theme (click to switch to dark)"
-      : "Dark theme (click to switch to system)";
+        ? "Light theme (click to switch to dark)"
+        : "Dark theme (click to switch to system)";
   return (
     <button
       type="button"
       onClick={cycle}
       aria-label={label}
       title={label}
-      className={className ?? "p-1.5 rounded-md border border-border/60 hover:border-border hover:bg-muted text-muted-foreground hover:text-foreground transition-colors print-hide"}
+      className={
+        className ??
+        "p-1.5 rounded-md border border-border/60 hover:border-border hover:bg-muted text-muted-foreground hover:text-foreground transition-colors print-hide"
+      }
     >
       {mode === "light" ? (
         <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5" aria-hidden="true">
@@ -234,7 +253,14 @@ function ThemeModeToggle({ mode, cycle, className }: { mode: ThemeMode; cycle: (
           <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
         </svg>
       ) : (
-        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" className="w-3.5 h-3.5" aria-hidden="true">
+        <svg
+          viewBox="0 0 20 20"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.6"
+          className="w-3.5 h-3.5"
+          aria-hidden="true"
+        >
           <rect x="2.5" y="4" width="15" height="11" rx="1.5" />
           <path d="M7 18h6M10 15v3" strokeLinecap="round" />
         </svg>
@@ -255,7 +281,7 @@ export function AppShell() {
   const [selectedPaletteId, setSelectedPaletteId] = useState(BRAND_PALETTES[0].id);
   const [customColors, setCustomColors] = useState<Record<string, ThemeColor[]>>({});
   const [inputCode, setInputCode] = useState(
-    BRAND_EXAMPLES[BRAND_PALETTES[0].id]?.flowchart ?? GENERIC_EXAMPLE,
+    BRAND_EXAMPLES[BRAND_PALETTES[0].id]?.flowchart ?? GENERIC_EXAMPLE
   );
   const [includeMetaComments, setIncludeMetaComments] = useState(true);
   const [includeBadge, setIncludeBadge] = useState(true);
@@ -266,9 +292,15 @@ export function AppShell() {
   const [typography, setTypography] = useState<TypographySettings>(DEFAULT_TYPOGRAPHY);
   const [rendererTarget, setRendererTarget] = useState<string>("");
   const [previewMode, setPreviewMode] = useState<"original" | "themed" | "diff" | "code">("themed");
-  const [lastExampleType, setLastExampleType] = useState<Record<string, "flowchart" | "sequence">>({});
+  const [lastExampleType, setLastExampleType] = useState<Record<string, "flowchart" | "sequence">>(
+    {}
+  );
   const [lastSelectedExampleId, setLastSelectedExampleId] = useState<string>("");
-  const [importDiagnostics, setImportDiagnostics] = useState<{ missingKeys: string[]; unknownKeys: string[]; invalidValues: Array<{ key: string; value: string }> } | null>(null);
+  const [importDiagnostics, setImportDiagnostics] = useState<{
+    missingKeys: string[];
+    unknownKeys: string[];
+    invalidValues: Array<{ key: string; value: string }>;
+  } | null>(null);
   const [hintResetToken, setHintResetToken] = useState(0);
   const [showSettingsMenu, setShowSettingsMenu] = useState(false);
   const settingsBtnRef = useRef<HTMLButtonElement>(null);
@@ -276,7 +308,7 @@ export function AppShell() {
 
   const supportsClassDef = useMemo(
     () => CLASSDEF_CAPABLE_FAMILIES.includes(detectDiagram(inputCode).family),
-    [inputCode],
+    [inputCode]
   );
   const tabsRef = useRef<HTMLDivElement>(null);
   const { mode: themeMode, cycle: cycleThemeMode } = useThemeMode();
@@ -306,7 +338,9 @@ export function AppShell() {
       // is present regardless of what the sharer sent, so the check must run
       // on the original themeVariables payload.
       const sharedKeys = new Set(Object.keys(share.themeVariables));
-      const missingKeys = (REQUIRED_COLOR_KEYS as readonly string[]).filter((k) => !sharedKeys.has(k));
+      const missingKeys = (REQUIRED_COLOR_KEYS as readonly string[]).filter(
+        (k) => !sharedKeys.has(k)
+      );
       const unknownKeys = Object.keys(share.themeVariables).filter((k) => !KNOWN_COLOR_KEYS.has(k));
       if (missingKeys.length > 0 || unknownKeys.length > 0) {
         setImportDiagnostics({ missingKeys, unknownKeys, invalidValues: [] });
@@ -315,35 +349,52 @@ export function AppShell() {
 
     const persisted = loadPersistedState();
     if (persisted) {
-      if (Array.isArray(persisted.userPalettes)) setUserPalettes((prev) => {
-        // Dedupe by id; share-token palettes win over persisted duplicates.
-        const seen = new Set(prev.map((p) => p.id));
-        const merged = [...prev];
-        for (const p of persisted.userPalettes!) if (!seen.has(p.id)) merged.push(p);
-        return merged;
-      });
+      if (Array.isArray(persisted.userPalettes))
+        setUserPalettes((prev) => {
+          // Dedupe by id; share-token palettes win over persisted duplicates.
+          const seen = new Set(prev.map((p) => p.id));
+          const merged = [...prev];
+          for (const p of persisted.userPalettes!) if (!seen.has(p.id)) merged.push(p);
+          return merged;
+        });
       if (!didApplyShare && typeof persisted.selectedPaletteId === "string") {
         setSelectedPaletteId(persisted.selectedPaletteId);
       }
       if (persisted.customColors && typeof persisted.customColors === "object") {
         setCustomColors(persisted.customColors as Record<string, ThemeColor[]>);
       }
-      if (typeof persisted.includeMetaComments === "boolean") setIncludeMetaComments(persisted.includeMetaComments);
+      if (typeof persisted.includeMetaComments === "boolean")
+        setIncludeMetaComments(persisted.includeMetaComments);
       if (typeof persisted.includeBadge === "boolean") setIncludeBadge(persisted.includeBadge);
-      if (typeof persisted.customThemeName === "string" && !didApplyShare) setCustomThemeName(persisted.customThemeName);
-      if (typeof persisted.inputCode === "string" && persisted.inputCode.trim()) setInputCode(persisted.inputCode);
+      if (typeof persisted.customThemeName === "string" && !didApplyShare)
+        setCustomThemeName(persisted.customThemeName);
+      if (typeof persisted.inputCode === "string" && persisted.inputCode.trim())
+        setInputCode(persisted.inputCode);
       if (Array.isArray(persisted.recentPaletteIds)) {
-        setRecentPaletteIds(persisted.recentPaletteIds.filter((s): s is string => typeof s === "string").slice(0, RECENT_PALETTES_MAX));
+        setRecentPaletteIds(
+          persisted.recentPaletteIds
+            .filter((s): s is string => typeof s === "string")
+            .slice(0, RECENT_PALETTES_MAX)
+        );
       }
       if (typeof persisted.fontSize === "string") setFontSize(persisted.fontSize);
       if (persisted.typography && typeof persisted.typography === "object") {
         const t = persisted.typography as TypographySettings;
-        if (t.diagramTitle && t.subgraphTitle && t.nestedSubgraphTitle && t.nodeLabel && t.edgeLabel) {
+        if (
+          t.diagramTitle &&
+          t.subgraphTitle &&
+          t.nestedSubgraphTitle &&
+          t.nodeLabel &&
+          t.edgeLabel
+        ) {
           setTypography(t);
         }
       }
       const VALID_PREVIEW_MODES = ["original", "themed", "diff", "code"] as const;
-      if (typeof persisted.previewMode === "string" && (VALID_PREVIEW_MODES as readonly string[]).includes(persisted.previewMode)) {
+      if (
+        typeof persisted.previewMode === "string" &&
+        (VALID_PREVIEW_MODES as readonly string[]).includes(persisted.previewMode)
+      ) {
         setPreviewMode(persisted.previewMode as "original" | "themed" | "diff" | "code");
       }
       if (persisted.lastExampleType && typeof persisted.lastExampleType === "object") {
@@ -382,7 +433,24 @@ export function AppShell() {
       lastExampleType,
       lastSelectedExampleId,
     });
-  }, [hydrated, selectedPaletteId, customColors, includeMetaComments, includeBadge, customThemeName, inputCode, userPalettes, recentPaletteIds, look, fontSize, typography, rendererTarget, previewMode, lastExampleType, lastSelectedExampleId]);
+  }, [
+    hydrated,
+    selectedPaletteId,
+    customColors,
+    includeMetaComments,
+    includeBadge,
+    customThemeName,
+    inputCode,
+    userPalettes,
+    recentPaletteIds,
+    look,
+    fontSize,
+    typography,
+    rendererTarget,
+    previewMode,
+    lastExampleType,
+    lastSelectedExampleId,
+  ]);
 
   // Auto-clear toast after 2.5s
   useEffect(() => {
@@ -393,7 +461,7 @@ export function AppShell() {
 
   const allPalettes = useMemo<Palette[]>(
     () => [...BRAND_PALETTES, ...UTILITY_PALETTES, ...userPalettes],
-    [userPalettes],
+    [userPalettes]
   );
 
   const selectedPalette = useMemo((): Palette => {
@@ -415,49 +483,48 @@ export function AppShell() {
 
   const effectiveThemeName = useMemo(
     () => getEffectiveThemeName(selectedPalette, customThemeName, hasCustomizations),
-    [selectedPalette, customThemeName, hasCustomizations],
+    [selectedPalette, customThemeName, hasCustomizations]
   );
 
-  const handleSelectPalette = useCallback((id: string) => {
-    setSelectedPaletteId(id);
-    setCustomThemeName("");
-    setRecentPaletteIds((prev) => {
-      const next = [id, ...prev.filter((p) => p !== id)].slice(0, RECENT_PALETTES_MAX);
-      return next;
-    });
-    const knownExamples = new Set<string>([
-      GENERIC_EXAMPLE,
-      SHOWCASE_EXAMPLE,
-      ...Object.values(BRAND_EXAMPLES).flatMap(({ flowchart, sequence }) => [
-        flowchart,
-        sequence,
-      ]),
-      ...EXAMPLE_GROUPS.flatMap((g) => g.entries.map((e) => e.content)),
-    ]);
-    const willReplace = inputCode.trim() === "" || knownExamples.has(inputCode);
-    const isBrandPalette = BRAND_PALETTES.some((p) => p.id === id);
-    if (isBrandPalette && BRAND_EXAMPLES[id]) {
-      const exType = lastExampleType[id] ?? "flowchart";
-      if (willReplace) {
-        const paletteName = BRAND_PALETTES.find((p) => p.id === id)?.name ?? id;
-        setToast(`Loaded ${paletteName} ${exType} example`);
+  const handleSelectPalette = useCallback(
+    (id: string) => {
+      setSelectedPaletteId(id);
+      setCustomThemeName("");
+      setRecentPaletteIds((prev) => {
+        const next = [id, ...prev.filter((p) => p !== id)].slice(0, RECENT_PALETTES_MAX);
+        return next;
+      });
+      const knownExamples = new Set<string>([
+        GENERIC_EXAMPLE,
+        SHOWCASE_EXAMPLE,
+        ...Object.values(BRAND_EXAMPLES).flatMap(({ flowchart, sequence }) => [
+          flowchart,
+          sequence,
+        ]),
+        ...EXAMPLE_GROUPS.flatMap((g) => g.entries.map((e) => e.content)),
+      ]);
+      const willReplace = inputCode.trim() === "" || knownExamples.has(inputCode);
+      const isBrandPalette = BRAND_PALETTES.some((p) => p.id === id);
+      if (isBrandPalette && BRAND_EXAMPLES[id]) {
+        const exType = lastExampleType[id] ?? "flowchart";
+        if (willReplace) {
+          const paletteName = BRAND_PALETTES.find((p) => p.id === id)?.name ?? id;
+          setToast(`Loaded ${paletteName} ${exType} example`);
+        }
+        setInputCode((current) =>
+          current.trim() === "" || knownExamples.has(current) ? BRAND_EXAMPLES[id][exType] : current
+        );
+      } else if (!isBrandPalette) {
+        if (willReplace) {
+          setToast("Loaded Mermaid flowchart example");
+        }
+        setInputCode((current) =>
+          current.trim() === "" || knownExamples.has(current) ? GENERIC_EXAMPLE : current
+        );
       }
-      setInputCode((current) =>
-        current.trim() === "" || knownExamples.has(current)
-          ? BRAND_EXAMPLES[id][exType]
-          : current,
-      );
-    } else if (!isBrandPalette) {
-      if (willReplace) {
-        setToast("Loaded Mermaid flowchart example");
-      }
-      setInputCode((current) =>
-        current.trim() === "" || knownExamples.has(current)
-          ? GENERIC_EXAMPLE
-          : current,
-      );
-    }
-  }, [inputCode, lastExampleType]);
+    },
+    [inputCode, lastExampleType]
+  );
 
   const handleColorChange = useCallback(
     (key: string, value: string) => {
@@ -469,7 +536,7 @@ export function AppShell() {
         return { ...prev, [selectedPaletteId]: updated };
       });
     },
-    [allPalettes, selectedPaletteId],
+    [allPalettes, selectedPaletteId]
   );
 
   const handleResetPalette = useCallback(() => {
@@ -508,7 +575,7 @@ export function AppShell() {
         return next;
       });
     },
-    [allPalettes, selectedPaletteId],
+    [allPalettes, selectedPaletteId]
   );
 
   const handleLoadExample = useCallback((code: string) => {
@@ -531,27 +598,30 @@ export function AppShell() {
       setToast(`Extracted ${Object.keys(extracted.themeVariables).length} theme variables.`);
       return palette;
     },
-    [inputCode],
+    [inputCode]
   );
 
   /** Extract tab: accept a pre-built Palette from the Extract tab and activate it.
    *  When codeWithClassDefs is provided (classDef overrides were edited), populate
    *  the Apply tab's input code so the overrides are immediately visible.
    */
-  const handleUseExtractedTheme = useCallback((palette: Palette, codeWithClassDefs?: string) => {
-    const taken = new Set<string>([
-      ...BUILTIN_PALETTES.map((p) => p.id),
-      ...userPalettes.map((p) => p.id),
-    ]);
-    const safeId = taken.has(palette.id) ? uniquePaletteId("extracted-", taken) : palette.id;
-    const safe: Palette = { ...palette, id: safeId };
-    setUserPalettes((prev) => [...prev, safe]);
-    setSelectedPaletteId(safeId);
-    setCustomThemeName("");
-    if (codeWithClassDefs?.trim()) {
-      setInputCode(codeWithClassDefs);
-    }
-  }, [userPalettes]);
+  const handleUseExtractedTheme = useCallback(
+    (palette: Palette, codeWithClassDefs?: string) => {
+      const taken = new Set<string>([
+        ...BUILTIN_PALETTES.map((p) => p.id),
+        ...userPalettes.map((p) => p.id),
+      ]);
+      const safeId = taken.has(palette.id) ? uniquePaletteId("extracted-", taken) : palette.id;
+      const safe: Palette = { ...palette, id: safeId };
+      setUserPalettes((prev) => [...prev, safe]);
+      setSelectedPaletteId(safeId);
+      setCustomThemeName("");
+      if (codeWithClassDefs?.trim()) {
+        setInputCode(codeWithClassDefs);
+      }
+    },
+    [userPalettes]
+  );
 
   /** Theme C: save the current effective palette (with edits) as a named user palette. */
   const handleSavePalette = useCallback(
@@ -580,7 +650,7 @@ export function AppShell() {
       setCustomThemeName("");
       setToast(`Saved palette: ${trimmed}`);
     },
-    [selectedPalette, userPalettes],
+    [selectedPalette, userPalettes]
   );
 
   const handleImportPalette = useCallback((palette: Palette) => {
@@ -589,9 +659,8 @@ export function AppShell() {
         ...BUILTIN_PALETTES.map((p) => p.id),
         ...prev.map((p) => p.id),
       ]);
-      const safeId = taken.has(palette.id) || !palette.id
-        ? uniquePaletteId("imported-", taken)
-        : palette.id;
+      const safeId =
+        taken.has(palette.id) || !palette.id ? uniquePaletteId("imported-", taken) : palette.id;
       const safe: Palette = { ...palette, id: safeId };
       // Defer selection until next tick so userPalettes update applies first.
       queueMicrotask(() => {
@@ -628,7 +697,8 @@ export function AppShell() {
       if (
         settingsMenuRef.current?.contains(e.target as Node) ||
         settingsBtnRef.current?.contains(e.target as Node)
-      ) return;
+      )
+        return;
       setShowSettingsMenu(false);
     }
     function onKeyDown(e: KeyboardEvent) {
@@ -659,9 +729,7 @@ export function AppShell() {
           <AppIcon size={28} aria-hidden="true" />
           <div>
             <div className="flex items-baseline gap-2 leading-none">
-              <h1 className="forge-header-title">
-                Mermaid Theme Builder
-              </h1>
+              <h1 className="forge-header-title">Mermaid Theme Builder</h1>
             </div>
             <p className="forge-header-subtitle">
               visual governance for AI-generated Mermaid diagrams
@@ -690,8 +758,17 @@ export function AppShell() {
               aria-haspopup="menu"
               className="forge-header-icon-btn print-hide"
             >
-              <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5" aria-hidden="true">
-                <path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
+              <svg
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                className="w-3.5 h-3.5"
+                aria-hidden="true"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
+                  clipRule="evenodd"
+                />
               </svg>
             </button>
             {showSettingsMenu && (
@@ -714,7 +791,12 @@ export function AppShell() {
                   }}
                   className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-left text-foreground hover:bg-muted transition-colors"
                 >
-                  <svg viewBox="0 0 16 16" fill="currentColor" className="w-3.5 h-3.5 shrink-0 text-muted-foreground" aria-hidden="true">
+                  <svg
+                    viewBox="0 0 16 16"
+                    fill="currentColor"
+                    className="w-3.5 h-3.5 shrink-0 text-muted-foreground"
+                    aria-hidden="true"
+                  >
                     <path d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM0 8a8 8 0 1116 0A8 8 0 010 8zm6.5-1.5A.75.75 0 017.25 6h1a.75.75 0 01.75.75v3.75h.25a.75.75 0 010 1.5h-2a.75.75 0 010-1.5h.25V7.5h-.25a.75.75 0 01-.75-.75zM8 4a1 1 0 110 2 1 1 0 010-2z" />
                   </svg>
                   Reset all syntax tips
@@ -731,7 +813,13 @@ export function AppShell() {
         role="tablist"
         aria-label="Mermaid Theme Builder sections"
         onKeyDown={(e) => {
-          if (e.key !== "ArrowLeft" && e.key !== "ArrowRight" && e.key !== "Home" && e.key !== "End") return;
+          if (
+            e.key !== "ArrowLeft" &&
+            e.key !== "ArrowRight" &&
+            e.key !== "Home" &&
+            e.key !== "End"
+          )
+            return;
           e.preventDefault();
           const idx = TAB_CONFIG.findIndex((t) => t.id === activeTab);
           let next = idx;
@@ -742,7 +830,9 @@ export function AppShell() {
           const nextId = TAB_CONFIG[next].id;
           setActiveTab(nextId);
           requestAnimationFrame(() => {
-            const btn = tabsRef.current?.querySelector<HTMLButtonElement>(`[data-tab-id="${nextId}"]`);
+            const btn = tabsRef.current?.querySelector<HTMLButtonElement>(
+              `[data-tab-id="${nextId}"]`
+            );
             btn?.focus();
           });
         }}
@@ -785,7 +875,11 @@ export function AppShell() {
         })}
       </nav>
 
-      <main id="main-content" tabIndex={-1} className="flex-1 md:overflow-hidden pb-20 md:pb-0 md:min-h-0 outline-none">
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className="flex-1 md:overflow-hidden pb-20 md:pb-0 md:min-h-0 outline-none"
+      >
         {/* ApplyTab is always mounted so its local state (activeDiagramIdx,
             showColorEditor, textareaExpanded, familyOverride, etc.) survives
             tab switches. It is visually hidden via the HTML `hidden` attribute
@@ -840,69 +934,75 @@ export function AppShell() {
           className="md:h-full"
           hidden={activeTab === "apply"}
         >
-        {activeTab === "compose" && (
-          <ComposeTab
-            selectedPalette={selectedPalette}
-            selectedPaletteId={selectedPaletteId}
-            onSelectPalette={handleSelectPalette}
-            customColors={customColors}
-            onColorChange={handleColorChange}
-            onResetPalette={handleResetPalette}
-            hasCustomizations={hasCustomizations}
-            includeMetaComments={includeMetaComments}
-            onIncludeMetaCommentsChange={setIncludeMetaComments}
-            includeBadge={includeBadge}
-            onIncludeBadgeChange={setIncludeBadge}
-            customThemeName={customThemeName}
-            onCustomThemeNameChange={setCustomThemeName}
-            effectiveThemeName={effectiveThemeName}
-            userPalettes={userPalettes}
-            onSavePalette={handleSavePalette}
-            onImportPalette={handleImportPalette}
-            onDeleteUserPalette={handleDeleteUserPalette}
-            onShowToast={showToast}
-            look={look}
-            onLookChange={setLook}
-            fontSize={fontSize}
-            onFontSizeChange={setFontSize}
-            typography={typography}
-            onTypographyChange={setTypography}
-            rendererTarget={rendererTarget}
-            onRendererTargetChange={setRendererTarget}
-            onUseExtractedTheme={handleUseExtractedTheme}
-            onSwitchTab={setActiveTab}
-            importDiagnostics={importDiagnostics}
-            onImportDiagnosticsChange={setImportDiagnostics}
-          />
-        )}
-        {activeTab === "examples" && (
-          <ExamplesTab
-            selectedPalette={selectedPalette}
-            selectedPaletteId={selectedPaletteId}
-            allPalettes={allPalettes}
-            customColors={customColors}
-            onSelectPalette={handleSelectPalette}
-            onLoadExample={handleLoadExample}
-            initialSelectedId={lastSelectedExampleId}
-            onExampleSelect={setLastSelectedExampleId}
-          />
-        )}
-        {activeTab === "reference" && (
-          <ReferenceTab
-            selectedPalette={selectedPalette}
-            selectedPaletteId={selectedPaletteId}
-            allPalettes={allPalettes}
-            customColors={customColors}
-            onSelectPalette={handleSelectPalette}
-            supportsClassDef={supportsClassDef}
-            inputCode={inputCode}
-          />
-        )}
+          {activeTab === "compose" && (
+            <ComposeTab
+              selectedPalette={selectedPalette}
+              selectedPaletteId={selectedPaletteId}
+              onSelectPalette={handleSelectPalette}
+              customColors={customColors}
+              onColorChange={handleColorChange}
+              onResetPalette={handleResetPalette}
+              hasCustomizations={hasCustomizations}
+              includeMetaComments={includeMetaComments}
+              onIncludeMetaCommentsChange={setIncludeMetaComments}
+              includeBadge={includeBadge}
+              onIncludeBadgeChange={setIncludeBadge}
+              customThemeName={customThemeName}
+              onCustomThemeNameChange={setCustomThemeName}
+              effectiveThemeName={effectiveThemeName}
+              userPalettes={userPalettes}
+              onSavePalette={handleSavePalette}
+              onImportPalette={handleImportPalette}
+              onDeleteUserPalette={handleDeleteUserPalette}
+              onShowToast={showToast}
+              look={look}
+              onLookChange={setLook}
+              fontSize={fontSize}
+              onFontSizeChange={setFontSize}
+              typography={typography}
+              onTypographyChange={setTypography}
+              rendererTarget={rendererTarget}
+              onRendererTargetChange={setRendererTarget}
+              onUseExtractedTheme={handleUseExtractedTheme}
+              onSwitchTab={setActiveTab}
+              importDiagnostics={importDiagnostics}
+              onImportDiagnosticsChange={setImportDiagnostics}
+            />
+          )}
+          {activeTab === "examples" && (
+            <ExamplesTab
+              selectedPalette={selectedPalette}
+              selectedPaletteId={selectedPaletteId}
+              allPalettes={allPalettes}
+              customColors={customColors}
+              onSelectPalette={handleSelectPalette}
+              onLoadExample={handleLoadExample}
+              initialSelectedId={lastSelectedExampleId}
+              onExampleSelect={setLastSelectedExampleId}
+            />
+          )}
+          {activeTab === "reference" && (
+            <ReferenceTab
+              selectedPalette={selectedPalette}
+              selectedPaletteId={selectedPaletteId}
+              allPalettes={allPalettes}
+              customColors={customColors}
+              onSelectPalette={handleSelectPalette}
+              supportsClassDef={supportsClassDef}
+              inputCode={inputCode}
+            />
+          )}
         </div>
       </main>
 
-      <div className="md:hidden fixed bottom-14 left-0 right-0 z-20 flex items-center justify-center px-4 py-1 print-hide" style={{background: '#0f1a17', borderTop: '1px solid rgba(212,201,181,0.08)'}}>
-        <p className="text-[9px] text-center" style={{color: 'rgba(212,201,181,0.45)', lineHeight: 1.4}}>
+      <div
+        className="md:hidden fixed bottom-14 left-0 right-0 z-20 flex items-center justify-center px-4 py-1 print-hide"
+        style={{ background: "#0f1a17", borderTop: "1px solid rgba(212,201,181,0.08)" }}
+      >
+        <p
+          className="text-[9px] text-center"
+          style={{ color: "rgba(212,201,181,0.45)", lineHeight: 1.4 }}
+        >
           Not affiliated with Mermaid, Mermaid Chart, or Mermaid.ai
         </p>
       </div>
@@ -912,7 +1012,13 @@ export function AppShell() {
         role="tablist"
         aria-label="Mermaid Theme Builder sections (mobile)"
         onKeyDown={(e) => {
-          if (e.key !== "ArrowLeft" && e.key !== "ArrowRight" && e.key !== "Home" && e.key !== "End") return;
+          if (
+            e.key !== "ArrowLeft" &&
+            e.key !== "ArrowRight" &&
+            e.key !== "Home" &&
+            e.key !== "End"
+          )
+            return;
           e.preventDefault();
           const idx = TAB_CONFIG.findIndex((t) => t.id === activeTab);
           let next = idx;
@@ -923,7 +1029,9 @@ export function AppShell() {
           const nextId = TAB_CONFIG[next].id;
           setActiveTab(nextId);
           requestAnimationFrame(() => {
-            const btn = document.querySelector<HTMLButtonElement>(`.forge-mobile-nav [data-tab-id="${nextId}"]`);
+            const btn = document.querySelector<HTMLButtonElement>(
+              `.forge-mobile-nav [data-tab-id="${nextId}"]`
+            );
             btn?.focus();
           });
         }}
@@ -949,19 +1057,55 @@ export function AppShell() {
         })}
       </nav>
 
-      <footer className="forge-footer flex-none hidden md:flex items-center justify-between px-4 py-1.5 print-hide" style={{minHeight: '34px'}}>
+      <footer
+        className="forge-footer flex-none hidden md:flex items-center justify-between px-4 py-1.5 print-hide"
+        style={{ minHeight: "34px" }}
+      >
         <div className="flex items-center gap-2 forge-footer-meta">
-          <a href="https://okhp3.github.io/mermaid-theme-builder" target="_blank" rel="noopener noreferrer" className="forge-footer-slug forge-footer-link">mermaid-theme-builder</a>
+          <a
+            href="https://okhp3.github.io/mermaid-theme-builder"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="forge-footer-slug forge-footer-link"
+          >
+            mermaid-theme-builder
+          </a>
           <span>·</span>
-          <a href="https://overkillhill.com/" target="_blank" rel="noopener noreferrer" className="forge-footer-brand forge-footer-link">OverKill Hill P³</a>
+          <a
+            href="https://overkillhill.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="forge-footer-brand forge-footer-link"
+          >
+            OverKill Hill P³
+          </a>
         </div>
-        <div className="flex items-center gap-2 forge-footer-meta" style={{opacity: 0.7, fontSize: '9px'}}>
+        <div
+          className="flex items-center gap-2 forge-footer-meta"
+          style={{ opacity: 0.7, fontSize: "9px" }}
+        >
           Not affiliated with Mermaid, Mermaid Chart, or Mermaid.ai
         </div>
         <div className="flex items-center gap-2">
-          <a href="https://replit.com/refer/overkillhillp3/" target="_blank" rel="noopener noreferrer" className="forge-footer-link" style={{ color: "#FF3C00" }}>Replit</a>
+          <a
+            href="https://replit.com/refer/overkillhillp3/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="forge-footer-link"
+            style={{ color: "#FF3C00" }}
+          >
+            Replit
+          </a>
           <span className="forge-footer-meta">·</span>
-          <a href="https://mermaidchart.cello.so/UhVlNtC2MlS" target="_blank" rel="noopener noreferrer" className="forge-footer-link" style={{ color: "#FF3670" }}>Mermaid.ai</a>
+          <a
+            href="https://mermaidchart.cello.so/UhVlNtC2MlS"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="forge-footer-link"
+            style={{ color: "#FF3670" }}
+          >
+            Mermaid.ai
+          </a>
         </div>
       </footer>
 

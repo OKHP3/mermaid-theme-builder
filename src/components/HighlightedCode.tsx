@@ -8,8 +8,8 @@ import { highlightClassDefLine } from "@/components/ClassBrowser";
 // ---------------------------------------------------------------------------
 
 export const INIT_HL = {
-  bracket: "#c8a870",  // warm amber — %%{ and }%% delimiters
-  content: "#8da89a",  // muted teal-gray — directive body
+  bracket: "#c8a870", // warm amber — %%{ and }%% delimiters
+  content: "#8da89a", // muted teal-gray — directive body
 } as const;
 
 /**

@@ -57,7 +57,7 @@ export function useCodeEditorOverride(exportCode: string, activeDiagramIdx: numb
         return next;
       });
     },
-    [activeDiagramIdx],
+    [activeDiagramIdx]
   );
 
   const effectiveExportCode = codeEditorOverride ?? exportCode;
