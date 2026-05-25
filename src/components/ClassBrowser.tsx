@@ -380,6 +380,17 @@ export function ClassBrowser({
       .sort();
   }, [usedClassNames, classDefs, supportsClassDef]);
 
+  // Class names defined in the palette but absent from the current diagram.
+  // Only meaningful when at least one class IS used — an empty usedClassNames
+  // means the diagram hasn't applied any classes yet, which is intentional.
+  const unusedClassNames = useMemo<string[]>(() => {
+    if (!usedClassNames || usedClassNames.size === 0 || !supportsClassDef) return [];
+    return classDefs
+      .filter((def) => !usedClassNames.has(def.name))
+      .map((d) => d.name)
+      .sort();
+  }, [classDefs, usedClassNames, supportsClassDef]);
+
   const activePreviewBlock = previewMode === "used" && hasUsed ? usedPreviewBlock : previewBlock;
   // Derive count directly from the block so the header always reflects the exact
   // content that will be copied — never an independently-maintained variable.
@@ -760,6 +771,37 @@ export function ClassBrowser({
               </span>
             ))}{" "}
             — not defined in the current palette. Check for typos.
+          </span>
+        </div>
+      )}
+
+      {unusedClassNames.length > 0 && (
+        <div className="mb-3 flex items-start gap-2 rounded-md border border-sky-500/30 bg-sky-500/8 px-3 py-2.5 text-[11px] text-sky-700 dark:text-sky-400">
+          <svg
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            className="w-3.5 h-3.5 mt-0.5 shrink-0 opacity-80"
+            aria-hidden="true"
+          >
+            <path
+              fillRule="evenodd"
+              d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z"
+              clipRule="evenodd"
+            />
+          </svg>
+          <span>
+            <span className="font-semibold">
+              {unusedClassNames.length === 1
+                ? "1 style not applied:"
+                : `${unusedClassNames.length} styles not applied:`}
+            </span>{" "}
+            {unusedClassNames.map((n, i) => (
+              <span key={n}>
+                <span className="font-mono">{`:::${n}`}</span>
+                {i < unusedClassNames.length - 1 && ", "}
+              </span>
+            ))}{" "}
+            — defined in the palette but not used in the current diagram.
           </span>
         </div>
       )}

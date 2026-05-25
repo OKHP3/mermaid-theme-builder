@@ -477,6 +477,124 @@ describe("ClassBrowser — unrecognized class name warning", () => {
   });
 });
 
+describe("ClassBrowser — unused class name info indicator", () => {
+  it("shows the indicator when a classDef exists but is not in usedClassNames (with at least one used class)", () => {
+    // primary is used; secondary is defined but not used → secondary should appear
+    const html = render({
+      supportsClassDef: true,
+      usedClassNames: new Set(["primary"]),
+    });
+    // "style not applied" matches both singular ("1 style not applied") and plural ("N styles not applied")
+    expect(html).toContain("style not applied");
+  });
+
+  it("uses singular '1 style not applied' when exactly one classDef is unused", () => {
+    const html = render({
+      supportsClassDef: true,
+      usedClassNames: new Set(["primary"]),
+    });
+    expect(html).toContain("1 style not applied:");
+    expect(html).not.toContain("2 styles not applied");
+  });
+
+  it("uses plural 'N styles not applied' when multiple classDefs are unused", () => {
+    // Neither primary nor secondary is used, but hasUsed guard needs at least one used name —
+    // use a third set member so hasUsed=true; both defined defs are then unused.
+    const html = render({
+      supportsClassDef: true,
+      classDefs: SAMPLE_CLASS_DEFS,
+      usedClassNames: new Set(["ghost"]), // "ghost" is used but not defined; primary+secondary = unused
+    });
+    expect(html).toContain("2 styles not applied:");
+  });
+
+  it("lists the unused class name with ::: prefix in the indicator", () => {
+    const html = render({
+      supportsClassDef: true,
+      usedClassNames: new Set(["primary"]),
+    });
+    expect(html).toContain(":::secondary");
+  });
+
+  it("lists all unused names when multiple classDefs are unused", () => {
+    const html = render({
+      supportsClassDef: true,
+      classDefs: SAMPLE_CLASS_DEFS,
+      usedClassNames: new Set(["ghost"]),
+    });
+    expect(html).toContain(":::primary");
+    expect(html).toContain(":::secondary");
+  });
+
+  it("includes the 'defined in the palette but not used' copy", () => {
+    const html = render({
+      supportsClassDef: true,
+      usedClassNames: new Set(["primary"]),
+    });
+    expect(html).toContain("defined in the palette but not used");
+  });
+
+  it("uses sky/blue styling to distinguish it from the amber typo warning", () => {
+    const html = render({
+      supportsClassDef: true,
+      usedClassNames: new Set(["primary"]),
+    });
+    expect(html).toContain("border-sky-500");
+    expect(html).toContain("bg-sky-500");
+  });
+
+  it("does NOT show amber colors for the unused-styles indicator", () => {
+    // Render a case where ONLY the unused indicator fires, not the typo warning.
+    // primary is used (known), secondary is unused — no unknown names.
+    const html = render({
+      supportsClassDef: true,
+      usedClassNames: new Set(["primary"]),
+    });
+    // The indicator must be sky/blue, not amber — amber is reserved for typos.
+    // Split out the unused indicator section only (after the typo warning section).
+    const skySection = html.split("border-sky-500")[1] ?? "";
+    expect(skySection).not.toContain("border-amber-500");
+  });
+
+  it("does NOT show the indicator when usedClassNames is empty (blank diagram is intentional)", () => {
+    const html = render({
+      supportsClassDef: true,
+      usedClassNames: new Set(),
+    });
+    expect(html).not.toContain("styles not applied");
+  });
+
+  it("does NOT show the indicator when usedClassNames is omitted", () => {
+    const html = render({ supportsClassDef: true });
+    expect(html).not.toContain("styles not applied");
+  });
+
+  it("does NOT show the indicator when all classDefs are present in usedClassNames", () => {
+    const html = render({
+      supportsClassDef: true,
+      usedClassNames: new Set(["primary", "secondary"]),
+    });
+    expect(html).not.toContain("styles not applied");
+  });
+
+  it("does NOT show the indicator when supportsClassDef={false}", () => {
+    const html = render({
+      supportsClassDef: false,
+      usedClassNames: new Set(["primary"]),
+    });
+    expect(html).not.toContain("styles not applied");
+  });
+
+  it("does NOT show the indicator when classDefs is empty", () => {
+    const html = render({
+      supportsClassDef: true,
+      classDefs: [],
+      usedClassNames: new Set(["primary"]),
+    });
+    expect(html).not.toContain("styles not applied");
+  });
+});
+
 // ---------------------------------------------------------------------------
 // Highlight functions — unit tests
 // These functions are exported from ClassBrowser.tsx specifically for testing.
