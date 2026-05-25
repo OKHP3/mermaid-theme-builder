@@ -1007,8 +1007,8 @@ export function ApplyTab({
                 )}
                 {type === "prompt" && !copied && promptIsThemeOnly && (
                   <span
-                    title="This diagram type uses theme-level colors only — per-node classDef classes are not supported"
-                    className="ml-0.5 px-1.5 py-px rounded text-[10px] font-semibold leading-none bg-muted text-muted-foreground border border-border"
+                    title="This diagram type only supports palette-level theming, not per-node color classes"
+                    className="ml-0.5 px-1.5 py-px rounded text-[10px] font-semibold leading-none bg-muted text-muted-foreground border border-border cursor-help"
                   >
                     No classDef
                   </span>
