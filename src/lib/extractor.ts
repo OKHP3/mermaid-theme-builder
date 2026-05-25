@@ -83,6 +83,33 @@ function parseFrontmatter(code: string): { theme?: string; vars: Record<string, 
 }
 
 /**
+ * Walk forward from openIdx (which must point at a `{`) and return the index
+ * of the matching closing `}`, respecting nested braces and quoted strings.
+ * Returns -1 if no balanced close is found.
+ */
+function findBalancedClose(str: string, openIdx: number): number {
+  let depth = 0;
+  let inStr = false;
+  let strChar = "";
+  for (let i = openIdx; i < str.length; i++) {
+    const c = str[i];
+    if (inStr) {
+      if (c === "\\" && i + 1 < str.length) { i++; continue; }
+      if (c === strChar) inStr = false;
+    } else if (c === '"' || c === "'") {
+      inStr = true;
+      strChar = c;
+    } else if (c === "{") {
+      depth++;
+    } else if (c === "}") {
+      depth--;
+      if (depth === 0) return i;
+    }
+  }
+  return -1;
+}
+
+/**
  * Extract themeVariables from `%%{init: {...}}%%` directive.
  * Tolerates JSON5-ish input (single quotes, trailing commas, unquoted keys).
  */
@@ -101,15 +128,23 @@ function parseInitDirective(code: string): { theme?: string; vars: Record<string
   // Keys may be unquoted (JSON5-style) or double-quoted (strict JSON). Both forms are
   // tolerated so that the extractor handles both hand-authored code and the output of
   // generateThemedCode, which emits fully-quoted JSON.
-  const tvMatch = payload.match(/["']?themeVariables["']?\s*:\s*\{([\s\S]*?)\}/);
   const themeMatch = payload.match(/(?:^|[\s,{])["']?theme["']?\s*:\s*["']?([A-Za-z][\w-]*)["']?/);
   const theme = themeMatch ? themeMatch[1] : undefined;
 
-  if (!tvMatch) {
+  // Locate the themeVariables block using balanced-brace parsing so that
+  // nested objects inside themeVariables (e.g. fontData: { size: 14 }) do not
+  // cause the capture to stop at the first inner `}`.
+  const tvKeyMatch = payload.match(/["']?themeVariables["']?\s*:\s*\{/);
+  if (!tvKeyMatch || tvKeyMatch.index === undefined) {
+    return theme ? { theme, vars: {} } : null;
+  }
+  const openBraceIdx = (tvKeyMatch.index ?? 0) + tvKeyMatch[0].length - 1;
+  const closeBraceIdx = findBalancedClose(payload, openBraceIdx);
+  if (closeBraceIdx === -1) {
     return theme ? { theme, vars: {} } : null;
   }
 
-  const inside = tvMatch[1];
+  const inside = payload.slice(openBraceIdx + 1, closeBraceIdx);
   const vars: Record<string, string> = {};
   // Match key:value pairs. Keys may be quoted.
   const kvRe = /(?:["']([A-Za-z_][\w-]*)["']|([A-Za-z_][\w-]*))\s*:\s*(?:"([^"]*)"|'([^']*)'|([^,}\n]+))/g;

@@ -77,6 +77,160 @@ describe("extractTheme — init directive with theme only (no themeVariables)", 
 });
 
 // ---------------------------------------------------------------------------
+// extractTheme — multi-line / pretty-printed init directives
+// ---------------------------------------------------------------------------
+
+describe("extractTheme — multi-line pretty-printed init directive (strict JSON)", () => {
+  const CODE = `%%{init: {
+  "theme": "base",
+  "themeVariables": {
+    "primaryColor": "#c46a2c",
+    "primaryTextColor": "#ffffff",
+    "lineColor": "#1c3a34",
+    "background": "#f5f0e8"
+  }
+}}%%
+flowchart TD
+  A --> B`;
+
+  it("returns sourceFormat 'init-directive'", () => {
+    expect(extractTheme(CODE).sourceFormat).toBe("init-directive");
+  });
+
+  it("extracts theme name from multi-line directive", () => {
+    expect(extractTheme(CODE).themeName).toBe("base");
+  });
+
+  it("extracts primaryColor from pretty-printed themeVariables block", () => {
+    expect(extractTheme(CODE).themeVariables.primaryColor).toBe("#c46a2c");
+  });
+
+  it("extracts primaryTextColor from pretty-printed themeVariables block", () => {
+    expect(extractTheme(CODE).themeVariables.primaryTextColor).toBe("#ffffff");
+  });
+
+  it("extracts lineColor from pretty-printed themeVariables block", () => {
+    expect(extractTheme(CODE).themeVariables.lineColor).toBe("#1c3a34");
+  });
+
+  it("extracts background from pretty-printed themeVariables block", () => {
+    expect(extractTheme(CODE).themeVariables.background).toBe("#f5f0e8");
+  });
+
+  it("extracts all four variables (no early cutoff)", () => {
+    const vars = extractTheme(CODE).themeVariables;
+    expect(Object.keys(vars).length).toBeGreaterThanOrEqual(4);
+  });
+});
+
+describe("extractTheme — multi-line init directive with a sibling property containing braces", () => {
+  // Ensures the themeVariables regex does not cut off at the closing brace of a
+  // sibling property that appears before themeVariables in the directive object.
+  const CODE = `%%{init: {
+  "theme": "base",
+  "flowchart": { "curve": "basis" },
+  "themeVariables": {
+    "primaryColor": "#3b82f6",
+    "lineColor": "#6b7280"
+  }
+}}%%
+flowchart LR
+  X --> Y`;
+
+  it("returns sourceFormat 'init-directive'", () => {
+    expect(extractTheme(CODE).sourceFormat).toBe("init-directive");
+  });
+
+  it("extracts theme name when sibling object property precedes themeVariables", () => {
+    expect(extractTheme(CODE).themeName).toBe("base");
+  });
+
+  it("extracts primaryColor when a sibling brace block precedes themeVariables", () => {
+    expect(extractTheme(CODE).themeVariables.primaryColor).toBe("#3b82f6");
+  });
+
+  it("extracts lineColor when a sibling brace block precedes themeVariables", () => {
+    expect(extractTheme(CODE).themeVariables.lineColor).toBe("#6b7280");
+  });
+
+  it("does not bleed the sibling flowchart block into themeVariables", () => {
+    const vars = extractTheme(CODE).themeVariables;
+    expect(vars).not.toHaveProperty("curve");
+  });
+});
+
+describe("extractTheme — last key in multi-line themeVariables is not cut off by the closing brace", () => {
+  // The themeVariables regex uses a lazy ([\s\S]*?) match and stops at the
+  // first } it encounters. For a flat themeVariables object with color values
+  // only (no nested braces in values), that first } IS the correct closing
+  // brace of the block. This test verifies that every key — including the last
+  // one on the line immediately preceding the closing } — is captured, with no
+  // early termination inside the block.
+  const CODE = `%%{init: {
+  "theme": "base",
+  "themeVariables": {
+    "primaryColor": "#aa1122",
+    "primaryTextColor": "#ffffff",
+    "primaryBorderColor": "#881100",
+    "lineColor": "#334455",
+    "background": "#fafafa",
+    "titleColor": "#cc5500"
+  }
+}}%%
+flowchart TD
+  A --> B`;
+
+  it("captures primaryColor — first key in the block", () => {
+    expect(extractTheme(CODE).themeVariables.primaryColor).toBe("#aa1122");
+  });
+
+  it("captures titleColor — last key, immediately before the closing brace", () => {
+    expect(extractTheme(CODE).themeVariables.titleColor).toBe("#cc5500");
+  });
+
+  it("captures all six keys with no early cutoff at any intermediate line", () => {
+    const vars = extractTheme(CODE).themeVariables;
+    expect(Object.keys(vars).length).toBeGreaterThanOrEqual(6);
+  });
+
+  it("captures background — penultimate key before titleColor", () => {
+    expect(extractTheme(CODE).themeVariables.background).toBe("#fafafa");
+  });
+});
+
+describe("extractTheme — themeVariables block containing a nested object (inner braces)", () => {
+  // Mermaid may emit or accept themeVariables with nested sub-objects (e.g.
+  // fontData: { size: 14 }). A lazy ([\s\S]*?) regex stops at the FIRST }
+  // inside themeVariables, which would be the closing } of the nested object,
+  // cutting off any keys that appear after it. The extractor must use
+  // balanced-brace parsing to find the true closing } of the themeVariables
+  // block so that all keys — before and after the nested value — are captured.
+  const CODE = `%%{init: {
+  "theme": "base",
+  "themeVariables": {
+    "primaryColor": "#ff0000",
+    "fontData": { "size": 14 },
+    "lineColor": "#6b7280"
+  }
+}}%%
+flowchart TD
+  A --> B`;
+
+  it("extracts primaryColor — key before the nested object", () => {
+    expect(extractTheme(CODE).themeVariables.primaryColor).toBe("#ff0000");
+  });
+
+  it("extracts lineColor — key after the nested object's closing brace", () => {
+    expect(extractTheme(CODE).themeVariables.lineColor).toBe("#6b7280");
+  });
+
+  it("does not stop at the inner } of the nested fontData object", () => {
+    const vars = extractTheme(CODE).themeVariables;
+    expect(Object.keys(vars)).toContain("lineColor");
+  });
+});
+
+// ---------------------------------------------------------------------------
 // extractTheme — init directive (JSON5/unquoted keys — backward compat)
 // ---------------------------------------------------------------------------
 
