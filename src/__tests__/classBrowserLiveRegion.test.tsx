@@ -3,7 +3,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { render, screen, act, cleanup } from "@testing-library/react";
 import { fireEvent } from "@testing-library/dom";
 import { createElement } from "react";
-import { ClassBrowser } from "@/components/ClassBrowser";
+import { ClassBrowser, HL } from "@/components/ClassBrowser";
 import type { ClassDef } from "@/lib/themeEngine";
 
 /**
@@ -155,5 +155,107 @@ describe("ClassBrowser — live-region updates on copy (interactive)", () => {
       })
     );
     expect(getLiveRegion().textContent?.trim()).toBe("");
+  });
+});
+
+describe("ClassBrowser — classDef preview panel highlighting (integration)", () => {
+  it("preview panel <pre> is absent from the DOM on initial mount", () => {
+    const { container } = render(
+      createElement(ClassBrowser, { classDefs: SAMPLE_CLASS_DEFS, supportsClassDef: true })
+    );
+    expect(container.querySelector("pre")).toBeNull();
+  });
+
+  it("clicking the preview toggle button mounts the preview panel", () => {
+    const { container } = render(
+      createElement(ClassBrowser, { classDefs: SAMPLE_CLASS_DEFS, supportsClassDef: true })
+    );
+    act(() => {
+      fireEvent.click(screen.getByLabelText("Preview all classDefs"));
+    });
+    expect(container.querySelector("pre")).not.toBeNull();
+  });
+
+  it("toggle button aria-pressed reflects panel open/closed state", () => {
+    render(createElement(ClassBrowser, { classDefs: SAMPLE_CLASS_DEFS, supportsClassDef: true }));
+    const btn = screen.getByLabelText("Preview all classDefs");
+    expect(btn.getAttribute("aria-pressed")).toBe("false");
+    act(() => {
+      fireEvent.click(btn);
+    });
+    expect(btn.getAttribute("aria-pressed")).toBe("true");
+  });
+
+  it("preview panel pre contains a span with HL.keyword color (classDef keyword)", () => {
+    const { container } = render(
+      createElement(ClassBrowser, { classDefs: SAMPLE_CLASS_DEFS, supportsClassDef: true })
+    );
+    act(() => {
+      fireEvent.click(screen.getByLabelText("Preview all classDefs"));
+    });
+    const pre = container.querySelector("pre")!;
+    // highlightClassDefBlock wraps the "classDef" token in a span with HL.keyword color.
+    const spans = Array.from(pre.querySelectorAll<HTMLSpanElement>("span"));
+    expect(spans.some((s) => s.style.color === HL.keyword)).toBe(true);
+  });
+
+  it("preview panel pre contains a span with HL.name color (class name identifier)", () => {
+    const { container } = render(
+      createElement(ClassBrowser, { classDefs: SAMPLE_CLASS_DEFS, supportsClassDef: true })
+    );
+    act(() => {
+      fireEvent.click(screen.getByLabelText("Preview all classDefs"));
+    });
+    const pre = container.querySelector("pre")!;
+    const spans = Array.from(pre.querySelectorAll<HTMLSpanElement>("span"));
+    expect(spans.some((s) => s.style.color === HL.name)).toBe(true);
+  });
+
+  it("preview panel pre contains a span with HL.key color (property key like fill/stroke)", () => {
+    const { container } = render(
+      createElement(ClassBrowser, { classDefs: SAMPLE_CLASS_DEFS, supportsClassDef: true })
+    );
+    act(() => {
+      fireEvent.click(screen.getByLabelText("Preview all classDefs"));
+    });
+    const pre = container.querySelector("pre")!;
+    const spans = Array.from(pre.querySelectorAll<HTMLSpanElement>("span"));
+    expect(spans.some((s) => s.style.color === HL.key)).toBe(true);
+  });
+
+  it("preview panel pre contains a span with HL.hex color (hex value like #1e3a5f)", () => {
+    const { container } = render(
+      createElement(ClassBrowser, { classDefs: SAMPLE_CLASS_DEFS, supportsClassDef: true })
+    );
+    act(() => {
+      fireEvent.click(screen.getByLabelText("Preview all classDefs"));
+    });
+    const pre = container.querySelector("pre")!;
+    const spans = Array.from(pre.querySelectorAll<HTMLSpanElement>("span"));
+    expect(spans.some((s) => s.style.color === HL.hex)).toBe(true);
+  });
+
+  it("close button removes the preview panel from the DOM", () => {
+    const { container } = render(
+      createElement(ClassBrowser, { classDefs: SAMPLE_CLASS_DEFS, supportsClassDef: true })
+    );
+    act(() => {
+      fireEvent.click(screen.getByLabelText("Preview all classDefs"));
+    });
+    expect(container.querySelector("pre")).not.toBeNull();
+    act(() => {
+      fireEvent.click(screen.getByLabelText("Close preview"));
+    });
+    expect(container.querySelector("pre")).toBeNull();
+  });
+
+  it("preview panel does not mount when supportsClassDef is false", () => {
+    const { container } = render(
+      createElement(ClassBrowser, { classDefs: SAMPLE_CLASS_DEFS, supportsClassDef: false })
+    );
+    // The toggle button is disabled; the pre should not appear even if somehow clicked.
+    const btn = screen.getByLabelText("Preview all classDefs") as HTMLButtonElement;
+    expect(btn.disabled).toBe(true);
+    expect(container.querySelector("pre")).toBeNull();
   });
 });
