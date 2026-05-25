@@ -5,22 +5,7 @@ import {
   resolveScaffoldFormat,
   saveScaffoldFormat,
 } from "@/lib/scaffoldPrefs";
-import { RENDERER_PROFILES } from "@/data/renderer-parity";
-import type { RendererProfile } from "@/data/renderer-parity";
-
-/** Derives a compact list of constraint strings from a renderer profile. */
-function getRendererConstraints(profile: RendererProfile): string[] {
-  const items: string[] = [];
-  if (profile.initDirectiveSupport === "none") items.push("%%{init}%% not supported");
-  else if (profile.initDirectiveSupport === "partial") items.push("%%{init}%% support partial");
-  if (profile.themeVariableSupport === "none") items.push("theme variables not supported");
-  else if (profile.themeVariableSupport === "partial") items.push("theme variables partial");
-  if (profile.cssInjectionSupport === "none") items.push("CSS injection not supported");
-  else if (profile.cssInjectionSupport === "partial") items.push("CSS injection partial");
-  if (profile.customFontSupport === "none") items.push("custom fonts blocked");
-  else if (profile.customFontSupport === "partial") items.push("custom fonts limited");
-  return items;
-}
+import { RENDERER_PROFILES, getRendererConstraints } from "@/data/renderer-parity";
 
 const PREVIEW_LINES = 25;
 

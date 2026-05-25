@@ -186,6 +186,24 @@ export function getRendererById(id: string): RendererProfile | undefined {
   return RENDERER_PROFILES.find((r) => r.id === id);
 }
 
+/**
+ * Derives a compact list of human-readable constraint strings from a renderer
+ * profile. Each string describes one capability limitation for that renderer.
+ * An empty array means the renderer has full support across all tracked features.
+ */
+export function getRendererConstraints(profile: RendererProfile): string[] {
+  const items: string[] = [];
+  if (profile.initDirectiveSupport === "none") items.push("%%{init}%% not supported");
+  else if (profile.initDirectiveSupport === "partial") items.push("%%{init}%% support partial");
+  if (profile.themeVariableSupport === "none") items.push("theme variables not supported");
+  else if (profile.themeVariableSupport === "partial") items.push("theme variables partial");
+  if (profile.cssInjectionSupport === "none") items.push("CSS injection not supported");
+  else if (profile.cssInjectionSupport === "partial") items.push("CSS injection partial");
+  if (profile.customFontSupport === "none") items.push("custom fonts blocked");
+  else if (profile.customFontSupport === "partial") items.push("custom fonts limited");
+  return items;
+}
+
 export function supportLabel(s: RendererSupport): string {
   switch (s) {
     case "full":
