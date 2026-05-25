@@ -60,6 +60,7 @@ afterEach(() => {
   cleanup();
   vi.useRealTimers();
   vi.restoreAllMocks();
+  localStorage.clear();
 });
 
 // ---------------------------------------------------------------------------

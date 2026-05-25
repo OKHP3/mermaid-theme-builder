@@ -48,6 +48,7 @@ afterEach(() => {
   cleanup();
   vi.useRealTimers();
   vi.restoreAllMocks();
+  localStorage.clear();
 });
 
 function getLiveRegion(): HTMLElement {

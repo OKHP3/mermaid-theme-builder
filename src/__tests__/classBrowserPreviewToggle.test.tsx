@@ -16,7 +16,12 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { render, screen, act, cleanup } from "@testing-library/react";
 import { fireEvent } from "@testing-library/dom";
 import { createElement } from "react";
-import { ClassBrowser } from "@/components/ClassBrowser";
+import {
+  ClassBrowser,
+  PREVIEW_MODE_KEY,
+  loadStoredPreviewMode,
+  saveStoredPreviewMode,
+} from "@/components/ClassBrowser";
 import type { ClassDef } from "@/lib/themeEngine";
 
 // ---------------------------------------------------------------------------
@@ -72,6 +77,7 @@ afterEach(() => {
   cleanup();
   vi.useRealTimers();
   vi.restoreAllMocks();
+  localStorage.clear();
 });
 
 // ---------------------------------------------------------------------------
@@ -158,7 +164,7 @@ describe("ClassBrowser preview — auto-switch on open with used classes", () =>
     expect(getPreviewPanel()).toBeNull();
   });
 
-  it("re-opening after user switched to 'all' resets to 'used' mode", () => {
+  it("re-opening after user switched to 'all' remembers 'all' (stored preference)", () => {
     render(
       createElement(ClassBrowser, {
         classDefs: ALL_DEFS,
@@ -167,24 +173,25 @@ describe("ClassBrowser preview — auto-switch on open with used classes", () =>
       })
     );
 
-    // Open → defaults to "used"
+    // Open → defaults to "used" (no stored preference yet)
     openPreview();
     expect(getUsedButton().getAttribute("aria-pressed")).toBe("true");
 
-    // Switch to "all" inside the panel
+    // Switch to "all" inside the panel — this saves "all" to localStorage
     act(() => {
       fireEvent.click(getAllButton());
     });
     expect(getAllButton().getAttribute("aria-pressed")).toBe("true");
 
-    // Close and re-open → should reset to "used"
+    // Close and re-open → should restore stored "all", not reset to "used"
     act(() => {
       fireEvent.click(getEyeButton());
     });
     act(() => {
       fireEvent.click(getEyeButton());
     });
-    expect(getUsedButton().getAttribute("aria-pressed")).toBe("true");
+    expect(getAllButton().getAttribute("aria-pressed")).toBe("true");
+    expect(getUsedButton().getAttribute("aria-pressed")).toBe("false");
   });
 });
 
@@ -888,5 +895,192 @@ describe("ClassBrowser preview — unrelated keys do not change mode", () => {
       fireEvent.keyDown(getPreviewPanel()!, { key: "a" });
     });
     expect(getUsedButton().getAttribute("aria-pressed")).toBe("true");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Tests: preview-mode localStorage persistence (task #257)
+// ---------------------------------------------------------------------------
+
+describe("ClassBrowser preview — localStorage persistence", () => {
+  it("helper functions round-trip 'all' and 'used' through localStorage", () => {
+    expect(loadStoredPreviewMode()).toBeNull();
+
+    saveStoredPreviewMode("all");
+    expect(loadStoredPreviewMode()).toBe("all");
+
+    saveStoredPreviewMode("used");
+    expect(loadStoredPreviewMode()).toBe("used");
+  });
+
+  it("PREVIEW_MODE_KEY is the expected storage key", () => {
+    expect(PREVIEW_MODE_KEY).toBe("mtb.classBrowser.previewMode");
+  });
+
+  it("loadStoredPreviewMode returns null when localStorage is empty", () => {
+    localStorage.clear();
+    expect(loadStoredPreviewMode()).toBeNull();
+  });
+
+  it("loadStoredPreviewMode returns null for an unrecognized stored value", () => {
+    localStorage.setItem(PREVIEW_MODE_KEY, "invalid");
+    expect(loadStoredPreviewMode()).toBeNull();
+  });
+
+  it("first open with no stored preference auto-defaults to 'used' when classes are used", () => {
+    render(
+      createElement(ClassBrowser, {
+        classDefs: ALL_DEFS,
+        supportsClassDef: true,
+        usedClassNames: USED_SET,
+      })
+    );
+    // No stored preference
+    expect(loadStoredPreviewMode()).toBeNull();
+
+    openPreview();
+    expect(getUsedButton().getAttribute("aria-pressed")).toBe("true");
+  });
+
+  it("clicking the All toggle saves 'all' to localStorage", () => {
+    render(
+      createElement(ClassBrowser, {
+        classDefs: ALL_DEFS,
+        supportsClassDef: true,
+        usedClassNames: USED_SET,
+      })
+    );
+    openPreview();
+
+    act(() => {
+      fireEvent.click(getAllButton());
+    });
+
+    expect(localStorage.getItem(PREVIEW_MODE_KEY)).toBe("all");
+  });
+
+  it("clicking the Used toggle saves 'used' to localStorage", () => {
+    render(
+      createElement(ClassBrowser, {
+        classDefs: ALL_DEFS,
+        supportsClassDef: true,
+        usedClassNames: USED_SET,
+      })
+    );
+    openPreview();
+
+    // First switch to all, then back to used
+    act(() => {
+      fireEvent.click(getAllButton());
+    });
+    act(() => {
+      fireEvent.click(getUsedButton());
+    });
+
+    expect(localStorage.getItem(PREVIEW_MODE_KEY)).toBe("used");
+  });
+
+  it("keyboard ArrowRight saves the new mode to localStorage", () => {
+    render(
+      createElement(ClassBrowser, {
+        classDefs: ALL_DEFS,
+        supportsClassDef: true,
+        usedClassNames: USED_SET,
+      })
+    );
+    openPreview();
+    // Default: "used" mode; ArrowRight should move to "all"
+    act(() => {
+      fireEvent.keyDown(getPreviewPanel()!, { key: "ArrowRight" });
+    });
+    expect(localStorage.getItem(PREVIEW_MODE_KEY)).toBe("all");
+  });
+
+  it("keyboard ArrowLeft saves the new mode to localStorage", () => {
+    render(
+      createElement(ClassBrowser, {
+        classDefs: ALL_DEFS,
+        supportsClassDef: true,
+        usedClassNames: USED_SET,
+      })
+    );
+    openPreview();
+    // Default: "used" (index 1); ArrowLeft wraps to "all" (index 0)
+    act(() => {
+      fireEvent.keyDown(getPreviewPanel()!, { key: "ArrowLeft" });
+    });
+    expect(localStorage.getItem(PREVIEW_MODE_KEY)).toBe("all");
+  });
+
+  it("stored 'all' preference is restored on re-open — used classes present", () => {
+    saveStoredPreviewMode("all");
+
+    render(
+      createElement(ClassBrowser, {
+        classDefs: ALL_DEFS,
+        supportsClassDef: true,
+        usedClassNames: USED_SET,
+      })
+    );
+    openPreview();
+
+    // Should use stored "all" instead of smart-defaulting to "used"
+    expect(getAllButton().getAttribute("aria-pressed")).toBe("true");
+    expect(getUsedButton().getAttribute("aria-pressed")).toBe("false");
+  });
+
+  it("stored 'used' preference is restored on re-open", () => {
+    saveStoredPreviewMode("used");
+
+    render(
+      createElement(ClassBrowser, {
+        classDefs: ALL_DEFS,
+        supportsClassDef: true,
+        usedClassNames: USED_SET,
+      })
+    );
+    openPreview();
+
+    expect(getUsedButton().getAttribute("aria-pressed")).toBe("true");
+    expect(getAllButton().getAttribute("aria-pressed")).toBe("false");
+  });
+
+  it("stored preference persists across multiple open/close cycles", () => {
+    render(
+      createElement(ClassBrowser, {
+        classDefs: ALL_DEFS,
+        supportsClassDef: true,
+        usedClassNames: USED_SET,
+      })
+    );
+
+    // First open → default "used"
+    openPreview();
+    expect(getUsedButton().getAttribute("aria-pressed")).toBe("true");
+
+    // Switch to "all" and close
+    act(() => {
+      fireEvent.click(getAllButton());
+    });
+    act(() => {
+      fireEvent.click(getEyeButton());
+    });
+
+    // Second open → should remember "all"
+    act(() => {
+      fireEvent.click(getEyeButton());
+    });
+    expect(getAllButton().getAttribute("aria-pressed")).toBe("true");
+
+    // Close again
+    act(() => {
+      fireEvent.click(getEyeButton());
+    });
+
+    // Third open → should still remember "all"
+    act(() => {
+      fireEvent.click(getEyeButton());
+    });
+    expect(getAllButton().getAttribute("aria-pressed")).toBe("true");
   });
 });

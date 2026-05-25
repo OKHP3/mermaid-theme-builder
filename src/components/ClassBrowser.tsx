@@ -12,6 +12,32 @@ import {
 // to resolve without any import-path changes.
 export { HL, highlightPropsSegment, highlightClassDefLine, highlightClassDefBlock };
 
+// ---------------------------------------------------------------------------
+// Preview-mode persistence — dedicated localStorage key, separate from the
+// main app state so it survives palette changes.
+// ---------------------------------------------------------------------------
+
+export const PREVIEW_MODE_KEY = "mtb.classBrowser.previewMode";
+
+export function loadStoredPreviewMode(): "all" | "used" | null {
+  try {
+    if (typeof window === "undefined") return null;
+    const v = window.localStorage.getItem(PREVIEW_MODE_KEY);
+    if (v === "all" || v === "used") return v;
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+export function saveStoredPreviewMode(mode: "all" | "used"): void {
+  try {
+    if (typeof window !== "undefined") window.localStorage.setItem(PREVIEW_MODE_KEY, mode);
+  } catch {
+    // storage unavailable — ignore
+  }
+}
+
 interface ClassBrowserProps {
   classDefs: ClassDef[];
   supportsClassDef?: boolean;
@@ -390,8 +416,16 @@ export function ClassBrowser({
               type="button"
               onClick={() => {
                 setShowPreview((v) => {
-                  // When opening, default to "used" mode if any classes are in use
-                  if (!v && hasUsed) setPreviewMode("used");
+                  if (!v) {
+                    // Opening: restore stored preference, or apply the smart default
+                    // (used when classes are used) on first open only.
+                    const stored = loadStoredPreviewMode();
+                    if (stored !== null) {
+                      setPreviewMode(stored);
+                    } else if (hasUsed) {
+                      setPreviewMode("used");
+                    }
+                  }
                   return !v;
                 });
               }}
@@ -537,6 +571,7 @@ export function ClassBrowser({
                       if (next !== null) {
                         e.preventDefault();
                         setPreviewMode(modes[next]);
+                        saveStoredPreviewMode(modes[next]);
                         requestAnimationFrame(() => {
                           const btn = document.querySelector<HTMLButtonElement>(
                             `[data-preview-toggle="${modes[next!]}"]`
@@ -549,7 +584,10 @@ export function ClassBrowser({
                     <button
                       type="button"
                       data-preview-toggle="all"
-                      onClick={() => setPreviewMode("all")}
+                      onClick={() => {
+                        setPreviewMode("all");
+                        saveStoredPreviewMode("all");
+                      }}
                       aria-pressed={previewMode === "all"}
                       tabIndex={previewMode === "all" ? 0 : -1}
                       title="Show all classDefs"
@@ -565,7 +603,10 @@ export function ClassBrowser({
                     <button
                       type="button"
                       data-preview-toggle="used"
-                      onClick={() => setPreviewMode("used")}
+                      onClick={() => {
+                        setPreviewMode("used");
+                        saveStoredPreviewMode("used");
+                      }}
                       aria-pressed={previewMode === "used"}
                       tabIndex={previewMode === "used" ? 0 : -1}
                       title={`Show only the ${usedClassNames?.size} classDef${usedClassNames?.size !== 1 ? "s" : ""} used in the current diagram`}
