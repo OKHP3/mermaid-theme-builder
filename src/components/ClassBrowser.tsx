@@ -142,95 +142,102 @@ function ClassNode({
 
   return (
     <div
-      role="button"
-      tabIndex={disabled ? -1 : 0}
-      aria-disabled={disabled ? true : undefined}
-      onClick={() => !disabled && onCopyUsage(def.name)}
-      onKeyDown={(e) => {
-        if (disabled) return;
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          onCopyUsage(def.name);
-        }
-      }}
-      title={`Click to copy :::${def.name}`}
-      className={`group flex flex-col items-stretch gap-0 rounded-lg overflow-hidden border hover:shadow-md transition-all text-left cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary/60 ${
+      className={`group relative rounded-lg overflow-hidden border hover:shadow-md transition-all ${
         isUsed
           ? "border-emerald-500/60 ring-1 ring-emerald-500/25 hover:border-emerald-500/80"
           : "border-border/40 hover:border-primary/50"
       }`}
       style={{ opacity: opacity ?? 1 }}
     >
-      <div
-        className="relative flex items-center justify-center px-2 py-3"
-        style={{ backgroundColor: def.fill }}
+      {/* Primary action: copy usage annotation — covers the whole card */}
+      <button
+        type="button"
+        tabIndex={disabled ? -1 : 0}
+        aria-disabled={disabled ? true : undefined}
+        onClick={() => !disabled && onCopyUsage(def.name)}
+        onKeyDown={(e) => {
+          if (disabled) return;
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onCopyUsage(def.name);
+          }
+        }}
+        aria-label={`Copy usage :::${def.name}`}
+        title={`Click to copy :::${def.name}`}
+        className="w-full flex flex-col items-stretch gap-0 text-left cursor-pointer focus:outline-none focus:ring-1 focus:ring-inset focus:ring-primary/60"
       >
-        <svg
-          className="absolute inset-0 w-full h-full"
-          xmlns="http://www.w3.org/2000/svg"
-          preserveAspectRatio="none"
-        >
-          <rect
-            x={svgStrokeWidth / 2}
-            y={svgStrokeWidth / 2}
-            width={`calc(100% - ${svgStrokeWidth}px)`}
-            height={`calc(100% - ${svgStrokeWidth}px)`}
-            fill="none"
-            stroke={def.stroke}
-            strokeWidth={svgStrokeWidth}
-            strokeDasharray={dashArray}
-          />
-        </svg>
-        <span
-          className="relative z-10 text-[11px] font-mono leading-tight text-center break-all px-1"
-          style={{ color: def.color, fontWeight, fontStyle }}
-        >
-          {def.name}
-        </span>
-
-        {isUsed && (
-          <span
-            className="absolute bottom-1 left-1 z-20 flex items-center justify-center w-4 h-4 rounded-full bg-emerald-500/80"
-            title={`:::${def.name} is used in the current diagram`}
-            aria-label="Used in current diagram"
-          >
-            <svg viewBox="0 0 10 10" fill="none" className="w-2.5 h-2.5">
-              <path d="M2 5.2l2 2 4-4" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </span>
-        )}
-
-        <button
-          type="button"
-          tabIndex={disabled ? -1 : 0}
-          aria-disabled={disabled ? true : undefined}
-          onClick={(e) => {
-            e.stopPropagation();
-            if (!disabled) onCopyClassDef(def);
-          }}
-          title={`Copy full classDef for ${def.name}`}
-          className="absolute top-1 right-1 z-20 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-150 flex items-center justify-center w-5 h-5 rounded bg-black/40 hover:bg-black/65 focus:outline-none focus:ring-1 focus:ring-white/60"
-          aria-label={`Copy classDef ${def.name}`}
+        <div
+          className="relative flex items-center justify-center px-2 py-3"
+          style={{ backgroundColor: def.fill }}
         >
           <svg
-            viewBox="0 0 14 14"
-            fill="none"
+            className="absolute inset-0 w-full h-full"
             xmlns="http://www.w3.org/2000/svg"
-            className="w-3 h-3"
+            preserveAspectRatio="none"
           >
-            <rect x="4.5" y="1" width="7.5" height="9" rx="1.2" stroke="white" strokeWidth="1.2" />
-            <rect x="2" y="4" width="7.5" height="9" rx="1.2" fill="rgba(0,0,0,0.4)" stroke="white" strokeWidth="1.2" />
+            <rect
+              x={svgStrokeWidth / 2}
+              y={svgStrokeWidth / 2}
+              width={`calc(100% - ${svgStrokeWidth}px)`}
+              height={`calc(100% - ${svgStrokeWidth}px)`}
+              fill="none"
+              stroke={def.stroke}
+              strokeWidth={svgStrokeWidth}
+              strokeDasharray={dashArray}
+            />
           </svg>
-        </button>
-      </div>
-      <div className="bg-card/80 px-2 py-1.5 border-t border-border/30">
-        <p className="text-[10px] text-muted-foreground leading-tight line-clamp-1">
-          {def.description}
-        </p>
-        <p className="text-[9px] text-muted-foreground/50 font-mono mt-0.5 leading-none group-hover:text-primary/70 transition-colors">
-          :::{ def.name}
-        </p>
-      </div>
+          <span
+            className="relative z-10 text-[11px] font-mono leading-tight text-center break-all px-1"
+            style={{ color: def.color, fontWeight, fontStyle }}
+          >
+            {def.name}
+          </span>
+
+          {isUsed && (
+            <span
+              className="absolute bottom-1 left-1 z-20 flex items-center justify-center w-4 h-4 rounded-full bg-emerald-500/80"
+              title={`:::${def.name} is used in the current diagram`}
+              aria-label="Used in current diagram"
+            >
+              <svg viewBox="0 0 10 10" fill="none" className="w-2.5 h-2.5">
+                <path d="M2 5.2l2 2 4-4" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </span>
+          )}
+        </div>
+        <div className="bg-card/80 px-2 py-1.5 border-t border-border/30">
+          <p className="text-[10px] text-muted-foreground leading-tight line-clamp-1">
+            {def.description}
+          </p>
+          <p className="text-[9px] text-muted-foreground/50 font-mono mt-0.5 leading-none group-hover:text-primary/70 transition-colors">
+            :::{ def.name}
+          </p>
+        </div>
+      </button>
+
+      {/* Secondary action: copy full classDef — sibling of primary button, positioned over the card */}
+      <button
+        type="button"
+        tabIndex={disabled ? -1 : 0}
+        aria-disabled={disabled ? true : undefined}
+        onClick={(e) => {
+          e.stopPropagation();
+          if (!disabled) onCopyClassDef(def);
+        }}
+        title={`Copy full classDef for ${def.name}`}
+        className="absolute top-1 right-1 z-20 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-150 flex items-center justify-center w-5 h-5 rounded bg-black/40 hover:bg-black/65 focus:outline-none focus:ring-1 focus:ring-white/60"
+        aria-label={`Copy classDef ${def.name}`}
+      >
+        <svg
+          viewBox="0 0 14 14"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-3 h-3"
+        >
+          <rect x="4.5" y="1" width="7.5" height="9" rx="1.2" stroke="white" strokeWidth="1.2" />
+          <rect x="2" y="4" width="7.5" height="9" rx="1.2" fill="rgba(0,0,0,0.4)" stroke="white" strokeWidth="1.2" />
+        </svg>
+      </button>
     </div>
   );
 }

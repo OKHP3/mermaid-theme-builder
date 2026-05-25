@@ -147,9 +147,9 @@ describe("ClassBrowser — supportsClassDef={true} (active state)", () => {
     expect(html).toContain("secondary");
   });
 
-  it("card copy-usage button is present (role=button)", () => {
+  it("card copy-usage button is present (native button element)", () => {
     const html = render({ supportsClassDef: true });
-    expect(html).toContain('role="button"');
+    expect(html).toContain('aria-label="Copy usage :::primary"');
   });
 });
 
@@ -207,17 +207,17 @@ describe("ClassBrowser — aria accessibility (inactive state)", () => {
     expect(html).not.toContain('aria-disabled="true"');
   });
 
-  it("card role=button elements have tabindex=\"-1\" when inactive", () => {
+  it("card button elements have tabindex=\"-1\" when inactive", () => {
     const html = render({ supportsClassDef: false });
     expect(html).toContain('tabindex="-1"');
   });
 
-  it("card role=button elements do NOT have tabindex=\"-1\" when active", () => {
+  it("card button elements do NOT have tabindex=\"-1\" when active", () => {
     const html = render({ supportsClassDef: true });
     expect(html).not.toContain('tabindex="-1"');
   });
 
-  it("card role=button elements have tabindex=\"0\" when active", () => {
+  it("card button elements have tabindex=\"0\" when active", () => {
     const html = render({ supportsClassDef: true });
     expect(html).toContain('tabindex="0"');
   });

@@ -273,6 +273,7 @@ export function ExamplesTab({ selectedPalette, selectedPaletteId, allPalettes, c
               </svg>
               <input
                 type="search"
+                aria-label="Search examples"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search by name, family, badge…"

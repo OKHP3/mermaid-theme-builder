@@ -36,6 +36,8 @@ import { AppShell } from "@/App";
 import { ApplyTab } from "@/pages/tabs/ApplyTab";
 import { ComposeTab } from "@/pages/tabs/ComposeTab";
 import { ExtractTab } from "@/pages/tabs/ExtractTab";
+import { ExamplesTab } from "@/pages/tabs/ExamplesTab";
+import { ReferenceTab } from "@/pages/tabs/ReferenceTab";
 import { ColorSwatch } from "@/components/ColorSwatch";
 import { ClassBrowser } from "@/components/ClassBrowser";
 import { BRAND_PALETTES } from "@/lib/palettes";
@@ -524,5 +526,72 @@ describe("Invisible button focus regression — ClassBrowser copy button", () =>
     );
     const violations = findOpacity0WithoutFocusEscape(container);
     expect(violations, formatFocusViolators(violations)).toHaveLength(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 11. ExamplesTab — browse catalogue, search field, group navigation, entry cards
+//
+// Renders ExamplesTab with a realistic palette and the full EXAMPLE_CATALOG
+// (via buildExampleList inside the module). The search input, section
+// headers, entry buttons, and action bar are all present on initial render.
+// ---------------------------------------------------------------------------
+describe("ExamplesTab (browse catalogue)", () => {
+  const palette = BRAND_PALETTES[0];
+  const noop = vi.fn();
+
+  const examplesTabProps = {
+    selectedPalette: palette,
+    selectedPaletteId: palette.id,
+    allPalettes: BRAND_PALETTES,
+    customColors: {},
+    onSelectPalette: noop,
+    onLoadExample: noop,
+  };
+
+  it("has zero critical/serious axe violations on initial render", async () => {
+    const { container } = render(createElement(ExamplesTab, examplesTabProps));
+    const { blocking, all } = await runAxe(container);
+    logViolations("ExamplesTab", all);
+    expect(
+      blocking,
+      `Critical/serious violations:\n${blocking
+        .map((v) => `  [${v.impact}] ${v.id}: ${v.description}\n  Nodes: ${v.nodes.map((n) => n.html).slice(0, 2).join(", ")}`)
+        .join("\n")}`,
+    ).toHaveLength(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 12. ReferenceTab — capabilities table, collapsible Renderer Parity Matrix,
+//     Class Library section
+//
+// Renders ReferenceTab with a realistic palette and supportsClassDef=true so
+// both collapsible <details> sections are open and fully rendered for scanning.
+// ---------------------------------------------------------------------------
+describe("ReferenceTab (capabilities table)", () => {
+  const palette = BRAND_PALETTES[0];
+  const noop = vi.fn();
+
+  const referenceTabProps = {
+    selectedPalette: palette,
+    selectedPaletteId: palette.id,
+    allPalettes: BRAND_PALETTES,
+    customColors: {},
+    onSelectPalette: noop,
+    supportsClassDef: true,
+    inputCode: "flowchart TD\n  A[Start] --> B[End]",
+  };
+
+  it("has zero critical/serious axe violations on initial render", async () => {
+    const { container } = render(createElement(ReferenceTab, referenceTabProps));
+    const { blocking, all } = await runAxe(container);
+    logViolations("ReferenceTab", all);
+    expect(
+      blocking,
+      `Critical/serious violations:\n${blocking
+        .map((v) => `  [${v.impact}] ${v.id}: ${v.description}\n  Nodes: ${v.nodes.map((n) => n.html).slice(0, 2).join(", ")}`)
+        .join("\n")}`,
+    ).toHaveLength(0);
   });
 });
