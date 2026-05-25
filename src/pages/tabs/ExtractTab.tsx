@@ -353,26 +353,52 @@ export function ExtractTab({ onUseExtractedTheme, onSwitchTab, onShowToast, embe
         )}
 
         {status === "empty" && (
-          <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 px-4 py-4 flex items-start gap-3">
-            <svg
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              className="w-4 h-4 text-amber-500 shrink-0 mt-0.5"
-              aria-hidden="true"
-            >
-              <path
-                fillRule="evenodd"
-                d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z"
-                clipRule="evenodd"
-              />
-            </svg>
-            <div>
-              <p className="text-sm font-medium text-amber-700 dark:text-amber-400">No theme detected</p>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                The pasted diagram contains no <code className="font-mono">{"%%{init}%%"}</code> directive,
-                YAML frontmatter, or <code className="font-mono">classDef</code> rules. Try pasting a diagram
-                that has already been themed by this tool or another Mermaid theming workflow.
-              </p>
+          <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 px-4 py-5 space-y-3">
+            <div className="flex items-start gap-3">
+              <svg
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                className="w-4 h-4 text-amber-500 shrink-0 mt-0.5"
+                aria-hidden="true"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              <div className="space-y-1.5">
+                <p className="text-sm font-medium text-amber-700 dark:text-amber-400">No theme found in this diagram</p>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  This looks like a bare diagram with no theme information attached. Extract mode reads existing theme
+                  data — it needs at least one of these to work:
+                </p>
+                <ul className="text-xs text-muted-foreground space-y-0.5 pl-3 list-disc">
+                  <li>
+                    An <code className="font-mono text-[10px] px-0.5 py-px rounded bg-muted">{"%%{init}%%"}</code> directive with a{" "}
+                    <code className="font-mono text-[10px] px-0.5 py-px rounded bg-muted">themeVariables</code> block
+                  </li>
+                  <li>
+                    YAML frontmatter (<code className="font-mono text-[10px] px-0.5 py-px rounded bg-muted">---</code> block) with{" "}
+                    <code className="font-mono text-[10px] px-0.5 py-px rounded bg-muted">themeVariables</code>
+                  </li>
+                  <li>
+                    <code className="font-mono text-[10px] px-0.5 py-px rounded bg-muted">classDef</code> color declarations inside the diagram body
+                  </li>
+                </ul>
+                <p className="text-xs text-muted-foreground/70 leading-relaxed pt-0.5">
+                  Want to <em>add</em> a theme to a bare diagram instead? Use the Apply tab.
+                </p>
+              </div>
+            </div>
+            <div className="pl-7">
+              <button
+                type="button"
+                onClick={() => onSwitchTab("apply")}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border border-border bg-background text-foreground hover:bg-muted transition-colors"
+              >
+                Go to Apply tab →
+              </button>
             </div>
           </div>
         )}
@@ -394,15 +420,16 @@ export function ExtractTab({ onUseExtractedTheme, onSwitchTab, onShowToast, embe
               </svg>
               <div>
                 <p className="text-sm font-medium text-amber-700 dark:text-amber-400">
-                  Theme directive found, but no themeVariables block
+                  Theme directive found — but no color variables to extract
                 </p>
-                <p className="text-xs text-muted-foreground mt-0.5">
+                <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
                   A {sourceLabel} was detected
-                  {extracted.themeName ? ` (theme: ${extracted.themeName})` : ""}, but it contains no
-                  color or font themeVariables to extract.
+                  {extracted.themeName ? ` (base theme: ${extracted.themeName})` : ""}, but it contains no{" "}
+                  <code className="font-mono text-[10px] px-0.5 py-px rounded bg-muted">themeVariables</code> color or font
+                  overrides to extract.{" "}
                   {extracted.classDefs.length > 0
-                    ? " ClassDef colors were detected — edit them below."
-                    : " Try pasting a diagram with an explicit themeVariables block."}
+                    ? "ClassDef colors were found — edit them below."
+                    : "Try pasting a diagram whose init directive includes an explicit themeVariables block."}
                 </p>
               </div>
             </div>
