@@ -321,3 +321,51 @@ describe("previewPicker — beta render-confidence hint (rendered)", () => {
     expect(container.querySelector('[role="note"]')).toBeNull();
   });
 });
+
+// ---------------------------------------------------------------------------
+// 6. Beta hint bar details — label text, experimental variant, action button
+// ---------------------------------------------------------------------------
+
+describe("previewPicker — beta hint bar details", () => {
+  it("hint shows 'Experimental diagram type' for an Experimental-badge entry", () => {
+    const { container } = renderTab();
+    fireEvent.change(getPickerSelect(container), {
+      target: { value: "eventmodeling-order-lifecycle" },
+    });
+    const hint = container.querySelector('[role="note"]');
+    expect(hint).not.toBeNull();
+    expect(hint!.textContent).toContain("Experimental diagram type");
+    // Must not show the Beta label for a purely Experimental entry.
+    expect(hint!.textContent).not.toContain("Beta diagram type");
+  });
+
+  it("hint shows 'Beta diagram type' for a Beta-badge entry", () => {
+    const { container } = renderTab();
+    fireEvent.change(getPickerSelect(container), {
+      target: { value: "sankey-effort-to-output" },
+    });
+    const hint = container.querySelector('[role="note"]');
+    expect(hint!.textContent).toContain("Beta diagram type");
+    expect(hint!.textContent).not.toContain("Experimental diagram type");
+  });
+
+  it("'See support details' action button is present inside the hint bar", () => {
+    const { container } = renderTab();
+    fireEvent.change(getPickerSelect(container), {
+      target: { value: "sankey-effort-to-output" },
+    });
+    const btn = container.querySelector<HTMLButtonElement>('[role="note"] button');
+    expect(btn).not.toBeNull();
+    expect(btn!.textContent).toContain("See support details");
+  });
+
+  it("'See support details' button is absent when no hint is shown", () => {
+    // Default selection is flowchart-basic — no beta hint, so no button.
+    const { container } = renderTab();
+    expect(container.querySelector('[role="note"]')).toBeNull();
+    const detailsBtns = Array.from(container.querySelectorAll("button")).filter((b) =>
+      b.textContent?.includes("See support details")
+    );
+    expect(detailsBtns).toHaveLength(0);
+  });
+});
