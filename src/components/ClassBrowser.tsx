@@ -1,100 +1,16 @@
-import { useState, useCallback, useMemo, useEffect, useRef, type ReactNode } from "react";
+import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { buildClassDefString, type ClassDef } from "@/lib/themeEngine";
 import { suggestClassMatch } from "@/lib/fuzzyClassMatch";
+import {
+  HL,
+  highlightPropsSegment,
+  highlightClassDefLine,
+  highlightClassDefBlock,
+} from "@/lib/syntaxHighlight";
 
-// ---------------------------------------------------------------------------
-// Syntax highlighting for the classDef preview panel
-// Produces React nodes with inline color spans; falls back to raw text.
-// ---------------------------------------------------------------------------
-
-export const HL = {
-  keyword: "#c46a2c", // rust-orange — "classDef"
-  name: "#e8d9c0", // bright cream — class name identifier
-  key: "#5fa89a", // forge teal — property keys (fill, stroke, color…)
-  hex: "#9ecfe8", // sky blue — hex color values
-  value: "#c8b89a", // warm beige — non-hex values (bold, 2px, normal…)
-  punct: "#7a7060", // dimmed — commas, colons, punctuation
-} as const;
-
-export function highlightPropsSegment(props: string, baseKey: string): ReactNode[] {
-  const nodes: ReactNode[] = [];
-  // Match key:value pairs separated by commas; values may include non-hex tokens
-  const re = /([\w-]+)(:)(#[0-9a-fA-F]{3,8}|[\w.%-]+(?:\s+[\w.%-]+)*)/g;
-  let last = 0;
-  let idx = 0;
-  let m: RegExpExecArray | null;
-
-  while ((m = re.exec(props)) !== null) {
-    // anything between the last match and this one (commas, spaces)
-    if (m.index > last) {
-      nodes.push(
-        <span key={`${baseKey}-p${idx}`} style={{ color: HL.punct }}>
-          {props.slice(last, m.index)}
-        </span>
-      );
-    }
-    const isHex = m[3].startsWith("#");
-    nodes.push(
-      <span key={`${baseKey}-k${idx}`} style={{ color: HL.key }}>
-        {m[1]}
-      </span>,
-      <span key={`${baseKey}-c${idx}`} style={{ color: HL.punct }}>
-        {m[2]}
-      </span>,
-      <span key={`${baseKey}-v${idx}`} style={{ color: isHex ? HL.hex : HL.value }}>
-        {m[3]}
-      </span>
-    );
-    last = re.lastIndex;
-    idx++;
-  }
-
-  if (last < props.length) {
-    nodes.push(
-      <span key={`${baseKey}-tail`} style={{ color: HL.punct }}>
-        {props.slice(last)}
-      </span>
-    );
-  }
-  return nodes;
-}
-
-export function highlightClassDefLine(line: string, lineIdx: number): ReactNode {
-  try {
-    // Expected format: classDef <name> key:val,key:val,...
-    const m = line.match(/^(classDef)(\s+)(\S+)(\s+)(.+)$/);
-    if (!m) {
-      // Not a standard classDef line — render dimmed
-      return (
-        <span key={lineIdx} style={{ color: HL.punct }}>
-          {line}
-        </span>
-      );
-    }
-    const [, keyword, sp1, name, sp2, props] = m;
-    return (
-      <span key={lineIdx}>
-        <span style={{ color: HL.keyword }}>{keyword}</span>
-        {sp1}
-        <span style={{ color: HL.name, fontWeight: 600 }}>{name}</span>
-        {sp2}
-        {highlightPropsSegment(props, String(lineIdx))}
-      </span>
-    );
-  } catch {
-    return <span key={lineIdx}>{line}</span>;
-  }
-}
-
-export function highlightClassDefBlock(text: string): ReactNode {
-  const lines = text.split("\n");
-  return lines.map((line, i) => (
-    <span key={i}>
-      {highlightClassDefLine(line, i)}
-      {i < lines.length - 1 && "\n"}
-    </span>
-  ));
-}
+// Re-export so that consumers and tests that import from ClassBrowser continue
+// to resolve without any import-path changes.
+export { HL, highlightPropsSegment, highlightClassDefLine, highlightClassDefBlock };
 
 interface ClassBrowserProps {
   classDefs: ClassDef[];
