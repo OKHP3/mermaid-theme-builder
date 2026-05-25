@@ -235,6 +235,90 @@ describe("ApplyTab → DiffView — all brand palettes produce add rows", () => 
 });
 
 // ---------------------------------------------------------------------------
+// 4. Tablist keyboard navigation — ArrowRight / ArrowLeft / Home / End
+// ---------------------------------------------------------------------------
+
+describe("ApplyTab — tablist keyboard navigation", () => {
+  it("ArrowRight from 'original' calls onPreviewModeChange with 'themed'", () => {
+    const onPreviewModeChange = vi.fn();
+    render(
+      createElement(ApplyTab, { ...BASE_PROPS, previewMode: "original", onPreviewModeChange })
+    );
+    const tablist = screen.getByRole("tablist", { name: /preview mode/i });
+    fireEvent.keyDown(tablist, { key: "ArrowRight" });
+    expect(onPreviewModeChange).toHaveBeenCalledTimes(1);
+    expect(onPreviewModeChange).toHaveBeenCalledWith("themed");
+  });
+
+  it("ArrowRight from 'themed' calls onPreviewModeChange with 'diff'", () => {
+    const onPreviewModeChange = vi.fn();
+    const { rerender } = render(
+      createElement(ApplyTab, { ...BASE_PROPS, previewMode: "original", onPreviewModeChange })
+    );
+    rerender(
+      createElement(ApplyTab, { ...BASE_PROPS, previewMode: "themed", onPreviewModeChange })
+    );
+    onPreviewModeChange.mockClear();
+    const tablist = screen.getByRole("tablist", { name: /preview mode/i });
+    fireEvent.keyDown(tablist, { key: "ArrowRight" });
+    expect(onPreviewModeChange).toHaveBeenCalledTimes(1);
+    expect(onPreviewModeChange).toHaveBeenCalledWith("diff");
+  });
+
+  it("End key calls onPreviewModeChange with 'code' regardless of current mode", () => {
+    const onPreviewModeChange = vi.fn();
+    render(
+      createElement(ApplyTab, { ...BASE_PROPS, previewMode: "original", onPreviewModeChange })
+    );
+    const tablist = screen.getByRole("tablist", { name: /preview mode/i });
+    fireEvent.keyDown(tablist, { key: "End" });
+    expect(onPreviewModeChange).toHaveBeenCalledTimes(1);
+    expect(onPreviewModeChange).toHaveBeenCalledWith("code");
+  });
+
+  it("Home key calls onPreviewModeChange with 'original' when on 'code'", () => {
+    const onPreviewModeChange = vi.fn();
+    render(createElement(ApplyTab, { ...BASE_PROPS, previewMode: "code", onPreviewModeChange }));
+    const tablist = screen.getByRole("tablist", { name: /preview mode/i });
+    fireEvent.keyDown(tablist, { key: "Home" });
+    expect(onPreviewModeChange).toHaveBeenCalledTimes(1);
+    expect(onPreviewModeChange).toHaveBeenCalledWith("original");
+  });
+
+  it("ArrowLeft from 'original' wraps around to 'code'", () => {
+    const onPreviewModeChange = vi.fn();
+    render(
+      createElement(ApplyTab, { ...BASE_PROPS, previewMode: "original", onPreviewModeChange })
+    );
+    const tablist = screen.getByRole("tablist", { name: /preview mode/i });
+    fireEvent.keyDown(tablist, { key: "ArrowLeft" });
+    expect(onPreviewModeChange).toHaveBeenCalledTimes(1);
+    expect(onPreviewModeChange).toHaveBeenCalledWith("code");
+  });
+
+  it("ArrowRight from 'code' wraps around to 'original'", () => {
+    const onPreviewModeChange = vi.fn();
+    render(createElement(ApplyTab, { ...BASE_PROPS, previewMode: "code", onPreviewModeChange }));
+    const tablist = screen.getByRole("tablist", { name: /preview mode/i });
+    fireEvent.keyDown(tablist, { key: "ArrowRight" });
+    expect(onPreviewModeChange).toHaveBeenCalledTimes(1);
+    expect(onPreviewModeChange).toHaveBeenCalledWith("original");
+  });
+
+  it("unrelated key does not call onPreviewModeChange", () => {
+    const onPreviewModeChange = vi.fn();
+    render(
+      createElement(ApplyTab, { ...BASE_PROPS, previewMode: "original", onPreviewModeChange })
+    );
+    const tablist = screen.getByRole("tablist", { name: /preview mode/i });
+    fireEvent.keyDown(tablist, { key: "Enter" });
+    fireEvent.keyDown(tablist, { key: "Tab" });
+    fireEvent.keyDown(tablist, { key: "Escape" });
+    expect(onPreviewModeChange).not.toHaveBeenCalled();
+  });
+});
+
+// ---------------------------------------------------------------------------
 // 4. oldText / newText orientation guard
 //    The original diagram lines must appear in the "unchanged" (context) or
 //    "removed" rows, never as "added" rows. The %%{init…} directive must
