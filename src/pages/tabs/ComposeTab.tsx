@@ -143,6 +143,18 @@ interface ComposeTabProps {
   ) => void;
 }
 
+/**
+ * Returns the option label for a preview diagram picker entry.
+ * Appends "(Beta)" or "(Experimental)" when the entry carries that badge,
+ * so users see the signal before picking rather than only after.
+ * "Canonical · Beta" entries surface only the "Beta" suffix.
+ */
+function previewOptionLabel(entry: { label: string; badge?: string }): string {
+  if (entry.badge?.includes("Experimental")) return `${entry.label} (Experimental)`;
+  if (entry.badge?.includes("Beta")) return `${entry.label} (Beta)`;
+  return entry.label;
+}
+
 export function ComposeTab({
   selectedPalette,
   selectedPaletteId,
@@ -1134,7 +1146,7 @@ export function ComposeTab({
                 <optgroup key={group.category} label={group.label}>
                   {group.entries.map((entry) => (
                     <option key={entry.id} value={entry.id}>
-                      {entry.label}
+                      {previewOptionLabel(entry)}
                     </option>
                   ))}
                 </optgroup>
