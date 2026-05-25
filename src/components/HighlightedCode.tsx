@@ -3,13 +3,17 @@ import { highlightClassDefLine } from "@/components/ClassBrowser";
 
 // ---------------------------------------------------------------------------
 // Syntax highlighting for full themed Mermaid code blocks.
-// Handles %%{init:...}%% directive lines and classDef lines.
+// Handles %%{init:...}%% directive lines, %% comment lines, and classDef lines.
 // All other lines fall back to plain text.
 // ---------------------------------------------------------------------------
 
 export const INIT_HL = {
   bracket: "#c8a870", // warm amber — %%{ and }%% delimiters
   content: "#8da89a", // muted teal-gray — directive body
+} as const;
+
+export const COMMENT_HL = {
+  text: "#7a7568", // dimmed warm gray — %% comment lines
 } as const;
 
 /**
@@ -43,14 +47,31 @@ export function highlightInitDirectiveLine(line: string, lineIdx: number): React
 }
 
 /**
+ * Highlight a single %% comment line (i.e. %% not followed by {).
+ * Renders in a muted warm-gray italic — the conventional comment treatment.
+ * Exported for testing.
+ */
+export function highlightCommentLine(line: string, lineIdx: number): ReactNode {
+  return (
+    <span key={lineIdx} style={{ color: COMMENT_HL.text, fontStyle: "italic" }}>
+      {line}
+    </span>
+  );
+}
+
+/**
  * Dispatch a single line of themed Mermaid output to the appropriate highlighter.
- * Routes %%{...}%% lines to highlightInitDirectiveLine, classDef lines to
- * highlightClassDefLine (from ClassBrowser), and all others to plain text.
+ * Routes %%{...}%% lines to highlightInitDirectiveLine, %% comment lines to
+ * highlightCommentLine, classDef lines to highlightClassDefLine (from ClassBrowser),
+ * and all others to plain text.
  * Exported for testing.
  */
 export function highlightMermaidCodeLine(line: string, lineIdx: number): ReactNode {
   if (line.startsWith("%%{")) {
     return highlightInitDirectiveLine(line, lineIdx);
+  }
+  if (/^%%(?!\{)/.test(line)) {
+    return highlightCommentLine(line, lineIdx);
   }
   if (/^classDef\s/.test(line)) {
     return highlightClassDefLine(line, lineIdx);
