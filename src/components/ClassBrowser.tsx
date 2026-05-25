@@ -1,5 +1,6 @@
 import { useState, useCallback, useMemo, useEffect, useRef, type ReactNode } from "react";
 import { buildClassDefString, type ClassDef } from "@/lib/themeEngine";
+import { suggestClassMatch } from "@/lib/fuzzyClassMatch";
 
 // ---------------------------------------------------------------------------
 // Syntax highlighting for the classDef preview panel
@@ -391,6 +392,13 @@ export function ClassBrowser({
       .sort();
   }, [classDefs, usedClassNames, supportsClassDef]);
 
+  // Map each unknown class name to its closest defined name suggestions (edit distance ≤ 2).
+  const unknownSuggestions = useMemo<Map<string, string[]>>(() => {
+    if (unknownClassNames.length === 0) return new Map();
+    const definedNames = classDefs.map((d) => d.name);
+    return new Map(unknownClassNames.map((name) => [name, suggestClassMatch(name, definedNames)]));
+  }, [unknownClassNames, classDefs]);
+
   const activePreviewBlock = previewMode === "used" && hasUsed ? usedPreviewBlock : previewBlock;
   // Derive count directly from the block so the header always reflects the exact
   // content that will be copied — never an independently-maintained variable.
@@ -764,12 +772,30 @@ export function ClassBrowser({
             <span className="font-semibold">
               {`Unrecognized class ${unknownClassNames.length === 1 ? "name" : "names"}:`}
             </span>{" "}
-            {unknownClassNames.map((n, i) => (
-              <span key={n}>
-                <span className="font-mono">{`:::${n}`}</span>
-                {i < unknownClassNames.length - 1 && ", "}
-              </span>
-            ))}{" "}
+            {unknownClassNames.map((n, i) => {
+              const suggestions = unknownSuggestions.get(n) ?? [];
+              return (
+                <span key={n}>
+                  <span className="font-mono">{`:::${n}`}</span>
+                  {suggestions.length > 0 && (
+                    <span>
+                      {" "}
+                      <span className="opacity-80">
+                        (did you mean{" "}
+                        {suggestions.map((s, si) => (
+                          <span key={s}>
+                            <span className="font-mono">{`:::${s}`}</span>
+                            {si < suggestions.length - 1 && ", "}
+                          </span>
+                        ))}
+                        ?)
+                      </span>
+                    </span>
+                  )}
+                  {i < unknownClassNames.length - 1 && ", "}
+                </span>
+              );
+            })}{" "}
             — not defined in the current palette. Check for typos.
           </span>
         </div>
