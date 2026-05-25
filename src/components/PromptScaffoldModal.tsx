@@ -25,14 +25,17 @@ function getRendererConstraints(profile: RendererProfile): string[] {
 const PREVIEW_LINES = 25;
 
 /**
- * Returns the stored scaffold format preference, or null when nothing is stored.
+ * Returns the stored scaffold format preference, or null when nothing is stored
+ * or the stored value is not a recognized format.
  * null → no "last used" badge should be shown in the modal.
+ * Unlike resolveScaffoldFormat (which returns "both" as a safe default), this
+ * function treats unrecognized values as "no prior selection" for badge purposes.
  */
 function readLastFormat(): ScaffoldFormat | null {
   try {
     const raw = localStorage.getItem(SCAFFOLD_FORMAT_KEY);
-    if (raw === null) return null;
-    return resolveScaffoldFormat(raw);
+    if (raw === "formatA" || raw === "formatB" || raw === "both") return raw;
+    return null;
   } catch {
     return null;
   }

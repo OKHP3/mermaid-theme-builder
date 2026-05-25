@@ -142,24 +142,29 @@ describe("PromptScaffoldModal — no badge when localStorage is empty", () => {
 });
 
 // ---------------------------------------------------------------------------
-// 3. Invalid/stale stored value → resolveScaffoldFormat default is "both"
-//    The "All" card receives the badge; the modal does not crash or hide all badges.
+// 3. Invalid/stale stored value → treated as no prior selection (no badge)
+//    readLastFormat() checks for exact valid literals and returns null for anything
+//    else, so a garbage or stale stored value does not produce a spurious badge.
 // ---------------------------------------------------------------------------
 
-describe("PromptScaffoldModal — invalid stored value resolves to 'both'", () => {
-  it("an invalid stored value shows the badge on the 'All' card (resolves to 'both')", () => {
+describe("PromptScaffoldModal — invalid stored value shows no badge", () => {
+  it("an unrecognized stored value produces no 'last used' badge", () => {
     localStorage.setItem(SCAFFOLD_FORMAT_KEY, "not-a-real-format");
     const { container } = render(createElement(PromptScaffoldModal, buildProps()));
-
-    const badges = getLastUsedBadges(container);
-    expect(badges).toHaveLength(1);
-    expect(badges[0].closest("button")?.textContent).toContain("All");
+    expect(getLastUsedBadges(container)).toHaveLength(0);
   });
 
-  it("subtitle still says 'highlighted' for an invalid stored value (preference is non-null)", () => {
+  it("subtitle reads 'Choose a theme directive format' for an invalid stored value", () => {
     localStorage.setItem(SCAFFOLD_FORMAT_KEY, "not-a-real-format");
     const { container } = render(createElement(PromptScaffoldModal, buildProps()));
-    expect(container.textContent).toContain("Your last-used format is highlighted");
+    expect(container.textContent).toContain("Choose a theme directive format");
+    expect(container.textContent).not.toContain("highlighted");
+  });
+
+  it("an empty string stored produces no badge (empty string is not a valid format)", () => {
+    localStorage.setItem(SCAFFOLD_FORMAT_KEY, "");
+    const { container } = render(createElement(PromptScaffoldModal, buildProps()));
+    expect(getLastUsedBadges(container)).toHaveLength(0);
   });
 });
 
