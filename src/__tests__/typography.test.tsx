@@ -28,6 +28,8 @@ import { createElement } from "react";
 import {
   enforceHierarchy,
   isDefaultTypography,
+  generateTypographyCss,
+  typographyToScaffoldSection,
   DEFAULT_TYPOGRAPHY,
   TIER_ORDER,
   type TypographySettings,
@@ -311,5 +313,169 @@ describe("ComposeTab — scale bar widths", () => {
     const { container } = render(createElement(ComposeTab, makeProps(custom)));
     const widths = getScaleBarWidths(container);
     expect(widths.every((w) => w === "100%")).toBe(true);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 5. generateTypographyCss
+// ---------------------------------------------------------------------------
+
+describe("generateTypographyCss — header comment", () => {
+  it("always includes the header comment line as the first line", () => {
+    const result = generateTypographyCss(DEFAULT_TYPOGRAPHY);
+    expect(result.split("\n")[0]).toBe(
+      "/* Mermaid typography hierarchy — flowchart/subgraph targets */",
+    );
+  });
+
+  it("returns only the header comment when all tiers match defaults", () => {
+    const result = generateTypographyCss(DEFAULT_TYPOGRAPHY);
+    expect(result).toBe(
+      "/* Mermaid typography hierarchy — flowchart/subgraph targets */",
+    );
+  });
+});
+
+describe("generateTypographyCss — font-size rules", () => {
+  it("emits a font-size rule when a tier size differs from default", () => {
+    const settings: TypographySettings = {
+      ...DEFAULT_TYPOGRAPHY,
+      diagramTitle: { fontSize: 28, fontFamily: "" },
+    };
+    const result = generateTypographyCss(settings);
+    expect(result).toContain("font-size: 28px;");
+  });
+
+  it("uses the correct CSS selector for the modified tier", () => {
+    const settings: TypographySettings = {
+      ...DEFAULT_TYPOGRAPHY,
+      edgeLabel: { fontSize: 10, fontFamily: "" },
+    };
+    const result = generateTypographyCss(settings);
+    expect(result).toContain(".edgeLabel { font-size: 10px; }");
+  });
+
+  it("skips the rule entirely when both size and family match defaults", () => {
+    const result = generateTypographyCss(DEFAULT_TYPOGRAPHY);
+    expect(result).not.toContain("font-size:");
+    expect(result).not.toContain("font-family:");
+  });
+});
+
+describe("generateTypographyCss — font-family rules", () => {
+  it("emits a font-family rule when fontFamily is set on a tier", () => {
+    const settings: TypographySettings = {
+      ...DEFAULT_TYPOGRAPHY,
+      nodeLabel: { fontSize: 14, fontFamily: "Roboto" },
+    };
+    const result = generateTypographyCss(settings);
+    expect(result).toContain("font-family: Roboto;");
+  });
+
+  it("does not emit a font-family rule when fontFamily is empty", () => {
+    const result = generateTypographyCss(DEFAULT_TYPOGRAPHY);
+    expect(result).not.toContain("font-family:");
+  });
+
+  it("emits both font-size and font-family when both differ from defaults", () => {
+    const settings: TypographySettings = {
+      ...DEFAULT_TYPOGRAPHY,
+      subgraphTitle: { fontSize: 18, fontFamily: "DM Sans" },
+    };
+    const result = generateTypographyCss(settings);
+    expect(result).toContain("font-size: 18px;");
+    expect(result).toContain("font-family: DM Sans;");
+  });
+});
+
+describe("generateTypographyCss — all tiers modified", () => {
+  it("emits rules for all five tiers when every tier differs from defaults", () => {
+    const settings: TypographySettings = {
+      diagramTitle:        { fontSize: 24, fontFamily: "Alfa Slab One" },
+      subgraphTitle:       { fontSize: 20, fontFamily: "DM Sans" },
+      nestedSubgraphTitle: { fontSize: 16, fontFamily: "DM Sans" },
+      nodeLabel:           { fontSize: 13, fontFamily: "JetBrains Mono" },
+      edgeLabel:           { fontSize: 11, fontFamily: "JetBrains Mono" },
+    };
+    const result = generateTypographyCss(settings);
+    expect(result).toContain(".label { font-size: 24px; font-family: Alfa Slab One; }");
+    expect(result).toContain(".cluster-label { font-size: 20px; font-family: DM Sans; }");
+    expect(result).toContain(".cluster-label .nodeLabel { font-size: 16px; font-family: DM Sans; }");
+    expect(result).toContain(".node .label { font-size: 13px; font-family: JetBrains Mono; }");
+    expect(result).toContain(".edgeLabel { font-size: 11px; font-family: JetBrains Mono; }");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 6. typographyToScaffoldSection
+// ---------------------------------------------------------------------------
+
+describe("typographyToScaffoldSection — markdown table structure", () => {
+  it("contains the markdown table header row", () => {
+    const result = typographyToScaffoldSection(DEFAULT_TYPOGRAPHY);
+    expect(result).toContain("| Tier | Target | Size | Font Family |");
+  });
+
+  it("contains the separator row below the header", () => {
+    const result = typographyToScaffoldSection(DEFAULT_TYPOGRAPHY);
+    expect(result).toContain("|------|--------|------|-------------|");
+  });
+
+  it("starts with the section heading", () => {
+    const result = typographyToScaffoldSection(DEFAULT_TYPOGRAPHY);
+    expect(result.startsWith("## Typography Hierarchy")).toBe(true);
+  });
+});
+
+describe("typographyToScaffoldSection — tier rows", () => {
+  it("includes the correct size for diagramTitle (20px by default)", () => {
+    const result = typographyToScaffoldSection(DEFAULT_TYPOGRAPHY);
+    expect(result).toContain("| Diagram Title |");
+    expect(result).toContain("| 20px |");
+  });
+
+  it("includes the correct size for edgeLabel (12px by default)", () => {
+    const result = typographyToScaffoldSection(DEFAULT_TYPOGRAPHY);
+    expect(result).toContain("| Edge Label |");
+    expect(result).toContain("| 12px |");
+  });
+
+  it("uses the custom size when a tier fontSize is overridden", () => {
+    const settings: TypographySettings = {
+      ...DEFAULT_TYPOGRAPHY,
+      diagramTitle: { fontSize: 32, fontFamily: "" },
+    };
+    const result = typographyToScaffoldSection(settings);
+    expect(result).toContain("| 32px |");
+  });
+});
+
+describe("typographyToScaffoldSection — font family column", () => {
+  it("uses '(palette fontFamily)' placeholder when fontFamily is empty", () => {
+    const result = typographyToScaffoldSection(DEFAULT_TYPOGRAPHY);
+    const lines = result.split("\n").filter((l) => l.startsWith("|") && !l.startsWith("|---") && !l.startsWith("| Tier"));
+    expect(lines.length).toBeGreaterThan(0);
+    lines.forEach((line) => {
+      expect(line).toContain("(palette fontFamily)");
+    });
+  });
+
+  it("uses the actual fontFamily string when set", () => {
+    const settings: TypographySettings = {
+      ...DEFAULT_TYPOGRAPHY,
+      nodeLabel: { fontSize: 14, fontFamily: "Roboto" },
+    };
+    const result = typographyToScaffoldSection(settings);
+    expect(result).toContain("| Roboto |");
+  });
+
+  it("mixes placeholder and actual values when only some tiers have fontFamily set", () => {
+    const settings: TypographySettings = {
+      ...DEFAULT_TYPOGRAPHY,
+      diagramTitle: { fontSize: 20, fontFamily: "Alfa Slab One" },
+    };
+    const result = typographyToScaffoldSection(settings);
+    expect(result).toContain("| Alfa Slab One |");
+    expect(result).toContain("(palette fontFamily)");
   });
 });
