@@ -860,23 +860,6 @@ export function AppShell() {
             >
               {tab.icon}
               {tab.label}
-              {tab.id === "reference" && classDefCount > 0 && (
-                <span
-                  className={`inline-flex items-center text-[10px] font-semibold px-1.5 py-0.5 rounded-full tabular-nums leading-none ${
-                    supportsClassDef
-                      ? "text-primary/80 bg-primary/10"
-                      : "text-muted-foreground/50 bg-muted/50"
-                  }`}
-                  title={
-                    supportsClassDef
-                      ? `${classDefCount} class styles available for this diagram type`
-                      : `${classDefCount} class styles exist but are inactive for this diagram type`
-                  }
-                  aria-label={`${classDefCount} class styles`}
-                >
-                  {classDefCount}
-                </span>
-              )}
             </button>
           );
         })}
