@@ -1181,6 +1181,14 @@ export function ApplyTab({
                                 {rendererProfile.shortName}
                               </span>
                             )}
+                            {promptIsThemeOnly && (
+                              <span
+                                title="This diagram type only supports palette-level theming, not per-node color classes"
+                                className="px-1.5 py-px rounded text-[10px] font-semibold leading-none bg-muted text-muted-foreground border border-border cursor-help"
+                              >
+                                No classDef
+                              </span>
+                            )}
                           </>
                         )}
                         {t === "svg" && "vector"}
