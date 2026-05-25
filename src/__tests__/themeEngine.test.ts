@@ -1384,6 +1384,76 @@ describe("sequence.fontSize sync rule", () => {
   });
 });
 
+// ── architectureBeta config block ─────────────────────────────────────────────
+// buildInitDirective emits `"architecture": {"randomize": false}` only for the
+// architectureBeta family. Any regression that emits it for other families would
+// silently corrupt init directives for flowcharts, class diagrams, etc.
+describe("architectureBeta config block", () => {
+  const ARCH_DIAGRAM = "architecture-beta\n  service db(database)[Database]";
+
+  it("emits \"architecture\": {\"randomize\": false} in the init directive for architectureBeta", () => {
+    const result = generateThemedCode(ARCH_DIAGRAM, {
+      ...BASE_OPTIONS,
+      diagramFamily: "architectureBeta",
+    });
+    expect(result).toContain('"architecture": {"randomize": false}');
+  });
+
+  it("the architecture key appears in the %%{init: ...}%% line", () => {
+    const result = generateThemedCode(ARCH_DIAGRAM, {
+      ...BASE_OPTIONS,
+      diagramFamily: "architectureBeta",
+    });
+    const initLine = result.split("\n").find((l) => l.startsWith("%%{init:"));
+    expect(initLine).toBeDefined();
+    expect(initLine).toContain('"architecture"');
+    expect(initLine).toContain('"randomize": false');
+  });
+
+  const NON_ARCH_FAMILIES: Array<ExportOptions["diagramFamily"]> = [
+    "flowchart",
+    "sequenceDiagram",
+    "classDiagram",
+    "erDiagram",
+    "gantt",
+    "pie",
+    "mindmap",
+    "block",
+  ];
+
+  for (const family of NON_ARCH_FAMILIES) {
+    it(`does NOT emit the "architecture" key for family: ${family}`, () => {
+      const result = generateThemedCode(SIMPLE_FLOWCHART, {
+        ...BASE_OPTIONS,
+        diagramFamily: family,
+      });
+      const initLine = result.split("\n").find((l) => l.startsWith("%%{init:"));
+      expect(initLine).toBeDefined();
+      expect(initLine).not.toContain('"architecture"');
+    });
+  }
+
+  it("architectureBeta and sequenceDiagram config blocks coexist without interference (separate calls)", () => {
+    const archResult = generateThemedCode(ARCH_DIAGRAM, {
+      ...BASE_OPTIONS,
+      diagramFamily: "architectureBeta",
+    });
+    const seqResult = generateThemedCode("sequenceDiagram\n  Alice->>Bob: Hello", {
+      ...BASE_OPTIONS,
+      diagramFamily: "sequenceDiagram",
+      typography: DEFAULT_TYPOGRAPHY,
+    });
+
+    // Architecture block present only in arch result
+    expect(archResult).toContain('"architecture": {"randomize": false}');
+    expect(seqResult).not.toContain('"architecture"');
+
+    // Sequence block present only in seq result
+    expect(seqResult).toContain('"sequence"');
+    expect(archResult).not.toContain('"sequence"');
+  });
+});
+
 describe("CLASSDEF_CAPABLE_FAMILIES — 'No classDef' badge visibility", () => {
   it("contains exactly the 4 classDef-capable families (regression sentinel)", () => {
     expect([...CLASSDEF_CAPABLE_FAMILIES].sort()).toEqual(
