@@ -978,3 +978,74 @@ describe("round-trip: generateThemedCode → extractTheme", () => {
     },
   );
 });
+
+// ---------------------------------------------------------------------------
+// Integration: block and c4Diagram family overrides appear in %%{init}%% output
+// ---------------------------------------------------------------------------
+
+describe("integration: block family overrides are present in generateThemedCode output", () => {
+  const palette = BUILTIN_PALETTES[0];
+  const mainBkgExpected = palette.colors.find((c) => c.key === "mainBkg")?.value ?? "";
+  const nodeBorderExpected = palette.colors.find((c) => c.key === "nodeBorder")?.value ?? "";
+  const lineColorExpected = palette.colors.find((c) => c.key === "lineColor")?.value ?? "";
+
+  const BLOCK_STUB = "block-beta\n  A[\"Node A\"]\n  B[\"Node B\"]\n  A --> B";
+
+  const themedCode = generateThemedCode(BLOCK_STUB, {
+    palette,
+    diagramFamily: "block",
+    includeMetaComments: false,
+    includeBadge: false,
+  });
+
+  it("generateThemedCode produces an init directive for block-beta", () => {
+    expect(themedCode).toContain("%%{init:");
+    expect(themedCode).toContain('"themeVariables"');
+  });
+
+  it("block: mainBkg from the palette is present in the init directive", () => {
+    const vars = extractTheme(themedCode).themeVariables;
+    expect(vars["mainBkg"]).toBe(mainBkgExpected);
+  });
+
+  it("block: nodeBorder from the palette is present in the init directive", () => {
+    const vars = extractTheme(themedCode).themeVariables;
+    expect(vars["nodeBorder"]).toBe(nodeBorderExpected);
+  });
+
+  it("block: lineColor from the palette is present in the init directive", () => {
+    const vars = extractTheme(themedCode).themeVariables;
+    expect(vars["lineColor"]).toBe(lineColorExpected);
+  });
+});
+
+describe("integration: c4Diagram family overrides are present in generateThemedCode output", () => {
+  const palette = BUILTIN_PALETTES[0];
+  const primaryColorExpected = palette.colors.find((c) => c.key === "primaryColor")?.value ?? "";
+  const primaryBorderExpected = palette.colors.find((c) => c.key === "primaryBorderColor")?.value ?? "";
+
+  const C4_STUB =
+    "C4Context\n  Person(personAlias, \"User\", \"A user\")\n  System(sys, \"System\", \"The system\")";
+
+  const themedCode = generateThemedCode(C4_STUB, {
+    palette,
+    diagramFamily: "c4Diagram",
+    includeMetaComments: false,
+    includeBadge: false,
+  });
+
+  it("generateThemedCode produces an init directive for C4Context", () => {
+    expect(themedCode).toContain("%%{init:");
+    expect(themedCode).toContain('"themeVariables"');
+  });
+
+  it("c4Diagram: personBkg equals the palette's primaryColor", () => {
+    const vars = extractTheme(themedCode).themeVariables;
+    expect(vars["personBkg"]).toBe(primaryColorExpected);
+  });
+
+  it("c4Diagram: personBorder equals the palette's primaryBorderColor", () => {
+    const vars = extractTheme(themedCode).themeVariables;
+    expect(vars["personBorder"]).toBe(primaryBorderExpected);
+  });
+});
