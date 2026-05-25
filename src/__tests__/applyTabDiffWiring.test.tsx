@@ -82,6 +82,8 @@ const BASE_PROPS = {
   onRecordExampleType: noop,
   previewMode: "original" as const,
   onPreviewModeChange: noop,
+  hintResetToken: 0,
+  onResetSyntaxHints: noop,
 };
 
 afterEach(cleanup);

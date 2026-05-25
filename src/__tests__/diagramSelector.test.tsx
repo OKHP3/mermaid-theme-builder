@@ -74,6 +74,8 @@ function makeProps(inputCode: string) {
     onRecordExampleType: vi.fn(),
     previewMode: "code" as const,
     onPreviewModeChange: vi.fn(),
+    hintResetToken: 0,
+    onResetSyntaxHints: vi.fn(),
   };
 }
 

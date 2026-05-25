@@ -169,6 +169,8 @@ describe("ApplyTab (real component)", () => {
     onRecordExampleType: noop,
     previewMode: "themed" as const,
     onPreviewModeChange: noop,
+    hintResetToken: 0,
+    onResetSyntaxHints: noop,
   };
 
   it("has zero critical/serious axe violations on initial render", async () => {
