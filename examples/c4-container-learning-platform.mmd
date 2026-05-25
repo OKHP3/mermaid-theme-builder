@@ -1,0 +1,27 @@
+C4Container
+    title Container Diagram — Online Learning Platform
+
+    Person(learner, "Learner", "Enrolls in courses and tracks progress")
+    Person(instructor, "Instructor", "Creates and manages course content")
+
+    System_Boundary(platform, "Learning Platform") {
+        Container(spa, "Single-Page App", "React", "Delivers the learning UI to the learner's browser")
+        Container(api, "API Server", "Node.js / Express", "Handles business logic, auth, and data access")
+        ContainerDb(db, "Primary Database", "PostgreSQL", "Stores users, courses, enrollments, and progress")
+        Container(queue, "Message Queue", "RabbitMQ", "Decouples notification delivery from request handling")
+        Container(notify, "Notification Worker", "Node.js", "Consumes queue events and sends emails and push alerts")
+    }
+
+    System_Ext(idp, "Identity Provider", "Single sign-on via OAuth 2.0")
+    System_Ext(payment, "Payment Gateway", "Processes course purchases")
+    System_Ext(cdn, "CDN", "Serves static assets and video content globally")
+
+    Rel(learner, spa, "Uses", "HTTPS")
+    Rel(instructor, spa, "Uses", "HTTPS")
+    Rel(spa, api, "Calls", "HTTPS / JSON")
+    Rel(api, db, "Reads and writes", "TCP")
+    Rel(api, queue, "Publishes events to", "AMQP")
+    Rel(queue, notify, "Delivers events to", "AMQP")
+    Rel(api, idp, "Authenticates users via", "OAuth 2.0")
+    Rel(api, payment, "Processes payments via", "HTTPS")
+    Rel(spa, cdn, "Loads assets from", "HTTPS")

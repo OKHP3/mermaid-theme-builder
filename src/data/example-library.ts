@@ -917,6 +917,55 @@ const C4_OKH_ECOSYSTEM = `C4Context
   Rel(llm, renderer, "Outputs themed Mermaid to")
   Rel(mtb, forge, "Part of")`;
 
+const C4_CONTAINER_LEARNING_PLATFORM = `C4Container
+    title Container Diagram — Online Learning Platform
+
+    Person(learner, "Learner", "Enrolls in courses and tracks progress")
+    Person(instructor, "Instructor", "Creates and manages course content")
+
+    System_Boundary(platform, "Learning Platform") {
+        Container(spa, "Single-Page App", "React", "Delivers the learning UI to the learner's browser")
+        Container(api, "API Server", "Node.js / Express", "Handles business logic, auth, and data access")
+        ContainerDb(db, "Primary Database", "PostgreSQL", "Stores users, courses, enrollments, and progress")
+        Container(queue, "Message Queue", "RabbitMQ", "Decouples notification delivery from request handling")
+        Container(notify, "Notification Worker", "Node.js", "Consumes queue events and sends emails and push alerts")
+    }
+
+    System_Ext(idp, "Identity Provider", "Single sign-on via OAuth 2.0")
+    System_Ext(payment, "Payment Gateway", "Processes course purchases")
+    System_Ext(cdn, "CDN", "Serves static assets and video content globally")
+
+    Rel(learner, spa, "Uses", "HTTPS")
+    Rel(instructor, spa, "Uses", "HTTPS")
+    Rel(spa, api, "Calls", "HTTPS / JSON")
+    Rel(api, db, "Reads and writes", "TCP")
+    Rel(api, queue, "Publishes events to", "AMQP")
+    Rel(queue, notify, "Delivers events to", "AMQP")
+    Rel(api, idp, "Authenticates users via", "OAuth 2.0")
+    Rel(api, payment, "Processes payments via", "HTTPS")
+    Rel(spa, cdn, "Loads assets from", "HTTPS")`;
+
+const C4_DYNAMIC_USER_LOGIN = `C4Dynamic
+    title Dynamic Diagram — User Login Across Containers
+
+    Person(user, "Learner", "Authenticates to access courses")
+
+    Boundary(platform, "Learning Platform") {
+        Container(spa, "Single-Page App", "React", "Hosts the login form and session state")
+        Container(api, "API Server", "Node.js", "Validates credentials and issues session tokens")
+        ContainerDb(db, "Primary Database", "PostgreSQL", "Stores user records and active sessions")
+    }
+
+    System_Ext(idp, "Identity Provider", "Issues OAuth 2.0 tokens")
+
+    Rel(user, spa, "1. Submits login form", "HTTPS")
+    Rel(spa, api, "2. POST /auth/login", "HTTPS / JSON")
+    Rel(api, idp, "3. Redirect to SSO", "OAuth 2.0")
+    Rel(idp, api, "4. Returns auth code", "OAuth 2.0")
+    Rel(api, db, "5. Upsert user session", "SQL")
+    Rel(api, spa, "6. Issues session token", "HTTPS / JSON")
+    Rel(spa, user, "7. Redirects to dashboard", "Browser")`;
+
 const ARCHITECTURE_STATIC_APP = `architecture-beta
   group browser(cloud)[Browser]
     service vite(server)[Vite Dev Server]
@@ -1710,6 +1759,30 @@ export const EXAMPLE_CATALOG: ExampleEntry[] = [
     description:
       "C4 Context diagram showing the Overkill Hill P³ tool ecosystem — Jamie, Mermaid Theme Builder, OKH Forge, and their external relationships to Mermaid.js, AI assistants, and target renderers.",
     tags: ["C4", "architecture", "OKH", "context diagram", "overkillhill.com"],
+  },
+
+  // C4 — Container level: multi-container web platform
+  {
+    id: "c4-container-learning-platform",
+    label: "C4 container — learning platform",
+    family: "c4",
+    category: "structural",
+    content: C4_CONTAINER_LEARNING_PLATFORM,
+    description:
+      "C4 Container diagram showing a multi-container online learning platform: React SPA, Node.js API server, PostgreSQL database, RabbitMQ message queue, notification worker, and external identity provider, payment gateway, and CDN. Shows how palette colors theme container boundaries, database shapes, and relationship lines at the container level of the C4 model.",
+    tags: ["C4", "container", "architecture", "microservices", "database", "queue", "structural"],
+  },
+
+  // C4 — Dynamic level: numbered runtime interaction sequence
+  {
+    id: "c4-dynamic-user-login",
+    label: "C4 dynamic — user login flow",
+    family: "c4",
+    category: "structural",
+    content: C4_DYNAMIC_USER_LOGIN,
+    description:
+      "C4 Dynamic diagram tracing the runtime login sequence across containers — learner submits a form, the SPA calls the API, the API redirects to an OAuth identity provider, receives an auth code, upserts the session, and returns a token. Numbered Rel steps show execution order. Demonstrates how palette colors theme participant boundaries and directed interaction arrows.",
+    tags: ["C4", "dynamic", "sequence", "login", "auth", "OAuth", "runtime", "structural"],
   },
 
   // Architecture — static app deployment

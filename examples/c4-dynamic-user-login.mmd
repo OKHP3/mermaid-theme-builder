@@ -1,0 +1,20 @@
+C4Dynamic
+    title Dynamic Diagram — User Login Across Containers
+
+    Person(user, "Learner", "Authenticates to access courses")
+
+    Boundary(platform, "Learning Platform") {
+        Container(spa, "Single-Page App", "React", "Hosts the login form and session state")
+        Container(api, "API Server", "Node.js", "Validates credentials and issues session tokens")
+        ContainerDb(db, "Primary Database", "PostgreSQL", "Stores user records and active sessions")
+    }
+
+    System_Ext(idp, "Identity Provider", "Issues OAuth 2.0 tokens")
+
+    Rel(user, spa, "1. Submits login form", "HTTPS")
+    Rel(spa, api, "2. POST /auth/login", "HTTPS / JSON")
+    Rel(api, idp, "3. Redirect to SSO", "OAuth 2.0")
+    Rel(idp, api, "4. Returns auth code", "OAuth 2.0")
+    Rel(api, db, "5. Upsert user session", "SQL")
+    Rel(api, spa, "6. Issues session token", "HTTPS / JSON")
+    Rel(spa, user, "7. Redirects to dashboard", "Browser")
