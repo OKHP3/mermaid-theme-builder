@@ -12,7 +12,7 @@ Visual governance for AI-generated Mermaid diagrams — paste, theme, preview, a
 - **3 rendering looks** — Classic, Neo, Hand-Drawn — sourced from Mermaid v11.15.0's look API
 - **7 renderer profiles** — mermaid.live, GitHub, GitLab, Notion, Obsidian, Confluence, CLI — with parity matrix and contextual look warnings
 - **5-tier typography hierarchy** — Diagram Title → Subgraph → Nested Subgraph → Node Label → Edge Label — with enforced parent-child sizing constraints
-- **Built-in brand palettes** — Overkill Hill P³, AskJamie, Glee Fully, plus Ocean Depth, Forest Sage, Slate Ember, Violet Mist and more
+- **Built-in brand palettes** — Overkill Hill P³, AskJamie, Glee-fully, plus Ocean Depth, Forest Sage, Slate Ember, Violet Mist and more
 - **Two-way color editor** — click swatches, preview updates live
 - **Three export formats** — Styled Code, Markdown Bootstrap, AI Prompt Scaffold
 - **Renderer-aware warnings** — contextual alerts when selected look is unsupported by target renderer
