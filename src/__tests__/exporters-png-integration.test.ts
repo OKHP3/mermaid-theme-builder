@@ -391,4 +391,132 @@ describe("svgStringToPngBlob — content pixel preservation", () => {
     expect(png.data[2], "B should match green foreground").toBe(0x44);
     expect(png.data[3], "Alpha should be fully opaque").toBe(255);
   });
+
+  it("scale=2: 10×10 source canvas produces correct interior pixels in 20×20 output", async () => {
+    // A solid-red 10×10 source drawn into a 20×20 output (scale=2).
+    // drawImage is called as ctx.drawImage(img, 0, 0, 20, 20), scaling the
+    // content to fill the larger canvas. Interior pixel (10,10) must be red,
+    // not the white background — catching any regression in scale math that
+    // produces a correctly-sized canvas but misdraws its content.
+    const source = createCanvas(10, 10);
+    const srcCtx = source.getContext("2d");
+    srcCtx.fillStyle = "#ff0000";
+    srcCtx.fillRect(0, 0, 10, 10);
+
+    class SourceImage {
+      readonly width = 10;
+      readonly height = 10;
+      readonly _sourceCanvas = source;
+      onload: (() => void) | null = null;
+      onerror: ((e: unknown) => void) | null = null;
+      set src(_url: string) {
+        Promise.resolve().then(() => this.onload?.());
+      }
+    }
+
+    vi.stubGlobal("Image", SourceImage);
+    vi.stubGlobal("document", {
+      createElement: (tag: string) => {
+        if (tag === "canvas") return makeContentCanvas();
+        throw new Error(`Unsupported tag in scale=2 content pixel test: ${tag}`);
+      },
+    });
+
+    const blob = await svgStringToPngBlob('<svg width="10" height="10"></svg>', 2);
+    const png = await parsePng(blob);
+
+    expect(png.width).toBe(20);
+    expect(png.height).toBe(20);
+
+    // Interior pixel (10, 10) — well within the scaled canvas.
+    const stride = png.width * 4;
+    const offset = 10 * stride + 10 * 4;
+    expect(png.data[offset], "R should be 255 (red scaled content)").toBe(255);
+    expect(png.data[offset + 1], "G should be 0 (red scaled content)").toBe(0);
+    expect(png.data[offset + 2], "B should be 0 (red scaled content)").toBe(0);
+    expect(png.data[offset + 3], "Alpha should be fully opaque").toBe(255);
+  });
+
+  it("scale=3: 10×10 source canvas produces correct interior pixels in 30×30 output", async () => {
+    // A solid-blue 10×10 source drawn into a 30×30 output (scale=3).
+    // Interior pixel (15,15) must carry the source color at the larger scale.
+    const source = createCanvas(10, 10);
+    const srcCtx = source.getContext("2d");
+    srcCtx.fillStyle = "#0000ff";
+    srcCtx.fillRect(0, 0, 10, 10);
+
+    class SourceImage {
+      readonly width = 10;
+      readonly height = 10;
+      readonly _sourceCanvas = source;
+      onload: (() => void) | null = null;
+      onerror: ((e: unknown) => void) | null = null;
+      set src(_url: string) {
+        Promise.resolve().then(() => this.onload?.());
+      }
+    }
+
+    vi.stubGlobal("Image", SourceImage);
+    vi.stubGlobal("document", {
+      createElement: (tag: string) => {
+        if (tag === "canvas") return makeContentCanvas();
+        throw new Error(`Unsupported tag in scale=3 content pixel test: ${tag}`);
+      },
+    });
+
+    const blob = await svgStringToPngBlob('<svg width="10" height="10"></svg>', 3);
+    const png = await parsePng(blob);
+
+    expect(png.width).toBe(30);
+    expect(png.height).toBe(30);
+
+    // Interior pixel (15, 15) — center of the 30×30 output.
+    const stride = png.width * 4;
+    const offset = 15 * stride + 15 * 4;
+    expect(png.data[offset], "R should be 0 (blue scaled content)").toBe(0);
+    expect(png.data[offset + 1], "G should be 0 (blue scaled content)").toBe(0);
+    expect(png.data[offset + 2], "B should be 255 (blue scaled content)").toBe(255);
+    expect(png.data[offset + 3], "Alpha should be fully opaque").toBe(255);
+  });
+
+  it("scale=2: corner pixel (0,0) is the foreground color, confirming no offset or clipping at origin", async () => {
+    // Verifies that the scaled drawImage starts at (0,0) with no offset.
+    // If the scale transform introduced an offset, the origin pixel would
+    // remain white (background) instead of the foreground color.
+    const source = createCanvas(10, 10);
+    const srcCtx = source.getContext("2d");
+    srcCtx.fillStyle = "#9b2335"; // crimson
+    srcCtx.fillRect(0, 0, 10, 10);
+
+    class SourceImage {
+      readonly width = 10;
+      readonly height = 10;
+      readonly _sourceCanvas = source;
+      onload: (() => void) | null = null;
+      onerror: ((e: unknown) => void) | null = null;
+      set src(_url: string) {
+        Promise.resolve().then(() => this.onload?.());
+      }
+    }
+
+    vi.stubGlobal("Image", SourceImage);
+    vi.stubGlobal("document", {
+      createElement: (tag: string) => {
+        if (tag === "canvas") return makeContentCanvas();
+        throw new Error(`Unsupported tag in scale=2 corner pixel test: ${tag}`);
+      },
+    });
+
+    const blob = await svgStringToPngBlob('<svg width="10" height="10"></svg>', 2);
+    const png = await parsePng(blob);
+
+    expect(png.width).toBe(20);
+    expect(png.height).toBe(20);
+
+    // Corner pixel (0, 0) — byte offset 0 in the RGBA data array.
+    expect(png.data[0], "R should be 0x9b (crimson, no origin offset)").toBe(0x9b);
+    expect(png.data[1], "G should be 0x23 (crimson, no origin offset)").toBe(0x23);
+    expect(png.data[2], "B should be 0x35 (crimson, no origin offset)").toBe(0x35);
+    expect(png.data[3], "Alpha should be fully opaque").toBe(255);
+  });
 });
