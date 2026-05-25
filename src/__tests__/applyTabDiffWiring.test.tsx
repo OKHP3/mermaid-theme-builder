@@ -67,6 +67,7 @@ const BASE_PROPS = {
   includeBadge: false,
   effectiveThemeName: PALETTE.name,
   onSwitchTab: noop,
+  onNavigateToParityMatrix: noop,
   onExtractTheme: () => null,
   userPalettes: [],
   onShowToast: noop,

@@ -306,6 +306,12 @@ export function AppShell() {
   const [showSettingsMenu, setShowSettingsMenu] = useState(false);
   const settingsBtnRef = useRef<HTMLButtonElement>(null);
   const settingsMenuRef = useRef<HTMLDivElement>(null);
+  const [openParityMatrix, setOpenParityMatrix] = useState(false);
+
+  const handleNavigateToParityMatrix = useCallback(() => {
+    setActiveTab("reference");
+    setOpenParityMatrix(true);
+  }, []);
 
   const supportsClassDef = useMemo(
     () => CLASSDEF_CAPABLE_FAMILIES.includes(detectDiagram(inputCode).family),
@@ -966,6 +972,7 @@ export function AppShell() {
               onRendererTargetChange={setRendererTarget}
               onUseExtractedTheme={handleUseExtractedTheme}
               onSwitchTab={setActiveTab}
+              onNavigateToParityMatrix={handleNavigateToParityMatrix}
               importDiagnostics={importDiagnostics}
               onImportDiagnosticsChange={setImportDiagnostics}
             />
@@ -991,6 +998,8 @@ export function AppShell() {
               onSelectPalette={handleSelectPalette}
               supportsClassDef={supportsClassDef}
               inputCode={inputCode}
+              openParityMatrix={openParityMatrix}
+              onParityMatrixOpened={() => setOpenParityMatrix(false)}
             />
           )}
         </div>

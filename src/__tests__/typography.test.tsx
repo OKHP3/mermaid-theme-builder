@@ -254,6 +254,7 @@ describe("ComposeTab — scale bar widths", () => {
       onRendererTargetChange: noop,
       onUseExtractedTheme: noop,
       onSwitchTab: noop,
+      onNavigateToParityMatrix: noop,
       importDiagnostics: null,
       onImportDiagnosticsChange: noop,
     };

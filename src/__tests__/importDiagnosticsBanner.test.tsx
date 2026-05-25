@@ -74,6 +74,7 @@ function makeBaseProps(overrides: Record<string, unknown> = {}) {
     onRendererTargetChange: noop,
     onUseExtractedTheme: noop,
     onSwitchTab: noop,
+    onNavigateToParityMatrix: noop,
     importDiagnostics: null as ImportDiagnostics | null,
     onImportDiagnosticsChange: noop,
     ...overrides,

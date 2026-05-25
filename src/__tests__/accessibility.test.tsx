@@ -401,6 +401,7 @@ describe("ComposeTab (color editor and palette editor)", () => {
     onRendererTargetChange: noop,
     onUseExtractedTheme: noop,
     onSwitchTab: noop,
+    onNavigateToParityMatrix: noop,
     importDiagnostics: null,
     onImportDiagnosticsChange: noop,
   };
@@ -526,6 +527,7 @@ describe("Invisible button focus regression — ComposeTab palette rows", () => 
         onRendererTargetChange: noop,
         onUseExtractedTheme: noop,
         onSwitchTab: noop,
+        onNavigateToParityMatrix: noop,
         importDiagnostics: null,
         onImportDiagnosticsChange: noop,
       })

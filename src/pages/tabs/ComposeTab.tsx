@@ -126,6 +126,7 @@ interface ComposeTabProps {
   onRendererTargetChange: (v: string) => void;
   onUseExtractedTheme: (palette: Palette, codeWithClassDefs?: string) => void;
   onSwitchTab: (tab: AppTab) => void;
+  onNavigateToParityMatrix: () => void;
   importDiagnostics: {
     missingKeys: string[];
     unknownKeys: string[];
@@ -172,6 +173,7 @@ export function ComposeTab({
   onRendererTargetChange,
   onUseExtractedTheme,
   onSwitchTab,
+  onNavigateToParityMatrix,
   importDiagnostics,
   onImportDiagnosticsChange,
 }: ComposeTabProps) {
@@ -1159,11 +1161,18 @@ export function ComposeTab({
                   clipRule="evenodd"
                 />
               </svg>
-              <span>
+              <span className="flex-1">
                 <span className="font-semibold">{previewBadgeLabel} diagram type</span>
                 {" — "}theme variable support is limited for this family. The preview may not
                 reflect all palette colors.
               </span>
+              <button
+                type="button"
+                onClick={onNavigateToParityMatrix}
+                className="shrink-0 text-[10px] font-medium text-amber-600 dark:text-amber-400 underline underline-offset-2 hover:text-amber-800 dark:hover:text-amber-200 focus:outline-none focus:ring-1 focus:ring-amber-500/60 rounded whitespace-nowrap"
+              >
+                See support details →
+              </button>
             </div>
           )}
           <div className="flex-1 overflow-auto p-4">

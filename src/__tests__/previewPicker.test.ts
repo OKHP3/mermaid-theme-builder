@@ -90,6 +90,7 @@ const BASE_PROPS = {
   onRendererTargetChange: noop,
   onUseExtractedTheme: noop,
   onSwitchTab: noop as (tab: AppTab) => void,
+  onNavigateToParityMatrix: noop,
   importDiagnostics: null,
   onImportDiagnosticsChange: noop,
 };

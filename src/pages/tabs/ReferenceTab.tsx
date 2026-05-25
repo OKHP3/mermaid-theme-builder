@@ -15,6 +15,8 @@ interface ReferenceTabProps {
   onSelectPalette: (id: string) => void;
   supportsClassDef: boolean;
   inputCode?: string;
+  openParityMatrix?: boolean;
+  onParityMatrixOpened?: () => void;
 }
 
 const TAXONOMY_DOCS_URL =
@@ -62,6 +64,8 @@ export function ReferenceTab({
   onSelectPalette,
   supportsClassDef,
   inputCode = "",
+  openParityMatrix = false,
+  onParityMatrixOpened,
 }: ReferenceTabProps) {
   const classDefs = useMemo(() => getClassDefs(selectedPalette), [selectedPalette]);
 
@@ -94,6 +98,18 @@ export function ReferenceTab({
       el.open = true;
     }
   }, [supportsClassDef]);
+
+  // When navigated here via the beta hint "See support details →" link, force-open
+  // the Renderer Parity Matrix section and scroll it into view.
+  useEffect(() => {
+    if (!openParityMatrix) return;
+    const el = rendererParityRef.current;
+    if (!el) return;
+    el.open = true;
+    setRendererParityOpen(true);
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+    onParityMatrixOpened?.();
+  }, [openParityMatrix, onParityMatrixOpened]);
 
   return (
     <div className="flex flex-col h-full overflow-hidden">

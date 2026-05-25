@@ -37,6 +37,7 @@ function noop() {}
 const BASE_PROPS = {
   onUseExtractedTheme: (_p: Palette, _c?: string) => {},
   onSwitchTab: noop as (tab: AppTab) => void,
+  onNavigateToParityMatrix: noop,
   onShowToast: noop,
 };
 
