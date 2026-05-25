@@ -19,6 +19,7 @@ import { ExtractTab } from "@/pages/tabs/ExtractTab";
 import type { AppTab } from "@/App";
 import {
   paletteToPortableJson,
+  palettesToBundleJson,
   parsePortablePalette,
   parsePaletteBundle,
   downloadTextFile,
@@ -327,6 +328,17 @@ export function ComposeTab({
     );
     onShowToast("Downloaded .theme.json file.");
   }, [selectedPalette, effectiveThemeName, onShowToast]);
+
+  const handleExportBundle = useCallback(() => {
+    downloadTextFile(
+      `my-palettes.palette-bundle.json`,
+      palettesToBundleJson(userPalettes),
+      "application/json;charset=utf-8"
+    );
+    onShowToast(
+      `Downloaded bundle with ${userPalettes.length} palette${userPalettes.length === 1 ? "" : "s"}.`
+    );
+  }, [userPalettes, onShowToast]);
 
   const handleImportClick = useCallback(() => {
     fileInputRef.current?.click();
@@ -914,6 +926,15 @@ export function ComposeTab({
                   Import JSON
                 </button>
               </div>
+              {userPalettes.length > 0 && (
+                <button
+                  onClick={handleExportBundle}
+                  className="w-full mt-2 text-xs px-2 py-1.5 rounded-md border border-border bg-background hover:bg-muted hover:border-primary/40 font-medium transition-all"
+                  title={`Export all ${userPalettes.length} saved palette${userPalettes.length === 1 ? "" : "s"} as a single bundle file`}
+                >
+                  Export bundle ({userPalettes.length})
+                </button>
+              )}
               {isCurrentUserPalette && (
                 <button
                   onClick={() => onDeleteUserPalette(selectedPaletteId)}
