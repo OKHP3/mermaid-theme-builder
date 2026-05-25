@@ -1049,7 +1049,16 @@ export function ApplyTab({
                       <span className="font-medium text-foreground">{DOWNLOAD_LABELS[t]}</span>
                       <span className="text-[10px] text-muted-foreground flex items-center gap-1">
                         {t === "mermaid" && "raw text"}
-                        {t === "markdown" && "bootstrap"}
+                        {t === "markdown" && (
+                          <>
+                            bootstrap
+                            {rendererProfile && (
+                              <span className="px-1.5 py-px rounded text-[10px] font-semibold leading-none bg-[#c46a2c]/15 text-[#c46a2c] border border-[#c46a2c]/30">
+                                {rendererProfile.shortName}
+                              </span>
+                            )}
+                          </>
+                        )}
                         {t === "scaffold" && (
                           <>
                             prompt
