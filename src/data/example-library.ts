@@ -1508,6 +1508,9 @@ export const EXAMPLE_CATALOG: ExampleEntry[] = [
     category: "structural",
     content: BLOCK_MERMAID_BASIC,
     badge: "Canonical",
+    description:
+      "Canonical block diagram from the Mermaid docs: raw input flows through a three-step transform block (validate, process, enrich) into a data store. Good starting point for seeing how palette colors theme block backgrounds, arrow connectors, and group borders.",
+    tags: ["block", "canonical", "data pipeline", "ETL", "transform", "structural"],
   },
   {
     id: "c4-mermaid-basic",
@@ -1516,6 +1519,9 @@ export const EXAMPLE_CATALOG: ExampleEntry[] = [
     category: "structural",
     content: C4_MERMAID_BASIC,
     badge: "Canonical",
+    description:
+      "Canonical C4 Context diagram: an online learning platform with learner and instructor personas, core systems (LMS, video, notifications), and external dependencies (payment gateway, identity provider). Shows how palette colors theme C4 boundaries, person shapes, and relationship lines.",
+    tags: ["c4", "canonical", "context", "learning", "platform", "architecture"],
   },
   // data-viz
   {
@@ -1560,6 +1566,9 @@ export const EXAMPLE_CATALOG: ExampleEntry[] = [
     category: "data-viz",
     content: RADAR_MERMAID_BASIC,
     badge: "Canonical · Beta",
+    description:
+      "Canonical radar chart from the Mermaid docs: three team members (Alice, Bob, Charlie) rated across six skill axes — backend, frontend, UX, data, DevOps, and quality. Good baseline for seeing how palette colors theme radar curves and axis labels.",
+    tags: ["radar", "canonical", "capability", "team", "skills", "matrix"],
   },
   {
     id: "xychart-mermaid-basic",
@@ -1568,6 +1577,9 @@ export const EXAMPLE_CATALOG: ExampleEntry[] = [
     category: "data-viz",
     content: XYCHART_MERMAID_BASIC,
     badge: "Canonical · Beta",
+    description:
+      "Canonical XY chart from the Mermaid docs: monthly revenue bars plotted against a target line over six months. Shows how palette colors theme bar fills and line strokes in a mixed bar-and-line chart.",
+    tags: ["xychart", "canonical", "revenue", "target", "bar chart", "data visualization"],
   },
   // timeline
   {
@@ -1605,6 +1617,9 @@ export const EXAMPLE_CATALOG: ExampleEntry[] = [
     category: "specialty",
     content: ARCHITECTURE_MERMAID_BASIC,
     badge: "Canonical · Beta",
+    description:
+      "Canonical architecture diagram from the Mermaid docs: a client zone (browser and mobile app) connecting through an API gateway to backend services (auth, cache, primary DB). Shows how palette colors theme service nodes, group boundaries, and connector lines.",
+    tags: ["architecture", "canonical", "backend", "gateway", "client", "services"],
   },
   {
     id: "kanban-mermaid-basic",
@@ -1613,6 +1628,9 @@ export const EXAMPLE_CATALOG: ExampleEntry[] = [
     category: "specialty",
     content: KANBAN_MERMAID_BASIC,
     badge: "Canonical · Beta",
+    description:
+      "Canonical Kanban board from the Mermaid docs: four columns (To Do, In Progress, In Review, Done) with nine task cards including priority and assignee metadata. Shows how palette colors theme column headers, card backgrounds, and status indicators.",
+    tags: ["kanban", "canonical", "board", "tasks", "workflow", "agile"],
   },
   {
     id: "packet-mermaid-basic",
@@ -1621,6 +1639,9 @@ export const EXAMPLE_CATALOG: ExampleEntry[] = [
     category: "specialty",
     content: PACKET_MERMAID_BASIC,
     badge: "Canonical · Beta",
+    description:
+      "Canonical packet diagram from the Mermaid docs: a TCP segment header laid out field by field — source and destination port, sequence number, control flags, window size, checksum, and options. Shows how palette colors theme field blocks and segment labels.",
+    tags: ["packet", "canonical", "TCP", "segment", "networking", "protocol"],
   },
 
   // ── Batch #2 ────────────────────────────────────────────────────────────────
