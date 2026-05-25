@@ -295,6 +295,130 @@ describe("round-trip: generateThemedCode output is re-extractable by extractThem
 });
 
 // ---------------------------------------------------------------------------
+// Round-trip: generateThemedCode → extractTheme (family-specific overlays)
+// ---------------------------------------------------------------------------
+
+describe("round-trip: family overlays survive generateThemedCode → extractTheme", () => {
+  const palette = BUILTIN_PALETTES[0];
+
+  const primaryColor = palette.colors.find((c) => c.key === "primaryColor")?.value ?? "";
+  const primaryTextColor = palette.colors.find((c) => c.key === "primaryTextColor")?.value ?? "";
+  const lineColor = palette.colors.find((c) => c.key === "lineColor")?.value ?? "";
+
+  const FAMILIES: Array<{ family: "sequenceDiagram" | "classDiagram"; stub: string }> = [
+    {
+      family: "sequenceDiagram",
+      stub: "sequenceDiagram\n  Alice->>Bob: Hello\n  Bob-->>Alice: Hi",
+    },
+    {
+      family: "classDiagram",
+      stub: "classDiagram\n  Animal <|-- Duck\n  Animal : +String name",
+    },
+  ];
+
+  it.each(FAMILIES)(
+    "$family: generateThemedCode produces an init directive",
+    ({ family, stub }) => {
+      const themed = generateThemedCode(stub, {
+        palette,
+        diagramFamily: family,
+        includeMetaComments: false,
+        includeBadge: false,
+      });
+      expect(themed).toContain("%%{init:");
+      expect(themed).toContain('"themeVariables"');
+    },
+  );
+
+  it.each(FAMILIES)(
+    "$family: extractTheme recognizes output as 'init-directive'",
+    ({ family, stub }) => {
+      const themed = generateThemedCode(stub, {
+        palette,
+        diagramFamily: family,
+        includeMetaComments: false,
+        includeBadge: false,
+      });
+      expect(extractTheme(themed).sourceFormat).toBe("init-directive");
+    },
+  );
+
+  it.each(FAMILIES)(
+    "$family: primaryColor survives the round-trip",
+    ({ family, stub }) => {
+      const themed = generateThemedCode(stub, {
+        palette,
+        diagramFamily: family,
+        includeMetaComments: false,
+        includeBadge: false,
+      });
+      expect(extractTheme(themed).themeVariables.primaryColor).toBe(primaryColor);
+    },
+  );
+
+  it.each(FAMILIES)(
+    "$family: primaryTextColor survives the round-trip",
+    ({ family, stub }) => {
+      const themed = generateThemedCode(stub, {
+        palette,
+        diagramFamily: family,
+        includeMetaComments: false,
+        includeBadge: false,
+      });
+      expect(extractTheme(themed).themeVariables.primaryTextColor).toBe(primaryTextColor);
+    },
+  );
+
+  it.each(FAMILIES)(
+    "$family: lineColor survives the round-trip",
+    ({ family, stub }) => {
+      const themed = generateThemedCode(stub, {
+        palette,
+        diagramFamily: family,
+        includeMetaComments: false,
+        includeBadge: false,
+      });
+      expect(extractTheme(themed).themeVariables.lineColor).toBe(lineColor);
+    },
+  );
+
+  it.each(FAMILIES)(
+    "$family: theme name is recovered as 'base'",
+    ({ family, stub }) => {
+      const themed = generateThemedCode(stub, {
+        palette,
+        diagramFamily: family,
+        includeMetaComments: false,
+        includeBadge: false,
+      });
+      expect(extractTheme(themed).themeName).toBe("base");
+    },
+  );
+
+  it("sequenceDiagram: family-specific actorBkg is present in themed output", () => {
+    const stub = "sequenceDiagram\n  Alice->>Bob: Hello";
+    const themed = generateThemedCode(stub, {
+      palette,
+      diagramFamily: "sequenceDiagram",
+      includeMetaComments: false,
+      includeBadge: false,
+    });
+    expect(themed).toContain("actorBkg");
+  });
+
+  it("classDiagram: family-specific classText is present in themed output", () => {
+    const stub = "classDiagram\n  Animal <|-- Duck";
+    const themed = generateThemedCode(stub, {
+      palette,
+      diagramFamily: "classDiagram",
+      includeMetaComments: false,
+      includeBadge: false,
+    });
+    expect(themed).toContain("classText");
+  });
+});
+
+// ---------------------------------------------------------------------------
 // extractTheme — YAML frontmatter
 // ---------------------------------------------------------------------------
 
