@@ -218,7 +218,7 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
   {
     id: "gantt",
     displayName: "Gantt Chart",
-    declarations: /^\s*gantt\b/im,
+    declarations: /^\s*gantt\s*$/im,
     stability: "stable",
     styleStrategy: "limited",
     supportsClassDef: false,
@@ -242,7 +242,7 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
   {
     id: "pie",
     displayName: "Pie Chart",
-    declarations: /^\s*pie\b/im,
+    declarations: /^\s*pie\s*(?:showData\b|title\b|\s*$)/im,
     stability: "stable",
     styleStrategy: "limited",
     supportsClassDef: false,
@@ -667,7 +667,7 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
   {
     id: "ishikawa",
     displayName: "Ishikawa (Fishbone)",
-    declarations: /^\s*ishikawa-beta\b/im,
+    declarations: /^\s*(?:ishikawa-beta|fishbone)\b/im,
     stability: "experimental",
     styleStrategy: "limited",
     supportsClassDef: false,
