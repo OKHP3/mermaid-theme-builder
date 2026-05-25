@@ -40,7 +40,6 @@ import { FamilySyntaxHint } from "@/components/FamilySyntaxHint";
 import {
   getFamilySyntaxHint,
   isHintDismissed,
-  clearAllDismissals,
 } from "@/lib/familySyntaxHints";
 import { HighlightedCode } from "@/components/HighlightedCode";
 import { type TypographySettings } from "@/lib/typography";
@@ -95,6 +94,8 @@ interface ApplyTabProps {
   onRecordExampleType: (id: string, type: "flowchart" | "sequence") => void;
   previewMode: PreviewMode;
   onPreviewModeChange: (mode: PreviewMode) => void;
+  hintResetToken: number;
+  onResetSyntaxHints: () => void;
 }
 
 const EXPORT_LABELS: Record<ExportType, string> = {
@@ -144,12 +145,13 @@ export function ApplyTab({
   onRecordExampleType,
   previewMode,
   onPreviewModeChange: setPreviewMode,
+  hintResetToken,
+  onResetSyntaxHints,
 }: ApplyTabProps) {
   const [showColorEditor, setShowColorEditor] = useState(false);
   const [copiedType, setCopiedType] = useState<ExportType | null>(null);
   const [downloadingType, setDownloadingType] = useState<DownloadType | null>(null);
   const [advisoryDismissed, setAdvisoryDismissed] = useState(false);
-  const [hintResetToken, setHintResetToken] = useState(0);
   const [familyHintDismissed, setFamilyHintDismissed] = useState(false);
 
   const rendererProfile = useMemo(() => getRendererById(rendererTarget), [rendererTarget]);
@@ -729,11 +731,7 @@ export function ApplyTab({
         <div className="flex-none border-b border-border/40 bg-transparent px-3 py-1 print-hide flex items-center justify-end">
           <button
             type="button"
-            onClick={() => {
-              clearAllDismissals();
-              setHintResetToken((t) => t + 1);
-              setFamilyHintDismissed(false);
-            }}
+            onClick={onResetSyntaxHints}
             className="text-[10px] text-muted-foreground/50 hover:text-sky-500 dark:hover:text-sky-400 transition-colors inline-flex items-center gap-1"
             aria-label="Show syntax tip for this diagram type"
           >

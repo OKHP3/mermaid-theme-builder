@@ -10,6 +10,7 @@ import {
   type ThemeColor,
   getEffectiveThemeName,
 } from "@/lib/palettes";
+import { clearAllDismissals } from "@/lib/familySyntaxHints";
 import { BRAND_EXAMPLES, GENERIC_EXAMPLE, SHOWCASE_EXAMPLE } from "@/data/examples";
 import { EXAMPLE_GROUPS } from "@/data/example-library";
 import { AppIcon } from "@/components/AppIcon";
@@ -268,6 +269,10 @@ export function AppShell() {
   const [lastExampleType, setLastExampleType] = useState<Record<string, "flowchart" | "sequence">>({});
   const [lastSelectedExampleId, setLastSelectedExampleId] = useState<string>("");
   const [importDiagnostics, setImportDiagnostics] = useState<{ missingKeys: string[]; unknownKeys: string[]; invalidValues: Array<{ key: string; value: string }> } | null>(null);
+  const [hintResetToken, setHintResetToken] = useState(0);
+  const [showSettingsMenu, setShowSettingsMenu] = useState(false);
+  const settingsBtnRef = useRef<HTMLButtonElement>(null);
+  const settingsMenuRef = useRef<HTMLDivElement>(null);
 
   const supportsClassDef = useMemo(
     () => CLASSDEF_CAPABLE_FAMILIES.includes(detectDiagram(inputCode).family),
@@ -611,6 +616,32 @@ export function AppShell() {
 
   const showToast = useCallback((msg: string) => setToast(msg), []);
 
+  const handleResetSyntaxHints = useCallback(() => {
+    clearAllDismissals();
+    setHintResetToken((t) => t + 1);
+    setToast("Syntax tips restored.");
+  }, []);
+
+  useEffect(() => {
+    if (!showSettingsMenu) return;
+    function onPointerDown(e: PointerEvent) {
+      if (
+        settingsMenuRef.current?.contains(e.target as Node) ||
+        settingsBtnRef.current?.contains(e.target as Node)
+      ) return;
+      setShowSettingsMenu(false);
+    }
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setShowSettingsMenu(false);
+    }
+    document.addEventListener("pointerdown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [showSettingsMenu]);
+
   const handleRecordExampleType = useCallback((id: string, type: "flowchart" | "sequence") => {
     setLastExampleType((prev) => ({ ...prev, [id]: type }));
   }, []);
@@ -648,6 +679,49 @@ export function AppShell() {
             cycle={cycleThemeMode}
             className="forge-header-icon-btn print-hide"
           />
+          <div className="relative">
+            <button
+              type="button"
+              ref={settingsBtnRef}
+              onClick={() => setShowSettingsMenu((v) => !v)}
+              aria-label="Settings"
+              title="Settings"
+              aria-expanded={showSettingsMenu}
+              aria-haspopup="menu"
+              className="forge-header-icon-btn print-hide"
+            >
+              <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5" aria-hidden="true">
+                <path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
+              </svg>
+            </button>
+            {showSettingsMenu && (
+              <div
+                ref={settingsMenuRef}
+                role="menu"
+                aria-label="Settings"
+                className="absolute top-full right-0 mt-1.5 z-50 rounded-lg border border-border bg-card shadow-lg overflow-hidden"
+                style={{ minWidth: "192px" }}
+              >
+                <div className="px-3 py-1.5 border-b border-border/60">
+                  <span className="forge-eyebrow text-muted-foreground/60">Settings</span>
+                </div>
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={() => {
+                    handleResetSyntaxHints();
+                    setShowSettingsMenu(false);
+                  }}
+                  className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-left text-foreground hover:bg-muted transition-colors"
+                >
+                  <svg viewBox="0 0 16 16" fill="currentColor" className="w-3.5 h-3.5 shrink-0 text-muted-foreground" aria-hidden="true">
+                    <path d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM0 8a8 8 0 1116 0A8 8 0 010 8zm6.5-1.5A.75.75 0 017.25 6h1a.75.75 0 01.75.75v3.75h.25a.75.75 0 010 1.5h-2a.75.75 0 010-1.5h.25V7.5h-.25a.75.75 0 01-.75-.75zM8 4a1 1 0 110 2 1 1 0 010-2z" />
+                  </svg>
+                  Reset all syntax tips
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </header>
 
@@ -754,6 +828,8 @@ export function AppShell() {
             onRecordExampleType={handleRecordExampleType}
             previewMode={previewMode}
             onPreviewModeChange={setPreviewMode}
+            hintResetToken={hintResetToken}
+            onResetSyntaxHints={handleResetSyntaxHints}
           />
         </div>
         <div
