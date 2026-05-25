@@ -37,8 +37,10 @@ import { ApplyTab } from "@/pages/tabs/ApplyTab";
 import { ComposeTab } from "@/pages/tabs/ComposeTab";
 import { ExtractTab } from "@/pages/tabs/ExtractTab";
 import { ColorSwatch } from "@/components/ColorSwatch";
+import { ClassBrowser } from "@/components/ClassBrowser";
 import { BRAND_PALETTES } from "@/lib/palettes";
 import { DEFAULT_TYPOGRAPHY } from "@/lib/typography";
+import { getClassDefs } from "@/lib/themeEngine";
 
 // ---------------------------------------------------------------------------
 // Suppress happy-dom navigation warnings that appear when AppShell writes to
@@ -82,6 +84,90 @@ function logViolations(label: string, violations: axe.Result[]) {
       violations.map((v) => `${v.impact}: ${v.id} — ${v.description}`),
     );
   }
+}
+
+// ---------------------------------------------------------------------------
+// Invisible-button focus regression guard helpers
+//
+// Checks that every opacity-0 interactive element in a rendered component has
+// at least one keyboard-visibility escape class:
+//   • focus:opacity-100  /  focus-visible:opacity-100  (direct focus)
+//   • group-focus-within:opacity-100 + an ancestor carrying the Tailwind
+//     "group" class  (visible when the ancestor's :focus-within fires —
+//     which happens when the element itself is focused)
+//
+// Note: happy-dom has no CSS engine so getComputedStyle().opacity is always
+// "". This structural className check is the reliable alternative. It targets
+// the exact regression pattern — opacity-0 without a focus counterpart — that
+// was historically spread across multiple components.
+// ---------------------------------------------------------------------------
+
+const DIRECT_FOCUS_ESCAPE_CLASSES = ["focus:opacity-100", "focus-visible:opacity-100"];
+
+function isInteractiveEl(el: Element): boolean {
+  const tag = el.tagName.toLowerCase();
+  return (
+    tag === "button" ||
+    tag === "input" ||
+    (tag === "a" && el.hasAttribute("href")) ||
+    el.getAttribute("role") === "button" ||
+    (el.hasAttribute("tabindex") && el.getAttribute("tabindex") !== "-1")
+  );
+}
+
+function hasGroupAncestor(el: Element): boolean {
+  let node = el.parentElement;
+  while (node) {
+    const cn = typeof node.className === "string" ? node.className : "";
+    if (cn.split(/\s+/).some((c) => c === "group" || c.startsWith("group/"))) return true;
+    node = node.parentElement;
+  }
+  return false;
+}
+
+interface FocusViolator {
+  tag: string;
+  ariaLabel: string | null;
+  reason: string;
+}
+
+function findOpacity0WithoutFocusEscape(container: HTMLElement): FocusViolator[] {
+  const violators: FocusViolator[] = [];
+  const allEls = container.querySelectorAll<HTMLElement>("*");
+
+  for (const el of allEls) {
+    const cn = typeof el.className === "string" ? el.className : "";
+    const classes = cn.split(/\s+/).filter(Boolean);
+
+    if (!classes.includes("opacity-0")) continue;
+    if (!isInteractiveEl(el)) continue;
+
+    if (classes.some((c) => DIRECT_FOCUS_ESCAPE_CLASSES.includes(c))) continue;
+
+    if (classes.includes("group-focus-within:opacity-100") && hasGroupAncestor(el)) continue;
+
+    violators.push({
+      tag: el.tagName.toLowerCase(),
+      ariaLabel: el.getAttribute("aria-label"),
+      reason: classes.includes("group-focus-within:opacity-100")
+        ? "group-focus-within:opacity-100 present but no .group ancestor found in DOM"
+        : "missing focus:opacity-100, focus-visible:opacity-100, or group-focus-within:opacity-100 (with .group ancestor)",
+    });
+  }
+  return violators;
+}
+
+function formatFocusViolators(vs: FocusViolator[]): string {
+  if (vs.length === 0) return "";
+  return (
+    "opacity-0 interactive elements without keyboard-visibility escape:\n" +
+    vs
+      .map(
+        (v) =>
+          `  <${v.tag}${v.ariaLabel ? ` aria-label="${v.ariaLabel}"` : ""}> — ${v.reason}`,
+      )
+      .join("\n")
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -348,5 +434,95 @@ describe("ExtractTab (input area, idle state)", () => {
         .map((v) => `  [${v.impact}] ${v.id}: ${v.description}\n  Nodes: ${v.nodes.map((n) => n.html).slice(0, 2).join(", ")}`)
         .join("\n")}`,
     ).toHaveLength(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 8–10. Invisible button focus regression guard
+//
+// Structural check: every opacity-0 interactive element in the named
+// components must have at least one keyboard-visibility escape class.
+//
+// A failure here means a button was made invisible without a matching focus
+// class — it would be unreachable by keyboard until a mouse hover occurs.
+//
+// Failure message shows which element was found and why it doesn't pass.
+// ---------------------------------------------------------------------------
+
+// 8. ColorSwatch — reset button (only rendered when isOverridden=true)
+describe("Invisible button focus regression — ColorSwatch reset button", () => {
+  it("reset button (opacity-0) has a keyboard-visibility escape class", () => {
+    const { container } = render(
+      createElement(ColorSwatch, {
+        color: { key: "primaryColor", label: "Primary Color", value: "#1e3a5f" },
+        onChange: vi.fn(),
+        isOverridden: true,
+        onReset: vi.fn(),
+      }),
+    );
+    const violations = findOpacity0WithoutFocusEscape(container);
+    expect(violations, formatFocusViolators(violations)).toHaveLength(0);
+  });
+});
+
+// 9. ComposeTab — delete-palette button in PaletteRow (opacity-0, focus:opacity-100)
+//
+// PaletteRow is defined in ComposeTab.tsx and contains an opacity-0 delete
+// button. This guard ensures the button retains its focus escape class if
+// PaletteRow is ever wired into the live render tree.
+describe("Invisible button focus regression — ComposeTab palette rows", () => {
+  it("all opacity-0 interactive elements have a keyboard-visibility escape class", () => {
+    const palette = BRAND_PALETTES[0];
+    const noop = vi.fn();
+    const { container } = render(
+      createElement(ComposeTab, {
+        selectedPalette: palette,
+        selectedPaletteId: palette.id,
+        onSelectPalette: noop,
+        customColors: {},
+        onColorChange: noop,
+        onResetPalette: noop,
+        hasCustomizations: false,
+        includeMetaComments: true,
+        onIncludeMetaCommentsChange: noop,
+        includeBadge: true,
+        onIncludeBadgeChange: noop,
+        customThemeName: "",
+        onCustomThemeNameChange: noop,
+        effectiveThemeName: palette.name,
+        userPalettes: [],
+        onSavePalette: noop,
+        onImportPalette: noop,
+        onDeleteUserPalette: noop,
+        onShowToast: noop,
+        look: "classic" as const,
+        onLookChange: noop,
+        fontSize: "",
+        onFontSizeChange: noop,
+        typography: DEFAULT_TYPOGRAPHY,
+        onTypographyChange: noop,
+        rendererTarget: "",
+        onRendererTargetChange: noop,
+        onUseExtractedTheme: noop,
+        onSwitchTab: noop,
+        importDiagnostics: null,
+        onImportDiagnosticsChange: noop,
+      }),
+    );
+    const violations = findOpacity0WithoutFocusEscape(container);
+    expect(violations, formatFocusViolators(violations)).toHaveLength(0);
+  });
+});
+
+// 10. ClassBrowser — copy-class button (opacity-0, group-focus-within:opacity-100
+//     inside a .group ancestor — no direct focus:opacity-100)
+describe("Invisible button focus regression — ClassBrowser copy button", () => {
+  it("copy-class button (opacity-0) has a keyboard-visibility escape class", () => {
+    const classDefs = getClassDefs(BRAND_PALETTES[0]);
+    const { container } = render(
+      createElement(ClassBrowser, { classDefs, supportsClassDef: true }),
+    );
+    const violations = findOpacity0WithoutFocusEscape(container);
+    expect(violations, formatFocusViolators(violations)).toHaveLength(0);
   });
 });
