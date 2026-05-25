@@ -1,7 +1,8 @@
 // @vitest-environment happy-dom
 
 /**
- * Tests for the FamilySyntaxHint component.
+ * Tests for the FamilySyntaxHint component and the familySyntaxHints storage
+ * helpers (dismissHint, isHintDismissed, clearAllDismissals).
  *
  * Behaviors covered:
  *   1. The hint panel renders for every family present in the HINTS registry:
@@ -14,6 +15,8 @@
  *   4. A family already marked dismissed in localStorage starts hidden.
  *   5. A resetToken change on the same mounted instance re-evaluates the
  *      dismissed state from localStorage.
+ *   6. clearAllDismissals() removes every "mtb.hint-dismissed.*" key from
+ *      localStorage without touching unrelated keys.
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
@@ -21,6 +24,11 @@ import { render, screen, act, cleanup } from "@testing-library/react";
 import { fireEvent } from "@testing-library/dom";
 import { createElement } from "react";
 import { FamilySyntaxHint } from "@/components/FamilySyntaxHint";
+import {
+  clearAllDismissals,
+  dismissHint,
+  isHintDismissed,
+} from "@/lib/familySyntaxHints";
 import type { DiagramFamily } from "@/data/mermaid-capabilities";
 
 // ---------------------------------------------------------------------------
@@ -252,5 +260,50 @@ describe("FamilySyntaxHint — resetToken re-evaluates dismissed state", () => {
     });
 
     expect(hintIsVisible()).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 6. clearAllDismissals — removes all mtb.hint-dismissed.* keys
+// ---------------------------------------------------------------------------
+
+describe("clearAllDismissals — removes all dismissal keys from localStorage", () => {
+  it("removes a single dismissal key", () => {
+    localStorage.setItem("mtb.hint-dismissed.gantt", "1");
+    clearAllDismissals();
+    expect(localStorage.getItem("mtb.hint-dismissed.gantt")).toBeNull();
+  });
+
+  it("removes multiple dismissal keys in one call", () => {
+    localStorage.setItem("mtb.hint-dismissed.gantt", "1");
+    localStorage.setItem("mtb.hint-dismissed.pie", "1");
+    localStorage.setItem("mtb.hint-dismissed.sequenceDiagram", "1");
+    clearAllDismissals();
+    expect(localStorage.getItem("mtb.hint-dismissed.gantt")).toBeNull();
+    expect(localStorage.getItem("mtb.hint-dismissed.pie")).toBeNull();
+    expect(localStorage.getItem("mtb.hint-dismissed.sequenceDiagram")).toBeNull();
+  });
+
+  it("does not remove unrelated localStorage keys", () => {
+    localStorage.setItem("some-unrelated-key", "value");
+    localStorage.setItem("mtb.hint-dismissed.gantt", "1");
+    clearAllDismissals();
+    expect(localStorage.getItem("some-unrelated-key")).toBe("value");
+  });
+
+  it("does not throw when there are no dismissal keys to remove", () => {
+    expect(() => clearAllDismissals()).not.toThrow();
+  });
+
+  it("isHintDismissed returns false for all previously dismissed families after clearAllDismissals", () => {
+    dismissHint("gantt");
+    dismissHint("pie");
+    expect(isHintDismissed("gantt")).toBe(true);
+    expect(isHintDismissed("pie")).toBe(true);
+
+    clearAllDismissals();
+
+    expect(isHintDismissed("gantt")).toBe(false);
+    expect(isHintDismissed("pie")).toBe(false);
   });
 });
