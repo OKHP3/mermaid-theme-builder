@@ -303,18 +303,28 @@ export function parsePortablePalette(json: string): PortablePaletteImport | Port
     if (!Array.isArray(data.colors) || data.colors.length === 0) {
       return { ok: false, error: "Missing or empty `colors` array." };
     }
+    // Validate top-level string fields — reject when present with the wrong type,
+    // but allow absent (undefined) values and substitute a safe default.
+    for (const field of ["id", "name", "version", "description"] as const) {
+      if (data[field] !== undefined && typeof data[field] !== "string") {
+        return {
+          ok: false,
+          error: `Field '${field}' must be a string, got ${typeof data[field]}.`,
+        };
+      }
+    }
+
     const colors: { key: string; label: string; value: string }[] = data.colors.map(
       (c: unknown) => {
         if (typeof c !== "object" || c === null) throw new Error("Invalid color entry");
         const cc = c as Record<string, unknown>;
-        if (
-          typeof cc.key !== "string" ||
-          typeof cc.label !== "string" ||
-          typeof cc.value !== "string"
-        ) {
-          throw new Error("Color entries must have key/label/value strings");
+        if (typeof cc.key !== "string" || typeof cc.label !== "string") {
+          throw new Error("Color entries must have string key and label fields");
         }
-        return { key: cc.key, label: cc.label, value: cc.value };
+        // Non-string value: coerce to a displayable string so the entry reaches
+        // invalidValues with a clear representation rather than aborting the import.
+        const value: string = typeof cc.value === "string" ? cc.value : `[type:${typeof cc.value}]`;
+        return { key: cc.key, label: cc.label, value };
       }
     );
     const id = typeof data.id === "string" ? data.id : `imported-${Date.now().toString(36)}`;

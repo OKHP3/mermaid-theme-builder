@@ -703,4 +703,155 @@ describe("parsePortablePalette — invalidValues", () => {
     if (!result.ok) throw new Error("Expected ok:true");
     expect(result.invalidValues.map((e) => e.key)).toContain("primaryColor");
   });
+
+  it("reports a color entry with a numeric value in invalidValues rather than aborting", () => {
+    const json = JSON.stringify({
+      type: "mtb-palette",
+      schemaVersion: 1,
+      id: "test",
+      name: "Test",
+      description: "d",
+      version: "1.0.0",
+      colors: [{ key: "primaryColor", label: "Primary", value: 16711680 }],
+    });
+    const result = parsePortablePalette(json);
+    expect(result.ok).toBe(true);
+    if (!result.ok) throw new Error("Expected ok:true");
+    expect(result.invalidValues.map((e) => e.key)).toContain("primaryColor");
+  });
+
+  it("reports a color entry with an object value in invalidValues rather than aborting", () => {
+    const json = JSON.stringify({
+      type: "mtb-palette",
+      schemaVersion: 1,
+      id: "test",
+      name: "Test",
+      description: "d",
+      version: "1.0.0",
+      colors: [{ key: "lineColor", label: "Line", value: { r: 0, g: 0, b: 0 } }],
+    });
+    const result = parsePortablePalette(json);
+    expect(result.ok).toBe(true);
+    if (!result.ok) throw new Error("Expected ok:true");
+    expect(result.invalidValues.map((e) => e.key)).toContain("lineColor");
+  });
+
+  it("reports a color entry with a boolean value in invalidValues rather than aborting", () => {
+    const json = JSON.stringify({
+      type: "mtb-palette",
+      schemaVersion: 1,
+      id: "test",
+      name: "Test",
+      description: "d",
+      version: "1.0.0",
+      colors: [{ key: "background", label: "BG", value: true }],
+    });
+    const result = parsePortablePalette(json);
+    expect(result.ok).toBe(true);
+    if (!result.ok) throw new Error("Expected ok:true");
+    expect(result.invalidValues.map((e) => e.key)).toContain("background");
+  });
+
+  it("still imports valid entries alongside an entry with a non-string value", () => {
+    const json = JSON.stringify({
+      type: "mtb-palette",
+      schemaVersion: 1,
+      id: "test",
+      name: "Test",
+      description: "d",
+      version: "1.0.0",
+      colors: [
+        { key: "primaryColor", label: "Primary", value: "#1a2b3c" },
+        { key: "lineColor", label: "Line", value: 42 },
+      ],
+    });
+    const result = parsePortablePalette(json);
+    expect(result.ok).toBe(true);
+    if (!result.ok) throw new Error("Expected ok:true");
+    expect(result.palette.colors).toHaveLength(2);
+    expect(result.invalidValues).toHaveLength(1);
+    expect(result.invalidValues[0].key).toBe("lineColor");
+  });
+});
+
+// ── parsePortablePalette — top-level field type validation ────────────────────
+
+describe("parsePortablePalette — top-level field type validation", () => {
+  function makeBase(overrides: Record<string, unknown>) {
+    return JSON.stringify({
+      type: "mtb-palette",
+      schemaVersion: 1,
+      colors: [{ key: "primaryColor", label: "Primary", value: "#1a2b3c" }],
+      ...overrides,
+    });
+  }
+
+  it("returns ok:false when 'name' is a number", () => {
+    const result = parsePortablePalette(makeBase({ name: 42 }));
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.error).toContain("name");
+      expect(result.error).toContain("string");
+    }
+  });
+
+  it("returns ok:false when 'version' is an object", () => {
+    const result = parsePortablePalette(makeBase({ version: { major: 1 } }));
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.error).toContain("version");
+      expect(result.error).toContain("string");
+    }
+  });
+
+  it("returns ok:false when 'id' is an array", () => {
+    const result = parsePortablePalette(makeBase({ id: ["a", "b"] }));
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.error).toContain("id");
+      expect(result.error).toContain("string");
+    }
+  });
+
+  it("returns ok:false when 'description' is a boolean", () => {
+    const result = parsePortablePalette(makeBase({ description: true }));
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.error).toContain("description");
+      expect(result.error).toContain("string");
+    }
+  });
+
+  it("returns ok:true when 'name' is absent — falls back to default", () => {
+    const result = parsePortablePalette(makeBase({}));
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.palette.name).toBe("Imported palette");
+  });
+
+  it("returns ok:true when 'version' is absent — falls back to default", () => {
+    const result = parsePortablePalette(makeBase({}));
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.palette.version).toBe("0.0.0");
+  });
+
+  it("returns ok:true when 'id' is absent — generates a fallback id", () => {
+    const result = parsePortablePalette(makeBase({}));
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(typeof result.palette.id).toBe("string");
+  });
+
+  it("returns ok:false when 'name' is null (present but wrong type)", () => {
+    const result = parsePortablePalette(makeBase({ name: null }));
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error).toContain("name");
+  });
+
+  it("error message names the field and the actual type received", () => {
+    const result = parsePortablePalette(makeBase({ version: 99 }));
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.error).toMatch(/version/);
+      expect(result.error).toMatch(/number/);
+    }
+  });
 });
