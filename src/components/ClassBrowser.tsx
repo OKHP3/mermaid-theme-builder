@@ -7,7 +7,7 @@ import { suggestClassMatch } from "@/lib/fuzzyClassMatch";
 // Produces React nodes with inline color spans; falls back to raw text.
 // ---------------------------------------------------------------------------
 
-const HL = {
+export const HL = {
   keyword: "#c46a2c", // rust-orange — "classDef"
   name: "#e8d9c0", // bright cream — class name identifier
   key: "#5fa89a", // forge teal — property keys (fill, stroke, color…)
