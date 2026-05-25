@@ -130,6 +130,16 @@ describe("DiffView — empty input (no diagram pasted)", () => {
     render(createElement(DiffView, { oldText: "", newText: "" }));
     expect(screen.queryByRole("table")).toBeNull();
   });
+
+  it("the paste-prompt sub-text mentions picking a palette", () => {
+    render(createElement(DiffView, { oldText: "", newText: "" }));
+    expect(screen.getByText(/pick a palette/i)).toBeTruthy();
+  });
+
+  it("does not show the no-changes message when both texts are empty", () => {
+    render(createElement(DiffView, { oldText: "", newText: "" }));
+    expect(screen.queryByText(/no changes/i)).toBeNull();
+  });
 });
 
 // ---------------------------------------------------------------------------
