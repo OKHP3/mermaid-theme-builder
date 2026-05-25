@@ -934,6 +934,7 @@ const GAMMA_DEF: ClassDef = {
 };
 const NON_CONTIGUOUS_DEFS: ClassDef[] = [ALPHA_DEF, BETA_DEF, GAMMA_DEF];
 const ALPHA_LINE = "classDef alpha fill:#aaaaaa,stroke:#111111,color:#ffffff";
+const BETA_LINE = "classDef beta fill:#bbbbbb,stroke:#222222,color:#eeeeee";
 const GAMMA_LINE = "classDef gamma fill:#cccccc,stroke:#333333,color:#dddddd";
 
 describe("ClassBrowser — preview panel displayed text matches 'Copy used' clipboard write", () => {
@@ -1048,7 +1049,6 @@ describe("ClassBrowser — preview panel displayed text matches 'Copy used' clip
   });
 
   it("switching to 'all' mode updates the preview text to the full block", async () => {
-    const BETA_LINE = "classDef beta fill:#bbbbbb,stroke:#222222,color:#eeeeee";
     const { container } = render(
       createElement(ClassBrowser, {
         classDefs: NON_CONTIGUOUS_DEFS,
@@ -1067,5 +1067,160 @@ describe("ClassBrowser — preview panel displayed text matches 'Copy used' clip
     expect(lines[0]).toBe(ALPHA_LINE);
     expect(lines[1]).toBe(BETA_LINE);
     expect(lines[2]).toBe(GAMMA_LINE);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Preview panel displayed text matches clipboard write — 'all' mode sync
+// ---------------------------------------------------------------------------
+// previewBlock and handleCopyAll are separate code paths that both derive from
+// classDefs in definition order. A regression (e.g. one path reads
+// sortedClassDefs, one gets an accidental sort) would cause the user to see
+// one ordering in the preview but paste a different one. These tests lock both
+// surfaces to the same string across two scenarios: no usedClassNames (panel
+// opens directly in "all" mode with no toggle) and an explicit switch to "all"
+// mode when usedClassNames is present.
+// ---------------------------------------------------------------------------
+
+describe("ClassBrowser — preview panel displayed text matches 'Copy all' clipboard write", () => {
+  it("preview text exactly matches clipboard write when no usedClassNames", async () => {
+    // No usedClassNames → panel opens in "all" mode by default, no toggle shown
+    const { container } = render(
+      createElement(ClassBrowser, {
+        classDefs: NON_CONTIGUOUS_DEFS,
+        supportsClassDef: true,
+      })
+    );
+    openPreviewPanel();
+
+    const pre = container.querySelector("pre");
+    const previewText = pre?.textContent ?? "";
+
+    const copyBtn = screen.getByTitle("Copy all classDefs");
+    await act(async () => {
+      fireEvent.click(copyBtn);
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    const writtenToClipboard = clipboardWriteText.mock.calls[0][0] as string;
+
+    expect(previewText).toBe(writtenToClipboard);
+  });
+
+  it("preview text exactly matches clipboard write after switching to 'all' mode", async () => {
+    // usedClassNames present → panel opens in "used" mode; user switches to "all"
+    const { container } = render(
+      createElement(ClassBrowser, {
+        classDefs: NON_CONTIGUOUS_DEFS,
+        supportsClassDef: true,
+        usedClassNames: new Set(["alpha", "gamma"]),
+      })
+    );
+    openPreviewPanel();
+    switchToAllMode();
+
+    const pre = container.querySelector("pre");
+    const previewText = pre?.textContent ?? "";
+
+    const copyBtn = screen.getByTitle("Copy all classDefs");
+    await act(async () => {
+      fireEvent.click(copyBtn);
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    const writtenToClipboard = clipboardWriteText.mock.calls[0][0] as string;
+
+    expect(previewText).toBe(writtenToClipboard);
+  });
+
+  it("preview text is in definition order (alpha, beta, gamma) — no usedClassNames", async () => {
+    const { container } = render(
+      createElement(ClassBrowser, {
+        classDefs: NON_CONTIGUOUS_DEFS,
+        supportsClassDef: true,
+      })
+    );
+    openPreviewPanel();
+
+    const pre = container.querySelector("pre");
+    const lines = (pre?.textContent ?? "").split("\n");
+
+    expect(lines).toHaveLength(3);
+    expect(lines[0]).toMatch(/^classDef alpha /);
+    expect(lines[1]).toMatch(/^classDef beta /);
+    expect(lines[2]).toMatch(/^classDef gamma /);
+  });
+
+  it("preview text has exactly 3 lines and clipboard write has exactly 3 lines", async () => {
+    const { container } = render(
+      createElement(ClassBrowser, {
+        classDefs: NON_CONTIGUOUS_DEFS,
+        supportsClassDef: true,
+      })
+    );
+    openPreviewPanel();
+
+    const pre = container.querySelector("pre");
+    const previewLines = (pre?.textContent ?? "").split("\n");
+
+    const copyBtn = screen.getByTitle("Copy all classDefs");
+    await act(async () => {
+      fireEvent.click(copyBtn);
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    const clipboardLines = (clipboardWriteText.mock.calls[0][0] as string).split("\n");
+
+    expect(previewLines).toHaveLength(3);
+    expect(clipboardLines).toHaveLength(3);
+  });
+
+  it("each preview line exactly matches its corresponding clipboard line", async () => {
+    const { container } = render(
+      createElement(ClassBrowser, {
+        classDefs: NON_CONTIGUOUS_DEFS,
+        supportsClassDef: true,
+      })
+    );
+    openPreviewPanel();
+
+    const pre = container.querySelector("pre");
+    const previewLines = (pre?.textContent ?? "").split("\n");
+
+    const copyBtn = screen.getByTitle("Copy all classDefs");
+    await act(async () => {
+      fireEvent.click(copyBtn);
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    const clipboardLines = (clipboardWriteText.mock.calls[0][0] as string).split("\n");
+
+    expect(previewLines[0]).toBe(ALPHA_LINE);
+    expect(previewLines[1]).toBe(BETA_LINE);
+    expect(previewLines[2]).toBe(GAMMA_LINE);
+    previewLines.forEach((line, i) => {
+      expect(line).toBe(clipboardLines[i]);
+    });
+  });
+
+  it("definition order is preserved even when usedClassNames would sort differently", async () => {
+    // "gamma" is the only used class → visual grid shows gamma first,
+    // but "all" mode preview and Copy all must still emit definition order.
+    const { container } = render(
+      createElement(ClassBrowser, {
+        classDefs: NON_CONTIGUOUS_DEFS,
+        supportsClassDef: true,
+        usedClassNames: new Set(["gamma"]),
+      })
+    );
+    openPreviewPanel();
+    switchToAllMode();
+
+    const pre = container.querySelector("pre");
+    const lines = (pre?.textContent ?? "").split("\n");
+
+    expect(lines[0]).toMatch(/^classDef alpha /);
+    expect(lines[1]).toMatch(/^classDef beta /);
+    expect(lines[2]).toMatch(/^classDef gamma /);
   });
 });
