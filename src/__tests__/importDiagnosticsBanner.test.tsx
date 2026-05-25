@@ -39,6 +39,7 @@ type ImportDiagnostics = {
   missingKeys: string[];
   unknownKeys: string[];
   invalidValues: Array<{ key: string; value: string }>;
+  warnValues: Array<{ key: string; value: string }>;
 };
 
 function makeBaseProps(overrides: Record<string, unknown> = {}) {
@@ -93,6 +94,7 @@ describe("Import warning banner — missingKeys", () => {
             missingKeys: ["primaryBorderColor", "secondaryColor"],
             unknownKeys: [],
             invalidValues: [],
+            warnValues: [],
           },
         })
       )
@@ -109,6 +111,7 @@ describe("Import warning banner — missingKeys", () => {
             missingKeys: ["primaryBorderColor", "secondaryColor"],
             unknownKeys: [],
             invalidValues: [],
+            warnValues: [],
           },
         })
       )
@@ -126,6 +129,7 @@ describe("Import warning banner — missingKeys", () => {
             missingKeys: ["primaryBorderColor", "secondaryColor"],
             unknownKeys: [],
             invalidValues: [],
+            warnValues: [],
           },
         })
       )
@@ -142,6 +146,7 @@ describe("Import warning banner — missingKeys", () => {
             missingKeys: ["lineColor"],
             unknownKeys: [],
             invalidValues: [],
+            warnValues: [],
           },
         })
       )
@@ -159,6 +164,7 @@ describe("Import warning banner — missingKeys", () => {
             missingKeys: ["lineColor"],
             unknownKeys: [],
             invalidValues: [],
+            warnValues: [],
           },
         })
       )
@@ -181,6 +187,7 @@ describe("Import warning banner — unknownKeys", () => {
             missingKeys: [],
             unknownKeys: ["weirdCustomProp", "anotherUnknownKey"],
             invalidValues: [],
+            warnValues: [],
           },
         })
       )
@@ -197,6 +204,7 @@ describe("Import warning banner — unknownKeys", () => {
             missingKeys: [],
             unknownKeys: ["weirdCustomProp", "anotherUnknownKey"],
             invalidValues: [],
+            warnValues: [],
           },
         })
       )
@@ -214,6 +222,7 @@ describe("Import warning banner — unknownKeys", () => {
             missingKeys: [],
             unknownKeys: ["weirdCustomProp"],
             invalidValues: [],
+            warnValues: [],
           },
         })
       )
@@ -230,6 +239,7 @@ describe("Import warning banner — unknownKeys", () => {
             missingKeys: [],
             unknownKeys: ["weirdCustomProp", "anotherUnknownKey"],
             invalidValues: [],
+            warnValues: [],
           },
         })
       )
@@ -246,6 +256,7 @@ describe("Import warning banner — unknownKeys", () => {
             missingKeys: [],
             unknownKeys: ["weirdCustomProp"],
             invalidValues: [],
+            warnValues: [],
           },
         })
       )
@@ -269,6 +280,7 @@ describe("Import warning banner — dismiss button", () => {
             missingKeys: ["primaryBorderColor"],
             unknownKeys: [],
             invalidValues: [],
+            warnValues: [],
           },
           onImportDiagnosticsChange,
         })
@@ -297,6 +309,7 @@ describe("Import warning banner — dismiss button", () => {
             missingKeys: [],
             unknownKeys: [],
             invalidValues: [],
+            warnValues: [],
           },
         })
       )
@@ -321,6 +334,7 @@ describe("Import warning banner — share-URL path", () => {
             missingKeys: ["lineColor", "secondaryColor", "tertiaryColor"],
             unknownKeys: [],
             invalidValues: [],
+            warnValues: [],
           },
         })
       )
@@ -340,6 +354,7 @@ describe("Import warning banner — share-URL path", () => {
             missingKeys: ["lineColor", "secondaryColor", "tertiaryColor"],
             unknownKeys: [],
             invalidValues: [],
+            warnValues: [],
           },
         })
       )
@@ -356,6 +371,7 @@ describe("Import warning banner — share-URL path", () => {
             missingKeys: ["lineColor", "secondaryColor"],
             unknownKeys: [],
             invalidValues: [],
+            warnValues: [],
           },
         })
       )
@@ -372,6 +388,7 @@ describe("Import warning banner — share-URL path", () => {
             missingKeys: ["lineColor"],
             unknownKeys: ["customBrandColor"],
             invalidValues: [],
+            warnValues: [],
           },
         })
       )
@@ -380,5 +397,101 @@ describe("Import warning banner — share-URL path", () => {
     expect(screen.getByText("customBrandColor")).toBeTruthy();
     expect(screen.getByText(/Missing required/)).toBeTruthy();
     expect(screen.getByText(/Unrecognized/)).toBeTruthy();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// warnValues — named CSS color warnings
+// ---------------------------------------------------------------------------
+
+describe("Import warning banner — warnValues", () => {
+  it("renders the banner heading when importDiagnostics has warnValues", () => {
+    render(
+      createElement(
+        ComposeTab,
+        makeBaseProps({
+          importDiagnostics: {
+            missingKeys: [],
+            unknownKeys: [],
+            invalidValues: [],
+            warnValues: [{ key: "primaryColor", value: "red" }],
+          },
+        })
+      )
+    );
+    expect(screen.getByText("Palette import warnings")).toBeTruthy();
+  });
+
+  it("shows singular 'color' prose when exactly one named CSS color is present", () => {
+    render(
+      createElement(
+        ComposeTab,
+        makeBaseProps({
+          importDiagnostics: {
+            missingKeys: [],
+            unknownKeys: [],
+            invalidValues: [],
+            warnValues: [{ key: "lineColor", value: "coral" }],
+          },
+        })
+      )
+    );
+    expect(screen.getByText(/Named CSS color/)).toBeTruthy();
+    expect(screen.getByText(/may not render correctly/)).toBeTruthy();
+  });
+
+  it("shows plural 'colors' prose when more than one named CSS color is present", () => {
+    render(
+      createElement(
+        ComposeTab,
+        makeBaseProps({
+          importDiagnostics: {
+            missingKeys: [],
+            unknownKeys: [],
+            invalidValues: [],
+            warnValues: [
+              { key: "primaryColor", value: "red" },
+              { key: "lineColor", value: "steelblue" },
+            ],
+          },
+        })
+      )
+    );
+    expect(screen.getByText(/Named CSS colors/)).toBeTruthy();
+  });
+
+  it("renders each named color key and value in the banner", () => {
+    render(
+      createElement(
+        ComposeTab,
+        makeBaseProps({
+          importDiagnostics: {
+            missingKeys: [],
+            unknownKeys: [],
+            invalidValues: [],
+            warnValues: [{ key: "primaryColor", value: "coral" }],
+          },
+        })
+      )
+    );
+    expect(screen.getByText("primaryColor")).toBeTruthy();
+    expect(screen.getByText(/coral/)).toBeTruthy();
+  });
+
+  it("does not render the banner when only warnValues is empty", () => {
+    render(
+      createElement(
+        ComposeTab,
+        makeBaseProps({
+          importDiagnostics: {
+            missingKeys: [],
+            unknownKeys: [],
+            invalidValues: [],
+            warnValues: [],
+          },
+        })
+      )
+    );
+    expect(screen.queryByText("Palette import warnings")).toBeNull();
   });
 });

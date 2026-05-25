@@ -130,12 +130,14 @@ interface ComposeTabProps {
     missingKeys: string[];
     unknownKeys: string[];
     invalidValues: Array<{ key: string; value: string }>;
+    warnValues: Array<{ key: string; value: string }>;
   } | null;
   onImportDiagnosticsChange: (
     d: {
       missingKeys: string[];
       unknownKeys: string[];
       invalidValues: Array<{ key: string; value: string }>;
+      warnValues: Array<{ key: string; value: string }>;
     } | null
   ) => void;
 }
@@ -374,6 +376,7 @@ export function ComposeTab({
           const combinedMissing: string[] = [];
           const combinedUnknown: string[] = [];
           const combinedInvalid: Array<{ key: string; value: string }> = [];
+          const combinedWarn: Array<{ key: string; value: string }> = [];
           for (const imp of result.palettes) {
             onImportPalette(imp.palette);
             for (const k of imp.missingKeys)
@@ -382,6 +385,8 @@ export function ComposeTab({
               if (!combinedUnknown.includes(k)) combinedUnknown.push(k);
             for (const iv of imp.invalidValues)
               if (!combinedInvalid.some((e) => e.key === iv.key)) combinedInvalid.push(iv);
+            for (const wv of imp.warnValues)
+              if (!combinedWarn.some((e) => e.key === wv.key)) combinedWarn.push(wv);
           }
           onShowToast(
             `Imported ${result.palettes.length} palette${result.palettes.length === 1 ? "" : "s"} from bundle.`
@@ -389,12 +394,14 @@ export function ComposeTab({
           if (
             combinedMissing.length > 0 ||
             combinedUnknown.length > 0 ||
-            combinedInvalid.length > 0
+            combinedInvalid.length > 0 ||
+            combinedWarn.length > 0
           ) {
             onImportDiagnosticsChange({
               missingKeys: combinedMissing,
               unknownKeys: combinedUnknown,
               invalidValues: combinedInvalid,
+              warnValues: combinedWarn,
             });
           }
         } else {
@@ -407,12 +414,14 @@ export function ComposeTab({
           if (
             result.missingKeys.length > 0 ||
             result.unknownKeys.length > 0 ||
-            result.invalidValues.length > 0
+            result.invalidValues.length > 0 ||
+            result.warnValues.length > 0
           ) {
             onImportDiagnosticsChange({
               missingKeys: result.missingKeys,
               unknownKeys: result.unknownKeys,
               invalidValues: result.invalidValues,
+              warnValues: result.warnValues,
             });
           }
         }
@@ -954,7 +963,8 @@ export function ComposeTab({
               {importDiagnostics &&
                 (importDiagnostics.missingKeys.length > 0 ||
                   importDiagnostics.unknownKeys.length > 0 ||
-                  importDiagnostics.invalidValues.length > 0) && (
+                  importDiagnostics.invalidValues.length > 0 ||
+                  importDiagnostics.warnValues.length > 0) && (
                   <div className="mt-2 rounded-md border border-amber-400/40 bg-amber-50/60 dark:bg-amber-950/20 dark:border-amber-500/30 p-2.5 text-xs space-y-1.5">
                     <div className="flex items-start justify-between gap-1">
                       <span className="font-semibold text-amber-700 dark:text-amber-400">
@@ -1030,6 +1040,27 @@ export function ComposeTab({
                                   : "{value}"
                                 </span>
                               )}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {importDiagnostics.warnValues.length > 0 && (
+                      <div>
+                        <p className="text-amber-600 dark:text-amber-500 mb-0.5">
+                          Named CSS {importDiagnostics.warnValues.length === 1 ? "color" : "colors"}{" "}
+                          — may not render correctly across all diagram types:
+                        </p>
+                        <ul className="list-none space-y-0.5 pl-0">
+                          {importDiagnostics.warnValues.map(({ key, value }) => (
+                            <li
+                              key={key}
+                              className="font-mono text-amber-700 dark:text-amber-400 bg-amber-100/40 dark:bg-amber-900/20 rounded px-1.5 py-0.5 inline-block mr-1"
+                            >
+                              {key}
+                              <span className="text-amber-600 dark:text-amber-500 not-italic">
+                                : "{value}"
+                              </span>
                             </li>
                           ))}
                         </ul>

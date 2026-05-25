@@ -207,6 +207,21 @@ export function paletteToPortableJson(palette: Palette): string {
 const HEX_COLOR_RE = /^#[0-9a-fA-F]{3}$|^#[0-9a-fA-F]{4}$|^#[0-9a-fA-F]{6}$|^#[0-9a-fA-F]{8}$/;
 /** CSS color keywords accepted by Mermaid's theme engine. */
 const CSS_KEYWORD_RE = /^transparent$|^inherit$|^currentColor$/i;
+/**
+ * Matches alpha-only strings that look like CSS named colors (e.g. "red",
+ * "coral", "steelblue"). Used to distinguish softer "may not work" warnings
+ * from hard "definitely invalid" errors.
+ */
+const CSS_NAMED_COLOR_RE = /^[a-zA-Z]+$/;
+
+/**
+ * Returns true when `value` is a CSS named color for the given `key`.
+ * fontFamily is always exempt. The three Mermaid-safe keywords are excluded.
+ */
+function isCssNamedColorValue(key: string, value: string): boolean {
+  if (key === "fontFamily") return false;
+  return CSS_NAMED_COLOR_RE.test(value) && !CSS_KEYWORD_RE.test(value);
+}
 
 /**
  * Returns true when `value` is acceptable for `key`.
@@ -235,6 +250,13 @@ export interface PortablePaletteImport {
    * the user can correct them, but diagram rendering will likely be broken.
    */
   invalidValues: Array<{ key: string; value: string }>;
+  /**
+   * Color entries whose `value` is a CSS named color (e.g. "red", "coral").
+   * These are technically valid CSS but Mermaid's theme engine does not
+   * reliably handle them — a softer "may not render correctly" warning is
+   * surfaced rather than treating them as hard errors.
+   */
+  warnValues: Array<{ key: string; value: string }>;
 }
 export interface PortablePaletteError {
   ok: false;
@@ -339,7 +361,10 @@ export function parsePortablePalette(json: string): PortablePaletteImport | Port
     );
     const unknownKeys = colors.map((c) => c.key).filter((k) => !KNOWN_COLOR_KEYS.has(k));
     const invalidValues = colors
-      .filter((c) => !isValidColorValue(c.key, c.value))
+      .filter((c) => !isValidColorValue(c.key, c.value) && !isCssNamedColorValue(c.key, c.value))
+      .map((c) => ({ key: c.key, value: c.value }));
+    const warnValues = colors
+      .filter((c) => isCssNamedColorValue(c.key, c.value))
       .map((c) => ({ key: c.key, value: c.value }));
 
     return {
@@ -347,6 +372,7 @@ export function parsePortablePalette(json: string): PortablePaletteImport | Port
       missingKeys,
       unknownKeys,
       invalidValues,
+      warnValues,
       palette: {
         id,
         name,

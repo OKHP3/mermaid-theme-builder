@@ -300,6 +300,7 @@ export function AppShell() {
     missingKeys: string[];
     unknownKeys: string[];
     invalidValues: Array<{ key: string; value: string }>;
+    warnValues: Array<{ key: string; value: string }>;
   } | null>(null);
   const [hintResetToken, setHintResetToken] = useState(0);
   const [showSettingsMenu, setShowSettingsMenu] = useState(false);
@@ -343,7 +344,7 @@ export function AppShell() {
       );
       const unknownKeys = Object.keys(share.themeVariables).filter((k) => !KNOWN_COLOR_KEYS.has(k));
       if (missingKeys.length > 0 || unknownKeys.length > 0) {
-        setImportDiagnostics({ missingKeys, unknownKeys, invalidValues: [] });
+        setImportDiagnostics({ missingKeys, unknownKeys, invalidValues: [], warnValues: [] });
       }
     }
 
