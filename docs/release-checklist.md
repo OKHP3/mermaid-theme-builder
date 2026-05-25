@@ -107,6 +107,7 @@ Run the following manual test scenarios:
 
 ## Pre-release: documentation
 
+- [ ] **CHANGELOG.md** — move all items from `[Unreleased]` into a new `## [x.y.z] — YYYY-MM-DD` section; add the comparison link in the footer block (e.g. `[x.y.z]: https://github.com/OKHP3/mermaid-theme-builder/compare/vPREV...vNEXT`); confirm an empty `[Unreleased]` section remains for future development items
 - [ ] README.md reflects current feature list
 - [ ] ROADMAP.md updated with released / deferred items
 - [ ] docs/MERMAID_CAPABILITY_REGISTRY.md version tag updated
@@ -124,6 +125,7 @@ Run the following manual test scenarios:
 
 ## Release: tag and deploy
 
+- [ ] Run CHANGELOG gate locally: `bash scripts/check-changelog.sh v{major}.{minor}.{patch}` — must exit 0 before tagging (CI also enforces this on tag push)
 - [ ] Create a git tag: `git tag v{major}.{minor}.{patch}`
 - [ ] Push tag to GitHub: `git push origin v{major}.{minor}.{patch}`
 - [ ] Deploy build to hosting target

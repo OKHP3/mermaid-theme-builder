@@ -1,0 +1,21 @@
+name: Release CHANGELOG gate
+
+on:
+  push:
+    tags:
+      - 'v[0-9]*'
+
+permissions:
+  contents: read
+
+jobs:
+  changelog-check:
+    name: Verify CHANGELOG entry for ${{ github.ref_name }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Check CHANGELOG has versioned entry for ${{ github.ref_name }}
+        run: bash scripts/check-changelog.sh "${{ github.ref_name }}"

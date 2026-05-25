@@ -133,7 +133,7 @@ can generate, not SaaS features. No backend is introduced.
 
 [ ] TASK-06x-22 | `src/App.tsx` | Add an in-app update notification that fetches the latest release tag from the GitHub Releases API (`https://api.github.com/repos/OKHP3/mermaid-theme-builder/releases/latest`) on app launch (once per 24 hours, cached in localStorage), compares it to `package.json` version, and surfaces a dismissible banner if a newer version is available.
 
-[ ] TASK-06x-23 | `CHANGELOG.md` | Create `CHANGELOG.md` at the repository root with formatted entries for every shipped version (v0.1.0 through v0.5.0) sourced from `docs/roadmap.md` shipped milestones, following the Keep a Changelog format, plus an `[Unreleased]` section for v0.6.0 items.
+[x] TASK-06x-23 | `CHANGELOG.md`, `scripts/check-changelog.sh`, `.github/workflows/release-gate.yml` | ~~Create `CHANGELOG.md`~~ **Done — CHANGELOG.md already exists** with Keep a Changelog entries for v0.1.0 through v0.5.0 and an `[Unreleased]` section for v0.6.0 items. Task reduced to the maintenance workflow: (1) `docs/release-checklist.md` now includes an explicit step to move `[Unreleased]` items to the versioned section and add the comparison link before each tag; (2) `scripts/check-changelog.sh` errors if the pushed tag has no matching `## [x.y.z]` section in CHANGELOG.md; (3) `.github/workflows/release-gate.yml` runs the script automatically on every `v*` tag push.
 
 [ ] TASK-06x-24 | `docs/MOBILE.md` | Create `docs/MOBILE.md` documenting the Capacitor build process: required Xcode version (minimum 15), required Android Studio version (minimum Hedgehog), required Ruby/Bundler for Fastlane, code signing prerequisites for both platforms, and the exact `pnpm build && npx cap sync && npx cap open ios` command sequence.
 
