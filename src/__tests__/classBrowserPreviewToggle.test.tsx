@@ -586,3 +586,307 @@ describe("ClassBrowser preview — panel not rendered when supportsClassDef=fals
     expect((getEyeButton() as HTMLButtonElement).disabled).toBe(true);
   });
 });
+
+// ---------------------------------------------------------------------------
+// Tests: roving tabIndex — only the active button is in the tab stop
+// ---------------------------------------------------------------------------
+
+describe("ClassBrowser preview — roving tabIndex on toggle buttons", () => {
+  it("active 'Used' button has tabIndex=0 on open (default mode)", () => {
+    render(
+      createElement(ClassBrowser, {
+        classDefs: ALL_DEFS,
+        supportsClassDef: true,
+        usedClassNames: USED_SET,
+      })
+    );
+    openPreview();
+    expect(getUsedButton().tabIndex).toBe(0);
+    expect(getAllButton().tabIndex).toBe(-1);
+  });
+
+  it("clicking 'All' moves tabIndex=0 to All and sets Used to tabIndex=-1", () => {
+    render(
+      createElement(ClassBrowser, {
+        classDefs: ALL_DEFS,
+        supportsClassDef: true,
+        usedClassNames: USED_SET,
+      })
+    );
+    openPreview();
+    act(() => {
+      fireEvent.click(getAllButton());
+    });
+    expect(getAllButton().tabIndex).toBe(0);
+    expect(getUsedButton().tabIndex).toBe(-1);
+  });
+
+  it("clicking 'Used' restores tabIndex=0 to Used after switching to All", () => {
+    render(
+      createElement(ClassBrowser, {
+        classDefs: ALL_DEFS,
+        supportsClassDef: true,
+        usedClassNames: USED_SET,
+      })
+    );
+    openPreview();
+    act(() => {
+      fireEvent.click(getAllButton());
+    });
+    act(() => {
+      fireEvent.click(getUsedButton());
+    });
+    expect(getUsedButton().tabIndex).toBe(0);
+    expect(getAllButton().tabIndex).toBe(-1);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Tests: ArrowLeft / ArrowRight keyboard navigation
+// ---------------------------------------------------------------------------
+
+describe("ClassBrowser preview — ArrowRight switches to the next option", () => {
+  it("ArrowRight from 'Used' (active) switches to 'All'", () => {
+    render(
+      createElement(ClassBrowser, {
+        classDefs: ALL_DEFS,
+        supportsClassDef: true,
+        usedClassNames: USED_SET,
+      })
+    );
+    openPreview();
+    // Default open = "used"
+    act(() => {
+      fireEvent.keyDown(getPreviewPanel()!, { key: "ArrowRight" });
+    });
+    expect(getAllButton().getAttribute("aria-pressed")).toBe("true");
+    expect(getUsedButton().getAttribute("aria-pressed")).toBe("false");
+  });
+
+  it("ArrowRight from 'All' wraps around to 'Used' (circular)", () => {
+    render(
+      createElement(ClassBrowser, {
+        classDefs: ALL_DEFS,
+        supportsClassDef: true,
+        usedClassNames: USED_SET,
+      })
+    );
+    openPreview();
+    // Switch to "all" first
+    act(() => {
+      fireEvent.click(getAllButton());
+    });
+    act(() => {
+      fireEvent.keyDown(getPreviewPanel()!, { key: "ArrowRight" });
+    });
+    expect(getUsedButton().getAttribute("aria-pressed")).toBe("true");
+    expect(getAllButton().getAttribute("aria-pressed")).toBe("false");
+  });
+});
+
+describe("ClassBrowser preview — ArrowLeft switches to the previous option", () => {
+  it("ArrowLeft from 'Used' (active) wraps around to 'All' (circular)", () => {
+    render(
+      createElement(ClassBrowser, {
+        classDefs: ALL_DEFS,
+        supportsClassDef: true,
+        usedClassNames: USED_SET,
+      })
+    );
+    openPreview();
+    // Default = "used", ArrowLeft wraps to "all"
+    act(() => {
+      fireEvent.keyDown(getPreviewPanel()!, { key: "ArrowLeft" });
+    });
+    expect(getAllButton().getAttribute("aria-pressed")).toBe("true");
+    expect(getUsedButton().getAttribute("aria-pressed")).toBe("false");
+  });
+
+  it("ArrowLeft from 'All' switches to 'Used'", () => {
+    render(
+      createElement(ClassBrowser, {
+        classDefs: ALL_DEFS,
+        supportsClassDef: true,
+        usedClassNames: USED_SET,
+      })
+    );
+    openPreview();
+    act(() => {
+      fireEvent.click(getAllButton());
+    });
+    act(() => {
+      fireEvent.keyDown(getPreviewPanel()!, { key: "ArrowLeft" });
+    });
+    expect(getUsedButton().getAttribute("aria-pressed")).toBe("true");
+    expect(getAllButton().getAttribute("aria-pressed")).toBe("false");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Tests: Home / End keyboard shortcuts
+// ---------------------------------------------------------------------------
+
+describe("ClassBrowser preview — Home / End keyboard shortcuts", () => {
+  it("Home key always jumps to 'All' regardless of current mode", () => {
+    render(
+      createElement(ClassBrowser, {
+        classDefs: ALL_DEFS,
+        supportsClassDef: true,
+        usedClassNames: USED_SET,
+      })
+    );
+    openPreview();
+    // Default = "used"; Home should switch to "all"
+    act(() => {
+      fireEvent.keyDown(getPreviewPanel()!, { key: "Home" });
+    });
+    expect(getAllButton().getAttribute("aria-pressed")).toBe("true");
+  });
+
+  it("Home key when already on 'All' leaves mode unchanged", () => {
+    render(
+      createElement(ClassBrowser, {
+        classDefs: ALL_DEFS,
+        supportsClassDef: true,
+        usedClassNames: USED_SET,
+      })
+    );
+    openPreview();
+    act(() => {
+      fireEvent.click(getAllButton());
+    });
+    act(() => {
+      fireEvent.keyDown(getPreviewPanel()!, { key: "Home" });
+    });
+    expect(getAllButton().getAttribute("aria-pressed")).toBe("true");
+  });
+
+  it("End key always jumps to 'Used' regardless of current mode", () => {
+    render(
+      createElement(ClassBrowser, {
+        classDefs: ALL_DEFS,
+        supportsClassDef: true,
+        usedClassNames: USED_SET,
+      })
+    );
+    openPreview();
+    // Switch to "all" first so End has something to do
+    act(() => {
+      fireEvent.click(getAllButton());
+    });
+    act(() => {
+      fireEvent.keyDown(getPreviewPanel()!, { key: "End" });
+    });
+    expect(getUsedButton().getAttribute("aria-pressed")).toBe("true");
+  });
+
+  it("End key when already on 'Used' leaves mode unchanged", () => {
+    render(
+      createElement(ClassBrowser, {
+        classDefs: ALL_DEFS,
+        supportsClassDef: true,
+        usedClassNames: USED_SET,
+      })
+    );
+    openPreview();
+    // Default = "used"
+    act(() => {
+      fireEvent.keyDown(getPreviewPanel()!, { key: "End" });
+    });
+    expect(getUsedButton().getAttribute("aria-pressed")).toBe("true");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Tests: keyboard nav also updates the roving tabIndex
+// ---------------------------------------------------------------------------
+
+describe("ClassBrowser preview — keyboard nav updates roving tabIndex", () => {
+  it("ArrowRight from 'Used' moves tabIndex=0 to 'All'", () => {
+    render(
+      createElement(ClassBrowser, {
+        classDefs: ALL_DEFS,
+        supportsClassDef: true,
+        usedClassNames: USED_SET,
+      })
+    );
+    openPreview();
+    act(() => {
+      fireEvent.keyDown(getPreviewPanel()!, { key: "ArrowRight" });
+    });
+    expect(getAllButton().tabIndex).toBe(0);
+    expect(getUsedButton().tabIndex).toBe(-1);
+  });
+
+  it("Home key moves tabIndex=0 to 'All'", () => {
+    render(
+      createElement(ClassBrowser, {
+        classDefs: ALL_DEFS,
+        supportsClassDef: true,
+        usedClassNames: USED_SET,
+      })
+    );
+    openPreview();
+    act(() => {
+      fireEvent.keyDown(getPreviewPanel()!, { key: "Home" });
+    });
+    expect(getAllButton().tabIndex).toBe(0);
+    expect(getUsedButton().tabIndex).toBe(-1);
+  });
+
+  it("End key moves tabIndex=0 to 'Used'", () => {
+    render(
+      createElement(ClassBrowser, {
+        classDefs: ALL_DEFS,
+        supportsClassDef: true,
+        usedClassNames: USED_SET,
+      })
+    );
+    openPreview();
+    act(() => {
+      fireEvent.click(getAllButton());
+    });
+    act(() => {
+      fireEvent.keyDown(getPreviewPanel()!, { key: "End" });
+    });
+    expect(getUsedButton().tabIndex).toBe(0);
+    expect(getAllButton().tabIndex).toBe(-1);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Tests: irrelevant keys do not change mode
+// ---------------------------------------------------------------------------
+
+describe("ClassBrowser preview — unrelated keys do not change mode", () => {
+  it("pressing Enter does not change the current mode", () => {
+    render(
+      createElement(ClassBrowser, {
+        classDefs: ALL_DEFS,
+        supportsClassDef: true,
+        usedClassNames: USED_SET,
+      })
+    );
+    openPreview();
+    // Default = "used"
+    act(() => {
+      fireEvent.keyDown(getPreviewPanel()!, { key: "Enter" });
+    });
+    expect(getUsedButton().getAttribute("aria-pressed")).toBe("true");
+  });
+
+  it("pressing 'a' (an unmapped key) does not change the current mode", () => {
+    render(
+      createElement(ClassBrowser, {
+        classDefs: ALL_DEFS,
+        supportsClassDef: true,
+        usedClassNames: USED_SET,
+      })
+    );
+    openPreview();
+    act(() => {
+      fireEvent.keyDown(getPreviewPanel()!, { key: "a" });
+    });
+    expect(getUsedButton().getAttribute("aria-pressed")).toBe("true");
+  });
+});

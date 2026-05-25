@@ -526,11 +526,32 @@ export function ClassBrowser({
                     role="group"
                     aria-label="Preview mode"
                     className="inline-flex items-center rounded border border-white/10 overflow-hidden"
+                    onKeyDown={(e) => {
+                      const modes = ["all", "used"] as const;
+                      const idx = modes.indexOf(previewMode as "all" | "used");
+                      let next: number | null = null;
+                      if (e.key === "ArrowLeft") next = (idx - 1 + modes.length) % modes.length;
+                      else if (e.key === "ArrowRight") next = (idx + 1) % modes.length;
+                      else if (e.key === "Home") next = 0;
+                      else if (e.key === "End") next = modes.length - 1;
+                      if (next !== null) {
+                        e.preventDefault();
+                        setPreviewMode(modes[next]);
+                        requestAnimationFrame(() => {
+                          const btn = document.querySelector<HTMLButtonElement>(
+                            `[data-preview-toggle="${modes[next!]}"]`
+                          );
+                          btn?.focus();
+                        });
+                      }
+                    }}
                   >
                     <button
                       type="button"
+                      data-preview-toggle="all"
                       onClick={() => setPreviewMode("all")}
                       aria-pressed={previewMode === "all"}
+                      tabIndex={previewMode === "all" ? 0 : -1}
                       title="Show all classDefs"
                       className={`px-1.5 py-0.5 text-[10px] font-medium transition-colors focus:outline-none focus:ring-1 focus:ring-white/30 ${
                         previewMode === "all"
@@ -543,8 +564,10 @@ export function ClassBrowser({
                     <span className="w-px h-3 bg-white/10" aria-hidden="true" />
                     <button
                       type="button"
+                      data-preview-toggle="used"
                       onClick={() => setPreviewMode("used")}
                       aria-pressed={previewMode === "used"}
+                      tabIndex={previewMode === "used" ? 0 : -1}
                       title={`Show only the ${usedClassNames?.size} classDef${usedClassNames?.size !== 1 ? "s" : ""} used in the current diagram`}
                       className={`inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium transition-colors focus:outline-none focus:ring-1 focus:ring-emerald-500/40 ${
                         previewMode === "used"
