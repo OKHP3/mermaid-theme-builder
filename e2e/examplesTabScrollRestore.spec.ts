@@ -1,12 +1,12 @@
 /**
- * End-to-end tests for Examples tab scroll-restore behavior (Task #130 / Task #203 / Task #264).
+ * End-to-end tests for Examples tab scroll-restore behavior (Task #130 / Task #203 / Task #264 / Task #265).
  *
  * When a persisted lastSelectedExampleId is loaded from localStorage, the
  * sidebar must scroll that item into view before the user sees it. Without the
  * scrollIntoView call, items deep in the list would be restored as selected but
  * invisible, requiring the user to manually scroll to find them.
  *
- * Three scenarios are covered:
+ * Four scenarios are covered:
  *   1. A first-section item ("OKHP3 Brand") — always near the top; verifies
  *      the no-scroll path does not break visibility.
  *   2. A deep "Specialty" section item that appears many sidebar entries below
@@ -14,6 +14,9 @@
  *   3. (Negative) Fresh start with no persisted selection — user scrolls deep
  *      then clicks an item; sidebar scrollTop must NOT jump (pendingScrollIdRef
  *      is null so no auto-scroll fires, preserving the user's browse position).
+ *   4. Deep-link via #examples hash — localStorage is pre-seeded with
+ *      addInitScript() before first navigation so ExamplesTab mounts on first
+ *      render rather than after a tab click; scroll restore must still fire.
  *
  * The sidebar is a fixed-height overflow-y:auto container. An element that has
  * not been scrolled into view is clipped by the container and does not
@@ -207,4 +210,56 @@ test("user click after fresh start does not auto-scroll the sidebar", async ({ p
   // Drift must be negligible: the sidebar must stay where the user left it.
   const drift = Math.abs(scrollTopAfter - scrollTopBefore);
   expect(drift).toBeLessThan(50);
+});
+
+// ---------------------------------------------------------------------------
+// Test 4: deep-link (#examples hash) still restores scroll on first render
+// ---------------------------------------------------------------------------
+
+test("deep-link to #examples restores scroll when ExamplesTab mounts on first render", async ({
+  page,
+}) => {
+  // Build the persisted state with a deep lastSelectedExampleId.
+  const state: Record<string, unknown> = {
+    schemaVersion: 1,
+    selectedPaletteId: "overkill-hill",
+    customColors: {},
+    includeMetaComments: true,
+    includeBadge: true,
+    customThemeName: "",
+    inputCode: "flowchart TD\n  A --> B",
+    userPalettes: [],
+    recentPaletteIds: [],
+    lastSelectedExampleId: DEEP_ITEM_ID,
+  };
+
+  // addInitScript injects a script that runs before any page script on every
+  // navigation — localStorage is already populated when React hydrates.
+  // This replicates the deep-link timing path: ExamplesTab mounts immediately
+  // on the first render (hash is already #examples) rather than mounting only
+  // after the user clicks the nav button from another tab.
+  await page.addInitScript(
+    ([key, value]: [string, string]) => {
+      localStorage.setItem(key, value);
+    },
+    [LS_KEY, JSON.stringify(state)]
+  );
+
+  // Navigate directly to the #examples URL hash — bypasses the Apply-tab-first
+  // path and mounts ExamplesTab on the very first render cycle.
+  await page.goto("/#examples");
+  await page.waitForLoadState("networkidle");
+
+  // Wait for sidebar entries to be present (same guard as other tests).
+  await page.waitForSelector("[data-example-id]", { timeout: 10000 });
+
+  const btn = page.locator(`[data-example-id="${DEEP_ITEM_ID}"]`);
+  await btn.waitFor({ state: "attached", timeout: 8000 });
+
+  // The restored selection must be highlighted.
+  await expect(btn).toHaveClass(/bg-primary\/10/);
+
+  // The restored item must be scrolled into view even under the deep-link
+  // timing path where hydration and first mount overlap.
+  await expect(btn).toBeInViewport();
 });
