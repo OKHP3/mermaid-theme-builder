@@ -107,6 +107,126 @@ const HINTS: FamilySyntaxHint[] = [
     themingNote:
       "Node and link colors inherit from the palette's primaryColor and lineColor. Individual node color is not configurable via themeVariables — palette selection is the main lever.",
   },
+  {
+    family: "journey",
+    keyIdiom:
+      "journey\n  title My Working Day\n  section Work\n    Make tea: 5: Me\n    Do work: 1: Me, Cat\n  section Home\n    Relax: 5: Me",
+    classDefStatus: "no",
+    themingNote:
+      "Background and global text colors apply. Task bar fill and section header colors are managed by Mermaid's internal journey renderer — palette selection is the main lever.",
+  },
+  {
+    family: "gitGraph",
+    keyIdiom:
+      "gitGraph\n  commit\n  branch feature\n  checkout feature\n  commit\n  commit\n  checkout main\n  merge feature",
+    classDefStatus: "no",
+    themingNote:
+      "Background colors apply. Branch lines and commit node colors are managed by Mermaid's gitGraph renderer and do not respond to standard themeVariables.",
+  },
+  {
+    family: "requirementDiagram",
+    keyIdiom:
+      'requirementDiagram\n  requirement Auth_Req {\n    id: 1\n    text: "System must authenticate users"\n    risk: high\n    verifyMethod: test\n  }\n  element AuthModule {\n    type: simulation\n  }\n  Auth_Req - satisfies -> AuthModule',
+    classDefStatus: "no",
+    themingNote:
+      "Requirement box backgrounds, borders, and text respond to themeVariables. Relationship lines use lineColor.",
+  },
+  {
+    family: "c4Diagram",
+    keyIdiom:
+      'C4Context\n  title System Context\n  Person(user, "User", "End user")\n  System(sys, "My System", "Core application")\n  Rel(user, sys, "Uses")',
+    classDefStatus: "no",
+    themingNote:
+      "Person and system block colors are partially influenced by themeVariables. Background and text apply reliably. C4-specific boundary colors may require additional CSS.",
+  },
+  {
+    family: "architectureBeta",
+    keyIdiom:
+      "architecture-beta\n  group api[Backend]\n  service db(database)[Database] in api\n  service server(server)[API Server] in api\n  db:L -- R:server",
+    classDefStatus: "no",
+    themingNote:
+      "Node backgrounds and connector colors apply. Architecture diagram styling is beta and may change in future Mermaid releases.",
+  },
+  {
+    family: "packet",
+    keyIdiom:
+      'packet-beta\n  title TCP Header\n  0-15: "Source Port"\n  16-31: "Destination Port"\n  32-63: "Sequence Number"',
+    classDefStatus: "no",
+    themingNote:
+      "Background and text colors apply. Packet field-level colors are not individually controlled by themeVariables — palette selection is the main lever.",
+  },
+  {
+    family: "kanban",
+    keyIdiom:
+      'kanban\n  todo["To Do"]\n    t1["Design tokens"]\n    t2["Write tests"]\n  doing["In Progress"]\n    t3["Theme engine"]\n  done["Done"]\n    t4["Palette setup"]',
+    classDefStatus: "no",
+    themingNote:
+      "Card backgrounds and borders are partially influenced by themeVariables. Column header colors are managed by Mermaid's internal kanban renderer.",
+  },
+  {
+    family: "zenuml",
+    keyIdiom:
+      'zenuml\n  @Actor Alice\n  @Participant Bob\n  Alice -> Bob: "Hello"\n  Bob -> Alice: return "Hi"\n  while Retry {\n    Alice -> Bob: "Ping"\n  }',
+    classDefStatus: "no",
+    themingNote:
+      "themeVariables apply to background and participant colors. Styling is less granular than standard sequenceDiagram — use actorBkg and primaryColor for best results.",
+  },
+  {
+    family: "radar",
+    keyIdiom:
+      'radar-beta\n  title Team Skills\n  axis be["Backend"], fe["Frontend"], ux["UX"]\n  curve a["Alice"]{85, 70, 60}\n  curve b["Bob"]{65, 85, 75}\n  max 100\n  min 0',
+    classDefStatus: "no",
+    themingNote:
+      "Background and title colors apply. Radar polygon fill and axis line colors are managed by Mermaid's internal renderer — palette selection is the main lever.",
+  },
+  {
+    family: "treemap",
+    keyIdiom:
+      'treemap-beta\n  "Category A"\n    "Item A1": 10\n    "Item A2": 20\n  "Category B"\n    "Item B1": 15\n    "Item B2": 25',
+    classDefStatus: "no",
+    themingNote:
+      "Node fill colors use Mermaid's internal color cycling and do not respond to standard themeVariables. Background applies reliably.",
+  },
+  {
+    family: "venn",
+    keyIdiom:
+      "venn-beta\n  A[Measure]\n  B[Document]\n  C[Diagram]\n  A&B[Auditable Records]\n  A&B&C[Visual Governance]",
+    classDefStatus: "no",
+    themingNote:
+      "Experimental. Circle fill colors and label text respond partially to themeVariables. Background applies reliably. Validate in your target renderer before publication.",
+  },
+  {
+    family: "ishikawa",
+    keyIdiom:
+      "fishbone\n  title Why Diagrams Fail\n  section Syntax\n    Missing init block : Syntax\n    Wrong keyword : Syntax\n  section Renderer\n    Version mismatch : Renderer",
+    classDefStatus: "no",
+    themingNote:
+      "Experimental. themeVariables apply to background and spine line colors. Branch-level node colors are not individually controllable.",
+  },
+  {
+    family: "wardley",
+    keyIdiom:
+      "wardley-beta\n  title Evolution Map\n  anchor User [0.95, 0.50]\n  component Service [0.65, 0.45]\n  component Platform [0.35, 0.30]\n  User --> Service\n  Service --> Platform",
+    classDefStatus: "no",
+    themingNote:
+      "Beta. themeVariables apply to background colors. Component node and evolution axis styles are primarily managed by Mermaid's internal Wardley renderer. handDrawn look is not supported.",
+  },
+  {
+    family: "treeView",
+    keyIdiom:
+      'treeView-beta\n  root["/"]\n    src["src/"]\n      lib["lib/"]\n        themeEngine.ts\n    public["public/"]',
+    classDefStatus: "no",
+    themingNote:
+      "Experimental. Theming support is limited — background and primary text colors apply. This diagram type may not be stable across Mermaid versions.",
+  },
+  {
+    family: "eventModeling",
+    keyIdiom:
+      "eventmodeling\n  title Order Lifecycle\n  Command PlaceOrder\n  Event OrderPlaced\n  Command ShipOrder\n  Event OrderShipped",
+    classDefStatus: "no",
+    themingNote:
+      "New in Mermaid 11.15.0. Background and primary colors from themeVariables apply; per-element styling is not available. Not available in Mermaid installations older than 11.15.0.",
+  },
 ];
 
 const HINT_MAP = new Map<DiagramFamily, FamilySyntaxHint>(HINTS.map((h) => [h.family, h]));

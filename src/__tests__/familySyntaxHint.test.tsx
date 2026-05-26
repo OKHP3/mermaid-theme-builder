@@ -5,11 +5,9 @@
  * helpers (dismissHint, isHintDismissed, clearAllDismissals).
  *
  * Behaviors covered:
- *   1. The hint panel renders for every family present in the HINTS registry:
- *      gantt, pie, mindmap, erDiagram, classDiagram, stateDiagram,
- *      sequenceDiagram, block, timeline.
+ *   1. The hint panel renders for every family present in the HINTS registry.
  *   2. The hint panel does NOT render for families absent from the HINTS
- *      registry: "flowchart", "unknown", "gitGraph", "journey".
+ *      registry: "unknown".
  *   3. Clicking the dismiss button hides the panel and writes the dismissal
  *      flag to localStorage under "mtb.hint-dismissed.<family>".
  *   4. A family already marked dismissed in localStorage starts hidden.
@@ -72,6 +70,21 @@ describe("FamilySyntaxHint — renders for supported families", () => {
     "xychart",
     "quadrantChart",
     "sankey",
+    "journey",
+    "gitGraph",
+    "requirementDiagram",
+    "c4Diagram",
+    "architectureBeta",
+    "packet",
+    "kanban",
+    "zenuml",
+    "radar",
+    "treemap",
+    "venn",
+    "ishikawa",
+    "wardley",
+    "treeView",
+    "eventModeling",
   ];
 
   for (const family of SUPPORTED_FAMILIES) {
@@ -99,7 +112,7 @@ describe("FamilySyntaxHint — renders for supported families", () => {
 // ---------------------------------------------------------------------------
 
 describe("FamilySyntaxHint — does not render for unsupported families", () => {
-  const UNSUPPORTED_FAMILIES: DiagramFamily[] = ["unknown", "gitGraph", "journey"];
+  const UNSUPPORTED_FAMILIES: DiagramFamily[] = ["unknown"];
 
   for (const family of UNSUPPORTED_FAMILIES) {
     it(`returns null for "${family}"`, () => {

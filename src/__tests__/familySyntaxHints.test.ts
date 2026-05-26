@@ -57,7 +57,7 @@ describe("getFamilySyntaxHint — returns non-null for all registered families",
 // ---------------------------------------------------------------------------
 
 describe("getFamilySyntaxHint — returns null for families without a hint", () => {
-  const NO_HINT_FAMILIES: DiagramFamily[] = ["unknown", "gitGraph", "journey"];
+  const NO_HINT_FAMILIES: DiagramFamily[] = ["unknown"];
 
   for (const family of NO_HINT_FAMILIES) {
     it(`returns null for "${family}"`, () => {
