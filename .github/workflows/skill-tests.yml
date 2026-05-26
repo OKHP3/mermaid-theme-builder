@@ -1,0 +1,32 @@
+name: Skill Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: skill-tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  skill-tests:
+    name: okhp3-mermaid-theme-builder skill suite
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: Run skill tests
+        working-directory: skills/okhp3-mermaid-theme-builder
+        run: node --test tests/*.test.mjs
