@@ -247,7 +247,9 @@ test("deep-link to #examples restores scroll when ExamplesTab mounts on first re
 
   // Navigate directly to the #examples URL hash — bypasses the Apply-tab-first
   // path and mounts ExamplesTab on the very first render cycle.
-  await page.goto("/#examples");
+  // "./#examples" resolves relative to baseURL → /mermaid-theme-builder/#examples.
+  // "/#examples" would resolve to the origin root and miss the app subpath.
+  await page.goto("./#examples");
   await page.waitForLoadState("networkidle");
 
   // Wait for sidebar entries to be present (same guard as other tests).
