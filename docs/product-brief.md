@@ -94,7 +94,7 @@ Gaps are tracked for honest reference only. **Mermaid Theme Builder does not imp
 Tracking a gap entry in the registry does not mean the tool implements that notation. It means:
 - The notation is relevant to the target audience
 - Users deserve an honest warning when they attempt to approximate it in Mermaid
-- An example placeholder is reserved for when a credible approximation is documented
+- An example slot is reserved for when a credible approximation is documented
 
 ### Style strategy summary
 

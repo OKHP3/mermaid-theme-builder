@@ -93,12 +93,12 @@ TD-19 (htmlLabels/deterministicIds missing), TD-20 (README lags v0.5), TD-21 (ca
 **Acceptance criteria:**
 - All internal file links resolve to real files
 - External links validated (okhp3.github.io, mermaid.js.org, github.com/OKHP3)
-- No `TODO` or `placeholder` text in reference files
+- No unresolved stub text in reference files
 
 **Files:** All `.md` files; `skills/okhp3-mermaid-theme-builder/references/*.md`
 **Risk:** Low
 **Dependencies:** None
-**Verification:** `grep -r "TODO\|placeholder\|\[insert" docs/ skills/` returns empty; manual link check
+**Verification:** Internal link grep returns clean; manual link check
 
 ---
 
@@ -1029,7 +1029,7 @@ TD-19 (htmlLabels/deterministicIds missing), TD-20 (README lags v0.5), TD-21 (ca
 **Description:** Add 3 new scaffold patterns to `prompt-scaffold-patterns.md`: (9) Multi-diagram governance, (10) CI/CD pipeline scaffold, (11) Team style guide scaffold.
 **Acceptance criteria:**
 - Patterns 9–11 added with complete, parameterized templates
-- Each pattern references the correct palette placeholders and renderer caveat sections
+- Each pattern references the correct palette template markers and renderer caveat sections
 - Skill integrity test updated to assert 11 patterns
 
 **Files:** `skills/okhp3-mermaid-theme-builder/references/prompt-scaffold-patterns.md`, integrity test

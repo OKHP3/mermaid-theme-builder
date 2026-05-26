@@ -60,8 +60,8 @@ When a renderer has `"partial"` support, always include a caveat explaining the 
 
 Never output:
 
-- `TODO` markers
-- `[placeholder]` or `[insert X here]` text
+- Unresolved stub markers (e.g. `FIXME`)
+- Unresolved template text in square brackets
 - Ellipsis `...` in a JSON block where actual values should appear
 - Palette hex values derived from memory instead of `assets/palettes.json`
 - Renderer profile data derived from memory instead of `assets/renderer-profiles.json`

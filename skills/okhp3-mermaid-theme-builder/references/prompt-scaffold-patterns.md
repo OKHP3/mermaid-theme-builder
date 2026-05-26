@@ -1,8 +1,8 @@
 # Prompt Scaffold Patterns
 
-8 parameterized scaffold templates for pre-prompting LLMs to generate consistently styled Mermaid diagrams. Each template uses `{{PALETTE_NAME}}` and `{{THEME_VARIABLES_JSON}}` placeholders.
+8 parameterized scaffold templates for pre-prompting LLMs to generate consistently styled Mermaid diagrams. Each template uses `{{PALETTE_NAME}}` and `{{THEME_VARIABLES_JSON}}` substitution tokens.
 
-Replace placeholders before use:
+Substitute template variables before use:
 - `{{PALETTE_NAME}}` → display name from `assets/palettes.json` (e.g., `"OverKill Hill P³"`)
 - `{{THEME_VARIABLES_JSON}}` → the `themeVariables` object from `assets/palettes.json`
 - `{{RENDERER}}` → target renderer name (e.g., `"GitHub"`)

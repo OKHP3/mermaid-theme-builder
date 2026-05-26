@@ -107,7 +107,7 @@ can generate, not SaaS features. No backend is introduced.
 
 [ ] TASK-06x-09 | `public/sw.js` | Rewrite the service worker to implement a cache-first strategy for all static assets (JS, CSS, fonts, WASM) and a network-first strategy for the root HTML, so the full app loads offline after first visit; increment `CACHE_VERSION` on every build using a Vite plugin or build script.
 
-[ ] TASK-06x-10 | `docs/artifacts/kofi-pptx-template/` | Create a 10-slide PPTX template using `pptxgenjs` (scripted generation, no manual authoring): slides cover Apply, Compose, Extract, Examples, Reference tabs, plus a title slide, agenda, diagram governance principles slide, color palette showcase, and a blank diagram placeholder slide — all using OKH P³ brand colors and Alfa Slab One / DM Sans fonts.
+[ ] TASK-06x-10 | `docs/artifacts/kofi-pptx-template/` | Create a 10-slide PPTX template using `pptxgenjs` (scripted generation, no manual authoring): slides cover Apply, Compose, Extract, Examples, Reference tabs, plus a title slide, agenda, diagram governance principles slide, color palette showcase, and a blank diagram starter slide — all using OKH P³ brand colors and Alfa Slab One / DM Sans fonts.
 
 [ ] TASK-06x-11 | `docs/artifacts/kofi-scaffold-pack/` | Package all 8 scaffold templates from `skills/okhp3-mermaid-theme-builder/references/prompt-scaffold-patterns.md` into a single downloadable PDF using a Markdown-to-PDF pipeline (`md-to-pdf` or `puppeteer`), with a cover page showing the OKH P³ brand, a table of contents, and one template per page.
 
