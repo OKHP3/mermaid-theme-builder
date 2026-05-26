@@ -489,9 +489,11 @@ describe("Invisible button focus regression — ColorSwatch reset button", () =>
 
 // 9. ComposeTab — delete-palette button in PaletteRow (opacity-0, focus:opacity-100)
 //
-// PaletteRow is defined in ComposeTab.tsx and contains an opacity-0 delete
-// button. This guard ensures the button retains its focus escape class if
-// PaletteRow is ever wired into the live render tree.
+// PaletteRow is wired into ComposeTab's "My Palettes" section to display the
+// user-palette list. Each row includes an opacity-0 delete button that must
+// retain its focus:opacity-100 escape class. The guard renders ComposeTab with
+// a non-empty userPalettes list so PaletteRow actually instantiates and the
+// scan covers the real button.
 describe("Invisible button focus regression — ComposeTab palette rows", () => {
   it("all opacity-0 interactive elements have a keyboard-visibility escape class", () => {
     const palette = BRAND_PALETTES[0];
@@ -512,7 +514,7 @@ describe("Invisible button focus regression — ComposeTab palette rows", () => 
         customThemeName: "",
         onCustomThemeNameChange: noop,
         effectiveThemeName: palette.name,
-        userPalettes: [],
+        userPalettes: [BRAND_PALETTES[0]],
         onSavePalette: noop,
         onImportPalette: noop,
         onDeleteUserPalette: noop,

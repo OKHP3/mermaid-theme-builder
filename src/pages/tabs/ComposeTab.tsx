@@ -950,20 +950,28 @@ export function ComposeTab({
                 </button>
               </div>
               {userPalettes.length > 0 && (
+                <div className="mt-2 flex flex-col gap-0.5">
+                  <p className="forge-eyebrow text-muted-foreground/50 mb-0.5">Saved palettes</p>
+                  {userPalettes.map((p) => (
+                    <PaletteRow
+                      key={p.id}
+                      palette={p}
+                      selected={p.id === selectedPaletteId}
+                      customized={Boolean(customColors[p.id]?.length)}
+                      onSelect={() => onSelectPalette(p.id)}
+                      swatchIndices={[0, 1, 2]}
+                      onDelete={() => onDeleteUserPalette(p.id)}
+                    />
+                  ))}
+                </div>
+              )}
+              {userPalettes.length > 0 && (
                 <button
                   onClick={handleExportBundle}
                   className="w-full mt-2 text-xs px-2 py-1.5 rounded-md border border-border bg-background hover:bg-muted hover:border-primary/40 font-medium transition-all"
                   title={`Export all ${userPalettes.length} saved palette${userPalettes.length === 1 ? "" : "s"} as a single bundle file`}
                 >
                   Export bundle ({userPalettes.length})
-                </button>
-              )}
-              {isCurrentUserPalette && (
-                <button
-                  onClick={() => onDeleteUserPalette(selectedPaletteId)}
-                  className="w-full mt-2 text-xs px-2 py-1.5 rounded-md border border-destructive/30 text-destructive hover:bg-destructive/10 font-medium transition-all"
-                >
-                  Delete this palette
                 </button>
               )}
               <input
