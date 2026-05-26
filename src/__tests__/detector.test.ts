@@ -42,8 +42,26 @@ describe("detectDiagram — family detection", () => {
     ).toBe("gantt");
   });
 
+  it("does not detect 'Gantt: [0.6, 0.8]' data label as gantt family", () => {
+    // Regression: /^\s*gantt\b/im was too broad — it matched data labels like
+    // "Gantt: [0.6, 0.8]" inside quadrantChart diagrams. The fix tightened the
+    // regex to /^\s*gantt\s*$/im so only a bare "gantt" keyword line matches.
+    const quadrantWithGanttLabel =
+      "quadrantChart\n  x-axis Low --> High\n  y-axis Low --> High\n  Gantt: [0.6, 0.8]";
+    expect(detectDiagram(quadrantWithGanttLabel).family).toBe("quadrantChart");
+  });
+
   it("detects pie", () => {
     expect(detectDiagram('pie title Pets\n  "Dogs" : 386').family).toBe("pie");
+  });
+
+  it("does not detect 'Pie Chart: [0.5, 0.6]' data label as pie family", () => {
+    // Regression: /^\s*pie\b/im was too broad — it matched data labels like
+    // "Pie Chart: [0.5, 0.6]" inside quadrantChart diagrams. The fix tightened
+    // the regex to require showData, title, or end-of-line after "pie".
+    const quadrantWithPieLabel =
+      "quadrantChart\n  x-axis Low --> High\n  y-axis Low --> High\n  Pie Chart: [0.5, 0.6]";
+    expect(detectDiagram(quadrantWithPieLabel).family).toBe("quadrantChart");
   });
 
   it("detects xychart-beta", () => {
@@ -148,6 +166,13 @@ describe("detectDiagram — family detection", () => {
 
   it("detects ishikawa-beta as ishikawa family", () => {
     expect(detectDiagram("ishikawa-beta\n  root((Root Cause))").family).toBe("ishikawa");
+  });
+
+  it("detects fishbone keyword as ishikawa family", () => {
+    // Regression: the original regex only matched "ishikawa-beta" and missed the
+    // "fishbone" alias, causing the ishikawa-render-failure catalog entry to
+    // detect as "unknown". The fix added fishbone as an alternate in the regex.
+    expect(detectDiagram("fishbone\n  root((Root Cause))").family).toBe("ishikawa");
   });
 
   it("detects radar-beta as radar family", () => {
