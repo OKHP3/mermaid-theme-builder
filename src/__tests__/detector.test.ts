@@ -64,6 +64,32 @@ describe("detectDiagram — family detection", () => {
     expect(detectDiagram(quadrantWithPieLabel).family).toBe("quadrantChart");
   });
 
+  // Regression matrix: quadrantChart data labels shaped like other diagram keyword prefixes.
+  // Each case guards against a future regex loosening that would cause the wrong family to
+  // be detected before quadrantChart is reached in the DIAGRAM_CAPABILITIES scan order.
+  it.each([
+    // journey comes BEFORE quadrantChart in DIAGRAM_CAPABILITIES — highest false-positive risk.
+    ["Journey: [0.3, 0.7]", "journey"],
+    // The families below come AFTER quadrantChart so they cannot currently fire first, but
+    // are included to document the contract and catch any future re-ordering.
+    ["Mindmap: [0.4, 0.6]", "mindmap"],
+    ["Timeline: [0.2, 0.8]", "timeline"],
+    ["Zenuml: [0.5, 0.5]", "zenuml"],
+    ["Kanban: [0.3, 0.7]", "kanban"],
+    ["Packet: [0.6, 0.4]", "packet"],
+    ["GitGraph: [0.4, 0.8]", "gitGraph"],
+  ])(
+    "does not detect '%s' data label as %s family (detects as quadrantChart)",
+    (label, _impersonatedFamily) => {
+      // Regression: a simple /^\s*<keyword>\b/im regex with the 'm' flag matches any line
+      // in the diagram that starts with that keyword, including quadrantChart data labels
+      // like "Journey: [0.3, 0.7]". Each keyword regex must be tight enough to reject
+      // label-style lines that contain the keyword followed by non-whitespace content.
+      const diagram = `quadrantChart\n  x-axis Low --> High\n  y-axis Low --> High\n  ${label}`;
+      expect(detectDiagram(diagram).family).toBe("quadrantChart");
+    }
+  );
+
   it("detects xychart-beta", () => {
     expect(detectDiagram("xychart-beta\n  x-axis [Q1, Q2, Q3]\n  bar [10, 20, 30]").family).toBe(
       "xychart"

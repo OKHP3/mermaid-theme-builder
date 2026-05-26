@@ -193,7 +193,7 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
   {
     id: "journey",
     displayName: "User Journey",
-    declarations: /^\s*journey\b/im,
+    declarations: /^\s*journey\s*$/im,
     stability: "stable",
     styleStrategy: "limited",
     supportsClassDef: false,
