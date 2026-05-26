@@ -137,7 +137,7 @@ When a diagram type has limited or partial support, a blue info note appears bel
 
 ## Roadmap summary
 
-See [ROADMAP.md](ROADMAP.md) for the full roadmap.
+See [roadmap.md](roadmap.md) for the full roadmap.
 
 **V0.2 targets:**
 - LocalStorage palette persistence

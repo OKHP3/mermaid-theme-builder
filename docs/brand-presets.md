@@ -146,4 +146,4 @@ All three brand presets draw from a common palette of design tokens:
 
 ## Adding additional brand presets
 
-To add a new palette, extend the `BUILTIN_PALETTES` array in `src/lib/palettes.ts`. Set `isBrandPreset: true` and `brandFamily: "okhp3"` to display it in the Brand Presets section of the UI. All other fields are documented in [THEME_METADATA.md](THEME_METADATA.md).
+To add a new palette, extend the `BUILTIN_PALETTES` array in `src/lib/palettes.ts`. Set `isBrandPreset: true` and `brandFamily: "okhp3"` to display it in the Brand Presets section of the UI. All other fields are documented in [theme-metadata.md](theme-metadata.md).
