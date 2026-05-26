@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "mEf8F17WSclt_ZgLgmj8s"
+uri = "file://.local/task-357-output/mtb-v050-update.tar.gz"
+type = "unspecified"
+title = "MTB v0.5.0 page update — index.html + git patch"
