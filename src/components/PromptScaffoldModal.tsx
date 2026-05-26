@@ -376,21 +376,21 @@ export function PromptScaffoldModal({
                     return (
                       <div className="border-t border-border/40">
                         <pre
-                          className="overflow-y-auto max-h-48 px-3 py-2.5 text-[10px] leading-relaxed font-mono whitespace-pre bg-[#0f1f1c] text-[#d4c9b5] select-text"
+                          className="overflow-y-auto max-h-48 px-3 py-2.5 text-[10px] leading-relaxed font-mono whitespace-pre bg-[var(--okh-forge-code-bg)] text-[var(--okh-forge-code-fg)] select-text"
                           aria-label={`Scaffold preview for ${opt.label}`}
                         >
                           {previewLines.slice(0, PREVIEW_LINES).join("\n")}
                           {previewLines.length > PREVIEW_LINES &&
                             `\n…  (${previewLines.length - PREVIEW_LINES} more lines)`}
                         </pre>
-                        <div className="flex justify-end px-2 py-1.5 bg-[#0f1f1c] border-t border-white/10">
+                        <div className="flex justify-end px-2 py-1.5 bg-[var(--okh-forge-code-bg)] border-t border-white/10">
                           <button
                             onClick={() => handleCopy(opt.format)}
                             disabled={copiedFormat !== null}
                             className={`flex items-center gap-1.5 px-2.5 py-1 rounded text-[10px] font-medium transition-colors disabled:pointer-events-none ${
                               copied
                                 ? "bg-emerald-500/20 text-emerald-300 disabled:opacity-100"
-                                : "bg-white/8 text-[#d4c9b5] hover:bg-white/14 active:bg-white/20 disabled:opacity-40"
+                                : "bg-white/8 text-[var(--okh-forge-code-fg)] hover:bg-white/14 active:bg-white/20 disabled:opacity-40"
                             }`}
                             aria-label={
                               copied ? `Copied ${opt.badge} scaffold` : `Copy ${opt.badge} scaffold`

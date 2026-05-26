@@ -6,7 +6,7 @@ import { applyMode } from "./lib/themeMode";
 (() => {
   try {
     const stored = window.localStorage.getItem("mtb.theme");
-    const mode = stored === "light" || stored === "dark" || stored === "system" ? stored : "system";
+    const mode = stored === "light" || stored === "dark" || stored === "system" ? stored : "light";
     applyMode(mode);
   } catch {
     // ignore

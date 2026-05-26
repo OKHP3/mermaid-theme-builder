@@ -312,3 +312,24 @@ export function getEffectiveThemeName(
   if (isCustomized) return `Custom — based on ${palette.name}`;
   return palette.name;
 }
+
+export const OKH_P3_MERMAID_THEME: Record<string, string> = {
+  primaryColor: "#111827",
+  primaryTextColor: "#e5e7eb",
+  primaryBorderColor: "#c46a2c",
+  lineColor: "#c46a2c",
+  secondaryColor: "#181f26",
+  secondaryTextColor: "#e5e7eb",
+  secondaryBorderColor: "#c46a2c",
+  tertiaryColor: "#1c3a34",
+  tertiaryTextColor: "#e5e7eb",
+  tertiaryBorderColor: "#c46a2c",
+  textColor: "#e5e7eb",
+  background: "#111827",
+  mainBkg: "#111827",
+  nodeBorder: "#c46a2c",
+  clusterBkg: "#0d1117",
+  titleColor: "#c46a2c",
+  edgeLabelBackground: "#181f26",
+  fontFamily: "DM Sans, system-ui, sans-serif",
+};

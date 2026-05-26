@@ -274,6 +274,24 @@
 .forge-btn-accent:hover    { background-color: hsl(var(--primary) / 0.14); }
 .forge-btn-accent:disabled { opacity: 0.40; cursor: not-allowed; }
 
+/* CTA — hero gradient pill for marketing / external link surfaces */
+.forge-btn-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px 20px;
+  border-radius: 999px;
+  border: none;
+  background: linear-gradient(135deg, #c46a2c, #e6a03c);
+  color: #0f172a;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.forge-btn-cta:hover    { opacity: 0.90; }
+.forge-btn-cta:disabled { opacity: 0.40; cursor: not-allowed; }
+
 /* ── Header text elements ─────────────────────────────────────────────── */
 
 .forge-header-title {

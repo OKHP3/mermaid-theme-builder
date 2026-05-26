@@ -546,9 +546,9 @@ export function ClassBrowser({
         </div>
 
         {showPreview && supportsClassDef && (
-          <div className="mt-2 rounded-md border border-border/50 bg-[#0f1f1c] overflow-hidden">
+          <div className="mt-2 rounded-md border border-border/50 bg-[var(--okh-forge-code-bg)] overflow-hidden">
             <div className="flex items-center justify-between px-3 py-1.5 border-b border-white/8">
-              <span className="text-[10px] font-medium text-[#d4c9b5]/60 uppercase tracking-wider font-mono">
+              <span className="text-[10px] font-medium text-[var(--okh-forge-code-fg)]/60 uppercase tracking-wider font-mono">
                 Preview —{" "}
                 {previewMode === "used" && hasUsed
                   ? `${activePreviewCount} classDef${activePreviewCount !== 1 ? "s" : ""} (used only)`
@@ -593,8 +593,8 @@ export function ClassBrowser({
                       title="Show all classDefs"
                       className={`px-1.5 py-0.5 text-[10px] font-medium transition-colors focus:outline-none focus:ring-1 focus:ring-white/30 ${
                         previewMode === "all"
-                          ? "bg-white/12 text-[#d4c9b5]"
-                          : "text-[#d4c9b5]/45 hover:text-[#d4c9b5]/80 hover:bg-white/6"
+                          ? "bg-white/12 text-[var(--okh-forge-code-fg)]"
+                          : "text-[var(--okh-forge-code-fg)]/45 hover:text-[var(--okh-forge-code-fg)]/80 hover:bg-white/6"
                       }`}
                     >
                       All
@@ -613,7 +613,7 @@ export function ClassBrowser({
                       className={`inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium transition-colors focus:outline-none focus:ring-1 focus:ring-emerald-500/40 ${
                         previewMode === "used"
                           ? "bg-emerald-500/20 text-emerald-300"
-                          : "text-[#d4c9b5]/45 hover:text-emerald-300/80 hover:bg-emerald-500/10"
+                          : "text-[var(--okh-forge-code-fg)]/45 hover:text-emerald-300/80 hover:bg-emerald-500/10"
                       }`}
                     >
                       <svg viewBox="0 0 10 10" fill="none" className="w-2 h-2">
@@ -638,7 +638,7 @@ export function ClassBrowser({
                   title={
                     previewMode === "used" && hasUsed ? "Copy used classDefs" : "Copy all classDefs"
                   }
-                  className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium text-[#d4c9b5]/60 hover:text-[#d4c9b5] border border-white/10 hover:border-white/25 hover:bg-white/8 transition-colors focus:outline-none focus:ring-1 focus:ring-white/30"
+                  className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium text-[var(--okh-forge-code-fg)]/60 hover:text-[var(--okh-forge-code-fg)] border border-white/10 hover:border-white/25 hover:bg-white/8 transition-colors focus:outline-none focus:ring-1 focus:ring-white/30"
                 >
                   <svg
                     viewBox="0 0 14 14"
@@ -673,7 +673,7 @@ export function ClassBrowser({
                   type="button"
                   onClick={() => setShowPreview(false)}
                   aria-label="Close preview"
-                  className="text-[#d4c9b5]/40 hover:text-[#d4c9b5]/80 transition-colors focus:outline-none focus:ring-1 focus:ring-white/30 rounded"
+                  className="text-[var(--okh-forge-code-fg)]/40 hover:text-[var(--okh-forge-code-fg)]/80 transition-colors focus:outline-none focus:ring-1 focus:ring-white/30 rounded"
                 >
                   <svg
                     viewBox="0 0 14 14"
@@ -703,7 +703,7 @@ export function ClassBrowser({
                 </button>
               </div>
             </div>
-            <pre className="px-3 py-2.5 text-[11px] font-mono text-[#d4c9b5] leading-relaxed overflow-x-auto whitespace-pre select-all">
+            <pre className="px-3 py-2.5 text-[11px] font-mono text-[var(--okh-forge-code-fg)] leading-relaxed overflow-x-auto whitespace-pre select-all">
               {highlightClassDefBlock(activePreviewBlock)}
             </pre>
           </div>

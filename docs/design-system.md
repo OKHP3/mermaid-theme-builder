@@ -1,4 +1,4 @@
-# OKH Forge UI System — v0.1.0
+# OKH Forge UI System — v0.5.x
 
 Design language shared across OverKill Hill P³ companion apps.
 Token definitions live in `src/styles/forge-tokens.css`; utility classes live in `src/index.css`.
@@ -118,9 +118,10 @@ Token definitions live in `src/styles/forge-tokens.css`; utility classes live in
 
 | Class | Action color | Shape |
 |---|---|---|
-| `.forge-btn-primary` | Solid rust-orange | Filled |
+| `.forge-btn-primary` | Solid rust-orange | Filled, 6px radius — dense in-app action |
 | `.forge-btn-outline` | Warm paper bg | Outlined |
 | `.forge-btn-accent` | Rust tint | Semi-transparent |
+| `.forge-btn-cta` | Gradient rust to amber | Pill (999px) — hero / external link surfaces |
 
 ---
 

@@ -316,7 +316,7 @@ export function ExtractTab({
           }}
           placeholder={`%%{init: {'theme':'base','themeVariables':{'primaryColor':'#4a90d9','lineColor':'#333'}}}%%\nflowchart TD\n    A[Start] --> B[Process]\n    B --> C[End]`}
           rows={8}
-          className="w-full text-xs font-mono bg-[#0f1f1c] text-[#d4c9b5] border border-border rounded-md px-3 py-2.5 resize-y focus:outline-none focus:ring-1 focus:ring-primary/50 placeholder:text-[#d4c9b5]/30"
+          className="w-full text-xs font-mono bg-[var(--okh-forge-code-bg)] text-[var(--okh-forge-code-fg)] border border-border rounded-md px-3 py-2.5 resize-y focus:outline-none focus:ring-1 focus:ring-primary/50 placeholder:text-[var(--okh-forge-code-fg)]/30"
           spellCheck={false}
           aria-label="Paste themed Mermaid diagram here"
         />

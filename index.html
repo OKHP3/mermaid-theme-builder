@@ -4,18 +4,18 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
     <title>Mermaid Theme Builder</title>
-    <meta name="description" content="Visual theme control for AI-generated Mermaid diagrams. A static, no-backend OverKill Hill P³ project by Jamie Hill." />
+    <meta name="description" content="Visual governance workbench for Mermaid diagram-as-code. Brand palette enforcement, renderer-aware export, SKILL.md agent skill. v0.5.0 shipped. Browser-only, MIT licensed." />
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
     <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
     <link rel="manifest" href="./manifest.webmanifest" />
     <meta name="theme-color" content="#c46a2c" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Mermaid Theme Builder" />
-    <meta property="og:description" content="Visual theme control for AI-generated Mermaid diagrams. Local-only, no backend." />
+    <meta property="og:description" content="Visual governance workbench for Mermaid diagram-as-code. Brand palette enforcement, renderer-aware export, SKILL.md agent skill. OverKill Hill P3." />
     <meta property="og:image" content="./opengraph.jpg" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Mermaid Theme Builder" />
-    <meta name="twitter:description" content="Visual theme control for AI-generated Mermaid diagrams. Local-only, no backend." />
+    <meta name="twitter:description" content="Visual governance workbench for Mermaid diagram-as-code. Brand palette enforcement, renderer-aware export, SKILL.md agent skill." />
     <meta name="twitter:image" content="./opengraph.jpg" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,7 +24,7 @@
       (function () {
         try {
           var stored = localStorage.getItem("mtb.theme");
-          var mode = stored === "light" || stored === "dark" || stored === "system" ? stored : "system";
+          var mode = stored === "light" || stored === "dark" || stored === "system" ? stored : "light";
           var resolved = mode === "system"
             ? (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
             : mode;
@@ -32,7 +32,7 @@
           if (resolved === "dark") root.classList.add("dark");
           root.dataset.themeMode = mode;
         } catch (e) {
-          document.documentElement.classList.add("dark");
+          /* ignore — render light on error */
         }
       })();
     </script>
