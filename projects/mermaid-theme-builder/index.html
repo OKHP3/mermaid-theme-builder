@@ -1112,7 +1112,7 @@
                   <div class="feature-icon" aria-hidden="true">&lt;/&gt;</div>
                   <div>
                     <h3>Multi-Format Export</h3>
-                    <p>Export as a complete <code>themeVariables</code> block, a Markdown style bootstrap you paste before any diagram, or a model-specific LLM prompt scaffold.</p>
+                    <p>Five export formats: complete <code>themeVariables</code> block, Markdown style bootstrap, renderer-aware prompt scaffold, diff view output, and raw CSS variable block. Each format is purpose-built for a different workflow — paste into LLMs, drop into <code>mermaid.initialize()</code>, or commit to a repo.</p>
                   </div>
                 </div>
                 <div class="feature-item">
@@ -1178,6 +1178,55 @@
                     <p>Fork it, remix it, embed it. Full source on GitHub. Contributions welcome.</p>
                   </div>
                 </div>
+                <div class="feature-item">
+                  <div class="feature-icon" aria-hidden="true">⬛</div>
+                  <div>
+                    <h3>Tabbed Workspace</h3>
+                    <p>Four tabs — Apply, Compose, Examples, Reference. Apply pastes and themes your code. Compose enforces a 5-tier typography hierarchy. Examples provides 26+ authoring references. Reference exposes the full diagram capability registry and renderer parity matrix.</p>
+                  </div>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-icon" aria-hidden="true">◑</div>
+                  <div>
+                    <h3>Dark / Light / System Mode</h3>
+                    <p>Full dark, light, and system-preference modes with persistent preference. The preview panel respects your active mode — contrast checks are accurate for your target context.</p>
+                  </div>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-icon" aria-hidden="true">◻</div>
+                  <div>
+                    <h3>Mermaid Look API</h3>
+                    <p>Three rendering looks — Classic, Neo, and Hand-Drawn — with per-renderer support warnings. Know before you paste which looks your target platform actually renders.</p>
+                  </div>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-icon" aria-hidden="true">⟺</div>
+                  <div>
+                    <h3>Diff View</h3>
+                    <p>Side-by-side comparison of original and themed Mermaid code. See exactly what the theme engine changed — useful for understanding transformations and auditing output before committing.</p>
+                  </div>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-icon" aria-hidden="true">⊞</div>
+                  <div>
+                    <h3>Multi-Diagram Splitting</h3>
+                    <p>Split and theme multiple diagrams in a single pass. Each diagram gets the same palette applied consistently — batch-theme an entire document without touching each block manually.</p>
+                  </div>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-icon" aria-hidden="true">⊟</div>
+                  <div>
+                    <h3>Shareable URL State</h3>
+                    <p>Your full theme configuration is encoded in the URL. Bookmark or share your exact working state — the recipient loads the same palette, renderer profile, and diagram family in one click.</p>
+                  </div>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-icon" aria-hidden="true">⚐</div>
+                  <div>
+                    <h3>Renderer Parity Matrix</h3>
+                    <p>Full compatibility matrix across 7 renderers — GitHub, GitLab, Obsidian, Notion, Confluence, Mermaid Live, and browser. Know which styling mechanisms work in your target before export.</p>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -1202,7 +1251,7 @@
                   <p>The structural sibling. BPMN for Mermaid extends Mermaid syntax toward BPMN-aligned diagram patterns. MTB is the styling and governance layer; BPMN for Mermaid is the structural extension layer. They are complementary — style what BPMN for Mermaid produces. <a href="/projects/bpmn-for-mermaid/" style="color:var(--okh-orange);">See the project →</a></p>
                 </div>
                 <div class="relationship-card">
-                  <span class="rel-tag">Agent Layer — In Development</span>
+                  <span class="rel-tag">Agent Layer — Shipped</span>
                   <h3>SKILL.md / Agent Workflows</h3>
                   <p>MTB is packaged as a reusable agent skill. The SKILL.md exposes its governance logic — palette definitions, renderer profiles, prompt scaffold patterns — as a machine-readable workflow that AI agents and coding assistants can consume without the visual UI. Installable in Claude Code, GitHub Copilot, Cursor, and VS Code.</p>
                 </div>
@@ -1398,8 +1447,22 @@
                   <li class="progress-phase">
                     <span class="progress-marker progress-marker--planned">○</span>
                     <div class="progress-phase-content">
-                      <p class="progress-phase-title">v0.7–v1.0 <span class="phase-pill phase-pill--planned">Planned</span></p>
-                      <p class="progress-phase-desc">Session persistence, multi-diagram canvas, theme drift detector, collaboration features, App Store and Google Play release, community palette registry.</p>
+                      <p class="progress-phase-title">v0.7.x — Session Persistence + Multi-Diagram Canvas <span class="phase-pill phase-pill--planned">Planned — Q4 2026</span></p>
+                      <p class="progress-phase-desc">Named theme sessions with localStorage. Multi-diagram batch theming canvas. Theme drift detector. Theme version history with rollback. Mermaid Chart enterprise API integration.</p>
+                    </div>
+                  </li>
+                  <li class="progress-phase">
+                    <span class="progress-marker progress-marker--planned">○</span>
+                    <div class="progress-phase-content">
+                      <p class="progress-phase-title">v0.8.x — Collaboration + Governance Hardening <span class="phase-pill phase-pill--planned">Planned — Q1 2027</span></p>
+                      <p class="progress-phase-desc">Shareable theme packages. Team import/export. Diagram audit mode for repository-scale drift. Custom palette builder with WCAG AA enforcement. classDef library builder.</p>
+                    </div>
+                  </li>
+                  <li class="progress-phase">
+                    <span class="progress-marker progress-marker--planned">○</span>
+                    <div class="progress-phase-content">
+                      <p class="progress-phase-title">v1.0 — Production Release <span class="phase-pill phase-pill--planned">Planned — H1 2027</span></p>
+                      <p class="progress-phase-desc">App Store release (iOS + iPadOS). Google Play release. Verified Mermaid Chart enterprise tier compatibility. Community palette registry. Stability commitment on export format and SKILL.md API.</p>
                     </div>
                   </li>
                 </ol>
@@ -1583,7 +1646,7 @@
                     </div>
                     <div class="faq-item">
                       <p class="faq-q">Does it support dark/light mode preview toggle?</p>
-                      <p class="faq-a">Yes — dark/light preview toggle shipped in v0.4.x. Set your target mode in the preview panel and the live preview reflects it. The contrast preview is accurate for any background you choose.</p>
+                      <p class="faq-a">Yes — dark/light/system mode shipped in V0.4.x. The preview panel respects your selected mode, so contrast checks are accurate for the context you're targeting.</p>
                     </div>
                     <div class="faq-item">
                       <p class="faq-q">Can I save and share my theme?</p>
