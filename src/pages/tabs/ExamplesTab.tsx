@@ -1,14 +1,19 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import type { Palette, ThemeColor } from "@/lib/palettes";
-import { BRAND_PALETTES } from "@/lib/palettes";
 import { PaletteSelectorBar } from "@/components/PaletteSelectorBar";
 import { generateThemedCode, type ExportOptions } from "@/lib/themeEngine";
 import { detectDiagram } from "@/lib/detector";
 import { MermaidPreview } from "@/components/MermaidPreview";
 import { MermaidReferral } from "@/components/MermaidReferral";
 import { DiagramInventory } from "@/components/DiagramInventory";
-import { BRAND_EXAMPLES, SHOWCASE_EXAMPLE, SHOWCASE_META } from "@/data/examples";
-import { EXAMPLE_GROUPS } from "@/data/example-library";
+import { SHOWCASE_META } from "@/data/examples";
+import {
+  type ExampleItem,
+  ALL_EXAMPLES,
+  SECTIONS,
+  ALL_FAMILIES,
+  filterExamples,
+} from "@/lib/examplesFilter";
 import {
   SUPPORT_STATUS_LABELS,
   SUPPORT_STATUS_STYLES,
@@ -16,17 +21,6 @@ import {
   THEME_CONFIDENCE_STYLES,
   NOTATION_COMPLIANCE_LABELS,
 } from "@/data/mermaid-capabilities";
-
-interface ExampleItem {
-  id: string;
-  label: string;
-  content: string;
-  badge?: string;
-  section: string;
-  family?: string;
-  description?: string;
-  tags?: string[];
-}
 
 async function writeToClipboard(text: string) {
   try {
@@ -41,63 +35,6 @@ async function writeToClipboard(text: string) {
   }
 }
 
-function buildExampleList(): ExampleItem[] {
-  const items: ExampleItem[] = [];
-
-  BRAND_PALETTES.forEach((p) => {
-    const ex = BRAND_EXAMPLES[p.id];
-    if (!ex) return;
-    items.push({
-      id: `brand-${p.id}-flow`,
-      label: `${p.name} — Flowchart`,
-      content: ex.flowchart,
-      badge: "Brand",
-      section: "OKHP3 Brand",
-      family: "flowchart",
-    });
-    if (ex.sequence) {
-      items.push({
-        id: `brand-${p.id}-seq`,
-        label: `${p.name} — Sequence`,
-        content: ex.sequence,
-        badge: "Brand",
-        section: "OKHP3 Brand",
-        family: "sequence",
-      });
-    }
-  });
-
-  items.push({
-    id: "showcase",
-    label: SHOWCASE_META.title,
-    content: SHOWCASE_EXAMPLE,
-    badge: "Advanced / renderer-dependent",
-    section: "Showcase",
-  });
-
-  EXAMPLE_GROUPS.forEach((group) => {
-    group.entries.forEach((entry) => {
-      items.push({
-        id: entry.id,
-        label: entry.label,
-        content: entry.content,
-        badge: entry.badge,
-        section: group.label,
-        family: entry.family,
-        description: entry.description,
-        tags: entry.tags,
-      });
-    });
-  });
-
-  return items;
-}
-
-const ALL_EXAMPLES = buildExampleList();
-const SECTIONS = Array.from(new Set(ALL_EXAMPLES.map((e) => e.section)));
-const ALL_FAMILIES = Array.from(
-  new Set(ALL_EXAMPLES.map((e) => e.family).filter((f): f is string => !!f))
-).sort();
 const FAMILY_COUNT = ALL_FAMILIES.length;
 
 interface ExamplesTabProps {
@@ -171,19 +108,7 @@ export function ExamplesTab({
   const [showMobilePreview, setShowMobilePreview] = useState(false);
   const [showInventory, setShowInventory] = useState(false);
 
-  const filteredExamples = useMemo(() => {
-    const q = searchQuery.trim().toLowerCase();
-    if (!q) return ALL_EXAMPLES;
-    return ALL_EXAMPLES.filter(
-      (e) =>
-        e.label.toLowerCase().includes(q) ||
-        (e.family ?? "").toLowerCase().includes(q) ||
-        (e.badge ?? "").toLowerCase().includes(q) ||
-        e.section.toLowerCase().includes(q) ||
-        (e.description ?? "").toLowerCase().includes(q) ||
-        (e.tags ?? []).some((t) => t.toLowerCase().includes(q))
-    );
-  }, [searchQuery]);
+  const filteredExamples = useMemo(() => filterExamples(ALL_EXAMPLES, searchQuery), [searchQuery]);
 
   const filteredSections = useMemo(() => {
     return SECTIONS.filter((section) => filteredExamples.some((e) => e.section === section));
