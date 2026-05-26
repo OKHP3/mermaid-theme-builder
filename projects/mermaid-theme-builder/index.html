@@ -1,0 +1,1812 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- ========================================
+       METADATA: Core Document & Character Set
+       ======================================== -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="language" content="English" />
+
+    <!-- ========================================
+       METADATA: Primary Title & Description
+       ======================================== -->
+    <title>Mermaid Theme Builder | OverKill Hill P³™</title>
+    <meta name="description" content="Visual governance workbench for AI-generated Mermaid diagrams. Renderer-aware export, brand palette enforcement, prompt scaffold generation. v0.5.0 shipped. Browser-only, MIT licensed." />
+    <meta name="keywords" content="Mermaid.js, theme builder, Mermaid themes, diagram theming, CSS variables, prompt scaffold, visual governance, OverKill Hill, open source" />
+    <meta name="author" content="OverKill Hill P³™" />
+    <meta name="creator" content="OverKill Hill P³™" />
+    <meta name="publisher" content="OverKill Hill P³™" />
+
+    <!-- ========================================
+       METADATA: Open Graph (Social Sharing)
+       ======================================== -->
+    <meta property="og:title" content="Mermaid Theme Builder | OverKill Hill P³™" />
+    <meta property="og:description" content="Visual governance workbench for AI-generated Mermaid diagrams. Renderer-aware export, brand palette enforcement, prompt scaffold generation. v0.5.0 shipped. Browser-only, MIT licensed." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://overkillhill.com/projects/mermaid-theme-builder/" />
+    <meta property="og:image" content="https://overkillhill.com/assets/img/OverKillHillP%C2%B3-Sentinel-Waiting-Square-1024.png" />
+    <meta property="og:image:alt" content="Mechanical raven perched on a vintage computer — OverKill Hill P³ illustration" />
+    <meta property="og:image:width" content="1024" />
+    <meta property="og:image:height" content="1024" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:site_name" content="OverKill Hill P³™" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- ========================================
+       METADATA: Twitter Card (X Social)
+       ======================================== -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Mermaid Theme Builder | OverKill Hill P³™" />
+    <meta name="twitter:description" content="Stop re-prompting for styles. Mermaid Theme Builder v0.5.0: governance workbench with renderer profiles, 5 export formats, and SKILL.md agent skill." />
+    <meta name="twitter:image" content="https://overkillhill.com/assets/img/OverKillHillP%C2%B3-Sentinel-Waiting-Square-1024.png" />
+    <meta name="twitter:image:alt" content="Mechanical raven perched on a vintage computer — OverKill Hill P³ illustration" />
+    <meta name="twitter:site" content="@OverKillHillP3" />
+    <meta name="twitter:creator" content="@OverKillHillP3" />
+
+    <!-- ========================================
+       METADATA: Search & Crawling
+       ======================================== -->
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="googlebot" content="index, follow" />
+    <meta name="bingbot" content="index, follow" />
+    <meta name="revisit-after" content="30 days" />
+    <link rel="author" href="/humans.txt" />
+    <link rel="canonical" href="https://overkillhill.com/projects/mermaid-theme-builder/" />
+    <link rel="alternate" hreflang="en" href="https://overkillhill.com/projects/mermaid-theme-builder/" />
+
+    <!-- ========================================
+       METADATA: Color Scheme & Theme
+       ======================================== -->
+    <meta name="theme-color" content="#2a2320" />
+    <meta name="color-scheme" content="dark light" />
+
+    <!-- ========================================
+       METADATA: Web App & PWA
+       ======================================== -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <!-- ========================================
+       FAVICONS: Multi-Format Icon Support
+       ======================================== -->
+    <link rel="icon" href="/assets/img/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+    <link rel="icon" href="/assets/img/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+    <link rel="apple-touch-icon" href="/assets/img/favicons/apple-touch-icon.png" sizes="180x180" type="image/png" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- ========================================
+       STYLESHEETS & FONTS
+       ======================================== -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+    <!-- OverKill Hill P³ typography: Alfa Slab One (headings), DM Sans (body) -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=DM+Sans:wght@400;500;600&display=swap" />
+    <!-- Page-specific: JetBrains Mono for code/monospace elements -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" />
+    <link rel="stylesheet" href="/assets/css/theme.css" />
+
+    <!-- ========================================
+       STRUCTURED DATA
+       ======================================== -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Mermaid Theme Builder",
+      "description": "A visual, no-prompt Mermaid.js theme builder. Pick colors, preview diagrams live, and export production-ready CSS variables.",
+      "url": "https://okhp3.github.io/mermaid-theme-builder/",
+      "author": {
+        "@type": "Organization",
+        "name": "OverKill Hill P³",
+        "url": "https://overkillhill.com"
+      },
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Web",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "codeRepository": "https://github.com/OKHP3/mermaid-theme-builder",
+      "license": "https://opensource.org/licenses/MIT"
+    }
+    </script>
+
+    <!-- ========================================
+       PAGE-SPECIFIC STYLES
+       ======================================== -->
+    <style>
+      /* ── Breadcrumb ───────────────────────────────────────────────────── */
+      .breadcrumb {
+        font-family: var(--font-body);
+        font-size: 0.8rem;
+        color: var(--color-muted);
+        margin-bottom: 1.25rem;
+      }
+      .breadcrumb a { color: var(--color-muted); text-decoration: none; }
+      .breadcrumb a:hover { color: var(--color-accent); }
+      .breadcrumb span { margin: 0 0.4rem; }
+
+      /* ── Tag badges ───────────────────────────────────────────────────── */
+      .tag-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.25rem; }
+      .tag {
+        display: inline-block;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.7rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        padding: 0.2rem 0.6rem;
+        border-radius: 4px;
+        border: 1px solid var(--color-border-subtle);
+        color: var(--color-muted);
+      }
+      .tag--accent {
+        border-color: rgba(196, 106, 44, 0.35);
+        color: var(--okh-orange);
+      }
+
+      /* ── Hero section (project pages) ────────────────────────────────── */
+      .project-hero {
+        padding: 3rem 0 2.5rem;
+        border-bottom: 1px solid var(--color-border-subtle);
+      }
+      .project-hero h1 {
+        font-size: clamp(2rem, 5vw, 3.25rem);
+        line-height: 1.1;
+        margin-bottom: 0.5rem;
+      }
+      .project-hero .hero-sub {
+        font-size: clamp(1.05rem, 2.5vw, 1.25rem);
+        color: var(--okh-orange);
+        font-family: var(--font-heading);
+        margin-bottom: 1rem;
+      }
+      .project-hero p {
+        font-size: 1.05rem;
+        color: var(--color-muted);
+        max-width: 680px;
+        line-height: 1.7;
+        margin-bottom: 1.5rem;
+      }
+      .hero-ctas { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+
+      /* ── Two-column page layout ───────────────────────────────────────── */
+      .project-layout {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        padding: 2.5rem 0 4rem;
+      }
+      @media (min-width: 1024px) {
+        .project-layout {
+          grid-template-columns: 1fr 300px;
+          gap: 3rem;
+          align-items: start;
+        }
+      }
+
+      /* ── Embed section ────────────────────────────────────────────────── */
+      .embed-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.6rem;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+      .embed-label {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.72rem;
+        color: var(--color-muted);
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .embed-live-dot {
+        display: inline-block;
+        width: 7px; height: 7px;
+        border-radius: 50%;
+        background: var(--okh-orange);
+        animation: pulse-dot 2s ease-in-out infinite;
+      }
+      @keyframes pulse-dot {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.35; }
+      }
+      .embed-actions { display: flex; gap: 0.5rem; }
+      .embed-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.35rem 0.75rem;
+        border-radius: 6px;
+        border: 1px solid var(--color-border-subtle);
+        background: transparent;
+        color: var(--color-muted);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.72rem;
+        cursor: pointer;
+        text-decoration: none;
+        transition: border-color 0.15s, color 0.15s;
+      }
+      .embed-btn:hover { border-color: var(--color-accent); color: var(--color-accent); text-decoration: none; }
+      .embed-btn--primary {
+        border-color: rgba(196, 106, 44, 0.5);
+        color: var(--okh-orange);
+        background: rgba(196, 106, 44, 0.08);
+      }
+      .embed-btn--primary:hover { background: rgba(196, 106, 44, 0.15); color: var(--okh-orange); }
+      .embed-frame-wrapper {
+        border: 1px solid rgba(196, 106, 44, 0.2);
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        background: #090d12;
+        box-shadow: 0 0 40px rgba(196, 106, 44, 0.06);
+        position: relative;
+      }
+      .embed-frame-wrapper iframe {
+        display: block;
+      }
+      .iframe-loading-overlay {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        background: #090d12;
+        z-index: 2;
+        transition: opacity 0.4s ease;
+      }
+      .iframe-loading-overlay.loaded {
+        opacity: 0;
+        pointer-events: none;
+      }
+      .iframe-spinner {
+        width: 36px;
+        height: 36px;
+        border: 3px solid rgba(196, 106, 44, 0.2);
+        border-top-color: #c46a2c;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+      .iframe-loading-text {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.78rem;
+        color: rgba(196, 106, 44, 0.7);
+        letter-spacing: 0.05em;
+      }
+      .iframe-slow-fallback {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+      }
+      .iframe-slow-fallback.visible { display: flex; }
+      .iframe-slow-fallback a {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.82rem;
+        color: #c46a2c;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+      }
+      .embed-note {
+        margin-top: 0.5rem;
+        font-size: 0.78rem;
+        color: var(--color-muted);
+        font-family: "JetBrains Mono", monospace;
+        text-align: center;
+      }
+      .embed-note a { color: var(--okh-orange); }
+
+      /* ── Content sections ─────────────────────────────────────────────── */
+      .section-label {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.72rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--color-muted);
+        margin-bottom: 0.5rem;
+      }
+      .content-block { margin-bottom: 2.5rem; }
+      .content-block h2 {
+        font-size: 1.35rem;
+        margin-bottom: 1rem;
+      }
+
+      /* ── Why section ──────────────────────────────────────────────────── */
+      .why-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1.25rem;
+      }
+      @media (max-width: 640px) { .why-grid { grid-template-columns: 1fr; } }
+      .why-col {
+        background: var(--color-surface-soft);
+        border: 1px solid var(--color-border-subtle);
+        border-radius: var(--radius-md);
+        padding: 1.25rem 1.5rem;
+      }
+      .why-col-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.75rem;
+      }
+      .why-mark {
+        width: 20px; height: 20px;
+        border-radius: 4px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0.75rem; font-weight: 700;
+        flex-shrink: 0;
+      }
+      .why-mark--no { background: rgba(239,68,68,0.12); color: #f87171; border: 1px solid rgba(239,68,68,0.25); }
+      .why-mark--yes { background: rgba(196,106,44,0.12); color: var(--okh-orange); border: 1px solid rgba(196,106,44,0.3); }
+      .why-col h3 { font-size: 0.9rem; margin: 0; font-family: var(--font-body); font-weight: 600; }
+      .why-col p { font-size: 0.875rem; color: var(--color-muted); margin: 0; }
+      .why-note {
+        border-top: 1px solid var(--color-border-subtle);
+        padding-top: 1rem;
+        font-size: 0.875rem;
+        color: var(--color-muted);
+      }
+
+      /* ── Feature grid ─────────────────────────────────────────────────── */
+      .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+        gap: 1rem;
+      }
+      .feature-item {
+        display: flex;
+        gap: 1rem;
+        padding: 1rem 1.25rem;
+        background: var(--color-surface-soft);
+        border: 1px solid var(--color-border-subtle);
+        border-radius: var(--radius-md);
+        transition: border-color 0.15s;
+      }
+      .feature-item:hover { border-color: rgba(196, 106, 44, 0.3); }
+      .feature-icon {
+        width: 36px; height: 36px;
+        border-radius: 6px;
+        border: 1px solid rgba(196,106,44,0.25);
+        background: rgba(196,106,44,0.07);
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0;
+        color: var(--okh-orange);
+        font-size: 1.1rem;
+      }
+      .feature-item h3 { font-size: 0.9rem; margin: 0 0 0.25rem; font-family: var(--font-body); font-weight: 600; }
+      .feature-item p { font-size: 0.85rem; color: var(--color-muted); margin: 0; }
+
+      /* ── Collapsible sections ─────────────────────────────────────────── */
+      .collapsibles { display: flex; flex-direction: column; gap: 0.5rem; }
+      .collapsible {
+        border: 1px solid var(--color-border-subtle);
+        border-radius: var(--radius-md);
+        background: var(--color-surface-soft);
+        overflow: hidden;
+      }
+      .collapsible-toggle {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.9rem 1.25rem;
+        background: transparent;
+        border: 0;
+        color: var(--color-fg);
+        font-family: var(--font-body);
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        text-align: left;
+        transition: color 0.15s;
+      }
+      .collapsible-toggle:hover { color: var(--okh-orange); }
+      .collapsible-chevron {
+        display: inline-block;
+        transition: transform 0.2s ease;
+        color: var(--color-muted);
+        font-size: 0.8rem;
+      }
+      .collapsible[open] > .collapsible-toggle .collapsible-chevron {
+        transform: rotate(180deg);
+      }
+      .collapsible-body {
+        padding: 0 1.25rem 1.25rem;
+        border-top: 1px solid var(--color-border-subtle);
+      }
+
+      /* ── Guide steps ──────────────────────────────────────────────────── */
+      .guide-steps { list-style: none; padding: 0; margin: 1rem 0; }
+      .guide-step {
+        display: flex;
+        gap: 1rem;
+        padding: 0.6rem 0;
+        border-bottom: 1px solid var(--color-border-subtle);
+      }
+      .guide-step:last-child { border-bottom: 0; }
+      .step-num {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--okh-orange);
+        opacity: 0.7;
+        padding-top: 0.1rem;
+        min-width: 1.5rem;
+      }
+      .step-content strong { display: block; font-size: 0.9rem; margin-bottom: 0.2rem; }
+      .step-content p { font-size: 0.85rem; color: var(--color-muted); margin: 0; }
+      .guide-tier-note {
+        background: rgba(196,106,44,0.06);
+        border: 1px solid rgba(196,106,44,0.2);
+        border-radius: 6px;
+        padding: 0.75rem 1rem;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.75rem;
+        color: var(--color-muted);
+        line-height: 1.6;
+        margin-top: 1rem;
+      }
+      .guide-tier-note strong { color: var(--okh-orange); }
+
+      /* ── Palette reference table ──────────────────────────────────────── */
+      .palette-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.82rem;
+        margin-top: 0.75rem;
+      }
+      .palette-table th {
+        text-align: left;
+        padding: 0.5rem 1rem 0.5rem 0;
+        border-bottom: 1px solid var(--color-border-subtle);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.72rem;
+        color: var(--color-muted);
+        font-weight: 500;
+      }
+      .palette-table td {
+        padding: 0.4rem 1rem 0.4rem 0;
+        vertical-align: top;
+        border-bottom: 1px solid rgba(249, 250, 251, 0.04);
+      }
+      .palette-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+      .palette-var {
+        font-family: "JetBrains Mono", monospace;
+        color: var(--okh-orange);
+        white-space: nowrap;
+      }
+      .palette-desc { color: var(--color-muted); }
+
+      /* ── FAQ ──────────────────────────────────────────────────────────── */
+      .faq-list { margin-top: 0.75rem; }
+      .faq-item { padding: 0.9rem 0; border-bottom: 1px solid var(--color-border-subtle); }
+      .faq-item:last-child { border-bottom: 0; }
+      .faq-q { font-weight: 600; font-size: 0.9rem; margin-bottom: 0.35rem; }
+      .faq-a { font-size: 0.875rem; color: var(--color-muted); margin: 0; line-height: 1.6; }
+
+      /* ── Build progress track ────────────────────────────────────────── */
+      .progress-track { list-style: none; padding: 0; margin: 1rem 0 0; }
+      .progress-phase {
+        display: flex;
+        gap: 1rem;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--color-border-subtle);
+      }
+      .progress-phase:last-child { border-bottom: 0; }
+      .progress-marker {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.8rem;
+        font-weight: 700;
+        min-width: 1.25rem;
+        padding-top: 0.15rem;
+        flex-shrink: 0;
+      }
+      .progress-marker--done { color: var(--okh-orange); }
+      .progress-marker--active { color: var(--okh-orange); opacity: 0.75; }
+      .progress-marker--planned { color: var(--color-muted); }
+      .progress-phase-content { flex: 1; }
+      .progress-phase-title {
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin: 0 0 0.2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+      .phase-pill {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.65rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        padding: 0.15rem 0.5rem;
+        border-radius: 3px;
+      }
+      .phase-pill--shipped { background: rgba(196,106,44,0.12); color: var(--okh-orange); border: 1px solid rgba(196,106,44,0.3); }
+      .phase-pill--active { background: rgba(234,179,8,0.1); color: #eab308; border: 1px solid rgba(234,179,8,0.3); }
+      .phase-pill--planned { background: rgba(107,114,128,0.08); color: var(--color-muted); border: 1px solid rgba(107,114,128,0.2); }
+      .progress-phase-desc { font-size: 0.85rem; color: var(--color-muted); margin: 0; line-height: 1.55; }
+
+      /* ── Builder's note ───────────────────────────────────────────────── */
+      .builder-note {
+        background: var(--color-surface-soft);
+        border: 1px solid var(--color-border-subtle);
+        border-radius: var(--radius-md);
+        padding: 1.5rem 1.75rem;
+        margin-bottom: 2.5rem;
+      }
+      .builder-note blockquote {
+        border-left: 2px solid rgba(196,106,44,0.4);
+        padding-left: 1rem;
+        margin: 0.75rem 0;
+        color: var(--color-muted);
+        font-size: 0.9rem;
+        line-height: 1.75;
+      }
+      .builder-note blockquote p { margin-bottom: 0.75rem; }
+      .builder-note blockquote p:last-child { margin-bottom: 0; }
+      .builder-sig {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.78rem;
+        color: var(--color-muted);
+        margin-top: 1rem;
+      }
+
+      /* ── Story placeholder ────────────────────────────────────────────── */
+      .story-placeholder {
+        border: 1px dashed rgba(249,250,251,0.12);
+        border-radius: var(--radius-md);
+        padding: 1.5rem 1.75rem;
+        margin-bottom: 2.5rem;
+      }
+      .story-placeholder p {
+        font-size: 0.875rem;
+        color: rgba(107,114,128,0.7);
+        font-style: italic;
+        margin-bottom: 0.5rem;
+      }
+      .story-placeholder .story-note {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.72rem;
+        color: rgba(107,114,128,0.5);
+        margin: 0;
+      }
+      .story-note a { color: rgba(196,106,44,0.5); }
+      .story-note a:hover { color: rgba(196,106,44,0.8); }
+
+      /* ── Right rail sidebar ───────────────────────────────────────────── */
+      .sidebar-rail { display: flex; flex-direction: column; gap: 1rem; }
+      @media (min-width: 1024px) {
+        .sidebar-rail { position: sticky; top: 6rem; }
+      }
+      .sidebar-cta {
+        border: 1px solid rgba(196,106,44,0.4);
+        background: rgba(196,106,44,0.05);
+        border-radius: var(--radius-md);
+        padding: 1.25rem;
+        box-shadow: 0 0 30px rgba(196,106,44,0.06);
+        text-align: center;
+      }
+      .sidebar-cta .section-label { margin-bottom: 0.75rem; }
+      .sidebar-cta .btn-primary { width: 100%; margin-bottom: 0.5rem; justify-content: center; }
+      .sidebar-cta .cta-note { font-size: 0.78rem; color: var(--color-muted); margin: 0; }
+      .sidebar-meta {
+        border: 1px solid var(--color-border-subtle);
+        background: var(--color-surface-soft);
+        border-radius: var(--radius-md);
+        padding: 1.25rem;
+      }
+      .sidebar-meta .section-label { margin-bottom: 0.75rem; }
+      .meta-row { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.25rem; }
+      .meta-item { font-size: 0.85rem; }
+      .meta-key {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.7rem;
+        color: var(--color-muted);
+        display: block;
+        margin-bottom: 0.15rem;
+      }
+      .meta-val { color: var(--color-fg); }
+      .meta-val a { color: var(--okh-orange); }
+      .status-dot {
+        display: inline-block;
+        width: 8px; height: 8px;
+        border-radius: 50%;
+        background: #eab308;
+        margin-right: 0.35rem;
+        vertical-align: middle;
+      }
+      .sidebar-links {
+        border-top: 1px solid var(--color-border-subtle);
+        padding-top: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .sidebar-link {
+        font-size: 0.85rem;
+        color: var(--color-muted);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        transition: color 0.15s;
+      }
+      .sidebar-link:hover { color: var(--okh-orange); text-decoration: none; }
+      .sidebar-related {
+        border: 1px solid var(--color-border-subtle);
+        background: var(--color-surface-soft);
+        border-radius: var(--radius-md);
+        padding: 1.25rem;
+      }
+      .sidebar-related ul { list-style: none; padding: 0; margin: 0.5rem 0 0; }
+      .sidebar-related li { margin-bottom: 0.5rem; font-size: 0.85rem; }
+      .sidebar-related a { color: var(--color-muted); }
+      .sidebar-related a:hover { color: var(--okh-orange); }
+
+      /* ── Fallback CTA button above iframe ────────────────────────────── */
+      .embed-fallback-cta {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 0.75rem;
+      }
+      .embed-fallback-cta a {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4em;
+        padding: 0.65rem 1.4rem;
+        background: var(--okh-orange);
+        color: #fff;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.88rem;
+        font-weight: 600;
+        border-radius: var(--radius-sm);
+        text-decoration: none;
+        letter-spacing: 0.01em;
+        transition: background 0.15s ease, opacity 0.15s ease;
+      }
+      .embed-fallback-cta a:hover { opacity: 0.88; }
+
+      /* ── Mobile stacking ──────────────────────────────────────────────── */
+      @media (max-width: 640px) {
+        .embed-toolbar { flex-direction: column; align-items: flex-start; }
+      }
+
+      /* ── What It Is / What It Is Not grid ────────────────────────────── */
+      .is-isnot-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+      @media (max-width: 640px) { .is-isnot-grid { grid-template-columns: 1fr; } }
+      .is-isnot-col {
+        background: var(--color-surface-soft);
+        border: 1px solid var(--color-border-subtle);
+        border-radius: var(--radius-md);
+        padding: 1.25rem 1.5rem;
+      }
+      .is-isnot-col--is { border-color: rgba(196,106,44,0.3); }
+      .is-isnot-header {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+        margin-bottom: 0.75rem;
+      }
+      .is-isnot-header--is { color: var(--okh-orange); }
+      .is-isnot-header--isnot { color: var(--color-muted); }
+      .is-isnot-col ul { list-style: none; padding: 0; margin: 0; }
+      .is-isnot-col li {
+        font-size: 0.85rem;
+        color: var(--color-muted);
+        padding: 0.3rem 0;
+        border-bottom: 1px solid rgba(249,250,251,0.05);
+        line-height: 1.5;
+        display: flex;
+        gap: 0.5rem;
+      }
+      .is-isnot-col li:last-child { border-bottom: 0; }
+      .is-isnot-col li .bullet { flex-shrink: 0; }
+      .is-isnot-col--is li .bullet { color: var(--okh-orange); }
+      .is-isnot-col--isnot li .bullet { color: var(--color-muted); opacity: 0.5; }
+
+      /* ── Relationship cards ───────────────────────────────────────────── */
+      .relationship-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+      @media (max-width: 640px) { .relationship-grid { grid-template-columns: 1fr; } }
+      .relationship-card {
+        background: var(--color-surface-soft);
+        border: 1px solid var(--color-border-subtle);
+        border-radius: var(--radius-md);
+        padding: 1.1rem 1.25rem;
+      }
+      .relationship-card .rel-tag {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: var(--okh-orange);
+        display: block;
+        margin-bottom: 0.35rem;
+      }
+      .relationship-card h3 {
+        font-size: 0.9rem;
+        font-weight: 600;
+        font-family: var(--font-body);
+        margin: 0 0 0.4rem;
+        color: var(--color-fg);
+      }
+      .relationship-card p {
+        font-size: 0.83rem;
+        color: var(--color-muted);
+        margin: 0;
+        line-height: 1.55;
+      }
+
+      /* ── Diagram family taxonomy ──────────────────────────────────────── */
+      .family-taxonomy { display: flex; flex-direction: column; gap: 0.6rem; margin-top: 0.75rem; }
+      .family-tier {
+        background: var(--color-surface-soft);
+        border: 1px solid var(--color-border-subtle);
+        border-radius: var(--radius-sm);
+        padding: 0.75rem 1rem;
+      }
+      .family-tier-label {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.67rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--okh-orange);
+        margin-bottom: 0.4rem;
+      }
+      .family-tier p { font-size: 0.81rem; color: var(--color-muted); margin: 0.2rem 0 0; line-height: 1.5; }
+      .family-chips { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.4rem; }
+      .family-chip {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.68rem;
+        padding: 0.15rem 0.5rem;
+        border-radius: 3px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid var(--color-border-subtle);
+        color: var(--color-fg);
+      }
+      .family-chip--beta { border-color: rgba(234,179,8,0.3); color: #eab308; background: rgba(234,179,8,0.07); }
+      .family-chip--ext { border-color: rgba(196,106,44,0.35); color: var(--okh-orange); background: rgba(196,106,44,0.08); }
+      .family-chip--proposal { border-color: rgba(96,165,250,0.3); color: #60a5fa; background: rgba(96,165,250,0.07); }
+
+      /* ── SKILL.md block ───────────────────────────────────────────────── */
+      .skill-block {
+        background: rgba(196,106,44,0.04);
+        border: 1px solid rgba(196,106,44,0.25);
+        border-radius: var(--radius-md);
+        padding: 1.5rem 1.75rem;
+      }
+      .skill-block h3 { font-size: 1rem; font-weight: 600; font-family: var(--font-body); margin: 0 0 0.6rem; }
+      .skill-block p { font-size: 0.875rem; color: var(--color-muted); margin: 0 0 0.6rem; line-height: 1.6; }
+      .skill-block ul { padding-left: 1.1rem; margin: 0.35rem 0 0.6rem; }
+      .skill-block li { font-size: 0.875rem; color: var(--color-muted); margin-bottom: 0.3rem; line-height: 1.5; }
+      .skill-note {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.75rem;
+        color: var(--color-muted);
+        margin-top: 0.75rem;
+        border-top: 1px solid rgba(196,106,44,0.2);
+        padding-top: 0.75rem;
+      }
+
+      /* ── Mobile experience split ──────────────────────────────────────── */
+      .mobile-split { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 0.75rem; }
+      @media (max-width: 640px) { .mobile-split { grid-template-columns: 1fr; } }
+      .mobile-mode {
+        background: var(--color-surface-soft);
+        border: 1px solid var(--color-border-subtle);
+        border-radius: var(--radius-md);
+        padding: 1.1rem 1.25rem;
+      }
+      .mobile-mode-label {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.67rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        display: block;
+        margin-bottom: 0.5rem;
+      }
+      .mobile-mode-label--desktop { color: var(--okh-orange); }
+      .mobile-mode-label--mobile { color: #60a5fa; }
+      .mobile-mode h3 { font-size: 0.88rem; font-weight: 600; font-family: var(--font-body); margin: 0 0 0.4rem; }
+      .mobile-mode ul { padding-left: 1rem; margin: 0; }
+      .mobile-mode li { font-size: 0.82rem; color: var(--color-muted); margin-bottom: 0.25rem; line-height: 1.5; }
+    </style>
+      <script type="speculationrules">
+    {
+      "prefetch": [
+        { "source": "document", "where": { "and": [
+          { "href_matches": "/*" },
+          { "not": { "selector_matches": "[rel~=nofollow]" } },
+          { "not": { "href_matches": "/*.{png,jpg,jpeg,webp,svg,ico,gif,pdf,zip}" } }
+        ]}, "eagerness": "moderate" }
+      ]
+    }
+    </script>
+  
+    <!-- ========================================
+       STRUCTURED DATA: BreadcrumbList
+       ======================================== -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "OverKill Hill P³™",
+        "item": "https://overkillhill.com/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Projects",
+        "item": "https://overkillhill.com/projects/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "Mermaid Theme Builder",
+        "item": "https://overkillhill.com/projects/mermaid-theme-builder/"
+      }
+      ]
+    }
+    </script>
+  </head>
+
+  <body class="projects-main">
+    <a class="okh-skip-link" href="#main">Skip to main content</a>
+    <!-- ============================================================
+         HEADER
+         ============================================================ -->
+    <header class="site-header" id="top">
+      <div class="container">
+        <div class="logo">
+          <a href="/">
+            <img src="/assets/img/OverKillHillP³-Sentinel-Warning-Square-256.png" alt="OverKill Hill P³ logo" width="40" height="40" />
+            <span class="sr-only">OverKill&nbsp;Hill&nbsp;P³™ Home</span>
+          </a>
+        </div>
+
+        <nav class="primary-nav" id="navigation" aria-label="Primary">
+          <ul>
+            <li><a href="/#forge">The Forge</a></li>
+            <!-- Projects cluster: index + individual project pages -->
+            <li class="has-submenu">
+              <a href="/projects/" aria-current="page">Our Projects</a>
+              <ul class="submenu">
+                <li><a href="/projects/mermaid-theme-builder/" class="is-current">Mermaid Theme Builder</a></li>
+                <li><a href="/projects/bpmn-for-mermaid/">BPMN for Mermaid</a></li>
+                                <li><a href="/projects/mac-studio-local-ai-workbench/">Mac Studio Local AI Workbench</a></li>
+              </ul>
+            </li>
+            <li class="has-submenu">
+              <a href="/writings/">Writings</a>
+              <ul class="submenu">
+                <li><a href="/manifesto/">The Manifesto</a></li>
+                <li><a href="/writings/biases-as-constants/">Biases as Constants</a></li>
+                <li><a href="/writings/magnus-saga/">The Magnus Saga</a></li>
+                <li><a href="/prompt-forge/">The Prompt Forge</a></li>
+                <li><a href="/writings/first-diagram-is-a-liar/">The First Diagram is a Liar</a></li>
+              </ul>
+            </li>
+            <li class="has-submenu">
+              <a href="/about/">About</a>
+              <ul class="submenu">
+                <li><a href="/universe/">OKHP³™ Universe</a></li>
+                <li><a href="/about/">About OKHP³™</a></li>
+                <li><a href="/contact/">Contact</a></li>
+                <li><a href="/legal/">Legal</a></li>
+              </ul>
+            </li>
+          </ul>
+        </nav>
+
+        <button class="nav-toggle" aria-controls="navigation" aria-expanded="false">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+        </button>
+      </div>
+
+      <section class="site-specials site-specials--okh" aria-label="Forge update">
+        <span class="site-specials-label">🔥Hot off the FORGE⚒️</span>
+        <a class="site-specials-link" href="/writings/first-diagram-is-a-liar/#council-scoring">
+          v0.5 is live: the Council of AIs scored each other — every model was harder on itself than the architect was. Read it →
+        </a>
+      </section>
+    </header>
+
+    <!-- ============================================================
+         MAIN
+         ============================================================ -->
+    <main id="main">
+      <div class="container">
+
+        <!-- HERO ────────────────────────────────────────────────── -->
+        <section class="project-hero" aria-label="Project overview">
+          <nav class="breadcrumb" aria-label="Breadcrumb">
+            <a href="/">overkillhill.com</a><span>/</span>
+            <a href="/projects/">projects</a><span>/</span>
+            <span>mermaid-theme-builder</span>
+          </nav>
+
+          <div class="tag-row">
+            <span class="tag">Community Tool</span>
+            <span class="tag">Open Source</span>
+            <span class="tag tag--accent">v0.5.0 Shipped</span>
+              <span class="tag" style="background:rgba(20,160,140,0.1);color:#1fa89a;border:1px solid rgba(20,160,140,0.3);">SKILL.md Sprint Active</span>
+          </div>
+
+          <h1>Mermaid Theme Builder</h1>
+          <p class="hero-sub">Governance Workbench. Renderer-Aware. Brand-Enforced.</p>
+
+          <p>
+            A visual governance workbench for Mermaid diagram-as-code styling, renderer-aware export, brand palette enforcement, and AI prompt scaffold generation. Define your theme once — get consistent output across every renderer, every AI tool, and every diagram family it touches.
+          </p>
+
+          <div class="hero-ctas">
+            <a href="https://okhp3.github.io/mermaid-theme-builder/#compose" target="_blank" rel="noopener noreferrer" class="btn btn-primary">⤢ Open the Workbench</a>
+            <a href="https://github.com/OKHP3/mermaid-theme-builder" target="_blank" rel="noopener noreferrer" class="btn btn-quiet">View Source on GitHub</a>
+            <a href="/projects/bpmn-for-mermaid/" class="btn btn-quiet">Sibling: BPMN for Mermaid</a>
+          </div>
+        </section>
+
+        <!-- TWO-COLUMN LAYOUT ───────────────────────────────────── -->
+        <div class="project-layout">
+
+          <!-- MAIN COLUMN ──────────────────────────────────────── -->
+          <div>
+
+            <!-- EMBED TOOL ───────────────────────────────────── -->
+            <div class="content-block" id="embed-tool" style="scroll-margin-top: 8rem;">
+              <div class="embed-toolbar">
+                <div class="embed-label">
+                  <span class="embed-live-dot"></span>
+                  Live Tool &nbsp;·&nbsp; okhp3.github.io
+                </div>
+                <div class="embed-actions">
+                  <button class="embed-btn" id="reload-btn" title="Reload tool" aria-label="Reload tool">
+                    ↺ Reload
+                  </button>
+                  <a href="https://okhp3.github.io/mermaid-theme-builder/" target="_blank" rel="noopener noreferrer" class="embed-btn embed-btn--primary">
+                    ⤢ Full Screen
+                  </a>
+                </div>
+              </div>
+
+              <div class="embed-fallback-cta">
+                <a href="https://okhp3.github.io/mermaid-theme-builder/" target="_blank" rel="noopener noreferrer">
+                  ⤢ Open Mermaid Theme Builder Full Screen
+                </a>
+              </div>
+
+              <div class="embed-frame-wrapper">
+                <div class="iframe-loading-overlay" id="iframe-overlay" aria-hidden="true">
+                  <div class="iframe-spinner"></div>
+                  <span class="iframe-loading-text">Loading Mermaid Theme Builder…</span>
+                  <div class="iframe-slow-fallback" id="iframe-fallback">
+                    <span class="iframe-loading-text" style="opacity:0.6;">Taking longer than expected?</span>
+                    <a href="https://okhp3.github.io/mermaid-theme-builder/" target="_blank" rel="noopener noreferrer">Open the tool in a new tab →</a>
+                  </div>
+                </div>
+                <iframe
+                  id="tool-iframe"
+                  src="https://okhp3.github.io/mermaid-theme-builder/"
+                  title="Mermaid Theme Builder"
+                  loading="lazy"
+                  allow="clipboard-read; clipboard-write; fullscreen"
+                  referrerpolicy="no-referrer-when-downgrade"
+                  style="width:100%; min-height:900px; border:0;"
+                ></iframe>
+              </div>
+
+              <p class="embed-note">
+                Embedded from <a href="https://okhp3.github.io/mermaid-theme-builder/" target="_blank" rel="noopener noreferrer">okhp3.github.io/mermaid-theme-builder</a>
+                — open in a new tab for the best experience
+              </p>
+            </div>
+
+            <!-- WHAT IT IS / IS NOT ──────────────────────────── -->
+            <div class="content-block">
+              <div class="section-label">What This Is</div>
+              <h2>A governance workbench, not a diagram editor</h2>
+              <div class="is-isnot-grid">
+                <div class="is-isnot-col is-isnot-col--is">
+                  <div class="is-isnot-header is-isnot-header--is">What It Is</div>
+                  <ul>
+                    <li><span class="bullet">◆</span>A visual workbench for defining and enforcing Mermaid diagram themes</li>
+                    <li><span class="bullet">◆</span>A renderer-aware export tool — flags what breaks in GitHub, GitLab, Obsidian, Notion, Confluence</li>
+                    <li><span class="bullet">◆</span>A brand palette enforcer — 7 built-in palettes: Ocean Depth, Forest Sage, Slate Ember, Violet Mist plus OverKill Hill P³, Glee-fully, AskJamie</li>
+                    <li><span class="bullet">◆</span>A prompt scaffold generator — AI tools stay on-brand from the first generation</li>
+                    <li><span class="bullet">◆</span>A SKILL.md-packaged agent skill for headless diagram-governance workflows</li>
+                    <li><span class="bullet">◆</span>An open-source community contribution to the Mermaid.js ecosystem. MIT licensed. Free always.</li>
+                  </ul>
+                </div>
+                <div class="is-isnot-col is-isnot-col--isnot">
+                  <div class="is-isnot-header is-isnot-header--isnot">What It Is Not</div>
+                  <ul>
+                    <li><span class="bullet">—</span>Not a diagram editor — it governs style, not structure</li>
+                    <li><span class="bullet">—</span>Not a Mermaid syntax generator — you bring the code</li>
+                    <li><span class="bullet">—</span>Not affiliated with Mermaid.ai or any commercial Mermaid product</li>
+                    <li><span class="bullet">—</span>Not a replacement for Mermaid.js — a governance layer on top of it</li>
+                    <li><span class="bullet">—</span>Not a SaaS, not a subscription, not a freemium gate</li>
+                    <li><span class="bullet">—</span>Not collecting any data — 100% client-side, no server, no analytics</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- WHY THIS EXISTS ──────────────────────────────── -->
+            <div class="content-block card">
+              <div class="section-label">Why This Exists</div>
+              <h2>What you get here that you don't get from prompting an LLM</h2>
+
+              <div class="why-grid">
+                <div class="why-col">
+                  <div class="why-col-header">
+                    <span class="why-mark why-mark--no">✗</span>
+                    <h3>Prompting an LLM</h3>
+                  </div>
+                  <p>Generates CSS variable blobs you paste and re-prompt until something looks right. No live preview, no iteration feedback, result varies by model. No renderer awareness — you find out what breaks when you paste it.</p>
+                </div>
+                <div class="why-col">
+                  <div class="why-col-header">
+                    <span class="why-mark why-mark--yes">✓</span>
+                    <h3>Mermaid Theme Builder</h3>
+                  </div>
+                  <p>Pick a color, see every diagram type update instantly. Export as a <code>themeVariables</code> block, a Markdown style bootstrap, or a renderer-aware prompt scaffold. AI tools stay on-brand from the first generation — not the sixth.</p>
+                </div>
+              </div>
+
+              <div class="why-note">
+                This is a <strong>visual governance layer</strong> for the Mermaid.js ecosystem — not a commercial product, not a SaaS, not a competitor to Mermaid.ai. It runs entirely in your browser. No account. No data collected.
+              </div>
+            </div>
+
+            <!-- FEATURES ─────────────────────────────────────── -->
+            <div class="content-block">
+              <div class="section-label">Features</div>
+              <h2>What the builder does</h2>
+
+              <div class="feature-grid">
+                <div class="feature-item">
+                  <div class="feature-icon" aria-hidden="true">⚡</div>
+                  <div>
+                    <h3>Live Diagram Preview</h3>
+                    <p>Every color change reflects instantly across multiple diagram types — flowchart, sequence, class, Gantt, and more. What you see is what you get.</p>
+                  </div>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-icon" aria-hidden="true">⟳</div>
+                  <div>
+                    <h3>Diagram Family Detection</h3>
+                    <p>Automatically identifies your diagram type and applies family-appropriate transformations. Not all Mermaid families behave the same — the tool knows the difference.</p>
+                  </div>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-icon" aria-hidden="true">&lt;/&gt;</div>
+                  <div>
+                    <h3>Multi-Format Export</h3>
+                    <p>Export as a complete <code>themeVariables</code> block, a Markdown style bootstrap you paste before any diagram, or a model-specific LLM prompt scaffold.</p>
+                  </div>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-icon" aria-hidden="true">◎</div>
+                  <div>
+                    <h3>Prompt Scaffold Generator</h3>
+                    <p>Generates LLM-ready prompt prefixes with your theme embedded. AI tools produce on-brand Mermaid on the first try — no follow-up styling cycles needed.</p>
+                  </div>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-icon" aria-hidden="true">⚐</div>
+                  <div>
+                    <h3>Renderer Capability Notes</h3>
+                    <p>Flags which styling choices work in GitHub, GitLab, Notion, Obsidian, and other renderers — so you know what breaks before you paste and find out.</p>
+                  </div>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-icon" aria-hidden="true">▤</div>
+                  <div>
+                    <h3>Brand Palette Presets</h3>
+                    <p>Ships with seven built-in palettes: four utility (Ocean Depth, Forest Sage, Slate Ember, Violet Mist) and three brand (OverKill Hill P³, Glee-fully, AskJamie). Start from a working preset or build your own.</p>
+                  </div>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-icon" aria-hidden="true">🎨</div>
+                  <div>
+                    <h3>Precise Color Controls</h3>
+                    <p>Full HSL/RGB pickers with live swatch previews. Dial in exact values with visual confirmation at every step — not just a hex input box.</p>
+                  </div>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-icon" aria-hidden="true">🔒</div>
+                  <div>
+                    <h3>Browser-Only — No Server</h3>
+                    <p>Runs 100% client-side. No login, no account, no data leaves your machine. Close the tab and nothing is stored anywhere.</p>
+                  </div>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-icon" aria-hidden="true">⊕</div>
+                  <div>
+                    <h3>Pan / Zoom Canvas</h3>
+                    <p>Navigate complex diagrams without losing context. Pan and zoom the preview canvas — useful for dense flowcharts and class diagrams that don't fit the initial viewport.</p>
+                  </div>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-icon" aria-hidden="true">⚙</div>
+                  <div>
+                    <h3>Forge UI System</h3>
+                    <p>The builder's interface runs on OKH Forge design tokens — the same design system used across OKH P³, Glee-fully, and AskJamie. Style consistency from the workbench itself outward.</p>
+                  </div>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-icon" aria-hidden="true">◻</div>
+                  <div>
+                    <h3>SKILL.md Agent Skill</h3>
+                    <p>The governance logic is packaged as a machine-readable agent skill. AI tools and coding assistants can apply brand palettes and renderer profiles without opening the visual app.</p>
+                  </div>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-icon" aria-hidden="true">◈</div>
+                  <div>
+                    <h3>Open Source, MIT License</h3>
+                    <p>Fork it, remix it, embed it. Full source on GitHub. Contributions welcome.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- RELATIONSHIPS ────────────────────────────────────── -->
+            <div class="content-block">
+              <div class="section-label">Relationships</div>
+              <h2>How it fits the ecosystem</h2>
+              <div class="relationship-grid">
+                <div class="relationship-card">
+                  <span class="rel-tag">Foundation</span>
+                  <h3>Mermaid.js</h3>
+                  <p>The open-source diagram rendering engine. Mermaid Theme Builder is a governance layer that wraps and extends the Mermaid.js <code>themeVariables</code> system. No affiliation — an independent ecosystem contribution built on top of the same open library.</p>
+                </div>
+                <div class="relationship-card">
+                  <span class="rel-tag">Distinct Product — No Affiliation</span>
+                  <h3>Mermaid.ai</h3>
+                  <p>A commercial AI-first diagram generation platform. Completely separate — no affiliation, no integration, no dependency. MTB works with the open Mermaid.js library directly. The distinction matters: Mermaid.js is the open standard; Mermaid.ai is a commercial product built on it.</p>
+                </div>
+                <div class="relationship-card">
+                  <span class="rel-tag">Sibling Project — OKH P³</span>
+                  <h3>BPMN for Mermaid</h3>
+                  <p>The structural sibling. BPMN for Mermaid extends Mermaid syntax toward BPMN-aligned diagram patterns. MTB is the styling and governance layer; BPMN for Mermaid is the structural extension layer. They are complementary — style what BPMN for Mermaid produces. <a href="/projects/bpmn-for-mermaid/" style="color:var(--okh-orange);">See the project →</a></p>
+                </div>
+                <div class="relationship-card">
+                  <span class="rel-tag">Agent Layer — In Development</span>
+                  <h3>SKILL.md / Agent Workflows</h3>
+                  <p>MTB is packaged as a reusable agent skill. The SKILL.md exposes its governance logic — palette definitions, renderer profiles, prompt scaffold patterns — as a machine-readable workflow that AI agents and coding assistants can consume without the visual UI. Installable in Claude Code, GitHub Copilot, Cursor, and VS Code.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- DIAGRAM FAMILY TAXONOMY ──────────────────────────── -->
+            <div class="content-block">
+              <div class="section-label">Diagram Families</div>
+              <h2>Support taxonomy — not all families are equal</h2>
+              <p style="font-size:0.875rem;color:var(--color-muted);margin-bottom:0.5rem;">Mermaid.js does not treat all diagram types with equal stability or renderer support. MTB reflects this — it does not imply uniform support across all families.</p>
+              <div class="family-taxonomy">
+                <div class="family-tier">
+                  <div class="family-tier-label">Stable — well-supported across renderers</div>
+                  <div class="family-chips">
+                    <span class="family-chip">flowchart</span>
+                    <span class="family-chip">sequenceDiagram</span>
+                    <span class="family-chip">classDiagram</span>
+                    <span class="family-chip">stateDiagram-v2</span>
+                    <span class="family-chip">erDiagram</span>
+                    <span class="family-chip">gantt</span>
+                    <span class="family-chip">pie</span>
+                  </div>
+                  <p>These families have the most consistent support across Mermaid.js versions and hosted renderers (GitHub, GitLab, Obsidian, Confluence). Safe for production use in most contexts.</p>
+                </div>
+                <div class="family-tier">
+                  <div class="family-tier-label">Beta / Experimental — support varies by Mermaid.js version</div>
+                  <div class="family-chips">
+                    <span class="family-chip family-chip--beta">sankey</span>
+                    <span class="family-chip family-chip--beta">block</span>
+                    <span class="family-chip family-chip--beta">kanban</span>
+                    <span class="family-chip family-chip--beta">timeline</span>
+                    <span class="family-chip family-chip--beta">xychart-beta</span>
+                    <span class="family-chip family-chip--beta">mindmap</span>
+                  </div>
+                  <p>These families exist in recent Mermaid.js releases but are marked beta or have inconsistent renderer support. Hosted renderers (GitHub, Confluence, Notion) may not support them yet. Verify before deploying.</p>
+                </div>
+                <div class="family-tier">
+                  <div class="family-tier-label">Renderer-dependent — behavior varies significantly by platform</div>
+                  <div class="family-chips">
+                    <span class="family-chip family-chip--beta">themeVariables</span>
+                    <span class="family-chip family-chip--beta">%%{init:…}%%</span>
+                    <span class="family-chip family-chip--beta">custom CSS</span>
+                  </div>
+                  <p>The Mermaid <code>%%{init:…}%%</code> directive and CSS-level overrides work in browser Mermaid.js but are stripped or ignored by many hosted renderers. MTB flags known breakpoints — the export profiles are built around this constraint.</p>
+                </div>
+                <div class="family-tier">
+                  <div class="family-tier-label">OKH P³ semantic templates — brand conventions, not syntax extensions</div>
+                  <div class="family-chips">
+                    <span class="family-chip family-chip--ext">OKH brand palette</span>
+                    <span class="family-chip family-chip--ext">Glee-fully palette</span>
+                    <span class="family-chip family-chip--ext">AskJamie palette</span>
+                </div>
+                  <p>Brand-specific scaffolding patterns that apply OKH conventions to standard diagram families. Not extensions of Mermaid syntax — conventions applied on top of valid Mermaid.</p>
+                </div>
+                <div class="family-tier">
+                  <div class="family-tier-label">BPMN for Mermaid — sibling proposal work</div>
+                  <div class="family-chips">
+                    <span class="family-chip family-chip--proposal">bpmn-task</span>
+                    <span class="family-chip family-chip--proposal">bpmn-gateway</span>
+                    <span class="family-chip family-chip--proposal">bpmn-event</span>
+                    <span class="family-chip family-chip--proposal">bpmn-pool</span>
+                  </div>
+                  <p>Structural diagram patterns from the sibling BPMN for Mermaid project. These extend Mermaid toward BPMN-aligned semantics. MTB can style BPMN-for-Mermaid outputs — they share the same theming contract. <a href="/projects/bpmn-for-mermaid/" style="color:var(--okh-orange);">See BPMN for Mermaid →</a></p>
+                </div>
+              </div>
+            </div>
+
+            <!-- WHY RENDERER-AWARE MATTERS ───────────────────────── -->
+            <div class="content-block">
+              <div class="section-label">Renderer Awareness</div>
+              <h2>Why renderer-aware output matters</h2>
+              <p style="font-size:0.9rem;color:var(--color-muted);line-height:1.7;">Mermaid.js can render a diagram that GitHub Markdown, Notion, or Obsidian cannot. The same <code>themeVariables</code> object that works perfectly in a browser may fail silently — or break layout — in a hosted renderer.</p>
+              <p style="font-size:0.9rem;color:var(--color-muted);line-height:1.7;">MTB tracks known renderer compatibility and flags styling choices that break in common deployment targets — GitHub Pages, GitHub Markdown, GitLab, Obsidian, Notion, and Confluence. The export profiles are built around these constraints. You find out before you paste, not after.</p>
+              <p style="font-size:0.9rem;color:var(--color-muted);line-height:1.7;">For AI-generated diagrams this matters even more. An AI tool generating Mermaid has no renderer context — it produces valid Mermaid.js that may be useless in the target environment. A renderer-aware prompt scaffold closes that gap before generation begins.</p>
+            </div>
+
+            <!-- SKILL.MD ─────────────────────────────────────────── -->
+            <div class="content-block">
+              <div class="section-label">Agent Layer</div>
+              <h2>SKILL.md — headless diagram governance</h2>
+              <div class="skill-block">
+                <h3>What the SKILL.md package does</h3>
+                <p>Mermaid Theme Builder is packaged as a reusable agent skill — a machine-readable <code>SKILL.md</code> that exposes the tool's governance logic in a format AI agents and coding assistants can consume directly, without opening the visual app.</p>
+                <p>The skill covers:</p>
+                <ul>
+                  <li>Palette definition and brand token mapping</li>
+                  <li>Renderer profile selection — GitHub, GitLab, Obsidian, Notion, Confluence</li>
+                  <li>Mermaid <code>themeVariables</code> assembly for a target renderer</li>
+                  <li>Prompt scaffold generation with embedded palette and renderer constraints</li>
+                  <li>Diagram family classification and renderer-safe export rules</li>
+                </ul>
+                <p>Intended for: AI coding assistants, local agent workflows, CI/CD diagram validation pipelines, and headless diagram-governance scripts that need to apply consistent brand and renderer rules without human review at each step.</p>
+                <h4 style="font-size:0.875rem;font-weight:600;margin:1rem 0 0.4rem;">Install paths</h4>
+                  <ul style="font-size:0.85rem;color:var(--color-muted);line-height:1.7;">
+                    <li><strong>Claude Code:</strong> <code>cp -r skills/okhp3-mermaid-theme-builder ~/.claude/skills/</code></li>
+                    <li><strong>Cursor:</strong> <code>cp skills/okhp3-mermaid-theme-builder/SKILL.md .cursor/rules/mermaid-theme-builder.mdc</code></li>
+                    <li><strong>GitHub Copilot:</strong> <code>cp -r skills/okhp3-mermaid-theme-builder .github/skills/</code></li>
+                    <li><strong>VS Code:</strong> same as Copilot path</li>
+                  </ul>
+                  <div class="skill-note">Status: Shipped. v0.5.x sprint: documentation parity and version alignment between the SKILL.md and repo reality. Will be promoted externally after the open PR backlog closes.</div>
+              </div>
+            </div>
+
+            <!-- MOBILE EXPERIENCE ────────────────────────────────── -->
+            <div class="content-block">
+              <div class="section-label">Mobile Experience</div>
+              <h2>Desktop-first. Mobile companion mode.</h2>
+              <p style="font-size:0.875rem;color:var(--color-muted);margin-bottom:0.75rem;">This is an honest description, not an apology. The workbench is a power tool — the full experience is designed for a desktop viewport with room for controls, preview, and output side by side.</p>
+              <div class="mobile-split">
+                <div class="mobile-mode">
+                  <span class="mobile-mode-label mobile-mode-label--desktop">Desktop</span>
+                  <h3>Full power-user experience</h3>
+                  <ul>
+                    <li>Full color picker suite — HSL, RGB, hex</li>
+                    <li>Live multi-diagram preview across families</li>
+                    <li>Pan / zoom canvas for complex diagrams</li>
+                    <li>All export formats — themeVariables, Markdown, prompt scaffold</li>
+                    <li>Renderer profile selection and compatibility flags</li>
+                    <li>Dense diagram inspection at full fidelity</li>
+                  </ul>
+                </div>
+                <div class="mobile-mode">
+                  <span class="mobile-mode-label mobile-mode-label--mobile">Mobile — Companion Mode</span>
+                  <h3>Useful subset, honestly scoped</h3>
+                  <ul>
+                    <li>Browse palette presets and examples</li>
+                    <li>Copy prompt scaffolds for pasting into AI tools</li>
+                    <li>Check renderer-safe export output</li>
+                    <li>Light diagram preview at smaller scale</li>
+                    <li>Review renderer compatibility notes</li>
+                  </ul>
+                  <p style="font-size:0.78rem;color:var(--color-muted);margin-top:0.6rem;">Heavy code editing and dense diagram inspection remain desktop-first. Mobile hardening is on the v0.6.x validation sprint roadmap.</p>
+                </div>
+              </div>
+            </div>
+
+
+              <!-- BUILD HISTORY ────────────────────────────────────────── -->
+              <div class="content-block">
+                <div class="section-label">Build History + Active Sprint</div>
+                <h2>Where the project is</h2>
+                <ol class="progress-track" style="list-style:none;padding:0;margin:1rem 0 0;">
+                  <li class="progress-phase">
+                    <span class="progress-marker progress-marker--done">✓</span>
+                    <div class="progress-phase-content">
+                      <p class="progress-phase-title">V0.1 — Foundation <span class="phase-pill phase-pill--shipped">Shipped</span></p>
+                      <p class="progress-phase-desc">Core paste → detect → palette → preview → export loop. Four utility palettes. Basic diagram family detection. Prompt scaffold modal. GitHub Pages deployment.</p>
+                    </div>
+                  </li>
+                  <li class="progress-phase">
+                    <span class="progress-marker progress-marker--done">✓</span>
+                    <div class="progress-phase-content">
+                      <p class="progress-phase-title">V0.2 — Brand System <span class="phase-pill phase-pill--shipped">Shipped</span></p>
+                      <p class="progress-phase-desc">Three brand palettes added (OverKill Hill P³, Glee-fully, AskJamie). Renderer capability notes. Family-specific theming overlays. Extract mode: pull and replace an existing theme.</p>
+                    </div>
+                  </li>
+                  <li class="progress-phase">
+                    <span class="progress-marker progress-marker--done">✓</span>
+                    <div class="progress-phase-content">
+                      <p class="progress-phase-title">V0.3 — Architecture Hardening <span class="phase-pill phase-pill--shipped">Shipped</span></p>
+                      <p class="progress-phase-desc">React 19 + Vite + TypeScript. pnpm workspaces. Compose tab with 5-tier typography hierarchy. OKH P³ Forge design language applied to the builder UI.</p>
+                    </div>
+                  </li>
+                  <li class="progress-phase">
+                    <span class="progress-marker progress-marker--done">✓</span>
+                    <div class="progress-phase-content">
+                      <p class="progress-phase-title">V0.4 — Renderer Intelligence <span class="phase-pill phase-pill--shipped">Shipped</span></p>
+                      <p class="progress-phase-desc">7 renderer profiles with full parity matrix. Look API: Classic, Neo, Hand-Drawn — with per-renderer support warnings. Dark/light/system mode. 26+ example files. Diff view between original and themed code.</p>
+                    </div>
+                  </li>
+                  <li class="progress-phase">
+                    <span class="progress-marker progress-marker--done">✓</span>
+                    <div class="progress-phase-content">
+                      <p class="progress-phase-title">V0.5.0 — Governance Layer + Agent Skill <span class="phase-pill phase-pill--shipped">Shipped — May 2026</span></p>
+                      <p class="progress-phase-desc">Reference tab: 27+ diagram family capability registry, renderer parity matrix, class library. Five export formats. SKILL.md agent skill for Claude Code, Copilot, Cursor, VS Code. Vitest test suite. Multi-diagram splitting. Shareable URL state encoding. Pan/zoom canvas.</p>
+                    </div>
+                  </li>
+                  <li class="progress-phase">
+                    <span class="progress-marker progress-marker--active">→</span>
+                    <div class="progress-phase-content">
+                      <p class="progress-phase-title">v0.5.x — SKILL.md Hardening Sprint <span class="phase-pill phase-pill--active">Active</span></p>
+                      <p class="progress-phase-desc">SKILL.md documentation parity, version alignment, and test suite validation. Closes all gaps between SKILL.md documentation and repo reality. No UI changes in this sprint.</p>
+                    </div>
+                  </li>
+                  <li class="progress-phase">
+                    <span class="progress-marker progress-marker--planned">○</span>
+                    <div class="progress-phase-content">
+                      <p class="progress-phase-title">v0.6.x — Native Capability + Ko-fi Artifacts <span class="phase-pill phase-pill--planned">Planned</span></p>
+                      <p class="progress-phase-desc">Capacitor.js wrapper for iOS and Android. Native device capabilities: Files app import, Share Sheet export. PWA manifest hardening. Ko-fi downloadable artifacts: PPTX templates, prompt scaffold pack PDF, palette JSON/CSS bundle.</p>
+                    </div>
+                  </li>
+                  <li class="progress-phase">
+                    <span class="progress-marker progress-marker--planned">○</span>
+                    <div class="progress-phase-content">
+                      <p class="progress-phase-title">v0.7–v1.0 <span class="phase-pill phase-pill--planned">Planned</span></p>
+                      <p class="progress-phase-desc">Session persistence, multi-diagram canvas, theme drift detector, collaboration features, App Store and Google Play release, community palette registry.</p>
+                    </div>
+                  </li>
+                </ol>
+              </div>
+
+              <!-- COLLAPSIBLE SECTIONS ─────────────────────────── -->
+            <div class="content-block collapsibles">
+
+              <!-- User Guide -->
+              <details class="collapsible">
+                <summary class="collapsible-toggle">
+                  User Guide
+                  <span class="collapsible-chevron" aria-hidden="true">▾</span>
+                </summary>
+                <div class="collapsible-body">
+                  <p style="font-size:0.875rem;color:var(--color-muted);margin-bottom:0.75rem;">
+                    Get from zero to a custom Mermaid theme in under five minutes.
+                  </p>
+                  <ol class="guide-steps">
+                    <li class="guide-step">
+                      <span class="step-num">01</span>
+                      <div class="step-content">
+                        <strong>Open the builder</strong>
+                        <p>Use the embedded tool above or open it in a full tab for maximum workspace. No login required.</p>
+                      </div>
+                    </li>
+                    <li class="guide-step">
+                      <span class="step-num">02</span>
+                      <div class="step-content">
+                        <strong>Select a diagram type to preview</strong>
+                        <p>The panel shows multiple Mermaid diagram types. Pick the one most relevant to your use case as your primary reference.</p>
+                      </div>
+                    </li>
+                    <li class="guide-step">
+                      <span class="step-num">03</span>
+                      <div class="step-content">
+                        <strong>Adjust base colors</strong>
+                        <p>Start with your primary background and node fill colors. Everything else cascades from these. Use the color pickers — HSL sliders give you the most control.</p>
+                      </div>
+                    </li>
+                    <li class="guide-step">
+                      <span class="step-num">04</span>
+                      <div class="step-content">
+                        <strong>Refine edges, text, and accents</strong>
+                        <p>Dial in edge colors, label text colors, and cluster/subgraph backgrounds. Watch the preview update in real time.</p>
+                      </div>
+                    </li>
+                    <li class="guide-step">
+                      <span class="step-num">05</span>
+                      <div class="step-content">
+                        <strong>Export your theme</strong>
+                        <p>Hit Export. You get a complete <code>mermaid.themeVariables</code> object ready to drop into your <code>mermaid.initialize()</code> call or mdx frontmatter.</p>
+                      </div>
+                    </li>
+                    <li class="guide-step">
+                      <span class="step-num">06</span>
+                      <div class="step-content">
+                        <strong>Paste and verify</strong>
+                        <p>Drop the exported variables into your project. If anything needs a tweak, return to the builder — your context is preserved in the URL.</p>
+                      </div>
+                    </li>
+                  </ol>
+                  <div class="guide-tier-note">
+                    <strong>Tier 1 users:</strong> Go straight to the tool. It's self-evident.<br>
+                    <strong>Tier 2 users:</strong> Follow steps 1–5. Total time: ~3 minutes.
+                  </div>
+                </div>
+              </details>
+
+              <!-- Palette Reference -->
+              <details class="collapsible">
+                <summary class="collapsible-toggle">
+                  Palette Reference
+                  <span class="collapsible-chevron" aria-hidden="true">▾</span>
+                </summary>
+                <div class="collapsible-body">
+                  <p style="font-size:0.875rem;color:var(--color-muted);margin-bottom:0.5rem;">
+                    All Mermaid themeVariables touched by the builder, and what they control.
+                  </p>
+                  <div style="overflow-x:auto;">
+                    <table class="palette-table">
+                      <thead>
+                        <tr>
+                          <th style="width:200px;">Variable</th>
+                          <th>Effect</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr><td class="palette-var">primaryColor</td><td class="palette-desc">Main node fill color — the dominant hue in your diagram.</td></tr>
+                        <tr><td class="palette-var">primaryTextColor</td><td class="palette-desc">Text inside primary-colored nodes. Ensure contrast.</td></tr>
+                        <tr><td class="palette-var">primaryBorderColor</td><td class="palette-desc">Border/stroke of primary nodes.</td></tr>
+                        <tr><td class="palette-var">secondaryColor</td><td class="palette-desc">Secondary node fill — used for alternate node types.</td></tr>
+                        <tr><td class="palette-var">secondaryTextColor</td><td class="palette-desc">Text inside secondary nodes.</td></tr>
+                        <tr><td class="palette-var">secondaryBorderColor</td><td class="palette-desc">Border of secondary nodes.</td></tr>
+                        <tr><td class="palette-var">tertiaryColor</td><td class="palette-desc">Tertiary fill — subgraphs, clusters, grouping elements.</td></tr>
+                        <tr><td class="palette-var">tertiaryTextColor</td><td class="palette-desc">Text inside tertiary elements.</td></tr>
+                        <tr><td class="palette-var">tertiaryBorderColor</td><td class="palette-desc">Border of tertiary elements.</td></tr>
+                        <tr><td class="palette-var">background</td><td class="palette-desc">Canvas/diagram background. Usually the page's background color.</td></tr>
+                        <tr><td class="palette-var">mainBkg</td><td class="palette-desc">Default background for most node types.</td></tr>
+                        <tr><td class="palette-var">nodeBorder</td><td class="palette-desc">Default border for all node types.</td></tr>
+                        <tr><td class="palette-var">clusterBkg</td><td class="palette-desc">Subgraph/cluster fill color.</td></tr>
+                        <tr><td class="palette-var">clusterBorder</td><td class="palette-desc">Subgraph/cluster border.</td></tr>
+                        <tr><td class="palette-var">lineColor</td><td class="palette-desc">Arrow and edge line color.</td></tr>
+                        <tr><td class="palette-var">edgeLabelBackground</td><td class="palette-desc">Background of inline edge labels.</td></tr>
+                        <tr><td class="palette-var">fontFamily</td><td class="palette-desc">Font family applied to all diagram text.</td></tr>
+                        <tr><td class="palette-var">fontSize</td><td class="palette-desc">Base font size — default 16px.</td></tr>
+                        <tr><td class="palette-var">labelBackground</td><td class="palette-desc">Background of standalone labels.</td></tr>
+                        <tr><td class="palette-var">labelTextColor</td><td class="palette-desc">Color of standalone label text.</td></tr>
+                        <tr><td class="palette-var">titleColor</td><td class="palette-desc">Diagram title text color.</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <p style="font-size:0.78rem;color:var(--color-muted);margin-top:0.75rem;">
+                    The builder exports these as a complete <code>themeVariables</code> object. Pass them to <code>mermaid.initialize({ theme: 'base', themeVariables: {...} })</code>.
+                  </p>
+                </div>
+              </details>
+
+              <!-- Renderer Compatibility -->
+              <details class="collapsible">
+                <summary class="collapsible-toggle">
+                  Renderer Compatibility
+                  <span class="collapsible-chevron" aria-hidden="true">▾</span>
+                </summary>
+                <div class="collapsible-body">
+                  <p style="font-size:0.875rem;color:var(--color-muted);margin-bottom:0.75rem;">
+                    Not every renderer supports every styling mechanism. Exports warn when your chosen styling is blocked on the target platform.
+                  </p>
+                  <div style="overflow-x:auto;">
+                    <table class="palette-table">
+                      <thead>
+                        <tr>
+                          <th style="width:130px;">Platform</th>
+                          <th>%%{init}</th>
+                          <th>themeVariables</th>
+                          <th>classDef</th>
+                          <th>CSS injection</th>
+                          <th>Web fonts</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr><td class="palette-var">Mermaid Live</td><td>Full</td><td>Full</td><td>Full</td><td>Full</td><td>Partial</td></tr>
+                        <tr><td class="palette-var">GitHub</td><td>Partial</td><td>Partial</td><td>Yes</td><td>Blocked</td><td>No</td></tr>
+                        <tr><td class="palette-var">GitLab</td><td>Partial</td><td>Partial</td><td>Yes</td><td>Partial</td><td>No</td></tr>
+                        <tr><td class="palette-var">Obsidian</td><td>Full</td><td>Full</td><td>Full</td><td>Partial</td><td>Yes</td></tr>
+                        <tr><td class="palette-var">Notion</td><td>Limited</td><td>Limited</td><td>No</td><td>No</td><td>No</td></tr>
+                        <tr><td class="palette-var">Confluence</td><td>Partial</td><td>Partial</td><td>Partial</td><td>No</td><td>No</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </details>
+
+              <!-- FAQ -->
+              <details class="collapsible">
+                <summary class="collapsible-toggle">
+                  FAQ
+                  <span class="collapsible-chevron" aria-hidden="true">▾</span>
+                </summary>
+                <div class="collapsible-body">
+                  <div class="faq-list">
+                    <div class="faq-item">
+                      <p class="faq-q">Is this affiliated with Mermaid.ai?</p>
+                      <p class="faq-a">No. This is an independent community contribution to the open-source Mermaid.js ecosystem. It has no relationship with Mermaid.ai or any commercial Mermaid product.</p>
+                    </div>
+                    <div class="faq-item">
+                      <p class="faq-q">Does it cost anything?</p>
+                      <p class="faq-a">Nothing. Free now, free always. No subscription, no freemium gate, no ads. MIT licensed.</p>
+                    </div>
+                    <div class="faq-item">
+                      <p class="faq-q">Does it collect any data?</p>
+                      <p class="faq-a">No. The tool is fully client-side. No analytics, no telemetry, no server communication. Your theme stays in your browser.</p>
+                    </div>
+                    <div class="faq-item">
+                      <p class="faq-q">Which Mermaid.js versions does it support?</p>
+                      <p class="faq-a">Tested against Mermaid.js v10 and v11 (tested through v11.15). The themeVariables API has been stable across these versions.</p>
+                    </div>
+                    <div class="faq-item">
+                      <p class="faq-q">Can I use the exported theme with Docusaurus, VitePress, or GitHub?</p>
+                      <p class="faq-a">Yes. The exported themeVariables object is standard Mermaid config — it works anywhere Mermaid.js is used. Check your platform's docs on how to pass themeVariables.</p>
+                    </div>
+                    <div class="faq-item">
+                      <p class="faq-q">Does it support dark/light mode preview toggle?</p>
+                      <p class="faq-a">Yes — dark/light preview toggle shipped in v0.4.x. Set your target mode in the preview panel and the live preview reflects it. The contrast preview is accurate for any background you choose.</p>
+                    </div>
+                    <div class="faq-item">
+                      <p class="faq-q">Can I save and share my theme?</p>
+                      <p class="faq-a">Yes — shareable URL state encoding shipped in V0.5.0. Your full theme configuration is encoded in the URL, so bookmarking or sharing gives anyone the same working state. For permanent storage, export your themeVariables JSON and commit it to your project.</p>
+                    </div>
+                    <div class="faq-item">
+                      <p class="faq-q">Can I use this with my AI coding agent?</p>
+                      <p class="faq-a">Yes. The SKILL.md agent skill is installable in Claude Code, GitHub Copilot, Cursor, and VS Code. Once installed, your AI tool can apply brand palettes and renderer profiles to Mermaid diagrams without opening the visual app. See the Agent Layer section above for install paths.</p>
+                    </div>
+                    <div class="faq-item">
+                      <p class="faq-q">How do I contribute or file a bug?</p>
+                      <p class="faq-a">Open an issue or PR on <a href="https://github.com/OKHP3/mermaid-theme-builder" target="_blank" rel="noopener noreferrer">GitHub</a>. Community feedback is actively used to shape the roadmap.</p>
+                    </div>
+                  </div>
+                </div>
+              </details>
+
+            </div><!-- /collapsibles -->
+
+            <!-- BUILDER'S NOTE ───────────────────────────────── -->
+            <div class="builder-note">
+              <div class="section-label">Builder's Note</div>
+              <blockquote>
+                <p>This tool started as a personal itch. I kept running into the same friction: needing a custom Mermaid theme, describing what I wanted in a prompt, getting CSS, pasting it, noticing something was off, re-prompting. The feedback loop was slow and imprecise.</p>
+                <p>So I built the direct-manipulation version. Pick a color. See the change. Move on.</p>
+                <p>It's useful to me and probably useful to someone else in the Mermaid.js community. That's why it's here.</p>
+                <p><em>Not a startup. Not a SaaS pivot in progress. A tool I built, made free, and put on GitHub.</em></p>
+              </blockquote>
+              <p class="builder-sig">— OverKill Hill P³</p>
+            </div>
+
+            <!-- DEVELOPMENT UPDATE ───────────────────────────── -->
+            <div class="builder-note" style="border-color: rgba(196,106,44,0.35);">
+              <div class="section-label">Development Update</div>
+              <blockquote>
+                <p>The v0.5.0 baseline is shipped. The Forge UI System is in — the builder now runs on the same design tokens as the rest of OKH P³. Pan/zoom is live. The SKILL.md agent skill is packaged and ready for external promotion once the open PR backlog closes.</p>
+                <p>The v0.5.x hardening sprint is the active work: SKILL.md documentation parity, version alignment, and test suite validation. The v0.6.x sprint brings native device capabilities and Ko-fi artifacts — the first step toward sustainable open-source distribution.</p>
+              </blockquote>
+              <p class="builder-sig">— May 2026 · OverKill Hill P³</p>
+            </div>
+
+          </div><!-- /main column -->
+
+          <!-- SIDEBAR ──────────────────────────────────────────── -->
+          <aside class="sidebar-rail" aria-label="Project information">
+
+            <!-- CTA -->
+            <div class="sidebar-cta">
+              <div class="section-label">Start Now</div>
+              <a href="https://okhp3.github.io/mermaid-theme-builder/" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+                ⤢ Open Full Screen
+              </a>
+              <p class="cta-note">No login. No install. Works immediately.</p>
+            </div>
+
+            <!-- Meta -->
+            <div class="sidebar-meta">
+              <div class="section-label">Project Info</div>
+              <div class="meta-row">
+                <div class="meta-item">
+                  <span class="meta-key">Status</span>
+                  <span class="meta-val"><span class="status-dot"></span>V0.5.0 (shipped)</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-key">Build Phase</span>
+                  <span class="meta-val">v0.5.x SKILL.md Hardening</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-key">License</span>
+                  <span class="meta-val">MIT</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-key">Type</span>
+                  <span class="meta-val">Community Contribution</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-key">Cost</span>
+                  <span class="meta-val">Free / Open Source</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-key">Maintained by</span>
+                  <span class="meta-val"><a href="https://overkillhill.com">OverKill Hill P³</a></span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-key">Mermaid.js compat</span>
+                  <span class="meta-val">v10, v11 (tested through v11.15)</span>
+                </div>
+              </div>
+              <div class="sidebar-links">
+                <a href="https://github.com/OKHP3/mermaid-theme-builder" target="_blank" rel="noopener noreferrer" class="sidebar-link">
+                  ◻ View on GitHub
+                </a>
+                <a href="https://github.com/OKHP3/mermaid-theme-builder/issues" target="_blank" rel="noopener noreferrer" class="sidebar-link">
+                  ⊘ Report an Issue
+                </a>
+                <a href="https://github.com/OKHP3/mermaid-theme-builder/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer" class="sidebar-link">
+                  ⊕ Contribute
+                </a>
+              </div>
+            </div>
+
+            <!-- Related -->
+            <div class="sidebar-related">
+              <div class="section-label">Related Resources</div>
+              <ul>
+                <li><a href="https://okhp3.github.io/mermaid-theme-builder/#compose" target="_blank" rel="noopener noreferrer">Live App — Compose Tab ↗</a></li>
+                <li><a href="https://github.com/OKHP3/mermaid-theme-builder" target="_blank" rel="noopener noreferrer">GitHub Repository ↗</a></li>
+                  <li><a href="https://github.com/OKHP3/mermaid-theme-builder/blob/main/skills/okhp3-mermaid-theme-builder/SKILL.md" target="_blank" rel="noopener noreferrer">SKILL.md Source ↗</a></li>
+                <li><a href="/projects/bpmn-for-mermaid/">BPMN for Mermaid (sibling)</a></li>
+                <li><a href="https://mermaid.js.org/config/theming.html" target="_blank" rel="noopener noreferrer">Mermaid.js Theming Docs ↗</a></li>
+                <li><a href="https://mermaid.js.org/config/theming.html#theme-variables" target="_blank" rel="noopener noreferrer">themeVariables Reference ↗</a></li>
+                <li><a href="/writings/first-diagram-is-a-liar/">The First Diagram is a Liar</a></li>
+                <li><a href="/projects/">All OverKill Hill Projects</a></li>
+              </ul>
+            </div>
+
+          </aside>
+
+        </div><!-- /project-layout -->
+
+      </div><!-- /container -->
+    </main>
+
+    <!-- ============================================================
+         FOOTER
+         ============================================================ -->
+    <footer class="site-footer">
+      <div class="container footer-grid">
+        <div class="footer-column">
+          <h3>OverKill&nbsp;Hill&nbsp;P³™</h3>
+          <p>The digital forge for protocol-driven power prompts and custom GPT systems that can withstand real-world complexity.</p>
+        </div>
+        <div class="footer-column">
+          <h4>Navigation</h4>
+          <ul>
+            <li><a href="/#forge">The Forge</a></li>
+            <li><a href="/universe/">P³ Universe</a></li>
+            <li><a href="/manifesto/">The Manifesto</a></li>
+            <li><a href="/projects/">Our Projects</a></li>
+            <li><a href="/writings/">Writings</a></li>
+            <li><a href="/about/">About OKH P³</a></li>
+            <li><a href="/contact/">Contact OKH P³</a></li>
+            <li><a href="/legal/">Legal</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h4>Connect</h4>
+          <ul>
+            <li><a href="mailto:contact@overkillhill.com">contact@overkillhill.com</a></li>
+            <li><a href="https://ko-fi.com/overkillhillp3" target="_blank" rel="noopener noreferrer">Ko-fi</a></li>
+            <li><a href="https://pro.fiverr.com/s/VYKPpoB" target="_blank" rel="noopener noreferrer">Fiverr</a></li>
+            <li><a href="https://www.linkedin.com/company/overkillhillp3" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+            <li><a href="https://facebook.com/OverKillHillP3/" target="_blank" rel="noopener noreferrer">Facebook</a></li>
+            <li><a href="https://x.com/OverKillHillP3" target="_blank" rel="noopener noreferrer">X (Twitter)</a></li>
+            <li><a href="https://www.youtube.com/@OverKillHillP3" target="_blank" rel="noopener noreferrer">YouTube</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom" style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:0.5rem;">
+        <span style="font-size:0.8rem;color:var(--color-muted);white-space:nowrap;padding-left:1rem;">
+          Built with <a href="https://replit.com/refer/overkillhillp3/" target="_blank" rel="noopener noreferrer" style="color:#FF3C00;text-decoration:none;font-weight:600;">Replit</a>
+        </span>
+        <p style="margin:0;text-align:center;">© <span id="current-year"></span> OverKill&nbsp;Hill&nbsp;P³™. All rights reserved.</p>
+        <span></span>
+      </div>
+    </footer>
+
+    <!-- ============================================================
+         SCRIPTS
+         ============================================================ -->
+    <script src="/assets/js/app.js"></script>
+
+    <!-- Iframe loading overlay + reload control -->
+    <script>
+      (function () {
+        const btn = document.getElementById('reload-btn');
+        const iframe = document.getElementById('tool-iframe');
+        const overlay = document.getElementById('iframe-overlay');
+        const fallback = document.getElementById('iframe-fallback');
+
+        if (!iframe) return;
+
+        var slowTimer = null;
+
+        function showLoading() {
+          if (overlay) {
+            overlay.classList.remove('loaded');
+          }
+          if (fallback) {
+            fallback.classList.remove('visible');
+          }
+          clearTimeout(slowTimer);
+          slowTimer = setTimeout(function () {
+            if (fallback) fallback.classList.add('visible');
+          }, 8000);
+        }
+
+        function hideLoading() {
+          clearTimeout(slowTimer);
+          if (overlay) overlay.classList.add('loaded');
+          if (fallback) fallback.classList.remove('visible');
+        }
+
+        iframe.addEventListener('load', hideLoading);
+
+        if (btn) {
+          btn.addEventListener('click', function () {
+            showLoading();
+            iframe.src = iframe.src;
+          });
+        }
+
+        showLoading();
+      })();
+    </script>
+
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-VJ1BKXS27H"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-VJ1BKXS27H');
+    </script>
+</body>
+</html>
