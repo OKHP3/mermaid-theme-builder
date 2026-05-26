@@ -34,7 +34,7 @@ import { createElement } from "react";
 import { ApplyTab } from "@/pages/tabs/ApplyTab";
 import { BRAND_PALETTES } from "@/lib/palettes";
 import { DEFAULT_TYPOGRAPHY } from "@/lib/typography";
-import { clearAllDismissals } from "@/lib/familySyntaxHints";
+import { clearAllDismissals, dismissHint } from "@/lib/familySyntaxHints";
 
 // ---------------------------------------------------------------------------
 // Fixtures
@@ -43,6 +43,13 @@ import { clearAllDismissals } from "@/lib/familySyntaxHints";
 // A plain flowchart so the detector resolves to "flowchart" and
 // FamilySyntaxHint renders the flowchart hint.
 const FLOWCHART = "flowchart TD\n  A[Start] --> B[End]";
+
+// A sequence diagram so the detector resolves to "sequence".
+const SEQUENCE = "sequenceDiagram\n  Alice->>Bob: Hello";
+
+// Text that doesn't match any known diagram family (resolves to "unknown",
+// which has no hint entry — so the restore button must never appear).
+const UNKNOWN = "plain text that is not a mermaid diagram";
 
 const PALETTE = BRAND_PALETTES[0];
 
@@ -189,5 +196,67 @@ describe("ApplyTab hint — dismiss and restore flow", () => {
 
     expect(hintPanelVisible()).toBe(true);
     expect(restoreButtonVisible()).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 3. Family switching while the restore button is visible
+// ---------------------------------------------------------------------------
+
+describe("ApplyTab hint — family switching while restore button is visible", () => {
+  it("hides the restore button when switching to a family with no hint", async () => {
+    const { rerender } = render(createElement(ApplyTab, BASE_PROPS));
+
+    const dismissBtn = screen.getByRole("button", { name: "Dismiss flowchart syntax tip" });
+    await act(async () => {
+      fireEvent.click(dismissBtn);
+    });
+    expect(restoreButtonVisible()).toBe(true);
+
+    // Switch to code the detector can't classify — "unknown" has no hint entry
+    act(() => {
+      rerender(createElement(ApplyTab, { ...BASE_PROPS, inputCode: UNKNOWN }));
+    });
+
+    expect(restoreButtonVisible()).toBe(false);
+  });
+
+  it("shows the restore button immediately when switching to a previously dismissed family", async () => {
+    // Pre-dismiss the sequenceDiagram family before rendering so localStorage
+    // already has the dismissal flag when the family switch triggers the useEffect.
+    dismissHint("sequenceDiagram");
+
+    const { rerender } = render(createElement(ApplyTab, BASE_PROPS));
+
+    const dismissBtn = screen.getByRole("button", { name: "Dismiss flowchart syntax tip" });
+    await act(async () => {
+      fireEvent.click(dismissBtn);
+    });
+
+    // Switch to sequence — it was pre-dismissed, so the restore button must appear
+    await act(async () => {
+      rerender(createElement(ApplyTab, { ...BASE_PROPS, inputCode: SEQUENCE }));
+    });
+
+    expect(restoreButtonVisible()).toBe(true);
+  });
+
+  it("shows the hint panel and hides the restore button when switching to an undismissed family", async () => {
+    const { rerender } = render(createElement(ApplyTab, BASE_PROPS));
+
+    const dismissBtn = screen.getByRole("button", { name: "Dismiss flowchart syntax tip" });
+    await act(async () => {
+      fireEvent.click(dismissBtn);
+    });
+    expect(restoreButtonVisible()).toBe(true);
+
+    // Switch to sequence — never dismissed, so the hint panel should be visible
+    // and the restore button should be gone.
+    await act(async () => {
+      rerender(createElement(ApplyTab, { ...BASE_PROPS, inputCode: SEQUENCE }));
+    });
+
+    expect(restoreButtonVisible()).toBe(false);
+    expect(screen.queryByRole("note", { name: "Syntax tips for sequenceDiagram" })).not.toBeNull();
   });
 });
