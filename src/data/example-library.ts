@@ -966,6 +966,36 @@ const C4_DYNAMIC_USER_LOGIN = `C4Dynamic
     Rel(api, spa, "6. Issues session token", "HTTPS / JSON")
     Rel(spa, user, "7. Redirects to dashboard", "Browser")`;
 
+const C4_COMPONENT_API_SERVER = `C4Component
+    title Component Diagram — API Server
+
+    Person(learner, "Learner", "Uses the platform via browser")
+
+    Container_Boundary(api, "API Server (Node.js / Express)") {
+        Component(authCtrl, "Auth Controller", "Express Router", "Handles login, logout, and token refresh endpoints")
+        Component(courseCtrl, "Course Controller", "Express Router", "Serves course catalog, enrollments, and progress")
+        Component(authSvc, "Auth Service", "Node.js module", "Validates credentials and issues JWT session tokens")
+        Component(courseSvc, "Course Service", "Node.js module", "Applies business rules for enrollment and progress")
+        Component(userRepo, "User Repository", "Drizzle ORM", "Reads and writes user and session records")
+        Component(courseRepo, "Course Repository", "Drizzle ORM", "Reads and writes course and enrollment records")
+    }
+
+    ContainerDb(db, "Primary Database", "PostgreSQL", "Stores all platform data")
+    System_Ext(idp, "Identity Provider", "Issues OAuth 2.0 tokens")
+    Container(spa, "Single-Page App", "React", "Delivers the learning UI to the browser")
+
+    Rel(learner, spa, "Uses", "HTTPS")
+    Rel(spa, authCtrl, "POST /auth/login", "HTTPS / JSON")
+    Rel(spa, courseCtrl, "GET /courses, POST /enroll", "HTTPS / JSON")
+    Rel(authCtrl, authSvc, "Delegates to")
+    Rel(courseCtrl, courseSvc, "Delegates to")
+    Rel(authSvc, idp, "Validates token via", "OAuth 2.0")
+    Rel(authSvc, userRepo, "Reads and writes")
+    Rel(courseSvc, userRepo, "Reads user data")
+    Rel(courseSvc, courseRepo, "Reads and writes")
+    Rel(userRepo, db, "Queries", "SQL / TCP")
+    Rel(courseRepo, db, "Queries", "SQL / TCP")`;
+
 const ARCHITECTURE_STATIC_APP = `architecture-beta
   group browser(cloud)[Browser]
     service vite(server)[Vite Dev Server]
@@ -1816,6 +1846,27 @@ export const EXAMPLE_CATALOG: ExampleEntry[] = [
     description:
       "C4 Dynamic diagram tracing the runtime login sequence across containers — learner submits a form, the SPA calls the API, the API redirects to an OAuth identity provider, receives an auth code, upserts the session, and returns a token. Numbered Rel steps show execution order. Demonstrates how palette colors theme participant boundaries and directed interaction arrows.",
     tags: ["C4", "dynamic", "sequence", "login", "auth", "OAuth", "runtime", "structural"],
+  },
+
+  // C4 — Component level: internal structure of the API Server container
+  {
+    id: "c4-component-api-server",
+    label: "C4 component — API server internals",
+    family: "c4",
+    category: "structural",
+    content: C4_COMPONENT_API_SERVER,
+    description:
+      "C4 Component diagram zooming into the API Server container from the learning platform — six internal components (Auth Controller, Course Controller, Auth Service, Course Service, User Repository, Course Repository) with their technologies and responsibilities, plus external context (SPA, database, identity provider). Completes the four-level C4 vocabulary: Context → Container → Component → Code. Shows how palette colors theme component boundaries, external containers, and relationship lines.",
+    tags: [
+      "C4",
+      "component",
+      "architecture",
+      "API",
+      "internals",
+      "repository",
+      "service",
+      "structural",
+    ],
   },
 
   // Architecture — static app deployment

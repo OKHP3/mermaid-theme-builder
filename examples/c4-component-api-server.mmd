@@ -1,0 +1,29 @@
+C4Component
+    title Component Diagram — API Server
+
+    Person(learner, "Learner", "Uses the platform via browser")
+
+    Container_Boundary(api, "API Server (Node.js / Express)") {
+        Component(authCtrl, "Auth Controller", "Express Router", "Handles login, logout, and token refresh endpoints")
+        Component(courseCtrl, "Course Controller", "Express Router", "Serves course catalog, enrollments, and progress")
+        Component(authSvc, "Auth Service", "Node.js module", "Validates credentials and issues JWT session tokens")
+        Component(courseSvc, "Course Service", "Node.js module", "Applies business rules for enrollment and progress")
+        Component(userRepo, "User Repository", "Drizzle ORM", "Reads and writes user and session records")
+        Component(courseRepo, "Course Repository", "Drizzle ORM", "Reads and writes course and enrollment records")
+    }
+
+    ContainerDb(db, "Primary Database", "PostgreSQL", "Stores all platform data")
+    System_Ext(idp, "Identity Provider", "Issues OAuth 2.0 tokens")
+    Container(spa, "Single-Page App", "React", "Delivers the learning UI to the browser")
+
+    Rel(learner, spa, "Uses", "HTTPS")
+    Rel(spa, authCtrl, "POST /auth/login", "HTTPS / JSON")
+    Rel(spa, courseCtrl, "GET /courses, POST /enroll", "HTTPS / JSON")
+    Rel(authCtrl, authSvc, "Delegates to")
+    Rel(courseCtrl, courseSvc, "Delegates to")
+    Rel(authSvc, idp, "Validates token via", "OAuth 2.0")
+    Rel(authSvc, userRepo, "Reads and writes")
+    Rel(courseSvc, userRepo, "Reads user data")
+    Rel(courseSvc, courseRepo, "Reads and writes")
+    Rel(userRepo, db, "Queries", "SQL / TCP")
+    Rel(courseRepo, db, "Queries", "SQL / TCP")
