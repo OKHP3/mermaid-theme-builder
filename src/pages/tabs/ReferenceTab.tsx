@@ -81,6 +81,10 @@ export function ReferenceTab({
   // the inactive badge can hide itself when the user manually expands the section.
   const [rendererParityOpen, setRendererParityOpen] = useState(false);
 
+  // Tracks whether the Class Library <details> is currently open so the
+  // inactive badge can hide itself when the user manually expands the section.
+  const [classLibraryOpen, setClassLibraryOpen] = useState(false);
+
   useEffect(() => {
     const el = rendererParityRef.current;
     if (!el) return;
@@ -92,11 +96,9 @@ export function ReferenceTab({
   useEffect(() => {
     const el = classLibraryRef.current;
     if (!el) return;
-    if (!supportsClassDef) {
-      el.open = false;
-    } else {
-      el.open = true;
-    }
+    const nextOpen = supportsClassDef;
+    el.open = nextOpen;
+    setClassLibraryOpen(nextOpen);
   }, [supportsClassDef]);
 
   // When navigated here via the beta hint "See support details →" link, force-open
@@ -262,7 +264,11 @@ export function ReferenceTab({
       </div>
 
       <div className="flex-none border-t border-border">
-        <details ref={classLibraryRef} className="group">
+        <details
+          ref={classLibraryRef}
+          className="group"
+          onToggle={(e) => setClassLibraryOpen((e.currentTarget as HTMLDetailsElement).open)}
+        >
           <summary className="flex items-center justify-between px-4 py-2.5 cursor-pointer list-none hover:bg-muted/40 transition-colors select-none">
             <div className="flex items-center gap-2">
               <svg
@@ -277,7 +283,7 @@ export function ReferenceTab({
                 />
               </svg>
               <span className="text-xs font-medium text-foreground">Class Library</span>
-              {!supportsClassDef && (
+              {!supportsClassDef && !classLibraryOpen && (
                 <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
                   inactive for this diagram type
                 </span>

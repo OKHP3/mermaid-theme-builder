@@ -286,23 +286,22 @@ describe("Reference tab — Class Library inactive badge visibility", () => {
     expect(hasBadgeIn(getClassLibraryDetails())).toBe(true);
   });
 
-  it("badge persists when Class Library is manually expanded while supportsClassDef is false", () => {
+  it("badge hides when Class Library is manually expanded while supportsClassDef is false", () => {
     render(createElement(ReferenceTab, { ...BASE_PROPS, supportsClassDef: false }));
     const clDetails = getClassLibraryDetails();
 
-    // Badge must be visible before expansion.
+    // Confirm badge is visible before expansion.
     expect(hasBadgeIn(clDetails)).toBe(true);
 
     // Simulate the browser expanding <details>: set open, dispatch toggle event.
-    // Unlike the RPM, the Class Library has no onToggle handler and no
-    // classLibraryOpen state — the badge condition is solely !supportsClassDef.
+    // The native toggle event triggers React's onToggle prop → setClassLibraryOpen(true).
     act(() => {
       clDetails.open = true;
       fireEvent(clDetails, new Event("toggle"));
     });
 
-    // Badge must still be visible after expanding — no expansion guard is
-    // intentional for Class Library (contrast with RPM which hides its badge).
-    expect(hasBadgeIn(clDetails)).toBe(true);
+    // The badge condition is !supportsClassDef && !classLibraryOpen.
+    // classLibraryOpen is now true, so the badge must be gone.
+    expect(hasBadgeIn(clDetails)).toBe(false);
   });
 });
