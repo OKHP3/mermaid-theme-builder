@@ -709,7 +709,10 @@ export function AppShell() {
       setShowSettingsMenu(false);
     }
     function onKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") setShowSettingsMenu(false);
+      if (e.key === "Escape") {
+        setShowSettingsMenu(false);
+        settingsBtnRef.current?.focus();
+      }
     }
     document.addEventListener("pointerdown", onPointerDown);
     document.addEventListener("keydown", onKeyDown);
@@ -759,6 +762,25 @@ export function AppShell() {
               type="button"
               ref={settingsBtnRef}
               onClick={() => setShowSettingsMenu((v) => !v)}
+              onKeyDown={(e) => {
+                if (e.key === "ArrowDown") {
+                  e.preventDefault();
+                  if (!showSettingsMenu) {
+                    // Menu not yet in the DOM — open it, then wait for render
+                    setShowSettingsMenu(true);
+                    requestAnimationFrame(() => {
+                      settingsMenuRef.current
+                        ?.querySelector<HTMLElement>('[role="menuitem"]')
+                        ?.focus();
+                    });
+                  } else {
+                    // Menu already rendered — focus synchronously
+                    settingsMenuRef.current
+                      ?.querySelector<HTMLElement>('[role="menuitem"]')
+                      ?.focus();
+                  }
+                }
+              }}
               aria-label="Settings"
               title="Settings"
               aria-expanded={showSettingsMenu}
@@ -785,6 +807,27 @@ export function AppShell() {
                 aria-label="Settings"
                 className="absolute top-full right-0 mt-1.5 z-50 rounded-lg border border-border bg-card shadow-lg overflow-hidden"
                 style={{ minWidth: "192px" }}
+                onKeyDown={(e) => {
+                  const items = Array.from(
+                    settingsMenuRef.current?.querySelectorAll<HTMLElement>('[role="menuitem"]') ??
+                      []
+                  );
+                  if (items.length === 0) return;
+                  const idx = items.indexOf(document.activeElement as HTMLElement);
+                  if (e.key === "ArrowDown") {
+                    e.preventDefault();
+                    items[(idx + 1) % items.length]?.focus();
+                  } else if (e.key === "ArrowUp") {
+                    e.preventDefault();
+                    items[(idx - 1 + items.length) % items.length]?.focus();
+                  } else if (e.key === "Home") {
+                    e.preventDefault();
+                    items[0]?.focus();
+                  } else if (e.key === "End") {
+                    e.preventDefault();
+                    items[items.length - 1]?.focus();
+                  }
+                }}
               >
                 <div className="px-3 py-1.5 border-b border-border/60">
                   <span className="forge-eyebrow text-muted-foreground/60">Settings</span>
