@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { familyThemeOverlay } from "@/lib/familyTheming";
+import { familyThemeOverlay } from "@/lib/family-theming";
 import type { Palette } from "@/lib/palettes";
 
 const TEST_PALETTE: Palette = {

@@ -54,6 +54,9 @@ artifacts/mockup-sandbox/
 attached_assets/
 attached-assets/
 
+# Replit platform tooling metadata
+skills-lock.json
+
 # Detritus folders (Repository Hygiene Standard §3)
 _unused/
 unused/

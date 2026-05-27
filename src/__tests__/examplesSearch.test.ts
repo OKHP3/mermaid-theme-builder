@@ -11,7 +11,7 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { ALL_EXAMPLES, filterExamples } from "@/lib/examplesFilter";
+import { ALL_EXAMPLES, filterExamples } from "@/lib/examples-filter";
 
 describe("ExamplesTab — filterExamples (real assembled list)", () => {
   // -------------------------------------------------------------------------

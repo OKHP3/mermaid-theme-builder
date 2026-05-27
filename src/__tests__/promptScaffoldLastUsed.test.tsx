@@ -20,7 +20,7 @@ import { render, cleanup } from "@testing-library/react";
 import { fireEvent } from "@testing-library/dom";
 import { act, createElement } from "react";
 import { PromptScaffoldModal } from "@/components/PromptScaffoldModal";
-import { SCAFFOLD_FORMAT_KEY } from "@/lib/scaffoldPrefs";
+import { SCAFFOLD_FORMAT_KEY } from "@/lib/scaffold-prefs";
 
 // ---------------------------------------------------------------------------
 // Shared fixtures

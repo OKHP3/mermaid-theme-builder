@@ -43,7 +43,7 @@ import { ClassBrowser } from "@/components/ClassBrowser";
 import { DiagramInventory } from "@/components/DiagramInventory";
 import { BRAND_PALETTES } from "@/lib/palettes";
 import { DEFAULT_TYPOGRAPHY } from "@/lib/typography";
-import { getClassDefs } from "@/lib/themeEngine";
+import { getClassDefs } from "@/lib/theme-engine";
 
 // ---------------------------------------------------------------------------
 // Suppress happy-dom navigation warnings that appear when AppShell writes to

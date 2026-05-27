@@ -9,7 +9,7 @@ import {
   type ExtractedTheme,
   type ExtractedClassDef,
 } from "@/lib/extractor";
-import { generateThemedCode } from "@/lib/themeEngine";
+import { generateThemedCode } from "@/lib/theme-engine";
 import { detectDiagram } from "@/lib/detector";
 import type { AppTab } from "@/App";
 

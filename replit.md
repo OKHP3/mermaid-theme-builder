@@ -19,7 +19,8 @@ Flat pnpm workspace. The Mermaid Theme Builder IS the root package — all sourc
 ├── src/                           ← All application source
 │   ├── components/                ← React components
 │   ├── data/                      ← Diagram capabilities, examples, example library
-│   ├── lib/                       ← Core logic (themeEngine, palettes, extractor, etc.)
+│   ├── hooks/                     ← Custom React hooks (useThemeMode, etc.)
+│   ├── lib/                       ← Core logic (theme-engine, palettes, extractor, etc.)
 │   └── pages/                     ← Tab pages (Apply, Compose, Examples, Reference)
 ├── public/                        ← Static assets (favicon, manifest, og image, etc.)
 ├── examples/                      ← 26 .mmd authoring reference files (dev only, not built)
@@ -74,20 +75,20 @@ Flat pnpm workspace. The Mermaid Theme Builder IS the root package — all sourc
 - Render-safety warnings (existing init directives, non-printable chars, long labels)
 - Three exports: Styled Code, Markdown Bootstrap, Prompt Scaffold
 - Extract mode: pull theme from existing themed Mermaid code
-- Family-specific overrides (familyTheming.ts)
+- Family-specific overrides (family-theming.ts)
 - GitHub Pages compatible (pure static build)
 
 **Key source files:**
 - `src/lib/palettes.ts` — palette definitions and BUILTIN_PALETTES
 - `src/lib/detector.ts` — diagram family detection
-- `src/lib/themeEngine.ts` — theme application and export generation
+- `src/lib/theme-engine.ts` — theme application and export generation
 - `src/lib/extractor.ts` — extract theme from existing Mermaid code
-- `src/lib/familyTheming.ts` — per-diagram-family theme overlays
+- `src/lib/family-theming.ts` — per-diagram-family theme overlays
 - `src/lib/persistence.ts` — localStorage state, shareable URL encoding
 - `src/lib/diff.ts` — diff view between original and themed code
-- `src/lib/diagramSplit.ts` — multi-diagram splitting
+- `src/lib/diagram-split.ts` — multi-diagram splitting
 - `src/lib/exporters.ts` — file download, SVG/PNG render, JSON import/export
-- `src/lib/themeMode.ts` — light/dark/system mode
+- `src/hooks/useThemeMode.ts` — light/dark/system mode
 - `src/data/mermaid-capabilities.ts` — diagram capability registry
 - `src/data/examples.ts` — palette preview diagrams (BRAND_EXAMPLES, SHOWCASE_EXAMPLE)
 - `src/data/example-library.ts` — browse catalog (EXAMPLE_CATALOG, EXAMPLE_GROUPS)

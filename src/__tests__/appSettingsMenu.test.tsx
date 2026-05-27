@@ -29,8 +29,8 @@ const { clearAllDismissalsMock } = vi.hoisted(() => ({
   clearAllDismissalsMock: vi.fn(),
 }));
 
-vi.mock("@/lib/familySyntaxHints", async (importOriginal) => {
-  const original = await importOriginal<typeof import("@/lib/familySyntaxHints")>();
+vi.mock("@/lib/family-syntax-hints", async (importOriginal) => {
+  const original = await importOriginal<typeof import("@/lib/family-syntax-hints")>();
   return { ...original, clearAllDismissals: clearAllDismissalsMock };
 });
 

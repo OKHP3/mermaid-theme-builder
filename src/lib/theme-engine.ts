@@ -1,6 +1,6 @@
 import type { Palette } from "./palettes";
 import type { DiagramFamily } from "./detector";
-import { familyThemeOverlay } from "./familyTheming";
+import { familyThemeOverlay } from "./family-theming";
 import { typographyToScaffoldSection, type TypographySettings } from "./typography";
 import {
   rendererToScaffoldSection,

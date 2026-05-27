@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { levenshtein, suggestClassMatch } from "@/lib/fuzzyClassMatch";
+import { levenshtein, suggestClassMatch } from "@/lib/fuzzy-class-match";
 
 // ---------------------------------------------------------------------------
 // levenshtein

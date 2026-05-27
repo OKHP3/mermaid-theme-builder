@@ -17,7 +17,7 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { generateThemedCode, type ExportOptions } from "@/lib/themeEngine";
+import { generateThemedCode, type ExportOptions } from "@/lib/theme-engine";
 import { BRAND_PALETTES } from "@/lib/palettes";
 
 // ---------------------------------------------------------------------------

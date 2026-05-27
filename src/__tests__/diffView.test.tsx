@@ -20,7 +20,7 @@ import { describe, it, expect, afterEach } from "vitest";
 import { render, screen, cleanup } from "@testing-library/react";
 import { createElement } from "react";
 import { DiffView } from "@/components/DiffView";
-import { generateThemedCode, type ExportOptions } from "@/lib/themeEngine";
+import { generateThemedCode, type ExportOptions } from "@/lib/theme-engine";
 import { BRAND_PALETTES } from "@/lib/palettes";
 
 afterEach(cleanup);

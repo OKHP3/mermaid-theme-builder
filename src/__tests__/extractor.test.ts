@@ -6,8 +6,8 @@ import {
   isExtractedPaletteId,
   makeExtractedPaletteId,
 } from "@/lib/extractor";
-import { generateThemedCode } from "@/lib/themeEngine";
-import type { ExportOptions } from "@/lib/themeEngine";
+import { generateThemedCode } from "@/lib/theme-engine";
+import type { ExportOptions } from "@/lib/theme-engine";
 import { BUILTIN_PALETTES } from "@/lib/palettes";
 
 // ---------------------------------------------------------------------------

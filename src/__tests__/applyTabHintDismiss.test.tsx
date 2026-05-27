@@ -34,7 +34,7 @@ import { createElement } from "react";
 import { ApplyTab } from "@/pages/tabs/ApplyTab";
 import { BRAND_PALETTES } from "@/lib/palettes";
 import { DEFAULT_TYPOGRAPHY } from "@/lib/typography";
-import { clearAllDismissals, dismissHint } from "@/lib/familySyntaxHints";
+import { clearAllDismissals, dismissHint } from "@/lib/family-syntax-hints";
 
 // ---------------------------------------------------------------------------
 // Fixtures

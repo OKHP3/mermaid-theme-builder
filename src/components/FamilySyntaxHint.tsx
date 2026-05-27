@@ -5,7 +5,7 @@ import {
   isHintDismissed,
   dismissHint,
   type ClassDefStatus,
-} from "@/lib/familySyntaxHints";
+} from "@/lib/family-syntax-hints";
 
 interface FamilySyntaxHintProps {
   family: DiagramFamily;

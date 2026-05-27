@@ -7,7 +7,7 @@ import {
   getClassDefs,
   CLASSDEF_CAPABLE_FAMILIES,
   type ExportOptions,
-} from "@/lib/themeEngine";
+} from "@/lib/theme-engine";
 import { BRAND_PALETTES, BUILTIN_PALETTES } from "@/lib/palettes";
 import { DEFAULT_TYPOGRAPHY } from "@/lib/typography";
 import { DIAGRAM_CAPABILITIES } from "@/data/mermaid-capabilities";

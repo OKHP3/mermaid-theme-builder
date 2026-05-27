@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { extractUsedClasses } from "@/lib/usedClasses";
+import { extractUsedClasses } from "@/lib/used-classes";
 
 /**
  * Tests for extractUsedClasses (src/lib/usedClasses.ts).

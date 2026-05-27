@@ -22,7 +22,7 @@ import { ComposeTab } from "@/pages/tabs/ComposeTab";
 import { BRAND_PALETTES } from "@/lib/palettes";
 import { DEFAULT_TYPOGRAPHY } from "@/lib/typography";
 import { EXAMPLE_CATALOG } from "@/data/example-library";
-import { generateThemedCode } from "@/lib/themeEngine";
+import { generateThemedCode } from "@/lib/theme-engine";
 import type { AppTab } from "@/App";
 import type { ThemeColor } from "@/lib/palettes";
 

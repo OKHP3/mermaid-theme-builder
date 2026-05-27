@@ -9,7 +9,7 @@ import {
   type ExportOptions,
   type ScaffoldFormat,
   type MermaidLook,
-} from "@/lib/themeEngine";
+} from "@/lib/theme-engine";
 import { MermaidPreview } from "@/components/MermaidPreview";
 import { ColorSwatch } from "@/components/ColorSwatch";
 import { PromptScaffoldModal } from "@/components/PromptScaffoldModal";

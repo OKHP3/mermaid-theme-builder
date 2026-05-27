@@ -19,9 +19,9 @@
 import { describe, it, expect } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { useCodeEditorOverride } from "@/hooks/useCodeEditorOverride";
-import { generateThemedCode, type ExportOptions } from "@/lib/themeEngine";
+import { generateThemedCode, type ExportOptions } from "@/lib/theme-engine";
 import { BRAND_PALETTES } from "@/lib/palettes";
-import { splitDiagrams } from "@/lib/diagramSplit";
+import { splitDiagrams } from "@/lib/diagram-split";
 
 const paletteA = BRAND_PALETTES[0];
 const paletteB = BRAND_PALETTES[1];

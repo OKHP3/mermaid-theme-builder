@@ -9,7 +9,7 @@ import {
   getCapabilityById,
   type DiagramFamily,
 } from "@/data/mermaid-capabilities";
-import { splitDiagrams } from "@/lib/diagramSplit";
+import { splitDiagrams } from "@/lib/diagram-split";
 import { DiffView } from "@/components/DiffView";
 import {
   generateThemedCode,
@@ -19,8 +19,8 @@ import {
   type ExportOptions,
   type ScaffoldFormat,
   type MermaidLook,
-} from "@/lib/themeEngine";
-import { readScaffoldFormat } from "@/lib/scaffoldPrefs";
+} from "@/lib/theme-engine";
+import { readScaffoldFormat } from "@/lib/scaffold-prefs";
 import { MermaidPreview } from "@/components/MermaidPreview";
 import { ColorSwatch } from "@/components/ColorSwatch";
 import { WarningBanner } from "@/components/WarningBanner";
@@ -37,11 +37,11 @@ import {
   paletteToCssVariables,
   palettesToBundleJson,
 } from "@/lib/exporters";
-import { openInLiveEditor } from "@/lib/liveEditor";
+import { openInLiveEditor } from "@/lib/live-editor";
 import { BRAND_EXAMPLES } from "@/data/examples";
 import { RENDERER_PROFILES, getRendererById } from "@/data/renderer-parity";
 import { FamilySyntaxHint } from "@/components/FamilySyntaxHint";
-import { getFamilySyntaxHint, isHintDismissed } from "@/lib/familySyntaxHints";
+import { getFamilySyntaxHint, isHintDismissed } from "@/lib/family-syntax-hints";
 import { HighlightedCode } from "@/components/HighlightedCode";
 import { type TypographySettings } from "@/lib/typography";
 import type { AppTab } from "@/App";

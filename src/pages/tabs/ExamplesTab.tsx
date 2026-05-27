@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import type { Palette, ThemeColor } from "@/lib/palettes";
 import { PaletteSelectorBar } from "@/components/PaletteSelectorBar";
-import { generateThemedCode, type ExportOptions } from "@/lib/themeEngine";
+import { generateThemedCode, type ExportOptions } from "@/lib/theme-engine";
 import { detectDiagram } from "@/lib/detector";
 import { MermaidPreview } from "@/components/MermaidPreview";
 import { MermaidReferral } from "@/components/MermaidReferral";
@@ -13,7 +13,7 @@ import {
   SECTIONS,
   ALL_FAMILIES,
   filterExamples,
-} from "@/lib/examplesFilter";
+} from "@/lib/examples-filter";
 import {
   SUPPORT_STATUS_LABELS,
   SUPPORT_STATUS_STYLES,

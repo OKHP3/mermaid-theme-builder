@@ -5,7 +5,7 @@ import {
   highlightCommentLine,
   highlightMermaidCodeLine,
   highlightMermaidCodeBlock,
-} from "@/lib/syntaxHighlight";
+} from "@/lib/syntax-highlight";
 
 // Re-export so that consumers and tests that import from HighlightedCode continue
 // to resolve without any import-path changes.

@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Palette, ThemeColor } from "@/lib/palettes";
 import { PaletteSelectorBar } from "@/components/PaletteSelectorBar";
-import { getClassDefs } from "@/lib/themeEngine";
-import { extractUsedClasses } from "@/lib/usedClasses";
+import { getClassDefs } from "@/lib/theme-engine";
+import { extractUsedClasses } from "@/lib/used-classes";
 import { DiagramInventory } from "@/components/DiagramInventory";
 import { ClassBrowser } from "@/components/ClassBrowser";
 import { RENDERER_PROFILES, supportLabel, supportColor } from "@/data/renderer-parity";

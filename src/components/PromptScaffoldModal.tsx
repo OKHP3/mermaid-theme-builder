@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
-import type { ScaffoldFormat } from "@/lib/themeEngine";
+import type { ScaffoldFormat } from "@/lib/theme-engine";
 import {
   SCAFFOLD_FORMAT_KEY,
   resolveScaffoldFormat,
   saveScaffoldFormat,
-} from "@/lib/scaffoldPrefs";
+} from "@/lib/scaffold-prefs";
 import { RENDERER_PROFILES, getRendererConstraints } from "@/data/renderer-parity";
 
 const PREVIEW_LINES = 25;

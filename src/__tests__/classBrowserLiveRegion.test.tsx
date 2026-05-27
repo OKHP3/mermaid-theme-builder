@@ -4,7 +4,7 @@ import { render, screen, act, cleanup } from "@testing-library/react";
 import { fireEvent } from "@testing-library/dom";
 import { createElement } from "react";
 import { ClassBrowser, HL } from "@/components/ClassBrowser";
-import type { ClassDef } from "@/lib/themeEngine";
+import type { ClassDef } from "@/lib/theme-engine";
 
 /**
  * Interactive tests for the aria-live announcements in ClassBrowser.

@@ -1,4 +1,4 @@
-import type { ScaffoldFormat } from "./themeEngine";
+import type { ScaffoldFormat } from "./theme-engine";
 
 export const SCAFFOLD_FORMAT_KEY = "mtb-scaffold-format";
 

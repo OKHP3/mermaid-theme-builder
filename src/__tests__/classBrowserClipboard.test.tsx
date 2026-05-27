@@ -4,7 +4,7 @@ import { render, screen, act, cleanup } from "@testing-library/react";
 import { fireEvent } from "@testing-library/dom";
 import { createElement } from "react";
 import { ClassBrowser } from "@/components/ClassBrowser";
-import type { ClassDef } from "@/lib/themeEngine";
+import type { ClassDef } from "@/lib/theme-engine";
 
 /**
  * Clipboard write tests for ClassBrowser.

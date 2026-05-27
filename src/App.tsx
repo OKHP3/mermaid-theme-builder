@@ -7,7 +7,7 @@ import {
   useRef,
   type ReactNode,
 } from "react";
-import { useThemeMode, type ThemeMode } from "@/lib/themeMode";
+import { useThemeMode, type ThemeMode } from "@/hooks/useThemeMode";
 import {
   BUILTIN_PALETTES,
   BRAND_PALETTES,
@@ -18,7 +18,7 @@ import {
   type ThemeColor,
   getEffectiveThemeName,
 } from "@/lib/palettes";
-import { clearAllDismissals } from "@/lib/familySyntaxHints";
+import { clearAllDismissals } from "@/lib/family-syntax-hints";
 import { BRAND_EXAMPLES, GENERIC_EXAMPLE, SHOWCASE_EXAMPLE } from "@/data/examples";
 import { EXAMPLE_GROUPS } from "@/data/example-library";
 import { AppIcon } from "@/components/AppIcon";
@@ -32,7 +32,7 @@ import {
   decodeShareableTheme,
   type ShareablePayload,
 } from "@/lib/persistence";
-import { type MermaidLook, CLASSDEF_CAPABLE_FAMILIES, getClassDefs } from "@/lib/themeEngine";
+import { type MermaidLook, CLASSDEF_CAPABLE_FAMILIES, getClassDefs } from "@/lib/theme-engine";
 import { detectDiagram } from "@/lib/detector";
 import { type TypographySettings, DEFAULT_TYPOGRAPHY } from "@/lib/typography";
 import {

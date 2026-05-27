@@ -22,7 +22,7 @@ import { render, screen, act, cleanup } from "@testing-library/react";
 import { fireEvent } from "@testing-library/dom";
 import { createElement } from "react";
 import { FamilySyntaxHint } from "@/components/FamilySyntaxHint";
-import { clearAllDismissals, dismissHint, isHintDismissed } from "@/lib/familySyntaxHints";
+import { clearAllDismissals, dismissHint, isHintDismissed } from "@/lib/family-syntax-hints";
 import type { DiagramFamily } from "@/data/mermaid-capabilities";
 
 // ---------------------------------------------------------------------------

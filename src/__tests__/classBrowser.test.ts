@@ -8,7 +8,7 @@ import {
   highlightClassDefBlock,
   HL,
 } from "@/components/ClassBrowser";
-import type { ClassDef } from "@/lib/themeEngine";
+import type { ClassDef } from "@/lib/theme-engine";
 
 /**
  * Tests for ClassBrowser (src/components/ClassBrowser.tsx).

@@ -1,12 +1,12 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from "react";
-import { buildClassDefString, type ClassDef } from "@/lib/themeEngine";
-import { suggestClassMatch } from "@/lib/fuzzyClassMatch";
+import { buildClassDefString, type ClassDef } from "@/lib/theme-engine";
+import { suggestClassMatch } from "@/lib/fuzzy-class-match";
 import {
   HL,
   highlightPropsSegment,
   highlightClassDefLine,
   highlightClassDefBlock,
-} from "@/lib/syntaxHighlight";
+} from "@/lib/syntax-highlight";
 
 // Re-export so that consumers and tests that import from ClassBrowser continue
 // to resolve without any import-path changes.

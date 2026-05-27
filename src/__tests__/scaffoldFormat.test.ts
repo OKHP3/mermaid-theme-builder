@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { generatePromptScaffoldWithFormat, type ExportOptions } from "@/lib/themeEngine";
-import { resolveScaffoldFormat } from "@/lib/scaffoldPrefs";
+import { generatePromptScaffoldWithFormat, type ExportOptions } from "@/lib/theme-engine";
+import { resolveScaffoldFormat } from "@/lib/scaffold-prefs";
 import { BRAND_PALETTES } from "@/lib/palettes";
 
 const palette = BRAND_PALETTES[0];

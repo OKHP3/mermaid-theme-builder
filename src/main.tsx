@@ -1,7 +1,7 @@
 import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
-import { applyMode } from "./lib/themeMode";
+import { applyMode } from "./hooks/useThemeMode";
 
 (() => {
   try {

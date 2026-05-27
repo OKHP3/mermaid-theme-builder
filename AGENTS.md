@@ -301,17 +301,18 @@ artifacts/mermaid-theme-builder/
 │   │   ├── example-library.ts        # full example entries with inlined .mmd content
 │   │   ├── examples.ts               # example metadata + display config
 │   │   └── mermaid-capabilities.ts   # authoritative capability registry (27 families)
+│   ├── hooks/
+│   │   └── useThemeMode.ts           # light/dark/system mode state hook
 │   ├── lib/
 │   │   ├── detector.ts               # diagram-family detection from raw text
-│   │   ├── diagramSplit.ts           # splits multi-diagram pastes into individual blocks
+│   │   ├── diagram-split.ts          # splits multi-diagram pastes into individual blocks
 │   │   ├── diff.ts                   # line-level diff computation for DiffView
 │   │   ├── exporters.ts              # all export-format serializers (CSS, JSON, MD, etc.)
 │   │   ├── extractor.ts              # extracts existing init/theme from pasted code
-│   │   ├── familyTheming.ts          # per-family themeVariables overlays (sequence, ER, etc.)
+│   │   ├── family-theming.ts         # per-family themeVariables overlays (sequence, ER, etc.)
 │   │   ├── palettes.ts               # palette schema, built-in palettes, user-palette types
 │   │   ├── persistence.ts            # localStorage read/write with schema versioning
-│   │   ├── themeEngine.ts            # core: palette → Mermaid init directive + exports
-│   │   └── themeMode.ts              # light/dark mode state hook
+│   │   └── theme-engine.ts           # core: palette → Mermaid init directive + exports
 │   └── pages/
 │       └── tabs/
 │           ├── ApplyTab.tsx          # Apply tab: paste → detect → theme → export
@@ -337,7 +338,8 @@ artifacts/mermaid-theme-builder/
 │   ├── renderer-compatibility.md     # renderer compat notes
 │   ├── roadmap.md                    # feature backlog with completion status
 │   ├── technical-debt-register.md    # known tech debt items
-│   └── theme-metadata.md             # palette metadata schema reference
+│   ├── theme-metadata.md             # palette metadata schema reference
+│   └── threat-model.md               # STRIDE threat model for the app
 ├── examples/                         # .mmd source files — human-readable originals
 │   │                                 # Content is inlined into example-library.ts;
 │   │                                 # these files are dev/authoring references only.

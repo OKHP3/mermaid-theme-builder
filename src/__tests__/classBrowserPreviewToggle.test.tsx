@@ -22,7 +22,7 @@ import {
   loadStoredPreviewMode,
   saveStoredPreviewMode,
 } from "@/components/ClassBrowser";
-import type { ClassDef } from "@/lib/themeEngine";
+import type { ClassDef } from "@/lib/theme-engine";
 
 // ---------------------------------------------------------------------------
 // Fixtures

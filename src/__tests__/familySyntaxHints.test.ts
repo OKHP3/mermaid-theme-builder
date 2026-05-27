@@ -13,9 +13,9 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { getFamilySyntaxHint } from "@/lib/familySyntaxHints";
-import type { ClassDefStatus } from "@/lib/familySyntaxHints";
-import { CLASSDEF_CAPABLE_FAMILIES } from "@/lib/themeEngine";
+import { getFamilySyntaxHint } from "@/lib/family-syntax-hints";
+import type { ClassDefStatus } from "@/lib/family-syntax-hints";
+import { CLASSDEF_CAPABLE_FAMILIES } from "@/lib/theme-engine";
 import type { DiagramFamily } from "@/data/mermaid-capabilities";
 
 // ---------------------------------------------------------------------------
