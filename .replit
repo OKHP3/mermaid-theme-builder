@@ -74,7 +74,7 @@ task = "shell.exec"
 args = "pnpm prettier --check \"src/**/*.{ts,tsx}\" \"*.ts\" \"*.json\""
 
 [workflows.workflow.metadata]
-outputType = "console"
+isValidation = true
 
 [agent]
 stack = "PNPM_WORKSPACE"
