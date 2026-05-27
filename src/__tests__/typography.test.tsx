@@ -413,6 +413,118 @@ describe("generateTypographyCss — all tiers modified", () => {
 // 6. typographyToScaffoldSection
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// 7. generateTypographyCss — CSS validity for unusual font-family values
+//
+// Guards against silent corruption of the CSS block when fontFamily contains
+// spaces (e.g. "DM Sans"), comma-separated fallback stacks ("DM Sans, sans-serif"),
+// or quoted names ("'DM Sans', sans-serif"). Also performs a structural brace-
+// balance check on a fully-modified settings object to catch any case where an
+// injected value breaks the selector { declarations } structure.
+// ---------------------------------------------------------------------------
+
+/** Count occurrences of a single character in a string. */
+function countChar(s: string, ch: string): number {
+  return [...s].filter((c) => c === ch).length;
+}
+
+describe("generateTypographyCss — CSS validity: font-family with spaces", () => {
+  it("'DM Sans' (one space) emits a well-formed full CSS rule for nodeLabel", () => {
+    const settings: TypographySettings = {
+      ...DEFAULT_TYPOGRAPHY,
+      nodeLabel: { fontSize: 14, fontFamily: "DM Sans" },
+    };
+    const result = generateTypographyCss(settings);
+    expect(result).toContain(".node .label { font-family: DM Sans; }");
+  });
+
+  it("'Alfa Slab One' (two spaces) emits the value verbatim for diagramTitle", () => {
+    const settings: TypographySettings = {
+      ...DEFAULT_TYPOGRAPHY,
+      diagramTitle: { fontSize: 20, fontFamily: "Alfa Slab One" },
+    };
+    const result = generateTypographyCss(settings);
+    expect(result).toContain(".label { font-family: Alfa Slab One; }");
+  });
+
+  it("'JetBrains Mono' paired with a non-default font-size emits both declarations in one rule", () => {
+    const settings: TypographySettings = {
+      ...DEFAULT_TYPOGRAPHY,
+      edgeLabel: { fontSize: 10, fontFamily: "JetBrains Mono" },
+    };
+    const result = generateTypographyCss(settings);
+    expect(result).toContain(".edgeLabel { font-size: 10px; font-family: JetBrains Mono; }");
+  });
+});
+
+describe("generateTypographyCss — CSS validity: comma-separated fallback stacks", () => {
+  it("'DM Sans, sans-serif' emits the fallback stack verbatim", () => {
+    const settings: TypographySettings = {
+      ...DEFAULT_TYPOGRAPHY,
+      nodeLabel: { fontSize: 14, fontFamily: "DM Sans, sans-serif" },
+    };
+    const result = generateTypographyCss(settings);
+    expect(result).toContain("font-family: DM Sans, sans-serif;");
+  });
+
+  it("\"'DM Sans', sans-serif\" (quoted name + fallback) emits the quotes correctly", () => {
+    const settings: TypographySettings = {
+      ...DEFAULT_TYPOGRAPHY,
+      nodeLabel: { fontSize: 14, fontFamily: "'DM Sans', sans-serif" },
+    };
+    const result = generateTypographyCss(settings);
+    expect(result).toContain("font-family: 'DM Sans', sans-serif;");
+  });
+
+  it("three-item fallback stack is enclosed in a valid selector { ... } rule", () => {
+    const settings: TypographySettings = {
+      ...DEFAULT_TYPOGRAPHY,
+      subgraphTitle: { fontSize: 16, fontFamily: "Inter, Arial, sans-serif" },
+    };
+    const result = generateTypographyCss(settings);
+    expect(result).toContain(".cluster-label { font-family: Inter, Arial, sans-serif; }");
+  });
+});
+
+describe("generateTypographyCss — CSS validity: brace balance on fully-modified settings", () => {
+  const fullyModified: TypographySettings = {
+    diagramTitle: { fontSize: 24, fontFamily: "Alfa Slab One" },
+    subgraphTitle: { fontSize: 20, fontFamily: "'DM Sans', sans-serif" },
+    nestedSubgraphTitle: { fontSize: 16, fontFamily: "DM Sans" },
+    nodeLabel: { fontSize: 13, fontFamily: "JetBrains Mono, monospace" },
+    edgeLabel: { fontSize: 11, fontFamily: "Inter, sans-serif" },
+  };
+
+  it("opening and closing brace counts are equal (braces are balanced)", () => {
+    const result = generateTypographyCss(fullyModified);
+    expect(countChar(result, "{")).toBe(countChar(result, "}"));
+  });
+
+  it("every CSS rule line ends with '}' — no dangling declarations", () => {
+    const result = generateTypographyCss(fullyModified);
+    const ruleLines = result.split("\n").filter((l) => l.startsWith("."));
+    expect(ruleLines.length).toBeGreaterThan(0);
+    for (const line of ruleLines) {
+      expect(line.trim(), `Rule line should end with '}': ${line}`).toMatch(/\}$/);
+    }
+  });
+
+  it("every CSS rule line contains exactly one '{' and one '}'", () => {
+    const result = generateTypographyCss(fullyModified);
+    const ruleLines = result.split("\n").filter((l) => l.startsWith("."));
+    for (const line of ruleLines) {
+      expect(countChar(line, "{"), `Expected exactly 1 opening brace in: ${line}`).toBe(1);
+      expect(countChar(line, "}"), `Expected exactly 1 closing brace in: ${line}`).toBe(1);
+    }
+  });
+
+  it("emits exactly five CSS rule lines — one per tier", () => {
+    const result = generateTypographyCss(fullyModified);
+    const ruleLines = result.split("\n").filter((l) => l.startsWith("."));
+    expect(ruleLines).toHaveLength(5);
+  });
+});
+
 describe("typographyToScaffoldSection — markdown table structure", () => {
   it("contains the markdown table header row", () => {
     const result = typographyToScaffoldSection(DEFAULT_TYPOGRAPHY);
