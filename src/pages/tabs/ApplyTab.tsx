@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useEffect, useRef } from "react";
+import { useState, useCallback, useMemo, useEffect, useRef, type ReactNode } from "react";
 import { useCodeEditorOverride } from "@/hooks/useCodeEditorOverride";
 import type { Palette, ThemeColor } from "@/lib/palettes";
 import { BRAND_PALETTES, UTILITY_PALETTES } from "@/lib/palettes";
@@ -80,7 +80,7 @@ interface ApplyTabProps {
   onSwitchTab: (tab: AppTab) => void;
   onExtractTheme: (name?: string) => Palette | null;
   userPalettes: Palette[];
-  onShowToast: (msg: string) => void;
+  onShowToast: (msg: ReactNode) => void;
   recentPaletteIds: string[];
   look: MermaidLook;
   onLookChange: (v: MermaidLook) => void;

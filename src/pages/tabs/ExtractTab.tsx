@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useRef, useEffect } from "react";
+import { useState, useCallback, useMemo, useRef, useEffect, type ReactNode } from "react";
 import type { Palette, ThemeColor } from "@/lib/palettes";
 import { ColorSwatch } from "@/components/ColorSwatch";
 import { DiffView } from "@/components/DiffView";
@@ -104,7 +104,7 @@ function applyEditedClassDefs(code: string, edits: Record<string, ExtractedClass
 interface ExtractTabProps {
   onUseExtractedTheme: (palette: Palette, codeWithClassDefs?: string) => void;
   onSwitchTab: (tab: AppTab) => void;
-  onShowToast: (msg: string) => void;
+  onShowToast: (msg: ReactNode) => void;
   embedded?: boolean;
 }
 

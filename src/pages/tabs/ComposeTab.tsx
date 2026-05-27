@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useRef } from "react";
+import { useState, useCallback, useMemo, useRef, type ReactNode } from "react";
 import type { Palette, ThemeColor } from "@/lib/palettes";
 import { BRAND_PALETTES, UTILITY_PALETTES } from "@/lib/palettes";
 import { PaletteSelectorBar } from "@/components/PaletteSelectorBar";
@@ -26,6 +26,7 @@ import {
   makeFilename,
 } from "@/lib/exporters";
 import { encodeShareableTheme, paletteToShareablePayload } from "@/lib/persistence";
+import { formatImportError } from "@/lib/importErrorFormat";
 import {
   type TypographySettings,
   type TypographyTierKey,
@@ -115,7 +116,7 @@ interface ComposeTabProps {
   onSavePalette: (name: string) => void;
   onImportPalette: (palette: Palette) => void;
   onDeleteUserPalette: (id: string) => void;
-  onShowToast: (msg: string) => void;
+  onShowToast: (msg: ReactNode) => void;
   look: MermaidLook;
   onLookChange: (v: MermaidLook) => void;
   fontSize: string;
@@ -384,7 +385,7 @@ export function ComposeTab({
         if (topLevelType === "mtb-palette-bundle") {
           const result = parsePaletteBundle(text);
           if (!result.ok) {
-            onShowToast(`Bundle import failed: ${result.error}`);
+            onShowToast(formatImportError(`Bundle import failed: ${result.error}`));
             return;
           }
           const combinedMissing: string[] = [];
@@ -421,7 +422,7 @@ export function ComposeTab({
         } else {
           const result = parsePortablePalette(text);
           if (!result.ok) {
-            onShowToast(`Import failed: ${result.error}`);
+            onShowToast(formatImportError(`Import failed: ${result.error}`));
             return;
           }
           onImportPalette(result.palette);

@@ -276,7 +276,7 @@ export function AppShell() {
     return TABS.includes(h as AppTab) ? (h as AppTab) : "apply";
   });
   const [hydrated, setHydrated] = useState(false);
-  const [toast, setToast] = useState<string | null>(null);
+  const [toast, setToast] = useState<ReactNode | null>(null);
   const [userPalettes, setUserPalettes] = useState<Palette[]>([]);
   const [selectedPaletteId, setSelectedPaletteId] = useState(BRAND_PALETTES[0].id);
   const [customColors, setCustomColors] = useState<Record<string, ThemeColor[]>>({});
@@ -690,7 +690,7 @@ export function AppShell() {
     setToast("Palette removed.");
   }, []);
 
-  const showToast = useCallback((msg: string) => setToast(msg), []);
+  const showToast = useCallback((msg: ReactNode) => setToast(msg), []);
 
   const handleResetSyntaxHints = useCallback(() => {
     clearAllDismissals();
