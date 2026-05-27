@@ -95,6 +95,31 @@ These must be updated whenever the Mermaid dependency is upgraded.
 
 Run the end-to-end test plan (see `docs/release-checklist.md`) before opening a pull request. All 6 e2e test scenarios must pass.
 
+## Language Standard: en-US
+
+This project is authored, owned, and maintained by a United States-based creator.
+All user-facing content must use United States English (`en-US`).
+
+Scope: UI copy, documentation, README content, release notes, comments intended for
+human readers, prompts, tooltips, button text, error messages, validation messages,
+QA/QC reports, and marketing language.
+
+Examples of required US-EN spellings:
+color, behavior, organization, optimize, customize, center, analyze, modeling,
+artifact, visualization, standardization, initialize, finalize, prioritize, summarize,
+license (noun), program, catalog, fulfill, gray, toward, among, while.
+
+Do NOT change the following where spelling is externally defined or technically significant:
+- Direct quotations from external sources
+- Proper nouns, brand names, product names
+- Dependency, package, or library names
+- URLs, file names, route names
+- API fields, schema keys, code identifiers
+- Generated lockfiles or external standards
+
+US English compliance is a required QA/QC gate. It is not a stylistic preference.
+Any output that fails this standard is a defect.
+
 ## File structure
 
 ```
@@ -106,7 +131,7 @@ artifacts/mermaid-theme-builder/
 │   ├── components/
 │   │   ├── CapabilityNote.tsx        # blue info note for non-full-support diagram families
 │   │   ├── ClassBrowser.tsx          # collapsible CSS class reference panel
-│   │   ├── ColorSwatch.tsx           # single colour chip with copy-on-click
+│   │   ├── ColorSwatch.tsx           # single color chip with copy-on-click
 │   │   ├── DiagramInventory.tsx      # filterable/searchable diagram family index
 │   │   ├── DiffView.tsx              # three-mode preview: original / themed / diff
 │   │   ├── MermaidPreview.tsx        # live Mermaid render wrapper
@@ -121,7 +146,7 @@ artifacts/mermaid-theme-builder/
 │   │   ├── detector.ts               # diagram-family detection from raw text
 │   │   ├── diagramSplit.ts           # splits multi-diagram pastes into individual blocks
 │   │   ├── diff.ts                   # line-level diff computation for DiffView
-│   │   ├── exporters.ts              # all export-format serialisers (CSS, JSON, MD, etc.)
+│   │   ├── exporters.ts              # all export-format serializers (CSS, JSON, MD, etc.)
 │   │   ├── extractor.ts              # extracts existing init/theme from pasted code
 │   │   ├── familyTheming.ts          # per-family themeVariables overlays (sequence, ER, etc.)
 │   │   ├── palettes.ts               # palette schema, built-in palettes, user-palette types
@@ -141,7 +166,7 @@ artifacts/mermaid-theme-builder/
 │   ├── copilot-prompt-kit.md         # reusable M365 Copilot prompt templates for themed Mermaid diagrams
 │   ├── deployment.md                 # GitHub Pages deployment instructions
 │   ├── design-system.md              # OKH Forge UI System reference
-│   ├── legal.md                      # colour copyright + brand policy analysis
+│   ├── legal.md                      # color copyright + brand policy analysis
 │   ├── market-research.md            # competitive landscape and positioning
 │   ├── mermaid-capability-registry.md # registry update checklist per Mermaid version
 │   ├── mermaid-theming-reference.md  # full themeVariables table + renderer compat

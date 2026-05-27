@@ -255,7 +255,7 @@ April 18, 2026: blank repo scaffold. April 23: "feat: Mermaid Theme Builder v0.1
 | Updated ROADMAP | ✅ Updated | `docs/ROADMAP.md` |
 | Product Brief (v0.1-era) | Exists but stale | `docs/PRODUCT_BRIEF.md` — update to v0.5 scope |
 | Architecture Summary | Covered in this doc + AGENTS.md | Optional: `docs/architecture-summary.md` |
-| Decision Register | Summarised in this doc | Optional: `docs/decision-register.md` |
+| Decision Register | Summarized in this doc | Optional: `docs/decision-register.md` |
 | README | Likely stale | Update to reflect v0.5 feature set |
 | GitHub releases | Missing | Create v0.5.0 release tag |
 | GitHub issues backlog | Partial | Convert recommended backlog to GitHub issues |

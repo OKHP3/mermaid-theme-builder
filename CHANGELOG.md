@@ -34,7 +34,7 @@ Palette authoring, smarter Prompt Scaffold, and Mermaid 11.14–11.15 coverage.
 ## [0.5.0] — 2026-05-12
 
 ### Added
-- **OKH Forge UI System v0.1.0** — `src/index.css` restructured into 8 labelled sections (raw palette tokens, Tailwind bridge, semantic light/dark tokens, base layer, forge utility classes, elevation helpers, print). New canonical design tokens: `--okh-forge-*`, `--forge-header-*`, `--forge-footer-*`, `--forge-mobile-nav-*`. New utility classes: `.forge-shell`, `.forge-footer`, `.forge-mobile-nav`, `.forge-card`, `.forge-tabs`, `.forge-tab`, `.forge-tab-active`
+- **OKH Forge UI System v0.1.0** — `src/index.css` restructured into 8 labeled sections (raw palette tokens, Tailwind bridge, semantic light/dark tokens, base layer, forge utility classes, elevation helpers, print). New canonical design tokens: `--okh-forge-*`, `--forge-header-*`, `--forge-footer-*`, `--forge-mobile-nav-*`. New utility classes: `.forge-shell`, `.forge-footer`, `.forge-mobile-nav`, `.forge-card`, `.forge-tabs`, `.forge-tab`, `.forge-tab-active`
 - **`docs/design-system.md`** — OKH Forge UI System reference document
 - **Pan and zoom on all diagram previews** — drag-to-pan, scroll-wheel zoom (10%–800%), touch pinch-to-zoom, double-click reset. Floating control toolbar with zoom-out, percentage readout, zoom-in, and reset buttons. Applies to Apply, Compose, and Examples tabs
 

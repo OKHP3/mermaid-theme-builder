@@ -90,7 +90,7 @@ Flat pnpm workspace. The Mermaid Theme Builder IS the root package — all sourc
 - `src/lib/themeMode.ts` — light/dark/system mode
 - `src/data/mermaid-capabilities.ts` — diagram capability registry
 - `src/data/examples.ts` — palette preview diagrams (BRAND_EXAMPLES, SHOWCASE_EXAMPLE)
-- `src/data/example-library.ts` — browse catalogue (EXAMPLE_CATALOG, EXAMPLE_GROUPS)
+- `src/data/example-library.ts` — browse catalog (EXAMPLE_CATALOG, EXAMPLE_GROUPS)
 - `src/components/MermaidPreview.tsx` — live Mermaid renderer
 - `src/components/ColorSwatch.tsx` — two-way color editor
 - `src/pages/ThemeBuilder.tsx` — main UI shell

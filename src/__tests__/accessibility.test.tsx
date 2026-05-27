@@ -554,13 +554,13 @@ describe("Invisible button focus regression — ClassBrowser copy button", () =>
 });
 
 // ---------------------------------------------------------------------------
-// 11. ExamplesTab — browse catalogue, search field, group navigation, entry cards
+// 11. ExamplesTab — browse catalog, search field, group navigation, entry cards
 //
 // Renders ExamplesTab with a realistic palette and the full EXAMPLE_CATALOG
 // (via buildExampleList inside the module). The search input, section
 // headers, entry buttons, and action bar are all present on initial render.
 // ---------------------------------------------------------------------------
-describe("ExamplesTab (browse catalogue)", () => {
+describe("ExamplesTab (browse catalog)", () => {
   const palette = BRAND_PALETTES[0];
   const noop = vi.fn();
 
