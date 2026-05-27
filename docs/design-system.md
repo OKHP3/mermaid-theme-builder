@@ -121,7 +121,7 @@ Token definitions live in `src/styles/forge-tokens.css`; utility classes live in
 | `.forge-btn-primary` | Solid rust-orange | Filled, 6px radius — dense in-app action |
 | `.forge-btn-outline` | Warm paper bg | Outlined |
 | `.forge-btn-accent` | Rust tint | Semi-transparent |
-| `.forge-btn-cta` | Gradient rust to amber | Pill (999px) — hero / external link surfaces |
+| `.forge-btn-cta` | Gradient rust to amber | Pill (999px) — hero / external link surfaces; applied to the footer "Open Workbench →" link |
 
 ---
 

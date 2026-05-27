@@ -1103,24 +1103,25 @@ export function AppShell() {
         className="forge-footer flex-none hidden md:flex items-center justify-between px-4 py-1.5 print-hide"
         style={{ minHeight: "34px" }}
       >
-        <div className="flex items-center gap-2 forge-footer-meta">
+        <div className="flex items-center gap-3">
           <a
             href="https://okhp3.github.io/mermaid-theme-builder"
             target="_blank"
             rel="noopener noreferrer"
-            className="forge-footer-slug forge-footer-link"
+            className="forge-btn-cta"
           >
-            mermaid-theme-builder
+            Open Workbench →
           </a>
-          <span>·</span>
-          <a
-            href="https://overkillhill.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="forge-footer-brand forge-footer-link"
-          >
-            OverKill Hill P³
-          </a>
+          <div className="flex items-center gap-2 forge-footer-meta">
+            <a
+              href="https://overkillhill.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="forge-footer-brand forge-footer-link"
+            >
+              OverKill Hill P³
+            </a>
+          </div>
         </div>
         <div
           className="flex items-center gap-2 forge-footer-meta"
