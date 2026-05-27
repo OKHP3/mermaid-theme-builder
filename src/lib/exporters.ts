@@ -384,7 +384,9 @@ export function parsePortablePalette(json: string): PortablePaletteImport | Port
       )
       .map((c) => ({ key: c.key, value: c.value }));
     const warnValues = colors
-      .filter((c) => isCssNamedColorValue(c.key, c.value) || isCssFunctionColorValue(c.key, c.value))
+      .filter(
+        (c) => isCssNamedColorValue(c.key, c.value) || isCssFunctionColorValue(c.key, c.value)
+      )
       .map((c) => ({ key: c.key, value: c.value }));
 
     return {

@@ -1068,63 +1068,62 @@ export function ComposeTab({
                         </ul>
                       </div>
                     )}
-                    {importDiagnostics.warnValues.length > 0 && (() => {
-                      const CSS_FUNC_RE = /^(rgba?|hsla?)\s*\(/i;
-                      const namedWarn = importDiagnostics.warnValues.filter(
-                        ({ value }) => !CSS_FUNC_RE.test(value)
-                      );
-                      const funcWarn = importDiagnostics.warnValues.filter(({ value }) =>
-                        CSS_FUNC_RE.test(value)
-                      );
-                      return (
-                        <>
-                          {namedWarn.length > 0 && (
-                            <div>
-                              <p className="text-amber-600 dark:text-amber-500 mb-0.5">
-                                Named CSS{" "}
-                                {namedWarn.length === 1 ? "color" : "colors"} — may not render
-                                correctly across all diagram types:
-                              </p>
-                              <ul className="list-none space-y-0.5 pl-0">
-                                {namedWarn.map(({ key, value }) => (
-                                  <li
-                                    key={key}
-                                    className="font-mono text-amber-700 dark:text-amber-400 bg-amber-100/40 dark:bg-amber-900/20 rounded px-1.5 py-0.5 inline-block mr-1"
-                                  >
-                                    {key}
-                                    <span className="text-amber-600 dark:text-amber-500 not-italic">
-                                      : "{value}"
-                                    </span>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
-                          {funcWarn.length > 0 && (
-                            <div>
-                              <p className="text-amber-600 dark:text-amber-500 mb-0.5">
-                                CSS color{" "}
-                                {funcWarn.length === 1 ? "function" : "functions"} — may not
-                                render correctly across all diagram types:
-                              </p>
-                              <ul className="list-none space-y-0.5 pl-0">
-                                {funcWarn.map(({ key, value }) => (
-                                  <li
-                                    key={key}
-                                    className="font-mono text-amber-700 dark:text-amber-400 bg-amber-100/40 dark:bg-amber-900/20 rounded px-1.5 py-0.5 inline-block mr-1"
-                                  >
-                                    {key}
-                                    <span className="text-amber-600 dark:text-amber-500 not-italic">
-                                      : "{value}"
-                                    </span>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
-                        </>
-                      );
-                    })()}
+                    {importDiagnostics.warnValues.length > 0 &&
+                      (() => {
+                        const CSS_FUNC_RE = /^(rgba?|hsla?)\s*\(/i;
+                        const namedWarn = importDiagnostics.warnValues.filter(
+                          ({ value }) => !CSS_FUNC_RE.test(value)
+                        );
+                        const funcWarn = importDiagnostics.warnValues.filter(({ value }) =>
+                          CSS_FUNC_RE.test(value)
+                        );
+                        return (
+                          <>
+                            {namedWarn.length > 0 && (
+                              <div>
+                                <p className="text-amber-600 dark:text-amber-500 mb-0.5">
+                                  Named CSS {namedWarn.length === 1 ? "color" : "colors"} — may not
+                                  render correctly across all diagram types:
+                                </p>
+                                <ul className="list-none space-y-0.5 pl-0">
+                                  {namedWarn.map(({ key, value }) => (
+                                    <li
+                                      key={key}
+                                      className="font-mono text-amber-700 dark:text-amber-400 bg-amber-100/40 dark:bg-amber-900/20 rounded px-1.5 py-0.5 inline-block mr-1"
+                                    >
+                                      {key}
+                                      <span className="text-amber-600 dark:text-amber-500 not-italic">
+                                        : "{value}"
+                                      </span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+                            {funcWarn.length > 0 && (
+                              <div>
+                                <p className="text-amber-600 dark:text-amber-500 mb-0.5">
+                                  CSS color {funcWarn.length === 1 ? "function" : "functions"} — may
+                                  not render correctly across all diagram types:
+                                </p>
+                                <ul className="list-none space-y-0.5 pl-0">
+                                  {funcWarn.map(({ key, value }) => (
+                                    <li
+                                      key={key}
+                                      className="font-mono text-amber-700 dark:text-amber-400 bg-amber-100/40 dark:bg-amber-900/20 rounded px-1.5 py-0.5 inline-block mr-1"
+                                    >
+                                      {key}
+                                      <span className="text-amber-600 dark:text-amber-500 not-italic">
+                                        : "{value}"
+                                      </span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+                          </>
+                        );
+                      })()}
                   </div>
                 )}
             </div>
