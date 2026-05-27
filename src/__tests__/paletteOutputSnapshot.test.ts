@@ -159,10 +159,7 @@ describe("generateThemedCode — original diagram body is preserved", () => {
 describe("generateThemedCode snapshots — BRAND_PALETTES × SEQUENCE_DIAGRAM", () => {
   for (const palette of BRAND_PALETTES) {
     it(`palette "${palette.name}" (id: ${palette.id}) sequence snapshot`, () => {
-      const output = generateThemedCode(
-        SEQUENCE_DIAGRAM,
-        baseOptions(palette, "sequenceDiagram")
-      );
+      const output = generateThemedCode(SEQUENCE_DIAGRAM, baseOptions(palette, "sequenceDiagram"));
       expect(output).toMatchSnapshot();
     });
   }
@@ -197,30 +194,35 @@ describe("generateThemedCode — each BRAND_PALETTE produces a distinct sequence
 describe("generateThemedCode — sequenceDiagram overlay variables resolve from palette", () => {
   for (const palette of BRAND_PALETTES) {
     it(`palette "${palette.name}" sequence output contains actorBkg = primaryColor`, () => {
-      const output = generateThemedCode(
-        SEQUENCE_DIAGRAM,
-        baseOptions(palette, "sequenceDiagram")
-      );
+      const output = generateThemedCode(SEQUENCE_DIAGRAM, baseOptions(palette, "sequenceDiagram"));
       const primary = paletteColor(palette, "primaryColor");
       expect(output).toContain(`"actorBkg": "${primary}"`);
     });
 
     it(`palette "${palette.name}" sequence output contains actorBorder = primaryBorderColor`, () => {
-      const output = generateThemedCode(
-        SEQUENCE_DIAGRAM,
-        baseOptions(palette, "sequenceDiagram")
-      );
+      const output = generateThemedCode(SEQUENCE_DIAGRAM, baseOptions(palette, "sequenceDiagram"));
       const border = paletteColor(palette, "primaryBorderColor");
       expect(output).toContain(`"actorBorder": "${border}"`);
     });
 
     it(`palette "${palette.name}" sequence output contains actorLineColor = lineColor`, () => {
-      const output = generateThemedCode(
-        SEQUENCE_DIAGRAM,
-        baseOptions(palette, "sequenceDiagram")
-      );
+      const output = generateThemedCode(SEQUENCE_DIAGRAM, baseOptions(palette, "sequenceDiagram"));
       const line = paletteColor(palette, "lineColor");
       expect(output).toContain(`"actorLineColor": "${line}"`);
+    });
+
+    it(`palette "${palette.name}" sequence output does not contain another palette's primaryColor`, () => {
+      const output = generateThemedCode(SEQUENCE_DIAGRAM, baseOptions(palette, "sequenceDiagram"));
+      const ownPrimary = paletteColor(palette, "primaryColor");
+      for (const other of BRAND_PALETTES) {
+        if (other.id === palette.id) continue;
+        const otherPrimary = paletteColor(other, "primaryColor");
+        if (otherPrimary === ownPrimary) continue;
+        expect(
+          output,
+          `Sequence: palette "${palette.name}" contains primaryColor from "${other.name}" (${otherPrimary})`
+        ).not.toContain(otherPrimary);
+      }
     });
   }
 });
@@ -232,10 +234,7 @@ describe("generateThemedCode — sequenceDiagram overlay variables resolve from 
 describe("generateThemedCode — sequence diagram body is preserved", () => {
   for (const palette of BRAND_PALETTES) {
     it(`palette "${palette.name}" preserves the sequence diagram body`, () => {
-      const output = generateThemedCode(
-        SEQUENCE_DIAGRAM,
-        baseOptions(palette, "sequenceDiagram")
-      );
+      const output = generateThemedCode(SEQUENCE_DIAGRAM, baseOptions(palette, "sequenceDiagram"));
       expect(output).toContain("sequenceDiagram");
       expect(output).toContain("participant Alice");
       expect(output).toContain("Alice->>Bob: Hello Bob");
@@ -305,6 +304,20 @@ describe("generateThemedCode — erDiagram overlay variables resolve from palett
       const output = generateThemedCode(ER_DIAGRAM, baseOptions(palette, "erDiagram"));
       const line = paletteColor(palette, "lineColor");
       expect(output).toContain(`"relationColor": "${line}"`);
+    });
+
+    it(`palette "${palette.name}" ER output does not contain another palette's primaryColor`, () => {
+      const output = generateThemedCode(ER_DIAGRAM, baseOptions(palette, "erDiagram"));
+      const ownPrimary = paletteColor(palette, "primaryColor");
+      for (const other of BRAND_PALETTES) {
+        if (other.id === palette.id) continue;
+        const otherPrimary = paletteColor(other, "primaryColor");
+        if (otherPrimary === ownPrimary) continue;
+        expect(
+          output,
+          `ER: palette "${palette.name}" contains primaryColor from "${other.name}" (${otherPrimary})`
+        ).not.toContain(otherPrimary);
+      }
     });
   }
 });
