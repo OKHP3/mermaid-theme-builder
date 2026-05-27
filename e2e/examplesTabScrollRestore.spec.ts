@@ -55,18 +55,14 @@ const DEEP_ITEM_ID = "ishikawa-render-failure";
 /**
  * Build a minimal valid persisted state object and set lastSelectedExampleId
  * to the given id, then navigate to the page so it hydrates from localStorage.
+ *
+ * Uses addInitScript so the state is in localStorage before any page JavaScript
+ * runs. This prevents a race where the app's auto-save useEffect could
+ * overwrite the injected lastSelectedExampleId between a post-load setItem call
+ * and the subsequent page.reload().
  */
 async function injectPersistedIdAndReload(page: Page, exampleId: string): Promise<void> {
-  // Navigate first so localStorage is accessible for this origin.
-  await page.goto("/");
-  await page.waitForLoadState("load");
-
-  const existingRaw: string | null = await page.evaluate(
-    (key: string) => localStorage.getItem(key),
-    LS_KEY
-  );
-
-  let base: Record<string, unknown> = {
+  const state = {
     schemaVersion: 1,
     selectedPaletteId: "overkill-hill",
     customColors: {},
@@ -76,24 +72,19 @@ async function injectPersistedIdAndReload(page: Page, exampleId: string): Promis
     inputCode: "flowchart TD\n  A --> B",
     userPalettes: [],
     recentPaletteIds: [],
+    lastSelectedExampleId: exampleId,
   };
 
-  if (existingRaw) {
-    try {
-      base = { ...base, ...JSON.parse(existingRaw) };
-    } catch {
-      // use default base
-    }
-  }
-
-  const state = { ...base, lastSelectedExampleId: exampleId };
-  await page.evaluate(
-    ([key, value]: [string, string]) => localStorage.setItem(key, value),
+  // addInitScript runs before any page-level JavaScript on every navigation,
+  // so the app's first localStorage read already sees lastSelectedExampleId.
+  await page.addInitScript(
+    ([key, value]: [string, string]) => {
+      localStorage.setItem(key, value);
+    },
     [LS_KEY, JSON.stringify(state)]
   );
 
-  // Reload so the app hydrates from the injected state.
-  await page.reload();
+  await page.goto("/");
   await page.waitForLoadState("load");
 }
 
