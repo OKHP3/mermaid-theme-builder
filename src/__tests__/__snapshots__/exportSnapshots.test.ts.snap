@@ -1,0 +1,2836 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`generateMarkdownExport snapshots — BRAND_PALETTES × SIMPLE_DIAGRAM > palette "AskJamie" (id: askjamie) markdown export matches snapshot 1`] = `
+"# Mermaid Diagram — AskJamie Theme
+
+**Theme:** AskJamie  
+**Theme ID:** \`askjamie\`  
+**Version:** 0.2.0  
+**Generated:** 2025-01-15  
+**Tool:** [Mermaid Theme Builder](https://overkillhill.com/projects/mermaid-theme-builder/)
+**Brand sources:** <https://askjamie.bot/> · <https://github.com/OKHP3/AskJamie/blob/main/assets/css/theme.css>
+**Use for:** Support flows, helpdesk diagrams, explainers, user-assistance workflows, and friendly AI-generated step-by-step guides
+
+## Usage
+
+Paste the code block below into any Mermaid-compatible renderer. The \`%%{init}%%\` directive applies the theme automatically.
+
+\`\`\`mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+flowchart TD
+  A[User Request] --> B[Validate Input]
+  B --> C[Return Response]
+\`\`\`
+
+## Recommended diagram families
+
+This theme was designed for: **Support flows, helpdesk diagrams, explainers, user-assistance workflows, and friendly AI-generated step-by-step guides**
+
+## Attribution
+
+Generated with [Mermaid Theme Builder](https://overkillhill.com/projects/mermaid-theme-builder/) · Theme: **AskJamie**
+> ⚠️ **Renderer note:** The \`%%{init}%%\` directive is supported by Mermaid.js v9+ and most modern renderers (including [mermaid.live](https://mermaid.live)). GitHub Markdown, Notion, and some other tools may strip or ignore theme variables. The \`look\` parameter (\`neo\`, \`handDrawn\`) requires Mermaid.js v11+.
+> _Mermaid Theme Builder is a personal [OverKill Hill P³](https://overkillhill.com) project by Jamie Hill. All transformations are local — your diagram code never leaves the browser._
+"
+`;
+
+exports[`generateMarkdownExport snapshots — BRAND_PALETTES × SIMPLE_DIAGRAM > palette "Glee-fully" (id: glee-fully) markdown export matches snapshot 1`] = `
+"# Mermaid Diagram — Glee-fully Theme
+
+**Theme:** Glee-fully  
+**Theme ID:** \`glee-fully\`  
+**Version:** 0.2.0  
+**Generated:** 2025-01-15  
+**Tool:** [Mermaid Theme Builder](https://overkillhill.com/projects/mermaid-theme-builder/)
+**Brand sources:** <https://glee-fully.tools/> · <https://github.com/OKHP3/Glee-fullyTools/blob/main/assets/css/theme.css>
+**Use for:** Life-organization, personal productivity, family-friendly, consumer-facing, and approachable explainer diagrams
+
+## Usage
+
+Paste the code block below into any Mermaid-compatible renderer. The \`%%{init}%%\` directive applies the theme automatically.
+
+\`\`\`mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+flowchart TD
+  A[User Request] --> B[Validate Input]
+  B --> C[Return Response]
+\`\`\`
+
+## Recommended diagram families
+
+This theme was designed for: **Life-organization, personal productivity, family-friendly, consumer-facing, and approachable explainer diagrams**
+
+## Attribution
+
+Generated with [Mermaid Theme Builder](https://overkillhill.com/projects/mermaid-theme-builder/) · Theme: **Glee-fully**
+> ⚠️ **Renderer note:** The \`%%{init}%%\` directive is supported by Mermaid.js v9+ and most modern renderers (including [mermaid.live](https://mermaid.live)). GitHub Markdown, Notion, and some other tools may strip or ignore theme variables. The \`look\` parameter (\`neo\`, \`handDrawn\`) requires Mermaid.js v11+.
+> _Mermaid Theme Builder is a personal [OverKill Hill P³](https://overkillhill.com) project by Jamie Hill. All transformations are local — your diagram code never leaves the browser._
+"
+`;
+
+exports[`generateMarkdownExport snapshots — BRAND_PALETTES × SIMPLE_DIAGRAM > palette "OKHP3" (id: overkill-hill) markdown export matches snapshot 1`] = `
+"# Mermaid Diagram — OKHP3 Theme
+
+**Theme:** OKHP3  
+**Theme ID:** \`overkill-hill\`  
+**Version:** 0.2.0  
+**Generated:** 2025-01-15  
+**Tool:** [Mermaid Theme Builder](https://overkillhill.com/projects/mermaid-theme-builder/)
+**Brand sources:** <https://overkillhill.com/> · <https://github.com/OKHP3/OverKill-Hill/blob/main/assets/css/theme.css>
+**Use for:** Technical, architectural, systems, AI tooling, strategy, and executive-facing diagrams
+
+## Usage
+
+Paste the code block below into any Mermaid-compatible renderer. The \`%%{init}%%\` directive applies the theme automatically.
+
+\`\`\`mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+flowchart TD
+  A[User Request] --> B[Validate Input]
+  B --> C[Return Response]
+\`\`\`
+
+## Recommended diagram families
+
+This theme was designed for: **Technical, architectural, systems, AI tooling, strategy, and executive-facing diagrams**
+
+## Attribution
+
+Generated with [Mermaid Theme Builder](https://overkillhill.com/projects/mermaid-theme-builder/) · Theme: **OKHP3**
+> ⚠️ **Renderer note:** The \`%%{init}%%\` directive is supported by Mermaid.js v9+ and most modern renderers (including [mermaid.live](https://mermaid.live)). GitHub Markdown, Notion, and some other tools may strip or ignore theme variables. The \`look\` parameter (\`neo\`, \`handDrawn\`) requires Mermaid.js v11+.
+> _Mermaid Theme Builder is a personal [OverKill Hill P³](https://overkillhill.com) project by Jamie Hill. All transformations are local — your diagram code never leaves the browser._
+"
+`;
+
+exports[`generatePromptScaffoldWithFormat snapshots — BRAND_PALETTES × ScaffoldFormat > palette "AskJamie" format "both" scaffold matches snapshot 1`] = `
+"# Mermaid Diagram Prompt Scaffold — AskJamie
+
+**Theme:** AskJamie  
+**Theme ID:** \`askjamie\`  
+**Version:** 0.2.0  
+**Tool:** [Mermaid Theme Builder](https://overkillhill.com/projects/mermaid-theme-builder/)
+**Source:** <https://askjamie.bot/>
+
+---
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- PART 1 — THREAD OPENER                                             -->
+<!-- Paste this entire section as your first message in a new AI thread -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+
+## Instructions for AI
+
+When generating flowchart diagrams, apply the following visual theme exactly as specified. Do not invent new colors, do not add extra CSS overrides, and do not change the theme directive.
+
+## Brand Guidance — AskJamie
+
+Use this theme for:
+- Support flows and helpdesk processes
+- Step-by-step user guidance diagrams
+- AI assistant conversation flows
+- Explainer diagrams for non-technical users
+- Onboarding and "how it works" content
+
+Do NOT use this theme for:
+- Deep technical architecture (use OverKill Hill P³ instead)
+- Executive strategy decks
+
+---
+
+## Required: Theme directive
+
+Choose ONE of the two formats below based on your renderer. Never use both in the same diagram.
+
+### Format A — \`%%{init}%%\` directive (universal, Mermaid v9+)
+
+> Use this for: Microsoft Loop, Notion, older renderers, or anywhere YAML frontmatter is not supported.
+
+\`\`\`
+%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+\`\`\`
+
+### Format B — YAML frontmatter (preferred, Mermaid v10.5+)
+
+> Use this for: Mermaid Live Editor, VS Code with Mermaid extension, GitHub (where supported). This format is the current Mermaid standard and deprecates \`%%{init}%%\`.
+
+\`\`\`
+---
+# Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported
+config:
+  theme: base
+  themeVariables:
+    primaryColor: "#fdfbf7"
+    primaryTextColor: "#2e2b29"
+    primaryBorderColor: "#2d6f7e"
+    lineColor: "#2d6f7e"
+    secondaryColor: "#f6f2ee"
+    secondaryTextColor: "#2e2b29"
+    secondaryBorderColor: "#2d6f7e"
+    tertiaryColor: "#e1ecef"
+    tertiaryTextColor: "#2e2b29"
+    tertiaryBorderColor: "#2d6f7e"
+    textColor: "#2e2b29"
+    background: "#f6f2ee"
+    mainBkg: "#fdfbf7"
+    nodeBorder: "#2d6f7e"
+    clusterBkg: "#e8f4f7"
+    titleColor: "#2d6f7e"
+    edgeLabelBackground: "#f6f2ee"
+    fontFamily: "Open Sans, system-ui, sans-serif"
+---
+\`\`\`
+
+---
+
+## Required: Metadata comments
+
+Add these comment lines immediately after the theme directive:
+
+\`\`\`
+%% Theme: AskJamie
+%% Theme ID: askjamie
+%% Tool: https://overkillhill.com/projects/mermaid-theme-builder/
+\`\`\`
+
+---
+
+## Semantic classDef library
+
+This is the complete styling vocabulary for this theme. Apply these classDef classes to nodes using \`:::className\` syntax. Do NOT add any other fill, stroke, or color values — use only these classes.
+
+\`\`\`mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+flowchart TD
+    classDef primary fill:#fdfbf7,stroke:#2d6f7e,color:#2e2b29
+    classDef secondary fill:#f6f2ee,stroke:#2d6f7e,color:#2e2b29
+    classDef tertiary fill:#e1ecef,stroke:#2d6f7e,color:#2e2b29
+    classDef platform fill:#fdfbf7,stroke:#2d6f7e,color:#2e2b29
+    classDef boundary fill:#e8f4f7,stroke:#2d6f7e,color:#2d6f7e,stroke-dasharray:5
+    classDef actor fill:#fdfbf7,stroke:#2d6f7e,color:#2e2b29,font-weight:bold
+    classDef gate fill:#2d6f7e,stroke:#2d6f7e,color:#f6f2ee
+    classDef control fill:#e1ecef,stroke:#2d6f7e,color:#2e2b29
+    classDef log fill:#f6f2ee,stroke:#2d6f7e,color:#2e2b29,font-style:italic
+    classDef question fill:#fdfbf7,stroke:#2d6f7e,color:#2d6f7e,stroke-dasharray:3
+    classDef accent fill:#2d6f7e,stroke:#2d6f7e,color:#f6f2ee
+    classDef deepBlue fill:#fdfbf7,stroke:#2d6f7e,color:#2e2b29,stroke-width:2px
+    classDef slate fill:#f6f2ee,stroke:#2d6f7e,color:#fdfbf7
+    classDef scope fill:#e8f4f7,stroke:#2d6f7e,color:#2d6f7e,stroke-width:2px
+    classDef outOfScope fill:#f6f2ee,stroke:#2d6f7e,color:#2e2b29,stroke-dasharray:8,opacity:0.6
+    classDef redDash fill:#3b0e0e,stroke:#b91c1c,color:#fecaca,stroke-dasharray:4
+
+    %% Usage example: NodeLabel:::primary
+    %% Apply a class to a node: A[My Node]:::secondary
+    %% Apply to a decision node: B{Choice}:::gate
+\`\`\`
+
+### Class reference table
+
+| Class | Role | When to use |
+|-------|------|-------------|
+| \`primary\` | Main action / primary entity | Core nodes, key steps, subject of the diagram |
+| \`secondary\` | Supporting / related entity | Adjacent systems, related processes |
+| \`tertiary\` | Background / context | Passive nodes, reference items |
+| \`platform\` | Platform / infrastructure | Hosting layer, operating environment |
+| \`boundary\` | System boundary (dashed) | External system boundaries, context limits |
+| \`actor\` | Person / user / role | Human actors, teams, personas |
+| \`gate\` | Decision / gateway | Diamond decision nodes, routing logic |
+| \`control\` | Control / management | Orchestrators, managers, approval nodes |
+| \`log\` | Log / audit / record (italic) | Audit trails, event logs, history |
+| \`question\` | Open question / TBD (dashed) | Unknowns, pending decisions, assumptions |
+| \`accent\` | Highlighted / key result | Outcomes, final states, primary outputs |
+| \`deepBlue\` | Deep emphasis / dark primary | Stressed primary nodes, thick border variant |
+| \`slate\` | Neutral / muted | Low-priority nodes, supporting details |
+| \`scope\` | In-scope boundary | Items explicitly in scope |
+| \`outOfScope\` | Out-of-scope (faded, dashed) | Explicitly excluded items |
+| \`redDash\` | Warning / error / blocker | Error states, blockers, known failures |
+
+---
+
+## Subgraph tier patterns
+
+Use \`style SubgraphName ...\` statements to apply visual hierarchy to subgraphs. Replace \`SubgraphName\` with the actual subgraph ID.
+
+\`\`\`mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+flowchart TD
+    %% Tier 1 — Primary system boundary (most prominent)
+    style SubgraphName fill:#fdfbf7,stroke:#2d6f7e,color:#2d6f7e
+
+    %% Tier 2 — Secondary system or service grouping
+    style SubgraphName fill:#f6f2ee,stroke:#2d6f7e,color:#2d6f7e
+
+    %% Tier 3 — Tertiary context or supporting group
+    style SubgraphName fill:#e1ecef,stroke:#2d6f7e,color:#2d6f7e
+
+    %% Tier 4 — Cluster / infrastructure boundary
+    style SubgraphName fill:#e8f4f7,stroke:#2d6f7e,color:#2d6f7e,stroke-dasharray:5
+
+    %% Tier 5 — Out-of-scope / external system
+    style SubgraphName fill:#f6f2ee,stroke:#2d6f7e,color:#fdfbf7,stroke-dasharray:8,opacity:0.7
+
+    %% Tier 6 — Annotation / note boundary (no fill)
+    style SubgraphName fill:transparent,stroke:#2d6f7e,color:#2d6f7e,stroke-dasharray:2
+\`\`\`
+
+---
+
+## Theme: AskJamie
+
+Calm mid-century tones with muted aquas and beige — clean, readable, ideal for guides and documentation
+
+**Intended use:** Support flows, helpdesk diagrams, explainers, user-assistance workflows, and friendly AI-generated step-by-step guides
+
+### Color reference
+  - Primary (nodes): \`#fdfbf7\`
+  - Primary text: \`#2e2b29\`
+  - Primary border: \`#2d6f7e\`
+  - Lines & arrows: \`#2d6f7e\`
+  - Secondary nodes: \`#f6f2ee\`
+  - Secondary text: \`#2e2b29\`
+  - Secondary border: \`#2d6f7e\`
+  - Tertiary nodes: \`#e1ecef\`
+  - Tertiary text: \`#2e2b29\`
+  - Tertiary border: \`#2d6f7e\`
+  - Text color: \`#2e2b29\`
+  - Background: \`#f6f2ee\`
+  - Main background: \`#fdfbf7\`
+  - Node border: \`#2d6f7e\`
+  - Cluster background: \`#e8f4f7\`
+  - Title color: \`#2d6f7e\`
+
+### Font
+\`Open Sans, system-ui, sans-serif\`
+
+---
+
+## Rules
+
+1. ALWAYS start the diagram with the theme directive (Format A or Format B above) — no exceptions.
+2. Add the metadata comment block immediately after the theme directive.
+3. Use \`flowchart TD\` as the diagram type unless the user specifies otherwise.
+4. Keep node labels concise (under 60 characters each).
+5. Style nodes using ONLY the classDef classes defined above — apply with \`:::className\` syntax.
+6. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values on individual nodes — use classDef classes instead.
+7. Do NOT change any color values — reproduce them exactly as shown.
+8. Use subgraph tier styles for visual hierarchy — never leave subgraphs unstyled.
+9. If the diagram type changes, preserve the exact same theme directive.
+10. If the diagram type does not support classDef (e.g. sequenceDiagram, erDiagram), omit classDef statements entirely — the theme directive handles all styling.
+
+---
+
+## Example output structure
+
+\`\`\`mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+%% Theme: AskJamie
+%% Theme ID: askjamie
+%% Tool: https://overkillhill.com/projects/mermaid-theme-builder/
+flowchart TD
+    A[Start] --> B[Process]
+    B:::primary --> C{Decision}:::gate
+    C -->|Yes| D[End]:::accent
+    C -->|No| B
+\`\`\`
+
+---
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- PART 2 — UPDATE PROMPT (style drift prevention)                    -->
+<!-- Use this when continuing a diagram thread and style has drifted    -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+
+## Update Prompt — paste this when style has drifted
+
+> Copy the block below into your AI thread when you notice the diagram is missing its theme directive or using wrong colors, or has lost classDef classes.
+
+---
+
+**[UPDATE — Restore theme contract]**
+
+The diagram above has drifted from the required visual theme. Please regenerate it in full with the following corrections applied:
+
+1. Restore the theme directive at the very top (use Format A or B from the original scaffold — do not omit it).
+2. Restore the metadata comment block immediately after the directive.
+3. Re-apply all node classes using the classDef vocabulary from the original scaffold (:::className syntax). Do not add any inline fill, stroke, or color values.
+4. Do not change any logic, labels, or relationships — only restore the visual styling contract.
+5. Output the complete diagram from top to bottom — do not abbreviate or use "..." placeholders.
+
+Theme contract reference:
+- Theme: **AskJamie** (\`askjamie\`)
+- Primary node color: \`#fdfbf7\`
+- Border color: \`#2d6f7e\`
+- Accent / line color: \`#2d6f7e\`
+- Font: \`Open Sans, system-ui, sans-serif\`
+
+---
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- PART 3 — REPAIR PROMPT (parse error recovery)                      -->
+<!-- Use this when Mermaid throws a parse or render error               -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+
+## Repair Prompt — paste this when the diagram has a parse error
+
+> Copy the block below and fill in the \`[PASTE ERROR HERE]\` section with the actual error text from your renderer.
+
+---
+
+**[REPAIR — Fix parse error without changing theme]**
+
+The diagram below is failing to render with the following error:
+
+\`\`\`
+[PASTE ERROR HERE]
+\`\`\`
+
+Please repair the diagram so it renders correctly. Rules for this repair:
+
+1. Fix only the syntax or structural issue causing the parse error.
+2. Do NOT change the theme directive (\`%%{init}%%\` or YAML frontmatter), metadata comments, or any classDef statements.
+3. Do NOT change any color values or add inline styling.
+4. Do NOT restructure the diagram logic unless the structure itself is the cause of the error.
+5. Output the complete repaired diagram from top to bottom — do not abbreviate.
+
+If the error is caused by an unsupported feature for this diagram type, note the limitation and propose the minimal change needed to fix it while preserving as much of the original intent as possible.
+
+---
+
+*Generated by [Mermaid Theme Builder](https://overkillhill.com/projects/mermaid-theme-builder/) — paste PART 1 into your AI thread to maintain visual consistency. Use PART 2 to restore drift. Use PART 3 to fix parse errors.*
+"
+`;
+
+exports[`generatePromptScaffoldWithFormat snapshots — BRAND_PALETTES × ScaffoldFormat > palette "AskJamie" format "formatA" scaffold matches snapshot 1`] = `
+"# Mermaid Diagram Prompt Scaffold — AskJamie
+
+**Theme:** AskJamie  
+**Theme ID:** \`askjamie\`  
+**Version:** 0.2.0  
+**Tool:** [Mermaid Theme Builder](https://overkillhill.com/projects/mermaid-theme-builder/)
+**Source:** <https://askjamie.bot/>
+
+---
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- PART 1 — THREAD OPENER                                             -->
+<!-- Paste this entire section as your first message in a new AI thread -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+
+## Instructions for AI
+
+When generating flowchart diagrams, apply the following visual theme exactly as specified. Do not invent new colors, do not add extra CSS overrides, and do not change the theme directive.
+
+## Brand Guidance — AskJamie
+
+Use this theme for:
+- Support flows and helpdesk processes
+- Step-by-step user guidance diagrams
+- AI assistant conversation flows
+- Explainer diagrams for non-technical users
+- Onboarding and "how it works" content
+
+Do NOT use this theme for:
+- Deep technical architecture (use OverKill Hill P³ instead)
+- Executive strategy decks
+
+---
+
+## Required: Theme directive
+
+Use the \`%%{init}%%\` directive (Format A) — compatible with Mermaid v9+, Microsoft Loop, Notion, and most renderers.
+
+\`\`\`
+%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+\`\`\`
+
+---
+
+## Required: Metadata comments
+
+Add these comment lines immediately after the theme directive:
+
+\`\`\`
+%% Theme: AskJamie
+%% Theme ID: askjamie
+%% Tool: https://overkillhill.com/projects/mermaid-theme-builder/
+\`\`\`
+
+---
+
+## Semantic classDef library
+
+This is the complete styling vocabulary for this theme. Apply these classDef classes to nodes using \`:::className\` syntax. Do NOT add any other fill, stroke, or color values — use only these classes.
+
+\`\`\`mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+flowchart TD
+    classDef primary fill:#fdfbf7,stroke:#2d6f7e,color:#2e2b29
+    classDef secondary fill:#f6f2ee,stroke:#2d6f7e,color:#2e2b29
+    classDef tertiary fill:#e1ecef,stroke:#2d6f7e,color:#2e2b29
+    classDef platform fill:#fdfbf7,stroke:#2d6f7e,color:#2e2b29
+    classDef boundary fill:#e8f4f7,stroke:#2d6f7e,color:#2d6f7e,stroke-dasharray:5
+    classDef actor fill:#fdfbf7,stroke:#2d6f7e,color:#2e2b29,font-weight:bold
+    classDef gate fill:#2d6f7e,stroke:#2d6f7e,color:#f6f2ee
+    classDef control fill:#e1ecef,stroke:#2d6f7e,color:#2e2b29
+    classDef log fill:#f6f2ee,stroke:#2d6f7e,color:#2e2b29,font-style:italic
+    classDef question fill:#fdfbf7,stroke:#2d6f7e,color:#2d6f7e,stroke-dasharray:3
+    classDef accent fill:#2d6f7e,stroke:#2d6f7e,color:#f6f2ee
+    classDef deepBlue fill:#fdfbf7,stroke:#2d6f7e,color:#2e2b29,stroke-width:2px
+    classDef slate fill:#f6f2ee,stroke:#2d6f7e,color:#fdfbf7
+    classDef scope fill:#e8f4f7,stroke:#2d6f7e,color:#2d6f7e,stroke-width:2px
+    classDef outOfScope fill:#f6f2ee,stroke:#2d6f7e,color:#2e2b29,stroke-dasharray:8,opacity:0.6
+    classDef redDash fill:#3b0e0e,stroke:#b91c1c,color:#fecaca,stroke-dasharray:4
+
+    %% Usage example: NodeLabel:::primary
+    %% Apply a class to a node: A[My Node]:::secondary
+    %% Apply to a decision node: B{Choice}:::gate
+\`\`\`
+
+### Class reference table
+
+| Class | Role | When to use |
+|-------|------|-------------|
+| \`primary\` | Main action / primary entity | Core nodes, key steps, subject of the diagram |
+| \`secondary\` | Supporting / related entity | Adjacent systems, related processes |
+| \`tertiary\` | Background / context | Passive nodes, reference items |
+| \`platform\` | Platform / infrastructure | Hosting layer, operating environment |
+| \`boundary\` | System boundary (dashed) | External system boundaries, context limits |
+| \`actor\` | Person / user / role | Human actors, teams, personas |
+| \`gate\` | Decision / gateway | Diamond decision nodes, routing logic |
+| \`control\` | Control / management | Orchestrators, managers, approval nodes |
+| \`log\` | Log / audit / record (italic) | Audit trails, event logs, history |
+| \`question\` | Open question / TBD (dashed) | Unknowns, pending decisions, assumptions |
+| \`accent\` | Highlighted / key result | Outcomes, final states, primary outputs |
+| \`deepBlue\` | Deep emphasis / dark primary | Stressed primary nodes, thick border variant |
+| \`slate\` | Neutral / muted | Low-priority nodes, supporting details |
+| \`scope\` | In-scope boundary | Items explicitly in scope |
+| \`outOfScope\` | Out-of-scope (faded, dashed) | Explicitly excluded items |
+| \`redDash\` | Warning / error / blocker | Error states, blockers, known failures |
+
+---
+
+## Subgraph tier patterns
+
+Use \`style SubgraphName ...\` statements to apply visual hierarchy to subgraphs. Replace \`SubgraphName\` with the actual subgraph ID.
+
+\`\`\`mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+flowchart TD
+    %% Tier 1 — Primary system boundary (most prominent)
+    style SubgraphName fill:#fdfbf7,stroke:#2d6f7e,color:#2d6f7e
+
+    %% Tier 2 — Secondary system or service grouping
+    style SubgraphName fill:#f6f2ee,stroke:#2d6f7e,color:#2d6f7e
+
+    %% Tier 3 — Tertiary context or supporting group
+    style SubgraphName fill:#e1ecef,stroke:#2d6f7e,color:#2d6f7e
+
+    %% Tier 4 — Cluster / infrastructure boundary
+    style SubgraphName fill:#e8f4f7,stroke:#2d6f7e,color:#2d6f7e,stroke-dasharray:5
+
+    %% Tier 5 — Out-of-scope / external system
+    style SubgraphName fill:#f6f2ee,stroke:#2d6f7e,color:#fdfbf7,stroke-dasharray:8,opacity:0.7
+
+    %% Tier 6 — Annotation / note boundary (no fill)
+    style SubgraphName fill:transparent,stroke:#2d6f7e,color:#2d6f7e,stroke-dasharray:2
+\`\`\`
+
+---
+
+## Theme: AskJamie
+
+Calm mid-century tones with muted aquas and beige — clean, readable, ideal for guides and documentation
+
+**Intended use:** Support flows, helpdesk diagrams, explainers, user-assistance workflows, and friendly AI-generated step-by-step guides
+
+### Color reference
+  - Primary (nodes): \`#fdfbf7\`
+  - Primary text: \`#2e2b29\`
+  - Primary border: \`#2d6f7e\`
+  - Lines & arrows: \`#2d6f7e\`
+  - Secondary nodes: \`#f6f2ee\`
+  - Secondary text: \`#2e2b29\`
+  - Secondary border: \`#2d6f7e\`
+  - Tertiary nodes: \`#e1ecef\`
+  - Tertiary text: \`#2e2b29\`
+  - Tertiary border: \`#2d6f7e\`
+  - Text color: \`#2e2b29\`
+  - Background: \`#f6f2ee\`
+  - Main background: \`#fdfbf7\`
+  - Node border: \`#2d6f7e\`
+  - Cluster background: \`#e8f4f7\`
+  - Title color: \`#2d6f7e\`
+
+### Font
+\`Open Sans, system-ui, sans-serif\`
+
+---
+
+## Rules
+
+1. ALWAYS start the diagram with the \`%%{init}%%\` theme directive — no exceptions.
+2. Add the metadata comment block immediately after the theme directive.
+3. Use \`flowchart TD\` as the diagram type unless the user specifies otherwise.
+4. Keep node labels concise (under 60 characters each).
+5. Style nodes using ONLY the classDef classes defined above — apply with \`:::className\` syntax.
+6. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values on individual nodes — use classDef classes instead.
+7. Do NOT change any color values — reproduce them exactly as shown.
+8. Use subgraph tier styles for visual hierarchy — never leave subgraphs unstyled.
+9. If the diagram type changes, preserve the exact same theme directive.
+10. If the diagram type does not support classDef (e.g. sequenceDiagram, erDiagram), omit classDef statements entirely — the theme directive handles all styling.
+
+---
+
+## Example output structure
+
+\`\`\`mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+%% Theme: AskJamie
+%% Theme ID: askjamie
+%% Tool: https://overkillhill.com/projects/mermaid-theme-builder/
+flowchart TD
+    A[Start] --> B[Process]
+    B:::primary --> C{Decision}:::gate
+    C -->|Yes| D[End]:::accent
+    C -->|No| B
+\`\`\`
+
+---
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- PART 2 — UPDATE PROMPT (style drift prevention)                    -->
+<!-- Use this when continuing a diagram thread and style has drifted    -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+
+## Update Prompt — paste this when style has drifted
+
+> Copy the block below into your AI thread when you notice the diagram is missing its theme directive or using wrong colors, or has lost classDef classes.
+
+---
+
+**[UPDATE — Restore theme contract]**
+
+The diagram above has drifted from the required visual theme. Please regenerate it in full with the following corrections applied:
+
+1. Restore the \`%%{init}%%\` theme directive at the very top (do not omit it).
+2. Restore the metadata comment block immediately after the directive.
+3. Re-apply all node classes using the classDef vocabulary from the original scaffold (:::className syntax). Do not add any inline fill, stroke, or color values.
+4. Do not change any logic, labels, or relationships — only restore the visual styling contract.
+5. Output the complete diagram from top to bottom — do not abbreviate or use "..." placeholders.
+
+Theme contract reference:
+- Theme: **AskJamie** (\`askjamie\`)
+- Primary node color: \`#fdfbf7\`
+- Border color: \`#2d6f7e\`
+- Accent / line color: \`#2d6f7e\`
+- Font: \`Open Sans, system-ui, sans-serif\`
+
+---
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- PART 3 — REPAIR PROMPT (parse error recovery)                      -->
+<!-- Use this when Mermaid throws a parse or render error               -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+
+## Repair Prompt — paste this when the diagram has a parse error
+
+> Copy the block below and fill in the \`[PASTE ERROR HERE]\` section with the actual error text from your renderer.
+
+---
+
+**[REPAIR — Fix parse error without changing theme]**
+
+The diagram below is failing to render with the following error:
+
+\`\`\`
+[PASTE ERROR HERE]
+\`\`\`
+
+Please repair the diagram so it renders correctly. Rules for this repair:
+
+1. Fix only the syntax or structural issue causing the parse error.
+2. Do NOT change the theme directive (\`%%{init}%%\` or YAML frontmatter), metadata comments, or any classDef statements.
+3. Do NOT change any color values or add inline styling.
+4. Do NOT restructure the diagram logic unless the structure itself is the cause of the error.
+5. Output the complete repaired diagram from top to bottom — do not abbreviate.
+
+If the error is caused by an unsupported feature for this diagram type, note the limitation and propose the minimal change needed to fix it while preserving as much of the original intent as possible.
+
+---
+
+*Generated by [Mermaid Theme Builder](https://overkillhill.com/projects/mermaid-theme-builder/) — paste PART 1 into your AI thread to maintain visual consistency. Use PART 2 to restore drift. Use PART 3 to fix parse errors.*
+"
+`;
+
+exports[`generatePromptScaffoldWithFormat snapshots — BRAND_PALETTES × ScaffoldFormat > palette "AskJamie" format "formatB" scaffold matches snapshot 1`] = `
+"# Mermaid Diagram Prompt Scaffold — AskJamie
+
+**Theme:** AskJamie  
+**Theme ID:** \`askjamie\`  
+**Version:** 0.2.0  
+**Tool:** [Mermaid Theme Builder](https://overkillhill.com/projects/mermaid-theme-builder/)
+**Source:** <https://askjamie.bot/>
+
+---
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- PART 1 — THREAD OPENER                                             -->
+<!-- Paste this entire section as your first message in a new AI thread -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+
+## Instructions for AI
+
+When generating flowchart diagrams, apply the following visual theme exactly as specified. Do not invent new colors, do not add extra CSS overrides, and do not change the theme directive.
+
+## Brand Guidance — AskJamie
+
+Use this theme for:
+- Support flows and helpdesk processes
+- Step-by-step user guidance diagrams
+- AI assistant conversation flows
+- Explainer diagrams for non-technical users
+- Onboarding and "how it works" content
+
+Do NOT use this theme for:
+- Deep technical architecture (use OverKill Hill P³ instead)
+- Executive strategy decks
+
+---
+
+## Required: Theme directive
+
+Use YAML frontmatter (Format B) — the preferred format for Mermaid v10.5+, Mermaid Live Editor, VS Code, and GitHub (where supported).
+
+\`\`\`
+---
+# Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported
+config:
+  theme: base
+  themeVariables:
+    primaryColor: "#fdfbf7"
+    primaryTextColor: "#2e2b29"
+    primaryBorderColor: "#2d6f7e"
+    lineColor: "#2d6f7e"
+    secondaryColor: "#f6f2ee"
+    secondaryTextColor: "#2e2b29"
+    secondaryBorderColor: "#2d6f7e"
+    tertiaryColor: "#e1ecef"
+    tertiaryTextColor: "#2e2b29"
+    tertiaryBorderColor: "#2d6f7e"
+    textColor: "#2e2b29"
+    background: "#f6f2ee"
+    mainBkg: "#fdfbf7"
+    nodeBorder: "#2d6f7e"
+    clusterBkg: "#e8f4f7"
+    titleColor: "#2d6f7e"
+    edgeLabelBackground: "#f6f2ee"
+    fontFamily: "Open Sans, system-ui, sans-serif"
+---
+\`\`\`
+
+---
+
+## Required: Metadata comments
+
+Add these comment lines immediately after the theme directive:
+
+\`\`\`
+%% Theme: AskJamie
+%% Theme ID: askjamie
+%% Tool: https://overkillhill.com/projects/mermaid-theme-builder/
+\`\`\`
+
+---
+
+## Semantic classDef library
+
+This is the complete styling vocabulary for this theme. Apply these classDef classes to nodes using \`:::className\` syntax. Do NOT add any other fill, stroke, or color values — use only these classes.
+
+\`\`\`mermaid
+---
+# Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported
+config:
+  theme: base
+  themeVariables:
+    primaryColor: "#fdfbf7"
+    primaryTextColor: "#2e2b29"
+    primaryBorderColor: "#2d6f7e"
+    lineColor: "#2d6f7e"
+    secondaryColor: "#f6f2ee"
+    secondaryTextColor: "#2e2b29"
+    secondaryBorderColor: "#2d6f7e"
+    tertiaryColor: "#e1ecef"
+    tertiaryTextColor: "#2e2b29"
+    tertiaryBorderColor: "#2d6f7e"
+    textColor: "#2e2b29"
+    background: "#f6f2ee"
+    mainBkg: "#fdfbf7"
+    nodeBorder: "#2d6f7e"
+    clusterBkg: "#e8f4f7"
+    titleColor: "#2d6f7e"
+    edgeLabelBackground: "#f6f2ee"
+    fontFamily: "Open Sans, system-ui, sans-serif"
+---
+flowchart TD
+    classDef primary fill:#fdfbf7,stroke:#2d6f7e,color:#2e2b29
+    classDef secondary fill:#f6f2ee,stroke:#2d6f7e,color:#2e2b29
+    classDef tertiary fill:#e1ecef,stroke:#2d6f7e,color:#2e2b29
+    classDef platform fill:#fdfbf7,stroke:#2d6f7e,color:#2e2b29
+    classDef boundary fill:#e8f4f7,stroke:#2d6f7e,color:#2d6f7e,stroke-dasharray:5
+    classDef actor fill:#fdfbf7,stroke:#2d6f7e,color:#2e2b29,font-weight:bold
+    classDef gate fill:#2d6f7e,stroke:#2d6f7e,color:#f6f2ee
+    classDef control fill:#e1ecef,stroke:#2d6f7e,color:#2e2b29
+    classDef log fill:#f6f2ee,stroke:#2d6f7e,color:#2e2b29,font-style:italic
+    classDef question fill:#fdfbf7,stroke:#2d6f7e,color:#2d6f7e,stroke-dasharray:3
+    classDef accent fill:#2d6f7e,stroke:#2d6f7e,color:#f6f2ee
+    classDef deepBlue fill:#fdfbf7,stroke:#2d6f7e,color:#2e2b29,stroke-width:2px
+    classDef slate fill:#f6f2ee,stroke:#2d6f7e,color:#fdfbf7
+    classDef scope fill:#e8f4f7,stroke:#2d6f7e,color:#2d6f7e,stroke-width:2px
+    classDef outOfScope fill:#f6f2ee,stroke:#2d6f7e,color:#2e2b29,stroke-dasharray:8,opacity:0.6
+    classDef redDash fill:#3b0e0e,stroke:#b91c1c,color:#fecaca,stroke-dasharray:4
+
+    %% Usage example: NodeLabel:::primary
+    %% Apply a class to a node: A[My Node]:::secondary
+    %% Apply to a decision node: B{Choice}:::gate
+\`\`\`
+
+### Class reference table
+
+| Class | Role | When to use |
+|-------|------|-------------|
+| \`primary\` | Main action / primary entity | Core nodes, key steps, subject of the diagram |
+| \`secondary\` | Supporting / related entity | Adjacent systems, related processes |
+| \`tertiary\` | Background / context | Passive nodes, reference items |
+| \`platform\` | Platform / infrastructure | Hosting layer, operating environment |
+| \`boundary\` | System boundary (dashed) | External system boundaries, context limits |
+| \`actor\` | Person / user / role | Human actors, teams, personas |
+| \`gate\` | Decision / gateway | Diamond decision nodes, routing logic |
+| \`control\` | Control / management | Orchestrators, managers, approval nodes |
+| \`log\` | Log / audit / record (italic) | Audit trails, event logs, history |
+| \`question\` | Open question / TBD (dashed) | Unknowns, pending decisions, assumptions |
+| \`accent\` | Highlighted / key result | Outcomes, final states, primary outputs |
+| \`deepBlue\` | Deep emphasis / dark primary | Stressed primary nodes, thick border variant |
+| \`slate\` | Neutral / muted | Low-priority nodes, supporting details |
+| \`scope\` | In-scope boundary | Items explicitly in scope |
+| \`outOfScope\` | Out-of-scope (faded, dashed) | Explicitly excluded items |
+| \`redDash\` | Warning / error / blocker | Error states, blockers, known failures |
+
+---
+
+## Subgraph tier patterns
+
+Use \`style SubgraphName ...\` statements to apply visual hierarchy to subgraphs. Replace \`SubgraphName\` with the actual subgraph ID.
+
+\`\`\`mermaid
+---
+# Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported
+config:
+  theme: base
+  themeVariables:
+    primaryColor: "#fdfbf7"
+    primaryTextColor: "#2e2b29"
+    primaryBorderColor: "#2d6f7e"
+    lineColor: "#2d6f7e"
+    secondaryColor: "#f6f2ee"
+    secondaryTextColor: "#2e2b29"
+    secondaryBorderColor: "#2d6f7e"
+    tertiaryColor: "#e1ecef"
+    tertiaryTextColor: "#2e2b29"
+    tertiaryBorderColor: "#2d6f7e"
+    textColor: "#2e2b29"
+    background: "#f6f2ee"
+    mainBkg: "#fdfbf7"
+    nodeBorder: "#2d6f7e"
+    clusterBkg: "#e8f4f7"
+    titleColor: "#2d6f7e"
+    edgeLabelBackground: "#f6f2ee"
+    fontFamily: "Open Sans, system-ui, sans-serif"
+---
+flowchart TD
+    %% Tier 1 — Primary system boundary (most prominent)
+    style SubgraphName fill:#fdfbf7,stroke:#2d6f7e,color:#2d6f7e
+
+    %% Tier 2 — Secondary system or service grouping
+    style SubgraphName fill:#f6f2ee,stroke:#2d6f7e,color:#2d6f7e
+
+    %% Tier 3 — Tertiary context or supporting group
+    style SubgraphName fill:#e1ecef,stroke:#2d6f7e,color:#2d6f7e
+
+    %% Tier 4 — Cluster / infrastructure boundary
+    style SubgraphName fill:#e8f4f7,stroke:#2d6f7e,color:#2d6f7e,stroke-dasharray:5
+
+    %% Tier 5 — Out-of-scope / external system
+    style SubgraphName fill:#f6f2ee,stroke:#2d6f7e,color:#fdfbf7,stroke-dasharray:8,opacity:0.7
+
+    %% Tier 6 — Annotation / note boundary (no fill)
+    style SubgraphName fill:transparent,stroke:#2d6f7e,color:#2d6f7e,stroke-dasharray:2
+\`\`\`
+
+---
+
+## Theme: AskJamie
+
+Calm mid-century tones with muted aquas and beige — clean, readable, ideal for guides and documentation
+
+**Intended use:** Support flows, helpdesk diagrams, explainers, user-assistance workflows, and friendly AI-generated step-by-step guides
+
+### Color reference
+  - Primary (nodes): \`#fdfbf7\`
+  - Primary text: \`#2e2b29\`
+  - Primary border: \`#2d6f7e\`
+  - Lines & arrows: \`#2d6f7e\`
+  - Secondary nodes: \`#f6f2ee\`
+  - Secondary text: \`#2e2b29\`
+  - Secondary border: \`#2d6f7e\`
+  - Tertiary nodes: \`#e1ecef\`
+  - Tertiary text: \`#2e2b29\`
+  - Tertiary border: \`#2d6f7e\`
+  - Text color: \`#2e2b29\`
+  - Background: \`#f6f2ee\`
+  - Main background: \`#fdfbf7\`
+  - Node border: \`#2d6f7e\`
+  - Cluster background: \`#e8f4f7\`
+  - Title color: \`#2d6f7e\`
+
+### Font
+\`Open Sans, system-ui, sans-serif\`
+
+---
+
+## Rules
+
+1. ALWAYS start the diagram with the YAML frontmatter theme directive — no exceptions.
+2. Add the metadata comment block immediately after the theme directive.
+3. Use \`flowchart TD\` as the diagram type unless the user specifies otherwise.
+4. Keep node labels concise (under 60 characters each).
+5. Style nodes using ONLY the classDef classes defined above — apply with \`:::className\` syntax.
+6. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values on individual nodes — use classDef classes instead.
+7. Do NOT change any color values — reproduce them exactly as shown.
+8. Use subgraph tier styles for visual hierarchy — never leave subgraphs unstyled.
+9. If the diagram type changes, preserve the exact same theme directive.
+10. If the diagram type does not support classDef (e.g. sequenceDiagram, erDiagram), omit classDef statements entirely — the theme directive handles all styling.
+
+---
+
+## Example output structure
+
+\`\`\`mermaid
+---
+# Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported
+config:
+  theme: base
+  themeVariables:
+    primaryColor: "#fdfbf7"
+    primaryTextColor: "#2e2b29"
+    primaryBorderColor: "#2d6f7e"
+    lineColor: "#2d6f7e"
+    secondaryColor: "#f6f2ee"
+    secondaryTextColor: "#2e2b29"
+    secondaryBorderColor: "#2d6f7e"
+    tertiaryColor: "#e1ecef"
+    tertiaryTextColor: "#2e2b29"
+    tertiaryBorderColor: "#2d6f7e"
+    textColor: "#2e2b29"
+    background: "#f6f2ee"
+    mainBkg: "#fdfbf7"
+    nodeBorder: "#2d6f7e"
+    clusterBkg: "#e8f4f7"
+    titleColor: "#2d6f7e"
+    edgeLabelBackground: "#f6f2ee"
+    fontFamily: "Open Sans, system-ui, sans-serif"
+---
+%% Theme: AskJamie
+%% Theme ID: askjamie
+%% Tool: https://overkillhill.com/projects/mermaid-theme-builder/
+flowchart TD
+    A[Start] --> B[Process]
+    B:::primary --> C{Decision}:::gate
+    C -->|Yes| D[End]:::accent
+    C -->|No| B
+\`\`\`
+
+---
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- PART 2 — UPDATE PROMPT (style drift prevention)                    -->
+<!-- Use this when continuing a diagram thread and style has drifted    -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+
+## Update Prompt — paste this when style has drifted
+
+> Copy the block below into your AI thread when you notice the diagram is missing its theme directive or using wrong colors, or has lost classDef classes.
+
+---
+
+**[UPDATE — Restore theme contract]**
+
+The diagram above has drifted from the required visual theme. Please regenerate it in full with the following corrections applied:
+
+1. Restore the YAML frontmatter theme directive at the very top (do not omit it).
+2. Restore the metadata comment block immediately after the directive.
+3. Re-apply all node classes using the classDef vocabulary from the original scaffold (:::className syntax). Do not add any inline fill, stroke, or color values.
+4. Do not change any logic, labels, or relationships — only restore the visual styling contract.
+5. Output the complete diagram from top to bottom — do not abbreviate or use "..." placeholders.
+
+Theme contract reference:
+- Theme: **AskJamie** (\`askjamie\`)
+- Primary node color: \`#fdfbf7\`
+- Border color: \`#2d6f7e\`
+- Accent / line color: \`#2d6f7e\`
+- Font: \`Open Sans, system-ui, sans-serif\`
+
+---
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- PART 3 — REPAIR PROMPT (parse error recovery)                      -->
+<!-- Use this when Mermaid throws a parse or render error               -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+
+## Repair Prompt — paste this when the diagram has a parse error
+
+> Copy the block below and fill in the \`[PASTE ERROR HERE]\` section with the actual error text from your renderer.
+
+---
+
+**[REPAIR — Fix parse error without changing theme]**
+
+The diagram below is failing to render with the following error:
+
+\`\`\`
+[PASTE ERROR HERE]
+\`\`\`
+
+Please repair the diagram so it renders correctly. Rules for this repair:
+
+1. Fix only the syntax or structural issue causing the parse error.
+2. Do NOT change the theme directive (\`%%{init}%%\` or YAML frontmatter), metadata comments, or any classDef statements.
+3. Do NOT change any color values or add inline styling.
+4. Do NOT restructure the diagram logic unless the structure itself is the cause of the error.
+5. Output the complete repaired diagram from top to bottom — do not abbreviate.
+
+If the error is caused by an unsupported feature for this diagram type, note the limitation and propose the minimal change needed to fix it while preserving as much of the original intent as possible.
+
+---
+
+*Generated by [Mermaid Theme Builder](https://overkillhill.com/projects/mermaid-theme-builder/) — paste PART 1 into your AI thread to maintain visual consistency. Use PART 2 to restore drift. Use PART 3 to fix parse errors.*
+"
+`;
+
+exports[`generatePromptScaffoldWithFormat snapshots — BRAND_PALETTES × ScaffoldFormat > palette "Glee-fully" format "both" scaffold matches snapshot 1`] = `
+"# Mermaid Diagram Prompt Scaffold — Glee-fully
+
+**Theme:** Glee-fully  
+**Theme ID:** \`glee-fully\`  
+**Version:** 0.2.0  
+**Tool:** [Mermaid Theme Builder](https://overkillhill.com/projects/mermaid-theme-builder/)
+**Source:** <https://glee-fully.tools/>
+
+---
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- PART 1 — THREAD OPENER                                             -->
+<!-- Paste this entire section as your first message in a new AI thread -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+
+## Instructions for AI
+
+When generating flowchart diagrams, apply the following visual theme exactly as specified. Do not invent new colors, do not add extra CSS overrides, and do not change the theme directive.
+
+## Brand Guidance — Glee-fully
+
+Use this theme for:
+- Personal productivity and life-organization diagrams
+- Family-friendly and consumer-facing content
+- Approachable process explainers
+- Warm, non-intimidating workflow diagrams
+
+Do NOT use this theme for:
+- Technical or enterprise-facing content (use OverKill Hill P³ or a utility theme instead)
+
+---
+
+## Required: Theme directive
+
+Choose ONE of the two formats below based on your renderer. Never use both in the same diagram.
+
+### Format A — \`%%{init}%%\` directive (universal, Mermaid v9+)
+
+> Use this for: Microsoft Loop, Notion, older renderers, or anywhere YAML frontmatter is not supported.
+
+\`\`\`
+%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+\`\`\`
+
+### Format B — YAML frontmatter (preferred, Mermaid v10.5+)
+
+> Use this for: Mermaid Live Editor, VS Code with Mermaid extension, GitHub (where supported). This format is the current Mermaid standard and deprecates \`%%{init}%%\`.
+
+\`\`\`
+---
+# Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported
+config:
+  theme: base
+  themeVariables:
+    primaryColor: "#fffdfa"
+    primaryTextColor: "#2e2b29"
+    primaryBorderColor: "#d94f63"
+    lineColor: "#d94f63"
+    secondaryColor: "#f6f2ee"
+    secondaryTextColor: "#2e2b29"
+    secondaryBorderColor: "#d94f63"
+    tertiaryColor: "#e5d9ce"
+    tertiaryTextColor: "#2e2b29"
+    tertiaryBorderColor: "#d94f63"
+    textColor: "#2e2b29"
+    background: "#fff7f1"
+    mainBkg: "#fffdfa"
+    nodeBorder: "#d94f63"
+    clusterBkg: "#f9f3ef"
+    titleColor: "#d94f63"
+    edgeLabelBackground: "#fff7f1"
+    fontFamily: "Open Sans, system-ui, sans-serif"
+---
+\`\`\`
+
+---
+
+## Required: Metadata comments
+
+Add these comment lines immediately after the theme directive:
+
+\`\`\`
+%% Theme: Glee-fully
+%% Theme ID: glee-fully
+%% Tool: https://overkillhill.com/projects/mermaid-theme-builder/
+\`\`\`
+
+---
+
+## Semantic classDef library
+
+This is the complete styling vocabulary for this theme. Apply these classDef classes to nodes using \`:::className\` syntax. Do NOT add any other fill, stroke, or color values — use only these classes.
+
+\`\`\`mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+flowchart TD
+    classDef primary fill:#fffdfa,stroke:#d94f63,color:#2e2b29
+    classDef secondary fill:#f6f2ee,stroke:#d94f63,color:#2e2b29
+    classDef tertiary fill:#e5d9ce,stroke:#d94f63,color:#2e2b29
+    classDef platform fill:#fffdfa,stroke:#d94f63,color:#2e2b29
+    classDef boundary fill:#f9f3ef,stroke:#d94f63,color:#d94f63,stroke-dasharray:5
+    classDef actor fill:#fffdfa,stroke:#d94f63,color:#2e2b29,font-weight:bold
+    classDef gate fill:#d94f63,stroke:#d94f63,color:#fff7f1
+    classDef control fill:#e5d9ce,stroke:#d94f63,color:#2e2b29
+    classDef log fill:#f6f2ee,stroke:#d94f63,color:#2e2b29,font-style:italic
+    classDef question fill:#fffdfa,stroke:#d94f63,color:#d94f63,stroke-dasharray:3
+    classDef accent fill:#d94f63,stroke:#d94f63,color:#fff7f1
+    classDef deepBlue fill:#fffdfa,stroke:#d94f63,color:#2e2b29,stroke-width:2px
+    classDef slate fill:#fff7f1,stroke:#d94f63,color:#fffdfa
+    classDef scope fill:#f9f3ef,stroke:#d94f63,color:#d94f63,stroke-width:2px
+    classDef outOfScope fill:#fff7f1,stroke:#d94f63,color:#2e2b29,stroke-dasharray:8,opacity:0.6
+    classDef redDash fill:#3b0e0e,stroke:#b91c1c,color:#fecaca,stroke-dasharray:4
+
+    %% Usage example: NodeLabel:::primary
+    %% Apply a class to a node: A[My Node]:::secondary
+    %% Apply to a decision node: B{Choice}:::gate
+\`\`\`
+
+### Class reference table
+
+| Class | Role | When to use |
+|-------|------|-------------|
+| \`primary\` | Main action / primary entity | Core nodes, key steps, subject of the diagram |
+| \`secondary\` | Supporting / related entity | Adjacent systems, related processes |
+| \`tertiary\` | Background / context | Passive nodes, reference items |
+| \`platform\` | Platform / infrastructure | Hosting layer, operating environment |
+| \`boundary\` | System boundary (dashed) | External system boundaries, context limits |
+| \`actor\` | Person / user / role | Human actors, teams, personas |
+| \`gate\` | Decision / gateway | Diamond decision nodes, routing logic |
+| \`control\` | Control / management | Orchestrators, managers, approval nodes |
+| \`log\` | Log / audit / record (italic) | Audit trails, event logs, history |
+| \`question\` | Open question / TBD (dashed) | Unknowns, pending decisions, assumptions |
+| \`accent\` | Highlighted / key result | Outcomes, final states, primary outputs |
+| \`deepBlue\` | Deep emphasis / dark primary | Stressed primary nodes, thick border variant |
+| \`slate\` | Neutral / muted | Low-priority nodes, supporting details |
+| \`scope\` | In-scope boundary | Items explicitly in scope |
+| \`outOfScope\` | Out-of-scope (faded, dashed) | Explicitly excluded items |
+| \`redDash\` | Warning / error / blocker | Error states, blockers, known failures |
+
+---
+
+## Subgraph tier patterns
+
+Use \`style SubgraphName ...\` statements to apply visual hierarchy to subgraphs. Replace \`SubgraphName\` with the actual subgraph ID.
+
+\`\`\`mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+flowchart TD
+    %% Tier 1 — Primary system boundary (most prominent)
+    style SubgraphName fill:#fffdfa,stroke:#d94f63,color:#d94f63
+
+    %% Tier 2 — Secondary system or service grouping
+    style SubgraphName fill:#f6f2ee,stroke:#d94f63,color:#d94f63
+
+    %% Tier 3 — Tertiary context or supporting group
+    style SubgraphName fill:#e5d9ce,stroke:#d94f63,color:#d94f63
+
+    %% Tier 4 — Cluster / infrastructure boundary
+    style SubgraphName fill:#f9f3ef,stroke:#d94f63,color:#d94f63,stroke-dasharray:5
+
+    %% Tier 5 — Out-of-scope / external system
+    style SubgraphName fill:#fff7f1,stroke:#d94f63,color:#fffdfa,stroke-dasharray:8,opacity:0.7
+
+    %% Tier 6 — Annotation / note boundary (no fill)
+    style SubgraphName fill:transparent,stroke:#d94f63,color:#d94f63,stroke-dasharray:2
+\`\`\`
+
+---
+
+## Theme: Glee-fully
+
+Warm and playful with coral and cream — approachable, energetic, great for how-to flows and tutorials
+
+**Intended use:** Life-organization, personal productivity, family-friendly, consumer-facing, and approachable explainer diagrams
+
+### Color reference
+  - Primary (nodes): \`#fffdfa\`
+  - Primary text: \`#2e2b29\`
+  - Primary border: \`#d94f63\`
+  - Lines & arrows: \`#d94f63\`
+  - Secondary nodes: \`#f6f2ee\`
+  - Secondary text: \`#2e2b29\`
+  - Secondary border: \`#d94f63\`
+  - Tertiary nodes: \`#e5d9ce\`
+  - Tertiary text: \`#2e2b29\`
+  - Tertiary border: \`#d94f63\`
+  - Text color: \`#2e2b29\`
+  - Background: \`#fff7f1\`
+  - Main background: \`#fffdfa\`
+  - Node border: \`#d94f63\`
+  - Cluster background: \`#f9f3ef\`
+  - Title color: \`#d94f63\`
+
+### Font
+\`Open Sans, system-ui, sans-serif\`
+
+---
+
+## Rules
+
+1. ALWAYS start the diagram with the theme directive (Format A or Format B above) — no exceptions.
+2. Add the metadata comment block immediately after the theme directive.
+3. Use \`flowchart TD\` as the diagram type unless the user specifies otherwise.
+4. Keep node labels concise (under 60 characters each).
+5. Style nodes using ONLY the classDef classes defined above — apply with \`:::className\` syntax.
+6. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values on individual nodes — use classDef classes instead.
+7. Do NOT change any color values — reproduce them exactly as shown.
+8. Use subgraph tier styles for visual hierarchy — never leave subgraphs unstyled.
+9. If the diagram type changes, preserve the exact same theme directive.
+10. If the diagram type does not support classDef (e.g. sequenceDiagram, erDiagram), omit classDef statements entirely — the theme directive handles all styling.
+
+---
+
+## Example output structure
+
+\`\`\`mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+%% Theme: Glee-fully
+%% Theme ID: glee-fully
+%% Tool: https://overkillhill.com/projects/mermaid-theme-builder/
+flowchart TD
+    A[Start] --> B[Process]
+    B:::primary --> C{Decision}:::gate
+    C -->|Yes| D[End]:::accent
+    C -->|No| B
+\`\`\`
+
+---
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- PART 2 — UPDATE PROMPT (style drift prevention)                    -->
+<!-- Use this when continuing a diagram thread and style has drifted    -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+
+## Update Prompt — paste this when style has drifted
+
+> Copy the block below into your AI thread when you notice the diagram is missing its theme directive or using wrong colors, or has lost classDef classes.
+
+---
+
+**[UPDATE — Restore theme contract]**
+
+The diagram above has drifted from the required visual theme. Please regenerate it in full with the following corrections applied:
+
+1. Restore the theme directive at the very top (use Format A or B from the original scaffold — do not omit it).
+2. Restore the metadata comment block immediately after the directive.
+3. Re-apply all node classes using the classDef vocabulary from the original scaffold (:::className syntax). Do not add any inline fill, stroke, or color values.
+4. Do not change any logic, labels, or relationships — only restore the visual styling contract.
+5. Output the complete diagram from top to bottom — do not abbreviate or use "..." placeholders.
+
+Theme contract reference:
+- Theme: **Glee-fully** (\`glee-fully\`)
+- Primary node color: \`#fffdfa\`
+- Border color: \`#d94f63\`
+- Accent / line color: \`#d94f63\`
+- Font: \`Open Sans, system-ui, sans-serif\`
+
+---
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- PART 3 — REPAIR PROMPT (parse error recovery)                      -->
+<!-- Use this when Mermaid throws a parse or render error               -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+
+## Repair Prompt — paste this when the diagram has a parse error
+
+> Copy the block below and fill in the \`[PASTE ERROR HERE]\` section with the actual error text from your renderer.
+
+---
+
+**[REPAIR — Fix parse error without changing theme]**
+
+The diagram below is failing to render with the following error:
+
+\`\`\`
+[PASTE ERROR HERE]
+\`\`\`
+
+Please repair the diagram so it renders correctly. Rules for this repair:
+
+1. Fix only the syntax or structural issue causing the parse error.
+2. Do NOT change the theme directive (\`%%{init}%%\` or YAML frontmatter), metadata comments, or any classDef statements.
+3. Do NOT change any color values or add inline styling.
+4. Do NOT restructure the diagram logic unless the structure itself is the cause of the error.
+5. Output the complete repaired diagram from top to bottom — do not abbreviate.
+
+If the error is caused by an unsupported feature for this diagram type, note the limitation and propose the minimal change needed to fix it while preserving as much of the original intent as possible.
+
+---
+
+*Generated by [Mermaid Theme Builder](https://overkillhill.com/projects/mermaid-theme-builder/) — paste PART 1 into your AI thread to maintain visual consistency. Use PART 2 to restore drift. Use PART 3 to fix parse errors.*
+"
+`;
+
+exports[`generatePromptScaffoldWithFormat snapshots — BRAND_PALETTES × ScaffoldFormat > palette "Glee-fully" format "formatA" scaffold matches snapshot 1`] = `
+"# Mermaid Diagram Prompt Scaffold — Glee-fully
+
+**Theme:** Glee-fully  
+**Theme ID:** \`glee-fully\`  
+**Version:** 0.2.0  
+**Tool:** [Mermaid Theme Builder](https://overkillhill.com/projects/mermaid-theme-builder/)
+**Source:** <https://glee-fully.tools/>
+
+---
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- PART 1 — THREAD OPENER                                             -->
+<!-- Paste this entire section as your first message in a new AI thread -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+
+## Instructions for AI
+
+When generating flowchart diagrams, apply the following visual theme exactly as specified. Do not invent new colors, do not add extra CSS overrides, and do not change the theme directive.
+
+## Brand Guidance — Glee-fully
+
+Use this theme for:
+- Personal productivity and life-organization diagrams
+- Family-friendly and consumer-facing content
+- Approachable process explainers
+- Warm, non-intimidating workflow diagrams
+
+Do NOT use this theme for:
+- Technical or enterprise-facing content (use OverKill Hill P³ or a utility theme instead)
+
+---
+
+## Required: Theme directive
+
+Use the \`%%{init}%%\` directive (Format A) — compatible with Mermaid v9+, Microsoft Loop, Notion, and most renderers.
+
+\`\`\`
+%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+\`\`\`
+
+---
+
+## Required: Metadata comments
+
+Add these comment lines immediately after the theme directive:
+
+\`\`\`
+%% Theme: Glee-fully
+%% Theme ID: glee-fully
+%% Tool: https://overkillhill.com/projects/mermaid-theme-builder/
+\`\`\`
+
+---
+
+## Semantic classDef library
+
+This is the complete styling vocabulary for this theme. Apply these classDef classes to nodes using \`:::className\` syntax. Do NOT add any other fill, stroke, or color values — use only these classes.
+
+\`\`\`mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+flowchart TD
+    classDef primary fill:#fffdfa,stroke:#d94f63,color:#2e2b29
+    classDef secondary fill:#f6f2ee,stroke:#d94f63,color:#2e2b29
+    classDef tertiary fill:#e5d9ce,stroke:#d94f63,color:#2e2b29
+    classDef platform fill:#fffdfa,stroke:#d94f63,color:#2e2b29
+    classDef boundary fill:#f9f3ef,stroke:#d94f63,color:#d94f63,stroke-dasharray:5
+    classDef actor fill:#fffdfa,stroke:#d94f63,color:#2e2b29,font-weight:bold
+    classDef gate fill:#d94f63,stroke:#d94f63,color:#fff7f1
+    classDef control fill:#e5d9ce,stroke:#d94f63,color:#2e2b29
+    classDef log fill:#f6f2ee,stroke:#d94f63,color:#2e2b29,font-style:italic
+    classDef question fill:#fffdfa,stroke:#d94f63,color:#d94f63,stroke-dasharray:3
+    classDef accent fill:#d94f63,stroke:#d94f63,color:#fff7f1
+    classDef deepBlue fill:#fffdfa,stroke:#d94f63,color:#2e2b29,stroke-width:2px
+    classDef slate fill:#fff7f1,stroke:#d94f63,color:#fffdfa
+    classDef scope fill:#f9f3ef,stroke:#d94f63,color:#d94f63,stroke-width:2px
+    classDef outOfScope fill:#fff7f1,stroke:#d94f63,color:#2e2b29,stroke-dasharray:8,opacity:0.6
+    classDef redDash fill:#3b0e0e,stroke:#b91c1c,color:#fecaca,stroke-dasharray:4
+
+    %% Usage example: NodeLabel:::primary
+    %% Apply a class to a node: A[My Node]:::secondary
+    %% Apply to a decision node: B{Choice}:::gate
+\`\`\`
+
+### Class reference table
+
+| Class | Role | When to use |
+|-------|------|-------------|
+| \`primary\` | Main action / primary entity | Core nodes, key steps, subject of the diagram |
+| \`secondary\` | Supporting / related entity | Adjacent systems, related processes |
+| \`tertiary\` | Background / context | Passive nodes, reference items |
+| \`platform\` | Platform / infrastructure | Hosting layer, operating environment |
+| \`boundary\` | System boundary (dashed) | External system boundaries, context limits |
+| \`actor\` | Person / user / role | Human actors, teams, personas |
+| \`gate\` | Decision / gateway | Diamond decision nodes, routing logic |
+| \`control\` | Control / management | Orchestrators, managers, approval nodes |
+| \`log\` | Log / audit / record (italic) | Audit trails, event logs, history |
+| \`question\` | Open question / TBD (dashed) | Unknowns, pending decisions, assumptions |
+| \`accent\` | Highlighted / key result | Outcomes, final states, primary outputs |
+| \`deepBlue\` | Deep emphasis / dark primary | Stressed primary nodes, thick border variant |
+| \`slate\` | Neutral / muted | Low-priority nodes, supporting details |
+| \`scope\` | In-scope boundary | Items explicitly in scope |
+| \`outOfScope\` | Out-of-scope (faded, dashed) | Explicitly excluded items |
+| \`redDash\` | Warning / error / blocker | Error states, blockers, known failures |
+
+---
+
+## Subgraph tier patterns
+
+Use \`style SubgraphName ...\` statements to apply visual hierarchy to subgraphs. Replace \`SubgraphName\` with the actual subgraph ID.
+
+\`\`\`mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+flowchart TD
+    %% Tier 1 — Primary system boundary (most prominent)
+    style SubgraphName fill:#fffdfa,stroke:#d94f63,color:#d94f63
+
+    %% Tier 2 — Secondary system or service grouping
+    style SubgraphName fill:#f6f2ee,stroke:#d94f63,color:#d94f63
+
+    %% Tier 3 — Tertiary context or supporting group
+    style SubgraphName fill:#e5d9ce,stroke:#d94f63,color:#d94f63
+
+    %% Tier 4 — Cluster / infrastructure boundary
+    style SubgraphName fill:#f9f3ef,stroke:#d94f63,color:#d94f63,stroke-dasharray:5
+
+    %% Tier 5 — Out-of-scope / external system
+    style SubgraphName fill:#fff7f1,stroke:#d94f63,color:#fffdfa,stroke-dasharray:8,opacity:0.7
+
+    %% Tier 6 — Annotation / note boundary (no fill)
+    style SubgraphName fill:transparent,stroke:#d94f63,color:#d94f63,stroke-dasharray:2
+\`\`\`
+
+---
+
+## Theme: Glee-fully
+
+Warm and playful with coral and cream — approachable, energetic, great for how-to flows and tutorials
+
+**Intended use:** Life-organization, personal productivity, family-friendly, consumer-facing, and approachable explainer diagrams
+
+### Color reference
+  - Primary (nodes): \`#fffdfa\`
+  - Primary text: \`#2e2b29\`
+  - Primary border: \`#d94f63\`
+  - Lines & arrows: \`#d94f63\`
+  - Secondary nodes: \`#f6f2ee\`
+  - Secondary text: \`#2e2b29\`
+  - Secondary border: \`#d94f63\`
+  - Tertiary nodes: \`#e5d9ce\`
+  - Tertiary text: \`#2e2b29\`
+  - Tertiary border: \`#d94f63\`
+  - Text color: \`#2e2b29\`
+  - Background: \`#fff7f1\`
+  - Main background: \`#fffdfa\`
+  - Node border: \`#d94f63\`
+  - Cluster background: \`#f9f3ef\`
+  - Title color: \`#d94f63\`
+
+### Font
+\`Open Sans, system-ui, sans-serif\`
+
+---
+
+## Rules
+
+1. ALWAYS start the diagram with the \`%%{init}%%\` theme directive — no exceptions.
+2. Add the metadata comment block immediately after the theme directive.
+3. Use \`flowchart TD\` as the diagram type unless the user specifies otherwise.
+4. Keep node labels concise (under 60 characters each).
+5. Style nodes using ONLY the classDef classes defined above — apply with \`:::className\` syntax.
+6. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values on individual nodes — use classDef classes instead.
+7. Do NOT change any color values — reproduce them exactly as shown.
+8. Use subgraph tier styles for visual hierarchy — never leave subgraphs unstyled.
+9. If the diagram type changes, preserve the exact same theme directive.
+10. If the diagram type does not support classDef (e.g. sequenceDiagram, erDiagram), omit classDef statements entirely — the theme directive handles all styling.
+
+---
+
+## Example output structure
+
+\`\`\`mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+%% Theme: Glee-fully
+%% Theme ID: glee-fully
+%% Tool: https://overkillhill.com/projects/mermaid-theme-builder/
+flowchart TD
+    A[Start] --> B[Process]
+    B:::primary --> C{Decision}:::gate
+    C -->|Yes| D[End]:::accent
+    C -->|No| B
+\`\`\`
+
+---
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- PART 2 — UPDATE PROMPT (style drift prevention)                    -->
+<!-- Use this when continuing a diagram thread and style has drifted    -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+
+## Update Prompt — paste this when style has drifted
+
+> Copy the block below into your AI thread when you notice the diagram is missing its theme directive or using wrong colors, or has lost classDef classes.
+
+---
+
+**[UPDATE — Restore theme contract]**
+
+The diagram above has drifted from the required visual theme. Please regenerate it in full with the following corrections applied:
+
+1. Restore the \`%%{init}%%\` theme directive at the very top (do not omit it).
+2. Restore the metadata comment block immediately after the directive.
+3. Re-apply all node classes using the classDef vocabulary from the original scaffold (:::className syntax). Do not add any inline fill, stroke, or color values.
+4. Do not change any logic, labels, or relationships — only restore the visual styling contract.
+5. Output the complete diagram from top to bottom — do not abbreviate or use "..." placeholders.
+
+Theme contract reference:
+- Theme: **Glee-fully** (\`glee-fully\`)
+- Primary node color: \`#fffdfa\`
+- Border color: \`#d94f63\`
+- Accent / line color: \`#d94f63\`
+- Font: \`Open Sans, system-ui, sans-serif\`
+
+---
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- PART 3 — REPAIR PROMPT (parse error recovery)                      -->
+<!-- Use this when Mermaid throws a parse or render error               -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+
+## Repair Prompt — paste this when the diagram has a parse error
+
+> Copy the block below and fill in the \`[PASTE ERROR HERE]\` section with the actual error text from your renderer.
+
+---
+
+**[REPAIR — Fix parse error without changing theme]**
+
+The diagram below is failing to render with the following error:
+
+\`\`\`
+[PASTE ERROR HERE]
+\`\`\`
+
+Please repair the diagram so it renders correctly. Rules for this repair:
+
+1. Fix only the syntax or structural issue causing the parse error.
+2. Do NOT change the theme directive (\`%%{init}%%\` or YAML frontmatter), metadata comments, or any classDef statements.
+3. Do NOT change any color values or add inline styling.
+4. Do NOT restructure the diagram logic unless the structure itself is the cause of the error.
+5. Output the complete repaired diagram from top to bottom — do not abbreviate.
+
+If the error is caused by an unsupported feature for this diagram type, note the limitation and propose the minimal change needed to fix it while preserving as much of the original intent as possible.
+
+---
+
+*Generated by [Mermaid Theme Builder](https://overkillhill.com/projects/mermaid-theme-builder/) — paste PART 1 into your AI thread to maintain visual consistency. Use PART 2 to restore drift. Use PART 3 to fix parse errors.*
+"
+`;
+
+exports[`generatePromptScaffoldWithFormat snapshots — BRAND_PALETTES × ScaffoldFormat > palette "Glee-fully" format "formatB" scaffold matches snapshot 1`] = `
+"# Mermaid Diagram Prompt Scaffold — Glee-fully
+
+**Theme:** Glee-fully  
+**Theme ID:** \`glee-fully\`  
+**Version:** 0.2.0  
+**Tool:** [Mermaid Theme Builder](https://overkillhill.com/projects/mermaid-theme-builder/)
+**Source:** <https://glee-fully.tools/>
+
+---
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- PART 1 — THREAD OPENER                                             -->
+<!-- Paste this entire section as your first message in a new AI thread -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+
+## Instructions for AI
+
+When generating flowchart diagrams, apply the following visual theme exactly as specified. Do not invent new colors, do not add extra CSS overrides, and do not change the theme directive.
+
+## Brand Guidance — Glee-fully
+
+Use this theme for:
+- Personal productivity and life-organization diagrams
+- Family-friendly and consumer-facing content
+- Approachable process explainers
+- Warm, non-intimidating workflow diagrams
+
+Do NOT use this theme for:
+- Technical or enterprise-facing content (use OverKill Hill P³ or a utility theme instead)
+
+---
+
+## Required: Theme directive
+
+Use YAML frontmatter (Format B) — the preferred format for Mermaid v10.5+, Mermaid Live Editor, VS Code, and GitHub (where supported).
+
+\`\`\`
+---
+# Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported
+config:
+  theme: base
+  themeVariables:
+    primaryColor: "#fffdfa"
+    primaryTextColor: "#2e2b29"
+    primaryBorderColor: "#d94f63"
+    lineColor: "#d94f63"
+    secondaryColor: "#f6f2ee"
+    secondaryTextColor: "#2e2b29"
+    secondaryBorderColor: "#d94f63"
+    tertiaryColor: "#e5d9ce"
+    tertiaryTextColor: "#2e2b29"
+    tertiaryBorderColor: "#d94f63"
+    textColor: "#2e2b29"
+    background: "#fff7f1"
+    mainBkg: "#fffdfa"
+    nodeBorder: "#d94f63"
+    clusterBkg: "#f9f3ef"
+    titleColor: "#d94f63"
+    edgeLabelBackground: "#fff7f1"
+    fontFamily: "Open Sans, system-ui, sans-serif"
+---
+\`\`\`
+
+---
+
+## Required: Metadata comments
+
+Add these comment lines immediately after the theme directive:
+
+\`\`\`
+%% Theme: Glee-fully
+%% Theme ID: glee-fully
+%% Tool: https://overkillhill.com/projects/mermaid-theme-builder/
+\`\`\`
+
+---
+
+## Semantic classDef library
+
+This is the complete styling vocabulary for this theme. Apply these classDef classes to nodes using \`:::className\` syntax. Do NOT add any other fill, stroke, or color values — use only these classes.
+
+\`\`\`mermaid
+---
+# Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported
+config:
+  theme: base
+  themeVariables:
+    primaryColor: "#fffdfa"
+    primaryTextColor: "#2e2b29"
+    primaryBorderColor: "#d94f63"
+    lineColor: "#d94f63"
+    secondaryColor: "#f6f2ee"
+    secondaryTextColor: "#2e2b29"
+    secondaryBorderColor: "#d94f63"
+    tertiaryColor: "#e5d9ce"
+    tertiaryTextColor: "#2e2b29"
+    tertiaryBorderColor: "#d94f63"
+    textColor: "#2e2b29"
+    background: "#fff7f1"
+    mainBkg: "#fffdfa"
+    nodeBorder: "#d94f63"
+    clusterBkg: "#f9f3ef"
+    titleColor: "#d94f63"
+    edgeLabelBackground: "#fff7f1"
+    fontFamily: "Open Sans, system-ui, sans-serif"
+---
+flowchart TD
+    classDef primary fill:#fffdfa,stroke:#d94f63,color:#2e2b29
+    classDef secondary fill:#f6f2ee,stroke:#d94f63,color:#2e2b29
+    classDef tertiary fill:#e5d9ce,stroke:#d94f63,color:#2e2b29
+    classDef platform fill:#fffdfa,stroke:#d94f63,color:#2e2b29
+    classDef boundary fill:#f9f3ef,stroke:#d94f63,color:#d94f63,stroke-dasharray:5
+    classDef actor fill:#fffdfa,stroke:#d94f63,color:#2e2b29,font-weight:bold
+    classDef gate fill:#d94f63,stroke:#d94f63,color:#fff7f1
+    classDef control fill:#e5d9ce,stroke:#d94f63,color:#2e2b29
+    classDef log fill:#f6f2ee,stroke:#d94f63,color:#2e2b29,font-style:italic
+    classDef question fill:#fffdfa,stroke:#d94f63,color:#d94f63,stroke-dasharray:3
+    classDef accent fill:#d94f63,stroke:#d94f63,color:#fff7f1
+    classDef deepBlue fill:#fffdfa,stroke:#d94f63,color:#2e2b29,stroke-width:2px
+    classDef slate fill:#fff7f1,stroke:#d94f63,color:#fffdfa
+    classDef scope fill:#f9f3ef,stroke:#d94f63,color:#d94f63,stroke-width:2px
+    classDef outOfScope fill:#fff7f1,stroke:#d94f63,color:#2e2b29,stroke-dasharray:8,opacity:0.6
+    classDef redDash fill:#3b0e0e,stroke:#b91c1c,color:#fecaca,stroke-dasharray:4
+
+    %% Usage example: NodeLabel:::primary
+    %% Apply a class to a node: A[My Node]:::secondary
+    %% Apply to a decision node: B{Choice}:::gate
+\`\`\`
+
+### Class reference table
+
+| Class | Role | When to use |
+|-------|------|-------------|
+| \`primary\` | Main action / primary entity | Core nodes, key steps, subject of the diagram |
+| \`secondary\` | Supporting / related entity | Adjacent systems, related processes |
+| \`tertiary\` | Background / context | Passive nodes, reference items |
+| \`platform\` | Platform / infrastructure | Hosting layer, operating environment |
+| \`boundary\` | System boundary (dashed) | External system boundaries, context limits |
+| \`actor\` | Person / user / role | Human actors, teams, personas |
+| \`gate\` | Decision / gateway | Diamond decision nodes, routing logic |
+| \`control\` | Control / management | Orchestrators, managers, approval nodes |
+| \`log\` | Log / audit / record (italic) | Audit trails, event logs, history |
+| \`question\` | Open question / TBD (dashed) | Unknowns, pending decisions, assumptions |
+| \`accent\` | Highlighted / key result | Outcomes, final states, primary outputs |
+| \`deepBlue\` | Deep emphasis / dark primary | Stressed primary nodes, thick border variant |
+| \`slate\` | Neutral / muted | Low-priority nodes, supporting details |
+| \`scope\` | In-scope boundary | Items explicitly in scope |
+| \`outOfScope\` | Out-of-scope (faded, dashed) | Explicitly excluded items |
+| \`redDash\` | Warning / error / blocker | Error states, blockers, known failures |
+
+---
+
+## Subgraph tier patterns
+
+Use \`style SubgraphName ...\` statements to apply visual hierarchy to subgraphs. Replace \`SubgraphName\` with the actual subgraph ID.
+
+\`\`\`mermaid
+---
+# Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported
+config:
+  theme: base
+  themeVariables:
+    primaryColor: "#fffdfa"
+    primaryTextColor: "#2e2b29"
+    primaryBorderColor: "#d94f63"
+    lineColor: "#d94f63"
+    secondaryColor: "#f6f2ee"
+    secondaryTextColor: "#2e2b29"
+    secondaryBorderColor: "#d94f63"
+    tertiaryColor: "#e5d9ce"
+    tertiaryTextColor: "#2e2b29"
+    tertiaryBorderColor: "#d94f63"
+    textColor: "#2e2b29"
+    background: "#fff7f1"
+    mainBkg: "#fffdfa"
+    nodeBorder: "#d94f63"
+    clusterBkg: "#f9f3ef"
+    titleColor: "#d94f63"
+    edgeLabelBackground: "#fff7f1"
+    fontFamily: "Open Sans, system-ui, sans-serif"
+---
+flowchart TD
+    %% Tier 1 — Primary system boundary (most prominent)
+    style SubgraphName fill:#fffdfa,stroke:#d94f63,color:#d94f63
+
+    %% Tier 2 — Secondary system or service grouping
+    style SubgraphName fill:#f6f2ee,stroke:#d94f63,color:#d94f63
+
+    %% Tier 3 — Tertiary context or supporting group
+    style SubgraphName fill:#e5d9ce,stroke:#d94f63,color:#d94f63
+
+    %% Tier 4 — Cluster / infrastructure boundary
+    style SubgraphName fill:#f9f3ef,stroke:#d94f63,color:#d94f63,stroke-dasharray:5
+
+    %% Tier 5 — Out-of-scope / external system
+    style SubgraphName fill:#fff7f1,stroke:#d94f63,color:#fffdfa,stroke-dasharray:8,opacity:0.7
+
+    %% Tier 6 — Annotation / note boundary (no fill)
+    style SubgraphName fill:transparent,stroke:#d94f63,color:#d94f63,stroke-dasharray:2
+\`\`\`
+
+---
+
+## Theme: Glee-fully
+
+Warm and playful with coral and cream — approachable, energetic, great for how-to flows and tutorials
+
+**Intended use:** Life-organization, personal productivity, family-friendly, consumer-facing, and approachable explainer diagrams
+
+### Color reference
+  - Primary (nodes): \`#fffdfa\`
+  - Primary text: \`#2e2b29\`
+  - Primary border: \`#d94f63\`
+  - Lines & arrows: \`#d94f63\`
+  - Secondary nodes: \`#f6f2ee\`
+  - Secondary text: \`#2e2b29\`
+  - Secondary border: \`#d94f63\`
+  - Tertiary nodes: \`#e5d9ce\`
+  - Tertiary text: \`#2e2b29\`
+  - Tertiary border: \`#d94f63\`
+  - Text color: \`#2e2b29\`
+  - Background: \`#fff7f1\`
+  - Main background: \`#fffdfa\`
+  - Node border: \`#d94f63\`
+  - Cluster background: \`#f9f3ef\`
+  - Title color: \`#d94f63\`
+
+### Font
+\`Open Sans, system-ui, sans-serif\`
+
+---
+
+## Rules
+
+1. ALWAYS start the diagram with the YAML frontmatter theme directive — no exceptions.
+2. Add the metadata comment block immediately after the theme directive.
+3. Use \`flowchart TD\` as the diagram type unless the user specifies otherwise.
+4. Keep node labels concise (under 60 characters each).
+5. Style nodes using ONLY the classDef classes defined above — apply with \`:::className\` syntax.
+6. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values on individual nodes — use classDef classes instead.
+7. Do NOT change any color values — reproduce them exactly as shown.
+8. Use subgraph tier styles for visual hierarchy — never leave subgraphs unstyled.
+9. If the diagram type changes, preserve the exact same theme directive.
+10. If the diagram type does not support classDef (e.g. sequenceDiagram, erDiagram), omit classDef statements entirely — the theme directive handles all styling.
+
+---
+
+## Example output structure
+
+\`\`\`mermaid
+---
+# Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported
+config:
+  theme: base
+  themeVariables:
+    primaryColor: "#fffdfa"
+    primaryTextColor: "#2e2b29"
+    primaryBorderColor: "#d94f63"
+    lineColor: "#d94f63"
+    secondaryColor: "#f6f2ee"
+    secondaryTextColor: "#2e2b29"
+    secondaryBorderColor: "#d94f63"
+    tertiaryColor: "#e5d9ce"
+    tertiaryTextColor: "#2e2b29"
+    tertiaryBorderColor: "#d94f63"
+    textColor: "#2e2b29"
+    background: "#fff7f1"
+    mainBkg: "#fffdfa"
+    nodeBorder: "#d94f63"
+    clusterBkg: "#f9f3ef"
+    titleColor: "#d94f63"
+    edgeLabelBackground: "#fff7f1"
+    fontFamily: "Open Sans, system-ui, sans-serif"
+---
+%% Theme: Glee-fully
+%% Theme ID: glee-fully
+%% Tool: https://overkillhill.com/projects/mermaid-theme-builder/
+flowchart TD
+    A[Start] --> B[Process]
+    B:::primary --> C{Decision}:::gate
+    C -->|Yes| D[End]:::accent
+    C -->|No| B
+\`\`\`
+
+---
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- PART 2 — UPDATE PROMPT (style drift prevention)                    -->
+<!-- Use this when continuing a diagram thread and style has drifted    -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+
+## Update Prompt — paste this when style has drifted
+
+> Copy the block below into your AI thread when you notice the diagram is missing its theme directive or using wrong colors, or has lost classDef classes.
+
+---
+
+**[UPDATE — Restore theme contract]**
+
+The diagram above has drifted from the required visual theme. Please regenerate it in full with the following corrections applied:
+
+1. Restore the YAML frontmatter theme directive at the very top (do not omit it).
+2. Restore the metadata comment block immediately after the directive.
+3. Re-apply all node classes using the classDef vocabulary from the original scaffold (:::className syntax). Do not add any inline fill, stroke, or color values.
+4. Do not change any logic, labels, or relationships — only restore the visual styling contract.
+5. Output the complete diagram from top to bottom — do not abbreviate or use "..." placeholders.
+
+Theme contract reference:
+- Theme: **Glee-fully** (\`glee-fully\`)
+- Primary node color: \`#fffdfa\`
+- Border color: \`#d94f63\`
+- Accent / line color: \`#d94f63\`
+- Font: \`Open Sans, system-ui, sans-serif\`
+
+---
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- PART 3 — REPAIR PROMPT (parse error recovery)                      -->
+<!-- Use this when Mermaid throws a parse or render error               -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+
+## Repair Prompt — paste this when the diagram has a parse error
+
+> Copy the block below and fill in the \`[PASTE ERROR HERE]\` section with the actual error text from your renderer.
+
+---
+
+**[REPAIR — Fix parse error without changing theme]**
+
+The diagram below is failing to render with the following error:
+
+\`\`\`
+[PASTE ERROR HERE]
+\`\`\`
+
+Please repair the diagram so it renders correctly. Rules for this repair:
+
+1. Fix only the syntax or structural issue causing the parse error.
+2. Do NOT change the theme directive (\`%%{init}%%\` or YAML frontmatter), metadata comments, or any classDef statements.
+3. Do NOT change any color values or add inline styling.
+4. Do NOT restructure the diagram logic unless the structure itself is the cause of the error.
+5. Output the complete repaired diagram from top to bottom — do not abbreviate.
+
+If the error is caused by an unsupported feature for this diagram type, note the limitation and propose the minimal change needed to fix it while preserving as much of the original intent as possible.
+
+---
+
+*Generated by [Mermaid Theme Builder](https://overkillhill.com/projects/mermaid-theme-builder/) — paste PART 1 into your AI thread to maintain visual consistency. Use PART 2 to restore drift. Use PART 3 to fix parse errors.*
+"
+`;
+
+exports[`generatePromptScaffoldWithFormat snapshots — BRAND_PALETTES × ScaffoldFormat > palette "OKHP3" format "both" scaffold matches snapshot 1`] = `
+"# Mermaid Diagram Prompt Scaffold — OKHP3
+
+**Theme:** OKHP3  
+**Theme ID:** \`overkill-hill\`  
+**Version:** 0.2.0  
+**Tool:** [Mermaid Theme Builder](https://overkillhill.com/projects/mermaid-theme-builder/)
+**Source:** <https://overkillhill.com/>
+
+---
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- PART 1 — THREAD OPENER                                             -->
+<!-- Paste this entire section as your first message in a new AI thread -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+
+## Instructions for AI
+
+When generating flowchart diagrams, apply the following visual theme exactly as specified. Do not invent new colors, do not add extra CSS overrides, and do not change the theme directive.
+
+## Brand Guidance — OverKill Hill P³
+
+Use this theme for:
+- Technical architecture diagrams
+- Systems design and infrastructure maps
+- AI tooling and orchestration flows
+- Strategy and executive-facing presentations
+- Anything that needs to look precise, structured, and serious
+
+Do NOT use this theme for:
+- Consumer-facing or casual content
+- Playful or lightweight explainers
+
+---
+
+## Required: Theme directive
+
+Choose ONE of the two formats below based on your renderer. Never use both in the same diagram.
+
+### Format A — \`%%{init}%%\` directive (universal, Mermaid v9+)
+
+> Use this for: Microsoft Loop, Notion, older renderers, or anywhere YAML frontmatter is not supported.
+
+\`\`\`
+%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+\`\`\`
+
+### Format B — YAML frontmatter (preferred, Mermaid v10.5+)
+
+> Use this for: Mermaid Live Editor, VS Code with Mermaid extension, GitHub (where supported). This format is the current Mermaid standard and deprecates \`%%{init}%%\`.
+
+\`\`\`
+---
+# Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported
+config:
+  theme: base
+  themeVariables:
+    primaryColor: "#111827"
+    primaryTextColor: "#e5e7eb"
+    primaryBorderColor: "#c46a2c"
+    lineColor: "#c46a2c"
+    secondaryColor: "#181f26"
+    secondaryTextColor: "#e5e7eb"
+    secondaryBorderColor: "#c46a2c"
+    tertiaryColor: "#1c3a34"
+    tertiaryTextColor: "#e5e7eb"
+    tertiaryBorderColor: "#c46a2c"
+    textColor: "#e5e7eb"
+    background: "#111827"
+    mainBkg: "#111827"
+    nodeBorder: "#c46a2c"
+    clusterBkg: "#0d1117"
+    titleColor: "#c46a2c"
+    edgeLabelBackground: "#181f26"
+    fontFamily: "DM Sans, system-ui, sans-serif"
+---
+\`\`\`
+
+---
+
+## Required: Metadata comments
+
+Add these comment lines immediately after the theme directive:
+
+\`\`\`
+%% Theme: OKHP3
+%% Theme ID: overkill-hill
+%% Tool: https://overkillhill.com/projects/mermaid-theme-builder/
+\`\`\`
+
+---
+
+## Semantic classDef library
+
+This is the complete styling vocabulary for this theme. Apply these classDef classes to nodes using \`:::className\` syntax. Do NOT add any other fill, stroke, or color values — use only these classes.
+
+\`\`\`mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+flowchart TD
+    classDef primary fill:#111827,stroke:#c46a2c,color:#e5e7eb
+    classDef secondary fill:#181f26,stroke:#c46a2c,color:#e5e7eb
+    classDef tertiary fill:#1c3a34,stroke:#c46a2c,color:#e5e7eb
+    classDef platform fill:#111827,stroke:#c46a2c,color:#e5e7eb
+    classDef boundary fill:#0d1117,stroke:#c46a2c,color:#c46a2c,stroke-dasharray:5
+    classDef actor fill:#111827,stroke:#c46a2c,color:#e5e7eb,font-weight:bold
+    classDef gate fill:#c46a2c,stroke:#c46a2c,color:#111827
+    classDef control fill:#1c3a34,stroke:#c46a2c,color:#e5e7eb
+    classDef log fill:#181f26,stroke:#c46a2c,color:#e5e7eb,font-style:italic
+    classDef question fill:#111827,stroke:#c46a2c,color:#c46a2c,stroke-dasharray:3
+    classDef accent fill:#c46a2c,stroke:#c46a2c,color:#111827
+    classDef deepBlue fill:#111827,stroke:#c46a2c,color:#e5e7eb,stroke-width:2px
+    classDef slate fill:#111827,stroke:#c46a2c,color:#111827
+    classDef scope fill:#0d1117,stroke:#c46a2c,color:#c46a2c,stroke-width:2px
+    classDef outOfScope fill:#111827,stroke:#c46a2c,color:#e5e7eb,stroke-dasharray:8,opacity:0.6
+    classDef redDash fill:#3b0e0e,stroke:#b91c1c,color:#fecaca,stroke-dasharray:4
+
+    %% Usage example: NodeLabel:::primary
+    %% Apply a class to a node: A[My Node]:::secondary
+    %% Apply to a decision node: B{Choice}:::gate
+\`\`\`
+
+### Class reference table
+
+| Class | Role | When to use |
+|-------|------|-------------|
+| \`primary\` | Main action / primary entity | Core nodes, key steps, subject of the diagram |
+| \`secondary\` | Supporting / related entity | Adjacent systems, related processes |
+| \`tertiary\` | Background / context | Passive nodes, reference items |
+| \`platform\` | Platform / infrastructure | Hosting layer, operating environment |
+| \`boundary\` | System boundary (dashed) | External system boundaries, context limits |
+| \`actor\` | Person / user / role | Human actors, teams, personas |
+| \`gate\` | Decision / gateway | Diamond decision nodes, routing logic |
+| \`control\` | Control / management | Orchestrators, managers, approval nodes |
+| \`log\` | Log / audit / record (italic) | Audit trails, event logs, history |
+| \`question\` | Open question / TBD (dashed) | Unknowns, pending decisions, assumptions |
+| \`accent\` | Highlighted / key result | Outcomes, final states, primary outputs |
+| \`deepBlue\` | Deep emphasis / dark primary | Stressed primary nodes, thick border variant |
+| \`slate\` | Neutral / muted | Low-priority nodes, supporting details |
+| \`scope\` | In-scope boundary | Items explicitly in scope |
+| \`outOfScope\` | Out-of-scope (faded, dashed) | Explicitly excluded items |
+| \`redDash\` | Warning / error / blocker | Error states, blockers, known failures |
+
+---
+
+## Subgraph tier patterns
+
+Use \`style SubgraphName ...\` statements to apply visual hierarchy to subgraphs. Replace \`SubgraphName\` with the actual subgraph ID.
+
+\`\`\`mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+flowchart TD
+    %% Tier 1 — Primary system boundary (most prominent)
+    style SubgraphName fill:#111827,stroke:#c46a2c,color:#c46a2c
+
+    %% Tier 2 — Secondary system or service grouping
+    style SubgraphName fill:#181f26,stroke:#c46a2c,color:#c46a2c
+
+    %% Tier 3 — Tertiary context or supporting group
+    style SubgraphName fill:#1c3a34,stroke:#c46a2c,color:#c46a2c
+
+    %% Tier 4 — Cluster / infrastructure boundary
+    style SubgraphName fill:#0d1117,stroke:#c46a2c,color:#c46a2c,stroke-dasharray:5
+
+    %% Tier 5 — Out-of-scope / external system
+    style SubgraphName fill:#111827,stroke:#c46a2c,color:#111827,stroke-dasharray:8,opacity:0.7
+
+    %% Tier 6 — Annotation / note boundary (no fill)
+    style SubgraphName fill:transparent,stroke:#c46a2c,color:#c46a2c,stroke-dasharray:2
+\`\`\`
+
+---
+
+## Theme: OKHP3
+
+Industrial dark mode with teal and amber forge accents — bold, high-contrast, built for architecture diagrams
+
+**Intended use:** Technical, architectural, systems, AI tooling, strategy, and executive-facing diagrams
+
+### Color reference
+  - Primary (nodes): \`#111827\`
+  - Primary text: \`#e5e7eb\`
+  - Primary border: \`#c46a2c\`
+  - Lines & arrows: \`#c46a2c\`
+  - Secondary nodes: \`#181f26\`
+  - Secondary text: \`#e5e7eb\`
+  - Secondary border: \`#c46a2c\`
+  - Tertiary nodes: \`#1c3a34\`
+  - Tertiary text: \`#e5e7eb\`
+  - Tertiary border: \`#c46a2c\`
+  - Text color: \`#e5e7eb\`
+  - Background: \`#111827\`
+  - Main background: \`#111827\`
+  - Node border: \`#c46a2c\`
+  - Cluster background: \`#0d1117\`
+  - Title color: \`#c46a2c\`
+
+### Font
+\`DM Sans, system-ui, sans-serif\`
+
+---
+
+## Rules
+
+1. ALWAYS start the diagram with the theme directive (Format A or Format B above) — no exceptions.
+2. Add the metadata comment block immediately after the theme directive.
+3. Use \`flowchart TD\` as the diagram type unless the user specifies otherwise.
+4. Keep node labels concise (under 60 characters each).
+5. Style nodes using ONLY the classDef classes defined above — apply with \`:::className\` syntax.
+6. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values on individual nodes — use classDef classes instead.
+7. Do NOT change any color values — reproduce them exactly as shown.
+8. Use subgraph tier styles for visual hierarchy — never leave subgraphs unstyled.
+9. If the diagram type changes, preserve the exact same theme directive.
+10. If the diagram type does not support classDef (e.g. sequenceDiagram, erDiagram), omit classDef statements entirely — the theme directive handles all styling.
+
+---
+
+## Example output structure
+
+\`\`\`mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+%% Theme: OKHP3
+%% Theme ID: overkill-hill
+%% Tool: https://overkillhill.com/projects/mermaid-theme-builder/
+flowchart TD
+    A[Start] --> B[Process]
+    B:::primary --> C{Decision}:::gate
+    C -->|Yes| D[End]:::accent
+    C -->|No| B
+\`\`\`
+
+---
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- PART 2 — UPDATE PROMPT (style drift prevention)                    -->
+<!-- Use this when continuing a diagram thread and style has drifted    -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+
+## Update Prompt — paste this when style has drifted
+
+> Copy the block below into your AI thread when you notice the diagram is missing its theme directive or using wrong colors, or has lost classDef classes.
+
+---
+
+**[UPDATE — Restore theme contract]**
+
+The diagram above has drifted from the required visual theme. Please regenerate it in full with the following corrections applied:
+
+1. Restore the theme directive at the very top (use Format A or B from the original scaffold — do not omit it).
+2. Restore the metadata comment block immediately after the directive.
+3. Re-apply all node classes using the classDef vocabulary from the original scaffold (:::className syntax). Do not add any inline fill, stroke, or color values.
+4. Do not change any logic, labels, or relationships — only restore the visual styling contract.
+5. Output the complete diagram from top to bottom — do not abbreviate or use "..." placeholders.
+
+Theme contract reference:
+- Theme: **OKHP3** (\`overkill-hill\`)
+- Primary node color: \`#111827\`
+- Border color: \`#c46a2c\`
+- Accent / line color: \`#c46a2c\`
+- Font: \`DM Sans, system-ui, sans-serif\`
+
+---
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- PART 3 — REPAIR PROMPT (parse error recovery)                      -->
+<!-- Use this when Mermaid throws a parse or render error               -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+
+## Repair Prompt — paste this when the diagram has a parse error
+
+> Copy the block below and fill in the \`[PASTE ERROR HERE]\` section with the actual error text from your renderer.
+
+---
+
+**[REPAIR — Fix parse error without changing theme]**
+
+The diagram below is failing to render with the following error:
+
+\`\`\`
+[PASTE ERROR HERE]
+\`\`\`
+
+Please repair the diagram so it renders correctly. Rules for this repair:
+
+1. Fix only the syntax or structural issue causing the parse error.
+2. Do NOT change the theme directive (\`%%{init}%%\` or YAML frontmatter), metadata comments, or any classDef statements.
+3. Do NOT change any color values or add inline styling.
+4. Do NOT restructure the diagram logic unless the structure itself is the cause of the error.
+5. Output the complete repaired diagram from top to bottom — do not abbreviate.
+
+If the error is caused by an unsupported feature for this diagram type, note the limitation and propose the minimal change needed to fix it while preserving as much of the original intent as possible.
+
+---
+
+*Generated by [Mermaid Theme Builder](https://overkillhill.com/projects/mermaid-theme-builder/) — paste PART 1 into your AI thread to maintain visual consistency. Use PART 2 to restore drift. Use PART 3 to fix parse errors.*
+"
+`;
+
+exports[`generatePromptScaffoldWithFormat snapshots — BRAND_PALETTES × ScaffoldFormat > palette "OKHP3" format "formatA" scaffold matches snapshot 1`] = `
+"# Mermaid Diagram Prompt Scaffold — OKHP3
+
+**Theme:** OKHP3  
+**Theme ID:** \`overkill-hill\`  
+**Version:** 0.2.0  
+**Tool:** [Mermaid Theme Builder](https://overkillhill.com/projects/mermaid-theme-builder/)
+**Source:** <https://overkillhill.com/>
+
+---
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- PART 1 — THREAD OPENER                                             -->
+<!-- Paste this entire section as your first message in a new AI thread -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+
+## Instructions for AI
+
+When generating flowchart diagrams, apply the following visual theme exactly as specified. Do not invent new colors, do not add extra CSS overrides, and do not change the theme directive.
+
+## Brand Guidance — OverKill Hill P³
+
+Use this theme for:
+- Technical architecture diagrams
+- Systems design and infrastructure maps
+- AI tooling and orchestration flows
+- Strategy and executive-facing presentations
+- Anything that needs to look precise, structured, and serious
+
+Do NOT use this theme for:
+- Consumer-facing or casual content
+- Playful or lightweight explainers
+
+---
+
+## Required: Theme directive
+
+Use the \`%%{init}%%\` directive (Format A) — compatible with Mermaid v9+, Microsoft Loop, Notion, and most renderers.
+
+\`\`\`
+%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+\`\`\`
+
+---
+
+## Required: Metadata comments
+
+Add these comment lines immediately after the theme directive:
+
+\`\`\`
+%% Theme: OKHP3
+%% Theme ID: overkill-hill
+%% Tool: https://overkillhill.com/projects/mermaid-theme-builder/
+\`\`\`
+
+---
+
+## Semantic classDef library
+
+This is the complete styling vocabulary for this theme. Apply these classDef classes to nodes using \`:::className\` syntax. Do NOT add any other fill, stroke, or color values — use only these classes.
+
+\`\`\`mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+flowchart TD
+    classDef primary fill:#111827,stroke:#c46a2c,color:#e5e7eb
+    classDef secondary fill:#181f26,stroke:#c46a2c,color:#e5e7eb
+    classDef tertiary fill:#1c3a34,stroke:#c46a2c,color:#e5e7eb
+    classDef platform fill:#111827,stroke:#c46a2c,color:#e5e7eb
+    classDef boundary fill:#0d1117,stroke:#c46a2c,color:#c46a2c,stroke-dasharray:5
+    classDef actor fill:#111827,stroke:#c46a2c,color:#e5e7eb,font-weight:bold
+    classDef gate fill:#c46a2c,stroke:#c46a2c,color:#111827
+    classDef control fill:#1c3a34,stroke:#c46a2c,color:#e5e7eb
+    classDef log fill:#181f26,stroke:#c46a2c,color:#e5e7eb,font-style:italic
+    classDef question fill:#111827,stroke:#c46a2c,color:#c46a2c,stroke-dasharray:3
+    classDef accent fill:#c46a2c,stroke:#c46a2c,color:#111827
+    classDef deepBlue fill:#111827,stroke:#c46a2c,color:#e5e7eb,stroke-width:2px
+    classDef slate fill:#111827,stroke:#c46a2c,color:#111827
+    classDef scope fill:#0d1117,stroke:#c46a2c,color:#c46a2c,stroke-width:2px
+    classDef outOfScope fill:#111827,stroke:#c46a2c,color:#e5e7eb,stroke-dasharray:8,opacity:0.6
+    classDef redDash fill:#3b0e0e,stroke:#b91c1c,color:#fecaca,stroke-dasharray:4
+
+    %% Usage example: NodeLabel:::primary
+    %% Apply a class to a node: A[My Node]:::secondary
+    %% Apply to a decision node: B{Choice}:::gate
+\`\`\`
+
+### Class reference table
+
+| Class | Role | When to use |
+|-------|------|-------------|
+| \`primary\` | Main action / primary entity | Core nodes, key steps, subject of the diagram |
+| \`secondary\` | Supporting / related entity | Adjacent systems, related processes |
+| \`tertiary\` | Background / context | Passive nodes, reference items |
+| \`platform\` | Platform / infrastructure | Hosting layer, operating environment |
+| \`boundary\` | System boundary (dashed) | External system boundaries, context limits |
+| \`actor\` | Person / user / role | Human actors, teams, personas |
+| \`gate\` | Decision / gateway | Diamond decision nodes, routing logic |
+| \`control\` | Control / management | Orchestrators, managers, approval nodes |
+| \`log\` | Log / audit / record (italic) | Audit trails, event logs, history |
+| \`question\` | Open question / TBD (dashed) | Unknowns, pending decisions, assumptions |
+| \`accent\` | Highlighted / key result | Outcomes, final states, primary outputs |
+| \`deepBlue\` | Deep emphasis / dark primary | Stressed primary nodes, thick border variant |
+| \`slate\` | Neutral / muted | Low-priority nodes, supporting details |
+| \`scope\` | In-scope boundary | Items explicitly in scope |
+| \`outOfScope\` | Out-of-scope (faded, dashed) | Explicitly excluded items |
+| \`redDash\` | Warning / error / blocker | Error states, blockers, known failures |
+
+---
+
+## Subgraph tier patterns
+
+Use \`style SubgraphName ...\` statements to apply visual hierarchy to subgraphs. Replace \`SubgraphName\` with the actual subgraph ID.
+
+\`\`\`mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+flowchart TD
+    %% Tier 1 — Primary system boundary (most prominent)
+    style SubgraphName fill:#111827,stroke:#c46a2c,color:#c46a2c
+
+    %% Tier 2 — Secondary system or service grouping
+    style SubgraphName fill:#181f26,stroke:#c46a2c,color:#c46a2c
+
+    %% Tier 3 — Tertiary context or supporting group
+    style SubgraphName fill:#1c3a34,stroke:#c46a2c,color:#c46a2c
+
+    %% Tier 4 — Cluster / infrastructure boundary
+    style SubgraphName fill:#0d1117,stroke:#c46a2c,color:#c46a2c,stroke-dasharray:5
+
+    %% Tier 5 — Out-of-scope / external system
+    style SubgraphName fill:#111827,stroke:#c46a2c,color:#111827,stroke-dasharray:8,opacity:0.7
+
+    %% Tier 6 — Annotation / note boundary (no fill)
+    style SubgraphName fill:transparent,stroke:#c46a2c,color:#c46a2c,stroke-dasharray:2
+\`\`\`
+
+---
+
+## Theme: OKHP3
+
+Industrial dark mode with teal and amber forge accents — bold, high-contrast, built for architecture diagrams
+
+**Intended use:** Technical, architectural, systems, AI tooling, strategy, and executive-facing diagrams
+
+### Color reference
+  - Primary (nodes): \`#111827\`
+  - Primary text: \`#e5e7eb\`
+  - Primary border: \`#c46a2c\`
+  - Lines & arrows: \`#c46a2c\`
+  - Secondary nodes: \`#181f26\`
+  - Secondary text: \`#e5e7eb\`
+  - Secondary border: \`#c46a2c\`
+  - Tertiary nodes: \`#1c3a34\`
+  - Tertiary text: \`#e5e7eb\`
+  - Tertiary border: \`#c46a2c\`
+  - Text color: \`#e5e7eb\`
+  - Background: \`#111827\`
+  - Main background: \`#111827\`
+  - Node border: \`#c46a2c\`
+  - Cluster background: \`#0d1117\`
+  - Title color: \`#c46a2c\`
+
+### Font
+\`DM Sans, system-ui, sans-serif\`
+
+---
+
+## Rules
+
+1. ALWAYS start the diagram with the \`%%{init}%%\` theme directive — no exceptions.
+2. Add the metadata comment block immediately after the theme directive.
+3. Use \`flowchart TD\` as the diagram type unless the user specifies otherwise.
+4. Keep node labels concise (under 60 characters each).
+5. Style nodes using ONLY the classDef classes defined above — apply with \`:::className\` syntax.
+6. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values on individual nodes — use classDef classes instead.
+7. Do NOT change any color values — reproduce them exactly as shown.
+8. Use subgraph tier styles for visual hierarchy — never leave subgraphs unstyled.
+9. If the diagram type changes, preserve the exact same theme directive.
+10. If the diagram type does not support classDef (e.g. sequenceDiagram, erDiagram), omit classDef statements entirely — the theme directive handles all styling.
+
+---
+
+## Example output structure
+
+\`\`\`mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+%% Theme: OKHP3
+%% Theme ID: overkill-hill
+%% Tool: https://overkillhill.com/projects/mermaid-theme-builder/
+flowchart TD
+    A[Start] --> B[Process]
+    B:::primary --> C{Decision}:::gate
+    C -->|Yes| D[End]:::accent
+    C -->|No| B
+\`\`\`
+
+---
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- PART 2 — UPDATE PROMPT (style drift prevention)                    -->
+<!-- Use this when continuing a diagram thread and style has drifted    -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+
+## Update Prompt — paste this when style has drifted
+
+> Copy the block below into your AI thread when you notice the diagram is missing its theme directive or using wrong colors, or has lost classDef classes.
+
+---
+
+**[UPDATE — Restore theme contract]**
+
+The diagram above has drifted from the required visual theme. Please regenerate it in full with the following corrections applied:
+
+1. Restore the \`%%{init}%%\` theme directive at the very top (do not omit it).
+2. Restore the metadata comment block immediately after the directive.
+3. Re-apply all node classes using the classDef vocabulary from the original scaffold (:::className syntax). Do not add any inline fill, stroke, or color values.
+4. Do not change any logic, labels, or relationships — only restore the visual styling contract.
+5. Output the complete diagram from top to bottom — do not abbreviate or use "..." placeholders.
+
+Theme contract reference:
+- Theme: **OKHP3** (\`overkill-hill\`)
+- Primary node color: \`#111827\`
+- Border color: \`#c46a2c\`
+- Accent / line color: \`#c46a2c\`
+- Font: \`DM Sans, system-ui, sans-serif\`
+
+---
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- PART 3 — REPAIR PROMPT (parse error recovery)                      -->
+<!-- Use this when Mermaid throws a parse or render error               -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+
+## Repair Prompt — paste this when the diagram has a parse error
+
+> Copy the block below and fill in the \`[PASTE ERROR HERE]\` section with the actual error text from your renderer.
+
+---
+
+**[REPAIR — Fix parse error without changing theme]**
+
+The diagram below is failing to render with the following error:
+
+\`\`\`
+[PASTE ERROR HERE]
+\`\`\`
+
+Please repair the diagram so it renders correctly. Rules for this repair:
+
+1. Fix only the syntax or structural issue causing the parse error.
+2. Do NOT change the theme directive (\`%%{init}%%\` or YAML frontmatter), metadata comments, or any classDef statements.
+3. Do NOT change any color values or add inline styling.
+4. Do NOT restructure the diagram logic unless the structure itself is the cause of the error.
+5. Output the complete repaired diagram from top to bottom — do not abbreviate.
+
+If the error is caused by an unsupported feature for this diagram type, note the limitation and propose the minimal change needed to fix it while preserving as much of the original intent as possible.
+
+---
+
+*Generated by [Mermaid Theme Builder](https://overkillhill.com/projects/mermaid-theme-builder/) — paste PART 1 into your AI thread to maintain visual consistency. Use PART 2 to restore drift. Use PART 3 to fix parse errors.*
+"
+`;
+
+exports[`generatePromptScaffoldWithFormat snapshots — BRAND_PALETTES × ScaffoldFormat > palette "OKHP3" format "formatB" scaffold matches snapshot 1`] = `
+"# Mermaid Diagram Prompt Scaffold — OKHP3
+
+**Theme:** OKHP3  
+**Theme ID:** \`overkill-hill\`  
+**Version:** 0.2.0  
+**Tool:** [Mermaid Theme Builder](https://overkillhill.com/projects/mermaid-theme-builder/)
+**Source:** <https://overkillhill.com/>
+
+---
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- PART 1 — THREAD OPENER                                             -->
+<!-- Paste this entire section as your first message in a new AI thread -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+
+## Instructions for AI
+
+When generating flowchart diagrams, apply the following visual theme exactly as specified. Do not invent new colors, do not add extra CSS overrides, and do not change the theme directive.
+
+## Brand Guidance — OverKill Hill P³
+
+Use this theme for:
+- Technical architecture diagrams
+- Systems design and infrastructure maps
+- AI tooling and orchestration flows
+- Strategy and executive-facing presentations
+- Anything that needs to look precise, structured, and serious
+
+Do NOT use this theme for:
+- Consumer-facing or casual content
+- Playful or lightweight explainers
+
+---
+
+## Required: Theme directive
+
+Use YAML frontmatter (Format B) — the preferred format for Mermaid v10.5+, Mermaid Live Editor, VS Code, and GitHub (where supported).
+
+\`\`\`
+---
+# Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported
+config:
+  theme: base
+  themeVariables:
+    primaryColor: "#111827"
+    primaryTextColor: "#e5e7eb"
+    primaryBorderColor: "#c46a2c"
+    lineColor: "#c46a2c"
+    secondaryColor: "#181f26"
+    secondaryTextColor: "#e5e7eb"
+    secondaryBorderColor: "#c46a2c"
+    tertiaryColor: "#1c3a34"
+    tertiaryTextColor: "#e5e7eb"
+    tertiaryBorderColor: "#c46a2c"
+    textColor: "#e5e7eb"
+    background: "#111827"
+    mainBkg: "#111827"
+    nodeBorder: "#c46a2c"
+    clusterBkg: "#0d1117"
+    titleColor: "#c46a2c"
+    edgeLabelBackground: "#181f26"
+    fontFamily: "DM Sans, system-ui, sans-serif"
+---
+\`\`\`
+
+---
+
+## Required: Metadata comments
+
+Add these comment lines immediately after the theme directive:
+
+\`\`\`
+%% Theme: OKHP3
+%% Theme ID: overkill-hill
+%% Tool: https://overkillhill.com/projects/mermaid-theme-builder/
+\`\`\`
+
+---
+
+## Semantic classDef library
+
+This is the complete styling vocabulary for this theme. Apply these classDef classes to nodes using \`:::className\` syntax. Do NOT add any other fill, stroke, or color values — use only these classes.
+
+\`\`\`mermaid
+---
+# Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported
+config:
+  theme: base
+  themeVariables:
+    primaryColor: "#111827"
+    primaryTextColor: "#e5e7eb"
+    primaryBorderColor: "#c46a2c"
+    lineColor: "#c46a2c"
+    secondaryColor: "#181f26"
+    secondaryTextColor: "#e5e7eb"
+    secondaryBorderColor: "#c46a2c"
+    tertiaryColor: "#1c3a34"
+    tertiaryTextColor: "#e5e7eb"
+    tertiaryBorderColor: "#c46a2c"
+    textColor: "#e5e7eb"
+    background: "#111827"
+    mainBkg: "#111827"
+    nodeBorder: "#c46a2c"
+    clusterBkg: "#0d1117"
+    titleColor: "#c46a2c"
+    edgeLabelBackground: "#181f26"
+    fontFamily: "DM Sans, system-ui, sans-serif"
+---
+flowchart TD
+    classDef primary fill:#111827,stroke:#c46a2c,color:#e5e7eb
+    classDef secondary fill:#181f26,stroke:#c46a2c,color:#e5e7eb
+    classDef tertiary fill:#1c3a34,stroke:#c46a2c,color:#e5e7eb
+    classDef platform fill:#111827,stroke:#c46a2c,color:#e5e7eb
+    classDef boundary fill:#0d1117,stroke:#c46a2c,color:#c46a2c,stroke-dasharray:5
+    classDef actor fill:#111827,stroke:#c46a2c,color:#e5e7eb,font-weight:bold
+    classDef gate fill:#c46a2c,stroke:#c46a2c,color:#111827
+    classDef control fill:#1c3a34,stroke:#c46a2c,color:#e5e7eb
+    classDef log fill:#181f26,stroke:#c46a2c,color:#e5e7eb,font-style:italic
+    classDef question fill:#111827,stroke:#c46a2c,color:#c46a2c,stroke-dasharray:3
+    classDef accent fill:#c46a2c,stroke:#c46a2c,color:#111827
+    classDef deepBlue fill:#111827,stroke:#c46a2c,color:#e5e7eb,stroke-width:2px
+    classDef slate fill:#111827,stroke:#c46a2c,color:#111827
+    classDef scope fill:#0d1117,stroke:#c46a2c,color:#c46a2c,stroke-width:2px
+    classDef outOfScope fill:#111827,stroke:#c46a2c,color:#e5e7eb,stroke-dasharray:8,opacity:0.6
+    classDef redDash fill:#3b0e0e,stroke:#b91c1c,color:#fecaca,stroke-dasharray:4
+
+    %% Usage example: NodeLabel:::primary
+    %% Apply a class to a node: A[My Node]:::secondary
+    %% Apply to a decision node: B{Choice}:::gate
+\`\`\`
+
+### Class reference table
+
+| Class | Role | When to use |
+|-------|------|-------------|
+| \`primary\` | Main action / primary entity | Core nodes, key steps, subject of the diagram |
+| \`secondary\` | Supporting / related entity | Adjacent systems, related processes |
+| \`tertiary\` | Background / context | Passive nodes, reference items |
+| \`platform\` | Platform / infrastructure | Hosting layer, operating environment |
+| \`boundary\` | System boundary (dashed) | External system boundaries, context limits |
+| \`actor\` | Person / user / role | Human actors, teams, personas |
+| \`gate\` | Decision / gateway | Diamond decision nodes, routing logic |
+| \`control\` | Control / management | Orchestrators, managers, approval nodes |
+| \`log\` | Log / audit / record (italic) | Audit trails, event logs, history |
+| \`question\` | Open question / TBD (dashed) | Unknowns, pending decisions, assumptions |
+| \`accent\` | Highlighted / key result | Outcomes, final states, primary outputs |
+| \`deepBlue\` | Deep emphasis / dark primary | Stressed primary nodes, thick border variant |
+| \`slate\` | Neutral / muted | Low-priority nodes, supporting details |
+| \`scope\` | In-scope boundary | Items explicitly in scope |
+| \`outOfScope\` | Out-of-scope (faded, dashed) | Explicitly excluded items |
+| \`redDash\` | Warning / error / blocker | Error states, blockers, known failures |
+
+---
+
+## Subgraph tier patterns
+
+Use \`style SubgraphName ...\` statements to apply visual hierarchy to subgraphs. Replace \`SubgraphName\` with the actual subgraph ID.
+
+\`\`\`mermaid
+---
+# Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported
+config:
+  theme: base
+  themeVariables:
+    primaryColor: "#111827"
+    primaryTextColor: "#e5e7eb"
+    primaryBorderColor: "#c46a2c"
+    lineColor: "#c46a2c"
+    secondaryColor: "#181f26"
+    secondaryTextColor: "#e5e7eb"
+    secondaryBorderColor: "#c46a2c"
+    tertiaryColor: "#1c3a34"
+    tertiaryTextColor: "#e5e7eb"
+    tertiaryBorderColor: "#c46a2c"
+    textColor: "#e5e7eb"
+    background: "#111827"
+    mainBkg: "#111827"
+    nodeBorder: "#c46a2c"
+    clusterBkg: "#0d1117"
+    titleColor: "#c46a2c"
+    edgeLabelBackground: "#181f26"
+    fontFamily: "DM Sans, system-ui, sans-serif"
+---
+flowchart TD
+    %% Tier 1 — Primary system boundary (most prominent)
+    style SubgraphName fill:#111827,stroke:#c46a2c,color:#c46a2c
+
+    %% Tier 2 — Secondary system or service grouping
+    style SubgraphName fill:#181f26,stroke:#c46a2c,color:#c46a2c
+
+    %% Tier 3 — Tertiary context or supporting group
+    style SubgraphName fill:#1c3a34,stroke:#c46a2c,color:#c46a2c
+
+    %% Tier 4 — Cluster / infrastructure boundary
+    style SubgraphName fill:#0d1117,stroke:#c46a2c,color:#c46a2c,stroke-dasharray:5
+
+    %% Tier 5 — Out-of-scope / external system
+    style SubgraphName fill:#111827,stroke:#c46a2c,color:#111827,stroke-dasharray:8,opacity:0.7
+
+    %% Tier 6 — Annotation / note boundary (no fill)
+    style SubgraphName fill:transparent,stroke:#c46a2c,color:#c46a2c,stroke-dasharray:2
+\`\`\`
+
+---
+
+## Theme: OKHP3
+
+Industrial dark mode with teal and amber forge accents — bold, high-contrast, built for architecture diagrams
+
+**Intended use:** Technical, architectural, systems, AI tooling, strategy, and executive-facing diagrams
+
+### Color reference
+  - Primary (nodes): \`#111827\`
+  - Primary text: \`#e5e7eb\`
+  - Primary border: \`#c46a2c\`
+  - Lines & arrows: \`#c46a2c\`
+  - Secondary nodes: \`#181f26\`
+  - Secondary text: \`#e5e7eb\`
+  - Secondary border: \`#c46a2c\`
+  - Tertiary nodes: \`#1c3a34\`
+  - Tertiary text: \`#e5e7eb\`
+  - Tertiary border: \`#c46a2c\`
+  - Text color: \`#e5e7eb\`
+  - Background: \`#111827\`
+  - Main background: \`#111827\`
+  - Node border: \`#c46a2c\`
+  - Cluster background: \`#0d1117\`
+  - Title color: \`#c46a2c\`
+
+### Font
+\`DM Sans, system-ui, sans-serif\`
+
+---
+
+## Rules
+
+1. ALWAYS start the diagram with the YAML frontmatter theme directive — no exceptions.
+2. Add the metadata comment block immediately after the theme directive.
+3. Use \`flowchart TD\` as the diagram type unless the user specifies otherwise.
+4. Keep node labels concise (under 60 characters each).
+5. Style nodes using ONLY the classDef classes defined above — apply with \`:::className\` syntax.
+6. Do NOT add inline \`fill:\`, \`stroke:\`, or \`color:\` values on individual nodes — use classDef classes instead.
+7. Do NOT change any color values — reproduce them exactly as shown.
+8. Use subgraph tier styles for visual hierarchy — never leave subgraphs unstyled.
+9. If the diagram type changes, preserve the exact same theme directive.
+10. If the diagram type does not support classDef (e.g. sequenceDiagram, erDiagram), omit classDef statements entirely — the theme directive handles all styling.
+
+---
+
+## Example output structure
+
+\`\`\`mermaid
+---
+# Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported
+config:
+  theme: base
+  themeVariables:
+    primaryColor: "#111827"
+    primaryTextColor: "#e5e7eb"
+    primaryBorderColor: "#c46a2c"
+    lineColor: "#c46a2c"
+    secondaryColor: "#181f26"
+    secondaryTextColor: "#e5e7eb"
+    secondaryBorderColor: "#c46a2c"
+    tertiaryColor: "#1c3a34"
+    tertiaryTextColor: "#e5e7eb"
+    tertiaryBorderColor: "#c46a2c"
+    textColor: "#e5e7eb"
+    background: "#111827"
+    mainBkg: "#111827"
+    nodeBorder: "#c46a2c"
+    clusterBkg: "#0d1117"
+    titleColor: "#c46a2c"
+    edgeLabelBackground: "#181f26"
+    fontFamily: "DM Sans, system-ui, sans-serif"
+---
+%% Theme: OKHP3
+%% Theme ID: overkill-hill
+%% Tool: https://overkillhill.com/projects/mermaid-theme-builder/
+flowchart TD
+    A[Start] --> B[Process]
+    B:::primary --> C{Decision}:::gate
+    C -->|Yes| D[End]:::accent
+    C -->|No| B
+\`\`\`
+
+---
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- PART 2 — UPDATE PROMPT (style drift prevention)                    -->
+<!-- Use this when continuing a diagram thread and style has drifted    -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+
+## Update Prompt — paste this when style has drifted
+
+> Copy the block below into your AI thread when you notice the diagram is missing its theme directive or using wrong colors, or has lost classDef classes.
+
+---
+
+**[UPDATE — Restore theme contract]**
+
+The diagram above has drifted from the required visual theme. Please regenerate it in full with the following corrections applied:
+
+1. Restore the YAML frontmatter theme directive at the very top (do not omit it).
+2. Restore the metadata comment block immediately after the directive.
+3. Re-apply all node classes using the classDef vocabulary from the original scaffold (:::className syntax). Do not add any inline fill, stroke, or color values.
+4. Do not change any logic, labels, or relationships — only restore the visual styling contract.
+5. Output the complete diagram from top to bottom — do not abbreviate or use "..." placeholders.
+
+Theme contract reference:
+- Theme: **OKHP3** (\`overkill-hill\`)
+- Primary node color: \`#111827\`
+- Border color: \`#c46a2c\`
+- Accent / line color: \`#c46a2c\`
+- Font: \`DM Sans, system-ui, sans-serif\`
+
+---
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- PART 3 — REPAIR PROMPT (parse error recovery)                      -->
+<!-- Use this when Mermaid throws a parse or render error               -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+
+## Repair Prompt — paste this when the diagram has a parse error
+
+> Copy the block below and fill in the \`[PASTE ERROR HERE]\` section with the actual error text from your renderer.
+
+---
+
+**[REPAIR — Fix parse error without changing theme]**
+
+The diagram below is failing to render with the following error:
+
+\`\`\`
+[PASTE ERROR HERE]
+\`\`\`
+
+Please repair the diagram so it renders correctly. Rules for this repair:
+
+1. Fix only the syntax or structural issue causing the parse error.
+2. Do NOT change the theme directive (\`%%{init}%%\` or YAML frontmatter), metadata comments, or any classDef statements.
+3. Do NOT change any color values or add inline styling.
+4. Do NOT restructure the diagram logic unless the structure itself is the cause of the error.
+5. Output the complete repaired diagram from top to bottom — do not abbreviate.
+
+If the error is caused by an unsupported feature for this diagram type, note the limitation and propose the minimal change needed to fix it while preserving as much of the original intent as possible.
+
+---
+
+*Generated by [Mermaid Theme Builder](https://overkillhill.com/projects/mermaid-theme-builder/) — paste PART 1 into your AI thread to maintain visual consistency. Use PART 2 to restore drift. Use PART 3 to fix parse errors.*
+"
+`;
