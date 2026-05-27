@@ -26,11 +26,11 @@ args = "typecheck"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "format"
+args = "e2e"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "e2e"
+args = "format"
 
 [[workflows.workflow]]
 name = "test"
@@ -55,17 +55,6 @@ args = "pnpm run typecheck"
 isValidation = true
 
 [[workflows.workflow]]
-name = "format"
-author = "agent"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "pnpm prettier --check \"src/**/*.{ts,tsx}\""
-
-[workflows.workflow.metadata]
-isValidation = true
-
-[[workflows.workflow]]
 name = "e2e"
 author = "agent"
 
@@ -75,6 +64,17 @@ args = "pnpm test:e2e"
 
 [workflows.workflow.metadata]
 isValidation = true
+
+[[workflows.workflow]]
+name = "format"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pnpm prettier --check \"src/**/*.{ts,tsx}\" \"*.ts\" \"*.json\""
+
+[workflows.workflow.metadata]
+outputType = "console"
 
 [agent]
 stack = "PNPM_WORKSPACE"

@@ -1,0 +1,12 @@
+# Auto-generated lockfiles
+pnpm-lock.yaml
+skills-lock.json
+
+# Build output
+dist/
+build/
+
+# Test output
+test-results/
+playwright-report/
+coverage/
