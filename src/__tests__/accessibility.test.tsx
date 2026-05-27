@@ -40,6 +40,7 @@ import { ExamplesTab } from "@/pages/tabs/ExamplesTab";
 import { ReferenceTab } from "@/pages/tabs/ReferenceTab";
 import { ColorSwatch } from "@/components/ColorSwatch";
 import { ClassBrowser } from "@/components/ClassBrowser";
+import { DiagramInventory } from "@/components/DiagramInventory";
 import { BRAND_PALETTES } from "@/lib/palettes";
 import { DEFAULT_TYPOGRAPHY } from "@/lib/typography";
 import { getClassDefs } from "@/lib/themeEngine";
@@ -616,6 +617,35 @@ describe("ReferenceTab (capabilities table)", () => {
     const { container } = render(createElement(ReferenceTab, referenceTabProps));
     const { blocking, all } = await runAxe(container);
     logViolations("ReferenceTab", all);
+    expect(
+      blocking,
+      `Critical/serious violations:\n${blocking
+        .map(
+          (v) =>
+            `  [${v.impact}] ${v.id}: ${v.description}\n  Nodes: ${v.nodes
+              .map((n) => n.html)
+              .slice(0, 2)
+              .join(", ")}`
+        )
+        .join("\n")}`
+    ).toHaveLength(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 13. DiagramInventory — standalone full-screen view (embedded=false)
+//
+// Renders DiagramInventory in its non-embedded (full-screen overlay) state
+// with onClose provided. The filter tabs, search input, capabilities table,
+// gaps table, close button, and footer legend are all present on initial render.
+// ---------------------------------------------------------------------------
+describe("DiagramInventory (standalone full-screen view)", () => {
+  it("has zero critical/serious axe violations on initial render", async () => {
+    const { container } = render(
+      createElement(DiagramInventory, { embedded: false, onClose: vi.fn() })
+    );
+    const { blocking, all } = await runAxe(container);
+    logViolations("DiagramInventory (standalone)", all);
     expect(
       blocking,
       `Critical/serious violations:\n${blocking

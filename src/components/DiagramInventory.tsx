@@ -317,6 +317,7 @@ export function DiagramInventory({ onClose, embedded = false }: DiagramInventory
         <div className="flex items-center gap-2">
           <input
             type="search"
+            aria-label="Search diagram types"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search diagrams…"
