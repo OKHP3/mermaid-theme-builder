@@ -596,3 +596,39 @@ describe("typographyToScaffoldSection — font family column", () => {
     expect(result).toContain("(palette fontFamily)");
   });
 });
+
+// ---------------------------------------------------------------------------
+// 8. typographyToScaffoldSection — full output pin
+//
+// Pins the complete string returned by typographyToScaffoldSection for
+// DEFAULT_TYPOGRAPHY. Any accidental deletion of the prose blocks (hierarchy
+// rule, CSS targets), the heading, the table structure, or any tier row will
+// cause this test to fail and force an intentional update.
+// ---------------------------------------------------------------------------
+
+describe("typographyToScaffoldSection — full output pin for DEFAULT_TYPOGRAPHY", () => {
+  it("matches the complete expected markdown section exactly", () => {
+    const expected = [
+      "## Typography Hierarchy",
+      "",
+      "The following 5-tier type scale applies to this diagram. Do not alter font sizes outside this contract.",
+      "",
+      "| Tier | Target | Size | Font Family |",
+      "|------|--------|------|-------------|",
+      "| Diagram Title | %%{init}%% title / diagram heading | 20px | (palette fontFamily) |",
+      "| Subgraph Title | Top-level subgraph / cluster header | 16px | (palette fontFamily) |",
+      "| Nested Subgraph | Inner subgraph header labels | 14px | (palette fontFamily) |",
+      "| Node Label | Text inside nodes and shapes | 14px | (palette fontFamily) |",
+      "| Edge Label | Text on edge connectors | 12px | (palette fontFamily) |",
+      "",
+      "**Hierarchy rule:** Each tier's size must be ≤ the tier above it. If you nest subgraphs, inner headings must be smaller than outer headings.",
+      "",
+      "**CSS targets (flowchart):**",
+      "- Diagram title: `.label`",
+      "- Subgraph title: `.cluster-label`",
+      "- Node label: `.node .label`",
+      "- Edge label: `.edgeLabel`",
+    ].join("\n");
+    expect(typographyToScaffoldSection(DEFAULT_TYPOGRAPHY)).toEqual(expected);
+  });
+});
