@@ -284,7 +284,7 @@ export function DiagramInventory({ onClose, embedded = false }: DiagramInventory
         <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-wider text-muted-foreground w-20">
           Example
         </th>
-        <th className="px-3 py-2 w-6" />
+        <th className="px-3 py-2 w-6" aria-label="Details" />
       </tr>
     </thead>
   );

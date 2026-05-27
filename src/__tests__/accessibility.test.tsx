@@ -630,6 +630,24 @@ describe("ReferenceTab (capabilities table)", () => {
         .join("\n")}`
     ).toHaveLength(0);
   });
+
+  it("DiagramInventory expand/collapse column header has a discernible label", () => {
+    const { container } = render(createElement(ReferenceTab, referenceTabProps));
+    // The last <th> in the DiagramInventory table is the expand/collapse column.
+    // It must carry aria-label so screen readers don't announce an unlabeled header cell.
+    const ths = container.querySelectorAll("th");
+    const unlabeled = Array.from(ths).filter((th) => {
+      const hasText = (th.textContent ?? "").trim().length > 0;
+      const hasAriaLabel = th.hasAttribute("aria-label");
+      const hasAriaHidden = th.getAttribute("aria-hidden") === "true";
+      return !hasText && !hasAriaLabel && !hasAriaHidden;
+    });
+    expect(
+      unlabeled,
+      `Found ${unlabeled.length} <th> element(s) with no discernible text, aria-label, or aria-hidden:\n` +
+        unlabeled.map((th) => `  ${th.outerHTML}`).join("\n")
+    ).toHaveLength(0);
+  });
 });
 
 // ---------------------------------------------------------------------------
