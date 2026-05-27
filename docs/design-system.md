@@ -173,6 +173,34 @@ Customize these to shift a companion app's light/dark behavior without touching 
 
 ---
 
+## Browser baseline
+
+Tailwind v4 uses **`color-mix(in oklab, …)`** to implement opacity modifiers (the `/60` suffix on a color utility). Every generated rule is wrapped in an `@supports (color: color-mix(in lab, red, red))` guard with a full-opacity fallback, so the pattern is safe by design:
+
+| Scenario | Rendered color |
+|---|---|
+| Browser supports `color-mix()` | Correct opacity — e.g. `--okh-forge-code-fg` at 60% |
+| Older browser (no `color-mix()`) | Full-opacity fallback — same token at 100%, still legible |
+
+**Minimum browser versions for full visual fidelity (opacity working):**
+
+| Browser | Minimum version | Release date |
+|---|---|---|
+| Chrome / Edge | 111 | March 2023 |
+| Firefox | 113 | May 2023 |
+| Safari | 16.2 | December 2022 |
+
+This is the same baseline Tailwind v4 requires for OKLCH color support, so no extra browser restriction is introduced by the opacity modifier pattern.
+
+**Where opacity modifiers appear in this codebase:**
+
+| File | Tailwind classes | Purpose |
+|---|---|---|
+| `src/components/ClassBrowser.tsx` | `text-[var(--okh-forge-code-fg)]/60`, `/45`, `/40`, `/80` | Preview panel header, toggle buttons, action buttons |
+| `src/pages/tabs/ExtractTab.tsx` | `placeholder:text-[var(--okh-forge-code-fg)]/30` | Paste-area placeholder text |
+
+---
+
 ## Keeping a sibling app aligned
 
 1. Copy `src/styles/forge-tokens.css` into the sibling app's global CSS.
