@@ -1,5 +1,53 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`generateThemedCode snapshots — BRAND_PALETTES × ER_DIAGRAM > palette "AskJamie" (id: askjamie) ER snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"attributeBackgroundColorOdd": "#fdfbf7", "attributeBackgroundColorEven": "#e1ecef", "entityFill": "#fdfbf7", "entityBorder": "#2d6f7e", "entityLabelColor": "#2e2b29", "relationColor": "#2d6f7e", "relationLabelBackground": "#f6f2ee", "relationLabelColor": "#2d6f7e", "primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+erDiagram
+  CUSTOMER ||--o{ ORDER : places
+  ORDER ||--|{ LINE-ITEM : contains"
+`;
+
+exports[`generateThemedCode snapshots — BRAND_PALETTES × ER_DIAGRAM > palette "Glee-fully" (id: glee-fully) ER snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"attributeBackgroundColorOdd": "#fffdfa", "attributeBackgroundColorEven": "#e5d9ce", "entityFill": "#fffdfa", "entityBorder": "#d94f63", "entityLabelColor": "#2e2b29", "relationColor": "#d94f63", "relationLabelBackground": "#fff7f1", "relationLabelColor": "#d94f63", "primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+erDiagram
+  CUSTOMER ||--o{ ORDER : places
+  ORDER ||--|{ LINE-ITEM : contains"
+`;
+
+exports[`generateThemedCode snapshots — BRAND_PALETTES × ER_DIAGRAM > palette "OKHP3" (id: overkill-hill) ER snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"attributeBackgroundColorOdd": "#111827", "attributeBackgroundColorEven": "#1c3a34", "entityFill": "#111827", "entityBorder": "#c46a2c", "entityLabelColor": "#e5e7eb", "relationColor": "#c46a2c", "relationLabelBackground": "#111827", "relationLabelColor": "#c46a2c", "primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+erDiagram
+  CUSTOMER ||--o{ ORDER : places
+  ORDER ||--|{ LINE-ITEM : contains"
+`;
+
+exports[`generateThemedCode snapshots — BRAND_PALETTES × SEQUENCE_DIAGRAM > palette "AskJamie" (id: askjamie) sequence snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"actorBkg": "#fdfbf7", "actorBorder": "#2d6f7e", "actorTextColor": "#2e2b29", "actorLineColor": "#2d6f7e", "signalColor": "#2d6f7e", "signalTextColor": "#2d6f7e", "labelBoxBkgColor": "#f6f2ee", "labelBoxBorderColor": "#2d6f7e", "labelTextColor": "#2e2b29", "loopTextColor": "#2d6f7e", "noteBkgColor": "#e1ecef", "noteBorderColor": "#2d6f7e", "noteTextColor": "#2d6f7e", "activationBkgColor": "#f6f2ee", "activationBorderColor": "#2d6f7e", "sequenceNumberColor": "#2e2b29", "primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+sequenceDiagram
+  participant Alice
+  participant Bob
+  Alice->>Bob: Hello Bob
+  Bob-->>Alice: Hi Alice"
+`;
+
+exports[`generateThemedCode snapshots — BRAND_PALETTES × SEQUENCE_DIAGRAM > palette "Glee-fully" (id: glee-fully) sequence snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"actorBkg": "#fffdfa", "actorBorder": "#d94f63", "actorTextColor": "#2e2b29", "actorLineColor": "#d94f63", "signalColor": "#d94f63", "signalTextColor": "#d94f63", "labelBoxBkgColor": "#f6f2ee", "labelBoxBorderColor": "#d94f63", "labelTextColor": "#2e2b29", "loopTextColor": "#d94f63", "noteBkgColor": "#e5d9ce", "noteBorderColor": "#d94f63", "noteTextColor": "#d94f63", "activationBkgColor": "#f6f2ee", "activationBorderColor": "#d94f63", "sequenceNumberColor": "#2e2b29", "primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+sequenceDiagram
+  participant Alice
+  participant Bob
+  Alice->>Bob: Hello Bob
+  Bob-->>Alice: Hi Alice"
+`;
+
+exports[`generateThemedCode snapshots — BRAND_PALETTES × SEQUENCE_DIAGRAM > palette "OKHP3" (id: overkill-hill) sequence snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"actorBkg": "#111827", "actorBorder": "#c46a2c", "actorTextColor": "#e5e7eb", "actorLineColor": "#c46a2c", "signalColor": "#c46a2c", "signalTextColor": "#c46a2c", "labelBoxBkgColor": "#181f26", "labelBoxBorderColor": "#c46a2c", "labelTextColor": "#e5e7eb", "loopTextColor": "#c46a2c", "noteBkgColor": "#1c3a34", "noteBorderColor": "#c46a2c", "noteTextColor": "#c46a2c", "activationBkgColor": "#181f26", "activationBorderColor": "#c46a2c", "sequenceNumberColor": "#e5e7eb", "primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+sequenceDiagram
+  participant Alice
+  participant Bob
+  Alice->>Bob: Hello Bob
+  Bob-->>Alice: Hi Alice"
+`;
+
 exports[`generateThemedCode snapshots — BRAND_PALETTES × SIMPLE_DIAGRAM > palette "AskJamie" (id: askjamie) matches snapshot 1`] = `
 "%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
 flowchart TD
