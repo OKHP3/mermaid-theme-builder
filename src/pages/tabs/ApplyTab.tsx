@@ -11,6 +11,7 @@ import {
 } from "@/data/mermaid-capabilities";
 import { splitDiagrams } from "@/lib/diagram-split";
 import { DiffView } from "@/components/DiffView";
+import { DiffTabHint } from "@/components/DiffTabHint";
 import {
   generateThemedCode,
   generateMarkdownExport,
@@ -959,6 +960,7 @@ export function ApplyTab({
               </div>
             )}
           </div>
+          {previewMode === "diff" && <DiffTabHint />}
           {previewMode === "code" ? (
             codeEditorOverride !== null ? (
               <textarea
