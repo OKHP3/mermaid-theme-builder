@@ -494,6 +494,69 @@ describe("parsePaletteBundle", () => {
       expect(imp.unknownKeys).toHaveLength(0);
     }
   });
+
+  it("returns ok:true with invalidValues when a bundle entry has a numeric color value", () => {
+    const bundle = {
+      type: "mtb-palette-bundle",
+      schemaVersion: 1,
+      palettes: [
+        {
+          type: "mtb-palette",
+          id: "num-val",
+          name: "Numeric Value",
+          description: "d",
+          version: "1",
+          colors: [{ key: "primaryColor", label: "Primary", value: 16711680 }],
+        },
+      ],
+    };
+    const result = parsePaletteBundle(JSON.stringify(bundle));
+    expect(result.ok).toBe(true);
+    if (!result.ok) throw new Error("Expected ok:true");
+    expect(result.palettes[0].invalidValues.map((e) => e.key)).toContain("primaryColor");
+  });
+
+  it("returns ok:true with invalidValues when a bundle entry has an object color value", () => {
+    const bundle = {
+      type: "mtb-palette-bundle",
+      schemaVersion: 1,
+      palettes: [
+        {
+          type: "mtb-palette",
+          id: "obj-val",
+          name: "Object Value",
+          description: "d",
+          version: "1",
+          colors: [{ key: "lineColor", label: "Line", value: { r: 0, g: 0, b: 0 } }],
+        },
+      ],
+    };
+    const result = parsePaletteBundle(JSON.stringify(bundle));
+    expect(result.ok).toBe(true);
+    if (!result.ok) throw new Error("Expected ok:true");
+    expect(result.palettes[0].invalidValues.map((e) => e.key)).toContain("lineColor");
+  });
+
+  it("returns ok:true with invalidValues when a bundle entry has a boolean color value", () => {
+    const bundle = {
+      type: "mtb-palette-bundle",
+      schemaVersion: 1,
+      palettes: [
+        {
+          type: "mtb-palette",
+          id: "bool-val",
+          name: "Boolean Value",
+          description: "d",
+          version: "1",
+          colors: [{ key: "secondaryColor", label: "Secondary", value: false }],
+        },
+      ],
+    };
+    const result = parsePaletteBundle(JSON.stringify(bundle));
+    expect(result.ok).toBe(true);
+    if (!result.ok) throw new Error("Expected ok:true");
+    expect(result.palettes[0].invalidValues.map((e) => e.key)).toContain("secondaryColor");
+  });
 });
 
 // ── share URL key validation (decodeShareableTheme → REQUIRED_COLOR_KEYS) ─────
