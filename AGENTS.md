@@ -120,6 +120,95 @@ Do NOT change the following where spelling is externally defined or technically 
 US English compliance is a required QA/QC gate. It is not a stylistic preference.
 Any output that fails this standard is a defect.
 
+## Repository Hygiene Standard
+
+**Scope:** Every OverKill Hill P³ Replit-created repo.
+**Status:** Canonical. Do not edit this copy independently — edit the upstream source and re-sync.
+**Version:** 1.0
+
+This section governs how files and folders are named, what structure all sibling repos share, and what counts as detritus that must not accumulate.
+
+### 1. Naming conventions
+
+**Default: kebab-case.** Every file and folder name defaults to lowercase letters and digits with words separated by single hyphens. Use this for documentation, configuration, assets, data files, CSS, plain scripts, and folder names.
+
+| File role | Convention | Examples |
+|---|---|---|
+| Documentation (`.md`) | kebab-case | `design-system.md`, `release-plan.md` |
+| Stylesheets (`.css`) | kebab-case | `forge-tokens.css`, `index.css` |
+| YAML, JSON, TOML data and config | kebab-case | `sync-forge-tokens.yml`, `palette-defaults.json` |
+| Plain scripts (`.sh`, `.py`) | kebab-case | `sync-skills.sh`, `build-tokens.py` |
+| Assets (SVG, PNG, etc.) | kebab-case | `forge-anvil-sigil.svg` |
+| Folder names | kebab-case | `src/styles/`, `docs/roadmap/` |
+| Plain TypeScript modules (no hook/component export) | kebab-case | `theme-mode.ts`, `palettes.ts` |
+| React hooks (`.ts` exporting `useFoo`) | camelCase matching hook | `useTheme.ts`, `useDebounce.ts` |
+| React components (`.tsx`/`.jsx`) | PascalCase matching component | `ApplyTab.tsx`, `DiffView.tsx` |
+| Root governance files | ALL CAPS | `README.md`, `LICENSE`, `CHANGELOG.md`, `AGENTS.md`, `SKILL.md` |
+| Tool-required filenames | Whatever the tool requires | `package.json`, `tsconfig.json`, `vite.config.ts`, `.gitignore` |
+| Web-standard files | Whatever the spec dictates | `robots.txt`, `manifest.webmanifest`, `favicon.ico` |
+
+Decision tree (when in doubt):
+1. Root governance file with universally expected name? → ALL CAPS.
+2. Tool-required filename? → Use what the tool requires.
+3. `.tsx`/`.jsx` exporting a React component? → PascalCase matching the component.
+4. `.ts` exporting a React hook (`useFoo`)? → camelCase matching the hook.
+5. Otherwise: kebab-case.
+
+Renaming policy: always update every importer in the same change. Run build + tests after. Never rename without validating.
+
+### 2. Detritus — what does not belong in version control
+
+**`attached_assets/`** — paste-buffer transcripts from Replit Agent prompts. Always gitignored. Delete from history if accidentally committed.
+
+**`attached-assets/`** (hyphen variant) — same rule.
+
+**`_unused/`** — code moved aside during a refactor. Read once, rescue anything stranded, then delete. Do not commit.
+
+**`projects/`** — pre-deploy preview directories copied into the repo. Delete once the live URL is deployed.
+
+**`test-results/`, `playwright-report/`, `coverage/`** — test/build output. Always gitignored.
+
+**`dist/`, `build/`, `.next/`, `.vite/`** — build output. Always gitignored.
+
+**`.DS_Store`, `Thumbs.db`, `.idea/`** — IDE/OS junk. Gitignored.
+
+### 3. Required `.gitignore` entries
+
+```
+# Replit working-buffer artifacts
+attached_assets/
+attached-assets/
+_unused/
+unused/
+projects/
+
+# Test and build output
+test-results/
+playwright-report/
+coverage/
+dist/
+build/
+.next/
+.vite/
+
+# IDE / OS
+.DS_Store
+Thumbs.db
+.idea/
+
+# Node
+node_modules/
+*.log
+```
+
+If a folder in this list is currently tracked, untrack it (`git rm -r --cached <folder>`) before committing the `.gitignore` change.
+
+### 4. Decrapify command
+
+To run a hygiene pass, send this message to Replit Agent:
+
+> **Decrapify this repo per the Repository Hygiene Standard in `AGENTS.md`.** Triage, do not just delete. Produce a plan first, then execute. Cover: `attached_assets/` and hyphen variant, `_unused/`, `test-results/`, `playwright-report/`, `coverage/`, `dist/`, `build/`, `projects/`, any file or folder violating the naming rules, and any `.gitignore` gaps vs Section 3. Produce a QA report: files scanned, files changed, items deleted, items gitignored, naming violations corrected, intentional exceptions noted.
+
 ## File structure
 
 ```

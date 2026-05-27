@@ -52,3 +52,18 @@ artifacts/mockup-sandbox/
 
 # Replit paste/scratchpad artifacts
 attached_assets/
+attached-assets/
+
+# Detritus folders (Repository Hygiene Standard §3)
+_unused/
+unused/
+projects/
+
+# Test and build output (Repository Hygiene Standard §4)
+test-results/
+playwright-report/
+coverage/
+build/
+.next/
+.vite/
+*.log
