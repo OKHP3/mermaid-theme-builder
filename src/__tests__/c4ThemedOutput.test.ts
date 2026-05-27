@@ -9,11 +9,17 @@
  * themed output. A regression in familyTheming.ts or themeEngine.ts could
  * silently break C4 themed output without touching any catalog metadata.
  *
- * These tests verify, for every C4 catalog entry (Container, Dynamic,
- * Component), that:
- *   1. The %%{init:...}%% directive is always injected.
- *   2. The C4-family themeVariable keys (personBkg, personBorder, mainBkg,
- *      nodeBorder, lineColor) appear in the output.
+ * Required fixtures (task #292):
+ *   c4-container-learning-platform  (C4Container)
+ *   c4-dynamic-user-login           (C4Dynamic)
+ *
+ * Additional fixture (added in task #291):
+ *   c4-component-api-server         (C4Component)
+ *
+ * For all three fixtures these tests verify that:
+ *   1. The %%{init:...}%% directive is injected for every BRAND_PALETTE.
+ *   2. All C4-family themeVariable keys (personBkg, personBorder, mainBkg,
+ *      nodeBorder, lineColor) appear in the output for every BRAND_PALETTE.
  *   3. The palette's own color values appear in the output.
  *   4. The original C4 keyword is preserved in the diagram body.
  */
@@ -29,15 +35,18 @@ import { EXAMPLE_CATALOG } from "@/data/example-library";
 
 /**
  * C4-specific themeVariable keys emitted by familyTheming.ts for "c4Diagram".
- * If any of these disappear from the output, a regression has occurred.
+ * If any key is dropped or renamed, the corresponding test will fail.
  */
 const C4_THEME_KEYS = ["personBkg", "personBorder", "mainBkg", "nodeBorder", "lineColor"] as const;
 
-/** Catalog entries under test — one per C4 level that exists in the library. */
+/**
+ * Primary fixtures are the task #292 targets.
+ * Component is extra coverage introduced alongside the new catalog entry.
+ */
 const C4_FIXTURES = [
-  { id: "c4-container-learning-platform", keyword: "C4Container" },
-  { id: "c4-dynamic-user-login", keyword: "C4Dynamic" },
-  { id: "c4-component-api-server", keyword: "C4Component" },
+  { id: "c4-container-learning-platform", keyword: "C4Container", primary: true },
+  { id: "c4-dynamic-user-login", keyword: "C4Dynamic", primary: true },
+  { id: "c4-component-api-server", keyword: "C4Component", primary: false },
 ] as const;
 
 // ---------------------------------------------------------------------------
@@ -60,18 +69,14 @@ function c4Options(palette: (typeof BRAND_PALETTES)[number]): ExportOptions {
 }
 
 // ---------------------------------------------------------------------------
-// 1. %%{init} block is always injected
+// 1. %%{init} block is injected for every palette
 // ---------------------------------------------------------------------------
 
 describe("C4 themed output — %%{init} block is injected for every palette", () => {
   for (const fixture of C4_FIXTURES) {
-    describe(fixture.keyword, () => {
+    const label = fixture.primary ? fixture.keyword : `${fixture.keyword} (extra coverage)`;
+    describe(label, () => {
       const content = getCatalogContent(fixture.id);
-
-      it("first BRAND_PALETTE produces output with %%{init block", () => {
-        const output = generateThemedCode(content, c4Options(BRAND_PALETTES[0]));
-        expect(output).toContain("%%{init:");
-      });
 
       it("every BRAND_PALETTE produces output with %%{init block", () => {
         for (const palette of BRAND_PALETTES) {
@@ -87,20 +92,24 @@ describe("C4 themed output — %%{init} block is injected for every palette", ()
 });
 
 // ---------------------------------------------------------------------------
-// 2. C4-family themeVariable keys appear in the init block
+// 2. C4-family themeVariable keys appear in output for every palette
 // ---------------------------------------------------------------------------
 
-describe("C4 themed output — C4-family themeVariable keys appear in output", () => {
+describe("C4 themed output — C4-family themeVariable keys appear for every palette", () => {
   for (const fixture of C4_FIXTURES) {
-    describe(fixture.keyword, () => {
-      const output = generateThemedCode(
-        getCatalogContent(fixture.id),
-        c4Options(BRAND_PALETTES[0])
-      );
+    const label = fixture.primary ? fixture.keyword : `${fixture.keyword} (extra coverage)`;
+    describe(label, () => {
+      const content = getCatalogContent(fixture.id);
 
       for (const key of C4_THEME_KEYS) {
-        it(`output contains "${key}"`, () => {
-          expect(output).toContain(key);
+        it(`"${key}" appears for every BRAND_PALETTE`, () => {
+          for (const palette of BRAND_PALETTES) {
+            const output = generateThemedCode(content, c4Options(palette));
+            expect(
+              output,
+              `Palette "${palette.name}" output is missing key "${key}" for ${fixture.id}`
+            ).toContain(key);
+          }
         });
       }
     });
@@ -115,22 +124,27 @@ describe("C4 themed output — palette colors appear in output", () => {
   for (const fixture of C4_FIXTURES) {
     describe(fixture.keyword, () => {
       const content = getCatalogContent(fixture.id);
-      const palette = BRAND_PALETTES[0];
-      const output = generateThemedCode(content, c4Options(palette));
 
-      it("primaryColor appears in output", () => {
-        const primaryColor = palette.colors.find((c) => c.key === "primaryColor")?.value ?? "";
-        expect(output).toContain(primaryColor);
+      it("every palette's primaryColor appears in its own output", () => {
+        for (const palette of BRAND_PALETTES) {
+          const output = generateThemedCode(content, c4Options(palette));
+          const primaryColor = palette.colors.find((c) => c.key === "primaryColor")?.value ?? "";
+          expect(
+            output,
+            `Palette "${palette.name}" primaryColor missing from ${fixture.id} output`
+          ).toContain(primaryColor);
+        }
       });
 
-      it("lineColor appears in output", () => {
-        const lineColor = palette.colors.find((c) => c.key === "lineColor")?.value ?? "";
-        expect(output).toContain(lineColor);
-      });
-
-      it("mainBkg color appears in output", () => {
-        const mainBkg = palette.colors.find((c) => c.key === "mainBkg")?.value ?? "";
-        expect(output).toContain(mainBkg);
+      it("every palette's lineColor appears in its own output", () => {
+        for (const palette of BRAND_PALETTES) {
+          const output = generateThemedCode(content, c4Options(palette));
+          const lineColor = palette.colors.find((c) => c.key === "lineColor")?.value ?? "";
+          expect(
+            output,
+            `Palette "${palette.name}" lineColor missing from ${fixture.id} output`
+          ).toContain(lineColor);
+        }
       });
     });
   }
