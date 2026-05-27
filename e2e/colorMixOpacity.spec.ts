@@ -4,7 +4,7 @@
  * Tailwind v4 compiles opacity-modified CSS-variable color utilities such as
  * `text-[var(--okh-forge-code-fg)]/60` into:
  *
- *   @supports (color: color-mix(in lab, red, red)) {
+ *   @supports (color:color-mix(in lab, red, red)) {
  *     .selector { color: color-mix(in oklab, var(--okh-forge-code-fg) 60%, transparent); }
  *   }
  *
@@ -19,7 +19,7 @@
  *   - Any Tailwind version bump that changes the `@supports` condition string.
  *
  * Relevant source:
- *   - src/components/ClassBrowser.tsx (lines 549–712) — preview panel
+ *   - src/components/ClassBrowser.tsx (lines 549-712) — preview panel
  *   - src/pages/tabs/ExtractTab.tsx (line 319) — paste-area placeholder
  *   - docs/design-system.md (browser baseline section)
  */
@@ -33,13 +33,16 @@ import { test, expect, type Page } from "@playwright/test";
 /**
  * Parse a CSS color string and return its alpha channel as a value between
  * 0 and 1. Handles:
- *   - `rgba(r, g, b, a)`          → a
- *   - `rgb(r, g, b)`              → 1 (fully opaque, no alpha component)
- *   - `color(display-p3 r g b / a)` → a
+ *   - `rgba(r, g, b, a)`                   → a
+ *   - `rgb(r, g, b)`                        → 1 (fully opaque)
+ *   - Modern slash-notation colors:
+ *       `oklch(L C H / a)`, `oklab(L a b / a)`, `color(display-p3 r g b / a)` → a
+ *   - Modern colors with no alpha:
+ *       `oklch(L C H)`, `oklab(L a b)`, `hsl(...)`, etc. → 1 (fully opaque)
  * Returns null when the string cannot be parsed.
  */
 function parseAlpha(color: string): number | null {
-  // rgba(r, g, b, a)
+  // rgba(r, g, b, a) — legacy comma syntax
   const rgba = color.match(
     /rgba\(\s*[\d.]+\s*,\s*[\d.]+\s*,\s*[\d.]+\s*,\s*([\d.]+)\s*\)/
   );
@@ -48,11 +51,40 @@ function parseAlpha(color: string): number | null {
   // rgb(r, g, b) — no alpha → fully opaque
   if (/^rgb\(/.test(color)) return 1;
 
-  // color(display-p3 r g b / a) or similar slash-notation
-  const slash = color.match(/\/\s*([\d.]+)\s*\)/);
-  if (slash) return parseFloat(slash[1]);
+  // All modern CSS color functions that carry a slash-notation alpha value:
+  //   oklch(L C H / a), oklab(L a b / a), lch(...), lab(...),
+  //   color(sRGB r g b / a), color(display-p3 r g b / a), hsl(H S L / a), etc.
+  const slashAlpha = color.match(/\/\s*([\d.]+)\s*\)/);
+  if (slashAlpha) return parseFloat(slashAlpha[1]);
+
+  // Modern color functions with no alpha component → fully opaque:
+  //   oklch(L C H), oklab(L a b), lch(...), lab(...), hsl(...), hwb(...)
+  if (/^(oklch|oklab|lch|lab|hsl|hwb|color)\s*\(/i.test(color)) return 1;
 
   return null;
+}
+
+/**
+ * Read all same-origin stylesheets as raw text and return them concatenated.
+ * Uses fetch() rather than sheet.cssRules to avoid cross-origin SecurityErrors
+ * that silent-fail in the try/catch of a stylesheet iteration.
+ */
+async function fetchCompiledCss(page: Page): Promise<string> {
+  return page.evaluate(async () => {
+    const links = Array.from(
+      document.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]')
+    );
+    const chunks: string[] = [];
+    for (const link of links) {
+      try {
+        const resp = await fetch(link.href);
+        if (resp.ok) chunks.push(await resp.text());
+      } catch {
+        // skip cross-origin or failed sheets
+      }
+    }
+    return chunks.join("\n");
+  });
 }
 
 /**
@@ -60,14 +92,14 @@ function parseAlpha(color: string): number | null {
  */
 async function loadApp(page: Page): Promise<void> {
   await page.goto("/");
-  await page.waitForLoadState("networkidle");
+  await page.waitForLoadState("load");
 }
 
 /**
  * Click a top-level tab button by its exact visible label.
  */
 async function switchTab(page: Page, label: string): Promise<void> {
-  await page.getByRole("button", { name: label, exact: true }).click();
+  await page.getByRole("tab", { name: label, exact: true }).first().click();
 }
 
 // ---------------------------------------------------------------------------
@@ -80,25 +112,9 @@ test.describe("color-mix @supports guard — compiled CSS", () => {
   }) => {
     await loadApp(page);
 
-    const hasSupportRule = await page.evaluate(() => {
-      for (const sheet of Array.from(document.styleSheets)) {
-        let rules: CSSRuleList;
-        try {
-          rules = sheet.cssRules;
-        } catch {
-          continue; // cross-origin sheet — skip
-        }
-        for (const rule of Array.from(rules)) {
-          if (
-            rule instanceof CSSSupportsRule &&
-            rule.conditionText.includes("color-mix")
-          ) {
-            return true;
-          }
-        }
-      }
-      return false;
-    });
+    const css = await fetchCompiledCss(page);
+    const hasSupportRule =
+      css.includes("@supports") && css.includes("color-mix");
 
     expect(
       hasSupportRule,
@@ -112,31 +128,11 @@ test.describe("color-mix @supports guard — compiled CSS", () => {
   }) => {
     await loadApp(page);
 
-    const found = await page.evaluate(() => {
-      for (const sheet of Array.from(document.styleSheets)) {
-        let rules: CSSRuleList;
-        try {
-          rules = sheet.cssRules;
-        } catch {
-          continue;
-        }
-        for (const rule of Array.from(rules)) {
-          if (
-            rule instanceof CSSSupportsRule &&
-            rule.conditionText.includes("color-mix")
-          ) {
-            const text = rule.cssText;
-            if (
-              text.includes("--okh-forge-code-fg") &&
-              text.includes("color-mix")
-            ) {
-              return true;
-            }
-          }
-        }
-      }
-      return false;
-    });
+    const css = await fetchCompiledCss(page);
+    const found =
+      css.includes("@supports") &&
+      css.includes("--okh-forge-code-fg") &&
+      css.includes("color-mix");
 
     expect(
       found,
@@ -208,10 +204,14 @@ test.describe("ClassBrowser preview panel — color-mix opacity rendering", () =
     page,
   }) => {
     const colorStr = await page.evaluate(() => {
-      // The Copy button inside the preview panel header carries the /60
-      // opacity modifier and has aria-label "Copy all classDefs".
-      const btn = document.querySelector<HTMLButtonElement>(
-        'button[aria-label="Copy all classDefs"]'
+      // The Copy button is in the same header row as the Close button.
+      // Scope the search via parentElement to avoid matching any other
+      // button with an aria-label ending in "classDefs" outside this panel.
+      const closeBtn = document.querySelector<HTMLButtonElement>(
+        'button[aria-label="Close preview"]'
+      );
+      const btn = closeBtn?.parentElement?.querySelector<HTMLButtonElement>(
+        'button[aria-label$="classDefs"]'
       );
       if (!btn) return null;
       return window.getComputedStyle(btn).color;
@@ -219,8 +219,8 @@ test.describe("ClassBrowser preview panel — color-mix opacity rendering", () =
 
     expect(
       colorStr,
-      "Could not find the 'Copy all classDefs' button inside the preview panel. " +
-        "Check that the button's aria-label matches."
+      "Could not find the Copy classDefs button inside the preview panel. " +
+        "Check that the button's aria-label ends with 'classDefs' (ClassBrowser.tsx)."
     ).toBeTruthy();
 
     const alpha = parseAlpha(colorStr!);
@@ -273,7 +273,7 @@ test.describe("ClassBrowser preview panel — color-mix opacity rendering", () =
 // The toggle group only renders when usedClassNames is non-empty (hasUsed).
 // The default Overkill Hill flowchart applies classDefs via :::className, so
 // hasUsed=true on load.  With no stored preference, the preview auto-defaults
-// to "used" mode (see ClassBrowser.tsx line 425-426).
+// to "used" mode (see ClassBrowser.tsx lines 422-426).
 //
 // Active-state classes:
 //   All  → text-[var(--okh-forge-code-fg)]      (no modifier, alpha ≈ 1)
@@ -374,8 +374,14 @@ test.describe("ClassBrowser toggle buttons — All/Used mode opacity", () => {
   test("inactive 'Used' toggle button renders at reduced opacity when 'All' mode is active", async ({
     page,
   }) => {
-    // Click 'All' to switch mode — 'Used' becomes inactive with /45 modifier.
+    // Click 'All' to switch mode — wait for aria-pressed to confirm the
+    // switch, then allow the CSS transition-colors to settle before reading
+    // the computed color.
     await page.locator('[data-preview-toggle="all"]').click();
+    await page.waitForSelector('[data-preview-toggle="all"][aria-pressed="true"]', {
+      timeout: 3_000,
+    });
+    await page.waitForTimeout(400);
 
     const colorStr = await page.evaluate(() => {
       const btn = document.querySelector<HTMLButtonElement>(
@@ -413,9 +419,14 @@ test.describe("ClassBrowser toggle buttons — All/Used mode opacity", () => {
   test("active 'All' toggle button renders at full opacity when 'All' mode is active", async ({
     page,
   }) => {
-    // Click 'All' to make it the active button; active class is
-    // text-[var(--okh-forge-code-fg)] with no opacity modifier.
+    // Click 'All' to make it the active button; wait for aria-pressed to
+    // confirm the state switch, then allow the CSS transition-colors animation
+    // to settle before reading the computed color.
     await page.locator('[data-preview-toggle="all"]').click();
+    await page.waitForSelector('[data-preview-toggle="all"][aria-pressed="true"]', {
+      timeout: 3_000,
+    });
+    await page.waitForTimeout(400);
 
     const colorStr = await page.evaluate(() => {
       const btn = document.querySelector<HTMLButtonElement>(
@@ -513,31 +524,12 @@ test.describe("ExtractTab paste-area — placeholder color-mix opacity", () => {
   test("@supports rule in compiled CSS targets placeholder with --okh-forge-code-fg", async ({
     page,
   }) => {
-    const found = await page.evaluate(() => {
-      for (const sheet of Array.from(document.styleSheets)) {
-        let rules: CSSRuleList;
-        try {
-          rules = sheet.cssRules;
-        } catch {
-          continue;
-        }
-        for (const rule of Array.from(rules)) {
-          if (
-            rule instanceof CSSSupportsRule &&
-            rule.conditionText.includes("color-mix")
-          ) {
-            const text = rule.cssText;
-            if (
-              text.includes("placeholder") &&
-              text.includes("--okh-forge-code-fg")
-            ) {
-              return true;
-            }
-          }
-        }
-      }
-      return false;
-    });
+    const css = await fetchCompiledCss(page);
+    const found =
+      css.includes("@supports") &&
+      css.includes("placeholder") &&
+      css.includes("--okh-forge-code-fg") &&
+      css.includes("color-mix");
 
     expect(
       found,

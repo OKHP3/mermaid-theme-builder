@@ -59,7 +59,7 @@ const DEEP_ITEM_ID = "ishikawa-render-failure";
 async function injectPersistedIdAndReload(page: Page, exampleId: string): Promise<void> {
   // Navigate first so localStorage is accessible for this origin.
   await page.goto("/");
-  await page.waitForLoadState("networkidle");
+  await page.waitForLoadState("load");
 
   const existingRaw: string | null = await page.evaluate(
     (key: string) => localStorage.getItem(key),
@@ -94,7 +94,7 @@ async function injectPersistedIdAndReload(page: Page, exampleId: string): Promis
 
   // Reload so the app hydrates from the injected state.
   await page.reload();
-  await page.waitForLoadState("networkidle");
+  await page.waitForLoadState("load");
 }
 
 /**
@@ -105,7 +105,7 @@ async function injectPersistedIdAndReload(page: Page, exampleId: string): Promis
 async function openExamplesTab(page: Page): Promise<void> {
   const hash = new URL(page.url()).hash;
   if (hash !== "#examples") {
-    await page.getByRole("button", { name: "Examples" }).click();
+    await page.getByRole("tab", { name: "Examples" }).first().click();
   }
   // Wait for at least one sidebar entry to be present.
   await page.waitForSelector("[data-example-id]", { timeout: 10000 });
@@ -158,7 +158,7 @@ test("user click after fresh start does not auto-scroll the sidebar", async ({ p
   // Navigate and clear any persisted lastSelectedExampleId so no scroll
   // restore will be queued (pendingScrollIdRef stays null throughout).
   await page.goto("/");
-  await page.waitForLoadState("networkidle");
+  await page.waitForLoadState("load");
 
   await page.evaluate((key: string) => {
     const raw = localStorage.getItem(key);
@@ -173,10 +173,10 @@ test("user click after fresh start does not auto-scroll the sidebar", async ({ p
   }, LS_KEY);
 
   await page.reload();
-  await page.waitForLoadState("networkidle");
+  await page.waitForLoadState("load");
 
   // Open the Examples tab and wait for sidebar entries to render.
-  await page.getByRole("button", { name: "Examples" }).click();
+  await page.getByRole("tab", { name: "Examples" }).first().click();
   await page.waitForSelector("[data-example-id]", { timeout: 10000 });
 
   // The sidebar is the overflow-y-auto container that wraps all example
@@ -250,7 +250,7 @@ test("deep-link to #examples restores scroll when ExamplesTab mounts on first re
   // "./#examples" resolves relative to baseURL → /mermaid-theme-builder/#examples.
   // "/#examples" would resolve to the origin root and miss the app subpath.
   await page.goto("./#examples");
-  await page.waitForLoadState("networkidle");
+  await page.waitForLoadState("load");
 
   // Wait for sidebar entries to be present (same guard as other tests).
   await page.waitForSelector("[data-example-id]", { timeout: 10000 });

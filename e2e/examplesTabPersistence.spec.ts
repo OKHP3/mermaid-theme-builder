@@ -23,6 +23,10 @@ const LS_KEY = "mtb.state.v1";
 // Must match: `${BRAND_PALETTES[1].name} — Flowchart` in ExamplesTab.tsx.
 const NON_DEFAULT_LABEL = "Glee-fully \u2014 Flowchart";
 
+// data-example-id attribute value for the same entry.
+// Pattern: brand-${palette.id}-flow (from examplesFilter.ts buildExampleList).
+const NON_DEFAULT_ID = "brand-glee-fully-flow";
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -30,19 +34,21 @@ const NON_DEFAULT_LABEL = "Glee-fully \u2014 Flowchart";
 /** Navigate to the app and open the Examples tab. */
 async function openExamplesTab(page: Page): Promise<void> {
   await page.goto("/");
-  await page.waitForLoadState("networkidle");
-  // Click the "Examples" tab in the navigation bar.
-  await page.getByRole("button", { name: "Examples" }).click();
+  await page.waitForLoadState("load");
+  // Click the "Examples" tab in the navigation bar (role="tab" per ARIA widget pattern).
+  await page.getByRole("tab", { name: "Examples" }).first().click();
   // Wait for at least one example sidebar button to be visible.
-  await page.waitForSelector('button:has-text("\u2014 Flowchart")', { timeout: 8000 });
+  await page.waitForSelector("[data-example-id]", { timeout: 8000 });
 }
 
 /**
  * Returns the label of the currently highlighted (selected) sidebar button.
- * The selected button carries the `bg-primary/10` Tailwind class.
+ * The selected button carries the bg-primary/10 Tailwind class and the
+ * data-example-id attribute (scoped away from other bg-primary/10 elements
+ * such as the family-detector badge).
  */
 async function getSelectedExampleLabel(page: Page): Promise<string> {
-  const selected = page.locator('button[class*="bg-primary\\/10"]').first();
+  const selected = page.locator("[data-example-id][class*=\"bg-primary\\/10\"]").first();
   await selected.waitFor({ timeout: 8000 });
   // The label is inside the first span.flex-1 inside the selected button.
   const labelSpan = selected.locator("span.flex-1").first();
@@ -56,8 +62,9 @@ async function getSelectedExampleLabel(page: Page): Promise<string> {
 test("selected example persists across a page reload", async ({ page }) => {
   await openExamplesTab(page);
 
-  // Click the non-default example button.
-  await page.getByRole("button", { name: NON_DEFAULT_LABEL, exact: true }).click();
+  // Click the non-default example by its data-example-id (the accessible name
+  // includes the "Brand" badge text so exact-name matching is unreliable).
+  await page.locator(`[data-example-id="${NON_DEFAULT_ID}"]`).click();
 
   // Confirm it is now selected before reloading.
   const labelBefore = await getSelectedExampleLabel(page);
@@ -65,14 +72,14 @@ test("selected example persists across a page reload", async ({ page }) => {
 
   // Reload the page — the App re-mounts and hydrates from localStorage.
   await page.reload();
-  await page.waitForLoadState("networkidle");
+  await page.waitForLoadState("load");
 
   // Re-open the Examples tab (hash should restore it, but click to be safe).
   const hash = new URL(page.url()).hash;
   if (hash !== "#examples") {
-    await page.getByRole("button", { name: "Examples" }).click();
+    await page.getByRole("tab", { name: "Examples" }).first().click();
   }
-  await page.waitForSelector('button[class*="bg-primary\\/10"]', { timeout: 8000 });
+  await page.waitForSelector("[data-example-id][class*=\"bg-primary\\/10\"]", { timeout: 8000 });
 
   // Assert the non-default example is still selected after reload.
   const labelAfter = await getSelectedExampleLabel(page);
@@ -86,7 +93,7 @@ test("selected example persists across a page reload", async ({ page }) => {
 test("stale lastSelectedExampleId in localStorage falls back to first example", async ({ page }) => {
   // Navigate to the app first so we can manipulate localStorage for its origin.
   await page.goto("/");
-  await page.waitForLoadState("networkidle");
+  await page.waitForLoadState("load");
 
   // Read the current persisted state (if any) to build a valid base state.
   const existingRaw: string | null = await page.evaluate(
@@ -123,11 +130,11 @@ test("stale lastSelectedExampleId in localStorage falls back to first example", 
 
   // Reload the page so App hydrates from the stale state.
   await page.reload();
-  await page.waitForLoadState("networkidle");
+  await page.waitForLoadState("load");
 
   // Open the Examples tab.
-  await page.getByRole("button", { name: "Examples" }).click();
-  await page.waitForSelector('button[class*="bg-primary\\/10"]', { timeout: 8000 });
+  await page.getByRole("tab", { name: "Examples" }).first().click();
+  await page.waitForSelector("[data-example-id][class*=\"bg-primary\\/10\"]", { timeout: 8000 });
 
   // The selected example must NOT be the stale one; it should fall back to
   // the first example (overkill-hill flowchart).

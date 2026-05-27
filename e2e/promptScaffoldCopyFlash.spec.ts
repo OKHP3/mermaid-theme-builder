@@ -39,19 +39,26 @@ async function grantClipboard(context: BrowserContext): Promise<void> {
 }
 
 /**
- * Navigate to the app, switch to the Compose tab, and click
- * "Copy Prompt Scaffold" to open the modal.
+ * Navigate to the app, switch to the Compose tab, expand the Bootstrap Export
+ * section (collapsed by default), and click "Copy Prompt Scaffold" to open the
+ * modal.
  */
 async function openScaffoldModal(page: Page): Promise<void> {
   await page.goto("/");
-  await page.waitForLoadState("networkidle");
+  await page.waitForLoadState("load");
 
-  // Navigate to the Compose tab (it may not be the default active tab).
-  await page.getByRole("button", { name: "Compose" }).click();
+  // Navigate to the Compose tab (role="tab" per ARIA widget pattern).
+  await page.getByRole("tab", { name: "Compose" }).first().click();
+
+  // The "Copy Prompt Scaffold" button lives inside the Bootstrap Export
+  // collapsible section (bootstrapOpen defaults to false).  Open it first.
+  const toggleBtn = page.getByRole("button", { name: "Toggle Bootstrap Export" });
+  await toggleBtn.waitFor({ timeout: 8_000 });
+  await toggleBtn.click();
 
   // Wait for the trigger button to be visible before clicking it.
   const trigger = page.getByRole("button", { name: "Copy Prompt Scaffold" });
-  await trigger.waitFor({ timeout: 8_000 });
+  await trigger.waitFor({ timeout: 4_000 });
   await trigger.click();
 
   // Modal must appear.
@@ -141,9 +148,11 @@ test.describe("PromptScaffoldModal — Path A: main card copy button", () => {
       .first()
       .click();
 
-    // Exactly one element inside the dialog should carry the emerald background class.
+    // Only the Format A toggle bar should go emerald.  We scope to toggle-bar
+    // buttons via aria-label^="Preview" (the label used when not previewing), so
+    // neither the main card copy button nor the in-preview copy button match.
     await expect(
-      page.locator('[role="dialog"] button[class*="bg-emerald-500"]'),
+      page.locator('[role="dialog"] button[aria-label^="Preview"][class*="bg-emerald-500"]'),
     ).toHaveCount(1, { timeout: 3_000 });
   });
 });
@@ -187,10 +196,13 @@ test.describe("PromptScaffoldModal — Path B: in-preview copy button", () => {
     // Click it.
     await copyBtn.click();
 
-    // The toggle bar must transition to emerald.
+    // After copy, the Format A toggle bar has bg-emerald-500/10 and its
+    // aria-label switches to "Hide preview for Format A" (preview is still
+    // open).  Scope to that specific button to avoid matching the main card
+    // copy button or the in-preview copy button which also gain emerald class.
     await expect(
-      page.locator('[role="dialog"] button[class*="bg-emerald-500"]'),
-    ).toBeVisible({ timeout: 3_000 });
+      page.locator('[role="dialog"] button[aria-label="Hide preview for Format A"]'),
+    ).toHaveClass(/bg-emerald-500/, { timeout: 3_000 });
   });
 
   test("in-preview copy button — modal closes automatically after the flash", async ({

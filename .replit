@@ -28,6 +28,10 @@ args = "typecheck"
 task = "workflow.run"
 args = "format"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "e2e"
+
 [[workflows.workflow]]
 name = "test"
 author = "agent"
@@ -61,6 +65,17 @@ args = "pnpm prettier --check \"src/**/*.{ts,tsx}\""
 [workflows.workflow.metadata]
 isValidation = true
 
+[[workflows.workflow]]
+name = "e2e"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pnpm test:e2e"
+
+[workflows.workflow.metadata]
+isValidation = true
+
 [agent]
 stack = "PNPM_WORKSPACE"
 expertMode = true
@@ -69,6 +84,10 @@ integrations = ["github:1.0.0"]
 [postMerge]
 path = "scripts/post-merge.sh"
 timeoutMs = 20000
+
+[[ports]]
+localPort = 4173
+externalPort = 3001
 
 [[ports]]
 localPort = 5173
