@@ -268,6 +268,184 @@ test.describe("ClassBrowser preview panel — color-mix opacity rendering", () =
 });
 
 // ---------------------------------------------------------------------------
+// Suite 2b: ClassBrowser toggle buttons — All/Used mode opacity
+//
+// The toggle group only renders when usedClassNames is non-empty (hasUsed).
+// The default Overkill Hill flowchart applies classDefs via :::className, so
+// hasUsed=true on load.  With no stored preference, the preview auto-defaults
+// to "used" mode (see ClassBrowser.tsx line 425-426).
+//
+// Active-state classes:
+//   All  → text-[var(--okh-forge-code-fg)]      (no modifier, alpha ≈ 1)
+//   Used → text-emerald-300                      (no modifier, alpha ≈ 1)
+//
+// Inactive-state class (both buttons):
+//   text-[var(--okh-forge-code-fg)]/45           (alpha ~0.45, <0.95)
+// ---------------------------------------------------------------------------
+
+test.describe("ClassBrowser toggle buttons — All/Used mode opacity", () => {
+  test.beforeEach(async ({ page }) => {
+    await loadApp(page);
+    await switchTab(page, "Reference");
+    await page.getByRole("button", { name: "Preview all classDefs" }).click();
+    // Wait for the Close button to confirm the panel is open.
+    await page.waitForSelector('button[aria-label="Close preview"]', {
+      timeout: 6_000,
+    });
+    // Wait for the toggle group to appear (only present when hasUsed is true).
+    await page.waitForSelector('[data-preview-toggle="all"]', {
+      timeout: 4_000,
+    });
+  });
+
+  test("inactive 'All' toggle button renders at reduced opacity when 'Used' mode is active", async ({
+    page,
+  }) => {
+    // The preview auto-defaults to 'used' mode, so 'All' is inactive and
+    // should carry the /45 opacity modifier.
+    const colorStr = await page.evaluate(() => {
+      const btn = document.querySelector<HTMLButtonElement>(
+        '[data-preview-toggle="all"]'
+      );
+      if (!btn) return null;
+      return window.getComputedStyle(btn).color;
+    });
+
+    expect(
+      colorStr,
+      "Could not find the 'All' toggle button via [data-preview-toggle='all']. " +
+        "Check that the attribute is still present in ClassBrowser.tsx."
+    ).toBeTruthy();
+
+    const alpha = parseAlpha(colorStr!);
+    expect(
+      alpha,
+      `Could not parse alpha from computed color "${colorStr}".`
+    ).not.toBeNull();
+
+    // /45 → ~0.45 nominal. Must be noticeably below 1 (inactive state).
+    expect(
+      alpha!,
+      `Inactive 'All' toggle color "${colorStr}" appears fully opaque (alpha=${alpha}). ` +
+        "The text-[var(--okh-forge-code-fg)]/45 modifier may not be compiling " +
+        "or the @supports guard may be missing."
+    ).toBeLessThan(0.95);
+
+    expect(
+      alpha!,
+      `Inactive 'All' toggle color "${colorStr}" appears invisible (alpha=${alpha}). ` +
+        "The opacity modifier may have resolved to transparent."
+    ).toBeGreaterThan(0.05);
+  });
+
+  test("active 'Used' toggle button renders at full opacity when 'Used' mode is active", async ({
+    page,
+  }) => {
+    // 'Used' is the active button; its active class is text-emerald-300 with
+    // no opacity modifier, so alpha should be ≈ 1.
+    const colorStr = await page.evaluate(() => {
+      const btn = document.querySelector<HTMLButtonElement>(
+        '[data-preview-toggle="used"]'
+      );
+      if (!btn) return null;
+      return window.getComputedStyle(btn).color;
+    });
+
+    expect(
+      colorStr,
+      "Could not find the 'Used' toggle button via [data-preview-toggle='used']. " +
+        "Check that the attribute is still present in ClassBrowser.tsx."
+    ).toBeTruthy();
+
+    const alpha = parseAlpha(colorStr!);
+    expect(
+      alpha,
+      `Could not parse alpha from computed color "${colorStr}".`
+    ).not.toBeNull();
+
+    // Active state has no opacity modifier — must be fully opaque.
+    expect(
+      alpha!,
+      `Active 'Used' toggle color "${colorStr}" appears semi-transparent (alpha=${alpha}). ` +
+        "The active state conditional class may have been incorrectly modified."
+    ).toBeGreaterThanOrEqual(0.95);
+  });
+
+  test("inactive 'Used' toggle button renders at reduced opacity when 'All' mode is active", async ({
+    page,
+  }) => {
+    // Click 'All' to switch mode — 'Used' becomes inactive with /45 modifier.
+    await page.locator('[data-preview-toggle="all"]').click();
+
+    const colorStr = await page.evaluate(() => {
+      const btn = document.querySelector<HTMLButtonElement>(
+        '[data-preview-toggle="used"]'
+      );
+      if (!btn) return null;
+      return window.getComputedStyle(btn).color;
+    });
+
+    expect(
+      colorStr,
+      "Could not find the 'Used' toggle button after switching to 'All' mode."
+    ).toBeTruthy();
+
+    const alpha = parseAlpha(colorStr!);
+    expect(
+      alpha,
+      `Could not parse alpha from computed color "${colorStr}".`
+    ).not.toBeNull();
+
+    // /45 → ~0.45 nominal. Must be noticeably reduced (inactive state).
+    expect(
+      alpha!,
+      `Inactive 'Used' toggle color "${colorStr}" appears fully opaque (alpha=${alpha}). ` +
+        "The text-[var(--okh-forge-code-fg)]/45 modifier may not be applying " +
+        "when the button switches to inactive."
+    ).toBeLessThan(0.95);
+
+    expect(
+      alpha!,
+      `Inactive 'Used' toggle color "${colorStr}" appears invisible (alpha=${alpha}).`
+    ).toBeGreaterThan(0.05);
+  });
+
+  test("active 'All' toggle button renders at full opacity when 'All' mode is active", async ({
+    page,
+  }) => {
+    // Click 'All' to make it the active button; active class is
+    // text-[var(--okh-forge-code-fg)] with no opacity modifier.
+    await page.locator('[data-preview-toggle="all"]').click();
+
+    const colorStr = await page.evaluate(() => {
+      const btn = document.querySelector<HTMLButtonElement>(
+        '[data-preview-toggle="all"]'
+      );
+      if (!btn) return null;
+      return window.getComputedStyle(btn).color;
+    });
+
+    expect(
+      colorStr,
+      "Could not find the 'All' toggle button after clicking it."
+    ).toBeTruthy();
+
+    const alpha = parseAlpha(colorStr!);
+    expect(
+      alpha,
+      `Could not parse alpha from computed color "${colorStr}".`
+    ).not.toBeNull();
+
+    // Active state has no opacity modifier — must be fully opaque.
+    expect(
+      alpha!,
+      `Active 'All' toggle color "${colorStr}" appears semi-transparent (alpha=${alpha}). ` +
+        "The active state conditional class may have been incorrectly modified."
+    ).toBeGreaterThanOrEqual(0.95);
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Suite 3: ExtractTab paste-area placeholder opacity
 //
 // The ExtractTab lives inside the Compose tab, inside a collapsible section
