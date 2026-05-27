@@ -95,84 +95,113 @@ These must be updated whenever the Mermaid dependency is upgraded.
 
 Run the end-to-end test plan (see `docs/release-checklist.md`) before opening a pull request. All 6 e2e test scenarios must pass.
 
-## Language Standard: en-US
+## Repository Hygiene Standard
 
-This project is authored, owned, and maintained by a United States-based creator.
-All user-facing content must use United States English (`en-US`).
+**Brand:** OverKill Hill P³ (Forge)
+**Body scope:** default; no body class set for this brand
+**Canonical stylesheet:** https://raw.githubusercontent.com/OKHP3/OverKill-Hill/main/assets/css/theme.css
+**Version:** 1.0
 
-Scope: UI copy, documentation, README content, release notes, comments intended for
-human readers, prompts, tooltips, button text, error messages, validation messages,
-QA/QC reports, and marketing language.
+This section governs how files and folders are named, what structure all sibling repos share, what counts as detritus, and the brand contract this repo serves. Replit Agent, left alone, will name files inconsistently, scatter working artifacts into the root, and leave paste-buffer transcripts in `attached_assets/`. The rules below stop that.
 
-Examples of required US-EN spellings:
-color, behavior, organization, optimize, customize, center, analyze, modeling,
-artifact, visualization, standardization, initialize, finalize, prioritize, summarize,
-license (noun), program, catalog, fulfill, gray, toward, among, while.
+### 0. Language Standard: en-US
 
-Do NOT change the following where spelling is externally defined or technically significant:
+This project is authored, owned, and maintained by a United States-based creator. All user-facing content must use United States English (`en-US`).
+
+**Scope:** UI copy, documentation, README content, release notes, comments intended for human readers, prompts, tooltips, button text, error messages, validation messages, QA/QC reports, marketing language, and any new code identifiers authored in this repo.
+
+**Examples of required US-EN spellings:** color, behavior, organization, optimize, customize, center, analyze, modeling, artifact, visualization, standardization, initialize, finalize, prioritize, summarize, license (noun), program, catalog, fulfill, gray, toward, among, while.
+
+**Protected exceptions (do NOT change spelling in):**
 - Direct quotations from external sources
 - Proper nouns, brand names, product names
 - Dependency, package, or library names
 - URLs, file names, route names
-- API fields, schema keys, code identifiers
+- API fields, schema keys, existing code identifiers
 - Generated lockfiles or external standards
 
-US English compliance is a required QA/QC gate. It is not a stylistic preference.
-Any output that fails this standard is a defect.
+**Identifier rule:** en-US applies to identifiers authored in *new* code. Renaming *existing* identifiers (variables, functions, types, exported symbols) is a breaking change and falls under the same renaming policy as files in Section 1: update every importer in the same commit, run the build and tests after, and set up a redirect if anything external depends on the old name. Do not run a blanket find-and-replace across existing identifiers without explicit instruction.
 
-## Repository Hygiene Standard
-
-**Scope:** Every OverKill Hill P³ Replit-created repo.
-**Status:** Canonical. Do not edit this copy independently — edit the upstream source and re-sync.
-**Version:** 1.0
-
-This section governs how files and folders are named, what structure all sibling repos share, and what counts as detritus that must not accumulate.
+**Status:** US English compliance is a required QA/QC gate, not a stylistic preference. Any output failing this standard is a defect.
 
 ### 1. Naming conventions
 
-**Default: kebab-case.** Every file and folder name defaults to lowercase letters and digits with words separated by single hyphens. Use this for documentation, configuration, assets, data files, CSS, plain scripts, and folder names.
+The rule is kebab-case by default with three structural exceptions, all dictated by ecosystem convention.
 
 | File role | Convention | Examples |
 |---|---|---|
-| Documentation (`.md`) | kebab-case | `design-system.md`, `release-plan.md` |
-| Stylesheets (`.css`) | kebab-case | `forge-tokens.css`, `index.css` |
-| YAML, JSON, TOML data and config | kebab-case | `sync-forge-tokens.yml`, `palette-defaults.json` |
-| Plain scripts (`.sh`, `.py`) | kebab-case | `sync-skills.sh`, `build-tokens.py` |
-| Assets (SVG, PNG, etc.) | kebab-case | `forge-anvil-sigil.svg` |
+| Docs (.md), CSS, YAML, JSON-data, SVG, plain scripts | kebab-case | `design-system.md`, `forge-tokens.css`, `sync-skills.sh` |
 | Folder names | kebab-case | `src/styles/`, `docs/roadmap/` |
-| Plain TypeScript modules (no hook/component export) | kebab-case | `theme-mode.ts`, `palettes.ts` |
-| React hooks (`.ts` exporting `useFoo`) | camelCase matching hook | `useTheme.ts`, `useDebounce.ts` |
-| React components (`.tsx`/`.jsx`) | PascalCase matching component | `ApplyTab.tsx`, `DiffView.tsx` |
-| Root governance files | ALL CAPS | `README.md`, `LICENSE`, `CHANGELOG.md`, `AGENTS.md`, `SKILL.md` |
-| Tool-required filenames | Whatever the tool requires | `package.json`, `tsconfig.json`, `vite.config.ts`, `.gitignore` |
-| Web-standard files | Whatever the spec dictates | `robots.txt`, `manifest.webmanifest`, `favicon.ico` |
+| Plain TypeScript modules (not exporting a hook or component) | kebab-case | `bpmn-styles.ts`, `theme-mode.ts`, `palettes.ts` |
+| React hooks (`.ts` exporting `useFoo`) | camelCase matching the hook | `useTheme.ts`, `useDebounce.ts` |
+| React components (`.tsx`/`.jsx`) | PascalCase matching the component | `ApplyTab.tsx`, `DiffView.tsx` |
+| Root governance files | ALL CAPS (ecosystem convention) | `README.md`, `LICENSE`, `CHANGELOG.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md`, `AGENTS.md`, `SKILL.md` |
+| Tool-required filenames | Whatever the tool requires | `package.json`, `tsconfig.json`, `vite.config.ts`, `.gitignore`, `.replit`, `.npmrc`, `Dockerfile`, `Makefile`, `CNAME` |
+| Web-standard files | Whatever the spec dictates | `humans.txt`, `robots.txt`, `llms.txt`, `404.html`, `_headers`, `favicon.ico` |
 
-Decision tree (when in doubt):
-1. Root governance file with universally expected name? → ALL CAPS.
-2. Tool-required filename? → Use what the tool requires.
-3. `.tsx`/`.jsx` exporting a React component? → PascalCase matching the component.
-4. `.ts` exporting a React hook (`useFoo`)? → camelCase matching the hook.
-5. Otherwise: kebab-case.
+Decision tree when in doubt: (1) governance file with universal name → ALL CAPS; (2) tool-required name → whatever the tool says; (3) `.tsx`/`.jsx` component → PascalCase matching the component; (4) `.ts` hook → camelCase matching the hook; (5) everything else → kebab-case.
 
-Renaming policy: always update every importer in the same change. Run build + tests after. Never rename without validating.
+These rules govern filenames only. Identifiers inside code follow language conventions: TypeScript uses `camelCase` for variables/functions and `PascalCase` for types/components; CSS custom properties use `--kebab-case`.
 
-### 2. Detritus — what does not belong in version control
+When renaming a file to fix a casing violation: update every importer in the same change, set up a redirect if the file is referenced by a deployed URL, and run the build and tests after.
 
-**`attached_assets/`** — paste-buffer transcripts from Replit Agent prompts. Always gitignored. Delete from history if accidentally committed.
+### 2. Repository structure
 
-**`attached-assets/`** (hyphen variant) — same rule.
+Companion apps under this brand share this top-level structure:
 
-**`_unused/`** — code moved aside during a refactor. Read once, rescue anything stranded, then delete. Do not commit.
+```
+<repo-root>/
+├── .agents/                  Replit Agent working memory
+├── .github/                  Actions, issue templates
+├── .gitignore
+├── .replit, .replitignore, .npmrc, .prettierrc
+├── AGENTS.md
+├── CHANGELOG.md
+├── CONTRIBUTING.md
+├── LICENSE
+├── README.md
+├── docs/
+│   ├── design-system.md
+│   ├── conformance-audit.md
+│   └── roadmap/
+├── public/
+├── scripts/
+├── skills/                   SKILL.md packages this app owns
+├── src/                      app source
+│   ├── components/           PascalCase React components
+│   ├── data/                 kebab-case
+│   ├── hooks/                useFoo.ts hooks
+│   ├── lib/                  kebab-case modules
+│   ├── pages/                PascalCase route components
+│   ├── styles/               CSS including forge-tokens.css
+│   └── __tests__/
+├── e2e/                      Playwright
+├── examples/
+├── standards/
+├── index.html
+├── package.json
+├── tsconfig.json
+└── vite.config.ts
+```
 
-**`projects/`** — pre-deploy preview directories copied into the repo. Delete once the live URL is deployed.
+Two valid layouts: flat (`src/` at repo root) is default. `artifacts/<app-name>/src/` is for repos that legitimately ship multiple apps. Do not use `artifacts/` for a single app.
 
-**`test-results/`, `playwright-report/`, `coverage/`** — test/build output. Always gitignored.
+Folders that must NOT exist at the repo root because their names are reserved for detritus: `_unused/`, `attached_assets/`, `attached-assets/`, `_drafts/`, `_scratch/`, `_old/`, `tmp/`, `temp/`, `unused/`.
 
-**`dist/`, `build/`, `.next/`, `.vite/`** — build output. Always gitignored.
+### 3. Detritus (does not belong in version control)
 
-**`.DS_Store`, `Thumbs.db`, `.idea/`** — IDE/OS junk. Gitignored.
+- **`attached_assets/`** — Replit paste-buffer transcripts and screenshots. Always gitignored. Delete if committed.
+- **`_unused/`** — code Replit moved aside during refactor. Triage once, then delete.
+- **`test-results/`, `playwright-report/`, `coverage/`** — test/build output. Gitignore.
+- **`dist/`, `build/`, `.next/`, `.vite/`** — build output. Gitignore.
+- **`.DS_Store`, `Thumbs.db`, `.idea/`** — OS/IDE junk. Gitignore.
+- **`_replit/`** — old working notes. Triage: salvage useful content into `docs/` or `docs/archive/<YYYY-MM-DD>-<topic>.md`, delete the rest.
+- **Duplicated sibling-repo content** — e.g., a skill folder for another app that landed here by accident. Remove it.
+- **Pre-deploy previews of sibling apps** in `_replit/*-preview/` — once the live URL is deployed, delete.
 
-### 3. Required `.gitignore` entries
+### 4. `.gitignore` baseline
+
+This repo must include at minimum:
 
 ```
 # Replit working-buffer artifacts
@@ -180,7 +209,6 @@ attached_assets/
 attached-assets/
 _unused/
 unused/
-projects/
 
 # Test and build output
 test-results/
@@ -201,13 +229,55 @@ node_modules/
 *.log
 ```
 
-If a folder in this list is currently tracked, untrack it (`git rm -r --cached <folder>`) before committing the `.gitignore` change.
+If a folder in this list is currently tracked, `git rm -r --cached <folder>` before committing the `.gitignore` change.
 
-### 4. Decrapify command
+### 5. Decrapify command (the reusable instruction)
 
-To run a hygiene pass, send this message to Replit Agent:
+When the repo accumulates working artifacts, send this short message to Replit Agent:
 
-> **Decrapify this repo per the Repository Hygiene Standard in `AGENTS.md`.** Triage, do not just delete. Produce a plan first, then execute. Cover: `attached_assets/` and hyphen variant, `_unused/`, `test-results/`, `playwright-report/`, `coverage/`, `dist/`, `build/`, `projects/`, any file or folder violating the naming rules, and any `.gitignore` gaps vs Section 3. Produce a QA report: files scanned, files changed, items deleted, items gitignored, naming violations corrected, intentional exceptions noted.
+> **Decrapify this repo per the Repository Hygiene Standard in `AGENTS.md` Section 5.** Triage, do not just delete. Produce a plan first, then execute on confirmation. Cover: `attached_assets/` and any hyphen variant, `_unused/`, `test-results/`, `playwright-report/`, `coverage/`, `dist/`, `build/`, `_replit/` (triage contents into `docs/` or `docs/archive/` before deleting), any duplicated sibling-repo content, any file or folder violating Section 1, and any folder name listed as forbidden in Section 2. Ensure `.gitignore` covers Section 4 and `git rm -r --cached` anything newly-ignored. Output a plain-text plan with: item, category (gitignore-only, delete, triage-then-delete, rename), justification, risk. Wait for "go" before executing. No em dashes.
+
+### 6. Brand contract (OverKill Hill P³ Forge)
+
+This repo serves the OverKill Hill P³ Forge motif. Canonical reference: https://raw.githubusercontent.com/OKHP3/OverKill-Hill/main/assets/css/theme.css
+
+Forge motif declared values:
+
+| Aspect | Value |
+|---|---|
+| Body scope class | NONE (this is the default brand) |
+| Display font | Alfa Slab One |
+| Body font | DM Sans |
+| Mono font | JetBrains Mono |
+| Primary accent | rust-orange `#c46a2c` |
+| Secondary accent | amber `#e6a03c` |
+| Header surface | teal `#1c3a34` |
+| Light page bg | `#f0ebe5` (warm paper) |
+| Light ink | `#0f172a` (deep navy) |
+| Dark mode | espresso/slate-blue family (hue ~224) |
+| Base radius | `0.75rem` |
+| Mermaid accent | `#c46a2c` lines and borders |
+
+Forbidden in this brand's apps:
+- Coral `#d94f63` (that's the glee-fully brand)
+- Aqua `#2d6f7e` (that's the AskJamie brand)
+- Olive hue family in dark mode
+- Fraunces, Inter, or any font that is not Alfa Slab One / DM Sans / JetBrains Mono
+- Builders FirstSource (BFS) references, color systems, or examples of any kind
+
+### 7. Universal guardrails
+
+- No em dashes anywhere (code, comments, copy, commit messages). Use periods or restructure.
+- No AI filler in copy or comments: not "seamlessly," "robust," "powerful," "effortlessly," "elevate," "unleash."
+- Tailwind v4 only: no `tailwind.config.js` (tokens live in CSS via `@theme inline`).
+- No new dependencies unless explicitly requested.
+- All user-facing content must use US English per the Language Standard in Section 0. UK/Commonwealth spellings are defects, not stylistic variants.
+
+### 8. US English audit command (reusable instruction)
+
+When the repo accumulates UK/Commonwealth spellings, send this short message to Replit Agent:
+
+> **Run the US English audit per the Language Standard in `AGENTS.md` Section 0.** Produce a QA summary first; execute corrections only after I say "go." Cover: UI copy, docs, README, release notes, human-readable comments, prompts, tooltips, error/validation messages, and QA/QC reports. Apply protected exceptions in Section 0. For existing code identifiers with UK spellings, list them as renaming candidates but do not auto-rename without confirmation. Output: (1) files scanned, (2) files changed, (3) UK spellings found with location, (4) US-EN replacements proposed, (5) protected exceptions intentionally left unchanged with reason, (6) identifier renaming candidates flagged for separate handling, (7) final confirmation that the report itself contains no UK spellings. Wait for "go." No em dashes.
 
 ## File structure
 
