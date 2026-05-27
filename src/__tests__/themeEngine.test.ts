@@ -1504,6 +1504,47 @@ describe("architectureBeta config block", () => {
     expect(initLine).toContain('"randomize": false');
   });
 
+  it("architecture config value deep-equals {randomize: false} — not true, not absent, no extra keys", () => {
+    // Parses the init directive as JSON so any change to the value (true, removal,
+    // added keys) fails immediately rather than silently passing a toContain check.
+    const result = generateThemedCode(ARCH_DIAGRAM, {
+      ...BASE_OPTIONS,
+      diagramFamily: "architectureBeta",
+    });
+    const initLine = result.split("\n").find((l) => l.startsWith("%%{init:"))!;
+    // Strip "%%{init: " prefix (9 chars) and "}%%" suffix (3 chars) to isolate the JSON.
+    const initJson = JSON.parse(initLine.slice("%%{init: ".length, -"}%%".length)) as {
+      architecture?: unknown;
+    };
+    expect(initJson.architecture).toEqual({ randomize: false });
+  });
+
+  it("architecture key is absent in the parsed init object for a non-arch family (flowchart)", () => {
+    // JSON-parse guard: checks that the key is truly absent, not just that it
+    // does not appear in the serialized string.
+    const result = generateThemedCode(SIMPLE_FLOWCHART, {
+      ...BASE_OPTIONS,
+      diagramFamily: "flowchart",
+    });
+    const initLine = result.split("\n").find((l) => l.startsWith("%%{init:"))!;
+    const initJson = JSON.parse(initLine.slice("%%{init: ".length, -"}%%".length)) as {
+      architecture?: unknown;
+    };
+    expect(initJson.architecture).toBeUndefined();
+  });
+
+  it("architecture key is absent in the parsed init object for an unrecognized family string", () => {
+    const result = generateThemedCode(SIMPLE_FLOWCHART, {
+      ...BASE_OPTIONS,
+      diagramFamily: "unknownDiagram" as ExportOptions["diagramFamily"],
+    });
+    const initLine = result.split("\n").find((l) => l.startsWith("%%{init:"))!;
+    const initJson = JSON.parse(initLine.slice("%%{init: ".length, -"}%%".length)) as {
+      architecture?: unknown;
+    };
+    expect(initJson.architecture).toBeUndefined();
+  });
+
   const NON_ARCH_FAMILIES: Array<ExportOptions["diagramFamily"]> = [
     "flowchart",
     "sequenceDiagram",
