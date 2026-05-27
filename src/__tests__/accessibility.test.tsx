@@ -28,7 +28,7 @@ vi.mock("mermaid", () => ({
   },
 }));
 
-import { render, cleanup } from "@testing-library/react";
+import { render, cleanup, fireEvent } from "@testing-library/react";
 import { createElement } from "react";
 import axe from "axe-core";
 
@@ -646,6 +646,49 @@ describe("DiagramInventory (standalone full-screen view)", () => {
     );
     const { blocking, all } = await runAxe(container);
     logViolations("DiagramInventory (standalone)", all);
+    expect(
+      blocking,
+      `Critical/serious violations:\n${blocking
+        .map(
+          (v) =>
+            `  [${v.impact}] ${v.id}: ${v.description}\n  Nodes: ${v.nodes
+              .map((n) => n.html)
+              .slice(0, 2)
+              .join(", ")}`
+        )
+        .join("\n")}`
+    ).toHaveLength(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 14. DiagramInventory — ExamplesTab modal state
+//
+// Renders ExamplesTab with realistic props, then clicks "Browse all supported
+// families" to open the DiagramInventory modal (showInventory=true). The modal
+// shell, embedded DiagramInventory, close button, and backdrop are all in the
+// DOM. axe scans the full container including the open overlay.
+// ---------------------------------------------------------------------------
+describe("DiagramInventory (ExamplesTab modal state)", () => {
+  it("has zero critical/serious axe violations when inventory modal is open", async () => {
+    const noop = vi.fn();
+    const { container } = render(
+      createElement(ExamplesTab, {
+        selectedPalette: BRAND_PALETTES[0],
+        selectedPaletteId: BRAND_PALETTES[0].id,
+        allPalettes: BRAND_PALETTES,
+        customColors: {},
+        onSelectPalette: noop,
+        onLoadExample: noop,
+      })
+    );
+    const browseBtn = Array.from(container.querySelectorAll("button")).find((b) =>
+      b.textContent?.includes("Browse all supported families")
+    );
+    expect(browseBtn, "'Browse all supported families' button must exist").toBeTruthy();
+    fireEvent.click(browseBtn!);
+    const { blocking, all } = await runAxe(container);
+    logViolations("DiagramInventory (ExamplesTab modal)", all);
     expect(
       blocking,
       `Critical/serious violations:\n${blocking
