@@ -952,6 +952,124 @@ describe("parsePortablePalette — warnValues", () => {
   });
 });
 
+// ── parsePortablePalette — CSS function color warnValues ─────────────────────
+
+describe("parsePortablePalette — CSS function color warnValues", () => {
+  function makePaletteJson(overrideColors: Array<{ key: string; label: string; value: string }>) {
+    return JSON.stringify({
+      type: "mtb-palette",
+      schemaVersion: 1,
+      id: "test",
+      name: "Test",
+      description: "d",
+      version: "1.0.0",
+      colors: overrideColors,
+    });
+  }
+
+  it("places rgb() in warnValues, not invalidValues", () => {
+    const result = parsePortablePalette(
+      makePaletteJson([{ key: "primaryColor", label: "Primary", value: "rgb(255,0,0)" }])
+    );
+    expect(result.ok).toBe(true);
+    if (!result.ok) throw new Error("Expected ok:true");
+    expect(result.warnValues).toHaveLength(1);
+    expect(result.warnValues[0].key).toBe("primaryColor");
+    expect(result.warnValues[0].value).toBe("rgb(255,0,0)");
+    expect(result.invalidValues).toHaveLength(0);
+  });
+
+  it("places rgba() in warnValues, not invalidValues", () => {
+    const result = parsePortablePalette(
+      makePaletteJson([{ key: "lineColor", label: "Line", value: "rgba(0,128,0,0.5)" }])
+    );
+    expect(result.ok).toBe(true);
+    if (!result.ok) throw new Error("Expected ok:true");
+    expect(result.warnValues).toHaveLength(1);
+    expect(result.warnValues[0].key).toBe("lineColor");
+    expect(result.warnValues[0].value).toBe("rgba(0,128,0,0.5)");
+    expect(result.invalidValues).toHaveLength(0);
+  });
+
+  it("places hsl() in warnValues, not invalidValues", () => {
+    const result = parsePortablePalette(
+      makePaletteJson([{ key: "background", label: "BG", value: "hsl(30,50%,50%)" }])
+    );
+    expect(result.ok).toBe(true);
+    if (!result.ok) throw new Error("Expected ok:true");
+    expect(result.warnValues).toHaveLength(1);
+    expect(result.warnValues[0].key).toBe("background");
+    expect(result.warnValues[0].value).toBe("hsl(30,50%,50%)");
+    expect(result.invalidValues).toHaveLength(0);
+  });
+
+  it("places hsla() in warnValues, not invalidValues", () => {
+    const result = parsePortablePalette(
+      makePaletteJson([{ key: "secondaryColor", label: "Sec", value: "hsla(210,100%,56%,0.8)" }])
+    );
+    expect(result.ok).toBe(true);
+    if (!result.ok) throw new Error("Expected ok:true");
+    expect(result.warnValues).toHaveLength(1);
+    expect(result.warnValues[0].key).toBe("secondaryColor");
+    expect(result.warnValues[0].value).toBe("hsla(210,100%,56%,0.8)");
+    expect(result.invalidValues).toHaveLength(0);
+  });
+
+  it("is case-insensitive — RGB() and HSL() also route to warnValues", () => {
+    for (const value of ["RGB(255,0,0)", "HSL(30,50%,50%)", "Rgba(0,0,255,1)", "Hsla(0,0%,0%,1)"]) {
+      const result = parsePortablePalette(
+        makePaletteJson([{ key: "primaryColor", label: "P", value }])
+      );
+      expect(result.ok).toBe(true);
+      if (!result.ok) throw new Error("Expected ok:true");
+      expect(result.warnValues.map((e) => e.value)).toContain(value);
+      expect(result.invalidValues.map((e) => e.value)).not.toContain(value);
+    }
+  });
+
+  it("does not route fontFamily with a function-like value to warnValues", () => {
+    const result = parsePortablePalette(
+      makePaletteJson([{ key: "fontFamily", label: "Font", value: "rgb(0,0,0)" }])
+    );
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.warnValues).toHaveLength(0);
+      expect(result.invalidValues).toHaveLength(0);
+    }
+  });
+
+  it("separates a CSS function warnValue from a genuinely invalid value in the same palette", () => {
+    const result = parsePortablePalette(
+      makePaletteJson([
+        { key: "primaryColor", label: "P", value: "rgb(255,0,0)" },
+        { key: "lineColor", label: "L", value: "#xyz" },
+        { key: "background", label: "B", value: "#abc" },
+      ])
+    );
+    expect(result.ok).toBe(true);
+    if (!result.ok) throw new Error("Expected ok:true");
+    expect(result.warnValues.map((e) => e.key)).toContain("primaryColor");
+    expect(result.invalidValues.map((e) => e.key)).toContain("lineColor");
+    expect(result.invalidValues.map((e) => e.key)).not.toContain("primaryColor");
+    expect(result.warnValues.map((e) => e.key)).not.toContain("lineColor");
+  });
+
+  it("CSS function value and CSS named color can both appear in warnValues together", () => {
+    const result = parsePortablePalette(
+      makePaletteJson([
+        { key: "primaryColor", label: "P", value: "rgb(255,0,0)" },
+        { key: "lineColor", label: "L", value: "coral" },
+      ])
+    );
+    expect(result.ok).toBe(true);
+    if (!result.ok) throw new Error("Expected ok:true");
+    expect(result.warnValues).toHaveLength(2);
+    expect(result.warnValues.map((e) => e.key)).toContain("primaryColor");
+    expect(result.warnValues.map((e) => e.key)).toContain("lineColor");
+    expect(result.invalidValues).toHaveLength(0);
+  });
+});
+
 // ── parsePortablePalette — top-level field type validation ────────────────────
 
 describe("parsePortablePalette — top-level field type validation", () => {

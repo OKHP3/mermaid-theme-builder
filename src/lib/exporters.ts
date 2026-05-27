@@ -213,6 +213,11 @@ const CSS_KEYWORD_RE = /^transparent$|^inherit$|^currentColor$/i;
  * from hard "definitely invalid" errors.
  */
 const CSS_NAMED_COLOR_RE = /^[a-zA-Z]+$/;
+/**
+ * Matches CSS color function calls — rgb(), rgba(), hsl(), hsla() — that are
+ * valid CSS but unreliable inside Mermaid's theme engine.
+ */
+const CSS_FUNCTION_COLOR_RE = /^(rgba?|hsla?)\s*\(/i;
 
 /**
  * Returns true when `value` is a CSS named color for the given `key`.
@@ -221,6 +226,15 @@ const CSS_NAMED_COLOR_RE = /^[a-zA-Z]+$/;
 function isCssNamedColorValue(key: string, value: string): boolean {
   if (key === "fontFamily") return false;
   return CSS_NAMED_COLOR_RE.test(value) && !CSS_KEYWORD_RE.test(value);
+}
+
+/**
+ * Returns true when `value` is a CSS color function call (rgb, rgba, hsl,
+ * hsla) for the given `key`. fontFamily is always exempt.
+ */
+function isCssFunctionColorValue(key: string, value: string): boolean {
+  if (key === "fontFamily") return false;
+  return CSS_FUNCTION_COLOR_RE.test(value);
 }
 
 /**
@@ -251,7 +265,8 @@ export interface PortablePaletteImport {
    */
   invalidValues: Array<{ key: string; value: string }>;
   /**
-   * Color entries whose `value` is a CSS named color (e.g. "red", "coral").
+   * Color entries whose `value` is a CSS named color (e.g. "red", "coral") or
+   * a CSS color function call (e.g. "rgb(255,0,0)", "hsl(30,50%,50%)").
    * These are technically valid CSS but Mermaid's theme engine does not
    * reliably handle them — a softer "may not render correctly" warning is
    * surfaced rather than treating them as hard errors.
@@ -361,10 +376,15 @@ export function parsePortablePalette(json: string): PortablePaletteImport | Port
     );
     const unknownKeys = colors.map((c) => c.key).filter((k) => !KNOWN_COLOR_KEYS.has(k));
     const invalidValues = colors
-      .filter((c) => !isValidColorValue(c.key, c.value) && !isCssNamedColorValue(c.key, c.value))
+      .filter(
+        (c) =>
+          !isValidColorValue(c.key, c.value) &&
+          !isCssNamedColorValue(c.key, c.value) &&
+          !isCssFunctionColorValue(c.key, c.value)
+      )
       .map((c) => ({ key: c.key, value: c.value }));
     const warnValues = colors
-      .filter((c) => isCssNamedColorValue(c.key, c.value))
+      .filter((c) => isCssNamedColorValue(c.key, c.value) || isCssFunctionColorValue(c.key, c.value))
       .map((c) => ({ key: c.key, value: c.value }));
 
     return {
