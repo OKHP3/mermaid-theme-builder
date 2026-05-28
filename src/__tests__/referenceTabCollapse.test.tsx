@@ -7,10 +7,12 @@
  * auto-collapse based on `supportsClassDef`. These tests lock in the behavior
  * at the DOM level so a silent regression can't slip through undetected.
  *
- * Also covers (as a regression guard for Task #182 / proposed Task #242):
+ * Also covers (as a regression guard for Task #182 / #314 / #315):
  *   - RPM inactive badge: visible when collapsed + supportsClassDef=false,
  *     hidden when supportsClassDef becomes true or the section is expanded
- *   - Class Library inactive badge: visible when supportsClassDef=false
+ *   - Class Library inactive badge: same hide-on-expand rule as RPM (added in
+ *     Task #314). Section 6 locks in this symmetry with a combined test so a
+ *     future refactor that silently diverges the two behaviors will fail.
  *
  * Strategy
  * --------
@@ -302,6 +304,51 @@ describe("Reference tab — Class Library inactive badge visibility", () => {
 
     // The badge condition is !supportsClassDef && !classLibraryOpen.
     // classLibraryOpen is now true, so the badge must be gone.
+    expect(hasBadgeIn(clDetails)).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 6. Combined RPM + Class Library badge behavior (Task #315)
+// ---------------------------------------------------------------------------
+
+describe("Reference tab — RPM and Class Library badges hide on expand — symmetric behavior", () => {
+  /**
+   * Combined regression guard for Task #314 / #315.
+   *
+   * Both the Renderer Parity Matrix and the Class Library share the same badge
+   * hide-on-expand rule: when supportsClassDef is false the "inactive" badge is
+   * visible, and it disappears as soon as the user manually opens that section.
+   *
+   * This test renders both sections in a single component tree and expands each
+   * one in sequence, asserting the expected hide happens for each — so a future
+   * change that accidentally diverges the two behaviors will be caught here even
+   * if the individual section-4 / section-5 tests are not run together.
+   */
+  it("both RPM and Class Library badges hide when their sections are manually expanded", () => {
+    render(createElement(ReferenceTab, { ...BASE_PROPS, supportsClassDef: false }));
+
+    const rpmDetails = getRpmDetails();
+    const clDetails = getClassLibraryDetails();
+
+    // Both badges must be visible before any expansion.
+    expect(hasBadgeIn(rpmDetails)).toBe(true);
+    expect(hasBadgeIn(clDetails)).toBe(true);
+
+    // Expand RPM → only the RPM badge should disappear.
+    act(() => {
+      rpmDetails.open = true;
+      fireEvent(rpmDetails, new Event("toggle"));
+    });
+    expect(hasBadgeIn(rpmDetails)).toBe(false);
+    expect(hasBadgeIn(clDetails)).toBe(true);
+
+    // Expand Class Library → the CL badge should also disappear.
+    act(() => {
+      clDetails.open = true;
+      fireEvent(clDetails, new Event("toggle"));
+    });
+    expect(hasBadgeIn(rpmDetails)).toBe(false);
     expect(hasBadgeIn(clDetails)).toBe(false);
   });
 });
