@@ -24,7 +24,7 @@ export interface PaletteAttribution {
 
 export interface Palette {
   id: string;               // Canonical slug (e.g. "overkill-hill")
-  name: string;             // Display name (e.g. "OverKill Hill P³")
+  name: string;             // Display name (e.g. "OKHP3")
   brandFamily?: "okhp3";    // "okhp3" for OKHP3 ecosystem presets
   isBrandPreset?: boolean;  // true = shown in Brand Presets section
   description: string;      // Short description shown in color editor
@@ -44,7 +44,7 @@ export interface Palette {
 A lowercase kebab-case string used as the canonical identifier. Used in metadata comments and export filenames. Brand preset IDs should match the brand slug: `overkill-hill`, `askjamie`, `glee-fully`.
 
 ### `name`
-The human-readable display name shown in the UI and exports. Brand preset names use the exact official brand name: `OverKill Hill P³`, `AskJamie`, `Glee-fully`.
+The human-readable display name shown in the UI and exports. Brand preset names use the exact official brand name: `OKHP3`, `AskJamie`, `Glee-fully`.
 
 ### `brandFamily`
 Optional. Set to `"okhp3"` for all palettes that belong to the OverKill Hill P³ design ecosystem. Absent for generic/community palettes.

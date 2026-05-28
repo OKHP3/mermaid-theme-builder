@@ -15,11 +15,11 @@ When enabled, all generated Mermaid code includes a block of `%%` comment lines 
 
 ```mermaid
 %%{init: {"theme": "base", "themeVariables": { ... }}}%%
-%% Created with: Mermaid Theme Builder v0.1.0
+%% Created with: Mermaid Theme Builder v0.5.0
 %% Tool: https://overkillhill.com/projects/mermaid-theme-builder/
-%% Theme: OverKill Hill P³
+%% Theme: OKHP3
 %% Theme ID: overkill-hill
-%% Theme Version: 0.1.0
+%% Theme Version: 0.2.0
 %% Generated: 2026-01-01T00:00:00.000Z
 %% Brand source: https://overkillhill.com
 %% Not affiliated with Mermaid, Mermaid Chart, or Mermaid.ai
@@ -46,7 +46,7 @@ flowchart TD
 When enabled for flowchart diagrams, a small disconnected badge node is appended to the diagram code:
 
 ```mermaid
-    _mtb_attr["Themed with Mermaid Theme Builder · OverKill Hill P³"]
+    _mtb_attr["Themed with Mermaid Theme Builder · OKHP3"]
     style _mtb_attr fill:#181f26,stroke:#c46a2c,color:#e5e7eb,font-size:9px,opacity:0.7
     click _mtb_attr href "https://overkillhill.com/projects/mermaid-theme-builder/" _blank
 ```
@@ -76,7 +76,7 @@ The badge node is disconnected from the diagram flow. Most Mermaid renderers wil
 The **Markdown Bootstrap** export always includes an attribution footer:
 
 ```markdown
-Generated with [Mermaid Theme Builder](https://overkillhill.com/projects/mermaid-theme-builder/) · Theme: **OverKill Hill P³**
+Generated with [Mermaid Theme Builder](https://overkillhill.com/projects/mermaid-theme-builder/) · Theme: **OKHP3**
 
 > _Not affiliated with Mermaid, Mermaid Chart, or Mermaid.ai. All transformations are local — your diagram code never leaves the browser._
 ```
@@ -105,6 +105,6 @@ It is not affiliated with:
 - [Mermaid Chart](https://www.mermaidchart.com/) — the commercial platform by the Mermaid maintainers
 - [Mermaid.ai](https://www.mermaid.ai/) — a separate AI-powered diagramming product
 
-All built-in brand presets (OverKill Hill P³, AskJamie, Glee-fully) are sourced exclusively from OKHP3-owned public brand surfaces.
+All built-in brand presets (OKHP3, AskJamie, Glee-fully) are sourced exclusively from OKHP3-owned public brand surfaces.
 
 Mermaid Theme Builder uses the Mermaid npm package as a runtime dependency. It does not fork or copy Mermaid source code.

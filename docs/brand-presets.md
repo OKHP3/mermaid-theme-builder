@@ -1,6 +1,6 @@
 # Brand Presets — OKHP3 Ecosystem
 
-Mermaid Theme Builder ships with three first-class brand presets derived from the OverKill Hill P³ design system. All color values are sourced directly from the `--mermaid-*` CSS custom properties and brand color tokens in the publicly available [shared theme.css](https://github.com/OKHP3/OverKill-Hill/blob/main/assets/css/theme.css).
+Mermaid Theme Builder ships with three first-class brand presets derived from the OKHP3 design system. All color values are sourced directly from the `--mermaid-*` CSS custom properties and brand color tokens in the publicly available [shared theme.css](https://github.com/OKHP3/OverKill-Hill/blob/main/assets/css/theme.css).
 
 ---
 
@@ -22,7 +22,7 @@ All three brand presets draw from a common palette of design tokens:
 
 ---
 
-## OverKill Hill P³
+## OKHP3
 
 **ID:** `overkill-hill`  
 **Site:** [overkillhill.com](https://overkillhill.com)  
@@ -99,7 +99,7 @@ All three brand presets draw from a common palette of design tokens:
 - Non-technical explainer diagrams
 
 ### Do not use for
-- Deep technical architecture (use OverKill Hill P³ instead)
+- Deep technical architecture (use OKHP3 instead)
 - Executive strategy decks
 
 ---
