@@ -260,3 +260,93 @@ describe("ClassBrowser — classDef preview panel highlighting (integration)", (
     expect(container.querySelector("pre")).toBeNull();
   });
 });
+
+// ---------------------------------------------------------------------------
+// All / Used preview toggle
+// ---------------------------------------------------------------------------
+
+describe("ClassBrowser — All / Used preview panel toggle", () => {
+  function renderWithUsed() {
+    return render(
+      createElement(ClassBrowser, {
+        classDefs: SAMPLE_CLASS_DEFS,
+        supportsClassDef: true,
+        usedClassNames: new Set(["primary"]),
+      })
+    );
+  }
+
+  function openPreview(container: HTMLElement) {
+    act(() => {
+      fireEvent.click(screen.getByLabelText("Preview all classDefs"));
+    });
+    return container.querySelector("pre")!;
+  }
+
+  it("opening the preview with usedClassNames defaults to 'used' mode", () => {
+    const { container } = renderWithUsed();
+    const pre = openPreview(container);
+    expect(pre.textContent).toContain("primary");
+    expect(pre.textContent).not.toContain("secondary");
+  });
+
+  it("the 'Used' toggle button has aria-pressed='true' in default mode", () => {
+    const { container } = renderWithUsed();
+    openPreview(container);
+    const usedBtn = container.querySelector<HTMLButtonElement>('[data-preview-toggle="used"]')!;
+    expect(usedBtn.getAttribute("aria-pressed")).toBe("true");
+  });
+
+  it("the 'All' toggle button has aria-pressed='false' in default (used) mode", () => {
+    const { container } = renderWithUsed();
+    openPreview(container);
+    const allBtn = screen.getByTitle("Show all classDefs");
+    expect(allBtn.getAttribute("aria-pressed")).toBe("false");
+  });
+
+  it("clicking 'All' shows both primary and secondary in the pre", () => {
+    const { container } = renderWithUsed();
+    const pre = openPreview(container);
+    act(() => {
+      fireEvent.click(screen.getByTitle("Show all classDefs"));
+    });
+    expect(pre.textContent).toContain("primary");
+    expect(pre.textContent).toContain("secondary");
+  });
+
+  it("after clicking 'All', the All button has aria-pressed='true'", () => {
+    const { container } = renderWithUsed();
+    openPreview(container);
+    const allBtn = screen.getByTitle("Show all classDefs");
+    act(() => {
+      fireEvent.click(allBtn);
+    });
+    expect(allBtn.getAttribute("aria-pressed")).toBe("true");
+  });
+
+  it("clicking 'Used' after 'All' reduces the pre back to primary only", () => {
+    const { container } = renderWithUsed();
+    const pre = openPreview(container);
+    act(() => {
+      fireEvent.click(screen.getByTitle("Show all classDefs"));
+    });
+    expect(pre.textContent).toContain("secondary");
+    act(() => {
+      fireEvent.click(container.querySelector<HTMLButtonElement>('[data-preview-toggle="used"]')!);
+    });
+    expect(pre.textContent).toContain("primary");
+    expect(pre.textContent).not.toContain("secondary");
+  });
+
+  it("the All/Used toggle group is absent when no usedClassNames are provided", () => {
+    const { container } = render(
+      createElement(ClassBrowser, {
+        classDefs: SAMPLE_CLASS_DEFS,
+        supportsClassDef: true,
+      })
+    );
+    openPreview(container);
+    expect(container.querySelector('[data-preview-toggle="all"]')).toBeNull();
+    expect(container.querySelector('[data-preview-toggle="used"]')).toBeNull();
+  });
+});
