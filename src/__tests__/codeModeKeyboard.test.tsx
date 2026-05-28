@@ -40,7 +40,7 @@ vi.mock("@/components/MermaidPreview", () => ({
 
 import { render, screen, act, cleanup } from "@testing-library/react";
 import { fireEvent } from "@testing-library/dom";
-import { createElement, type ReactElement } from "react";
+import { createElement, useState, type ReactElement } from "react";
 import { HighlightedCode } from "@/components/HighlightedCode";
 import { useCodeEditorOverride } from "@/hooks/useCodeEditorOverride";
 import { ApplyTab } from "@/pages/tabs/ApplyTab";
@@ -426,5 +426,224 @@ describe("ApplyTab code mode — Escape key cancels edit mode", () => {
       container.querySelector("textarea[aria-label='Styled code output — edit before copying']")
     ).not.toBeNull();
     expect(container.querySelector("pre[aria-label='Styled code output']")).toBeNull();
+  });
+});
+
+// ===========================================================================
+// E. Preview-mode tablist — ArrowLeft/ArrowRight/Home/End keyboard navigation
+// ===========================================================================
+
+// Controlled wrapper: holds previewMode in state so keyboard navigation
+// actually re-renders the component when onPreviewModeChange is called.
+function ControlledApplyTab({
+  initial = "original",
+}: {
+  initial?: "original" | "themed" | "diff" | "code";
+}): ReactElement {
+  const [mode, setMode] = useState<"original" | "themed" | "diff" | "code">(initial);
+  return createElement(
+    ApplyTab,
+    buildApplyTabProps({ previewMode: mode, onPreviewModeChange: setMode })
+  );
+}
+
+function renderWithMode(initial: "original" | "themed" | "diff" | "code" = "original") {
+  const result = render(createElement(ControlledApplyTab, { initial }));
+  const tablist = result.container.querySelector('[role="tablist"]') as HTMLElement;
+  function tab(mode: string) {
+    return result.container.querySelector(`[data-preview-mode="${mode}"]`) as HTMLElement;
+  }
+  return { ...result, tablist, tab };
+}
+
+describe("ApplyTab preview tablist — initial roving tabIndex", () => {
+  it("the active tab ('original') has tabIndex=0", () => {
+    const { tab } = renderWithMode("original");
+    expect(tab("original").getAttribute("tabindex")).toBe("0");
+  });
+
+  it("inactive tabs have tabIndex=-1", () => {
+    const { tab } = renderWithMode("original");
+    expect(tab("themed").getAttribute("tabindex")).toBe("-1");
+    expect(tab("diff").getAttribute("tabindex")).toBe("-1");
+    expect(tab("code").getAttribute("tabindex")).toBe("-1");
+  });
+
+  it("the active tab has aria-selected='true'", () => {
+    const { tab } = renderWithMode("original");
+    expect(tab("original").getAttribute("aria-selected")).toBe("true");
+  });
+
+  it("inactive tabs have aria-selected='false'", () => {
+    const { tab } = renderWithMode("original");
+    expect(tab("themed").getAttribute("aria-selected")).toBe("false");
+    expect(tab("diff").getAttribute("aria-selected")).toBe("false");
+    expect(tab("code").getAttribute("aria-selected")).toBe("false");
+  });
+});
+
+describe("ApplyTab preview tablist — ArrowRight navigation", () => {
+  it("ArrowRight from 'original' activates 'themed'", () => {
+    const { tablist, tab } = renderWithMode("original");
+    act(() => {
+      fireEvent.keyDown(tablist, { key: "ArrowRight" });
+    });
+    expect(tab("themed").getAttribute("aria-selected")).toBe("true");
+    expect(tab("original").getAttribute("aria-selected")).toBe("false");
+  });
+
+  it("ArrowRight from 'themed' activates 'diff'", () => {
+    const { tablist, tab } = renderWithMode("themed");
+    act(() => {
+      fireEvent.keyDown(tablist, { key: "ArrowRight" });
+    });
+    expect(tab("diff").getAttribute("aria-selected")).toBe("true");
+  });
+
+  it("ArrowRight from 'diff' activates 'code'", () => {
+    const { tablist, tab } = renderWithMode("diff");
+    act(() => {
+      fireEvent.keyDown(tablist, { key: "ArrowRight" });
+    });
+    expect(tab("code").getAttribute("aria-selected")).toBe("true");
+  });
+
+  it("ArrowRight from 'code' wraps around to 'original'", () => {
+    const { tablist, tab } = renderWithMode("code");
+    act(() => {
+      fireEvent.keyDown(tablist, { key: "ArrowRight" });
+    });
+    expect(tab("original").getAttribute("aria-selected")).toBe("true");
+    expect(tab("code").getAttribute("aria-selected")).toBe("false");
+  });
+});
+
+describe("ApplyTab preview tablist — ArrowLeft navigation", () => {
+  it("ArrowLeft from 'original' wraps around to 'code'", () => {
+    const { tablist, tab } = renderWithMode("original");
+    act(() => {
+      fireEvent.keyDown(tablist, { key: "ArrowLeft" });
+    });
+    expect(tab("code").getAttribute("aria-selected")).toBe("true");
+    expect(tab("original").getAttribute("aria-selected")).toBe("false");
+  });
+
+  it("ArrowLeft from 'code' activates 'diff'", () => {
+    const { tablist, tab } = renderWithMode("code");
+    act(() => {
+      fireEvent.keyDown(tablist, { key: "ArrowLeft" });
+    });
+    expect(tab("diff").getAttribute("aria-selected")).toBe("true");
+  });
+
+  it("ArrowLeft from 'diff' activates 'themed'", () => {
+    const { tablist, tab } = renderWithMode("diff");
+    act(() => {
+      fireEvent.keyDown(tablist, { key: "ArrowLeft" });
+    });
+    expect(tab("themed").getAttribute("aria-selected")).toBe("true");
+  });
+
+  it("ArrowLeft from 'themed' activates 'original'", () => {
+    const { tablist, tab } = renderWithMode("themed");
+    act(() => {
+      fireEvent.keyDown(tablist, { key: "ArrowLeft" });
+    });
+    expect(tab("original").getAttribute("aria-selected")).toBe("true");
+  });
+});
+
+describe("ApplyTab preview tablist — Home and End keys", () => {
+  it("Home from 'code' jumps to 'original'", () => {
+    const { tablist, tab } = renderWithMode("code");
+    act(() => {
+      fireEvent.keyDown(tablist, { key: "Home" });
+    });
+    expect(tab("original").getAttribute("aria-selected")).toBe("true");
+    expect(tab("code").getAttribute("aria-selected")).toBe("false");
+  });
+
+  it("Home from 'diff' jumps to 'original'", () => {
+    const { tablist, tab } = renderWithMode("diff");
+    act(() => {
+      fireEvent.keyDown(tablist, { key: "Home" });
+    });
+    expect(tab("original").getAttribute("aria-selected")).toBe("true");
+  });
+
+  it("End from 'original' jumps to 'code'", () => {
+    const { tablist, tab } = renderWithMode("original");
+    act(() => {
+      fireEvent.keyDown(tablist, { key: "End" });
+    });
+    expect(tab("code").getAttribute("aria-selected")).toBe("true");
+    expect(tab("original").getAttribute("aria-selected")).toBe("false");
+  });
+
+  it("End from 'themed' jumps to 'code'", () => {
+    const { tablist, tab } = renderWithMode("themed");
+    act(() => {
+      fireEvent.keyDown(tablist, { key: "End" });
+    });
+    expect(tab("code").getAttribute("aria-selected")).toBe("true");
+  });
+
+  it("Home on already-active 'original' keeps it active", () => {
+    const { tablist, tab } = renderWithMode("original");
+    act(() => {
+      fireEvent.keyDown(tablist, { key: "Home" });
+    });
+    expect(tab("original").getAttribute("aria-selected")).toBe("true");
+  });
+
+  it("End on already-active 'code' keeps it active", () => {
+    const { tablist, tab } = renderWithMode("code");
+    act(() => {
+      fireEvent.keyDown(tablist, { key: "End" });
+    });
+    expect(tab("code").getAttribute("aria-selected")).toBe("true");
+  });
+});
+
+describe("ApplyTab preview tablist — roving tabIndex updates after navigation", () => {
+  it("after ArrowRight to 'themed', tabIndex=0 on 'themed' and -1 on others", () => {
+    const { tablist, tab } = renderWithMode("original");
+    act(() => {
+      fireEvent.keyDown(tablist, { key: "ArrowRight" });
+    });
+    expect(tab("themed").getAttribute("tabindex")).toBe("0");
+    expect(tab("original").getAttribute("tabindex")).toBe("-1");
+    expect(tab("diff").getAttribute("tabindex")).toBe("-1");
+    expect(tab("code").getAttribute("tabindex")).toBe("-1");
+  });
+
+  it("after End to 'code', tabIndex=0 on 'code' and -1 on others", () => {
+    const { tablist, tab } = renderWithMode("original");
+    act(() => {
+      fireEvent.keyDown(tablist, { key: "End" });
+    });
+    expect(tab("code").getAttribute("tabindex")).toBe("0");
+    expect(tab("original").getAttribute("tabindex")).toBe("-1");
+    expect(tab("themed").getAttribute("tabindex")).toBe("-1");
+    expect(tab("diff").getAttribute("tabindex")).toBe("-1");
+  });
+});
+
+describe("ApplyTab preview tablist — non-navigation keys have no effect", () => {
+  it("pressing Tab does not change the active mode", () => {
+    const { tablist, tab } = renderWithMode("original");
+    act(() => {
+      fireEvent.keyDown(tablist, { key: "Tab" });
+    });
+    expect(tab("original").getAttribute("aria-selected")).toBe("true");
+    expect(tab("themed").getAttribute("aria-selected")).toBe("false");
+  });
+
+  it("pressing Space does not change the active mode via the tablist handler", () => {
+    const { tablist, tab } = renderWithMode("original");
+    act(() => {
+      fireEvent.keyDown(tablist, { key: " " });
+    });
+    expect(tab("original").getAttribute("aria-selected")).toBe("true");
   });
 });
