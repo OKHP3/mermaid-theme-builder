@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Palette, ThemeColor } from "@/lib/palettes";
 import { PaletteSelectorBar } from "@/components/PaletteSelectorBar";
 import { getClassDefs } from "@/lib/theme-engine";
@@ -15,6 +15,9 @@ interface ReferenceTabProps {
   onSelectPalette: (id: string) => void;
   supportsClassDef: boolean;
   inputCode?: string;
+  /** When provided, the unrecognized-class "Fix" buttons become active and
+   *  call this with the corrected diagram source. */
+  onInputChange?: (code: string) => void;
   openParityMatrix?: boolean;
   onParityMatrixOpened?: () => void;
 }
@@ -64,6 +67,7 @@ export function ReferenceTab({
   onSelectPalette,
   supportsClassDef,
   inputCode = "",
+  onInputChange,
   openParityMatrix = false,
   onParityMatrixOpened,
 }: ReferenceTabProps) {
@@ -72,6 +76,15 @@ export function ReferenceTab({
   const usedClassNames = useMemo<ReadonlySet<string>>(
     () => extractUsedClasses(inputCode),
     [inputCode]
+  );
+
+  // Replace every occurrence of :::typo with :::suggestion in the diagram source.
+  const handleApplyFix = useCallback(
+    (typo: string, suggestion: string) => {
+      if (!onInputChange) return;
+      onInputChange(inputCode.replaceAll(`:::${typo}`, `:::${suggestion}`));
+    },
+    [inputCode, onInputChange]
   );
 
   const rendererParityRef = useRef<HTMLDetailsElement>(null);
@@ -309,6 +322,7 @@ export function ReferenceTab({
               classDefs={classDefs}
               supportsClassDef={supportsClassDef}
               usedClassNames={usedClassNames}
+              onApplyFix={onInputChange ? handleApplyFix : undefined}
             />
           </div>
         </details>

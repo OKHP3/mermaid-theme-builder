@@ -42,6 +42,10 @@ interface ClassBrowserProps {
   classDefs: ClassDef[];
   supportsClassDef?: boolean;
   usedClassNames?: ReadonlySet<string>;
+  /** Called when the user clicks a "Fix" button next to a typo suggestion.
+   *  `typo` is the unrecognized token; `suggestion` is the closest defined name.
+   *  When omitted, Fix buttons are not rendered. */
+  onApplyFix?: (typo: string, suggestion: string) => void;
 }
 
 function parseDashArray(extra: string): string | undefined {
@@ -208,6 +212,7 @@ export function ClassBrowser({
   classDefs,
   supportsClassDef = true,
   usedClassNames,
+  onApplyFix,
 }: ClassBrowserProps) {
   const [copiedState, setCopiedState] = useState<CopiedState>(null);
   const [showPreview, setShowPreview] = useState(false);
@@ -765,6 +770,19 @@ export function ClassBrowser({
                         {suggestions.map((s, si) => (
                           <span key={s}>
                             <span className="font-mono">{`:::${s}`}</span>
+                            {onApplyFix && (
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  onApplyFix(n, s);
+                                }}
+                                className="ml-1 inline-flex items-center px-1 py-px rounded text-[9px] font-semibold uppercase tracking-wide bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/30 hover:bg-amber-500/25 transition-colors cursor-pointer"
+                                aria-label={`Fix :::${n} → :::${s}`}
+                              >
+                                Fix
+                              </button>
+                            )}
                             {si < suggestions.length - 1 && ", "}
                           </span>
                         ))}

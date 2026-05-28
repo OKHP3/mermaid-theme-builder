@@ -1073,6 +1073,7 @@ export function AppShell() {
               onSelectPalette={handleSelectPalette}
               supportsClassDef={supportsClassDef}
               inputCode={inputCode}
+              onInputChange={setInputCode}
               openParityMatrix={openParityMatrix}
               onParityMatrixOpened={() => setOpenParityMatrix(false)}
             />
