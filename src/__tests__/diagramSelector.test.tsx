@@ -276,3 +276,71 @@ describe("ApplyTab — diagram selector sync: selector hidden after content shri
     expect(capturedDiffNew).not.toContain("sequenceDiagram");
   });
 });
+
+// ---------------------------------------------------------------------------
+// Override isolation: auto-clear is scoped to the active diagram
+// ---------------------------------------------------------------------------
+
+// Same as MULTI_INPUT but with diagram 1 source changed so its exportCode
+// differs — triggering the auto-clear useEffect only for that diagram.
+const MULTI_INPUT_UPDATED = [
+  "flowchart TD",
+  "  A --> B",
+  "",
+  "sequenceDiagram",
+  "  Alice->>Bob: Updated",
+].join("\n");
+
+describe("ApplyTab — code-editor override: auto-clear is scoped to the active diagram", () => {
+  it("auto-clearing diagram 1's stale override leaves diagram 0's override intact", async () => {
+    const { container, rerender } = render(createElement(ApplyTab, makeProps(MULTI_INPUT)));
+
+    // 1. Enter edit mode for diagram 0 — clicking Edit sets override[0] = exportCode_0.
+    await act(async () => {
+      fireEvent.click(screen.getByTitle("Edit the styled code before copying"));
+    });
+    expect(
+      container.querySelector("textarea[aria-label='Styled code output — edit before copying']")
+    ).not.toBeNull();
+
+    // 2. Switch to diagram 1. First visit: prevExportCodesRef has no entry for idx 1
+    //    → auto-clear does NOT fire → override[0] is preserved.
+    await act(async () => {
+      fireEvent.click(screen.getByLabelText("Next diagram"));
+    });
+    // Diagram 1 has no override yet → HighlightedCode shown, not textarea.
+    expect(
+      container.querySelector("textarea[aria-label='Styled code output — edit before copying']")
+    ).toBeNull();
+
+    // 3. Enter edit mode for diagram 1 — sets override[1] = exportCode_1.
+    await act(async () => {
+      fireEvent.click(screen.getByTitle("Edit the styled code before copying"));
+    });
+    expect(
+      container.querySelector("textarea[aria-label='Styled code output — edit before copying']")
+    ).not.toBeNull();
+
+    // 4. Rerender with updated diagram 1 source. exportCode for diagram 1 changes
+    //    → useEffect detects prev !== current → deletes override[1] only.
+    //    Diagram 0's source is unchanged so override[0] is unaffected.
+    act(() => {
+      rerender(createElement(ApplyTab, makeProps(MULTI_INPUT_UPDATED)));
+    });
+
+    // Diagram 1's override is auto-cleared → textarea is gone.
+    expect(
+      container.querySelector("textarea[aria-label='Styled code output — edit before copying']")
+    ).toBeNull();
+
+    // 5. Switch back to diagram 0.
+    await act(async () => {
+      fireEvent.click(screen.getByLabelText("Previous diagram"));
+    });
+
+    // Diagram 0's override is intact → textarea is still shown.
+    expect(
+      container.querySelector("textarea[aria-label='Styled code output — edit before copying']")
+    ).not.toBeNull();
+  });
+});
