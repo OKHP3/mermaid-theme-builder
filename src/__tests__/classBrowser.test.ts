@@ -725,6 +725,24 @@ describe("ClassBrowser — unused class name info indicator", () => {
     });
     expect(html).toContain('title="Click to copy :::secondary"');
   });
+
+  it("disappears immediately when the last :::annotation is removed (usedClassNames becomes empty)", () => {
+    // Render 1: one class is in use — indicator should be visible.
+    const htmlWithUsed = render({
+      supportsClassDef: true,
+      usedClassNames: new Set(["primary"]),
+    });
+    expect(htmlWithUsed).toContain("style not applied");
+
+    // Render 2: user removes the last annotation — usedClassNames is now empty.
+    // The indicator must vanish; showing "N styles not applied" for a blank
+    // diagram would be misleading (no annotations means no typos, not neglect).
+    const htmlEmpty = render({
+      supportsClassDef: true,
+      usedClassNames: new Set(),
+    });
+    expect(htmlEmpty).not.toContain("style not applied");
+  });
 });
 
 // ---------------------------------------------------------------------------
