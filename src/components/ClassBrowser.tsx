@@ -819,12 +819,28 @@ export function ClassBrowser({
                 ? "1 style not applied:"
                 : `${unusedClassNames.length} styles not applied:`}
             </span>{" "}
-            {unusedClassNames.map((n, i) => (
-              <span key={n}>
-                <span className="font-mono">{`:::${n}`}</span>
-                {i < unusedClassNames.length - 1 && ", "}
-              </span>
-            ))}{" "}
+            {unusedClassNames.map((n, i) => {
+              const isJustCopied =
+                copiedState?.name === n && copiedState.kind === "usage";
+              return (
+                <span key={n}>
+                  <button
+                    type="button"
+                    onClick={() => handleCopyUsage(n)}
+                    className={`font-mono rounded px-0.5 transition-colors cursor-pointer focus:outline-none focus:ring-1 focus:ring-sky-500/60 ${
+                      isJustCopied
+                        ? "text-emerald-600 dark:text-emerald-400"
+                        : "underline decoration-dotted underline-offset-2 hover:bg-sky-500/15"
+                    }`}
+                    aria-label={`Copy :::${n}`}
+                    title={`Click to copy :::${n}`}
+                  >
+                    {`:::${n}`}
+                  </button>
+                  {i < unusedClassNames.length - 1 && ", "}
+                </span>
+              );
+            })}{" "}
             — defined in the palette but not used in the current diagram.
           </span>
         </div>

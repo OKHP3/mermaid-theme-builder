@@ -695,6 +695,36 @@ describe("ClassBrowser — unused class name info indicator", () => {
     });
     expect(html).not.toContain("styles not applied");
   });
+
+  it("renders each unused name as a button element (not a plain span)", () => {
+    const html = render({
+      supportsClassDef: true,
+      usedClassNames: new Set(["primary"]),
+    });
+    // Locate the info indicator section and verify :::secondary is inside a <button>
+    const skyIdx = html.indexOf("border-sky-500");
+    const indicatorHtml = skyIdx >= 0 ? html.slice(skyIdx) : "";
+    // A <button …>:::secondary</button> must be present in the indicator
+    expect(indicatorHtml).toMatch(/<button[^>]*>:::secondary<\/button>/);
+  });
+
+  it("each indicator button carries the correct aria-label for accessibility", () => {
+    const html = render({
+      supportsClassDef: true,
+      classDefs: SAMPLE_CLASS_DEFS,
+      usedClassNames: new Set(["ghost"]),
+    });
+    expect(html).toContain('aria-label="Copy :::primary"');
+    expect(html).toContain('aria-label="Copy :::secondary"');
+  });
+
+  it("indicator buttons carry a descriptive title tooltip", () => {
+    const html = render({
+      supportsClassDef: true,
+      usedClassNames: new Set(["primary"]),
+    });
+    expect(html).toContain('title="Click to copy :::secondary"');
+  });
 });
 
 // ---------------------------------------------------------------------------
