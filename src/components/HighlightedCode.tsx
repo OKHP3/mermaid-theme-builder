@@ -25,6 +25,7 @@ interface HighlightedCodeProps {
   className?: string;
   "aria-label"?: string;
   placeholder?: string;
+  onKeyDown?: React.KeyboardEventHandler<HTMLPreElement>;
 }
 
 /**
@@ -37,6 +38,7 @@ export function HighlightedCode({
   className = "",
   "aria-label": ariaLabel,
   placeholder = "Paste a diagram above to see the styled output\u2026",
+  onKeyDown,
 }: HighlightedCodeProps) {
   if (!code.trim()) {
     return (
@@ -53,6 +55,7 @@ export function HighlightedCode({
       className={`forge-code-panel flex-1 min-h-[160px] md:min-h-0 w-full p-3 text-xs font-mono overflow-auto whitespace-pre ${className}`}
       aria-label={ariaLabel}
       tabIndex={0}
+      onKeyDown={onKeyDown}
     >
       {highlightMermaidCodeBlock(code)}
     </pre>

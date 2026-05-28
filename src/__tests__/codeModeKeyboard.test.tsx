@@ -361,3 +361,70 @@ describe("ApplyTab code mode — Reset button in real component", () => {
     expect((pre as HTMLElement).getAttribute("tabindex")).toBe("0");
   });
 });
+
+// ===========================================================================
+// D. Keyboard bindings — Enter to edit, Escape to cancel (Task #331)
+// ===========================================================================
+
+describe("ApplyTab code mode — Enter key activates edit mode", () => {
+  it("pressing Enter on the focused <pre> replaces it with a textarea", () => {
+    const { container } = render(createElement(ApplyTab, buildApplyTabProps()));
+    const pre = container.querySelector("pre[aria-label='Styled code output']") as HTMLElement;
+    act(() => {
+      fireEvent.keyDown(pre, { key: "Enter" });
+    });
+    expect(
+      container.querySelector("textarea[aria-label='Styled code output — edit before copying']")
+    ).not.toBeNull();
+    expect(container.querySelector("pre[aria-label='Styled code output']")).toBeNull();
+  });
+
+  it("pressing a non-Enter key on the <pre> does not activate edit mode", () => {
+    const { container } = render(createElement(ApplyTab, buildApplyTabProps()));
+    const pre = container.querySelector("pre[aria-label='Styled code output']") as HTMLElement;
+    act(() => {
+      fireEvent.keyDown(pre, { key: "Space" });
+    });
+    expect(container.querySelector("pre[aria-label='Styled code output']")).not.toBeNull();
+    expect(
+      container.querySelector("textarea[aria-label='Styled code output — edit before copying']")
+    ).toBeNull();
+  });
+});
+
+describe("ApplyTab code mode — Escape key cancels edit mode", () => {
+  it("pressing Escape on the textarea restores the <pre> and removes the textarea", () => {
+    const { container } = render(createElement(ApplyTab, buildApplyTabProps()));
+    act(() => {
+      fireEvent.click(screen.getByTitle("Edit the styled code before copying"));
+    });
+    const textarea = container.querySelector(
+      "textarea[aria-label='Styled code output — edit before copying']"
+    ) as HTMLElement;
+    expect(textarea).not.toBeNull();
+    act(() => {
+      fireEvent.keyDown(textarea, { key: "Escape" });
+    });
+    expect(container.querySelector("pre[aria-label='Styled code output']")).not.toBeNull();
+    expect(
+      container.querySelector("textarea[aria-label='Styled code output — edit before copying']")
+    ).toBeNull();
+  });
+
+  it("pressing a non-Escape key on the textarea does not exit edit mode", () => {
+    const { container } = render(createElement(ApplyTab, buildApplyTabProps()));
+    act(() => {
+      fireEvent.click(screen.getByTitle("Edit the styled code before copying"));
+    });
+    const textarea = container.querySelector(
+      "textarea[aria-label='Styled code output — edit before copying']"
+    ) as HTMLElement;
+    act(() => {
+      fireEvent.keyDown(textarea, { key: "Enter" });
+    });
+    expect(
+      container.querySelector("textarea[aria-label='Styled code output — edit before copying']")
+    ).not.toBeNull();
+    expect(container.querySelector("pre[aria-label='Styled code output']")).toBeNull();
+  });
+});

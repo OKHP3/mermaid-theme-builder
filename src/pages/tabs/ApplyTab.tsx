@@ -967,12 +967,27 @@ export function ApplyTab({
                 className="forge-code-panel flex-1 min-h-[160px] md:min-h-0 w-full p-3 text-xs font-mono resize-none overflow-auto focus:outline-none"
                 value={effectiveExportCode}
                 onChange={(e) => setCodeEditorOverride(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Escape") {
+                    e.stopPropagation();
+                    setCodeEditorOverride(null);
+                  }
+                }}
                 spellCheck={false}
                 aria-label="Styled code output — edit before copying"
                 autoFocus
               />
             ) : (
-              <HighlightedCode code={effectiveExportCode} aria-label="Styled code output" />
+              <HighlightedCode
+                code={effectiveExportCode}
+                aria-label="Styled code output"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    setCodeEditorOverride(effectiveExportCode);
+                  }
+                }}
+              />
             )
           ) : (
             <div className="md:flex-1 overflow-auto p-3 md:p-4 min-h-[260px]" data-print-only>
