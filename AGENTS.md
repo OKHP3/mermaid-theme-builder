@@ -84,6 +84,24 @@ These must be updated whenever the Mermaid dependency is upgraded.
 - Unknown diagram type: show warning, not a capability note
 - Attribution badge toggle must be disabled for non-flowchart diagrams in V1
 
+## Badge conventions
+
+The `badge` field on example library entries uses plain text tokens. Canonical values:
+
+| Token | Meaning |
+|---|---|
+| `"Beta"` | Diagram family rendered by Mermaid but not production-stable |
+| `"Experimental"` | Diagram family with known renderer gaps or breaking-change risk |
+| `"Canonical"` | Reference-quality example; no user-facing badge chip |
+| `"Canonical · Beta"` | Reference example for a Beta family; surfaces as `· Beta` to users |
+
+**Cross-surface consistency rule:** both the Examples tab chip and the Compose tab picker option must convey the same signal using the same separator character (middle dot `·`):
+
+- Examples tab chip: renders the raw `badge` field text (e.g. `"Beta"`, `"Canonical · Beta"`)
+- Compose tab picker `<option>`: uses `previewOptionLabel` which appends `· Beta` or `· Experimental` after the entry label (stripping the `"Canonical"` prefix if present)
+
+When adding a new example library entry that has a `Beta` or `Experimental` badge, no extra work is needed — `previewOptionLabel` and the chip renderer handle it automatically.
+
 ## Export rules
 
 - Metadata comments are included by default (can be toggled off)

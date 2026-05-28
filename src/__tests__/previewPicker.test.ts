@@ -217,31 +217,31 @@ describe("previewPicker — unknown stored id fallback", () => {
 // ---------------------------------------------------------------------------
 
 describe("previewPicker — option label suffixes", () => {
-  it("a 'Beta' entry shows '(Beta)' appended to its label in the picker", () => {
+  it("a 'Beta' entry shows '· Beta' appended to its label in the picker", () => {
     const { container } = renderTab();
     const opt = Array.from(getPickerSelect(container).options).find(
       (o) => o.value === "sankey-effort-to-output"
     );
     expect(opt).toBeDefined();
-    expect(opt!.text).toBe("Sankey (Beta)");
+    expect(opt!.text).toBe("Sankey · Beta");
   });
 
-  it("an 'Experimental' entry shows '(Experimental)' appended to its label", () => {
+  it("an 'Experimental' entry shows '· Experimental' appended to its label", () => {
     const { container } = renderTab();
     const opt = Array.from(getPickerSelect(container).options).find(
       (o) => o.value === "eventmodeling-order-lifecycle"
     );
     expect(opt).toBeDefined();
-    expect(opt!.text).toBe("Event Modeling — order lifecycle (Experimental)");
+    expect(opt!.text).toBe("Event Modeling — order lifecycle · Experimental");
   });
 
-  it("a 'Canonical · Beta' entry shows only '(Beta)' suffix, not the full badge text", () => {
+  it("a 'Canonical · Beta' entry shows only '· Beta' suffix, not the full badge text", () => {
     const { container } = renderTab();
     const opt = Array.from(getPickerSelect(container).options).find(
       (o) => o.value === "sankey-mermaid-basic"
     );
     expect(opt).toBeDefined();
-    expect(opt!.text).toBe("Sankey — energy flow (Beta)");
+    expect(opt!.text).toBe("Sankey — energy flow · Beta");
     expect(opt!.text).not.toContain("Canonical");
   });
 
@@ -252,8 +252,8 @@ describe("previewPicker — option label suffixes", () => {
     );
     expect(opt).toBeDefined();
     expect(opt!.text).toBe("Flowchart — basic");
-    expect(opt!.text).not.toContain("(Beta)");
-    expect(opt!.text).not.toContain("(Experimental)");
+    expect(opt!.text).not.toContain("· Beta");
+    expect(opt!.text).not.toContain("· Experimental");
   });
 
   it("an entry with no badge field has no suffix", () => {
@@ -263,21 +263,21 @@ describe("previewPicker — option label suffixes", () => {
     );
     expect(opt).toBeDefined();
     expect(opt!.text).toBe("Flowchart");
-    expect(opt!.text).not.toContain("(Beta)");
-    expect(opt!.text).not.toContain("(Experimental)");
+    expect(opt!.text).not.toContain("· Beta");
+    expect(opt!.text).not.toContain("· Experimental");
   });
 
   it("all options with beta/experimental badges carry the correct suffix", () => {
     const { container } = renderTab();
     const options = Array.from(getPickerSelect(container).options);
-    // Every option whose text contains "(Beta)" or "(Experimental)" must match an
-    // EXAMPLE_CATALOG entry that carries a Beta or Experimental badge.
+    // Every option whose text ends with "· Beta" or "· Experimental" must match
+    // an EXAMPLE_CATALOG entry that carries a Beta or Experimental badge.
     for (const opt of options) {
-      if (opt.text.endsWith("(Beta)")) {
+      if (opt.text.endsWith("· Beta")) {
         const entry = EXAMPLE_CATALOG.find((e) => e.id === opt.value);
         expect(entry?.badge).toMatch(/Beta/);
       }
-      if (opt.text.endsWith("(Experimental)")) {
+      if (opt.text.endsWith("· Experimental")) {
         const entry = EXAMPLE_CATALOG.find((e) => e.id === opt.value);
         expect(entry?.badge).toContain("Experimental");
       }
