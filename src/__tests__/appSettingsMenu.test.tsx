@@ -161,3 +161,75 @@ describe("AppShell settings menu — Reset all syntax tips", () => {
     expect(screen.queryByRole("menu", { name: "Settings" })).toBeNull();
   });
 });
+
+// ---------------------------------------------------------------------------
+// 4. Dismissal — Escape key and outside pointerdown
+// ---------------------------------------------------------------------------
+
+describe("AppShell settings menu — dismissal", () => {
+  async function openMenu() {
+    const btn = screen.getByRole("button", { name: "Settings" });
+    await act(async () => {
+      fireEvent.click(btn);
+    });
+  }
+
+  it("pressing Escape while the menu is open closes it (role=menu disappears)", async () => {
+    render(createElement(AppShell));
+    await openMenu();
+    expect(screen.getByRole("menu", { name: "Settings" })).toBeDefined();
+
+    await act(async () => {
+      fireEvent.keyDown(document, { key: "Escape" });
+    });
+
+    expect(screen.queryByRole("menu", { name: "Settings" })).toBeNull();
+  });
+
+  it("aria-expanded returns to false after Escape is pressed", async () => {
+    render(createElement(AppShell));
+    await openMenu();
+    const btn = screen.getByRole("button", { name: "Settings" });
+
+    await act(async () => {
+      fireEvent.keyDown(document, { key: "Escape" });
+    });
+
+    expect(btn.getAttribute("aria-expanded")).toBe("false");
+  });
+
+  it("a non-Escape keydown does not close the menu", async () => {
+    render(createElement(AppShell));
+    await openMenu();
+
+    await act(async () => {
+      fireEvent.keyDown(document, { key: "Tab" });
+    });
+
+    expect(screen.getByRole("menu", { name: "Settings" })).toBeDefined();
+  });
+
+  it("a pointerdown event outside the button and menu closes it", async () => {
+    render(createElement(AppShell));
+    await openMenu();
+    expect(screen.getByRole("menu", { name: "Settings" })).toBeDefined();
+
+    await act(async () => {
+      fireEvent.pointerDown(document.body);
+    });
+
+    expect(screen.queryByRole("menu", { name: "Settings" })).toBeNull();
+  });
+
+  it("aria-expanded returns to false after an outside pointerdown", async () => {
+    render(createElement(AppShell));
+    await openMenu();
+    const btn = screen.getByRole("button", { name: "Settings" });
+
+    await act(async () => {
+      fireEvent.pointerDown(document.body);
+    });
+
+    expect(btn.getAttribute("aria-expanded")).toBe("false");
+  });
+});
