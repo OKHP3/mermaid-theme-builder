@@ -1,4 +1,5 @@
 import {
+  HL,
   INIT_HL,
   COMMENT_HL,
   highlightInitDirectiveLine,
@@ -10,6 +11,7 @@ import {
 // Re-export so that consumers and tests that import from HighlightedCode continue
 // to resolve without any import-path changes.
 export {
+  HL,
   INIT_HL,
   COMMENT_HL,
   highlightInitDirectiveLine,
