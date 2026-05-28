@@ -83,6 +83,7 @@ export function clearPersistedState(): void {
   if (!storage) return;
   try {
     storage.removeItem(STORAGE_KEY);
+    storage.removeItem(PREVIEW_MODE_KEY);
   } catch (err) {
     console.warn("[mtb] failed to clear persisted state", err);
   }

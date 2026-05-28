@@ -1,5 +1,13 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { loadPersistedState, savePersistedState, type PersistedState } from "@/lib/persistence";
+import {
+  loadPersistedState,
+  savePersistedState,
+  clearPersistedState,
+  PREVIEW_MODE_KEY,
+  loadStoredPreviewMode,
+  saveStoredPreviewMode,
+  type PersistedState,
+} from "@/lib/persistence";
 
 function makeLocalStorageMock() {
   const store: Record<string, string> = {};
@@ -100,5 +108,78 @@ describe("PersistedState — previewMode round-trip", () => {
     savePersistedState(legacy as PersistedState);
     const loaded = loadPersistedState();
     expect(loaded?.previewMode).toBeUndefined();
+  });
+});
+
+describe("clearPersistedState — clears all mtb keys", () => {
+  it("clearPersistedState removes the main state key", () => {
+    savePersistedState(BASE_STATE);
+    clearPersistedState();
+    expect(loadPersistedState()).toBeNull();
+  });
+
+  it("clearPersistedState also removes the preview-mode key", () => {
+    saveStoredPreviewMode("used");
+    clearPersistedState();
+    expect(loadStoredPreviewMode()).toBeNull();
+  });
+
+  it("clearPersistedState removes both keys when both are set", () => {
+    savePersistedState(BASE_STATE);
+    saveStoredPreviewMode("all");
+    clearPersistedState();
+    expect(loadPersistedState()).toBeNull();
+    expect(loadStoredPreviewMode()).toBeNull();
+  });
+
+  it("clearPersistedState is a no-op when storage is already empty", () => {
+    expect(() => clearPersistedState()).not.toThrow();
+    expect(loadPersistedState()).toBeNull();
+    expect(loadStoredPreviewMode()).toBeNull();
+  });
+});
+
+describe("PREVIEW_MODE_KEY — constant value", () => {
+  it("is the expected storage key string", () => {
+    expect(PREVIEW_MODE_KEY).toBe("mtb.classBrowser.previewMode");
+  });
+});
+
+describe("loadStoredPreviewMode — contract", () => {
+  it("returns null when storage is empty", () => {
+    expect(loadStoredPreviewMode()).toBeNull();
+  });
+
+  it("returns 'all' after saving 'all'", () => {
+    saveStoredPreviewMode("all");
+    expect(loadStoredPreviewMode()).toBe("all");
+  });
+
+  it("returns 'used' after saving 'used'", () => {
+    saveStoredPreviewMode("used");
+    expect(loadStoredPreviewMode()).toBe("used");
+  });
+
+  it("returns null for an unrecognized stored value", () => {
+    localStorageMock.setItem(PREVIEW_MODE_KEY, "invalid");
+    expect(loadStoredPreviewMode()).toBeNull();
+  });
+
+  it("overwrite: saving 'used' after 'all' returns 'used'", () => {
+    saveStoredPreviewMode("all");
+    saveStoredPreviewMode("used");
+    expect(loadStoredPreviewMode()).toBe("used");
+  });
+});
+
+describe("saveStoredPreviewMode — writes the correct key", () => {
+  it("writes 'all' under PREVIEW_MODE_KEY", () => {
+    saveStoredPreviewMode("all");
+    expect(localStorageMock.getItem(PREVIEW_MODE_KEY)).toBe("all");
+  });
+
+  it("writes 'used' under PREVIEW_MODE_KEY", () => {
+    saveStoredPreviewMode("used");
+    expect(localStorageMock.getItem(PREVIEW_MODE_KEY)).toBe("used");
   });
 });
