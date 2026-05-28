@@ -26,7 +26,7 @@ vi.mock("@/components/PaletteSelectorBar", () => ({
   PaletteSelectorBar: () => null,
 }));
 
-import { render, screen, cleanup } from "@testing-library/react";
+import { render, screen, cleanup, fireEvent } from "@testing-library/react";
 import { createElement } from "react";
 import { ApplyTab } from "@/pages/tabs/ApplyTab";
 import { BRAND_PALETTES } from "@/lib/palettes";
@@ -134,5 +134,86 @@ describe("ApplyTab Prompt Scaffold — No classDef badge — non-capable family"
     const badge = screen.getByText("No classDef");
     expect(badge).toBeTruthy();
     expect(badge.getAttribute("title")).toBe(NO_CLASSDEF_TITLE);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Helpers shared by download-dropdown tests
+// ---------------------------------------------------------------------------
+
+/** Opens the download dropdown by clicking the "Download" button. */
+function openDownloadMenu(container: HTMLElement): void {
+  const btn = Array.from(container.querySelectorAll<HTMLButtonElement>("button")).find((b) =>
+    b.textContent?.trim().startsWith("Download")
+  );
+  if (!btn) throw new Error("Download button not found");
+  fireEvent.click(btn);
+}
+
+/**
+ * Returns "No classDef" badge spans that are inside a download-menu row
+ * identified by rowLabel (the visible DOWNLOAD_LABELS text, e.g. ".txt" or ".md").
+ */
+function getMenuRowBadges(container: HTMLElement, rowLabel: string): HTMLSpanElement[] {
+  return Array.from(container.querySelectorAll<HTMLSpanElement>("span")).filter(
+    (s) =>
+      s.textContent?.trim() === "No classDef" &&
+      s.closest("button")?.querySelector("span")?.textContent === rowLabel
+  );
+}
+
+// ---------------------------------------------------------------------------
+// 3. Download dropdown — scaffold (.txt) row badge
+// ---------------------------------------------------------------------------
+
+describe("ApplyTab download dropdown — No classDef badge in scaffold row", () => {
+  it("badge appears in the scaffold row when the menu is open and the family is non-classDef", () => {
+    const { container } = render(createElement(ApplyTab, { ...BASE_PROPS, inputCode: GANTT }));
+    openDownloadMenu(container);
+    expect(getMenuRowBadges(container, ".txt")).toHaveLength(1);
+  });
+
+  it("scaffold row badge has the correct title text", () => {
+    const { container } = render(createElement(ApplyTab, { ...BASE_PROPS, inputCode: GANTT }));
+    openDownloadMenu(container);
+    const [badge] = getMenuRowBadges(container, ".txt");
+    expect(badge.getAttribute("title")).toBe(NO_CLASSDEF_TITLE);
+  });
+
+  it("badge is absent from the scaffold row when the family is classDef-capable", () => {
+    const { container } = render(createElement(ApplyTab, { ...BASE_PROPS, inputCode: FLOWCHART }));
+    openDownloadMenu(container);
+    expect(getMenuRowBadges(container, ".txt")).toHaveLength(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 4. Download dropdown — Markdown Bootstrap (.md) row badge (Task #325 feature)
+// ---------------------------------------------------------------------------
+
+describe("ApplyTab download dropdown — No classDef badge in markdown row", () => {
+  it("badge appears in the markdown row when the menu is open and the family is non-classDef", () => {
+    const { container } = render(createElement(ApplyTab, { ...BASE_PROPS, inputCode: GANTT }));
+    openDownloadMenu(container);
+    expect(getMenuRowBadges(container, ".md")).toHaveLength(1);
+  });
+
+  it("markdown row badge has the correct title text", () => {
+    const { container } = render(createElement(ApplyTab, { ...BASE_PROPS, inputCode: GANTT }));
+    openDownloadMenu(container);
+    const [badge] = getMenuRowBadges(container, ".md");
+    expect(badge.getAttribute("title")).toBe(NO_CLASSDEF_TITLE);
+  });
+
+  it("badge is absent from the markdown row when the family is classDef-capable", () => {
+    const { container } = render(createElement(ApplyTab, { ...BASE_PROPS, inputCode: FLOWCHART }));
+    openDownloadMenu(container);
+    expect(getMenuRowBadges(container, ".md")).toHaveLength(0);
+  });
+
+  it("pie diagram (another non-capable family) also shows the badge in the markdown row", () => {
+    const { container } = render(createElement(ApplyTab, { ...BASE_PROPS, inputCode: PIE }));
+    openDownloadMenu(container);
+    expect(getMenuRowBadges(container, ".md")).toHaveLength(1);
   });
 });
