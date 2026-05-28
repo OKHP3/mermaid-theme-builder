@@ -233,3 +233,81 @@ describe("PromptScaffoldModal — subtitle hint text", () => {
     expect(container.textContent).not.toContain("highlighted");
   });
 });
+
+// ---------------------------------------------------------------------------
+// 6. Round-trip — copy then re-open picks up the newly written preference
+// ---------------------------------------------------------------------------
+
+describe("PromptScaffoldModal — round-trip: copy then re-open shows badge", () => {
+  it("Format B 'last used' badge appears on re-open after copying Format B", async () => {
+    const props = buildProps();
+    const { container, rerender } = render(createElement(PromptScaffoldModal, props));
+
+    // No badge before any copy action.
+    expect(getLastUsedBadges(container)).toHaveLength(0);
+
+    // Click Format B — writes 'formatB' to localStorage and starts the 1200ms flash.
+    await act(async () => {
+      fireEvent.click(getMainCopyButton(container, "Format B"));
+    });
+
+    // Advance past the 1200ms copy-flash timeout (fires handleClose) and then past
+    // the 150ms close-animation timeout (fires onClose).
+    act(() => {
+      vi.advanceTimersByTime(1400);
+    });
+
+    expect(props.onClose).toHaveBeenCalledTimes(1);
+
+    // Simulate the parent responding to onClose: set open=false, then re-open.
+    rerender(createElement(PromptScaffoldModal, { ...props, open: false }));
+    rerender(createElement(PromptScaffoldModal, { ...props, open: true }));
+
+    // The useEffect([open]) re-reads localStorage → badge appears on Format B.
+    const badges = getLastUsedBadges(container);
+    expect(badges).toHaveLength(1);
+    expect(badges[0].closest("button")?.textContent).toContain("Format B");
+  });
+
+  it("Format A 'last used' badge appears on re-open after copying Format A", async () => {
+    const props = buildProps();
+    const { container, rerender } = render(createElement(PromptScaffoldModal, props));
+
+    await act(async () => {
+      fireEvent.click(getMainCopyButton(container, "Format A"));
+    });
+
+    act(() => {
+      vi.advanceTimersByTime(1400);
+    });
+
+    rerender(createElement(PromptScaffoldModal, { ...props, open: false }));
+    rerender(createElement(PromptScaffoldModal, { ...props, open: true }));
+
+    const badges = getLastUsedBadges(container);
+    expect(badges).toHaveLength(1);
+    expect(badges[0].closest("button")?.textContent).toContain("Format A");
+  });
+
+  it("subtitle updates to 'highlighted' on re-open after copying for the first time", async () => {
+    const props = buildProps();
+    const { container, rerender } = render(createElement(PromptScaffoldModal, props));
+
+    // Before copy: neutral subtitle.
+    expect(container.textContent).toContain("Choose a theme directive format");
+
+    await act(async () => {
+      fireEvent.click(getMainCopyButton(container, "Format B"));
+    });
+
+    act(() => {
+      vi.advanceTimersByTime(1400);
+    });
+
+    rerender(createElement(PromptScaffoldModal, { ...props, open: false }));
+    rerender(createElement(PromptScaffoldModal, { ...props, open: true }));
+
+    // After re-open: subtitle reflects the newly saved preference.
+    expect(container.textContent).toContain("Your last-used format is highlighted");
+  });
+});
