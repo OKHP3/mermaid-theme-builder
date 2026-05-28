@@ -198,12 +198,12 @@ describe("AppShell settings menu — dismissal", () => {
     expect(btn.getAttribute("aria-expanded")).toBe("false");
   });
 
-  it("a non-Escape keydown does not close the menu", async () => {
+  it("a non-Escape / non-Tab keydown does not close the menu", async () => {
     render(createElement(AppShell));
     await openMenu();
 
     await act(async () => {
-      fireEvent.keyDown(document, { key: "Tab" });
+      fireEvent.keyDown(document, { key: "F1" });
     });
 
     expect(screen.getByRole("menu", { name: "Settings" })).toBeDefined();
@@ -231,5 +231,118 @@ describe("AppShell settings menu — dismissal", () => {
     });
 
     expect(btn.getAttribute("aria-expanded")).toBe("false");
+  });
+
+  it("Tab closes the menu", async () => {
+    render(createElement(AppShell));
+    await openMenu();
+    expect(screen.getByRole("menu", { name: "Settings" })).toBeDefined();
+
+    await act(async () => {
+      fireEvent.keyDown(document, { key: "Tab" });
+    });
+
+    expect(screen.queryByRole("menu", { name: "Settings" })).toBeNull();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 5. Keyboard navigation — ArrowDown / ArrowUp / Home / End within the menu
+// ---------------------------------------------------------------------------
+
+describe("AppShell settings menu — arrow-key navigation", () => {
+  async function openMenu() {
+    const btn = screen.getByRole("button", { name: "Settings" });
+    await act(async () => {
+      fireEvent.click(btn);
+    });
+  }
+
+  it("ArrowDown with no item focused moves focus to the first menu item", async () => {
+    render(createElement(AppShell));
+    await openMenu();
+    const menuEl = screen.getByRole("menu", { name: "Settings" });
+    const items = screen.getAllByRole("menuitem");
+
+    await act(async () => {
+      fireEvent.keyDown(menuEl, { key: "ArrowDown" });
+    });
+
+    expect(document.activeElement).toBe(items[0]);
+  });
+
+  it("ArrowDown from the first item moves focus to the second item", async () => {
+    render(createElement(AppShell));
+    await openMenu();
+    const menuEl = screen.getByRole("menu", { name: "Settings" });
+    const items = screen.getAllByRole("menuitem");
+
+    items[0].focus();
+
+    await act(async () => {
+      fireEvent.keyDown(menuEl, { key: "ArrowDown" });
+    });
+
+    expect(document.activeElement).toBe(items[1]);
+  });
+
+  it("ArrowDown from the last item wraps focus to the first item", async () => {
+    render(createElement(AppShell));
+    await openMenu();
+    const menuEl = screen.getByRole("menu", { name: "Settings" });
+    const items = screen.getAllByRole("menuitem");
+
+    items[items.length - 1].focus();
+
+    await act(async () => {
+      fireEvent.keyDown(menuEl, { key: "ArrowDown" });
+    });
+
+    expect(document.activeElement).toBe(items[0]);
+  });
+
+  it("ArrowUp from the first item wraps focus to the last item", async () => {
+    render(createElement(AppShell));
+    await openMenu();
+    const menuEl = screen.getByRole("menu", { name: "Settings" });
+    const items = screen.getAllByRole("menuitem");
+
+    items[0].focus();
+
+    await act(async () => {
+      fireEvent.keyDown(menuEl, { key: "ArrowUp" });
+    });
+
+    expect(document.activeElement).toBe(items[items.length - 1]);
+  });
+
+  it("Home moves focus to the first item regardless of current position", async () => {
+    render(createElement(AppShell));
+    await openMenu();
+    const menuEl = screen.getByRole("menu", { name: "Settings" });
+    const items = screen.getAllByRole("menuitem");
+
+    items[items.length - 1].focus();
+
+    await act(async () => {
+      fireEvent.keyDown(menuEl, { key: "Home" });
+    });
+
+    expect(document.activeElement).toBe(items[0]);
+  });
+
+  it("End moves focus to the last item regardless of current position", async () => {
+    render(createElement(AppShell));
+    await openMenu();
+    const menuEl = screen.getByRole("menu", { name: "Settings" });
+    const items = screen.getAllByRole("menuitem");
+
+    items[0].focus();
+
+    await act(async () => {
+      fireEvent.keyDown(menuEl, { key: "End" });
+    });
+
+    expect(document.activeElement).toBe(items[items.length - 1]);
   });
 });

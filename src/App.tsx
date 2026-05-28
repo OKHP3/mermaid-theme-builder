@@ -712,6 +712,8 @@ export function AppShell() {
       if (e.key === "Escape") {
         setShowSettingsMenu(false);
         settingsBtnRef.current?.focus();
+      } else if (e.key === "Tab") {
+        setShowSettingsMenu(false);
       }
     }
     document.addEventListener("pointerdown", onPointerDown);
