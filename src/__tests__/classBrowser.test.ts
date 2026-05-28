@@ -517,6 +517,68 @@ describe("ClassBrowser — Fix button rendering (unrecognized class typo suggest
   });
 });
 
+describe("ClassBrowser — 'did you mean' fuzzy suggestion rendering", () => {
+  it("shows 'did you mean :::closestName' when the typo has an edit-distance-1 match", () => {
+    // "prmary" is edit-distance 1 from "primary" → suggestion should appear
+    const html = render({
+      supportsClassDef: true,
+      usedClassNames: new Set(["prmary"]),
+    });
+    expect(html).toContain("did you mean");
+    expect(html).toContain(":::primary");
+  });
+
+  it("does NOT show a 'did you mean' hint when no defined name is within edit distance 2", () => {
+    // "xyzzy" has no classDef within distance 2 of "primary" or "secondary"
+    const html = render({
+      supportsClassDef: true,
+      usedClassNames: new Set(["xyzzy"]),
+    });
+    expect(html).not.toContain("did you mean");
+  });
+
+  it("lists up to 3 equidistant suggestions when multiple candidates tie at min distance", () => {
+    // Four classDefs all at edit distance 1 from "abx"; suggestClassMatch caps at 3.
+    const fourCloseDefs: ClassDef[] = [
+      { name: "abc", fill: "#000", stroke: "#000", color: "#fff", extra: "", description: "" },
+      { name: "abd", fill: "#000", stroke: "#000", color: "#fff", extra: "", description: "" },
+      { name: "abe", fill: "#000", stroke: "#000", color: "#fff", extra: "", description: "" },
+      { name: "abf", fill: "#000", stroke: "#000", color: "#fff", extra: "", description: "" },
+    ];
+    const html = renderToString(
+      createElement(ClassBrowser, {
+        classDefs: fourCloseDefs,
+        supportsClassDef: true,
+        usedClassNames: new Set(["abx"]),
+      })
+    );
+    expect(html).toContain("did you mean");
+
+    // Scope assertions to only the "did you mean …?" phrase so that :::abf
+    // appearances in the card grid or unused-styles indicator don't false-fail.
+    // Slice from "did you mean" up to the closing "?)" of that parenthetical.
+    const hintStart = html.indexOf("did you mean");
+    const hintEnd = html.indexOf("?)", hintStart);
+    const hintSection = hintStart >= 0 && hintEnd >= 0 ? html.slice(hintStart, hintEnd) : "";
+
+    // Suggestions are sorted alphabetically; cap is 3 — abc, abd, abe appear…
+    expect(hintSection).toContain(":::abc");
+    expect(hintSection).toContain(":::abd");
+    expect(hintSection).toContain(":::abe");
+    // …but abf (the 4th alphabetically) is excluded by the 3-suggestion cap.
+    expect(hintSection).not.toContain(":::abf");
+  });
+
+  it("does NOT show 'did you mean' when supportsClassDef is false", () => {
+    // supportsClassDef=false suppresses the entire warning including the hint
+    const html = render({
+      supportsClassDef: false,
+      usedClassNames: new Set(["prmary"]),
+    });
+    expect(html).not.toContain("did you mean");
+  });
+});
+
 describe("ClassBrowser — unused class name info indicator", () => {
   it("shows the indicator when a classDef exists but is not in usedClassNames (with at least one used class)", () => {
     // primary is used; secondary is defined but not used → secondary should appear
