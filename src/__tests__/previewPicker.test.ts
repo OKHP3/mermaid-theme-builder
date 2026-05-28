@@ -368,4 +368,18 @@ describe("previewPicker — beta hint bar details", () => {
     );
     expect(detailsBtns).toHaveLength(0);
   });
+
+  it("clicking 'See support details →' calls onNavigateToParityMatrix exactly once", () => {
+    const spy = vi.fn();
+    const { container } = render(
+      createElement(ComposeTab, { ...BASE_PROPS, onNavigateToParityMatrix: spy })
+    );
+    fireEvent.change(getPickerSelect(container), {
+      target: { value: "sankey-effort-to-output" },
+    });
+    const btn = container.querySelector<HTMLButtonElement>('[role="note"] button');
+    expect(btn).not.toBeNull();
+    fireEvent.click(btn!);
+    expect(spy).toHaveBeenCalledTimes(1);
+  });
 });
