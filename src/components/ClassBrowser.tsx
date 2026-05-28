@@ -820,8 +820,7 @@ export function ClassBrowser({
                 : `${unusedClassNames.length} styles not applied:`}
             </span>{" "}
             {unusedClassNames.map((n, i) => {
-              const isJustCopied =
-                copiedState?.name === n && copiedState.kind === "usage";
+              const isJustCopied = copiedState?.name === n && copiedState.kind === "usage";
               return (
                 <span key={n}>
                   <button

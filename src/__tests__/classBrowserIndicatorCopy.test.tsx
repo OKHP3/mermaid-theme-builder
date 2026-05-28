@@ -51,7 +51,11 @@ let clipboardWritten: string[] = [];
 beforeEach(() => {
   clipboardWritten = [];
   Object.defineProperty(navigator, "clipboard", {
-    value: { writeText: vi.fn(async (text: string) => { clipboardWritten.push(text); }) },
+    value: {
+      writeText: vi.fn(async (text: string) => {
+        clipboardWritten.push(text);
+      }),
+    },
     writable: true,
     configurable: true,
   });
@@ -68,7 +72,9 @@ describe("ClassBrowser — unused indicator copy buttons", () => {
     );
 
     const copyBtn = screen.getByRole("button", { name: "Copy :::secondary" });
-    await act(async () => { fireEvent.click(copyBtn); });
+    await act(async () => {
+      fireEvent.click(copyBtn);
+    });
 
     expect(clipboardWritten).toContain(":::secondary");
   });
@@ -86,7 +92,9 @@ describe("ClassBrowser — unused indicator copy buttons", () => {
     expect(liveRegion.textContent).toBe("");
 
     const copyBtn = screen.getByRole("button", { name: "Copy :::secondary" });
-    await act(async () => { fireEvent.click(copyBtn); });
+    await act(async () => {
+      fireEvent.click(copyBtn);
+    });
 
     expect(liveRegion.textContent).toBe("Copied :::secondary");
   });
@@ -103,10 +111,14 @@ describe("ClassBrowser — unused indicator copy buttons", () => {
     const primaryBtn = screen.getByRole("button", { name: "Copy :::primary" });
     const secondaryBtn = screen.getByRole("button", { name: "Copy :::secondary" });
 
-    await act(async () => { fireEvent.click(secondaryBtn); });
+    await act(async () => {
+      fireEvent.click(secondaryBtn);
+    });
     expect(clipboardWritten[clipboardWritten.length - 1]).toBe(":::secondary");
 
-    await act(async () => { fireEvent.click(primaryBtn); });
+    await act(async () => {
+      fireEvent.click(primaryBtn);
+    });
     expect(clipboardWritten[clipboardWritten.length - 1]).toBe(":::primary");
   });
 
