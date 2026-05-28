@@ -19,7 +19,7 @@ export interface PaletteAttribution {
   url: string;                // Tool URL for clickable attribution
   themeName: string;          // Theme display name for attribution text
   toolName: string;           // Tool name ("Mermaid Theme Builder")
-  toolVersion: string;        // Semantic version ("0.1.0")
+  toolVersion: string;        // Semantic version ("0.3.0")
 }
 
 export interface Palette {
@@ -30,8 +30,8 @@ export interface Palette {
   description: string;      // Short description shown in color editor
   themeIntent?: string;     // Comma-separated use-case guidance
   sourceUrls?: string[];    // Brand source URLs (sites + GitHub CSS)
-  version: string;          // Semantic version string ("0.1.0")
-  colors: ThemeColor[];     // 13 Mermaid themeVariable entries
+  version: string;          // Semantic version string ("0.2.0")
+  colors: ThemeColor[];     // 11 required + optional themeVariable entries
   attribution: PaletteAttribution;
 }
 ```
@@ -65,7 +65,9 @@ An array of URLs where the brand's CSS/design source is publicly available. The 
 Semantic version string. Incremented when palette colors or metadata change meaningfully. Used in metadata comments and Markdown Bootstrap exports.
 
 ### `colors`
-An array of 13 `ThemeColor` objects mapping to Mermaid's `themeVariables` object. The standard 13 keys:
+An array of `ThemeColor` objects mapping to Mermaid's `themeVariables` object. Palettes must supply the 11 required keys; additional optional keys from the known set may also be included.
+
+**11 required keys** (`REQUIRED_COLOR_KEYS` in `src/lib/palettes.ts`):
 
 | Key | Role |
 |---|---|
@@ -80,8 +82,20 @@ An array of 13 `ThemeColor` objects mapping to Mermaid's `themeVariables` object
 | `nodeBorder` | Node border (some diagram types) |
 | `clusterBkg` | Subgraph/cluster background |
 | `titleColor` | Diagram title text color |
+
+**Optional known keys** (`KNOWN_COLOR_KEYS` in `src/lib/palettes.ts`):
+
+| Key | Role |
+|---|---|
 | `edgeLabelBackground` | Background behind edge labels |
 | `fontFamily` | Font family string (not a color) |
+| `secondaryTextColor` | Text color on secondary nodes |
+| `secondaryBorderColor` | Border color on secondary nodes |
+| `tertiaryTextColor` | Text color on tertiary nodes |
+| `tertiaryBorderColor` | Border color on tertiary nodes |
+| `textColor` | General text fallback color |
+
+Keys outside the known set are flagged as unknown on palette import.
 
 ### `attribution`
 Default attribution metadata for the palette. The app reads `attribution.enabledByDefault` to pre-populate the "Metadata comments" toggle. The `label`, `url`, `themeName`, `toolName`, and `toolVersion` are used when generating attribution text in exports.
