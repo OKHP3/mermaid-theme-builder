@@ -43,7 +43,7 @@ import { BRAND_EXAMPLES } from "@/data/examples";
 import { RENDERER_PROFILES, getRendererById } from "@/data/renderer-parity";
 import { FamilySyntaxHint } from "@/components/FamilySyntaxHint";
 import { getFamilySyntaxHint, isHintDismissed } from "@/lib/family-syntax-hints";
-import { HighlightedCode } from "@/components/HighlightedCode";
+import { HighlightedCode, INIT_HL, COMMENT_HL, HL } from "@/components/HighlightedCode";
 import { type TypographySettings } from "@/lib/typography";
 import type { AppTab } from "@/App";
 
@@ -899,6 +899,19 @@ export function ApplyTab({
               >
                 Reset
               </button>
+            )}
+            {previewMode === "code" && codeEditorOverride === null && (
+              <span
+                className="hidden sm:inline-flex items-center gap-2.5 text-[10px] font-mono select-none pl-1"
+                aria-label="Syntax highlighting legend"
+                title="%%{init} directives, %% comments, and classDef lines each use distinct colors in the Code view"
+              >
+                <span style={{ color: INIT_HL.bracket }}>{"%%{init}"}</span>
+                <span style={{ color: COMMENT_HL.text, fontStyle: "italic" }}>
+                  {"%%\u00a0comment"}
+                </span>
+                <span style={{ color: HL.keyword }}>classDef</span>
+              </span>
             )}
             {isMultiDiagram && (
               <div className="flex items-center gap-1 ml-auto">
