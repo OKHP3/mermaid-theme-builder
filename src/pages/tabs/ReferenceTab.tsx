@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Palette, ThemeColor } from "@/lib/palettes";
 import { PaletteSelectorBar } from "@/components/PaletteSelectorBar";
 import { getClassDefs } from "@/lib/theme-engine";
-import { extractUsedClasses } from "@/lib/used-classes";
+import { extractUsedClasses, applyClassFix } from "@/lib/used-classes";
 import { DiagramInventory } from "@/components/DiagramInventory";
 import { ClassBrowser } from "@/components/ClassBrowser";
 import { RENDERER_PROFILES, supportLabel, supportColor } from "@/data/renderer-parity";
@@ -78,11 +78,13 @@ export function ReferenceTab({
     [inputCode]
   );
 
-  // Replace every occurrence of :::typo with :::suggestion in the diagram source.
+  // Replace every whole-token occurrence of :::typo with :::suggestion.
+  // Uses applyClassFix which applies a word-boundary regex so that a shorter
+  // typo (e.g. :::prim) never corrupts a longer valid token (e.g. :::primary).
   const handleApplyFix = useCallback(
     (typo: string, suggestion: string) => {
       if (!onInputChange) return;
-      onInputChange(inputCode.replaceAll(`:::${typo}`, `:::${suggestion}`));
+      onInputChange(applyClassFix(inputCode, typo, suggestion));
     },
     [inputCode, onInputChange]
   );

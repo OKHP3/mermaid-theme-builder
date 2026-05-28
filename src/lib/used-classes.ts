@@ -16,3 +16,19 @@ export function extractUsedClasses(code: string): ReadonlySet<string> {
   const matches = code.matchAll(/:::(\w+)/g);
   return new Set(Array.from(matches, (m) => m[1]));
 }
+
+/**
+ * Replaces every whole-token occurrence of `:::typo` with `:::suggestion`
+ * in the given diagram source string.
+ *
+ * Uses a word-boundary anchor (`\b`) after the typo name so that a shorter
+ * token (e.g. `:::prim`) is never confused with a longer one that shares the
+ * same prefix (e.g. `:::primary`). Only exact token matches are replaced.
+ *
+ * Special regex characters in `typo` are escaped before pattern construction.
+ */
+export function applyClassFix(code: string, typo: string, suggestion: string): string {
+  const escaped = typo.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const re = new RegExp(`:::${escaped}\\b`, "g");
+  return code.replace(re, `:::${suggestion}`);
+}

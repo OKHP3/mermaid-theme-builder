@@ -478,6 +478,45 @@ describe("ClassBrowser — unrecognized class name warning", () => {
   });
 });
 
+describe("ClassBrowser — Fix button rendering (unrecognized class typo suggestions)", () => {
+  it("renders a Fix button when onApplyFix is provided and a suggestion exists", () => {
+    // "prmary" is 1 edit from "primary" — suggestClassMatch will return ["primary"]
+    const html = renderToString(
+      createElement(ClassBrowser, {
+        classDefs: SAMPLE_CLASS_DEFS,
+        supportsClassDef: true,
+        usedClassNames: new Set(["prmary"]),
+        onApplyFix: () => {},
+      })
+    );
+    expect(html).toContain('aria-label="Fix :::prmary → :::primary"');
+  });
+
+  it("does NOT render a Fix button when onApplyFix is not provided", () => {
+    const html = renderToString(
+      createElement(ClassBrowser, {
+        classDefs: SAMPLE_CLASS_DEFS,
+        supportsClassDef: true,
+        usedClassNames: new Set(["prmary"]),
+      })
+    );
+    expect(html).not.toContain("Fix :::prmary");
+  });
+
+  it("does NOT render a Fix button when there is no close suggestion", () => {
+    // "xyzzy" has no classDef within edit distance 2 of "primary"/"secondary"
+    const html = renderToString(
+      createElement(ClassBrowser, {
+        classDefs: SAMPLE_CLASS_DEFS,
+        supportsClassDef: true,
+        usedClassNames: new Set(["xyzzy"]),
+        onApplyFix: () => {},
+      })
+    );
+    expect(html).not.toContain("Fix :::xyzzy");
+  });
+});
+
 describe("ClassBrowser — unused class name info indicator", () => {
   it("shows the indicator when a classDef exists but is not in usedClassNames (with at least one used class)", () => {
     // primary is used; secondary is defined but not used → secondary should appear
