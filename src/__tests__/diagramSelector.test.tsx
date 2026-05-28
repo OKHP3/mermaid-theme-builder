@@ -20,6 +20,28 @@
  */
 
 import { describe, it, expect, vi, afterEach } from "vitest";
+
+// Capture variables — prop-spy mocks write here; each test resets before asserting.
+let capturedMermaidCode: string | undefined;
+let capturedDiffOld: string | undefined;
+let capturedDiffNew: string | undefined;
+
+// vi.mock calls are hoisted before all imports by Vitest.
+vi.mock("@/components/MermaidPreview", () => ({
+  MermaidPreview: ({ code }: { code: string }) => {
+    capturedMermaidCode = code;
+    return null;
+  },
+}));
+
+vi.mock("@/components/DiffView", () => ({
+  DiffView: ({ oldText, newText }: { oldText: string; newText: string }) => {
+    capturedDiffOld = oldText;
+    capturedDiffNew = newText;
+    return null;
+  },
+}));
+
 import { render, screen, act, cleanup } from "@testing-library/react";
 import { fireEvent } from "@testing-library/dom";
 import { createElement } from "react";
@@ -201,5 +223,56 @@ describe("ApplyTab — diagram selector sync: selector hidden after content shri
     expect(screen.getByLabelText("Select diagram")).toBeTruthy();
     const options = Array.from(screen.getByLabelText("Select diagram").querySelectorAll("option"));
     expect(options).toHaveLength(2);
+  });
+
+  it("'themed' preview shows diagram 0 content after selector sync", async () => {
+    capturedMermaidCode = undefined;
+    const { rerender } = render(
+      createElement(ApplyTab, { ...makeProps(MULTI_INPUT), previewMode: "themed" as const })
+    );
+
+    // Navigate to diagram 2 (sequenceDiagram).
+    const nextBtn = screen.getByLabelText("Next diagram");
+    await act(async () => {
+      fireEvent.click(nextBtn);
+    });
+
+    // Shrink to single-diagram content — selector sync clamps activeDiagramIdx to 0.
+    act(() => {
+      rerender(
+        createElement(ApplyTab, { ...makeProps(SINGLE_INPUT), previewMode: "themed" as const })
+      );
+    });
+
+    // The MermaidPreview code prop must reflect diagram 0 (flowchart), not diagram 1.
+    expect(capturedMermaidCode).toContain("flowchart");
+    expect(capturedMermaidCode).not.toContain("sequenceDiagram");
+  });
+
+  it("'diff' view shows diagram 0 content after selector sync", async () => {
+    capturedDiffOld = undefined;
+    capturedDiffNew = undefined;
+    const { rerender } = render(
+      createElement(ApplyTab, { ...makeProps(MULTI_INPUT), previewMode: "diff" as const })
+    );
+
+    // Navigate to diagram 2 (sequenceDiagram).
+    const nextBtn = screen.getByLabelText("Next diagram");
+    await act(async () => {
+      fireEvent.click(nextBtn);
+    });
+
+    // Shrink to single-diagram content — selector sync clamps activeDiagramIdx to 0.
+    act(() => {
+      rerender(
+        createElement(ApplyTab, { ...makeProps(SINGLE_INPUT), previewMode: "diff" as const })
+      );
+    });
+
+    // Both DiffView props must reflect diagram 0 (flowchart), not diagram 1.
+    expect(capturedDiffOld).toContain("flowchart");
+    expect(capturedDiffOld).not.toContain("sequenceDiagram");
+    expect(capturedDiffNew).toContain("flowchart");
+    expect(capturedDiffNew).not.toContain("sequenceDiagram");
   });
 });
