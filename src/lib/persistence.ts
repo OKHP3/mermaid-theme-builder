@@ -163,3 +163,28 @@ export function paletteToShareablePayload(
     customThemeName: customThemeName || undefined,
   };
 }
+
+// ---------------------------------------------------------------------------
+// ClassBrowser preview-mode persistence
+// ---------------------------------------------------------------------------
+
+export const PREVIEW_MODE_KEY = "mtb.classBrowser.previewMode";
+
+export function loadStoredPreviewMode(): "all" | "used" | null {
+  try {
+    if (typeof window === "undefined") return null;
+    const v = window.localStorage.getItem(PREVIEW_MODE_KEY);
+    if (v === "all" || v === "used") return v;
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+export function saveStoredPreviewMode(mode: "all" | "used"): void {
+  try {
+    if (typeof window !== "undefined") window.localStorage.setItem(PREVIEW_MODE_KEY, mode);
+  } catch {
+    // storage unavailable — ignore
+  }
+}

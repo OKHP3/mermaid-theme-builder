@@ -16,12 +16,8 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { render, screen, act, cleanup } from "@testing-library/react";
 import { fireEvent } from "@testing-library/dom";
 import { createElement } from "react";
-import {
-  ClassBrowser,
-  PREVIEW_MODE_KEY,
-  loadStoredPreviewMode,
-  saveStoredPreviewMode,
-} from "@/components/ClassBrowser";
+import { ClassBrowser } from "@/components/ClassBrowser";
+import { PREVIEW_MODE_KEY, loadStoredPreviewMode, saveStoredPreviewMode } from "@/lib/persistence";
 import type { ClassDef } from "@/lib/theme-engine";
 
 // ---------------------------------------------------------------------------
