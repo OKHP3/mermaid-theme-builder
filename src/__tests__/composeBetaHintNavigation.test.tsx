@@ -1,24 +1,25 @@
 // @vitest-environment happy-dom
 
 /**
- * App-level integration test for the "See support details →" navigation
- * in the ComposeTab beta hint bar (Task #320).
+ * Integration tests for the "See support details →" navigation in the
+ * ComposeTab beta hint bar (Task #320).
  *
- * The unit tests in composeBetaHint.test.tsx verify ComposeTab in isolation.
- * This file tests the full chain that can break at the App.tsx level:
+ * Two levels of integration are tested here:
  *
- *   ComposeTab.onNavigateToParityMatrix
- *     → setActiveTab("reference")   — switches the visible tab
- *     → setOpenParityMatrix(true)   — force-opens the RPM section
+ * 1. AppWrapper (custom minimal harness) — mirrors the relevant slice of
+ *    App.tsx state (activeTab + openParityMatrix + handleNavigateToParityMatrix)
+ *    and renders ComposeTab + ReferenceTab together. Verifies the tab switch
+ *    and RPM open state precisely (supportsClassDef=false prevents auto-open).
  *
- * A minimal AppWrapper component reproduces the relevant slice of App.tsx
- * state (activeTab + openParityMatrix) and renders ComposeTab and
- * ReferenceTab together. The test then clicks the button and asserts:
- *   1. The Reference tab becomes active (ComposeTab button is gone).
- *   2. The Renderer Parity Matrix <details> element is open.
+ * 2. AppShell (real App.tsx component) — renders the actual top-level shell
+ *    so that the real App.tsx wiring is exercised. Verifies the full chain:
+ *    - onNavigateToParityMatrix is correctly passed to ComposeTab in App.tsx
+ *    - clicking the button switches the active tab to Reference
+ *    - the Renderer Parity Matrix section is present after navigation
  *
- * ReferenceTab is rendered with supportsClassDef=false so its own auto-open
- * effect does NOT open the RPM details — only the openParityMatrix prop can.
+ * Mocks:  mermaid, ApplyTab, ExamplesTab, MermaidPreview (ComposeTab preview),
+ *         AppIcon, PaletteSelectorBar, DiagramInventory, ClassBrowser.
+ *         ComposeTab and ReferenceTab are NOT mocked.
  */
 
 import { vi, describe, it, expect, beforeEach, afterEach } from "vitest";
@@ -46,8 +47,25 @@ vi.mock("@/components/ClassBrowser", () => ({
   highlightClassDefBlock: () => null,
 }));
 
+vi.mock("@/components/MermaidPreview", () => ({
+  MermaidPreview: () => null,
+}));
+
+vi.mock("@/pages/tabs/ApplyTab", () => ({
+  ApplyTab: () => null,
+}));
+
+vi.mock("@/pages/tabs/ExamplesTab", () => ({
+  ExamplesTab: () => null,
+}));
+
+vi.mock("@/components/AppIcon", () => ({
+  AppIcon: () => null,
+}));
+
 import { useState, createElement, type ReactElement } from "react";
 import { render, screen, cleanup, fireEvent, act } from "@testing-library/react";
+import { AppShell } from "@/App";
 import { ComposeTab } from "@/pages/tabs/ComposeTab";
 import { ReferenceTab } from "@/pages/tabs/ReferenceTab";
 import { BRAND_PALETTES } from "@/lib/palettes";
@@ -120,8 +138,15 @@ const REFERENCE_BASE_PROPS = {
  *   - activeTab: "compose" | "reference"
  *   - openParityMatrix: boolean
  *   - handleNavigateToParityMatrix: sets both
+ *
+ * supportsClassDef=false ensures the RPM details is only opened by
+ * openParityMatrix, not the auto-open effect, keeping assertions precise.
  */
-function AppWrapper({ onNavigateToParityMatrix }: { onNavigateToParityMatrix?: () => void }): ReactElement {
+function AppWrapper({
+  onNavigateToParityMatrix,
+}: {
+  onNavigateToParityMatrix?: () => void;
+}): ReactElement {
   const [activeTab, setActiveTab] = useState<"compose" | "reference">("compose");
   const [openParityMatrix, setOpenParityMatrix] = useState(false);
 
@@ -154,17 +179,21 @@ afterEach(() => {
   localStorage.removeItem(PREVIEW_SAMPLE_KEY);
 });
 
-describe("ComposeTab → App.tsx → ReferenceTab navigation integration", () => {
+// ---------------------------------------------------------------------------
+// 1. AppWrapper — minimal harness (precise supportsClassDef=false isolation)
+// ---------------------------------------------------------------------------
+
+describe("ComposeTab → App.tsx → ReferenceTab navigation integration (AppWrapper)", () => {
   it("clicking 'See support details →' switches the visible tab from Compose to Reference", async () => {
     localStorage.setItem(PREVIEW_SAMPLE_KEY, "sankey-effort-to-output");
     render(createElement(AppWrapper, {}));
 
     const btn = screen.getByRole("button", { name: "See support details →" });
-    await act(async () => { fireEvent.click(btn); });
+    await act(async () => {
+      fireEvent.click(btn);
+    });
 
-    // ComposeTab is unmounted — the button is gone
     expect(screen.queryByRole("button", { name: "See support details →" })).toBeNull();
-    // ReferenceTab is now mounted
     expect(screen.getByText("Renderer Parity Matrix")).toBeDefined();
   });
 
@@ -176,8 +205,9 @@ describe("ComposeTab → App.tsx → ReferenceTab navigation integration", () =>
       fireEvent.click(screen.getByRole("button", { name: "See support details →" }));
     });
 
-    const label = screen.getByText("Renderer Parity Matrix");
-    const details = label.closest("details") as HTMLDetailsElement;
+    const details = screen
+      .getByText("Renderer Parity Matrix")
+      .closest("details") as HTMLDetailsElement;
     expect(details.open).toBe(true);
   });
 
@@ -191,5 +221,47 @@ describe("ComposeTab → App.tsx → ReferenceTab navigation integration", () =>
     });
 
     expect(spy).toHaveBeenCalledTimes(1);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 2. AppShell — real App.tsx wiring (catches "forgot to pass the prop" bugs)
+// ---------------------------------------------------------------------------
+
+describe("AppShell integration — full wiring via real App.tsx", () => {
+  it("clicking 'See support details →' switches AppShell to the Reference tab", async () => {
+    localStorage.setItem(PREVIEW_SAMPLE_KEY, "sankey-effort-to-output");
+    render(createElement(AppShell, {}));
+
+    // AppShell starts on Apply. AppShell renders two navbars (desktop + mobile),
+    // each containing duplicate tab buttons — pick the first Compose tab.
+    await act(async () => {
+      fireEvent.click(screen.getAllByRole("tab", { name: /Compose/i })[0]);
+    });
+
+    const btn = screen.getByRole("button", { name: "See support details →" });
+    await act(async () => {
+      fireEvent.click(btn);
+    });
+
+    // Reference tab is now active — Renderer Parity Matrix heading is rendered.
+    expect(screen.getByText("Renderer Parity Matrix")).toBeDefined();
+    // The Compose beta hint button is gone (ComposeTab unmounted).
+    expect(screen.queryByRole("button", { name: "See support details →" })).toBeNull();
+  });
+
+  it("Renderer Parity Matrix is visible in AppShell after navigation", async () => {
+    localStorage.setItem(PREVIEW_SAMPLE_KEY, "sankey-effort-to-output");
+    render(createElement(AppShell, {}));
+
+    await act(async () => {
+      fireEvent.click(screen.getAllByRole("tab", { name: /Compose/i })[0]);
+    });
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: "See support details →" }));
+    });
+
+    // The Renderer Parity Matrix section heading is present in the DOM.
+    expect(screen.getByText("Renderer Parity Matrix")).toBeDefined();
   });
 });
