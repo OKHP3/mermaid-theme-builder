@@ -1,0 +1,38 @@
+name: Internal link check
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**/*.md'
+      - 'README.md'
+      - 'CHANGELOG.md'
+      - 'AGENTS.md'
+      - 'scripts/check-links.sh'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'docs/**/*.md'
+      - 'README.md'
+      - 'CHANGELOG.md'
+      - 'AGENTS.md'
+      - 'scripts/check-links.sh'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: link-check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  internal-links:
+    name: Check internal doc links
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Check internal Markdown links
+        run: bash scripts/check-links.sh

@@ -105,6 +105,21 @@ Run the following manual test scenarios:
 
 ---
 
+## Pre-release: internal link validation
+
+Run the internal Markdown link checker before tagging. This catches broken relative links (renamed files, moved docs) before they reach main.
+
+```bash
+bash scripts/check-links.sh
+```
+
+- [ ] `bash scripts/check-links.sh` exits 0 — no broken internal doc links found
+- [ ] If it fails: fix each broken relative link reported, then re-run
+
+> External URLs (http/https) are intentionally skipped by the checker to avoid rate-limit failures. CI enforces this gate on every push to `main` and on PRs that touch `docs/` or root Markdown files (see `.github/workflows/link-check.yml`).
+
+---
+
 ## Pre-release: documentation
 
 - [ ] **CHANGELOG.md** — move all items from `[Unreleased]` into a new `## [x.y.z] — YYYY-MM-DD` section; add the comparison link in the footer block (e.g. `[x.y.z]: https://github.com/OKHP3/mermaid-theme-builder/compare/vPREV...vNEXT`); confirm an empty `[Unreleased]` section remains for future development items
