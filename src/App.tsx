@@ -325,6 +325,21 @@ export function AppShell() {
     window.location.hash = activeTab;
   }, [activeTab]);
 
+  // Sync active tab when the browser navigates via Back / Forward.
+  // Without this listener the URL hash changes but React state stays stale,
+  // so pressing Back would show the wrong tab with the correct URL.
+  useEffect(() => {
+    const TABS: AppTab[] = ["apply", "compose", "examples", "reference"];
+    const onHashChange = () => {
+      const h = window.location.hash.slice(1);
+      if (TABS.includes(h as AppTab)) {
+        setActiveTab(h as AppTab);
+      }
+    };
+    window.addEventListener("hashchange", onHashChange);
+    return () => window.removeEventListener("hashchange", onHashChange);
+  }, []);
+
   // Hydrate from URL share token (highest priority) or localStorage on mount.
   useEffect(() => {
     let didApplyShare = false;
