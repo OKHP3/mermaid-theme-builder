@@ -171,6 +171,37 @@ function formatFocusViolators(vs: FocusViolator[]): string {
 }
 
 // ---------------------------------------------------------------------------
+// Unlabeled <th> guard helpers
+//
+// Scans a rendered container for <th> elements that have none of:
+//   • visible text content (trimmed non-empty textContent)
+//   • an aria-label attribute
+//   • aria-hidden="true"
+//
+// A <th> without any of the above is invisible to screen readers and will
+// surface as an axe "scope-attr-unambiguous" / empty-header violation.
+// The guard is intentionally broad: it catches header cells with only
+// icon-children or purely visual content as well as genuinely empty cells.
+// ---------------------------------------------------------------------------
+
+function findUnlabeledThs(container: HTMLElement): HTMLElement[] {
+  return Array.from(container.querySelectorAll<HTMLElement>("th")).filter((th) => {
+    const hasText = (th.textContent ?? "").trim().length > 0;
+    const hasAriaLabel = th.hasAttribute("aria-label");
+    const hasAriaHidden = th.getAttribute("aria-hidden") === "true";
+    return !hasText && !hasAriaLabel && !hasAriaHidden;
+  });
+}
+
+function formatUnlabeledThs(ths: HTMLElement[]): string {
+  if (ths.length === 0) return "";
+  return (
+    `Found ${ths.length} <th> element(s) with no discernible text, aria-label, or aria-hidden:\n` +
+    ths.map((th) => `  ${th.outerHTML}`).join("\n")
+  );
+}
+
+// ---------------------------------------------------------------------------
 // 1. AppShell — real main app shell
 //
 // Renders the full AppShell (header, desktop tab bar, main content with
@@ -218,6 +249,12 @@ describe("AppShell (real component)", () => {
     expect(header).toBeTruthy();
     const position = skipLink!.compareDocumentPosition(header!);
     expect(position & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  it("has no unlabeled <th> elements", () => {
+    const { container } = render(createElement(AppShell, null));
+    const unlabeled = findUnlabeledThs(container);
+    expect(unlabeled, formatUnlabeledThs(unlabeled)).toHaveLength(0);
   });
 });
 
@@ -302,6 +339,12 @@ describe("ApplyTab (real component)", () => {
         .map((v) => `  [${v.impact}] ${v.id}: ${v.description}`)
         .join("\n")}`
     ).toHaveLength(0);
+  });
+
+  it("has no unlabeled <th> elements", () => {
+    const { container } = render(createElement(ApplyTab, applyTabProps));
+    const unlabeled = findUnlabeledThs(container);
+    expect(unlabeled, formatUnlabeledThs(unlabeled)).toHaveLength(0);
   });
 });
 
@@ -423,6 +466,12 @@ describe("ComposeTab (color editor and palette editor)", () => {
         )
         .join("\n")}`
     ).toHaveLength(0);
+  });
+
+  it("has no unlabeled <th> elements", () => {
+    const { container } = render(createElement(ComposeTab, composeTabProps));
+    const unlabeled = findUnlabeledThs(container);
+    expect(unlabeled, formatUnlabeledThs(unlabeled)).toHaveLength(0);
   });
 });
 
@@ -590,6 +639,12 @@ describe("ExamplesTab (browse catalog)", () => {
         .join("\n")}`
     ).toHaveLength(0);
   });
+
+  it("has no unlabeled <th> elements", () => {
+    const { container } = render(createElement(ExamplesTab, examplesTabProps));
+    const unlabeled = findUnlabeledThs(container);
+    expect(unlabeled, formatUnlabeledThs(unlabeled)).toHaveLength(0);
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -631,22 +686,10 @@ describe("ReferenceTab (capabilities table)", () => {
     ).toHaveLength(0);
   });
 
-  it("DiagramInventory expand/collapse column header has a discernible label", () => {
+  it("has no unlabeled <th> elements", () => {
     const { container } = render(createElement(ReferenceTab, referenceTabProps));
-    // The last <th> in the DiagramInventory table is the expand/collapse column.
-    // It must carry aria-label so screen readers don't announce an unlabeled header cell.
-    const ths = container.querySelectorAll("th");
-    const unlabeled = Array.from(ths).filter((th) => {
-      const hasText = (th.textContent ?? "").trim().length > 0;
-      const hasAriaLabel = th.hasAttribute("aria-label");
-      const hasAriaHidden = th.getAttribute("aria-hidden") === "true";
-      return !hasText && !hasAriaLabel && !hasAriaHidden;
-    });
-    expect(
-      unlabeled,
-      `Found ${unlabeled.length} <th> element(s) with no discernible text, aria-label, or aria-hidden:\n` +
-        unlabeled.map((th) => `  ${th.outerHTML}`).join("\n")
-    ).toHaveLength(0);
+    const unlabeled = findUnlabeledThs(container);
+    expect(unlabeled, formatUnlabeledThs(unlabeled)).toHaveLength(0);
   });
 });
 
