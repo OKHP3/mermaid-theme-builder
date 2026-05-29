@@ -304,6 +304,7 @@ export function AppShell() {
   } | null>(null);
   const [hintResetToken, setHintResetToken] = useState(0);
   const [showSettingsMenu, setShowSettingsMenu] = useState(false);
+  const [confirmResetPalettes, setConfirmResetPalettes] = useState(false);
   const settingsBtnRef = useRef<HTMLButtonElement>(null);
   const settingsMenuRef = useRef<HTMLDivElement>(null);
   const [openParityMatrix, setOpenParityMatrix] = useState(false);
@@ -739,6 +740,11 @@ export function AppShell() {
     };
   }, [showSettingsMenu]);
 
+  // Reset the palette-reset confirmation when the settings menu is dismissed.
+  useEffect(() => {
+    if (!showSettingsMenu) setConfirmResetPalettes(false);
+  }, [showSettingsMenu]);
+
   const handleRecordExampleType = useCallback((id: string, type: "flowchart" | "sequence") => {
     setLastExampleType((prev) => ({ ...prev, [id]: type }));
   }, []);
@@ -868,31 +874,60 @@ export function AppShell() {
                   </svg>
                   Reset all syntax tips
                 </button>
-                <button
-                  type="button"
-                  role="menuitem"
-                  onClick={() => {
-                    setCustomColors({});
-                    setCustomThemeName("");
-                    setToast("All palette customizations reset.");
-                    setShowSettingsMenu(false);
-                  }}
-                  className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-left text-foreground hover:bg-muted transition-colors"
-                >
-                  <svg
-                    viewBox="0 0 16 16"
-                    fill="currentColor"
-                    className="w-3.5 h-3.5 shrink-0 text-muted-foreground"
-                    aria-hidden="true"
+                {confirmResetPalettes ? (
+                  <div className="px-3 py-2 border-t border-border/60">
+                    <p className="text-xs text-foreground mb-2">
+                      Reset all?{" "}
+                      <span className="text-muted-foreground">This can&apos;t be undone.</span>
+                    </p>
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        role="menuitem"
+                        autoFocus
+                        onClick={() => {
+                          setCustomColors({});
+                          setCustomThemeName("");
+                          setToast("All palette customizations reset.");
+                          setConfirmResetPalettes(false);
+                          setShowSettingsMenu(false);
+                        }}
+                        className="flex-1 rounded px-2 py-1 text-xs font-medium bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-colors"
+                      >
+                        Confirm
+                      </button>
+                      <button
+                        type="button"
+                        role="menuitem"
+                        onClick={() => setConfirmResetPalettes(false)}
+                        className="flex-1 rounded px-2 py-1 text-xs font-medium bg-muted text-foreground hover:bg-muted/80 transition-colors"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    role="menuitem"
+                    onClick={() => setConfirmResetPalettes(true)}
+                    className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-left text-foreground hover:bg-muted transition-colors"
                   >
-                    <path
-                      fillRule="evenodd"
-                      d="M8 3a5 5 0 1 0 4.546 2.914.75.75 0 0 1 1.357-.637A6.5 6.5 0 1 1 8 2v1.5a.75.75 0 0 1-1.5 0V.75a.75.75 0 0 1 .75-.75h2.25a.75.75 0 0 1 0 1.5H8Z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  Reset all palette customizations
-                </button>
+                    <svg
+                      viewBox="0 0 16 16"
+                      fill="currentColor"
+                      className="w-3.5 h-3.5 shrink-0 text-muted-foreground"
+                      aria-hidden="true"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M8 3a5 5 0 1 0 4.546 2.914.75.75 0 0 1 1.357-.637A6.5 6.5 0 1 1 8 2v1.5a.75.75 0 0 1-1.5 0V.75a.75.75 0 0 1 .75-.75h2.25a.75.75 0 0 1 0 1.5H8Z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    Reset all palette customizations
+                  </button>
+                )}
                 <button
                   type="button"
                   role="menuitem"
