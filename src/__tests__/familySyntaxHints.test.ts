@@ -211,3 +211,62 @@ describe("getFamilySyntaxHint — shape integrity for all registered hints", () 
     expect(uniqueHints.size).toBe(HINT_FAMILIES.length);
   });
 });
+
+// ---------------------------------------------------------------------------
+// 5. Content snapshots — lock in keyIdiom, classDefStatus, and themingNote
+//    for every registered hint (Task #348).
+//
+//    Any mutation to a hint body (typo fix, wording change, whitespace edit)
+//    produces a diff that must be reviewed before `vitest --update-snapshots`.
+//    The first run after adding this block creates the snapshot file; all
+//    subsequent CI runs guard against unintentional mutations.
+// ---------------------------------------------------------------------------
+
+describe("getFamilySyntaxHint — content snapshots (all 28 registered hints)", () => {
+  const ALL_HINT_FAMILIES: DiagramFamily[] = [
+    // Original 13 — already covered by structural tests above
+    "flowchart",
+    "gantt",
+    "pie",
+    "mindmap",
+    "erDiagram",
+    "classDiagram",
+    "stateDiagram",
+    "sequenceDiagram",
+    "block",
+    "timeline",
+    "xychart",
+    "quadrantChart",
+    "sankey",
+    // Additional 15 added in Task #271
+    "journey",
+    "gitGraph",
+    "requirementDiagram",
+    "c4Diagram",
+    "architectureBeta",
+    "packet",
+    "kanban",
+    "zenuml",
+    "radar",
+    "treemap",
+    "venn",
+    "ishikawa",
+    "wardley",
+    "treeView",
+    "eventModeling",
+  ];
+
+  it("ALL_HINT_FAMILIES list has exactly 28 entries", () => {
+    expect(ALL_HINT_FAMILIES).toHaveLength(28);
+  });
+
+  for (const family of ALL_HINT_FAMILIES) {
+    it(`snapshot: "${family}" hint content`, () => {
+      const hint = getFamilySyntaxHint(family);
+      expect(hint).not.toBeNull();
+      // Snapshot the full hint object so keyIdiom, classDefStatus,
+      // and themingNote are all pinned in one readable snapshot block.
+      expect(hint).toMatchSnapshot();
+    });
+  }
+});

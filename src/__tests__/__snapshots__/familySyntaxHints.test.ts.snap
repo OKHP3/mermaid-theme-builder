@@ -1,0 +1,397 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`getFamilySyntaxHint — content snapshots (all 28 registered hints) > snapshot: "architectureBeta" hint content 1`] = `
+{
+  "classDefStatus": "no",
+  "family": "architectureBeta",
+  "keyIdiom": "architecture-beta
+  group api[Backend]
+  service db(database)[Database] in api
+  service server(server)[API Server] in api
+  db:L -- R:server",
+  "themingNote": "Node backgrounds and connector colors apply. Architecture diagram styling is beta and may change in future Mermaid releases.",
+}
+`;
+
+exports[`getFamilySyntaxHint — content snapshots (all 28 registered hints) > snapshot: "block" hint content 1`] = `
+{
+  "classDefStatus": "yes",
+  "family": "block",
+  "keyIdiom": "block:group
+  A["Step 1"]
+  B["Step 2"]
+end
+A --> B
+classDef accent fill:#c46a2c",
+  "themingNote": "Block is the newest Mermaid layout engine. classDef works the same as flowchart — append :::styleName to a block id.",
+}
+`;
+
+exports[`getFamilySyntaxHint — content snapshots (all 28 registered hints) > snapshot: "c4Diagram" hint content 1`] = `
+{
+  "classDefStatus": "no",
+  "family": "c4Diagram",
+  "keyIdiom": "C4Context
+  title System Context
+  Person(user, "User", "End user")
+  System(sys, "My System", "Core application")
+  Rel(user, sys, "Uses")",
+  "themingNote": "Person and system block colors are partially influenced by themeVariables. Background and text apply reliably. C4-specific boundary colors may require additional CSS.",
+}
+`;
+
+exports[`getFamilySyntaxHint — content snapshots (all 28 registered hints) > snapshot: "classDiagram" hint content 1`] = `
+{
+  "classDefStatus": "yes",
+  "family": "classDiagram",
+  "keyIdiom": "class Animal {
+  +String name
+  +speak() void
+}
+Animal <|-- Dog",
+  "themingNote": "classDef lets you color individual classes — add :::styleName after a class name.",
+}
+`;
+
+exports[`getFamilySyntaxHint — content snapshots (all 28 registered hints) > snapshot: "erDiagram" hint content 1`] = `
+{
+  "classDefStatus": "no",
+  "family": "erDiagram",
+  "keyIdiom": "CUSTOMER {
+  string name
+  int id PK
+}
+CUSTOMER ||--o{ ORDER : "places"",
+  "themingNote": "Entity blocks use primaryColor; relationship lines use lineColor.",
+}
+`;
+
+exports[`getFamilySyntaxHint — content snapshots (all 28 registered hints) > snapshot: "eventModeling" hint content 1`] = `
+{
+  "classDefStatus": "no",
+  "family": "eventModeling",
+  "keyIdiom": "eventmodeling
+  title Order Lifecycle
+  Command PlaceOrder
+  Event OrderPlaced
+  Command ShipOrder
+  Event OrderShipped",
+  "themingNote": "New in Mermaid 11.15.0. Background and primary colors from themeVariables apply; per-element styling is not available. Not available in Mermaid installations older than 11.15.0.",
+}
+`;
+
+exports[`getFamilySyntaxHint — content snapshots (all 28 registered hints) > snapshot: "flowchart" hint content 1`] = `
+{
+  "classDefStatus": "yes",
+  "family": "flowchart",
+  "keyIdiom": "flowchart LR
+  A([Start]) --> B{Decision}
+  B -- Yes --> C[Action]
+  B -- No  --> D[/Input/]
+  C --> E((End))
+  classDef accent fill:#c46a2c,color:#fff
+  class C accent",
+  "themingNote": "Node fill/border use primaryColor and primaryBorderColor; edge labels use edgeLabelBackground. classDef lets you color individual nodes — append :::styleName after a node id.",
+}
+`;
+
+exports[`getFamilySyntaxHint — content snapshots (all 28 registered hints) > snapshot: "gantt" hint content 1`] = `
+{
+  "classDefStatus": "no",
+  "family": "gantt",
+  "keyIdiom": "dateFormat YYYY-MM-DD
+section Phase
+  Task name :done, id, 2024-01-01, 7d",
+  "themingNote": "Task fill/border via taskBkgColor, taskBorderColor; section bands via sectionBkgColor.",
+}
+`;
+
+exports[`getFamilySyntaxHint — content snapshots (all 28 registered hints) > snapshot: "gitGraph" hint content 1`] = `
+{
+  "classDefStatus": "no",
+  "family": "gitGraph",
+  "keyIdiom": "gitGraph
+  commit
+  branch feature
+  checkout feature
+  commit
+  commit
+  checkout main
+  merge feature",
+  "themingNote": "Background colors apply. Branch lines and commit node colors are managed by Mermaid's gitGraph renderer and do not respond to standard themeVariables.",
+}
+`;
+
+exports[`getFamilySyntaxHint — content snapshots (all 28 registered hints) > snapshot: "ishikawa" hint content 1`] = `
+{
+  "classDefStatus": "no",
+  "family": "ishikawa",
+  "keyIdiom": "fishbone
+  title Why Diagrams Fail
+  section Syntax
+    Missing init block : Syntax
+    Wrong keyword : Syntax
+  section Renderer
+    Version mismatch : Renderer",
+  "themingNote": "Experimental. themeVariables apply to background and spine line colors. Branch-level node colors are not individually controllable.",
+}
+`;
+
+exports[`getFamilySyntaxHint — content snapshots (all 28 registered hints) > snapshot: "journey" hint content 1`] = `
+{
+  "classDefStatus": "no",
+  "family": "journey",
+  "keyIdiom": "journey
+  title My Working Day
+  section Work
+    Make tea: 5: Me
+    Do work: 1: Me, Cat
+  section Home
+    Relax: 5: Me",
+  "themingNote": "Background and global text colors apply. Task bar fill and section header colors are managed by Mermaid's internal journey renderer — palette selection is the main lever.",
+}
+`;
+
+exports[`getFamilySyntaxHint — content snapshots (all 28 registered hints) > snapshot: "kanban" hint content 1`] = `
+{
+  "classDefStatus": "no",
+  "family": "kanban",
+  "keyIdiom": "kanban
+  todo["To Do"]
+    t1["Design tokens"]
+    t2["Write tests"]
+  doing["In Progress"]
+    t3["Theme engine"]
+  done["Done"]
+    t4["Palette setup"]",
+  "themingNote": "Card backgrounds and borders are partially influenced by themeVariables. Column header colors are managed by Mermaid's internal kanban renderer.",
+}
+`;
+
+exports[`getFamilySyntaxHint — content snapshots (all 28 registered hints) > snapshot: "mindmap" hint content 1`] = `
+{
+  "classDefStatus": "no",
+  "family": "mindmap",
+  "keyIdiom": "root((Topic))
+  Branch
+    (Rounded)
+    [Square]
+    ))Cloud((",
+  "themingNote": "Node fill follows primaryColor; edge label backgrounds follow edgeLabelBackground.",
+}
+`;
+
+exports[`getFamilySyntaxHint — content snapshots (all 28 registered hints) > snapshot: "packet" hint content 1`] = `
+{
+  "classDefStatus": "no",
+  "family": "packet",
+  "keyIdiom": "packet-beta
+  title TCP Header
+  0-15: "Source Port"
+  16-31: "Destination Port"
+  32-63: "Sequence Number"",
+  "themingNote": "Background and text colors apply. Packet field-level colors are not individually controlled by themeVariables — palette selection is the main lever.",
+}
+`;
+
+exports[`getFamilySyntaxHint — content snapshots (all 28 registered hints) > snapshot: "pie" hint content 1`] = `
+{
+  "classDefStatus": "no",
+  "family": "pie",
+  "keyIdiom": "title Chart Title
+"Slice A" : 40
+"Slice B" : 60",
+  "themingNote": "Slice colors cycle through pie1–pie12 themeVariables — override up to 12 segments.",
+}
+`;
+
+exports[`getFamilySyntaxHint — content snapshots (all 28 registered hints) > snapshot: "quadrantChart" hint content 1`] = `
+{
+  "classDefStatus": "no",
+  "family": "quadrantChart",
+  "keyIdiom": "quadrantChart
+  title "Priority Matrix"
+  x-axis "Low Effort" --> "High Effort"
+  y-axis "Low Impact" --> "High Impact"
+  quadrant-1 Quick Wins
+  quadrant-2 Major Projects
+  quadrant-3 Fill-ins
+  quadrant-4 Consider
+  Feature A: [0.3, 0.6]",
+  "themingNote": "Quadrant backgrounds use quadrant1–quadrant4 themeVariables; point fill uses quadrantPointFill; axis labels use primaryTextColor.",
+}
+`;
+
+exports[`getFamilySyntaxHint — content snapshots (all 28 registered hints) > snapshot: "radar" hint content 1`] = `
+{
+  "classDefStatus": "no",
+  "family": "radar",
+  "keyIdiom": "radar-beta
+  title Team Skills
+  axis be["Backend"], fe["Frontend"], ux["UX"]
+  curve a["Alice"]{85, 70, 60}
+  curve b["Bob"]{65, 85, 75}
+  max 100
+  min 0",
+  "themingNote": "Background and title colors apply. Radar polygon fill and axis line colors are managed by Mermaid's internal renderer — palette selection is the main lever.",
+}
+`;
+
+exports[`getFamilySyntaxHint — content snapshots (all 28 registered hints) > snapshot: "requirementDiagram" hint content 1`] = `
+{
+  "classDefStatus": "no",
+  "family": "requirementDiagram",
+  "keyIdiom": "requirementDiagram
+  requirement Auth_Req {
+    id: 1
+    text: "System must authenticate users"
+    risk: high
+    verifyMethod: test
+  }
+  element AuthModule {
+    type: simulation
+  }
+  Auth_Req - satisfies -> AuthModule",
+  "themingNote": "Requirement box backgrounds, borders, and text respond to themeVariables. Relationship lines use lineColor.",
+}
+`;
+
+exports[`getFamilySyntaxHint — content snapshots (all 28 registered hints) > snapshot: "sankey" hint content 1`] = `
+{
+  "classDefStatus": "no",
+  "family": "sankey",
+  "keyIdiom": "sankey-beta
+Source,Target A,10
+Source,Target B,6
+Target A,Sink,10
+Target B,Sink,6",
+  "themingNote": "Node and link colors inherit from the palette's primaryColor and lineColor. Individual node color is not configurable via themeVariables — palette selection is the main lever.",
+}
+`;
+
+exports[`getFamilySyntaxHint — content snapshots (all 28 registered hints) > snapshot: "sequenceDiagram" hint content 1`] = `
+{
+  "classDefStatus": "no",
+  "family": "sequenceDiagram",
+  "keyIdiom": "participant A as Alice
+A->>B: Hello
+loop Retry
+  B-->>A: Ack
+end",
+  "themingNote": "Actor styling via actorBkg, actorBorder; activation boxes via activationBkgColor.",
+}
+`;
+
+exports[`getFamilySyntaxHint — content snapshots (all 28 registered hints) > snapshot: "stateDiagram" hint content 1`] = `
+{
+  "classDefStatus": "limited",
+  "family": "stateDiagram",
+  "keyIdiom": "[*] --> Active
+Active --> Done : complete
+Done --> [*]
+state "Long label" as alias",
+  "themingNote": "Composite states auto-rotate fill colors (fillType0–fillType7) by nesting depth. classDef requires stateDiagram-v2.",
+}
+`;
+
+exports[`getFamilySyntaxHint — content snapshots (all 28 registered hints) > snapshot: "timeline" hint content 1`] = `
+{
+  "classDefStatus": "no",
+  "family": "timeline",
+  "keyIdiom": "title Project Milestones
+section Q1
+  Kickoff : 2024-01-15
+  Alpha   : 2024-02-28
+section Q2
+  Beta    : 2024-05-01",
+  "themingNote": "Period (section) bands cycle through cScale0–cScale11 themeVariables — override up to 12 sections.",
+}
+`;
+
+exports[`getFamilySyntaxHint — content snapshots (all 28 registered hints) > snapshot: "treeView" hint content 1`] = `
+{
+  "classDefStatus": "no",
+  "family": "treeView",
+  "keyIdiom": "treeView-beta
+  root["/"]
+    src["src/"]
+      lib["lib/"]
+        themeEngine.ts
+    public["public/"]",
+  "themingNote": "Experimental. Theming support is limited — background and primary text colors apply. This diagram type may not be stable across Mermaid versions.",
+}
+`;
+
+exports[`getFamilySyntaxHint — content snapshots (all 28 registered hints) > snapshot: "treemap" hint content 1`] = `
+{
+  "classDefStatus": "no",
+  "family": "treemap",
+  "keyIdiom": "treemap-beta
+  "Category A"
+    "Item A1": 10
+    "Item A2": 20
+  "Category B"
+    "Item B1": 15
+    "Item B2": 25",
+  "themingNote": "Node fill colors use Mermaid's internal color cycling and do not respond to standard themeVariables. Background applies reliably.",
+}
+`;
+
+exports[`getFamilySyntaxHint — content snapshots (all 28 registered hints) > snapshot: "venn" hint content 1`] = `
+{
+  "classDefStatus": "no",
+  "family": "venn",
+  "keyIdiom": "venn-beta
+  A[Measure]
+  B[Document]
+  C[Diagram]
+  A&B[Auditable Records]
+  A&B&C[Visual Governance]",
+  "themingNote": "Experimental. Circle fill colors and label text respond partially to themeVariables. Background applies reliably. Validate in your target renderer before publication.",
+}
+`;
+
+exports[`getFamilySyntaxHint — content snapshots (all 28 registered hints) > snapshot: "wardley" hint content 1`] = `
+{
+  "classDefStatus": "no",
+  "family": "wardley",
+  "keyIdiom": "wardley-beta
+  title Evolution Map
+  anchor User [0.95, 0.50]
+  component Service [0.65, 0.45]
+  component Platform [0.35, 0.30]
+  User --> Service
+  Service --> Platform",
+  "themingNote": "Beta. themeVariables apply to background colors. Component node and evolution axis styles are primarily managed by Mermaid's internal Wardley renderer. handDrawn look is not supported.",
+}
+`;
+
+exports[`getFamilySyntaxHint — content snapshots (all 28 registered hints) > snapshot: "xychart" hint content 1`] = `
+{
+  "classDefStatus": "no",
+  "family": "xychart",
+  "keyIdiom": "xychart-beta
+  title "Revenue"
+  x-axis ["Q1", "Q2", "Q3", "Q4"]
+  y-axis "USD" 0 --> 100
+  bar [30, 45, 60, 80]
+  line [25, 40, 55, 75]",
+  "themingNote": "Bar/line colors come from xyChart.plotColorPalette (comma-separated hex list). Background and axis labels use xyChart.backgroundColor and xyChart.plotColorPalette.",
+}
+`;
+
+exports[`getFamilySyntaxHint — content snapshots (all 28 registered hints) > snapshot: "zenuml" hint content 1`] = `
+{
+  "classDefStatus": "no",
+  "family": "zenuml",
+  "keyIdiom": "zenuml
+  @Actor Alice
+  @Participant Bob
+  Alice -> Bob: "Hello"
+  Bob -> Alice: return "Hi"
+  while Retry {
+    Alice -> Bob: "Ping"
+  }",
+  "themingNote": "themeVariables apply to background and participant colors. Styling is less granular than standard sequenceDiagram — use actorBkg and primaryColor for best results.",
+}
+`;
