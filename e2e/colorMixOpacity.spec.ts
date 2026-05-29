@@ -454,6 +454,52 @@ test.describe("ClassBrowser toggle buttons — All/Used mode opacity", () => {
         "The active state conditional class may have been incorrectly modified."
     ).toBeGreaterThanOrEqual(0.95);
   });
+
+  test("inactive 'All' toggle button hover state renders in the /80 opacity range", async ({
+    page,
+  }) => {
+    // The preview defaults to 'used' mode, so 'All' is inactive at /45.
+    // Hovering applies hover:text-[var(--okh-forge-code-fg)]/80, lifting
+    // the alpha to ~0.80.
+    await page.hover('[data-preview-toggle="all"]');
+    // Allow the CSS transition-colors to settle before reading.
+    await page.waitForTimeout(300);
+
+    const colorStr = await page.evaluate(() => {
+      const btn = document.querySelector<HTMLButtonElement>(
+        '[data-preview-toggle="all"]'
+      );
+      if (!btn) return null;
+      return window.getComputedStyle(btn).color;
+    });
+
+    expect(
+      colorStr,
+      "Could not find the 'All' toggle button via [data-preview-toggle='all']. " +
+        "Check that the attribute is still present in ClassBrowser.tsx."
+    ).toBeTruthy();
+
+    const alpha = parseAlpha(colorStr!);
+    expect(
+      alpha,
+      `Could not parse alpha from computed color "${colorStr}".`
+    ).not.toBeNull();
+
+    // hover:/80 → ~0.80 nominal.  Must sit clearly above the resting /45
+    // value (>0.75) and below full opacity (<0.95).
+    expect(
+      alpha!,
+      `Hovered 'All' toggle color "${colorStr}" is below the /80 range (alpha=${alpha}). ` +
+        "The hover:text-[var(--okh-forge-code-fg)]/80 modifier may have been removed " +
+        "or replaced with a lower value."
+    ).toBeGreaterThan(0.75);
+
+    expect(
+      alpha!,
+      `Hovered 'All' toggle color "${colorStr}" appears fully opaque (alpha=${alpha}). ` +
+        "The /80 hover modifier may not be applying — alpha should remain below 0.95."
+    ).toBeLessThan(0.95);
+  });
 });
 
 // ---------------------------------------------------------------------------
