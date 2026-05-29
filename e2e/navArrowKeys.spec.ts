@@ -58,8 +58,25 @@ test.describe("Tab bar arrow-key navigation — desktop tablist", () => {
     );
     expect(startIdx, "a tab must be aria-selected=true on load").toBeGreaterThanOrEqual(0);
 
-    // Focus the active tab (already in Tab order via tabIndex=0).
-    await page.locator(`${TAB_SEL}[aria-selected="true"]`).focus();
+    // Reach the active tab via keyboard Tab navigation (validates Tab reachability).
+    // The roving-tabindex pattern keeps only the active tab in Tab order (tabIndex=0).
+    // Tab order on load: skip link → settings button → active nav tab → main content …
+    await page.evaluate(() => document.body.focus());
+    let tabReached = false;
+    for (let i = 0; i < 10; i++) {
+      await page.keyboard.press("Tab");
+      const onNavTab = await page.evaluate(
+        (navSel) =>
+          document.activeElement?.getAttribute("role") === "tab" &&
+          !!document.activeElement?.closest(navSel),
+        'nav[role="tablist"][aria-label="Mermaid Theme Builder sections"]',
+      );
+      if (onNavTab) {
+        tabReached = true;
+        break;
+      }
+    }
+    expect(tabReached, "active nav tab must be reachable via Tab from document body").toBe(true);
 
     await page.keyboard.press("ArrowRight");
 
