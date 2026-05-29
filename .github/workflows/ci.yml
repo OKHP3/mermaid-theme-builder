@@ -14,10 +14,11 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
-    name: Typecheck & Build
+  ci:
+    name: Unit tests, typecheck, and formatting
     runs-on: ubuntu-latest
     timeout-minutes: 10
+
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -34,14 +35,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Typecheck (libs + leaves)
+      - name: Unit tests (Vitest)
+        run: pnpm test
+
+      - name: Type check
         run: pnpm run typecheck
 
-      - name: Run tests
-        run: pnpm run test
-
-      - name: Build Mermaid Theme Builder
-        env:
-          PORT: "18624"
-          BASE_PATH: "/mermaid-theme-builder/"
-        run: pnpm run build
+      - name: Format check (Prettier)
+        run: pnpm prettier --check "src/**/*.{ts,tsx}" "*.ts" "*.json"
