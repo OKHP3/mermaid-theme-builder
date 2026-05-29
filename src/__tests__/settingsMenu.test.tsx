@@ -4,20 +4,26 @@
  * Component tests for the three Settings menu actions (Task #350).
  *
  * Behaviors covered:
- *   1. "Reset all syntax tips" — calls clearAllDismissals, shows toast.
+ *   1. "Reset all syntax tips" — calls clearAllDismissals, shows toast,
+ *      closes menu.
  *   2. "Reset all palette customizations" (two-step confirm, Task #349):
  *        a. First click shows inline confirm panel.
- *        b. Confirm fires toast and closes the menu.
- *        c. Cancel returns to the normal menu list without side effects.
- *   3. "Clear recent palette history" — shows toast and closes the menu.
+ *        b. Confirm fires toast, closes menu, and clears customColors from
+ *           persisted localStorage state.
+ *        c. Cancel returns to the normal menu list with no side effects.
+ *   3. "Clear recent palette history" — shows toast, closes menu, and
+ *      clears recentPaletteIds from persisted localStorage state.
  *
  * Strategy
  * --------
- * The full <App /> is rendered so the header (including the Settings button)
- * is present.  Mermaid is mocked to prevent canvas/SVG errors.
- * clearAllDismissals is spied on to verify it is called for action #1.
- * The toast (role="status") and menu (role="menu") are the primary observable
- * signals for actions #2 and #3.
+ * The full <App /> is rendered so the real header (Settings button) and
+ * persistence layer are exercised.  Mermaid is mocked to prevent canvas
+ * errors.  clearAllDismissals is spied on for action #1.
+ *
+ * State-mutation tests seed "mtb.state.v1" in localStorage before rendering
+ * so App loads non-empty customColors / recentPaletteIds.  After each action
+ * the persisted value is read back (using waitFor since savePersistedState
+ * runs inside a React useEffect) to confirm the mutation.
  */
 
 // vi.mock calls must be hoisted before any imports.
@@ -42,11 +48,41 @@ vi.mock("@/lib/family-syntax-hints", async (importOriginal) => {
   };
 });
 
-import { render, screen, cleanup } from "@testing-library/react";
+import { render, screen, cleanup, waitFor } from "@testing-library/react";
 import { fireEvent } from "@testing-library/dom";
 import { createElement } from "react";
 import App from "@/App";
 import { clearAllDismissals } from "@/lib/family-syntax-hints";
+
+// ---------------------------------------------------------------------------
+// Constants
+// ---------------------------------------------------------------------------
+
+/** localStorage key used by the persistence module (src/lib/persistence.ts). */
+const STORAGE_KEY = "mtb.state.v1";
+
+/**
+ * A minimal seeded state that gives App non-empty customColors and
+ * recentPaletteIds so the state-mutation tests have something to verify.
+ */
+const SEEDED_STATE = JSON.stringify({
+  schemaVersion: 1,
+  customColors: { "seed-palette": [{ key: "primaryColor", value: "#ff0000" }] },
+  recentPaletteIds: ["seed-a", "seed-b"],
+  selectedPaletteId: "okhp3",
+  inputCode: "",
+  includeMetaComments: false,
+  includeBadge: false,
+  customThemeName: "",
+  userPalettes: [],
+  look: "classic",
+  fontSize: "",
+  typography: {},
+  rendererTarget: "",
+  previewMode: "original",
+  lastExampleType: {},
+  lastSelectedExampleId: "",
+});
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -64,6 +100,11 @@ function getToast(): string {
   return screen.getByRole("status").textContent ?? "";
 }
 
+function getPersistedState(): Record<string, unknown> {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  return raw ? (JSON.parse(raw) as Record<string, unknown>) : {};
+}
+
 // ---------------------------------------------------------------------------
 // Lifecycle
 // ---------------------------------------------------------------------------
@@ -71,7 +112,6 @@ function getToast(): string {
 afterEach(() => {
   cleanup();
   vi.clearAllMocks();
-  // Clear any localStorage state written by App between tests.
   localStorage.clear();
 });
 
@@ -142,6 +182,21 @@ describe("Settings menu — Reset all palette customizations (confirm flow)", ()
     expect(getMenu()).toBeNull();
   });
 
+  it("clears customColors in persisted localStorage state after Confirm", async () => {
+    localStorage.setItem(STORAGE_KEY, SEEDED_STATE);
+    render(createElement(App, null));
+    openSettingsMenu();
+    fireEvent.click(screen.getByText("Reset all palette customizations"));
+    fireEvent.click(screen.getByText("Confirm"));
+
+    // savePersistedState runs inside a React useEffect — wait for it.
+    await waitFor(() => {
+      const saved = getPersistedState();
+      const colors = saved.customColors as Record<string, unknown>;
+      expect(Object.keys(colors ?? {}).length).toBe(0);
+    });
+  });
+
   it("returns to the normal menu list after Cancel — original button is visible again", () => {
     render(createElement(App, null));
     openSettingsMenu();
@@ -159,7 +214,6 @@ describe("Settings menu — Reset all palette customizations (confirm flow)", ()
     openSettingsMenu();
     fireEvent.click(screen.getByText("Reset all palette customizations"));
     fireEvent.click(screen.getByText("Cancel"));
-    // Menu must still be visible.
     expect(getMenu()).not.toBeNull();
   });
 
@@ -190,5 +244,18 @@ describe("Settings menu — Clear recent palette history", () => {
     expect(getMenu()).not.toBeNull();
     fireEvent.click(screen.getByText("Clear recent palette history"));
     expect(getMenu()).toBeNull();
+  });
+
+  it("clears recentPaletteIds in persisted localStorage state after clicking", async () => {
+    localStorage.setItem(STORAGE_KEY, SEEDED_STATE);
+    render(createElement(App, null));
+    openSettingsMenu();
+    fireEvent.click(screen.getByText("Clear recent palette history"));
+
+    // savePersistedState runs inside a React useEffect — wait for it.
+    await waitFor(() => {
+      const saved = getPersistedState();
+      expect(saved.recentPaletteIds).toEqual([]);
+    });
   });
 });
