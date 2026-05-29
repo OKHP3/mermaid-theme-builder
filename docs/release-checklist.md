@@ -116,7 +116,7 @@ bash scripts/check-links.sh
 - [ ] `bash scripts/check-links.sh` exits 0 — no broken internal doc links found
 - [ ] If it fails: fix each broken relative link reported, then re-run
 
-> External URLs (http/https) are intentionally skipped by the checker to avoid rate-limit failures. CI enforces this gate on every push to `main` and on PRs that touch `docs/` or root Markdown files (see `.github/workflows/link-check.yml`).
+> External URLs (http/https) are intentionally skipped by the checker to avoid rate-limit failures. CI enforces this gate on every push to `main` and on every PR targeting `main` (see `.github/workflows/link-check.yml`). Checked scope: `docs/`, `skills/`, `README.md`, `CHANGELOG.md`, `AGENTS.md`.
 
 ---
 

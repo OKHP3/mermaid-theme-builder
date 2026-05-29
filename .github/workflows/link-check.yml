@@ -3,20 +3,8 @@ name: Internal link check
 on:
   push:
     branches: [main]
-    paths:
-      - 'docs/**/*.md'
-      - 'README.md'
-      - 'CHANGELOG.md'
-      - 'AGENTS.md'
-      - 'scripts/check-links.sh'
   pull_request:
     branches: [main]
-    paths:
-      - 'docs/**/*.md'
-      - 'README.md'
-      - 'CHANGELOG.md'
-      - 'AGENTS.md'
-      - 'scripts/check-links.sh'
 
 permissions:
   contents: read
