@@ -12,6 +12,7 @@
 
 import { describe, it, expect } from "vitest";
 import { ALL_EXAMPLES, filterExamples } from "@/lib/examples-filter";
+import { EXAMPLE_CATALOG } from "@/data/example-library";
 
 describe("ExamplesTab — filterExamples (real assembled list)", () => {
   // -------------------------------------------------------------------------
@@ -182,5 +183,87 @@ describe("ExamplesTab — filterExamples (real assembled list)", () => {
 
   it("a query with no matching entries returns an empty array", () => {
     expect(filterExamples(ALL_EXAMPLES, "xyzzy-not-a-real-term-9q4k7")).toHaveLength(0);
+  });
+});
+
+// =============================================================================
+// EXAMPLE_CATALOG — data-integrity tests (Task #346)
+//
+// These tests assert directly on the catalog *data*, not on the filter logic.
+// They ensure that high-value entries retain the populated description and tags
+// fields that make search useful.  If an entry is accidentally cleared or
+// renamed during a future catalog edit the filter tests above would still pass
+// (the logic is correct) but these tests would immediately flag the regression.
+// =============================================================================
+
+describe("EXAMPLE_CATALOG — data integrity", () => {
+  // Build a lookup map once for all entry-specific assertions.
+  const byId = new Map(EXAMPLE_CATALOG.map((e) => [e.id, e]));
+
+  // ---------------------------------------------------------------------------
+  // Helper: assert a named entry has non-empty description AND non-empty tags.
+  // ---------------------------------------------------------------------------
+  function assertHasDescriptionAndTags(id: string): void {
+    const entry = byId.get(id);
+    expect(entry, `entry "${id}" must exist in EXAMPLE_CATALOG`).toBeDefined();
+    expect(
+      entry!.description?.trim(),
+      `entry "${id}" must have a non-empty description`,
+    ).toBeTruthy();
+    expect(
+      entry!.tags,
+      `entry "${id}" must have a tags array`,
+    ).toBeDefined();
+    expect(
+      entry!.tags!.length,
+      `entry "${id}" must have at least one tag`,
+    ).toBeGreaterThan(0);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Named high-value entries — explicitly guarded
+  // ---------------------------------------------------------------------------
+
+  it('venn-governance-triangle has a non-empty description and tags', () => {
+    assertHasDescriptionAndTags("venn-governance-triangle");
+  });
+
+  it('ishikawa-render-failure has a non-empty description and tags', () => {
+    assertHasDescriptionAndTags("ishikawa-render-failure");
+  });
+
+  it('sequence-council-to-prototype has a non-empty description and tags', () => {
+    assertHasDescriptionAndTags("sequence-council-to-prototype");
+  });
+
+  it('gantt-mermaid-theme-builder-roadmap has a non-empty description and tags', () => {
+    assertHasDescriptionAndTags("gantt-mermaid-theme-builder-roadmap");
+  });
+
+  it('gitgraph-repo-evolution has a non-empty description and tags', () => {
+    assertHasDescriptionAndTags("gitgraph-repo-evolution");
+  });
+
+  // ---------------------------------------------------------------------------
+  // Count guard — catches accidental bulk deletion of searchable metadata
+  //
+  // At the time this test was written there were 30 catalog entries with both
+  // a non-empty description and at least one tag.  The floor of 25 catches any
+  // batch deletion (≥ 5 entries cleared) while tolerating deliberate small
+  // pruning without requiring an immediate test update.
+  // ---------------------------------------------------------------------------
+
+  it("at least 25 EXAMPLE_CATALOG entries have both a non-empty description and at least one tag", () => {
+    const enriched = EXAMPLE_CATALOG.filter(
+      (e) =>
+        e.description !== undefined &&
+        e.description.trim().length > 0 &&
+        e.tags !== undefined &&
+        e.tags.length > 0,
+    );
+    expect(
+      enriched.length,
+      `expected ≥ 25 enriched catalog entries, found ${enriched.length}`,
+    ).toBeGreaterThanOrEqual(25);
   });
 });
