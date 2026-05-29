@@ -208,39 +208,33 @@ describe("EXAMPLE_CATALOG — data integrity", () => {
     expect(entry, `entry "${id}" must exist in EXAMPLE_CATALOG`).toBeDefined();
     expect(
       entry!.description?.trim(),
-      `entry "${id}" must have a non-empty description`,
+      `entry "${id}" must have a non-empty description`
     ).toBeTruthy();
-    expect(
-      entry!.tags,
-      `entry "${id}" must have a tags array`,
-    ).toBeDefined();
-    expect(
-      entry!.tags!.length,
-      `entry "${id}" must have at least one tag`,
-    ).toBeGreaterThan(0);
+    expect(entry!.tags, `entry "${id}" must have a tags array`).toBeDefined();
+    expect(entry!.tags!.length, `entry "${id}" must have at least one tag`).toBeGreaterThan(0);
   }
 
   // ---------------------------------------------------------------------------
   // Named high-value entries — explicitly guarded
   // ---------------------------------------------------------------------------
 
-  it('venn-governance-triangle has a non-empty description and tags', () => {
+  it("venn-governance-triangle has a non-empty description and tags", () => {
     assertHasDescriptionAndTags("venn-governance-triangle");
   });
 
-  it('ishikawa-render-failure has a non-empty description and tags', () => {
+  it("ishikawa-render-failure has a non-empty description and tags", () => {
     assertHasDescriptionAndTags("ishikawa-render-failure");
   });
 
-  it('sequence-council-to-prototype has a non-empty description and tags', () => {
+  it("sequence-council-to-prototype has a non-empty description and tags", () => {
     assertHasDescriptionAndTags("sequence-council-to-prototype");
   });
 
-  it('gantt-mermaid-theme-builder-roadmap has a non-empty description and tags', () => {
+  it("gantt-mermaid-theme-builder-roadmap has a non-empty description and tags", () => {
     assertHasDescriptionAndTags("gantt-mermaid-theme-builder-roadmap");
   });
 
-  it('gitgraph-repo-evolution has a non-empty description and tags', () => {
+  it("gitgraph-repo-evolution has a non-empty description and tags", () => {
     assertHasDescriptionAndTags("gitgraph-repo-evolution");
   });
 
@@ -259,11 +253,11 @@ describe("EXAMPLE_CATALOG — data integrity", () => {
         e.description !== undefined &&
         e.description.trim().length > 0 &&
         e.tags !== undefined &&
-        e.tags.length > 0,
+        e.tags.length > 0
     );
     expect(
       enriched.length,
-      `expected ≥ 25 enriched catalog entries, found ${enriched.length}`,
+      `expected ≥ 25 enriched catalog entries, found ${enriched.length}`
     ).toBeGreaterThanOrEqual(25);
   });
 });
