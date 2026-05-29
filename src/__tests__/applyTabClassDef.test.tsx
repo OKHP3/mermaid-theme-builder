@@ -106,6 +106,22 @@ const TIMELINE_DIAGRAM = `timeline
 /** A flowchart diagram — "flowchart" IS in CLASSDEF_CAPABLE_FAMILIES. */
 const FLOWCHART_DIAGRAM = "flowchart TD\n  A[Start] --> B[Process] --> C[End]";
 
+/** A classDiagram — "classDiagram" IS in CLASSDEF_CAPABLE_FAMILIES. */
+const CLASS_DIAGRAM = `classDiagram
+  class Animal {
+    +String name
+    +move()
+  }`;
+
+/** A stateDiagram-v2 — maps to family "stateDiagram" which IS in CLASSDEF_CAPABLE_FAMILIES. */
+const STATE_DIAGRAM = `stateDiagram-v2
+  [*] --> Active
+  Active --> [*]`;
+
+/** A block diagram — "block" IS in CLASSDEF_CAPABLE_FAMILIES (uses block-beta keyword). */
+const BLOCK_DIAGRAM = `block-beta
+  A["Start"] --> B["End"]`;
+
 afterEach(cleanup);
 
 // ---------------------------------------------------------------------------
@@ -144,6 +160,27 @@ describe("ApplyTab — 'No classDef' badge is absent for classDef-capable famili
 
   it("does not render 'No classDef' when inputCode is empty (unknown family)", () => {
     render(createElement(ApplyTab, { ...BASE_PROPS, inputCode: "" }));
+    expect(screen.queryByText("No classDef")).toBeNull();
+  });
+
+  // -------------------------------------------------------------------------
+  // Remaining three CLASSDEF_CAPABLE_FAMILIES entries (Task #347)
+  // If any of these were accidentally removed from the list the badge would
+  // appear and these tests would immediately fail.
+  // -------------------------------------------------------------------------
+
+  it("does not render 'No classDef' for a classDiagram diagram", () => {
+    render(createElement(ApplyTab, { ...BASE_PROPS, inputCode: CLASS_DIAGRAM }));
+    expect(screen.queryByText("No classDef")).toBeNull();
+  });
+
+  it("does not render 'No classDef' for a stateDiagram-v2 diagram", () => {
+    render(createElement(ApplyTab, { ...BASE_PROPS, inputCode: STATE_DIAGRAM }));
+    expect(screen.queryByText("No classDef")).toBeNull();
+  });
+
+  it("does not render 'No classDef' for a block diagram", () => {
+    render(createElement(ApplyTab, { ...BASE_PROPS, inputCode: BLOCK_DIAGRAM }));
     expect(screen.queryByText("No classDef")).toBeNull();
   });
 });
