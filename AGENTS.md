@@ -34,7 +34,7 @@ and current state.
 
 ## Repository Hygiene Standard
 
-**Brand:** OverKill Hill P3 (Forge / Rust-orange) **Body scope class:** none -- this is the default brand; pages set no body class **Canonical stylesheet:** <https://raw.githubusercontent.com/OKHP3/OverKill-Hill/main/assets/css/theme.css> **Version:** 2.0
+**Brand:** OverKill Hill P3 (Forge / Rust-orange) **Body scope class:** none -- this is the default brand; pages set no body class **Canonical stylesheet:** <https://raw.githubusercontent.com/OKHP3/OverKill-Hill/main/assets/css/theme.css> **Version:** 2.1
 
 This section governs how files and folders are named, what structure all sibling
 repos share, what counts as detritus, and the brand contract this repo serves.
@@ -203,8 +203,6 @@ no source code. Do not delete it.
 |   |   |-- release-gate.yml          CHANGELOG entry check on tag push
 |   |   |-- skill-tests.yml           Node.js skill package tests
 |   |   |-- sync-forge-tokens.yml     weekly upstream forge-tokens.css sync
-|   |   |-- deploy-mermaid-theme-builder.yml   DEPRECATED -- safe to delete
-|   |   +-- pages.yml                           DEPRECATED -- safe to delete
 |   |-- dependabot.yml
 |   |-- FUNDING.yml
 |   +-- copilot-instructions.md
