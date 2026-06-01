@@ -22,6 +22,8 @@ async function getMermaid(): Promise<MermaidType> {
     mermaidInstance = mod.default;
   }
   if (!initializationDone) {
+    const zenuml = await import("@mermaid-js/mermaid-zenuml");
+    await mermaidInstance.registerExternalDiagrams([zenuml.default]);
     mermaidInstance.initialize({
       startOnLoad: false,
       securityLevel: "strict",

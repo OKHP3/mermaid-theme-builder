@@ -823,7 +823,7 @@ const VENN_GOVERNANCE_TRIANGLE = `venn-beta
   A&B&C[Visual Governance]`;
 
 const ISHIKAWA_RENDER_FAILURE = `%%{init: {"theme": "base"} }%%
-fishbone
+ishikawa
     title Why does a Mermaid diagram render incorrectly?
     accTitle: Root cause analysis - premature or incorrect rendering
     section Syntax
@@ -1203,17 +1203,6 @@ click GLEE_LINK "https://glee-fully.tools" _blank
 click ASK_LINK "https://askjamie.bot" _blank
 click FOOTNOTE "https://overkillhill.com/projects/mermaid-theme-builder/" _blank
 
-e_start@{ animation: fast }
-e_collect@{ animation: slow }
-e_interrogate@{ animation: slow }
-e_decide@{ animation: fast }
-e_s1@{ animation: fast }
-e_s2@{ animation: fast }
-e_s3@{ animation: fast }
-e_s4@{ animation: fast }
-e_s5@{ animation: fast }
-e_s6@{ animation: fast }
-e_ship@{ animation: fast }
 
 classDef origin fill:#0F172A,stroke:#38BDF8,stroke-width:3px,color:#F8FAFC
 classDef hot fill:#7F1D1D,stroke:#F97316,stroke-width:2px,color:#FFF7ED
