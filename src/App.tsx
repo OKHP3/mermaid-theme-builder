@@ -1200,14 +1200,6 @@ export function AppShell() {
         style={{ minHeight: "34px" }}
       >
         <div className="flex items-center gap-3">
-          <a
-            href="https://okhp3.github.io/mermaid-theme-builder"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="forge-btn-cta"
-          >
-            Open Workbench →
-          </a>
           <div className="flex items-center gap-2 forge-footer-meta">
             <a
               href="https://overkillhill.com/"
