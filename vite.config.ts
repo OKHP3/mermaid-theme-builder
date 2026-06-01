@@ -59,6 +59,14 @@ export default defineConfig({
   },
   resolve: {
     alias: {
+      mermaid: path.resolve(
+        import.meta.dirname,
+        "node_modules/mermaid/dist/mermaid.esm.min.mjs"
+      ),
+      "@mermaid-js/mermaid-zenuml": path.resolve(
+        import.meta.dirname,
+        "node_modules/@mermaid-js/mermaid-zenuml/dist/mermaid-zenuml.esm.min.mjs"
+      ),
       "@": path.resolve(import.meta.dirname, "src"),
     },
     dedupe: ["react", "react-dom"],

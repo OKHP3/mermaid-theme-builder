@@ -1,0 +1,1 @@
+- [Mermaid + Vite ESM entry aliasing](mermaid-vite-esm-entry.md) — alias both to .esm.min.mjs + exclude from optimizeDeps, else .core.mjs causes CJS import failures in browser

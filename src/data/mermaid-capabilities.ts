@@ -661,7 +661,7 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
   {
     id: "ishikawa",
     displayName: "Ishikawa (Fishbone)",
-    declarations: /^\s*(?:ishikawa-beta|fishbone)\b/im,
+    declarations: /^\s*(?:ishikawa(?:-beta)?|fishbone)\b/im,
     stability: "experimental",
     styleStrategy: "limited",
     supportsClassDef: false,
