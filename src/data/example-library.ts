@@ -998,19 +998,17 @@ const C4_COMPONENT_API_SERVER = `C4Component
 
 const ARCHITECTURE_STATIC_APP = `architecture-beta
   group browser(cloud)[Browser]
-    service vite(server)[Vite Dev Server]
-    service app(disk)[React App]
-  end
-
   group cdn(cloud)[GitHub Pages CDN]
-    service pages(server)[Static Files]
-  end
+
+  service vite(server)[Vite Dev Server] in browser
+  service app(disk)[React App] in browser
+  service pages(server)[Static Files] in cdn
 
   service mermaidjs(internet)[Mermaid.js]
 
-  app:R --> mermaidjs:L
-  vite:R --> app:L
-  pages:R --> app:L`;
+  app:R -- L:mermaidjs
+  vite:R -- L:app
+  pages:R -- L:app`;
 
 const XYCHART_CLARITY_VELOCITY = `xychart-beta
   title "Clarity Velocity — Sprints 1–6"
@@ -1093,48 +1091,48 @@ flowchart LR
 %% Created with: Mermaid Theme Builder by OverKill Hill P3
 %% Tool: https://overkillhill.com/projects/mermaid-theme-builder/
 
-START@{ shape: stadium, label: "Random Thought Enters the Machine" }:::origin
-SPARK@{ shape: bolt, label: "Spark" }:::hot
-LEDGER@{ shape: docs, label: "Notes, Threads, Prompts" }:::doc
-COUNCIL@{ shape: braces, label: "Council of AIs: useful or just shiny?" }:::council
-DECIDE@{ shape: diamond, label: "Worth Overdoing?" }:::decision
+START@{ shape: stadium, label: "Random Thought Enters the Machine" }
+SPARK@{ shape: bolt, label: "Spark" }
+LEDGER@{ shape: docs, label: "Notes, Threads, Prompts" }
+COUNCIL@{ shape: braces, label: "Council of AIs: useful or just shiny?" }
+DECIDE@{ shape: diamond, label: "Worth Overdoing?" }
 
 START e_start@==> SPARK
 SPARK e_collect@--> LEDGER
 LEDGER e_interrogate@--> COUNCIL
 COUNCIL e_decide@--> DECIDE
 
-DECIDE -- "No, park it" --> GRAVEYARD@{ shape: bow-rect, label: "Idea Graveyard" }:::muted
+DECIDE -- "No, park it" --> GRAVEYARD@{ shape: bow-rect, label: "Idea Graveyard" }
 GRAVEYARD -. "ferments" .-> SPARK
-DECIDE -- "Yes, overdo it" --> THESIS@{ shape: hex, label: "Name the Pain" }:::okh
+DECIDE -- "Yes, overdo it" --> THESIS@{ shape: hex, label: "Name the Pain" }
 
 subgraph SG1["1. Sequence Engine: Context Distillation"]
 direction TB
-  S1A@{ shape: circle, label: "Input" }:::sequence
-  S1B@{ shape: stadium, label: "Voice Riff" }:::sequence
-  S1C@{ shape: doc, label: "Messy Transcript" }:::doc
-  S1D@{ shape: div-rect, label: "Extract Claims" }:::sequence
-  S1E@{ shape: notch-rect, label: "Reusable Thesis Card" }:::artifact
+  S1A@{ shape: circle, label: "Input" }
+  S1B@{ shape: stadium, label: "Voice Riff" }
+  S1C@{ shape: doc, label: "Messy Transcript" }
+  S1D@{ shape: div-rect, label: "Extract Claims" }
+  S1E@{ shape: notch-rect, label: "Reusable Thesis Card" }
   S1A --> S1B --> S1C --> S1D --> S1E
 end
 
 subgraph SG2["2. Timeline Forge: Maybe to Momentum"]
 direction TB
-  T0@{ shape: sm-circ, label: "T+0" }:::timeline
-  T1@{ shape: flag, label: "T+2 Name Product" }:::timeline
-  T2@{ shape: hourglass, label: "T+6 Debate Scope" }:::timeline
-  T3@{ shape: doc, label: "T+9 PRD Packet" }:::timeline
-  T4@{ shape: framed-circle, label: "T+12 Prototype" }:::artifact
+  T0@{ shape: sm-circ, label: "T+0" }
+  T1@{ shape: flag, label: "T+2 Name Product" }
+  T2@{ shape: hourglass, label: "T+6 Debate Scope" }
+  T3@{ shape: doc, label: "T+9 PRD Packet" }
+  T4@{ shape: framed-circle, label: "T+12 Prototype" }
   T0 --> T1 --> T2 --> T3 --> T4
 end
 
 subgraph SG3["3. Brand Gravity Well"]
 direction TB
-  M0@{ shape: dbl-circ, label: "Personal Ecosystem" }:::brand
-  M1@{ shape: curv-trap, label: "OverKill Hill P3" }:::okh
-  M2@{ shape: stadium, label: "AskJamie" }:::askjamie
-  M3@{ shape: stadium, label: "Glee-fully" }:::glee
-  M4@{ shape: comment, label: "No BFS. No employer bleed." }:::warning
+  M0@{ shape: dbl-circ, label: "Personal Ecosystem" }
+  M1@{ shape: curv-trap, label: "OverKill Hill P3" }
+  M2@{ shape: stadium, label: "AskJamie" }
+  M3@{ shape: stadium, label: "Glee-fully" }
+  M4@{ shape: comment, label: "No BFS. No employer bleed." }
   M0 --> M1
   M0 --> M2
   M0 --> M3
@@ -1143,11 +1141,11 @@ end
 
 subgraph SG4["4. Theme Builder Runtime"]
 direction TB
-  A1@{ shape: lean-r, label: "Paste Mermaid" }:::input
-  A2@{ shape: cyl, label: "Palette Store" }:::data
-  A3@{ shape: hex, label: "Theme Engine" }:::engine
-  A4@{ shape: curv-trap, label: "Live Preview" }:::preview
-  A5@{ shape: lean-l, label: "Copy / Export" }:::output
+  A1@{ shape: lean-r, label: "Paste Mermaid" }
+  A2@{ shape: cyl, label: "Palette Store" }
+  A3@{ shape: hex, label: "Theme Engine" }
+  A4@{ shape: curv-trap, label: "Live Preview" }
+  A5@{ shape: lean-l, label: "Copy / Export" }
   A1 --> A3
   A2 --> A3
   A3 --> A4
@@ -1156,12 +1154,12 @@ end
 
 subgraph SG5["5. Apply, Repair, Repeat"]
 direction TB
-  P1@{ shape: lean-r, label: "Bland Diagram" }:::raw
-  P2@{ shape: trap-t, label: "Detect Family" }:::process
-  P3@{ shape: diamond, label: "Strong Support?" }:::decision
-  P4@{ shape: tag-rect, label: "Full Theme" }:::success
-  P5@{ shape: notch-rect, label: "Generic Only" }:::caution
-  P6@{ shape: dbl-circ, label: "Styled Artifact" }:::artifact
+  P1@{ shape: lean-r, label: "Bland Diagram" }
+  P2@{ shape: trap-t, label: "Detect Family" }
+  P3@{ shape: diamond, label: "Strong Support?" }
+  P4@{ shape: tag-rect, label: "Full Theme" }
+  P5@{ shape: notch-rect, label: "Generic Only" }
+  P6@{ shape: dbl-circ, label: "Styled Artifact" }
   P1 --> P2 --> P3
   P3 -- "High" --> P4 --> P6
   P3 -- "Beta" --> P5 --> P6
@@ -1169,10 +1167,10 @@ end
 
 subgraph SG6["6. Governance: Safety and Attribution"]
 direction TB
-  G1@{ shape: hex, label: "Render Safety Scan" }:::govern
-  G2@{ shape: cyl, label: "Theme Metadata" }:::data
-  G3@{ shape: comment, label: "Source Comments: ON" }:::note
-  G4@{ shape: flag, label: "Export Bootstrap" }:::artifact
+  G1@{ shape: hex, label: "Render Safety Scan" }
+  G2@{ shape: cyl, label: "Theme Metadata" }
+  G3@{ shape: comment, label: "Source Comments: ON" }
+  G4@{ shape: flag, label: "Export Bootstrap" }
   G1 --> G2
   G2 --> G3
   G2 --> G4
@@ -1185,17 +1183,17 @@ SG3 e_s4@--> SG4
 SG4 e_s5@--> SG5
 SG5 e_s6@--> SG6
 
-SG6 e_ship@==> SHIP@{ shape: dbl-circ, label: "Ship it. Then sharpen it." }:::ship
+SG6 e_ship@==> SHIP@{ shape: dbl-circ, label: "Ship it. Then sharpen it." }
 
-OKH_LINK@{ shape: curv-trap, label: "overkillhill.com" }:::okhLink
-GLEE_LINK@{ shape: curv-trap, label: "glee-fully.tools" }:::gleeLink
-ASK_LINK@{ shape: curv-trap, label: "askjamie.bot" }:::askLink
+OKH_LINK@{ shape: curv-trap, label: "overkillhill.com" }
+GLEE_LINK@{ shape: curv-trap, label: "glee-fully.tools" }
+ASK_LINK@{ shape: curv-trap, label: "askjamie.bot" }
 
 SHIP --> OKH_LINK
 SHIP --> GLEE_LINK
 SHIP --> ASK_LINK
 
-FOOTNOTE@{ shape: text, label: "Mermaid Theme Builder | OKH Protocol Dark | v0.2-alpha" }:::credit
+FOOTNOTE@{ shape: text, label: "Mermaid Theme Builder | OKH Protocol Dark | v0.2-alpha" }
 SHIP -.-> FOOTNOTE
 
 click OKH_LINK "https://overkillhill.com" _blank
@@ -1203,6 +1201,37 @@ click GLEE_LINK "https://glee-fully.tools" _blank
 click ASK_LINK "https://askjamie.bot" _blank
 click FOOTNOTE "https://overkillhill.com/projects/mermaid-theme-builder/" _blank
 
+
+class START origin
+class SPARK hot
+class LEDGER,S1C,T3 doc
+class COUNCIL council
+class DECIDE,P3 decision
+class GRAVEYARD muted
+class THESIS,M1 okh
+class S1A,S1B,S1D sequence
+class S1E,T4,P6,G4 artifact
+class T0,T1,T2 timeline
+class M0 brand
+class M2 askjamie
+class M3 glee
+class M4 warning
+class A1 input
+class A2,G2 data
+class A3 engine
+class A4 preview
+class A5 output
+class P1 raw
+class P2 process
+class P4 success
+class P5 caution
+class G1 govern
+class G3 note
+class SHIP ship
+class OKH_LINK okhLink
+class GLEE_LINK gleeLink
+class ASK_LINK askLink
+class FOOTNOTE credit
 
 classDef origin fill:#0F172A,stroke:#38BDF8,stroke-width:3px,color:#F8FAFC
 classDef hot fill:#7F1D1D,stroke:#F97316,stroke-width:2px,color:#FFF7ED

@@ -1,15 +1,13 @@
 architecture-beta
   group browser(cloud)[Browser]
-    service vite(server)[Vite Dev Server]
-    service app(disk)[React App]
-  end
-
   group cdn(cloud)[GitHub Pages CDN]
-    service pages(server)[Static Files]
-  end
+
+  service vite(server)[Vite Dev Server] in browser
+  service app(disk)[React App] in browser
+  service pages(server)[Static Files] in cdn
 
   service mermaidjs(internet)[Mermaid.js]
 
-  app:R --> mermaidjs:L
-  vite:R --> app:L
-  pages:R --> app:L
+  app:R -- L:mermaidjs
+  vite:R -- L:app
+  pages:R -- L:app
