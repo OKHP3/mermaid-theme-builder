@@ -1178,14 +1178,14 @@ export function ComposeTab({
         </div>
 
         <div className="flex-1 flex flex-col overflow-hidden min-h-[280px] md:min-h-0">
-          <div className="flex items-center px-4 py-2 border-b border-border bg-card/20 flex-none gap-2 min-w-0">
+          <div className="flex items-center px-4 py-2 border-b border-border bg-card/20 flex-none gap-[5px] min-w-0">
             <span className="text-xs font-medium text-muted-foreground shrink-0">
               Theme Preview
             </span>
             <select
               value={selectedSampleId}
               onChange={(e) => handleSampleIdChange(e.target.value)}
-              className="text-xs text-muted-foreground/70 bg-transparent border-0 outline-none cursor-pointer min-w-0 truncate max-w-[180px] md:max-w-[260px]"
+              className="text-xs text-muted-foreground/70 bg-transparent border-0 outline-none cursor-pointer min-w-0 truncate flex-1"
               aria-label="Preview diagram"
             >
               {EXAMPLE_GROUPS.map((group) => (

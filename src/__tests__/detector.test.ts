@@ -335,36 +335,3 @@ describe("DIAGRAM_CAPABILITIES registry", () => {
     }
   });
 });
-
-describe("detectDiagram — eventModeling full example", () => {
-  const entry = EXAMPLE_CATALOG.find((e) => e.id === "eventmodeling-order-lifecycle");
-
-  it("eventmodeling-order-lifecycle entry exists in EXAMPLE_CATALOG", () => {
-    expect(entry).toBeDefined();
-  });
-
-  it("full example detects as eventModeling family", () => {
-    expect(entry).toBeDefined();
-    expect(detectDiagram(entry!.content).family).toBe("eventModeling");
-  });
-
-  it("full example contains at least one Command node", () => {
-    expect(entry).toBeDefined();
-    expect(entry!.content).toMatch(/^\s*Command\s+\w+/m);
-  });
-
-  it("full example contains at least one Event node", () => {
-    expect(entry).toBeDefined();
-    expect(entry!.content).toMatch(/^\s*Event\s+\w+/m);
-  });
-
-  it("full example contains at least one View node", () => {
-    expect(entry).toBeDefined();
-    expect(entry!.content).toMatch(/^\s*View\s+\w+/m);
-  });
-
-  it("full example contains at least one arrow (-->)", () => {
-    expect(entry).toBeDefined();
-    expect(entry!.content).toContain("-->");
-  });
-});

@@ -1,1 +1,2 @@
 - [Mermaid + Vite ESM entry aliasing](mermaid-vite-esm-entry.md) — alias both to .esm.min.mjs + exclude from optimizeDeps, else .core.mjs causes CJS import failures in browser
+- [Mermaid 11 grammar quirks](mermaid-grammar-quirks.md) — block:id needs end, arch-beta has no end, venn uses set/union keywords, :::class invalid after @{}, eventModeling has no title token

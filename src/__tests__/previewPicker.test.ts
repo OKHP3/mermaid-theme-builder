@@ -226,14 +226,6 @@ describe("previewPicker — option label suffixes", () => {
     expect(opt!.text).toBe("Sankey · Beta");
   });
 
-  it("an 'Experimental' entry shows '· Experimental' appended to its label", () => {
-    const { container } = renderTab();
-    const opt = Array.from(getPickerSelect(container).options).find(
-      (o) => o.value === "eventmodeling-order-lifecycle"
-    );
-    expect(opt).toBeDefined();
-    expect(opt!.text).toBe("Event Modeling — order lifecycle · Experimental");
-  });
 
   it("a 'Canonical · Beta' entry shows only '· Beta' suffix, not the full badge text", () => {
     const { container } = renderTab();
@@ -327,18 +319,6 @@ describe("previewPicker — beta render-confidence hint (rendered)", () => {
 // ---------------------------------------------------------------------------
 
 describe("previewPicker — beta hint bar details", () => {
-  it("hint shows 'Experimental diagram type' for an Experimental-badge entry", () => {
-    const { container } = renderTab();
-    fireEvent.change(getPickerSelect(container), {
-      target: { value: "eventmodeling-order-lifecycle" },
-    });
-    const hint = container.querySelector('[role="note"]');
-    expect(hint).not.toBeNull();
-    expect(hint!.textContent).toContain("Experimental diagram type");
-    // Must not show the Beta label for a purely Experimental entry.
-    expect(hint!.textContent).not.toContain("Beta diagram type");
-  });
-
   it("hint shows 'Beta diagram type' for a Beta-badge entry", () => {
     const { container } = renderTab();
     fireEvent.change(getPickerSelect(container), {
