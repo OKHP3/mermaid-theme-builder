@@ -173,11 +173,31 @@ export function MermaidPreview({ code, className, typography }: MermaidPreviewPr
     const svg = container.querySelector("svg");
     if (!svg) return;
 
-    // Use viewBox for intrinsic SVG dimensions — Mermaid always sets viewBox
-    let svgW = svg.viewBox?.baseVal?.width ?? 0;
-    let svgH = svg.viewBox?.baseVal?.height ?? 0;
+    let svgW = 0;
+    let svgH = 0;
 
-    // Fallback: parse explicit width/height attributes (skip percentage values)
+    // Mermaid sets max-width (CSS pixels) on the SVG element.
+    // viewBox may use a different internal coordinate scale, so max-width
+    // is a more reliable source for the diagram's natural rendered size.
+    const maxWidthStr = svg.style.maxWidth;
+    if (maxWidthStr && !maxWidthStr.includes("%")) {
+      const mw = parseFloat(maxWidthStr);
+      if (mw > 0) {
+        svgW = mw;
+        const vb = svg.viewBox?.baseVal;
+        if (vb && vb.width > 0) {
+          svgH = mw * (vb.height / vb.width);
+        }
+      }
+    }
+
+    // Fallback: use viewBox dimensions directly
+    if (!svgW || !svgH) {
+      svgW = svg.viewBox?.baseVal?.width ?? 0;
+      svgH = svg.viewBox?.baseVal?.height ?? 0;
+    }
+
+    // Fallback: parse explicit width/height attributes (skip "%" values)
     if (!svgW || !svgH) {
       const aw = parseFloat(svg.getAttribute("width") ?? "0");
       const ah = parseFloat(svg.getAttribute("height") ?? "0");
