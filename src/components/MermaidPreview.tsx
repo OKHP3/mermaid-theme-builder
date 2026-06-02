@@ -173,11 +173,11 @@ export function MermaidPreview({ code, className, typography }: MermaidPreviewPr
     const svg = container.querySelector("svg");
     if (!svg) return;
 
-    // Use viewBox for intrinsic SVG dimensions (Mermaid always sets viewBox)
+    // Use viewBox for intrinsic SVG dimensions — Mermaid always sets viewBox
     let svgW = svg.viewBox?.baseVal?.width ?? 0;
     let svgH = svg.viewBox?.baseVal?.height ?? 0;
 
-    // Fallback: parse width/height attributes (strip "px", skip "%")
+    // Fallback: parse explicit width/height attributes (skip percentage values)
     if (!svgW || !svgH) {
       const aw = parseFloat(svg.getAttribute("width") ?? "0");
       const ah = parseFloat(svg.getAttribute("height") ?? "0");
@@ -185,13 +185,6 @@ export function MermaidPreview({ code, className, typography }: MermaidPreviewPr
         svgW = aw;
         svgH = ah;
       }
-    }
-
-    // Last resort: use scaled bounding rect divided back by current scale
-    if (!svgW || !svgH) {
-      const rect = svg.getBoundingClientRect();
-      svgW = rect.width / scale;
-      svgH = rect.height / scale;
     }
 
     if (!svgW || !svgH) return;
@@ -206,11 +199,8 @@ export function MermaidPreview({ code, className, typography }: MermaidPreviewPr
 
     setScale(Math.round(fitScale * 100) / 100);
     setTranslate({ x: 0, y: 0 });
-  }, [scale]);
+  }, []);
 
-  useEffect(() => {
-    resetView();
-  }, [code, resetView]);
 
   const zoomBy = useCallback((delta: number) => {
     setScale((s) => clamp(Math.round((s + delta) * 100) / 100, MIN_SCALE, MAX_SCALE));
@@ -354,6 +344,11 @@ export function MermaidPreview({ code, className, typography }: MermaidPreviewPr
       canceled = true;
     };
   }, [code, uniqueId]);
+
+  // Auto-fit whenever a new SVG is committed to the DOM
+  useEffect(() => {
+    if (svgContent) fitToWindow();
+  }, [svgContent, fitToWindow]);
 
   const btnBase = "forge-preview-btn";
   const isEmpty = !code.trim();
