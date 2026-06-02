@@ -98,6 +98,31 @@ function IconReset() {
   );
 }
 
+function IconFit() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <polyline points="1 5 1 1 5 1" />
+      <line x1="1" y1="1" x2="5.5" y2="5.5" />
+      <polyline points="15 5 15 1 11 1" />
+      <line x1="15" y1="1" x2="10.5" y2="5.5" />
+      <polyline points="1 11 1 15 5 15" />
+      <line x1="1" y1="15" x2="5.5" y2="10.5" />
+      <polyline points="15 11 15 15 11 15" />
+      <line x1="15" y1="15" x2="10.5" y2="10.5" />
+    </svg>
+  );
+}
+
 function scopedTypographyCss(css: string, scopeId: string): string {
   const scope = `#${scopeId}`;
   return css
@@ -141,6 +166,47 @@ export function MermaidPreview({ code, className, typography }: MermaidPreviewPr
     setScale(1);
     setTranslate({ x: 0, y: 0 });
   }, []);
+
+  const fitToWindow = useCallback(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    const svg = container.querySelector("svg");
+    if (!svg) return;
+
+    // Use viewBox for intrinsic SVG dimensions (Mermaid always sets viewBox)
+    let svgW = svg.viewBox?.baseVal?.width ?? 0;
+    let svgH = svg.viewBox?.baseVal?.height ?? 0;
+
+    // Fallback: parse width/height attributes (strip "px", skip "%")
+    if (!svgW || !svgH) {
+      const aw = parseFloat(svg.getAttribute("width") ?? "0");
+      const ah = parseFloat(svg.getAttribute("height") ?? "0");
+      if (aw && ah && !svg.getAttribute("width")?.includes("%")) {
+        svgW = aw;
+        svgH = ah;
+      }
+    }
+
+    // Last resort: use scaled bounding rect divided back by current scale
+    if (!svgW || !svgH) {
+      const rect = svg.getBoundingClientRect();
+      svgW = rect.width / scale;
+      svgH = rect.height / scale;
+    }
+
+    if (!svgW || !svgH) return;
+
+    const containerW = container.clientWidth;
+    const containerH = container.clientHeight;
+    const fitScale = clamp(
+      Math.min(containerW / svgW, containerH / svgH) * 0.9,
+      MIN_SCALE,
+      MAX_SCALE,
+    );
+
+    setScale(Math.round(fitScale * 100) / 100);
+    setTranslate({ x: 0, y: 0 });
+  }, [scale]);
 
   useEffect(() => {
     resetView();
@@ -400,6 +466,15 @@ export function MermaidPreview({ code, className, typography }: MermaidPreviewPr
               aria-label="Zoom in"
             >
               <IconZoomIn />
+            </button>
+            <div className="mx-0.5 h-3.5 w-px bg-white/15" />
+            <button
+              className={btnBase}
+              onClick={fitToWindow}
+              title="Fit to window"
+              aria-label="Fit to window"
+            >
+              <IconFit />
             </button>
             <div className="mx-0.5 h-3.5 w-px bg-white/15" />
             <button
