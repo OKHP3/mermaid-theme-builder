@@ -817,10 +817,10 @@ const VENN_GOVERNANCE_TRIANGLE = `venn-beta
   set B ["Document"]
   set C ["Diagram"]
 
-  union A B ["Auditable Records"]
-  union B C ["Annotated Diagrams"]
-  union A C ["Metric Visualizations"]
-  union A B C ["Visual Governance"]`;
+  union A, B ["Auditable Records"]
+  union B, C ["Annotated Diagrams"]
+  union A, C ["Metric Visualizations"]
+  union A, B, C ["Visual Governance"]`;
 
 const ISHIKAWA_RENDER_FAILURE = `%%{init: {"theme": "base"} }%%
 ishikawa
@@ -1511,41 +1511,7 @@ export const EXAMPLE_CATALOG: ExampleEntry[] = [
       "Mindmap-style root cause diagram analyzing why a Mermaid diagram renders incorrectly — covering Syntax, Renderer, Theme, Environment, and User Workflow failure modes. A governance reference for AI-generated diagram quality.",
     tags: ["mindmap", "root cause", "rendering", "quality", "governance", "debugging", "workflow"],
   },
-  {
-    id: "eventmodeling-order-lifecycle",
-    label: "Event Modeling — order lifecycle",
-    family: "eventModeling",
-    category: "specialty",
-    content: `eventmodeling
-  Command PlaceOrder
-  Event OrderPlaced
-  Command ProcessPayment
-  Event PaymentProcessed
-  Event PaymentFailed
-  Command ShipOrder
-  Event OrderShipped
-  Event OrderDelivered
-  Command CancelOrder
-  Event OrderCanceled
-  View OrderStatus
 
-  PlaceOrder --> OrderPlaced
-  OrderPlaced --> ProcessPayment
-  ProcessPayment --> PaymentProcessed
-  ProcessPayment --> PaymentFailed
-  PaymentProcessed --> ShipOrder
-  ShipOrder --> OrderShipped
-  OrderShipped --> OrderDelivered
-  OrderPlaced --> CancelOrder
-  CancelOrder --> OrderCanceled
-  OrderPlaced --> OrderStatus
-  PaymentProcessed --> OrderStatus
-  PaymentFailed --> OrderStatus
-  OrderShipped --> OrderStatus
-  OrderDelivered --> OrderStatus
-  OrderCanceled --> OrderStatus`,
-    badge: "Experimental",
-  },
   {
     id: "wardley-diagram-generation-value-chain",
     label: "Wardley — diagram value chain",
