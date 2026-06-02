@@ -813,14 +813,14 @@ title TCP Segment
 const VENN_GOVERNANCE_TRIANGLE = `venn-beta
   title The Governance Triangle
 
-  A[Measure]
-  B[Document]
-  C[Diagram]
+  set A ["Measure"]
+  set B ["Document"]
+  set C ["Diagram"]
 
-  A&B[Auditable Records]
-  B&C[Annotated Diagrams]
-  A&C[Metric Visualizations]
-  A&B&C[Visual Governance]`;
+  union A B ["Auditable Records"]
+  union B C ["Annotated Diagrams"]
+  union A C ["Metric Visualizations"]
+  union A B C ["Visual Governance"]`;
 
 const ISHIKAWA_RENDER_FAILURE = `%%{init: {"theme": "base"} }%%
 ishikawa
@@ -1004,7 +1004,7 @@ const ARCHITECTURE_STATIC_APP = `architecture-beta
   service app(disk)[React App] in browser
   service pages(server)[Static Files] in cdn
 
-  service mermaidjs(internet)[Mermaid.js]
+  service mermaidjs(internet)[Mermaid JS]
 
   app:R -- L:mermaidjs
   vite:R -- L:app
@@ -1020,17 +1020,17 @@ const XYCHART_CLARITY_VELOCITY = `xychart-beta
 const BLOCK_PRODUCT_MODULES = `block-beta
   columns 3
 
-  block:Apply["Apply Tab"]:1
-  block:Compose["Compose Tab"]:1
-  block:Examples["Examples Tab"]:1
-  block:Reference["Reference Tab"]:1
+  Apply["Apply Tab"]:1
+  Compose["Compose Tab"]:1
+  Examples["Examples Tab"]:1
+  Reference["Reference Tab"]:1
 
-  block:ThemeEngine["Theme Engine"]:2
-  block:Detector["Family Detector"]:1
+  ThemeEngine["Theme Engine"]:2
+  Detector["Family Detector"]:1
 
-  block:Palettes["Palette Store"]:1
-  block:Persistence["Persistence"]:1
-  block:Export["Exporters"]:1`;
+  Palettes["Palette Store"]:1
+  Persistence["Persistence"]:1
+  Export["Exporters"]:1`;
 
 const ZENUML_COUNCIL_FLOW = `zenuml
   title Council to Prototype Flow
@@ -1517,8 +1517,6 @@ export const EXAMPLE_CATALOG: ExampleEntry[] = [
     family: "eventModeling",
     category: "specialty",
     content: `eventmodeling
-  title Order Lifecycle — Place to Deliver
-
   Command PlaceOrder
   Event OrderPlaced
   Command ProcessPayment

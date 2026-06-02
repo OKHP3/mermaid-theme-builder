@@ -6,7 +6,7 @@ architecture-beta
   service app(disk)[React App] in browser
   service pages(server)[Static Files] in cdn
 
-  service mermaidjs(internet)[Mermaid.js]
+  service mermaidjs(internet)[Mermaid JS]
 
   app:R -- L:mermaidjs
   vite:R -- L:app
