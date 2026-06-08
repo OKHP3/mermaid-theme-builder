@@ -35,16 +35,16 @@ function hashOf(url: string): string {
 test("browser Back restores Examples tab after Apply → Examples → Apply navigation", async ({
   page,
 }) => {
-  // 1. Load the root URL — app defaults to Compose tab when no hash is present.
+  // 1. Load the root URL — app defaults to Apply tab.
   await page.goto("/");
   await page.waitForLoadState("load");
 
   // Wait for the app shell to finish setting the initial hash.
   await page.waitForFunction(() => window.location.hash !== "");
 
-  // Confirm we are on a known tab (hash should be set after init).
+  // Confirm we are on Apply (hash should be #apply after init).
   const initialHash = hashOf(page.url());
-  expect(["#apply", "#compose", "#"]).toContain(initialHash === "" ? "#" : initialHash);
+  expect(["#apply", "#"]).toContain(initialHash === "" ? "#" : initialHash);
 
   // 2. Navigate to Examples tab.
   await page.getByRole("tab", { name: "Examples" }).first().click();

@@ -16,7 +16,7 @@ const skillRoot = join(__dirname, "..");
 const skillMdPath = join(skillRoot, "SKILL.md");
 
 function parseSkillFrontmatter(content) {
-  const match = content.match(/^---\n([\s\S]*?)\n---/);
+  const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
   if (!match) return null;
   return match[1];
 }
@@ -34,7 +34,7 @@ function extractYamlField(frontmatter, key) {
   return null;
 }
 
-const skillContent = readFileSync(skillMdPath, "utf8").replace(/\r\n/g, "\n");
+const skillContent = readFileSync(skillMdPath, "utf8");
 const frontmatter = parseSkillFrontmatter(skillContent);
 
 // ── Frontmatter structure — flat Agent Skills format ──────────────────────

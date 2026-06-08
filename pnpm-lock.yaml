@@ -7,8 +7,8 @@ settings:
 catalogs:
   default:
     '@replit/vite-plugin-cartographer':
-      specifier: ^0.5.5
-      version: 0.5.5
+      specifier: ^0.5.1
+      version: 0.5.1
     '@replit/vite-plugin-dev-banner':
       specifier: ^0.1.1
       version: 0.1.2
@@ -22,8 +22,8 @@ catalogs:
       specifier: ^25.6.0
       version: 25.6.0
     '@types/react':
-      specifier: ^19.2.17
-      version: 19.2.17
+      specifier: ^19.2.0
+      version: 19.2.14
     '@types/react-dom':
       specifier: ^19.2.0
       version: 19.2.3
@@ -31,11 +31,11 @@ catalogs:
       specifier: ^6.0.2
       version: 6.0.2
     react:
-      specifier: 19.2.7
-      version: 19.2.7
+      specifier: 19.1.0
+      version: 19.1.0
     react-dom:
-      specifier: 19.2.7
-      version: 19.2.7
+      specifier: 19.1.0
+      version: 19.1.0
     tailwindcss:
       specifier: ^4.3.0
       version: 4.3.0
@@ -137,7 +137,7 @@ importers:
     devDependencies:
       '@mermaid-js/mermaid-zenuml':
         specifier: ^0.2.3
-        version: 0.2.3(@babel/template@7.28.6)(@types/react@19.2.17)(mermaid@11.15.0)(playwright-core@1.60.0)(yaml@2.9.0)
+        version: 0.2.3(@babel/template@7.28.6)(@types/react@19.2.14)(mermaid@11.15.0)(playwright-core@1.60.0)(yaml@2.9.0)
       '@napi-rs/canvas':
         specifier: ^1.0.0
         version: 1.0.0
@@ -146,7 +146,7 @@ importers:
         version: 1.60.0
       '@replit/vite-plugin-cartographer':
         specifier: 'catalog:'
-        version: 0.5.5
+        version: 0.5.1
       '@replit/vite-plugin-dev-banner':
         specifier: 'catalog:'
         version: 0.1.2
@@ -161,20 +161,16 @@ importers:
         version: 10.4.1
       '@testing-library/react':
         specifier: ^16.3.2
-<<<<<<< HEAD
-        version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.1.0(react@19.2.7))(react@19.2.7)
-=======
-        version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
->>>>>>> 339f9ab (Update dependencies and fix accessibility test timeout)
+        version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@types/node':
         specifier: 'catalog:'
         version: 25.6.0
       '@types/react':
         specifier: 'catalog:'
-        version: 19.2.17
+        version: 19.2.14
       '@types/react-dom':
         specifier: 'catalog:'
-        version: 19.2.3(@types/react@19.2.17)
+        version: 19.2.3(@types/react@19.2.14)
       '@vitejs/plugin-react':
         specifier: 'catalog:'
         version: 6.0.2(vite@8.0.16(@types/node@25.6.0)(jiti@2.6.1)(yaml@2.9.0))
@@ -191,18 +187,14 @@ importers:
         specifier: ^7.0.0
         version: 7.0.0
       prettier:
-        specifier: ^3.8.3
-        version: 3.8.3
+        specifier: ^3.8.1
+        version: 3.8.1
       react:
         specifier: 'catalog:'
-        version: 19.2.7
+        version: 19.1.0
       react-dom:
         specifier: 'catalog:'
-<<<<<<< HEAD
-        version: 19.1.0(react@19.2.7)
-=======
-        version: 19.2.7(react@19.2.7)
->>>>>>> 339f9ab (Update dependencies and fix accessibility test timeout)
+        version: 19.1.0(react@19.1.0)
       simple-git-hooks:
         specifier: ^2.13.1
         version: 2.13.1
@@ -561,8 +553,8 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
 
-  '@replit/vite-plugin-cartographer@0.5.5':
-    resolution: {integrity: sha512-iEXsvofgEQb1BSjMflHfuqVbRhWqI7n8u5ESSH+cSoxHgX4Lk8wM7qHk1h7u1BZSwqmPn8ftsRFSN4IVvUzB5w==}
+  '@replit/vite-plugin-cartographer@0.5.1':
+    resolution: {integrity: sha512-KiaQMx4ssTM8hSjMFscyIV1PN1bRVCWCFqN3fXOfXa39uFFCKUaeL3VvH/sxuy7S7ET+MCFOt+J7lLtL56bRrA==}
 
   '@replit/vite-plugin-dev-banner@0.1.2':
     resolution: {integrity: sha512-YfW3U1xKnLrqvSiTzXeEX8AG+Vpz7XwBsJHNvGbp841AE1mLvishMQi2Zw7ApyHp+9EMGthXuCjP+mLbl3IuGA==}
@@ -852,8 +844,8 @@ packages:
     peerDependencies:
       '@types/react': ^19.2.0
 
-  '@types/react@19.2.17':
-    resolution: {integrity: sha512-MXfmqaVPEVgkBT/aY0aGCkRWWtByiYQXo3xdQ8r5RzuFrPiRn8Gar2tQdXSUQ2GKV3bkXckek89V8wQBY2Q/Aw==}
+  '@types/react@19.2.14':
+    resolution: {integrity: sha512-ilcTH/UniCkMdtexkoCN0bI7pMcJDvmQFPvuPvmEaYA/NSfFTAgdUSLAoVjaRJm7+6PvcM+q1zYOwS4wTYMF9w==}
 
   '@types/trusted-types@2.0.7':
     resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
@@ -1686,8 +1678,8 @@ packages:
     resolution: {integrity: sha512-FfR8sjd4em2T6fb3I2MwAJU7HWVMr9zba+enmQeeWFfCbm+UOC/0X4DS8XtpUTMwWMGbjKYP7xjfNekzyGmB3A==}
     engines: {node: ^10 || ^12 || >=14}
 
-  prettier@3.8.3:
-    resolution: {integrity: sha512-7igPTM53cGHMW8xWuVTydi2KO233VFiTNyF5hLJqpilHfmn8C8gPf+PS7dUT64YcXFbiMGZxS9pCSxL/Dxm/Jw==}
+  prettier@3.8.1:
+    resolution: {integrity: sha512-UOnG6LftzbdaHZcKoPFtOcCKztrQ57WkHDeRD9t/PTQtmT0NHSeWWepj6pS0z/N7+08BHFDQVUrfmfMRcZwbMg==}
     engines: {node: '>=14'}
     hasBin: true
 
@@ -1714,10 +1706,15 @@ packages:
       react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
       react-dom: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
 
-  react-dom@19.2.7:
-    resolution: {integrity: sha512-t0BRVXvbiE/o20Hfw669rLbMCDWtYZLvmJigy2f0MxsXF+71pxhR3xOkspmsO8h3ZlNzyibAmtCa3l4lYKk6gQ==}
+  react-dom@19.1.0:
+    resolution: {integrity: sha512-Xs1hdnE+DyKgeHJeJznQmYMIBG3TKIHJJT95Q58nHLSrElKlGQqDTR2HQ9fx5CN/Gk6Vh/kupBTDLU11/nDk/g==}
     peerDependencies:
-      react: ^19.2.7
+      react: ^19.1.0
+
+  react-dom@19.2.6:
+    resolution: {integrity: sha512-0prMI+hvBbPjsWnxDLxlCGyM8PN6UuWjEUCYmZhO67xIV9Xasa/r/vDnq+Xyq4Lo27g8QSbO5YzARu0D1Sps3g==}
+    peerDependencies:
+      react: ^19.2.6
 
   react-is@17.0.2:
     resolution: {integrity: sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==}
@@ -1727,8 +1724,12 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
 
-  react@19.2.7:
-    resolution: {integrity: sha512-HNe9WslTbXmFK8o8cmwgAeJFSBvt1bPdHCVKtaaV+WlAN36mpT4hcRpwbf3fY56ar2oIXzsBpOAiIRHAdY0OlQ==}
+  react@19.1.0:
+    resolution: {integrity: sha512-FS+XFBNvn3GTAWq26joslQgWNoFu08F4kl0J4CgdNKADkdSGXQyTCnKteIAJy96Br6YbpEU1LSzV5dYtjMkMDg==}
+    engines: {node: '>=0.10.0'}
+
+  react@19.2.6:
+    resolution: {integrity: sha512-sfWGGfavi0xr8Pg0sVsyHMAOziVYKgPLNrS7ig+ivMNb3wbCBw3KxtflsGBAwD3gYQlE/AEZsTLgToRrSCjb0Q==}
     engines: {node: '>=0.10.0'}
 
   read-cache@1.0.0:
@@ -1788,6 +1789,9 @@ packages:
 
   safer-buffer@2.1.2:
     resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
+
+  scheduler@0.26.0:
+    resolution: {integrity: sha512-NlHwttCI/l5gCPR3D1nNXtWABUmBwvZpEQiD4IXSbIDq8BzLIK/7Ir5gTFSGZDUu37K5cMNp0hFtzO38sC7gWA==}
 
   scheduler@0.27.0:
     resolution: {integrity: sha512-eNv+WrVbKu1f3vbYJT/xtiF5syA5HPIMtf9IgY/nKg0sWqzAUEvqY/xm7OcZc/qafLx/iO9FgOmeSAp4v5ti/Q==}
@@ -2155,73 +2159,39 @@ snapshots:
       '@floating-ui/core': 1.7.5
       '@floating-ui/utils': 0.2.11
 
-<<<<<<< HEAD
-  '@floating-ui/react-dom@2.1.8(react-dom@19.2.6(react@19.2.7))(react@19.2.7)':
+  '@floating-ui/react-dom@2.1.8(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     dependencies:
       '@floating-ui/dom': 1.7.6
-      react: 19.2.7
-      react-dom: 19.2.6(react@19.2.7)
+      react: 19.2.6
+      react-dom: 19.2.6(react@19.2.6)
 
-  '@floating-ui/react@0.26.28(react-dom@19.2.6(react@19.2.7))(react@19.2.7)':
+  '@floating-ui/react@0.26.28(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     dependencies:
-      '@floating-ui/react-dom': 2.1.8(react-dom@19.2.6(react@19.2.7))(react@19.2.7)
+      '@floating-ui/react-dom': 2.1.8(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@floating-ui/utils': 0.2.11
-      react: 19.2.7
-      react-dom: 19.2.6(react@19.2.7)
+      react: 19.2.6
+      react-dom: 19.2.6(react@19.2.6)
       tabbable: 6.4.0
 
-  '@floating-ui/react@0.27.19(react-dom@19.2.6(react@19.2.7))(react@19.2.7)':
+  '@floating-ui/react@0.27.19(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     dependencies:
-      '@floating-ui/react-dom': 2.1.8(react-dom@19.2.6(react@19.2.7))(react@19.2.7)
+      '@floating-ui/react-dom': 2.1.8(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@floating-ui/utils': 0.2.11
-      react: 19.2.7
-      react-dom: 19.2.6(react@19.2.7)
-=======
-  '@floating-ui/react-dom@2.1.8(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
-    dependencies:
-      '@floating-ui/dom': 1.7.6
-      react: 19.2.7
-      react-dom: 19.2.7(react@19.2.7)
-
-  '@floating-ui/react@0.26.28(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
-    dependencies:
-      '@floating-ui/react-dom': 2.1.8(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      '@floating-ui/utils': 0.2.11
-      react: 19.2.7
-      react-dom: 19.2.7(react@19.2.7)
-      tabbable: 6.4.0
-
-  '@floating-ui/react@0.27.19(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
-    dependencies:
-      '@floating-ui/react-dom': 2.1.8(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      '@floating-ui/utils': 0.2.11
-      react: 19.2.7
-      react-dom: 19.2.7(react@19.2.7)
->>>>>>> 339f9ab (Update dependencies and fix accessibility test timeout)
+      react: 19.2.6
+      react-dom: 19.2.6(react@19.2.6)
       tabbable: 6.4.0
 
   '@floating-ui/utils@0.2.11': {}
 
-<<<<<<< HEAD
-  '@headlessui/react@2.2.10(react-dom@19.2.6(react@19.2.7))(react@19.2.7)':
+  '@headlessui/react@2.2.10(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     dependencies:
-      '@floating-ui/react': 0.26.28(react-dom@19.2.6(react@19.2.7))(react@19.2.7)
-      '@react-aria/focus': 3.22.1(react-dom@19.2.6(react@19.2.7))(react@19.2.7)
-      '@react-aria/interactions': 3.28.1(react-dom@19.2.6(react@19.2.7))(react@19.2.7)
-      '@tanstack/react-virtual': 3.13.26(react-dom@19.2.6(react@19.2.7))(react@19.2.7)
-      react: 19.2.7
-      react-dom: 19.2.6(react@19.2.7)
-=======
-  '@headlessui/react@2.2.10(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
-    dependencies:
-      '@floating-ui/react': 0.26.28(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      '@react-aria/focus': 3.22.1(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      '@react-aria/interactions': 3.28.1(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      '@tanstack/react-virtual': 3.13.26(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      react: 19.2.7
-      react-dom: 19.2.7(react@19.2.7)
->>>>>>> 339f9ab (Update dependencies and fix accessibility test timeout)
-      use-sync-external-store: 1.6.0(react@19.2.7)
+      '@floating-ui/react': 0.26.28(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@react-aria/focus': 3.22.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@react-aria/interactions': 3.28.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@tanstack/react-virtual': 3.13.26(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      react: 19.2.6
+      react-dom: 19.2.6(react@19.2.6)
+      use-sync-external-store: 1.6.0(react@19.2.6)
 
   '@headlessui/tailwindcss@0.2.2(tailwindcss@3.4.19(yaml@2.9.0))':
     dependencies:
@@ -2266,9 +2236,9 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@mermaid-js/mermaid-zenuml@0.2.3(@babel/template@7.28.6)(@types/react@19.2.17)(mermaid@11.15.0)(playwright-core@1.60.0)(yaml@2.9.0)':
+  '@mermaid-js/mermaid-zenuml@0.2.3(@babel/template@7.28.6)(@types/react@19.2.14)(mermaid@11.15.0)(playwright-core@1.60.0)(yaml@2.9.0)':
     dependencies:
-      '@zenuml/core': 3.49.0(@babel/template@7.28.6)(@types/react@19.2.17)(playwright-core@1.60.0)(yaml@2.9.0)
+      '@zenuml/core': 3.49.0(@babel/template@7.28.6)(@types/react@19.2.14)(playwright-core@1.60.0)(yaml@2.9.0)
       mermaid: 11.15.0
     transitivePeerDependencies:
       - '@babel/core'
@@ -2402,42 +2372,26 @@ snapshots:
     dependencies:
       playwright: 1.60.0
 
-<<<<<<< HEAD
-  '@react-aria/focus@3.22.1(react-dom@19.2.6(react@19.2.7))(react@19.2.7)':
+  '@react-aria/focus@3.22.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     dependencies:
       '@swc/helpers': 0.5.23
-      react: 19.2.7
-      react-aria: 3.49.0(react-dom@19.2.6(react@19.2.7))(react@19.2.7)
-      react-dom: 19.2.6(react@19.2.7)
+      react: 19.2.6
+      react-aria: 3.49.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      react-dom: 19.2.6(react@19.2.6)
 
-  '@react-aria/interactions@3.28.1(react-dom@19.2.6(react@19.2.7))(react@19.2.7)':
-=======
-  '@react-aria/focus@3.22.1(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
+  '@react-aria/interactions@3.28.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     dependencies:
+      '@react-types/shared': 3.35.0(react@19.2.6)
       '@swc/helpers': 0.5.23
-      react: 19.2.7
-      react-aria: 3.49.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      react-dom: 19.2.7(react@19.2.7)
+      react: 19.2.6
+      react-aria: 3.49.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      react-dom: 19.2.6(react@19.2.6)
 
-  '@react-aria/interactions@3.28.1(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
->>>>>>> 339f9ab (Update dependencies and fix accessibility test timeout)
+  '@react-types/shared@3.35.0(react@19.2.6)':
     dependencies:
-      '@react-types/shared': 3.35.0(react@19.2.7)
-      '@swc/helpers': 0.5.23
-      react: 19.2.7
-<<<<<<< HEAD
-      react-aria: 3.49.0(react-dom@19.2.6(react@19.2.7))(react@19.2.7)
-      react-dom: 19.2.6(react@19.2.7)
-=======
-      react-aria: 3.49.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      react-dom: 19.2.7(react@19.2.7)
->>>>>>> 339f9ab (Update dependencies and fix accessibility test timeout)
+      react: 19.2.6
 
-  '@react-types/shared@3.35.0(react@19.2.7)':
-    dependencies:
-      react: 19.2.7
-
-  '@replit/vite-plugin-cartographer@0.5.5':
+  '@replit/vite-plugin-cartographer@0.5.1':
     dependencies:
       '@babel/parser': 7.29.0
       '@babel/traverse': 7.29.0
@@ -2538,19 +2492,11 @@ snapshots:
       tailwindcss: 4.3.0
       vite: 8.0.16(@types/node@25.6.0)(jiti@2.6.1)(yaml@2.9.0)
 
-<<<<<<< HEAD
-  '@tanstack/react-virtual@3.13.26(react-dom@19.2.6(react@19.2.7))(react@19.2.7)':
+  '@tanstack/react-virtual@3.13.26(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     dependencies:
       '@tanstack/virtual-core': 3.16.0
-      react: 19.2.7
-      react-dom: 19.2.6(react@19.2.7)
-=======
-  '@tanstack/react-virtual@3.13.26(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
-    dependencies:
-      '@tanstack/virtual-core': 3.16.0
-      react: 19.2.7
-      react-dom: 19.2.7(react@19.2.7)
->>>>>>> 339f9ab (Update dependencies and fix accessibility test timeout)
+      react: 19.2.6
+      react-dom: 19.2.6(react@19.2.6)
 
   '@tanstack/virtual-core@3.16.0': {}
 
@@ -2565,23 +2511,15 @@ snapshots:
       picocolors: 1.1.1
       pretty-format: 27.5.1
 
-<<<<<<< HEAD
-  '@testing-library/react@16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.1.0(react@19.2.7))(react@19.2.7)':
-=======
-  '@testing-library/react@16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
->>>>>>> 339f9ab (Update dependencies and fix accessibility test timeout)
+  '@testing-library/react@16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
     dependencies:
       '@babel/runtime': 7.29.2
       '@testing-library/dom': 10.4.1
-      react: 19.2.7
-<<<<<<< HEAD
-      react-dom: 19.1.0(react@19.2.7)
-=======
-      react-dom: 19.2.7(react@19.2.7)
->>>>>>> 339f9ab (Update dependencies and fix accessibility test timeout)
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
     optionalDependencies:
-      '@types/react': 19.2.17
-      '@types/react-dom': 19.2.3(@types/react@19.2.17)
+      '@types/react': 19.2.14
+      '@types/react-dom': 19.2.3(@types/react@19.2.14)
 
   '@tybys/wasm-util@0.10.1':
     dependencies:
@@ -2722,11 +2660,11 @@ snapshots:
     dependencies:
       undici-types: 7.19.2
 
-  '@types/react-dom@19.2.3(@types/react@19.2.17)':
+  '@types/react-dom@19.2.3(@types/react@19.2.14)':
     dependencies:
-      '@types/react': 19.2.17
+      '@types/react': 19.2.14
 
-  '@types/react@19.2.17':
+  '@types/react@19.2.14':
     dependencies:
       csstype: 3.2.3
 
@@ -2790,15 +2728,10 @@ snapshots:
       convert-source-map: 2.0.0
       tinyrainbow: 3.1.0
 
-  '@zenuml/core@3.49.0(@babel/template@7.28.6)(@types/react@19.2.17)(playwright-core@1.60.0)(yaml@2.9.0)':
+  '@zenuml/core@3.49.0(@babel/template@7.28.6)(@types/react@19.2.14)(playwright-core@1.60.0)(yaml@2.9.0)':
     dependencies:
-<<<<<<< HEAD
-      '@floating-ui/react': 0.27.19(react-dom@19.2.6(react@19.2.7))(react@19.2.7)
-      '@headlessui/react': 2.2.10(react-dom@19.2.6(react@19.2.7))(react@19.2.7)
-=======
-      '@floating-ui/react': 0.27.19(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      '@headlessui/react': 2.2.10(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
->>>>>>> 339f9ab (Update dependencies and fix accessibility test timeout)
+      '@floating-ui/react': 0.27.19(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@headlessui/react': 2.2.10(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@headlessui/tailwindcss': 0.2.2(tailwindcss@3.4.19(yaml@2.9.0))
       antlr4: 4.11.0
       class-variance-authority: 0.7.1
@@ -2808,17 +2741,13 @@ snapshots:
       highlight.js: 11.11.1
       html-to-image: 1.11.13
       immer: 10.2.0
-      jotai: 2.20.0(@babel/template@7.28.6)(@types/react@19.2.17)(react@19.2.7)
+      jotai: 2.20.0(@babel/template@7.28.6)(@types/react@19.2.14)(react@19.2.6)
       lodash: 4.18.1
       marked: 4.3.0
       pako: 2.1.0
       pino: 8.21.0
-      react: 19.2.7
-<<<<<<< HEAD
-      react-dom: 19.2.6(react@19.2.7)
-=======
-      react-dom: 19.2.7(react@19.2.7)
->>>>>>> 339f9ab (Update dependencies and fix accessibility test timeout)
+      react: 19.2.6
+      react-dom: 19.2.6(react@19.2.6)
       tailwind-merge: 3.6.0
       tailwindcss: 3.4.19(yaml@2.9.0)
     optionalDependencies:
@@ -3283,11 +3212,11 @@ snapshots:
 
   jiti@2.6.1: {}
 
-  jotai@2.20.0(@babel/template@7.28.6)(@types/react@19.2.17)(react@19.2.7):
+  jotai@2.20.0(@babel/template@7.28.6)(@types/react@19.2.14)(react@19.2.6):
     optionalDependencies:
       '@babel/template': 7.28.6
-      '@types/react': 19.2.17
-      react: 19.2.7
+      '@types/react': 19.2.14
+      react: 19.2.6
 
   js-tokens@4.0.0: {}
 
@@ -3531,7 +3460,7 @@ snapshots:
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
-  prettier@3.8.3: {}
+  prettier@3.8.1: {}
 
   pretty-format@27.5.1:
     dependencies:
@@ -3547,57 +3476,45 @@ snapshots:
 
   quick-format-unescaped@4.0.4: {}
 
-<<<<<<< HEAD
-  react-aria@3.49.0(react-dom@19.2.6(react@19.2.7))(react@19.2.7):
-=======
-  react-aria@3.49.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7):
->>>>>>> 339f9ab (Update dependencies and fix accessibility test timeout)
+  react-aria@3.49.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6):
     dependencies:
       '@internationalized/date': 3.12.2
       '@internationalized/number': 3.6.7
       '@internationalized/string': 3.2.9
-      '@react-types/shared': 3.35.0(react@19.2.7)
+      '@react-types/shared': 3.35.0(react@19.2.6)
       '@swc/helpers': 0.5.23
       aria-hidden: 1.2.6
       clsx: 2.1.1
-      react: 19.2.7
-<<<<<<< HEAD
-      react-dom: 19.2.6(react@19.2.7)
-      react-stately: 3.47.0(react@19.2.7)
-      use-sync-external-store: 1.6.0(react@19.2.7)
+      react: 19.2.6
+      react-dom: 19.2.6(react@19.2.6)
+      react-stately: 3.47.0(react@19.2.6)
+      use-sync-external-store: 1.6.0(react@19.2.6)
 
-  react-dom@19.1.0(react@19.2.7):
+  react-dom@19.1.0(react@19.1.0):
     dependencies:
-      react: 19.2.7
+      react: 19.1.0
       scheduler: 0.26.0
 
-  react-dom@19.2.6(react@19.2.7):
+  react-dom@19.2.6(react@19.2.6):
     dependencies:
-      react: 19.2.7
-=======
-      react-dom: 19.2.7(react@19.2.7)
-      react-stately: 3.47.0(react@19.2.7)
-      use-sync-external-store: 1.6.0(react@19.2.7)
-
-  react-dom@19.2.7(react@19.2.7):
-    dependencies:
-      react: 19.2.7
->>>>>>> 339f9ab (Update dependencies and fix accessibility test timeout)
+      react: 19.2.6
       scheduler: 0.27.0
 
   react-is@17.0.2: {}
 
-  react-stately@3.47.0(react@19.2.7):
+  react-stately@3.47.0(react@19.2.6):
     dependencies:
       '@internationalized/date': 3.12.2
       '@internationalized/number': 3.6.7
       '@internationalized/string': 3.2.9
-      '@react-types/shared': 3.35.0(react@19.2.7)
+      '@react-types/shared': 3.35.0(react@19.2.6)
       '@swc/helpers': 0.5.23
-      react: 19.2.7
-      use-sync-external-store: 1.6.0(react@19.2.7)
+      react: 19.2.6
+      use-sync-external-store: 1.6.0(react@19.2.6)
 
-  react@19.2.7: {}
+  react@19.1.0: {}
+
+  react@19.2.6: {}
 
   read-cache@1.0.0:
     dependencies:
@@ -3674,6 +3591,8 @@ snapshots:
   safe-stable-stringify@2.5.0: {}
 
   safer-buffer@2.1.2: {}
+
+  scheduler@0.26.0: {}
 
   scheduler@0.27.0: {}
 
@@ -3824,9 +3743,9 @@ snapshots:
 
   undici-types@7.19.2: {}
 
-  use-sync-external-store@1.6.0(react@19.2.7):
+  use-sync-external-store@1.6.0(react@19.2.6):
     dependencies:
-      react: 19.2.7
+      react: 19.2.6
 
   util-deprecate@1.0.2: {}
 

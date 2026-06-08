@@ -78,7 +78,7 @@ for FILE in "${ALL_FILES[@]}"; do
       # Inline links: [text](target)
       grep -oP '\]\(\K[^)]+' "$FILE" 2>/dev/null || true
 
-      # Reference-style link definitions: ^[label]: target
+      # Reference-style link definitions: ^\s*[label]: target
       grep -oP '^\s*\[[^\]]+\]:\s+\K\S+' "$FILE" 2>/dev/null || true
     } \
       | grep -v '^https\?://' \
