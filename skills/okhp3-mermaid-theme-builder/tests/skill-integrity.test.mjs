@@ -34,7 +34,7 @@ function extractYamlField(frontmatter, key) {
   return null;
 }
 
-const skillContent = readFileSync(skillMdPath, "utf8");
+const skillContent = readFileSync(skillMdPath, "utf8").replace(/\r\n/g, "\n");
 const frontmatter = parseSkillFrontmatter(skillContent);
 
 // ── Frontmatter structure — flat Agent Skills format ──────────────────────
