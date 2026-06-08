@@ -900,13 +900,13 @@ export function ComposeTab({
 
           <div className="p-3 border-b border-border">
             <div className="flex items-center justify-between mb-1">
-              <p className="forge-eyebrow">My Palettes</p>
+              <p className="forge-eyebrow">My Themes</p>
               <button
                 type="button"
                 onClick={() => setMyPalettesOpen((v) => !v)}
                 className="p-0.5 text-muted-foreground"
                 aria-expanded={myPalettesOpen}
-                aria-label="Toggle My Palettes"
+                aria-label="Toggle My Themes"
               >
                 <svg
                   viewBox="0 0 12 12"
@@ -927,7 +927,7 @@ export function ComposeTab({
                   onClick={() => setShowSaveDialog(true)}
                   className="text-xs px-2 py-1.5 rounded-md border border-border bg-background hover:bg-muted hover:border-primary/40 font-medium transition-all"
                 >
-                  Save as palette
+                  Save theme
                 </button>
                 <button
                   onClick={handleCopyShareLink}
