@@ -555,113 +555,6 @@ export function ComposeTab({
           </div>
 
           <div className="p-3 border-b border-border">
-            <div className="flex items-center justify-between mb-2">
-              <p className="forge-eyebrow">Settings</p>
-              <button
-                type="button"
-                onClick={() => setSettingsOpen((v) => !v)}
-                className="p-0.5 text-muted-foreground"
-                aria-expanded={settingsOpen}
-                aria-label="Toggle Settings"
-              >
-                <svg
-                  viewBox="0 0 12 12"
-                  fill="currentColor"
-                  className={`w-3.5 h-3.5 transition-transform ${settingsOpen ? "rotate-180" : ""}`}
-                  aria-hidden="true"
-                >
-                  <path d="M3 4.5l3 3 3-3z" />
-                </svg>
-              </button>
-            </div>
-            <div className={`${settingsOpen ? "" : "hidden"}`}>
-              <div className="space-y-3">
-                <div>
-                  <label className="text-xs font-medium text-foreground block mb-1.5">Look</label>
-                  <div className="flex gap-1" role="group" aria-label="Look style">
-                    {(
-                      [
-                        {
-                          value: "classic" as MermaidLook,
-                          label: "Classic",
-                          desc: "Standard rendering",
-                        },
-                        {
-                          value: "neo" as MermaidLook,
-                          label: "Neo",
-                          desc: "Mermaid v11+ rounder shapes",
-                        },
-                        {
-                          value: "handDrawn" as MermaidLook,
-                          label: "Hand Drawn",
-                          desc: "Rough.js sketch style",
-                        },
-                      ] as const
-                    ).map((opt) => (
-                      <button
-                        key={opt.value}
-                        type="button"
-                        onClick={() => onLookChange(opt.value)}
-                        title={opt.desc}
-                        aria-pressed={look === opt.value}
-                        className={`flex-1 text-[11px] px-1 py-1.5 rounded-md border font-medium transition-all ${
-                          look === opt.value
-                            ? "border-primary bg-primary/10 text-primary"
-                            : "border-border bg-background hover:bg-muted text-muted-foreground"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
-                  {look !== "classic" && (
-                    <p className="text-[10px] text-muted-foreground mt-1 leading-relaxed">
-                      {look === "neo"
-                        ? "Neo look — requires Mermaid v11+. Rounder nodes, cleaner lines."
-                        : "Hand-drawn sketch style via Rough.js. Great for informal diagrams."}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <label className="text-xs font-medium text-foreground block mb-1">
-                    Theme name
-                  </label>
-                  <input
-                    type="text"
-                    value={customThemeName}
-                    onChange={(e) => onCustomThemeNameChange(e.target.value)}
-                    placeholder={selectedPalette.name}
-                    className="w-full text-xs bg-background border border-border rounded-md px-2.5 py-1.5 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/50"
-                  />
-                  {effectiveThemeName !== selectedPalette.name && customThemeName.trim() && (
-                    <p className="text-[10px] text-muted-foreground mt-0.5">
-                      Output: {effectiveThemeName}
-                    </p>
-                  )}
-                </div>
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={includeMetaComments}
-                    onChange={(e) => onIncludeMetaCommentsChange(e.target.checked)}
-                    className="w-3.5 h-3.5 rounded border-border accent-primary"
-                  />
-                  <span className="text-xs text-foreground">Include metadata comments</span>
-                </label>
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={includeBadge}
-                    onChange={(e) => onIncludeBadgeChange(e.target.checked)}
-                    className="w-3.5 h-3.5 rounded border-border accent-primary"
-                  />
-                  <span className="text-xs text-foreground">Include attribution watermark</span>
-                </label>
-              </div>
-            </div>
-          </div>
-
-          <div className="p-3 border-b border-border">
             <div className="flex items-center justify-between mb-1.5">
               <p className="forge-eyebrow">Typography</p>
               <div className="flex items-center gap-2">
@@ -895,6 +788,113 @@ export function ComposeTab({
                 themeVariable. Other tiers and per-tier font overrides are included in the Prompt
                 Scaffold export.
               </p>
+            </div>
+          </div>
+
+          <div className="p-3 border-b border-border">
+            <div className="flex items-center justify-between mb-2">
+              <p className="forge-eyebrow">Settings</p>
+              <button
+                type="button"
+                onClick={() => setSettingsOpen((v) => !v)}
+                className="p-0.5 text-muted-foreground"
+                aria-expanded={settingsOpen}
+                aria-label="Toggle Settings"
+              >
+                <svg
+                  viewBox="0 0 12 12"
+                  fill="currentColor"
+                  className={`w-3.5 h-3.5 transition-transform ${settingsOpen ? "rotate-180" : ""}`}
+                  aria-hidden="true"
+                >
+                  <path d="M3 4.5l3 3 3-3z" />
+                </svg>
+              </button>
+            </div>
+            <div className={`${settingsOpen ? "" : "hidden"}`}>
+              <div className="space-y-3">
+                <div>
+                  <label className="text-xs font-medium text-foreground block mb-1.5">Look</label>
+                  <div className="flex gap-1" role="group" aria-label="Look style">
+                    {(
+                      [
+                        {
+                          value: "classic" as MermaidLook,
+                          label: "Classic",
+                          desc: "Standard rendering",
+                        },
+                        {
+                          value: "neo" as MermaidLook,
+                          label: "Neo",
+                          desc: "Mermaid v11+ rounder shapes",
+                        },
+                        {
+                          value: "handDrawn" as MermaidLook,
+                          label: "Hand Drawn",
+                          desc: "Rough.js sketch style",
+                        },
+                      ] as const
+                    ).map((opt) => (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        onClick={() => onLookChange(opt.value)}
+                        title={opt.desc}
+                        aria-pressed={look === opt.value}
+                        className={`flex-1 text-[11px] px-1 py-1.5 rounded-md border font-medium transition-all ${
+                          look === opt.value
+                            ? "border-primary bg-primary/10 text-primary"
+                            : "border-border bg-background hover:bg-muted text-muted-foreground"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  {look !== "classic" && (
+                    <p className="text-[10px] text-muted-foreground mt-1 leading-relaxed">
+                      {look === "neo"
+                        ? "Neo look — requires Mermaid v11+. Rounder nodes, cleaner lines."
+                        : "Hand-drawn sketch style via Rough.js. Great for informal diagrams."}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-foreground block mb-1">
+                    Theme name
+                  </label>
+                  <input
+                    type="text"
+                    value={customThemeName}
+                    onChange={(e) => onCustomThemeNameChange(e.target.value)}
+                    placeholder={selectedPalette.name}
+                    className="w-full text-xs bg-background border border-border rounded-md px-2.5 py-1.5 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/50"
+                  />
+                  {effectiveThemeName !== selectedPalette.name && customThemeName.trim() && (
+                    <p className="text-[10px] text-muted-foreground mt-0.5">
+                      Output: {effectiveThemeName}
+                    </p>
+                  )}
+                </div>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={includeMetaComments}
+                    onChange={(e) => onIncludeMetaCommentsChange(e.target.checked)}
+                    className="w-3.5 h-3.5 rounded border-border accent-primary"
+                  />
+                  <span className="text-xs text-foreground">Include metadata comments</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={includeBadge}
+                    onChange={(e) => onIncludeBadgeChange(e.target.checked)}
+                    className="w-3.5 h-3.5 rounded border-border accent-primary"
+                  />
+                  <span className="text-xs text-foreground">Include attribution watermark</span>
+                </label>
+              </div>
             </div>
           </div>
 
