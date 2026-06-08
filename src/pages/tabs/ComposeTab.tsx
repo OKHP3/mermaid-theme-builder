@@ -858,24 +858,6 @@ export function ComposeTab({
                     </p>
                   )}
                 </div>
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={includeMetaComments}
-                    onChange={(e) => onIncludeMetaCommentsChange(e.target.checked)}
-                    className="w-3.5 h-3.5 rounded border-border accent-primary"
-                  />
-                  <span className="text-xs text-foreground">Include metadata comments</span>
-                </label>
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={includeBadge}
-                    onChange={(e) => onIncludeBadgeChange(e.target.checked)}
-                    className="w-3.5 h-3.5 rounded border-border accent-primary"
-                  />
-                  <span className="text-xs text-foreground">Include attribution watermark</span>
-                </label>
               </div>
             </div>
           </div>
@@ -920,6 +902,26 @@ export function ComposeTab({
                     Output: {effectiveThemeName}
                   </p>
                 )}
+              </div>
+              <div className="space-y-2 mb-3">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={includeMetaComments}
+                    onChange={(e) => onIncludeMetaCommentsChange(e.target.checked)}
+                    className="w-3.5 h-3.5 rounded border-border accent-primary"
+                  />
+                  <span className="text-xs text-foreground">Include metadata comments</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={includeBadge}
+                    onChange={(e) => onIncludeBadgeChange(e.target.checked)}
+                    className="w-3.5 h-3.5 rounded border-border accent-primary"
+                  />
+                  <span className="text-xs text-foreground">Include attribution watermark</span>
+                </label>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <button
