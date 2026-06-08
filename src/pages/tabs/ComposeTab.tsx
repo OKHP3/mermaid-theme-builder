@@ -540,7 +540,7 @@ export function ComposeTab({
                 {selectedPalette.description}
               </p>
               <div className="grid grid-cols-2 md:grid-cols-1 gap-x-1">
-                {selectedPalette.colors.map((color) => (
+                {selectedPalette.colors.filter((c) => c.key !== "fontFamily").map((color) => (
                   <ColorSwatch
                     key={color.key}
                     color={
