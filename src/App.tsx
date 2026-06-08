@@ -273,7 +273,7 @@ export function AppShell() {
   const [activeTab, setActiveTab] = useState<AppTab>(() => {
     const h = window.location.hash.slice(1);
     const TABS: AppTab[] = ["apply", "compose", "examples", "reference"];
-    return TABS.includes(h as AppTab) ? (h as AppTab) : "compose";
+    return TABS.includes(h as AppTab) ? (h as AppTab) : "apply";
   });
   const [hydrated, setHydrated] = useState(false);
   const [toast, setToast] = useState<ReactNode | null>(null);

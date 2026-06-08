@@ -42,6 +42,9 @@ export default defineConfig({
     baseURL: process.env.PLAYWRIGHT_BASE_URL ?? PREVIEW_URL,
     actionTimeout: 15_000,
     trace: "on-first-retry",
+    // Start every test with empty localStorage so tab-persistence state from
+    // a previous run does not bleed into the next test.
+    storageState: { cookies: [], origins: [] },
   },
   projects: [
     {
