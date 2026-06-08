@@ -792,7 +792,7 @@ export function ComposeTab({
 
           <div className="p-3 border-b border-border">
             <div className="flex items-center justify-between mb-2">
-              <p className="forge-eyebrow">Settings</p>
+              <p className="forge-eyebrow">Styling</p>
               <button
                 type="button"
                 onClick={() => setSettingsOpen((v) => !v)}
