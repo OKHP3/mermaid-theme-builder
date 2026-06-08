@@ -1132,20 +1132,20 @@ export function ComposeTab({
                 <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
                   Paste into your AI before generating diagrams to pre-load the theme.
                 </p>
-                <div className="flex flex-col gap-2">
+                <div className="grid grid-cols-2 gap-2">
                   <button
                     onClick={handleCopyBootstrap}
-                    className={`w-full flex items-center justify-center gap-2 text-xs px-3 py-2 rounded-md border font-medium transition-all ${
+                    className={`text-xs px-2 py-1.5 rounded-md border font-medium transition-all ${
                       copiedBootstrap
                         ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-                        : "border-primary bg-primary text-primary-foreground hover:opacity-90"
+                        : "border-border bg-background hover:bg-muted hover:border-primary/40"
                     }`}
                   >
                     {copiedBootstrap ? "Copied!" : "Copy Bootstrap Markdown"}
                   </button>
                   <button
                     onClick={() => setShowScaffoldModal(true)}
-                    className="w-full flex items-center justify-center gap-2 text-xs px-3 py-2 rounded-md border border-primary/35 bg-primary/8 text-primary hover:bg-primary/14 font-medium transition-all"
+                    className="text-xs px-2 py-1.5 rounded-md border border-border bg-background hover:bg-muted hover:border-primary/40 font-medium transition-all"
                   >
                     Copy Prompt Scaffold
                   </button>
