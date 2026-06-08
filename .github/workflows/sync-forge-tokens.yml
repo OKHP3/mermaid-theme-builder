@@ -2,7 +2,7 @@
 # sync-forge-tokens.yml
 # OKH Forge UI System — canonical token sync
 #
-# Pulls the upstream forge-tokens.css from the brand source-of-truth repo and
+# Pulls the upstream theme.css token source from the brand source-of-truth repo and
 # opens a pull request in THIS repo whenever the local copy has drifted.
 #
 # It NEVER edits tokens directly on main. It opens a reviewable PR on diff,
@@ -23,7 +23,7 @@ permissions:
 
 env:
   UPSTREAM_REPO: OKHP3/OverKill-Hill
-  UPSTREAM_PATH: assets/css/forge-tokens.css
+  UPSTREAM_PATH: assets/css/theme.css
   LOCAL_PATH: src/styles/forge-tokens.css
 
 jobs:
@@ -33,7 +33,7 @@ jobs:
       - name: Check out this repo
         uses: actions/checkout@v4
 
-      - name: Fetch upstream forge-tokens.css
+      - name: Fetch upstream token source
         run: |
           mkdir -p "$(dirname "$LOCAL_PATH")"
           curl -fsSL \
