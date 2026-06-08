@@ -39,7 +39,7 @@ packages:
   - "artifacts/*"
 
 catalog:
-  '@replit/vite-plugin-cartographer': ^0.5.1
+  '@replit/vite-plugin-cartographer': ^0.5.5
   '@replit/vite-plugin-dev-banner': ^0.1.1
   '@replit/vite-plugin-runtime-error-modal': ^0.0.6
   '@tailwindcss/vite': ^4.3.0
