@@ -1,0 +1,25 @@
+# Default: normalize line endings to LF on commit
+* text=auto eol=lf
+
+# Shell scripts must always be LF (CRLF breaks bash on Linux/macOS/CI)
+*.sh text eol=lf
+
+# Windows batch files keep CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Binary files — no line-ending normalization
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.svg binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+*.eot binary
+*.zip binary
+*.gz binary

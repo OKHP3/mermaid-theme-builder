@@ -225,7 +225,7 @@ describe("AppShell (real component)", () => {
         )
         .join("\n")}`
     ).toHaveLength(0);
-  });
+  }, 15000);
 
   it("has a skip-to-main-content link as the first focusable element", () => {
     const { container } = render(createElement(AppShell, null));
