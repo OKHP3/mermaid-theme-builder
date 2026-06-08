@@ -858,23 +858,6 @@ export function ComposeTab({
                     </p>
                   )}
                 </div>
-                <div>
-                  <label className="text-xs font-medium text-foreground block mb-1">
-                    Theme name
-                  </label>
-                  <input
-                    type="text"
-                    value={customThemeName}
-                    onChange={(e) => onCustomThemeNameChange(e.target.value)}
-                    placeholder={selectedPalette.name}
-                    className="w-full text-xs bg-background border border-border rounded-md px-2.5 py-1.5 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/50"
-                  />
-                  {effectiveThemeName !== selectedPalette.name && customThemeName.trim() && (
-                    <p className="text-[10px] text-muted-foreground mt-0.5">
-                      Output: {effectiveThemeName}
-                    </p>
-                  )}
-                </div>
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="checkbox"
@@ -921,6 +904,23 @@ export function ComposeTab({
               <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
                 Save the current colors as a named palette, share it via URL, or import/export JSON.
               </p>
+              <div className="mb-3">
+                <label className="text-xs font-medium text-foreground block mb-1">
+                  Theme name
+                </label>
+                <input
+                  type="text"
+                  value={customThemeName}
+                  onChange={(e) => onCustomThemeNameChange(e.target.value)}
+                  placeholder={selectedPalette.name}
+                  className="w-full text-xs bg-background border border-border rounded-md px-2.5 py-1.5 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/50"
+                />
+                {effectiveThemeName !== selectedPalette.name && customThemeName.trim() && (
+                  <p className="text-[10px] text-muted-foreground mt-0.5">
+                    Output: {effectiveThemeName}
+                  </p>
+                )}
+              </div>
               <div className="grid grid-cols-2 gap-2">
                 <button
                   onClick={() => setShowSaveDialog(true)}
