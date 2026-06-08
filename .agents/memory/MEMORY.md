@@ -1,1 +1,2 @@
-- [Playwright test isolation](playwright-test-isolation.md) — storageState, exact:true on Settings locators, and default-tab must stay "apply" not "compose"
+- [CRLF file editing](crlf-editing.md) — ComposeTab.tsx and several e2e specs are CRLF; Python rb/wb byte-level edits required, edit tool fails
+- [Playwright test isolation](playwright-test-isolation.md) — storageState + default tab must stay "apply"; label renames in app require matching e2e spec updates

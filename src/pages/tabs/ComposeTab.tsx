@@ -207,7 +207,6 @@ export function ComposeTab({
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [typographyOpen, setTypographyOpen] = useState(false);
   const [myPalettesOpen, setMyPalettesOpen] = useState(false);
-  const [bootstrapOpen, setBootstrapOpen] = useState(false);
   const [extractOpen, setExtractOpen] = useState(false);
 
   const handleTypographyChangeWithClamp = useCallback(
@@ -1128,50 +1127,29 @@ export function ComposeTab({
                       })()}
                   </div>
                 )}
-            </div>
-          </div>
-
-          <div className="p-3">
-            <div className="flex items-center justify-between mb-1">
-              <p className="forge-eyebrow">Bootstrap Export</p>
-              <button
-                type="button"
-                onClick={() => setBootstrapOpen((v) => !v)}
-                className="p-0.5 text-muted-foreground"
-                aria-expanded={bootstrapOpen}
-                aria-label="Toggle Bootstrap Export"
-              >
-                <svg
-                  viewBox="0 0 12 12"
-                  fill="currentColor"
-                  className={`w-3.5 h-3.5 transition-transform ${bootstrapOpen ? "rotate-180" : ""}`}
-                  aria-hidden="true"
-                >
-                  <path d="M3 4.5l3 3 3-3z" />
-                </svg>
-              </button>
-            </div>
-            <div className={`${bootstrapOpen ? "" : "hidden"}`}>
-              <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
-                Paste into your AI before generating diagrams to pre-load the theme.
-              </p>
-              <div className="flex flex-col gap-2">
-                <button
-                  onClick={handleCopyBootstrap}
-                  className={`w-full flex items-center justify-center gap-2 text-xs px-3 py-2 rounded-md border font-medium transition-all ${
-                    copiedBootstrap
-                      ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-                      : "border-primary bg-primary text-primary-foreground hover:opacity-90"
-                  }`}
-                >
-                  {copiedBootstrap ? "Copied!" : "Copy Bootstrap Markdown"}
-                </button>
-                <button
-                  onClick={() => setShowScaffoldModal(true)}
-                  className="w-full flex items-center justify-center gap-2 text-xs px-3 py-2 rounded-md border border-primary/35 bg-primary/8 text-primary hover:bg-primary/14 font-medium transition-all"
-                >
-                  Copy Prompt Scaffold
-                </button>
+              <div className="mt-4 pt-3 border-t border-border">
+                <p className="forge-eyebrow mb-2">Bootstrap Export</p>
+                <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
+                  Paste into your AI before generating diagrams to pre-load the theme.
+                </p>
+                <div className="flex flex-col gap-2">
+                  <button
+                    onClick={handleCopyBootstrap}
+                    className={`w-full flex items-center justify-center gap-2 text-xs px-3 py-2 rounded-md border font-medium transition-all ${
+                      copiedBootstrap
+                        ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                        : "border-primary bg-primary text-primary-foreground hover:opacity-90"
+                    }`}
+                  >
+                    {copiedBootstrap ? "Copied!" : "Copy Bootstrap Markdown"}
+                  </button>
+                  <button
+                    onClick={() => setShowScaffoldModal(true)}
+                    className="w-full flex items-center justify-center gap-2 text-xs px-3 py-2 rounded-md border border-primary/35 bg-primary/8 text-primary hover:bg-primary/14 font-medium transition-all"
+                  >
+                    Copy Prompt Scaffold
+                  </button>
+                </div>
               </div>
             </div>
           </div>
