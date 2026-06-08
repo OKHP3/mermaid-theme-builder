@@ -884,7 +884,7 @@ export function ComposeTab({
             </div>
             <div className={`${myPalettesOpen ? "" : "hidden"}`}>
               <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
-                Save the current colors as a named palette, share it via URL, or import/export JSON.
+                Save the currently selected fonts, colors, and overall look as a named palette/theme JSON file, or share it via URL.
               </p>
               <div className="mb-3">
                 <label className="text-xs font-medium text-foreground block mb-1">
@@ -938,7 +938,7 @@ export function ComposeTab({
                       : "border-border bg-background hover:bg-muted hover:border-primary/40"
                   }`}
                 >
-                  {copiedShare ? "Link copied!" : "Copy share link"}
+                  {copiedShare ? "Link copied!" : "Copy Shareable URL"}
                 </button>
                 <button
                   onClick={handleExportJson}
@@ -1132,7 +1132,7 @@ export function ComposeTab({
               <div className="mt-4 pt-3 border-t border-border">
                 <p className="forge-eyebrow mb-2">Bootstrap Export</p>
                 <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
-                  Paste into your AI before generating diagrams to pre-load the theme.
+                  Pre‑load your custom theme into your AI before generating diagrams to increase the likelihood that the results match what you expect.
                 </p>
                 <div className="grid grid-cols-2 gap-2">
                   <button
@@ -1143,7 +1143,7 @@ export function ComposeTab({
                         : "border-border bg-background hover:bg-muted hover:border-primary/40"
                     }`}
                   >
-                    {copiedBootstrap ? "Copied!" : "Copy Bootstrap Markdown"}
+                    {copiedBootstrap ? "Copied!" : "Copy Markdown Format"}
                   </button>
                   <button
                     onClick={() => setShowScaffoldModal(true)}
