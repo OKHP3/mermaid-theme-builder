@@ -16,7 +16,7 @@ const skillRoot = join(__dirname, "..");
 const skillMdPath = join(skillRoot, "SKILL.md");
 
 function parseSkillFrontmatter(content) {
-  const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+  const match = content.match(/^---\n([\s\S]*?)\n---/);
   if (!match) return null;
   return match[1];
 }
