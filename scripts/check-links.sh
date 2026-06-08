@@ -12,7 +12,7 @@
 # Usage (from the project root):
 #   bash scripts/check-links.sh
 #
-# No external dependencies required — pure bash + standard POSIX tools.
+# No external dependencies required — bash + GNU grep (PCRE) + standard Unix tools.
 #
 # Exits 0 when all relative links resolve.
 # Exits 1 with a clear per-file error listing every broken link found.
