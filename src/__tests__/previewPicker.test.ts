@@ -226,7 +226,6 @@ describe("previewPicker — option label suffixes", () => {
     expect(opt!.text).toBe("Sankey · Beta");
   });
 
-
   it("a 'Canonical · Beta' entry shows only '· Beta' suffix, not the full badge text", () => {
     const { container } = renderTab();
     const opt = Array.from(getPickerSelect(container).options).find(

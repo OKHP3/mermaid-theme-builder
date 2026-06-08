@@ -214,13 +214,12 @@ export function MermaidPreview({ code, className, typography }: MermaidPreviewPr
     const fitScale = clamp(
       Math.min(containerW / svgW, containerH / svgH) * 0.9,
       MIN_SCALE,
-      MAX_SCALE,
+      MAX_SCALE
     );
 
     setScale(Math.round(fitScale * 100) / 100);
     setTranslate({ x: 0, y: 0 });
   }, []);
-
 
   const zoomBy = useCallback((delta: number) => {
     setScale((s) => clamp(Math.round((s + delta) * 100) / 100, MIN_SCALE, MAX_SCALE));
