@@ -40,12 +40,7 @@ import {
   isMyThemeSlotId,
   slotDisplayName,
 } from "@/lib/my-theme-slots";
-import {
-  downloadTextFile,
-  makeFilename,
-  paletteToPortableJson,
-  parsePortablePalette,
-} from "@/lib/exporters";
+import { downloadTextFile, makeFilename, paletteToPortableJson } from "@/lib/exporters";
 import { detectDiagram } from "@/lib/detector";
 import { type TypographySettings, DEFAULT_TYPOGRAPHY } from "@/lib/typography";
 import {
@@ -741,21 +736,6 @@ export function AppShell() {
     [activeMyThemeSlotId]
   );
 
-  const handleImportMyThemeSlot = useCallback((id: string, json: string) => {
-    const result = parsePortablePalette(json);
-    if (!result.ok) {
-      setToast(`Import failed: ${result.error}`);
-      return;
-    }
-    if (result.missingKeys.length > 0) {
-      setToast(`Import failed: missing required color keys: ${result.missingKeys.join(", ")}`);
-      return;
-    }
-    setMyThemeSlots((prev) =>
-      prev.map((s) => (s.id === id ? { ...s, colors: result.palette.colors } : s))
-    );
-  }, []);
-
   const handleExportMyThemeSlot = useCallback(
     (id: string) => {
       const slot = myThemeSlots.find((s) => s.id === id);
@@ -1284,7 +1264,6 @@ export function AppShell() {
             onAddMyThemeSlot={handleAddMyThemeSlot}
             onDeleteMyThemeSlot={handleDeleteMyThemeSlot}
             onExportMyThemeSlot={handleExportMyThemeSlot}
-            onImportMyThemeSlot={handleImportMyThemeSlot}
           />
         </div>
         <div
@@ -1335,7 +1314,6 @@ export function AppShell() {
               onAddMyThemeSlot={handleAddMyThemeSlot}
               onDeleteMyThemeSlot={handleDeleteMyThemeSlot}
               onExportMyThemeSlot={handleExportMyThemeSlot}
-              onImportMyThemeSlot={handleImportMyThemeSlot}
               customThemeNamePlaceholder={
                 activeMyThemeSlotId ? slotDisplayName(activeMyThemeSlotId) : undefined
               }
@@ -1357,7 +1335,6 @@ export function AppShell() {
               onAddMyThemeSlot={handleAddMyThemeSlot}
               onDeleteMyThemeSlot={handleDeleteMyThemeSlot}
               onExportMyThemeSlot={handleExportMyThemeSlot}
-              onImportMyThemeSlot={handleImportMyThemeSlot}
             />
           )}
           {activeTab === "reference" && (
@@ -1378,7 +1355,6 @@ export function AppShell() {
               onAddMyThemeSlot={handleAddMyThemeSlot}
               onDeleteMyThemeSlot={handleDeleteMyThemeSlot}
               onExportMyThemeSlot={handleExportMyThemeSlot}
-              onImportMyThemeSlot={handleImportMyThemeSlot}
             />
           )}
         </div>

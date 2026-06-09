@@ -149,7 +149,6 @@ interface ComposeTabProps {
   onAddMyThemeSlot?: () => void;
   onDeleteMyThemeSlot?: (id: string) => void;
   onExportMyThemeSlot?: (id: string) => void;
-  onImportMyThemeSlot?: (id: string, json: string) => void;
   customThemeNamePlaceholder?: string;
 }
 
@@ -206,7 +205,6 @@ export function ComposeTab({
   onAddMyThemeSlot = () => {},
   onDeleteMyThemeSlot = () => {},
   onExportMyThemeSlot = () => {},
-  onImportMyThemeSlot,
   customThemeNamePlaceholder,
 }: ComposeTabProps) {
   const [copiedBootstrap, setCopiedBootstrap] = useState(false);
@@ -493,7 +491,6 @@ export function ComposeTab({
         onAddMyThemeSlot={onAddMyThemeSlot}
         onDeleteMyThemeSlot={onDeleteMyThemeSlot}
         onExportMyThemeSlot={onExportMyThemeSlot}
-        onImportMyThemeSlot={onImportMyThemeSlot}
       />
 
       <div className="flex flex-col md:flex-row flex-1 overflow-hidden min-h-0">

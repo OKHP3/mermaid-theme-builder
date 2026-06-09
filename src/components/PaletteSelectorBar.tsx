@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { BUILTIN_PALETTES } from "@/lib/palettes";
 import type { Palette, ThemeColor } from "@/lib/palettes";
 import { isExtractedPaletteId } from "@/lib/extractor";
@@ -18,7 +18,6 @@ interface PaletteSelectorBarProps {
   onAddMyThemeSlot: () => void;
   onDeleteMyThemeSlot: (id: string) => void;
   onExportMyThemeSlot: (id: string) => void;
-  onImportMyThemeSlot?: (id: string, json: string) => void;
 }
 
 export function PaletteSelectorBar({
@@ -33,10 +32,8 @@ export function PaletteSelectorBar({
   onAddMyThemeSlot,
   onDeleteMyThemeSlot,
   onExportMyThemeSlot,
-  onImportMyThemeSlot,
 }: PaletteSelectorBarProps) {
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!pendingDeleteId) return;
@@ -91,43 +88,10 @@ export function PaletteSelectorBar({
     [currentNavId, navLen, onSelectMyThemeSlot, onSelectPalette, tileIdPrefix]
   );
 
-  const handleImportClick = useCallback(() => {
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-      fileInputRef.current.click();
-    }
-  }, []);
-
-  const handleFileChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
-      if (!file || !activeMyThemeSlotId) return;
-      const reader = new FileReader();
-      reader.onload = (evt) => {
-        const json = evt.target?.result;
-        if (typeof json === "string") {
-          onImportMyThemeSlot?.(activeMyThemeSlotId, json);
-        }
-      };
-      reader.readAsText(file);
-    },
-    [activeMyThemeSlotId, onImportMyThemeSlot]
-  );
-
   const pendingSlot = pendingDeleteId ? myThemeSlots.find((s) => s.id === pendingDeleteId) : null;
 
   return (
     <div className="flex-none border-b border-border bg-card/30 px-3 py-2 print-hide">
-      {/* Hidden file input for palette JSON import */}
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept=".json,application/json"
-        className="sr-only"
-        aria-hidden="true"
-        tabIndex={-1}
-        onChange={handleFileChange}
-      />
       <div
         role="radiogroup"
         aria-label="Palette selector"
@@ -197,28 +161,6 @@ export function PaletteSelectorBar({
             </div>
           );
         })}
-
-        {/* Import JSON into active slot — visible when a slot is selected */}
-        {activeMyThemeSlotId && (
-          <button
-            type="button"
-            onClick={handleImportClick}
-            title="Import palette JSON into this slot"
-            aria-label="Import palette JSON into active slot"
-            className="flex-none flex flex-col items-center justify-center gap-1 px-2 py-1.5 rounded-lg border border-dashed border-border/60 hover:border-primary/50 hover:bg-primary/5 transition-all text-muted-foreground hover:text-primary"
-          >
-            <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4" aria-hidden="true">
-              <path
-                d="M8 2v8M5 7l3 3 3-3M3 13h10"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-            <span className="text-[9px] leading-none font-medium whitespace-nowrap">Import</span>
-          </button>
-        )}
 
         {/* Add slot button — hidden once 3 slots exist */}
         {myThemeSlots.length < 3 && (

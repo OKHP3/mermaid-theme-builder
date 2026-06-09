@@ -27,7 +27,6 @@ interface ReferenceTabProps {
   onAddMyThemeSlot?: () => void;
   onDeleteMyThemeSlot?: (id: string) => void;
   onExportMyThemeSlot?: (id: string) => void;
-  onImportMyThemeSlot?: (id: string, json: string) => void;
 }
 
 const TAXONOMY_DOCS_URL =
@@ -84,7 +83,6 @@ export function ReferenceTab({
   onAddMyThemeSlot = () => {},
   onDeleteMyThemeSlot = () => {},
   onExportMyThemeSlot = () => {},
-  onImportMyThemeSlot,
 }: ReferenceTabProps) {
   const classDefs = useMemo(() => getClassDefs(selectedPalette), [selectedPalette]);
 
@@ -157,7 +155,6 @@ export function ReferenceTab({
         onAddMyThemeSlot={onAddMyThemeSlot}
         onDeleteMyThemeSlot={onDeleteMyThemeSlot}
         onExportMyThemeSlot={onExportMyThemeSlot}
-        onImportMyThemeSlot={onImportMyThemeSlot}
       />
       <div className="flex-1 overflow-hidden">
         <DiagramInventory embedded />
