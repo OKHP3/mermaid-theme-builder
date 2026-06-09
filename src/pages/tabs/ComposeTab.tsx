@@ -507,7 +507,7 @@ export function ComposeTab({
                 onClick={handleImportClick}
                 className="w-full text-xs px-2 py-1.5 rounded-md border border-border bg-background hover:bg-muted hover:border-primary/40 font-medium transition-all mb-3"
               >
-                Import JSON
+                Import from JSON
               </button>
               <hr className="border-border/40 mb-2" />
               <p className="text-[10px] font-semibold uppercase tracking-[0.07em] text-muted-foreground mb-1">
@@ -960,7 +960,7 @@ export function ComposeTab({
                   onClick={() => setShowSaveDialog(true)}
                   className="text-xs px-2 py-1.5 rounded-md border border-border bg-background hover:bg-muted hover:border-primary/40 font-medium transition-all"
                 >
-                  Save theme
+                  Save Theme as
                 </button>
                 <button
                   onClick={handleCopyShareLink}
@@ -970,13 +970,13 @@ export function ComposeTab({
                       : "border-border bg-background hover:bg-muted hover:border-primary/40"
                   }`}
                 >
-                  {copiedShare ? "Link copied!" : "Copy Shareable URL"}
+                  {copiedShare ? "Link copied!" : "Share Via URL"}
                 </button>
                 <button
                   onClick={handleExportJson}
                   className="col-span-2 text-xs px-2 py-1.5 rounded-md border border-border bg-background hover:bg-muted hover:border-primary/40 font-medium transition-all"
                 >
-                  Export JSON
+                  Export to JSON
                 </button>
               </div>
               {userPalettes.length > 0 && (
@@ -1001,7 +1001,7 @@ export function ComposeTab({
                   className="w-full mt-2 text-xs px-2 py-1.5 rounded-md border border-border bg-background hover:bg-muted hover:border-primary/40 font-medium transition-all"
                   title={`Export all ${userPalettes.length} saved palette${userPalettes.length === 1 ? "" : "s"} as a single bundle file`}
                 >
-                  Export bundle ({userPalettes.length})
+                  Export All Themes
                 </button>
               )}
               <input
@@ -1170,13 +1170,13 @@ export function ComposeTab({
                         : "border-border bg-background hover:bg-muted hover:border-primary/40"
                     }`}
                   >
-                    {copiedBootstrap ? "Copied!" : "Copy Markdown Format"}
+                    {copiedBootstrap ? "Copied!" : "Export as Markdown"}
                   </button>
                   <button
                     onClick={() => setShowScaffoldModal(true)}
                     className="text-xs px-2 py-1.5 rounded-md border border-border bg-background hover:bg-muted hover:border-primary/40 font-medium transition-all"
                   >
-                    Copy Prompt Scaffold
+                    Generate Prompt Pattern
                   </button>
                 </div>
               </div>

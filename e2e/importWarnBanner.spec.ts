@@ -60,14 +60,14 @@ async function openComposeAndImport(page: Page, json: string): Promise<void> {
   // Switch to the Compose tab.
   await page.getByRole("tab", { name: "Compose" }).first().click();
 
-  // The banner lives inside the "My Palettes" collapsible section which
+  // The banner lives inside the "Export Theme" collapsible section which
   // starts closed.  Expand it so the banner will be visible after import.
   const toggle = page.getByRole("button", { name: "Toggle Export Theme" });
   await toggle.waitFor({ timeout: 8_000 });
   await toggle.click();
 
-  // Wait for the Import JSON button to confirm the section is open.
-  await page.getByRole("button", { name: "Import JSON" }).waitFor({ timeout: 4_000 });
+  // Wait for the Export to JSON button to confirm the section is open.
+  await page.getByRole("button", { name: "Export to JSON" }).waitFor({ timeout: 4_000 });
 
   // Feed the JSON directly to the hidden file input — same code path as a
   // real import but without the OS file dialog.

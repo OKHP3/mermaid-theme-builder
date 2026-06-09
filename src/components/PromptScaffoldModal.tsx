@@ -166,7 +166,7 @@ export function PromptScaffoldModal({
               id="scaffold-modal-title"
               className="text-sm font-semibold text-foreground leading-none"
             >
-              Copy Prompt Scaffold
+              Generate Prompt Pattern
             </h2>
             <p className="text-xs text-muted-foreground mt-1">
               {hasPreference
