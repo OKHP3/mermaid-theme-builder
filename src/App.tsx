@@ -566,7 +566,22 @@ export function AppShell() {
 
   const classDefCount = useMemo(() => getClassDefs(selectedPalette).length, [selectedPalette]);
 
-  const hasCustomizations = Boolean(!activeMyThemeSlotId && customColors[selectedPaletteId]);
+  const slotBaseColors = useMemo(() => {
+    const builtin = BUILTIN_PALETTES.find((p) => p.id === selectedPaletteId);
+    return (builtin ?? BRAND_PALETTES[0]).colors;
+  }, [selectedPaletteId]);
+
+  const hasSlotColorOverrides = useMemo(() => {
+    if (!activeMyThemeSlot) return false;
+    return activeMyThemeSlot.colors.some((c) => {
+      const base = slotBaseColors.find((b) => b.key === c.key);
+      return base !== undefined && base.value !== c.value;
+    });
+  }, [activeMyThemeSlot, slotBaseColors]);
+
+  const hasCustomizations = activeMyThemeSlotId
+    ? hasSlotColorOverrides
+    : Boolean(customColors[selectedPaletteId]);
 
   const effectiveCustomThemeName = activeMyThemeSlot ? activeMyThemeSlot.name : customThemeName;
   const effectiveLook = activeMyThemeSlot ? activeMyThemeSlot.look : look;
@@ -760,13 +775,23 @@ export function AppShell() {
   );
 
   const handleResetPalette = useCallback(() => {
+    if (activeMyThemeSlotId) {
+      setMyThemeSlots((prev) =>
+        prev.map((s) =>
+          s.id === activeMyThemeSlotId
+            ? { ...s, colors: slotBaseColors.map((c) => ({ ...c })) }
+            : s
+        )
+      );
+      return;
+    }
     setCustomColors((prev) => {
       const next = { ...prev };
       delete next[selectedPaletteId];
       return next;
     });
     setCustomThemeName("");
-  }, [selectedPaletteId]);
+  }, [activeMyThemeSlotId, selectedPaletteId, slotBaseColors]);
 
   /** Reset a single swatch back to its base palette value. If clearing this
    *  override leaves the palette with no remaining customizations, the
