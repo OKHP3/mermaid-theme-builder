@@ -205,7 +205,6 @@ export function ComposeTab({
   const clampTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const [colorsOpen, setColorsOpen] = useState(false);
   const [lookOpen, setLookOpen] = useState(true);
-  const [settingsOpen, setSettingsOpen] = useState(false);
   const [typographyOpen, setTypographyOpen] = useState(false);
   const [myPalettesOpen, setMyPalettesOpen] = useState(false);
   const [extractOpen, setExtractOpen] = useState(false);
@@ -529,26 +528,8 @@ export function ComposeTab({
           </div>
 
           <div className="p-3 border-b border-border">
-            <div className="flex items-center justify-between mb-2">
-              <p className="forge-eyebrow">Customize Theme</p>
-              <button
-                type="button"
-                onClick={() => setSettingsOpen((v) => !v)}
-                className="p-0.5 text-muted-foreground"
-                aria-expanded={settingsOpen}
-                aria-label="Toggle Settings"
-              >
-                <svg
-                  viewBox="0 0 12 12"
-                  fill="currentColor"
-                  className={`w-3.5 h-3.5 transition-transform ${settingsOpen ? "rotate-180" : ""}`}
-                  aria-hidden="true"
-                >
-                  <path d="M3 4.5l3 3 3-3z" />
-                </svg>
-              </button>
-            </div>
-            <div className={`${settingsOpen ? "" : "hidden"}`}>
+            <p className="forge-eyebrow mb-2">Customize Theme</p>
+            <div>
               {/* ── Look ── */}
               <hr className="border-border/40 mb-2" />
               <div className="flex items-center justify-between mb-1">
