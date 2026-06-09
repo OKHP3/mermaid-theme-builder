@@ -535,24 +535,28 @@ export function ComposeTab({
               <hr className="border-border/40 mb-2" />
               <div className="space-y-3">
                 <div>
-                  <label className="text-xs font-medium text-foreground block mb-1.5">Look</label>
+                  <label className="text-xs font-medium text-foreground block mb-1">Look</label>
+                  <p className="text-[10px] text-muted-foreground mb-1.5 leading-relaxed">
+                    Controls the overall visual style applied to all shapes, connectors, and labels
+                    in your diagram. Choose a rendering mode that fits your content&apos;s tone.
+                  </p>
                   <div className="flex gap-1" role="group" aria-label="Look style">
                     {(
                       [
                         {
                           value: "classic" as MermaidLook,
                           label: "Classic",
-                          desc: "Standard rendering",
+                          desc: "The original Mermaid style — crisp angles and familiar shapes",
                         },
                         {
                           value: "neo" as MermaidLook,
                           label: "Neo",
-                          desc: "Mermaid v11+ rounder shapes",
+                          desc: "A modern refresh for Mermaid v11+ — rounder nodes and cleaner connectors",
                         },
                         {
                           value: "handDrawn" as MermaidLook,
                           label: "Hand Drawn",
-                          desc: "Rough.js sketch style",
+                          desc: "Sketch-like rendering via Rough.js — organic edges for an informal, whiteboard feel",
                         },
                       ] as const
                     ).map((opt) => (
@@ -572,13 +576,13 @@ export function ComposeTab({
                       </button>
                     ))}
                   </div>
-                  {look !== "classic" && (
-                    <p className="text-[10px] text-muted-foreground mt-1 leading-relaxed">
-                      {look === "neo"
-                        ? "Neo look — requires Mermaid v11+. Rounder nodes, cleaner lines."
-                        : "Hand-drawn sketch style via Rough.js. Great for informal diagrams."}
-                    </p>
-                  )}
+                  <p className="text-[10px] text-muted-foreground mt-1 leading-relaxed">
+                    {look === "neo"
+                      ? "A modern refresh introduced in Mermaid v11 — rounder nodes, cleaner connectors, polished presentation style."
+                      : look === "handDrawn"
+                        ? "Rough.js-powered sketch style — organic, imperfect edges perfect for wireframes and informal diagrams."
+                        : "The original Mermaid rendering — crisp angles, familiar shapes, consistent across all diagram types."}
+                  </p>
                 </div>
               </div>
             </div>
