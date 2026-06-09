@@ -497,6 +497,20 @@ export function ComposeTab({
             <div className={`${extractOpen ? "" : "hidden"}`}>
               <hr className="border-border/40 mb-2" />
               <p className="text-[10px] font-semibold uppercase tracking-[0.07em] text-muted-foreground mb-1">
+                Existing Theme
+              </p>
+              <p className="text-[10px] text-muted-foreground leading-relaxed mb-2">
+                Have a theme you&apos;ve already saved, or a palette you&apos;ve built before and
+                want to revisit? Load the JSON here and carry on from where you left off.
+              </p>
+              <button
+                onClick={handleImportClick}
+                className="w-full text-xs px-2 py-1.5 rounded-md border border-border bg-background hover:bg-muted hover:border-primary/40 font-medium transition-all mb-3"
+              >
+                Import JSON
+              </button>
+              <hr className="border-border/40 mb-2" />
+              <p className="text-[10px] font-semibold uppercase tracking-[0.07em] text-muted-foreground mb-1">
                 Extract Theme
               </p>
               <p className="text-[10px] text-muted-foreground leading-relaxed mb-3">
@@ -960,15 +974,9 @@ export function ComposeTab({
                 </button>
                 <button
                   onClick={handleExportJson}
-                  className="text-xs px-2 py-1.5 rounded-md border border-border bg-background hover:bg-muted hover:border-primary/40 font-medium transition-all"
+                  className="col-span-2 text-xs px-2 py-1.5 rounded-md border border-border bg-background hover:bg-muted hover:border-primary/40 font-medium transition-all"
                 >
                   Export JSON
-                </button>
-                <button
-                  onClick={handleImportClick}
-                  className="text-xs px-2 py-1.5 rounded-md border border-border bg-background hover:bg-muted hover:border-primary/40 font-medium transition-all"
-                >
-                  Import JSON
                 </button>
               </div>
               {userPalettes.length > 0 && (
