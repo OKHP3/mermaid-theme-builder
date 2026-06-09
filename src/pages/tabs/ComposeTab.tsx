@@ -476,13 +476,13 @@ export function ComposeTab({
         <div className="flex flex-col w-full md:w-[35%] border-b md:border-b-0 md:border-r border-border overflow-y-auto shrink-0">
           <div className="p-3 border-b border-border">
             <div className="flex items-center justify-between mb-1">
-              <p className="forge-eyebrow">Extract Theme</p>
+              <p className="forge-eyebrow">Import Theme</p>
               <button
                 type="button"
                 onClick={() => setExtractOpen((v) => !v)}
                 className="p-0.5 text-muted-foreground"
                 aria-expanded={extractOpen}
-                aria-label="Toggle Extract Theme"
+                aria-label="Toggle Import Theme"
               >
                 <svg
                   viewBox="0 0 12 12"
@@ -495,6 +495,7 @@ export function ComposeTab({
               </button>
             </div>
             <div className={`${extractOpen ? "" : "hidden"}`}>
+              <p className="forge-eyebrow mb-2 mt-1">Extract Theme</p>
               <ExtractTab
                 embedded
                 onUseExtractedTheme={onUseExtractedTheme}
@@ -540,15 +541,17 @@ export function ComposeTab({
                 {selectedPalette.description}
               </p>
               <div className="grid grid-cols-2 md:grid-cols-1 gap-x-1">
-                {selectedPalette.colors.filter((c) => c.key !== "fontFamily").map((color) => (
-                  <ColorSwatch
-                    key={color.key}
-                    color={
-                      customColors[selectedPaletteId]?.find((c) => c.key === color.key) ?? color
-                    }
-                    onChange={onColorChange}
-                  />
-                ))}
+                {selectedPalette.colors
+                  .filter((c) => c.key !== "fontFamily")
+                  .map((color) => (
+                    <ColorSwatch
+                      key={color.key}
+                      color={
+                        customColors[selectedPaletteId]?.find((c) => c.key === color.key) ?? color
+                      }
+                      onChange={onColorChange}
+                    />
+                  ))}
               </div>
             </div>
           </div>

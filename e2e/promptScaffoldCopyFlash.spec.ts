@@ -86,10 +86,7 @@ function inPreviewCopyBtn(page: Page, badge: string) {
 // ---------------------------------------------------------------------------
 
 test.describe("PromptScaffoldModal — Path A: main card copy button", () => {
-  test("toggle bar for the copied format gains emerald classes", async ({
-    page,
-    context,
-  }) => {
+  test("toggle bar for the copied format gains emerald classes", async ({ page, context }) => {
     await grantClipboard(context);
     await openScaffoldModal(page);
 
@@ -152,7 +149,7 @@ test.describe("PromptScaffoldModal — Path A: main card copy button", () => {
     // buttons via aria-label^="Preview" (the label used when not previewing), so
     // neither the main card copy button nor the in-preview copy button match.
     await expect(
-      page.locator('[role="dialog"] button[aria-label^="Preview"][class*="bg-emerald-500"]'),
+      page.locator('[role="dialog"] button[aria-label^="Preview"][class*="bg-emerald-500"]')
     ).toHaveCount(1, { timeout: 3_000 });
   });
 });
@@ -201,7 +198,7 @@ test.describe("PromptScaffoldModal — Path B: in-preview copy button", () => {
     // open).  Scope to that specific button to avoid matching the main card
     // copy button or the in-preview copy button which also gain emerald class.
     await expect(
-      page.locator('[role="dialog"] button[aria-label="Hide preview for Format A"]'),
+      page.locator('[role="dialog"] button[aria-label="Hide preview for Format A"]')
     ).toHaveClass(/bg-emerald-500/, { timeout: 3_000 });
   });
 
@@ -240,8 +237,8 @@ test.describe("PromptScaffoldModal — Path B: in-preview copy button", () => {
     await copyBtn.click();
 
     // The button itself changes aria-label to "Copied Format A scaffold" while flashing.
-    await expect(
-      page.getByRole("button", { name: "Copied Format A scaffold" }),
-    ).toBeVisible({ timeout: 3_000 });
+    await expect(page.getByRole("button", { name: "Copied Format A scaffold" })).toBeVisible({
+      timeout: 3_000,
+    });
   });
 });

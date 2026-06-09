@@ -75,9 +75,7 @@ test.describe("Settings menu keyboard navigation", () => {
 
     // The focus is moved inside a requestAnimationFrame callback — wait for it
     // to settle on a menuitem before asserting, to avoid a RAF-timing race.
-    await page.waitForFunction(
-      () => document.activeElement?.getAttribute("role") === "menuitem"
-    );
+    await page.waitForFunction(() => document.activeElement?.getAttribute("role") === "menuitem");
 
     const focusedRole = await page.evaluate(
       () => document.activeElement?.getAttribute("role") ?? null

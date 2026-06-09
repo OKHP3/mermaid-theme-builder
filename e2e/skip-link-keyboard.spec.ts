@@ -52,7 +52,7 @@ test.describe("Skip link keyboard navigation", () => {
 
     expect(
       ["main-content", "inside-main-content"].includes(focusedId ?? ""),
-      `Expected focus on #main-content or a descendant, got: ${focusedId}`,
+      `Expected focus on #main-content or a descendant, got: ${focusedId}`
     ).toBe(true);
   });
 });

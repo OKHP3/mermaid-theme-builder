@@ -94,12 +94,13 @@ test.describe("Import warning banner — named CSS color", () => {
     await expect(page.getByText(/Named CSS color/)).toBeVisible({ timeout: 4_000 });
   });
 
-  test("affected key ('primaryColor') and value ('red') appear in the banner", async ({
-    page,
-  }) => {
+  test("affected key ('primaryColor') and value ('red') appear in the banner", async ({ page }) => {
     await openComposeAndImport(page, NAMED_COLOR_JSON);
     // Both key and value must be in the same <li> entry inside the banner.
-    const entry = page.locator("li").filter({ hasText: "primaryColor" }).filter({ hasText: '"red"' });
+    const entry = page
+      .locator("li")
+      .filter({ hasText: "primaryColor" })
+      .filter({ hasText: '"red"' });
     await expect(entry).toBeVisible({ timeout: 4_000 });
   });
 

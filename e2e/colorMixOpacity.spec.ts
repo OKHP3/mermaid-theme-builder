@@ -43,9 +43,7 @@ import { test, expect, type Page } from "@playwright/test";
  */
 function parseAlpha(color: string): number | null {
   // rgba(r, g, b, a) — legacy comma syntax
-  const rgba = color.match(
-    /rgba\(\s*[\d.]+\s*,\s*[\d.]+\s*,\s*[\d.]+\s*,\s*([\d.]+)\s*\)/
-  );
+  const rgba = color.match(/rgba\(\s*[\d.]+\s*,\s*[\d.]+\s*,\s*[\d.]+\s*,\s*([\d.]+)\s*\)/);
   if (rgba) return parseFloat(rgba[1]);
 
   // rgb(r, g, b) — no alpha → fully opaque
@@ -71,9 +69,7 @@ function parseAlpha(color: string): number | null {
  */
 async function fetchCompiledCss(page: Page): Promise<string> {
   return page.evaluate(async () => {
-    const links = Array.from(
-      document.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]')
-    );
+    const links = Array.from(document.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]'));
     const chunks: string[] = [];
     for (const link of links) {
       try {
@@ -113,8 +109,7 @@ test.describe("color-mix @supports guard — compiled CSS", () => {
     await loadApp(page);
 
     const css = await fetchCompiledCss(page);
-    const hasSupportRule =
-      css.includes("@supports") && css.includes("color-mix");
+    const hasSupportRule = css.includes("@supports") && css.includes("color-mix");
 
     expect(
       hasSupportRule,
@@ -130,9 +125,7 @@ test.describe("color-mix @supports guard — compiled CSS", () => {
 
     const css = await fetchCompiledCss(page);
     const found =
-      css.includes("@supports") &&
-      css.includes("--okh-forge-code-fg") &&
-      css.includes("color-mix");
+      css.includes("@supports") && css.includes("--okh-forge-code-fg") && css.includes("color-mix");
 
     expect(
       found,
@@ -200,9 +193,7 @@ test.describe("ClassBrowser preview panel — color-mix opacity rendering", () =
     ).toBeGreaterThan(0.05);
   });
 
-  test("preview 'Copy' action button text renders at reduced opacity", async ({
-    page,
-  }) => {
+  test("preview 'Copy' action button text renders at reduced opacity", async ({ page }) => {
     const colorStr = await page.evaluate(() => {
       // The Copy button is in the same header row as the Close button.
       // Scope the search via parentElement to avoid matching any other
@@ -238,13 +229,9 @@ test.describe("ClassBrowser preview panel — color-mix opacity rendering", () =
     ).toBeGreaterThan(0.05);
   });
 
-  test("preview 'Close' (×) button renders at reduced opacity", async ({
-    page,
-  }) => {
+  test("preview 'Close' (×) button renders at reduced opacity", async ({ page }) => {
     const colorStr = await page.evaluate(() => {
-      const btn = document.querySelector<HTMLButtonElement>(
-        'button[aria-label="Close preview"]'
-      );
+      const btn = document.querySelector<HTMLButtonElement>('button[aria-label="Close preview"]');
       if (!btn) return null;
       return window.getComputedStyle(btn).color;
     });
@@ -304,9 +291,7 @@ test.describe("ClassBrowser toggle buttons — All/Used mode opacity", () => {
     // The preview auto-defaults to 'used' mode, so 'All' is inactive and
     // should carry the /45 opacity modifier.
     const colorStr = await page.evaluate(() => {
-      const btn = document.querySelector<HTMLButtonElement>(
-        '[data-preview-toggle="all"]'
-      );
+      const btn = document.querySelector<HTMLButtonElement>('[data-preview-toggle="all"]');
       if (!btn) return null;
       return window.getComputedStyle(btn).color;
     });
@@ -318,10 +303,7 @@ test.describe("ClassBrowser toggle buttons — All/Used mode opacity", () => {
     ).toBeTruthy();
 
     const alpha = parseAlpha(colorStr!);
-    expect(
-      alpha,
-      `Could not parse alpha from computed color "${colorStr}".`
-    ).not.toBeNull();
+    expect(alpha, `Could not parse alpha from computed color "${colorStr}".`).not.toBeNull();
 
     // /45 → ~0.45 nominal. Must be noticeably below 1 (inactive state).
     expect(
@@ -344,9 +326,7 @@ test.describe("ClassBrowser toggle buttons — All/Used mode opacity", () => {
     // 'Used' is the active button; its active class is text-emerald-300 with
     // no opacity modifier, so alpha should be ≈ 1.
     const colorStr = await page.evaluate(() => {
-      const btn = document.querySelector<HTMLButtonElement>(
-        '[data-preview-toggle="used"]'
-      );
+      const btn = document.querySelector<HTMLButtonElement>('[data-preview-toggle="used"]');
       if (!btn) return null;
       return window.getComputedStyle(btn).color;
     });
@@ -358,10 +338,7 @@ test.describe("ClassBrowser toggle buttons — All/Used mode opacity", () => {
     ).toBeTruthy();
 
     const alpha = parseAlpha(colorStr!);
-    expect(
-      alpha,
-      `Could not parse alpha from computed color "${colorStr}".`
-    ).not.toBeNull();
+    expect(alpha, `Could not parse alpha from computed color "${colorStr}".`).not.toBeNull();
 
     // Active state has no opacity modifier — must be fully opaque.
     expect(
@@ -384,9 +361,7 @@ test.describe("ClassBrowser toggle buttons — All/Used mode opacity", () => {
     await page.waitForTimeout(400);
 
     const colorStr = await page.evaluate(() => {
-      const btn = document.querySelector<HTMLButtonElement>(
-        '[data-preview-toggle="used"]'
-      );
+      const btn = document.querySelector<HTMLButtonElement>('[data-preview-toggle="used"]');
       if (!btn) return null;
       return window.getComputedStyle(btn).color;
     });
@@ -397,10 +372,7 @@ test.describe("ClassBrowser toggle buttons — All/Used mode opacity", () => {
     ).toBeTruthy();
 
     const alpha = parseAlpha(colorStr!);
-    expect(
-      alpha,
-      `Could not parse alpha from computed color "${colorStr}".`
-    ).not.toBeNull();
+    expect(alpha, `Could not parse alpha from computed color "${colorStr}".`).not.toBeNull();
 
     // /45 → ~0.45 nominal. Must be noticeably reduced (inactive state).
     expect(
@@ -429,23 +401,15 @@ test.describe("ClassBrowser toggle buttons — All/Used mode opacity", () => {
     await page.waitForTimeout(400);
 
     const colorStr = await page.evaluate(() => {
-      const btn = document.querySelector<HTMLButtonElement>(
-        '[data-preview-toggle="all"]'
-      );
+      const btn = document.querySelector<HTMLButtonElement>('[data-preview-toggle="all"]');
       if (!btn) return null;
       return window.getComputedStyle(btn).color;
     });
 
-    expect(
-      colorStr,
-      "Could not find the 'All' toggle button after clicking it."
-    ).toBeTruthy();
+    expect(colorStr, "Could not find the 'All' toggle button after clicking it.").toBeTruthy();
 
     const alpha = parseAlpha(colorStr!);
-    expect(
-      alpha,
-      `Could not parse alpha from computed color "${colorStr}".`
-    ).not.toBeNull();
+    expect(alpha, `Could not parse alpha from computed color "${colorStr}".`).not.toBeNull();
 
     // Active state has no opacity modifier — must be fully opaque.
     expect(
@@ -466,9 +430,7 @@ test.describe("ClassBrowser toggle buttons — All/Used mode opacity", () => {
     await page.waitForTimeout(300);
 
     const colorStr = await page.evaluate(() => {
-      const btn = document.querySelector<HTMLButtonElement>(
-        '[data-preview-toggle="all"]'
-      );
+      const btn = document.querySelector<HTMLButtonElement>('[data-preview-toggle="all"]');
       if (!btn) return null;
       return window.getComputedStyle(btn).color;
     });
@@ -480,10 +442,7 @@ test.describe("ClassBrowser toggle buttons — All/Used mode opacity", () => {
     ).toBeTruthy();
 
     const alpha = parseAlpha(colorStr!);
-    expect(
-      alpha,
-      `Could not parse alpha from computed color "${colorStr}".`
-    ).not.toBeNull();
+    expect(alpha, `Could not parse alpha from computed color "${colorStr}".`).not.toBeNull();
 
     // hover:/80 → ~0.80 nominal.  Must sit clearly above the resting /45
     // value (>0.75) and below full opacity (<0.95).
@@ -506,25 +465,22 @@ test.describe("ClassBrowser toggle buttons — All/Used mode opacity", () => {
 // Suite 3: ExtractTab paste-area placeholder opacity
 //
 // The ExtractTab lives inside the Compose tab, inside a collapsible section
-// toggled by the "Toggle Extract Theme" button.
+// toggled by the "Toggle Import Theme" button.
 // ---------------------------------------------------------------------------
 
 test.describe("ExtractTab paste-area — placeholder color-mix opacity", () => {
   test.beforeEach(async ({ page }) => {
     await loadApp(page);
-    // Navigate to the Compose tab, then open the Extract Theme section.
+    // Navigate to the Compose tab, then open the Import Theme section.
     await switchTab(page, "Compose");
-    await page.getByRole("button", { name: "Toggle Extract Theme" }).click();
+    await page.getByRole("button", { name: "Toggle Import Theme" }).click();
     // Wait for the textarea to appear.
-    await page.waitForSelector(
-      'textarea[aria-label="Paste themed Mermaid diagram here"]',
-      { timeout: 6_000 }
-    );
+    await page.waitForSelector('textarea[aria-label="Paste themed Mermaid diagram here"]', {
+      timeout: 6_000,
+    });
   });
 
-  test("paste-area placeholder text renders at reduced opacity via color-mix", async ({
-    page,
-  }) => {
+  test("paste-area placeholder text renders at reduced opacity via color-mix", async ({ page }) => {
     const colorStr = await page.evaluate(() => {
       const textarea = document.querySelector<HTMLTextAreaElement>(
         'textarea[aria-label="Paste themed Mermaid diagram here"]'
