@@ -454,13 +454,21 @@ export function AppShell() {
         // Apply even when empty — an empty array means the user intentionally
         // deleted all slots; only the absence of the field means "use default".
         setMyThemeSlots(validSlots);
-      }
-      if (
-        persisted.activeMyThemeSlotId === null ||
-        (typeof persisted.activeMyThemeSlotId === "string" &&
-          isMyThemeSlotId(persisted.activeMyThemeSlotId))
-      ) {
-        setActiveMyThemeSlotId(persisted.activeMyThemeSlotId ?? null);
+        // Validate active slot ID against the hydrated slots so a stale or
+        // dangling ID (e.g. slot was deleted in another tab) doesn't persist.
+        const validSlotIds = new Set(validSlots.map((s) => s.id));
+        if (persisted.activeMyThemeSlotId === null) {
+          setActiveMyThemeSlotId(null);
+        } else if (
+          typeof persisted.activeMyThemeSlotId === "string" &&
+          isMyThemeSlotId(persisted.activeMyThemeSlotId) &&
+          validSlotIds.has(persisted.activeMyThemeSlotId)
+        ) {
+          setActiveMyThemeSlotId(persisted.activeMyThemeSlotId);
+        } else {
+          // ID references a slot that no longer exists — clear it.
+          setActiveMyThemeSlotId(null);
+        }
       }
     }
     setHydrated(true);

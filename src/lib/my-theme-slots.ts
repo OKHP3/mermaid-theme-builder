@@ -44,7 +44,11 @@ export function createDefaultMyThemeSlot(n: 1 | 2 | 3, sourceColors?: ThemeColor
 
 export function nextSlotNumber(slots: MyThemeSlot[]): (1 | 2 | 3) | null {
   if (slots.length >= 3) return null;
-  return (slots.length + 1) as 1 | 2 | 3;
+  const usedIds = new Set(slots.map((s) => s.id));
+  for (const n of [1, 2, 3] as const) {
+    if (!usedIds.has(`my-theme-${n}` as MyThemeSlotId)) return n;
+  }
+  return null;
 }
 
 export function isMyThemeSlotId(id: unknown): id is MyThemeSlotId {
