@@ -496,10 +496,10 @@ export function ComposeTab({
             </div>
             <div className={`${extractOpen ? "" : "hidden"}`}>
               <hr className="border-border/40 mb-2" />
-              <p className="text-foreground uppercase tracking-[0.07em] mb-1 font-semibold text-[10px]">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.07em] text-muted-foreground mb-1">
                 Extract Theme
               </p>
-              <p className="text-xs text-muted-foreground leading-relaxed mb-3">
+              <p className="text-[10px] text-muted-foreground leading-relaxed mb-3">
                 Paste a themed diagram above, then click Extract theme
               </p>
               <ExtractTab
@@ -596,7 +596,7 @@ export function ComposeTab({
                   <button
                     onClick={onResetPalette}
                     aria-label={`Reset ${selectedPalette.name} colors to defaults`}
-                    className="text-xs text-muted-foreground hover:text-destructive transition-colors"
+                    className="text-[10px] text-muted-foreground hover:text-destructive transition-colors"
                   >
                     Reset
                   </button>
@@ -620,7 +620,7 @@ export function ComposeTab({
               </div>
             </div>
             <div className={`${colorsOpen ? "" : "hidden"}`}>
-              <p className="text-xs text-muted-foreground mb-2 leading-relaxed">
+              <p className="text-[10px] text-muted-foreground mb-2 leading-relaxed">
                 {selectedPalette.description}
               </p>
               <div className="grid grid-cols-2 md:grid-cols-1 gap-x-1">
@@ -737,7 +737,7 @@ export function ComposeTab({
                 />
               </div>
 
-              <p className="text-[10px] uppercase tracking-wide text-muted-foreground/60 font-semibold mb-2">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.07em] text-muted-foreground mb-2">
                 Tier hierarchy
               </p>
               <div className="space-y-2">
@@ -915,7 +915,7 @@ export function ComposeTab({
                   </p>
                 )}
               </div>
-              <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
+              <p className="text-[10px] text-muted-foreground mb-3 leading-relaxed">
                 Save the currently selected fonts, colors, and overall look as a named palette/theme
                 JSON file, or share it via URL.
               </p>
