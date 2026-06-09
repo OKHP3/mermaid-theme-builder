@@ -248,34 +248,65 @@ export function MermaidPreview({ code, className, typography }: MermaidPreviewPr
   const fitToWindow = useCallback(() => {
     const container = containerRef.current;
     if (!container) return;
+
+    // Bail out early if the container has no visible dimensions yet — the caller
+    // is responsible for retrying once the container is properly laid out.
+    const containerW = container.clientWidth;
+    const containerH = container.clientHeight;
+    if (!containerW || !containerH) return;
+
     const svg = container.querySelector("svg");
     if (!svg) return;
 
     let svgW = 0;
     let svgH = 0;
 
-    // Mermaid sets max-width (CSS pixels) on the SVG element.
-    // viewBox may use a different internal coordinate scale, so max-width
-    // is a more reliable source for the diagram's natural rendered size.
-    const maxWidthStr = svg.style.maxWidth;
-    if (maxWidthStr && !maxWidthStr.includes("%")) {
-      const mw = parseFloat(maxWidthStr);
-      if (mw > 0) {
-        svgW = mw;
-        const vb = svg.viewBox?.baseVal;
-        if (vb && vb.width > 0) {
-          svgH = mw * (vb.height / vb.width);
+    // Primary: getBBox() returns the tight bounding box of rendered content in
+    // SVG user units, excluding any internal whitespace that Mermaid may allocate
+    // (e.g., requirementDiagram reserves a tall viewBox even for small diagrams).
+    // Convert user units → CSS pixels via max-width / viewBox.width ratio, then
+    // clamp to viewBox dimensions — this ensures diagrams whose edge labels or
+    // arrowheads spill slightly outside the viewBox don't get zoomed further out
+    // than the viewBox-based calculation, while still allowing a tighter fit when
+    // the viewBox has more whitespace than the actual content.
+    try {
+      const bbox = (svg as SVGGraphicsElement).getBBox();
+      const vb = svg.viewBox?.baseVal;
+      if (bbox.width > 0 && bbox.height > 0 && vb && vb.width > 0 && vb.height > 0) {
+        const maxWidthStr = svg.style.maxWidth;
+        const mw =
+          maxWidthStr && !maxWidthStr.includes("%") ? parseFloat(maxWidthStr) : vb.width;
+        if (mw > 0) {
+          const cssPerUnit = mw / vb.width;
+          const viewBoxH = vb.height * cssPerUnit;
+          svgW = Math.min(bbox.width * cssPerUnit, mw);
+          svgH = Math.min(bbox.height * cssPerUnit, viewBoxH);
+        }
+      }
+    } catch {
+      // getBBox() throws when the SVG is not attached to a visible document
+    }
+
+    // Fallback: max-width + viewBox aspect ratio
+    if (!svgW || !svgH) {
+      const maxWidthStr = svg.style.maxWidth;
+      if (maxWidthStr && !maxWidthStr.includes("%")) {
+        const mw = parseFloat(maxWidthStr);
+        if (mw > 0) {
+          svgW = mw;
+          const vb = svg.viewBox?.baseVal;
+          if (vb && vb.width > 0) svgH = mw * (vb.height / vb.width);
         }
       }
     }
 
-    // Fallback: use viewBox dimensions directly
+    // Fallback: viewBox dimensions directly
     if (!svgW || !svgH) {
       svgW = svg.viewBox?.baseVal?.width ?? 0;
       svgH = svg.viewBox?.baseVal?.height ?? 0;
     }
 
-    // Fallback: parse explicit width/height attributes (skip "%" values)
+    // Fallback: explicit width/height attributes (skip "%" values)
     if (!svgW || !svgH) {
       const aw = parseFloat(svg.getAttribute("width") ?? "0");
       const ah = parseFloat(svg.getAttribute("height") ?? "0");
@@ -287,8 +318,6 @@ export function MermaidPreview({ code, className, typography }: MermaidPreviewPr
 
     if (!svgW || !svgH) return;
 
-    const containerW = container.clientWidth;
-    const containerH = container.clientHeight;
     const fitScale = clamp(
       Math.min(containerW / svgW, containerH / svgH) * 0.9,
       MIN_SCALE,
@@ -465,9 +494,28 @@ export function MermaidPreview({ code, className, typography }: MermaidPreviewPr
     };
   }, [code, uniqueId]);
 
-  // Auto-fit whenever a new SVG is committed to the DOM
+  // Auto-fit whenever a new SVG is committed to the DOM.
+  // If the container has zero dimensions (e.g., the tab is not yet active or the
+  // panel flex layout has not resolved), defer via ResizeObserver and fit on the
+  // first frame where non-zero dimensions are available.
   useEffect(() => {
-    if (svgContent) fitToWindow();
+    if (!svgContent) return;
+    const container = containerRef.current;
+    if (!container) return;
+
+    if (container.clientWidth > 0 && container.clientHeight > 0) {
+      fitToWindow();
+      return;
+    }
+
+    const ro = new ResizeObserver(() => {
+      if (container.clientWidth > 0 && container.clientHeight > 0) {
+        ro.disconnect();
+        fitToWindow();
+      }
+    });
+    ro.observe(container);
+    return () => ro.disconnect();
   }, [svgContent, fitToWindow]);
 
   const btnBase = "forge-preview-btn";
