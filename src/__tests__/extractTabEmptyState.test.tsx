@@ -70,9 +70,9 @@ async function extractCode(code: string) {
 // ---------------------------------------------------------------------------
 
 describe("ExtractTab — idle state", () => {
-  it("shows the idle placeholder on initial render", () => {
+  it("shows the 'Works with' hint on initial render", () => {
     renderExtract();
-    expect(screen.getByText("Paste a themed diagram above, then click Extract theme")).toBeTruthy();
+    expect(screen.getByText(/Works with/)).toBeTruthy();
   });
 });
 
@@ -122,10 +122,10 @@ describe("ExtractTab — no theme found (bare diagram)", () => {
     expect(onSwitchTab).toHaveBeenCalledWith("apply");
   });
 
-  it("does not show the idle placeholder after extraction", async () => {
+  it("shows the 'No theme found' heading (not idle) after extraction", async () => {
     renderExtract();
     await extractCode(BARE_DIAGRAM);
-    expect(screen.queryByText("Paste a themed diagram above, then click Extract theme")).toBeNull();
+    expect(screen.getByText("No theme found in this diagram")).toBeTruthy();
   });
 });
 
