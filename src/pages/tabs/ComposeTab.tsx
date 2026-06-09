@@ -801,7 +801,7 @@ export function ComposeTab({
 
           <div className="p-3 border-b border-border">
             <div className="flex items-center justify-between mb-2">
-              <p className="forge-eyebrow">Styling</p>
+              <p className="forge-eyebrow">Customize Theme</p>
               <button
                 type="button"
                 onClick={() => setSettingsOpen((v) => !v)}
@@ -820,6 +820,7 @@ export function ComposeTab({
               </button>
             </div>
             <div className={`${settingsOpen ? "" : "hidden"}`}>
+              <hr className="border-border/40 mb-2" />
               <div className="space-y-3">
                 <div>
                   <label className="text-xs font-medium text-foreground block mb-1.5">Look</label>
