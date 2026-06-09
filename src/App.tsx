@@ -778,9 +778,7 @@ export function AppShell() {
     if (activeMyThemeSlotId) {
       setMyThemeSlots((prev) =>
         prev.map((s) =>
-          s.id === activeMyThemeSlotId
-            ? { ...s, colors: slotBaseColors.map((c) => ({ ...c })) }
-            : s
+          s.id === activeMyThemeSlotId ? { ...s, colors: slotBaseColors.map((c) => ({ ...c })) } : s
         )
       );
       return;
