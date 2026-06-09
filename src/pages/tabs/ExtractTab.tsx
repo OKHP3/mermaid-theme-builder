@@ -329,7 +329,7 @@ export function ExtractTab({
             type="button"
             onClick={handleExtract}
             disabled={!pastedCode.trim()}
-            className="text-xs px-3 py-1.5 rounded-md border border-border bg-background hover:bg-muted hover:border-primary/40 font-medium transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+            className="flex-1 text-xs px-2 py-1.5 rounded-md border border-border bg-background hover:bg-muted hover:border-primary/40 font-medium transition-all disabled:opacity-40 disabled:cursor-not-allowed"
           >
             Extract theme
           </button>
