@@ -21,12 +21,12 @@ interface ReferenceTabProps {
   onInputChange?: (code: string) => void;
   openParityMatrix?: boolean;
   onParityMatrixOpened?: () => void;
-  myThemeSlots: MyThemeSlot[];
-  activeMyThemeSlotId: string | null;
-  onSelectMyThemeSlot: (id: string) => void;
-  onAddMyThemeSlot: () => void;
-  onDeleteMyThemeSlot: (id: string) => void;
-  onExportMyThemeSlot: (id: string) => void;
+  myThemeSlots?: MyThemeSlot[];
+  activeMyThemeSlotId?: string | null;
+  onSelectMyThemeSlot?: (id: string) => void;
+  onAddMyThemeSlot?: () => void;
+  onDeleteMyThemeSlot?: (id: string) => void;
+  onExportMyThemeSlot?: (id: string) => void;
 }
 
 const TAXONOMY_DOCS_URL =
@@ -77,12 +77,12 @@ export function ReferenceTab({
   onInputChange,
   openParityMatrix = false,
   onParityMatrixOpened,
-  myThemeSlots,
-  activeMyThemeSlotId,
-  onSelectMyThemeSlot,
-  onAddMyThemeSlot,
-  onDeleteMyThemeSlot,
-  onExportMyThemeSlot,
+  myThemeSlots = [],
+  activeMyThemeSlotId = null,
+  onSelectMyThemeSlot = () => {},
+  onAddMyThemeSlot = () => {},
+  onDeleteMyThemeSlot = () => {},
+  onExportMyThemeSlot = () => {},
 }: ReferenceTabProps) {
   const classDefs = useMemo(() => getClassDefs(selectedPalette), [selectedPalette]);
 

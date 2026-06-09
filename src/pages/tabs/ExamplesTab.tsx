@@ -47,12 +47,12 @@ interface ExamplesTabProps {
   onLoadExample: (code: string) => void;
   initialSelectedId?: string;
   onExampleSelect?: (id: string) => void;
-  myThemeSlots: MyThemeSlot[];
-  activeMyThemeSlotId: string | null;
-  onSelectMyThemeSlot: (id: string) => void;
-  onAddMyThemeSlot: () => void;
-  onDeleteMyThemeSlot: (id: string) => void;
-  onExportMyThemeSlot: (id: string) => void;
+  myThemeSlots?: MyThemeSlot[];
+  activeMyThemeSlotId?: string | null;
+  onSelectMyThemeSlot?: (id: string) => void;
+  onAddMyThemeSlot?: () => void;
+  onDeleteMyThemeSlot?: (id: string) => void;
+  onExportMyThemeSlot?: (id: string) => void;
 }
 
 export function ExamplesTab({
@@ -64,12 +64,12 @@ export function ExamplesTab({
   onLoadExample,
   initialSelectedId,
   onExampleSelect,
-  myThemeSlots,
-  activeMyThemeSlotId,
-  onSelectMyThemeSlot,
-  onAddMyThemeSlot,
-  onDeleteMyThemeSlot,
-  onExportMyThemeSlot,
+  myThemeSlots = [],
+  activeMyThemeSlotId = null,
+  onSelectMyThemeSlot = () => {},
+  onAddMyThemeSlot = () => {},
+  onDeleteMyThemeSlot = () => {},
+  onExportMyThemeSlot = () => {},
 }: ExamplesTabProps) {
   const [selectedId, setSelectedId] = useState(() => {
     if (initialSelectedId && ALL_EXAMPLES.some((e) => e.id === initialSelectedId)) {

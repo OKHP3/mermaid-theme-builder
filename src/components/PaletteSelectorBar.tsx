@@ -88,9 +88,7 @@ export function PaletteSelectorBar({
     [currentNavId, navLen, onSelectMyThemeSlot, onSelectPalette, tileIdPrefix]
   );
 
-  const pendingSlot = pendingDeleteId
-    ? myThemeSlots.find((s) => s.id === pendingDeleteId)
-    : null;
+  const pendingSlot = pendingDeleteId ? myThemeSlots.find((s) => s.id === pendingDeleteId) : null;
 
   return (
     <div className="flex-none border-b border-border bg-card/30 px-3 py-2 print-hide">
@@ -104,8 +102,7 @@ export function PaletteSelectorBar({
         {myThemeSlots.map((slot) => {
           const swatchColors = SWATCH_INDICES.map((i) => slot.colors[i]?.value ?? "#888");
           const isActive = activeMyThemeSlotId === slot.id;
-          const displayName =
-            slot.name.length > 15 ? slot.name.slice(0, 14) + "\u2026" : slot.name;
+          const displayName = slot.name.length > 15 ? slot.name.slice(0, 14) + "\u2026" : slot.name;
           return (
             <div key={slot.id} className="relative flex-none group/slot">
               <button
@@ -188,10 +185,7 @@ export function PaletteSelectorBar({
 
         {/* Faint divider between My Theme section and built-in presets */}
         {myThemeSlots.length > 0 && (
-          <div
-            className="w-px bg-border/50 self-stretch mx-1 flex-none"
-            aria-hidden="true"
-          />
+          <div className="w-px bg-border/50 self-stretch mx-1 flex-none" aria-hidden="true" />
         )}
 
         {/* Built-in / saved palette tiles */}

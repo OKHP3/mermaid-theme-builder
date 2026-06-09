@@ -143,12 +143,12 @@ interface ComposeTabProps {
       warnValues: Array<{ key: string; value: string }>;
     } | null
   ) => void;
-  myThemeSlots: MyThemeSlot[];
-  activeMyThemeSlotId: string | null;
-  onSelectMyThemeSlot: (id: string) => void;
-  onAddMyThemeSlot: () => void;
-  onDeleteMyThemeSlot: (id: string) => void;
-  onExportMyThemeSlot: (id: string) => void;
+  myThemeSlots?: MyThemeSlot[];
+  activeMyThemeSlotId?: string | null;
+  onSelectMyThemeSlot?: (id: string) => void;
+  onAddMyThemeSlot?: () => void;
+  onDeleteMyThemeSlot?: (id: string) => void;
+  onExportMyThemeSlot?: (id: string) => void;
   customThemeNamePlaceholder?: string;
 }
 
@@ -199,12 +199,12 @@ export function ComposeTab({
   onNavigateToParityMatrix,
   importDiagnostics,
   onImportDiagnosticsChange,
-  myThemeSlots,
-  activeMyThemeSlotId,
-  onSelectMyThemeSlot,
-  onAddMyThemeSlot,
-  onDeleteMyThemeSlot,
-  onExportMyThemeSlot,
+  myThemeSlots = [],
+  activeMyThemeSlotId = null,
+  onSelectMyThemeSlot = () => {},
+  onAddMyThemeSlot = () => {},
+  onDeleteMyThemeSlot = () => {},
+  onExportMyThemeSlot = () => {},
   customThemeNamePlaceholder,
 }: ComposeTabProps) {
   const [copiedBootstrap, setCopiedBootstrap] = useState(false);

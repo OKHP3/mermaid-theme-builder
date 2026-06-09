@@ -60,12 +60,12 @@ interface ApplyTabProps {
   onPreviewModeChange: (mode: PreviewMode) => void;
   hintResetToken: number;
   onResetSyntaxHints: () => void;
-  myThemeSlots: MyThemeSlot[];
-  activeMyThemeSlotId: string | null;
-  onSelectMyThemeSlot: (id: string) => void;
-  onAddMyThemeSlot: () => void;
-  onDeleteMyThemeSlot: (id: string) => void;
-  onExportMyThemeSlot: (id: string) => void;
+  myThemeSlots?: MyThemeSlot[];
+  activeMyThemeSlotId?: string | null;
+  onSelectMyThemeSlot?: (id: string) => void;
+  onAddMyThemeSlot?: () => void;
+  onDeleteMyThemeSlot?: (id: string) => void;
+  onExportMyThemeSlot?: (id: string) => void;
 }
 
 export function ApplyTab({
@@ -100,12 +100,12 @@ export function ApplyTab({
   onPreviewModeChange: setPreviewMode,
   hintResetToken,
   onResetSyntaxHints,
-  myThemeSlots,
-  activeMyThemeSlotId,
-  onSelectMyThemeSlot,
-  onAddMyThemeSlot,
-  onDeleteMyThemeSlot,
-  onExportMyThemeSlot,
+  myThemeSlots = [],
+  activeMyThemeSlotId = null,
+  onSelectMyThemeSlot = () => {},
+  onAddMyThemeSlot = () => {},
+  onDeleteMyThemeSlot = () => {},
+  onExportMyThemeSlot = () => {},
 }: ApplyTabProps) {
   const [showColorEditor, setShowColorEditor] = useState(false);
   const [advisoryDismissed, setAdvisoryDismissed] = useState(false);

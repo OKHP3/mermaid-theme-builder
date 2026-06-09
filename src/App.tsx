@@ -40,11 +40,7 @@ import {
   isMyThemeSlotId,
   slotDisplayName,
 } from "@/lib/my-theme-slots";
-import {
-  downloadTextFile,
-  makeFilename,
-  paletteToPortableJson,
-} from "@/lib/exporters";
+import { downloadTextFile, makeFilename, paletteToPortableJson } from "@/lib/exporters";
 import { detectDiagram } from "@/lib/detector";
 import { type TypographySettings, DEFAULT_TYPOGRAPHY } from "@/lib/typography";
 import {
@@ -527,9 +523,7 @@ export function AppShell() {
 
   const activeMyThemeSlot = useMemo(
     () =>
-      activeMyThemeSlotId
-        ? (myThemeSlots.find((s) => s.id === activeMyThemeSlotId) ?? null)
-        : null,
+      activeMyThemeSlotId ? (myThemeSlots.find((s) => s.id === activeMyThemeSlotId) ?? null) : null,
     [myThemeSlots, activeMyThemeSlotId]
   );
 
@@ -693,18 +687,20 @@ export function AppShell() {
     setMyThemeSlots((prev) => {
       if (prev.length >= 3) return prev;
       const num = nextSlotNumber(prev);
-      const newSlot = createDefaultMyThemeSlot(num, BRAND_PALETTES[0].colors);
+      if (num === null) return prev;
+      const newSlot = createDefaultMyThemeSlot(num, selectedPalette.colors);
       setActiveMyThemeSlotId(newSlot.id);
       return [...prev, newSlot];
     });
-  }, []);
+  }, [selectedPalette.colors]);
 
   const handleDeleteMyThemeSlot = useCallback(
     (id: string) => {
       setMyThemeSlots((prev) => {
+        const idx = prev.findIndex((s) => s.id === id);
         const next = prev.filter((s) => s.id !== id);
         if (activeMyThemeSlotId === id) {
-          const nearest = next[0] ?? null;
+          const nearest = next[idx] ?? next[idx - 1] ?? null;
           setActiveMyThemeSlotId(nearest ? nearest.id : null);
         }
         return next;
@@ -718,15 +714,15 @@ export function AppShell() {
       const slot = myThemeSlots.find((s) => s.id === id);
       if (!slot) return;
       const exportPalette: Palette = {
+        ...BRAND_PALETTES[0],
         id: "my-theme-export",
         name: slot.name,
         description: `Exported My Theme workspace: ${slot.name}`,
         colors: slot.colors,
-        look: slot.look,
       };
       const json = paletteToPortableJson(exportPalette);
-      const filename = makeFilename(slot.name, "json");
-      downloadTextFile(json, filename, "application/json");
+      const filename = makeFilename(slot.name, "theme", "json");
+      downloadTextFile(filename, json, "application/json");
     },
     [myThemeSlots]
   );
