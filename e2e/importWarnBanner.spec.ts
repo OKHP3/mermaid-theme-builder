@@ -62,7 +62,7 @@ async function openComposeAndImport(page: Page, json: string): Promise<void> {
 
   // The banner lives inside the "My Palettes" collapsible section which
   // starts closed.  Expand it so the banner will be visible after import.
-  const toggle = page.getByRole("button", { name: "Toggle My Themes" });
+  const toggle = page.getByRole("button", { name: "Toggle Export Theme" });
   await toggle.waitFor({ timeout: 8_000 });
   await toggle.click();
 

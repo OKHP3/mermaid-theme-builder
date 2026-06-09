@@ -874,13 +874,13 @@ export function ComposeTab({
 
           <div className="p-3 border-b border-border">
             <div className="flex items-center justify-between mb-1">
-              <p className="forge-eyebrow">My Themes</p>
+              <p className="forge-eyebrow">Export Theme</p>
               <button
                 type="button"
                 onClick={() => setMyPalettesOpen((v) => !v)}
                 className="p-0.5 text-muted-foreground"
                 aria-expanded={myPalettesOpen}
-                aria-label="Toggle My Themes"
+                aria-label="Toggle Export Theme"
               >
                 <svg
                   viewBox="0 0 12 12"
@@ -893,12 +893,11 @@ export function ComposeTab({
               </button>
             </div>
             <div className={`${myPalettesOpen ? "" : "hidden"}`}>
-              <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
-                Save the currently selected fonts, colors, and overall look as a named palette/theme
-                JSON file, or share it via URL.
-              </p>
+              <hr className="border-border/40 mb-2" />
               <div className="mb-3">
-                <label className="text-xs font-medium text-foreground block mb-1">Theme name</label>
+                <label className="text-xs font-medium text-foreground block mb-1">
+                  My Theme's Name
+                </label>
                 <input
                   type="text"
                   value={customThemeName}
@@ -912,6 +911,10 @@ export function ComposeTab({
                   </p>
                 )}
               </div>
+              <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
+                Save the currently selected fonts, colors, and overall look as a named palette/theme
+                JSON file, or share it via URL.
+              </p>
               <div className="space-y-2 mb-3">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input

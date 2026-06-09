@@ -52,7 +52,7 @@ async function openScaffoldModal(page: Page): Promise<void> {
 
   // The "Copy Prompt Scaffold" button lives inside the Bootstrap Export
   // as a non-collapsible Bootstrap Export sub-section.  Open My Themes first.
-  const toggleBtn = page.getByRole("button", { name: "Toggle My Themes" });
+  const toggleBtn = page.getByRole("button", { name: "Toggle Export Theme" });
   await toggleBtn.waitFor({ timeout: 8_000 });
   await toggleBtn.click();
 
