@@ -496,7 +496,7 @@ export function ComposeTab({
             </div>
             <div className={`${extractOpen ? "" : "hidden"}`}>
               <hr className="border-border/40 mb-2" />
-              <p className="text-xs font-semibold text-foreground uppercase tracking-[0.07em] mb-1">
+              <p className="text-foreground uppercase tracking-[0.07em] mb-1 font-semibold text-[10px]">
                 Extract Theme
               </p>
               <p className="text-xs text-muted-foreground leading-relaxed mb-3">
