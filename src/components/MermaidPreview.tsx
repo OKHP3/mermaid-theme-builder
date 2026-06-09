@@ -198,7 +198,11 @@ function scopeInjectedCss(css: string, scopeId: string): string {
 
     if (selector.startsWith("@keyframes") || selector.startsWith("@-")) {
       out.push(`${selector}{${blockContent}}`);
-    } else if (selector.startsWith("@media") || selector.startsWith("@supports") || selector.startsWith("@layer")) {
+    } else if (
+      selector.startsWith("@media") ||
+      selector.startsWith("@supports") ||
+      selector.startsWith("@layer")
+    ) {
       out.push(`${selector}{${scopeInjectedCss(blockContent, scopeId)}}`);
     } else if (selector.startsWith("@")) {
       out.push(`${selector}{${blockContent}}`);
@@ -428,13 +432,40 @@ export function MermaidPreview({ code, className, typography }: MermaidPreviewPr
     (async () => {
       try {
         const mermaid = await getMermaid();
+
+        // Watch for any styles injected into document.head during render
+        const renderNewStyles: HTMLStyleElement[] = [];
+        const renderObserver = new MutationObserver((mutations) => {
+          for (const mutation of mutations) {
+            for (const node of mutation.addedNodes) {
+              if (node instanceof HTMLStyleElement) {
+                renderNewStyles.push(node);
+              }
+            }
+          }
+        });
+        renderObserver.observe(document.head, { childList: true });
+
         const { svg } = await mermaid.render(diagramId, code);
+
+        renderObserver.disconnect();
+
+        // Capture and remove any styles injected during this render
+        let renderCapturedCss = "";
+        for (const el of renderNewStyles) {
+          renderCapturedCss += el.textContent ?? "";
+          el.remove();
+        }
+
+        // Import-time ZenUML styles are only relevant for ZenUML diagrams;
+        // other diagram types must not receive them (could alter their visuals)
+        const isZenUml = /^\s*zenuml/i.test(code);
+        const capturedCss = (isZenUml ? zenumlInjectedCss : "") + renderCapturedCss;
+
         if (!canceled) {
           setSvgContent(svg);
           setInjectedCss(
-            zenumlInjectedCss
-              ? scopeInjectedCss(zenumlInjectedCss, `mermaid-preview-${uniqueId}`)
-              : ""
+            capturedCss ? scopeInjectedCss(capturedCss, `mermaid-preview-${uniqueId}`) : ""
           );
           setError(null);
           setLoading(false);
