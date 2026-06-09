@@ -1,19 +1,14 @@
 /**
  * CSS leakage guard for Mermaid diagram rendering.
  *
- * ## Families confirmed to inject <style> nodes into document.head
+ * ## Families confirmed to inject <style> nodes into document.head at render time
  *
- * During a mermaid.render() call (or at import/registration time), several
- * diagram families inject raw <style> tags into document.head. These persist
- * after the SVG string is captured and bleed into subsequently rendered
- * diagrams or into the app's own UI unless explicitly removed.
+ * During a mermaid.render() call several diagram families inject raw <style>
+ * tags into document.head. These persist after the SVG string is captured and
+ * bleed into subsequently rendered diagrams or into the app's own UI unless
+ * explicitly removed.
  *
- * Confirmed injectors (audited against mermaid ^11.14.0 dist chunks):
- *
- *   • zenuml      — @mermaid-js/mermaid-zenuml (Vue-based, external package)
- *                   Injects Vue component styles at registerExternalDiagrams()
- *                   time, not per render. Captured once at init and stored for
- *                   scoped re-injection only when a ZenUML diagram is displayed.
+ * Confirmed render-time injectors (audited against mermaid ^11.14.0 dist chunks):
  *
  *   • venn        — mermaid/dist chunks (vennDiagram chunk) inject a <style>
  *                   tag with d3-based layout CSS on first render.
@@ -27,8 +22,15 @@
  * All other families (flowchart, sequence, class, state, ER, pie, gitGraph,
  * mindmap, timeline, quadrant, requirement, c4, architecture, block, sankey,
  * xychart, packet, kanban, treemap, ishikawa, wardley, treeView, radar,
- * eventModeling) do not inject additional <style> nodes at render time — their
- * styling is fully embedded in the returned SVG string.
+ * eventModeling, zenuml) do not inject additional <style> nodes at render time
+ * — their styling is fully embedded in the returned SVG string.
+ *
+ * Note on ZenUML: @mermaid-js/mermaid-zenuml (Vue-based) injects Vue-scoped
+ * styles at registerExternalDiagrams() time. Those styles use [data-v-*]
+ * selectors that only match Vue component DOM — they are harmless to Mermaid's
+ * SVG output — so they are intentionally left in document.head and NOT captured.
+ * Capturing them at init time would also remove Mermaid's own base CSS (font
+ * metrics, size constraints), breaking zoom-to-fit for every non-ZenUML render.
  *
  * ## Strategy
  *

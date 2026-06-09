@@ -16,7 +16,6 @@ const ZOOM_STEP = 0.15;
 
 let mermaidInstance: MermaidType | null = null;
 let initializationDone = false;
-let zenumlInjectedCss = "";
 
 async function getMermaid(): Promise<MermaidType> {
   if (!mermaidInstance) {
@@ -24,22 +23,19 @@ async function getMermaid(): Promise<MermaidType> {
     mermaidInstance = mod.default;
   }
   if (!initializationDone) {
-    // ZenUML (@mermaid-js/mermaid-zenuml, Vue-based) injects <style> nodes
-    // into document.head at registerExternalDiagrams() time. Capture them here
-    // so they can be re-injected in a scoped manner only when a ZenUML diagram
-    // is actually displayed — preventing leakage into other diagram renders.
-    const initCapture = createStyleCapture();
-    try {
-      const zenuml = await import("@mermaid-js/mermaid-zenuml");
-      await mermaidInstance.registerExternalDiagrams([zenuml.default]);
-      mermaidInstance.initialize({
-        startOnLoad: false,
-        securityLevel: "strict",
-        suppressErrorRendering: true,
-      });
-    } finally {
-      zenumlInjectedCss = initCapture.finish();
-    }
+    // ZenUML (@mermaid-js/mermaid-zenuml, Vue-based) injects Vue-scoped <style>
+    // nodes using [data-v-*] selectors — these only match Vue component DOM and
+    // are harmless to Mermaid's own SVG output.  Do NOT capture/remove them at
+    // init time: doing so also strips Mermaid's own base CSS (font metrics, size
+    // constraints) which causes the layout engine to produce wrong SVG dimensions
+    // for every subsequent non-ZenUML render, breaking zoom-to-fit.
+    const zenuml = await import("@mermaid-js/mermaid-zenuml");
+    await mermaidInstance.registerExternalDiagrams([zenuml.default]);
+    mermaidInstance.initialize({
+      startOnLoad: false,
+      securityLevel: "strict",
+      suppressErrorRendering: true,
+    });
 
     initializationDone = true;
   }
@@ -440,10 +436,7 @@ export function MermaidPreview({ code, className, typography }: MermaidPreviewPr
           renderCapturedCss = renderCapture.finish();
         }
 
-        // Import-time ZenUML styles are only relevant for ZenUML diagrams;
-        // other diagram types must not receive them (could alter their visuals)
-        const isZenUml = /^\s*zenuml/i.test(code);
-        const capturedCss = (isZenUml ? zenumlInjectedCss : "") + renderCapturedCss;
+        const capturedCss = renderCapturedCss;
 
         if (!canceled) {
           setSvgContent(svg);
