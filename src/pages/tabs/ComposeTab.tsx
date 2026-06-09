@@ -512,6 +512,79 @@ export function ComposeTab({
           </div>
 
           <div className="p-3 border-b border-border">
+            <div className="flex items-center justify-between mb-2">
+              <p className="forge-eyebrow">Customize Theme</p>
+              <button
+                type="button"
+                onClick={() => setSettingsOpen((v) => !v)}
+                className="p-0.5 text-muted-foreground"
+                aria-expanded={settingsOpen}
+                aria-label="Toggle Settings"
+              >
+                <svg
+                  viewBox="0 0 12 12"
+                  fill="currentColor"
+                  className={`w-3.5 h-3.5 transition-transform ${settingsOpen ? "rotate-180" : ""}`}
+                  aria-hidden="true"
+                >
+                  <path d="M3 4.5l3 3 3-3z" />
+                </svg>
+              </button>
+            </div>
+            <div className={`${settingsOpen ? "" : "hidden"}`}>
+              <hr className="border-border/40 mb-2" />
+              <div className="space-y-3">
+                <div>
+                  <label className="text-xs font-medium text-foreground block mb-1.5">Look</label>
+                  <div className="flex gap-1" role="group" aria-label="Look style">
+                    {(
+                      [
+                        {
+                          value: "classic" as MermaidLook,
+                          label: "Classic",
+                          desc: "Standard rendering",
+                        },
+                        {
+                          value: "neo" as MermaidLook,
+                          label: "Neo",
+                          desc: "Mermaid v11+ rounder shapes",
+                        },
+                        {
+                          value: "handDrawn" as MermaidLook,
+                          label: "Hand Drawn",
+                          desc: "Rough.js sketch style",
+                        },
+                      ] as const
+                    ).map((opt) => (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        onClick={() => onLookChange(opt.value)}
+                        title={opt.desc}
+                        aria-pressed={look === opt.value}
+                        className={`flex-1 text-[11px] px-1 py-1.5 rounded-md border font-medium transition-all ${
+                          look === opt.value
+                            ? "border-primary bg-primary/10 text-primary"
+                            : "border-border bg-background hover:bg-muted text-muted-foreground"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  {look !== "classic" && (
+                    <p className="text-[10px] text-muted-foreground mt-1 leading-relaxed">
+                      {look === "neo"
+                        ? "Neo look — requires Mermaid v11+. Rounder nodes, cleaner lines."
+                        : "Hand-drawn sketch style via Rough.js. Great for informal diagrams."}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-3 border-b border-border">
             <div className="flex items-center justify-between mb-1">
               <p className="forge-eyebrow">Colors</p>
               <div className="flex items-center gap-2">
@@ -796,79 +869,6 @@ export function ComposeTab({
                 themeVariable. Other tiers and per-tier font overrides are included in the Prompt
                 Scaffold export.
               </p>
-            </div>
-          </div>
-
-          <div className="p-3 border-b border-border">
-            <div className="flex items-center justify-between mb-2">
-              <p className="forge-eyebrow">Customize Theme</p>
-              <button
-                type="button"
-                onClick={() => setSettingsOpen((v) => !v)}
-                className="p-0.5 text-muted-foreground"
-                aria-expanded={settingsOpen}
-                aria-label="Toggle Settings"
-              >
-                <svg
-                  viewBox="0 0 12 12"
-                  fill="currentColor"
-                  className={`w-3.5 h-3.5 transition-transform ${settingsOpen ? "rotate-180" : ""}`}
-                  aria-hidden="true"
-                >
-                  <path d="M3 4.5l3 3 3-3z" />
-                </svg>
-              </button>
-            </div>
-            <div className={`${settingsOpen ? "" : "hidden"}`}>
-              <hr className="border-border/40 mb-2" />
-              <div className="space-y-3">
-                <div>
-                  <label className="text-xs font-medium text-foreground block mb-1.5">Look</label>
-                  <div className="flex gap-1" role="group" aria-label="Look style">
-                    {(
-                      [
-                        {
-                          value: "classic" as MermaidLook,
-                          label: "Classic",
-                          desc: "Standard rendering",
-                        },
-                        {
-                          value: "neo" as MermaidLook,
-                          label: "Neo",
-                          desc: "Mermaid v11+ rounder shapes",
-                        },
-                        {
-                          value: "handDrawn" as MermaidLook,
-                          label: "Hand Drawn",
-                          desc: "Rough.js sketch style",
-                        },
-                      ] as const
-                    ).map((opt) => (
-                      <button
-                        key={opt.value}
-                        type="button"
-                        onClick={() => onLookChange(opt.value)}
-                        title={opt.desc}
-                        aria-pressed={look === opt.value}
-                        className={`flex-1 text-[11px] px-1 py-1.5 rounded-md border font-medium transition-all ${
-                          look === opt.value
-                            ? "border-primary bg-primary/10 text-primary"
-                            : "border-border bg-background hover:bg-muted text-muted-foreground"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
-                  {look !== "classic" && (
-                    <p className="text-[10px] text-muted-foreground mt-1 leading-relaxed">
-                      {look === "neo"
-                        ? "Neo look — requires Mermaid v11+. Rounder nodes, cleaner lines."
-                        : "Hand-drawn sketch style via Rough.js. Great for informal diagrams."}
-                    </p>
-                  )}
-                </div>
-              </div>
             </div>
           </div>
 
