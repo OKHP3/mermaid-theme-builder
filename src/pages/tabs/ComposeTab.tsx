@@ -204,7 +204,7 @@ export function ComposeTab({
   const [clampedTiers, setClampedTiers] = useState<Set<TypographyTierKey>>(new Set());
   const clampTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const [colorsOpen, setColorsOpen] = useState(false);
-  const [lookOpen, setLookOpen] = useState(true);
+  const [lookOpen, setLookOpen] = useState(false);
   const [typographyOpen, setTypographyOpen] = useState(false);
   const [myPalettesOpen, setMyPalettesOpen] = useState(false);
   const [extractOpen, setExtractOpen] = useState(false);
