@@ -7,6 +7,8 @@ import {
   MY_THEME_SLOT_IDS,
   type MyThemeSlot,
 } from "@/lib/my-theme-slots";
+import { paletteToPortableJson, parsePortablePalette } from "@/lib/exporters";
+import { BRAND_PALETTES, type Palette } from "@/lib/palettes";
 
 function makeSlot(n: 1 | 2 | 3): MyThemeSlot {
   return createDefaultMyThemeSlot(n);
@@ -114,5 +116,75 @@ describe("createDefaultMyThemeSlot", () => {
     const slot = createDefaultMyThemeSlot(1, colors);
     colors[0].value = "#ffffff";
     expect(slot.colors[0].value).toBe("#111111");
+  });
+});
+
+// ── Import round-trip ─────────────────────────────────────────────────────────
+
+describe("My Theme slot export → import round-trip", () => {
+  const brand = BRAND_PALETTES[0];
+
+  function slotToPalette(slot: MyThemeSlot): Palette {
+    return {
+      ...brand,
+      id: "my-theme-export",
+      name: slot.name,
+      description: `Exported My Theme workspace: ${slot.name}`,
+      colors: slot.colors,
+    };
+  }
+
+  it("colors survive a full export → parsePortablePalette cycle", () => {
+    const slot = createDefaultMyThemeSlot(1, brand.colors);
+    const json = paletteToPortableJson(slotToPalette(slot));
+    const result = parsePortablePalette(json);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.missingKeys).toHaveLength(0);
+    expect(result.palette.colors.length).toBe(slot.colors.length);
+    for (const original of slot.colors) {
+      const imported = result.palette.colors.find((c) => c.key === original.key);
+      expect(imported?.value).toBe(original.value);
+    }
+  });
+
+  it("import fails when required color keys are missing", () => {
+    const partial: Palette = {
+      ...brand,
+      id: "partial",
+      name: "Partial",
+      description: "Missing most keys",
+      colors: [{ key: "primaryColor", label: "Primary", value: "#ff0000" }],
+    };
+    const json = paletteToPortableJson(partial);
+    const result = parsePortablePalette(json);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    // All required keys except primaryColor are missing
+    expect(result.missingKeys.length).toBeGreaterThan(0);
+    expect(result.missingKeys).not.toContain("primaryColor");
+  });
+
+  it("import fails with a meaningful error for malformed JSON", () => {
+    const result = parsePortablePalette("{ not valid json }");
+    expect(result.ok).toBe(false);
+  });
+
+  it("import fails when type field is wrong", () => {
+    const json = JSON.stringify({ type: "mtb-bundle", colors: [] });
+    const result = parsePortablePalette(json);
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.error).toMatch(/type/);
+  });
+
+  it("name from exported slot is preserved in the imported palette", () => {
+    const slot = createDefaultMyThemeSlot(2, brand.colors);
+    const customSlot = { ...slot, name: "My Custom Palette" };
+    const json = paletteToPortableJson(slotToPalette(customSlot));
+    const result = parsePortablePalette(json);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.palette.name).toBe("My Custom Palette");
   });
 });
