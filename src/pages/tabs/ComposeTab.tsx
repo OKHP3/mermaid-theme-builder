@@ -500,7 +500,9 @@ export function ComposeTab({
                 Extract Theme
               </p>
               <p className="text-[10px] text-muted-foreground leading-relaxed mb-3">
-                Paste a themed diagram above, then click Extract theme
+                Already have a styled Mermaid diagram you love — hand-crafted or AI-generated? Paste
+                it below and this tool will extract the color theme automatically, presetting your
+                palette so you can keep refining from there.
               </p>
               <ExtractTab
                 embedded
