@@ -15,6 +15,7 @@ const ZOOM_STEP = 0.15;
 
 let mermaidInstance: MermaidType | null = null;
 let initializationDone = false;
+let zenumlInjectedCss = "";
 
 async function getMermaid(): Promise<MermaidType> {
   if (!mermaidInstance) {
@@ -22,6 +23,18 @@ async function getMermaid(): Promise<MermaidType> {
     mermaidInstance = mod.default;
   }
   if (!initializationDone) {
+    const newStyles: HTMLStyleElement[] = [];
+    const observer = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        for (const node of mutation.addedNodes) {
+          if (node instanceof HTMLStyleElement) {
+            newStyles.push(node);
+          }
+        }
+      }
+    });
+    observer.observe(document.head, { childList: true });
+
     const zenuml = await import("@mermaid-js/mermaid-zenuml");
     await mermaidInstance.registerExternalDiagrams([zenuml.default]);
     mermaidInstance.initialize({
@@ -29,6 +42,14 @@ async function getMermaid(): Promise<MermaidType> {
       securityLevel: "strict",
       suppressErrorRendering: true,
     });
+
+    observer.disconnect();
+
+    for (const el of newStyles) {
+      zenumlInjectedCss += el.textContent ?? "";
+      el.remove();
+    }
+
     initializationDone = true;
   }
   return mermaidInstance;
@@ -135,10 +156,76 @@ function scopedTypographyCss(css: string, scopeId: string): string {
     .join("\n");
 }
 
+function scopeInjectedCss(css: string, scopeId: string): string {
+  if (!css.trim()) return "";
+  const scope = `#${scopeId}`;
+  const out: string[] = [];
+  let pos = 0;
+
+  while (pos < css.length) {
+    const wsEnd = pos;
+    while (pos < css.length && /\s/.test(css[pos])) pos++;
+    if (pos > wsEnd) {
+      out.push(css.slice(wsEnd, pos));
+    }
+    if (pos >= css.length) break;
+
+    if (css.slice(pos, pos + 2) === "/*") {
+      const end = css.indexOf("*/", pos + 2);
+      const commentEnd = end === -1 ? css.length : end + 2;
+      out.push(css.slice(pos, commentEnd));
+      pos = commentEnd;
+      continue;
+    }
+
+    let bracePos = pos;
+    while (bracePos < css.length && css[bracePos] !== "{") bracePos++;
+    if (bracePos >= css.length) {
+      out.push(css.slice(pos));
+      break;
+    }
+
+    const selector = css.slice(pos, bracePos).trim();
+
+    let depth = 1;
+    let blockPos = bracePos + 1;
+    while (blockPos < css.length && depth > 0) {
+      if (css[blockPos] === "{") depth++;
+      else if (css[blockPos] === "}") depth--;
+      blockPos++;
+    }
+    const blockContent = css.slice(bracePos + 1, blockPos - 1);
+
+    if (selector.startsWith("@keyframes") || selector.startsWith("@-")) {
+      out.push(`${selector}{${blockContent}}`);
+    } else if (selector.startsWith("@media") || selector.startsWith("@supports") || selector.startsWith("@layer")) {
+      out.push(`${selector}{${scopeInjectedCss(blockContent, scopeId)}}`);
+    } else if (selector.startsWith("@")) {
+      out.push(`${selector}{${blockContent}}`);
+    } else {
+      const scoped = selector
+        .split(",")
+        .map((s) => {
+          const t = s.trim();
+          if (!t) return s;
+          if (t === ":root") return scope;
+          return `${scope} ${t}`;
+        })
+        .join(",");
+      out.push(`${scoped}{${blockContent}}`);
+    }
+
+    pos = blockPos;
+  }
+
+  return out.join("");
+}
+
 export function MermaidPreview({ code, className, typography }: MermaidPreviewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [svgContent, setSvgContent] = useState<string>("");
+  const [injectedCss, setInjectedCss] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [scale, setScale] = useState(1);
   const [translate, setTranslate] = useState({ x: 0, y: 0 });
@@ -328,6 +415,7 @@ export function MermaidPreview({ code, className, typography }: MermaidPreviewPr
   useEffect(() => {
     if (!code.trim()) {
       setSvgContent("");
+      setInjectedCss("");
       setError(null);
       setLoading(false);
       return;
@@ -343,6 +431,11 @@ export function MermaidPreview({ code, className, typography }: MermaidPreviewPr
         const { svg } = await mermaid.render(diagramId, code);
         if (!canceled) {
           setSvgContent(svg);
+          setInjectedCss(
+            zenumlInjectedCss
+              ? scopeInjectedCss(zenumlInjectedCss, `mermaid-preview-${uniqueId}`)
+              : ""
+          );
           setError(null);
           setLoading(false);
           setStatusAnnouncement("Diagram rendered");
@@ -353,6 +446,7 @@ export function MermaidPreview({ code, className, typography }: MermaidPreviewPr
           const cleanMessage = message.replace(/<br\s*\/?>/gi, "\n").replace(/<[^>]*>/g, "");
           setError(cleanMessage);
           setSvgContent("");
+          setInjectedCss("");
           setLoading(false);
           setStatusAnnouncement(`Render error: ${cleanMessage.slice(0, 100)}`);
         }
@@ -378,6 +472,7 @@ export function MermaidPreview({ code, className, typography }: MermaidPreviewPr
   return (
     <div id={previewScopeId} className={`relative overflow-hidden ${className ?? ""}`}>
       {typographyCss && <style>{typographyCss}</style>}
+      {injectedCss && <style>{injectedCss}</style>}
       {/* Always-mounted screen reader live region — stays in the DOM across all render states */}
       <div aria-live="polite" aria-atomic="true" className="sr-only">
         {statusAnnouncement}
