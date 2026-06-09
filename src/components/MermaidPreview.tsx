@@ -274,8 +274,7 @@ export function MermaidPreview({ code, className, typography }: MermaidPreviewPr
       const vb = svg.viewBox?.baseVal;
       if (bbox.width > 0 && bbox.height > 0 && vb && vb.width > 0 && vb.height > 0) {
         const maxWidthStr = svg.style.maxWidth;
-        const mw =
-          maxWidthStr && !maxWidthStr.includes("%") ? parseFloat(maxWidthStr) : vb.width;
+        const mw = maxWidthStr && !maxWidthStr.includes("%") ? parseFloat(maxWidthStr) : vb.width;
         if (mw > 0) {
           const cssPerUnit = mw / vb.width;
           const viewBoxH = vb.height * cssPerUnit;
