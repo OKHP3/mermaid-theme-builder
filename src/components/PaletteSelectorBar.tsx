@@ -146,7 +146,7 @@ export function PaletteSelectorBar({
                   setPendingDeleteId(slot.id);
                 }}
                 aria-label={`Delete ${slot.name}`}
-                className="absolute top-1 right-0.5 opacity-0 group-hover/slot:opacity-100 focus:opacity-100 transition-opacity p-0.5 rounded hover:bg-destructive/15 text-muted-foreground hover:text-destructive focus-visible:outline focus-visible:outline-1 focus-visible:outline-destructive"
+                className="absolute top-1 right-0.5 opacity-0 group-hover/slot:opacity-100 focus:opacity-100 [@media(pointer:coarse)]:opacity-100 transition-opacity p-0.5 rounded hover:bg-destructive/15 text-muted-foreground hover:text-destructive focus-visible:outline focus-visible:outline-1 focus-visible:outline-destructive"
               >
                 <svg viewBox="0 0 16 16" fill="none" className="w-3 h-3" aria-hidden="true">
                   <path

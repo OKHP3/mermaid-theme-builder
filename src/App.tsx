@@ -451,7 +451,9 @@ export function AppShell() {
             isMyThemeSlotId((s as MyThemeSlot).id) &&
             Array.isArray((s as MyThemeSlot).colors)
         );
-        if (validSlots.length > 0) setMyThemeSlots(validSlots);
+        // Apply even when empty — an empty array means the user intentionally
+        // deleted all slots; only the absence of the field means "use default".
+        setMyThemeSlots(validSlots);
       }
       if (
         persisted.activeMyThemeSlotId === null ||
@@ -700,7 +702,9 @@ export function AppShell() {
         const idx = prev.findIndex((s) => s.id === id);
         const next = prev.filter((s) => s.id !== id);
         if (activeMyThemeSlotId === id) {
-          const nearest = next[idx] ?? next[idx - 1] ?? null;
+          // Prefer the slot immediately before the deleted one; fall back to
+          // the slot that now occupies the same index (i.e. the one to the right).
+          const nearest = next[idx - 1] ?? next[idx] ?? null;
           setActiveMyThemeSlotId(nearest ? nearest.id : null);
         }
         return next;
