@@ -33,6 +33,18 @@ import {
   type ShareablePayload,
 } from "@/lib/persistence";
 import { type MermaidLook, CLASSDEF_CAPABLE_FAMILIES, getClassDefs } from "@/lib/theme-engine";
+import {
+  type MyThemeSlot,
+  createDefaultMyThemeSlot,
+  nextSlotNumber,
+  isMyThemeSlotId,
+  slotDisplayName,
+} from "@/lib/my-theme-slots";
+import {
+  downloadTextFile,
+  makeFilename,
+  paletteToPortableJson,
+} from "@/lib/exporters";
 import { detectDiagram } from "@/lib/detector";
 import { type TypographySettings, DEFAULT_TYPOGRAPHY } from "@/lib/typography";
 import {
@@ -308,6 +320,10 @@ export function AppShell() {
   const settingsBtnRef = useRef<HTMLButtonElement>(null);
   const settingsMenuRef = useRef<HTMLDivElement>(null);
   const [openParityMatrix, setOpenParityMatrix] = useState(false);
+  const [myThemeSlots, setMyThemeSlots] = useState<MyThemeSlot[]>(() => [
+    createDefaultMyThemeSlot(1, BRAND_PALETTES[0].colors),
+  ]);
+  const [activeMyThemeSlotId, setActiveMyThemeSlotId] = useState<string | null>("my-theme-1");
 
   const handleNavigateToParityMatrix = useCallback(() => {
     setActiveTab("reference");
@@ -430,6 +446,24 @@ export function AppShell() {
       if (typeof persisted.lastSelectedExampleId === "string" && persisted.lastSelectedExampleId) {
         setLastSelectedExampleId(persisted.lastSelectedExampleId);
       }
+      if (Array.isArray(persisted.myThemeSlots)) {
+        const validSlots = (persisted.myThemeSlots as unknown[]).filter(
+          (s): s is MyThemeSlot =>
+            typeof s === "object" &&
+            s !== null &&
+            "id" in s &&
+            isMyThemeSlotId((s as MyThemeSlot).id) &&
+            Array.isArray((s as MyThemeSlot).colors)
+        );
+        if (validSlots.length > 0) setMyThemeSlots(validSlots);
+      }
+      if (
+        persisted.activeMyThemeSlotId === null ||
+        (typeof persisted.activeMyThemeSlotId === "string" &&
+          isMyThemeSlotId(persisted.activeMyThemeSlotId))
+      ) {
+        setActiveMyThemeSlotId(persisted.activeMyThemeSlotId ?? null);
+      }
     }
     setHydrated(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -455,6 +489,8 @@ export function AppShell() {
       previewMode,
       lastExampleType,
       lastSelectedExampleId,
+      myThemeSlots,
+      activeMyThemeSlotId,
     });
   }, [
     hydrated,
@@ -473,6 +509,8 @@ export function AppShell() {
     previewMode,
     lastExampleType,
     lastSelectedExampleId,
+    myThemeSlots,
+    activeMyThemeSlotId,
   ]);
 
   // Auto-clear toast after 2.5s
@@ -487,7 +525,24 @@ export function AppShell() {
     [userPalettes]
   );
 
+  const activeMyThemeSlot = useMemo(
+    () =>
+      activeMyThemeSlotId
+        ? (myThemeSlots.find((s) => s.id === activeMyThemeSlotId) ?? null)
+        : null,
+    [myThemeSlots, activeMyThemeSlotId]
+  );
+
   const selectedPalette = useMemo((): Palette => {
+    if (activeMyThemeSlot) {
+      const base = BRAND_PALETTES[0];
+      return {
+        ...base,
+        id: activeMyThemeSlot.id,
+        name: activeMyThemeSlot.name,
+        colors: activeMyThemeSlot.colors,
+      };
+    }
     const base = allPalettes.find((p) => p.id === selectedPaletteId) ?? BRAND_PALETTES[0];
     const overrides = customColors[selectedPaletteId];
     if (!overrides) return base;
@@ -498,19 +553,25 @@ export function AppShell() {
         return override ?? c;
       }),
     };
-  }, [allPalettes, selectedPaletteId, customColors]);
+  }, [allPalettes, selectedPaletteId, customColors, activeMyThemeSlot]);
 
   const classDefCount = useMemo(() => getClassDefs(selectedPalette).length, [selectedPalette]);
 
-  const hasCustomizations = Boolean(customColors[selectedPaletteId]);
+  const hasCustomizations = Boolean(!activeMyThemeSlotId && customColors[selectedPaletteId]);
+
+  const effectiveCustomThemeName = activeMyThemeSlot ? activeMyThemeSlot.name : customThemeName;
+  const effectiveLook = activeMyThemeSlot ? activeMyThemeSlot.look : look;
+  const effectiveFontSize = activeMyThemeSlot ? activeMyThemeSlot.fontSize : fontSize;
+  const effectiveTypography = activeMyThemeSlot ? activeMyThemeSlot.typography : typography;
 
   const effectiveThemeName = useMemo(
-    () => getEffectiveThemeName(selectedPalette, customThemeName, hasCustomizations),
-    [selectedPalette, customThemeName, hasCustomizations]
+    () => getEffectiveThemeName(selectedPalette, effectiveCustomThemeName, hasCustomizations),
+    [selectedPalette, effectiveCustomThemeName, hasCustomizations]
   );
 
   const handleSelectPalette = useCallback(
     (id: string) => {
+      setActiveMyThemeSlotId(null);
       setSelectedPaletteId(id);
       setCustomThemeName("");
       setRecentPaletteIds((prev) => {
@@ -551,6 +612,16 @@ export function AppShell() {
 
   const handleColorChange = useCallback(
     (key: string, value: string) => {
+      if (activeMyThemeSlotId) {
+        setMyThemeSlots((prev) =>
+          prev.map((s) =>
+            s.id === activeMyThemeSlotId
+              ? { ...s, colors: s.colors.map((c) => (c.key === key ? { ...c, value } : c)) }
+              : s
+          )
+        );
+        return;
+      }
       setCustomColors((prev) => {
         const base = allPalettes.find((p) => p.id === selectedPaletteId);
         if (!base) return prev;
@@ -559,7 +630,105 @@ export function AppShell() {
         return { ...prev, [selectedPaletteId]: updated };
       });
     },
-    [allPalettes, selectedPaletteId]
+    [allPalettes, selectedPaletteId, activeMyThemeSlotId]
+  );
+
+  const handleLookChange = useCallback(
+    (newLook: MermaidLook) => {
+      if (activeMyThemeSlotId) {
+        setMyThemeSlots((prev) =>
+          prev.map((s) => (s.id === activeMyThemeSlotId ? { ...s, look: newLook } : s))
+        );
+      } else {
+        setLook(newLook);
+      }
+    },
+    [activeMyThemeSlotId]
+  );
+
+  const handleFontSizeChange = useCallback(
+    (newSize: string) => {
+      if (activeMyThemeSlotId) {
+        setMyThemeSlots((prev) =>
+          prev.map((s) => (s.id === activeMyThemeSlotId ? { ...s, fontSize: newSize } : s))
+        );
+      } else {
+        setFontSize(newSize);
+      }
+    },
+    [activeMyThemeSlotId]
+  );
+
+  const handleTypographyChange = useCallback(
+    (newTypo: import("@/lib/typography").TypographySettings) => {
+      if (activeMyThemeSlotId) {
+        setMyThemeSlots((prev) =>
+          prev.map((s) => (s.id === activeMyThemeSlotId ? { ...s, typography: newTypo } : s))
+        );
+      } else {
+        setTypography(newTypo);
+      }
+    },
+    [activeMyThemeSlotId]
+  );
+
+  const handleCustomThemeNameChange = useCallback(
+    (newName: string) => {
+      if (activeMyThemeSlotId) {
+        setMyThemeSlots((prev) =>
+          prev.map((s) => (s.id === activeMyThemeSlotId ? { ...s, name: newName } : s))
+        );
+      } else {
+        setCustomThemeName(newName);
+      }
+    },
+    [activeMyThemeSlotId]
+  );
+
+  const handleSelectMyThemeSlot = useCallback((id: string) => {
+    setActiveMyThemeSlotId(id);
+  }, []);
+
+  const handleAddMyThemeSlot = useCallback(() => {
+    setMyThemeSlots((prev) => {
+      if (prev.length >= 3) return prev;
+      const num = nextSlotNumber(prev);
+      const newSlot = createDefaultMyThemeSlot(num, BRAND_PALETTES[0].colors);
+      setActiveMyThemeSlotId(newSlot.id);
+      return [...prev, newSlot];
+    });
+  }, []);
+
+  const handleDeleteMyThemeSlot = useCallback(
+    (id: string) => {
+      setMyThemeSlots((prev) => {
+        const next = prev.filter((s) => s.id !== id);
+        if (activeMyThemeSlotId === id) {
+          const nearest = next[0] ?? null;
+          setActiveMyThemeSlotId(nearest ? nearest.id : null);
+        }
+        return next;
+      });
+    },
+    [activeMyThemeSlotId]
+  );
+
+  const handleExportMyThemeSlot = useCallback(
+    (id: string) => {
+      const slot = myThemeSlots.find((s) => s.id === id);
+      if (!slot) return;
+      const exportPalette: Palette = {
+        id: "my-theme-export",
+        name: slot.name,
+        description: `Exported My Theme workspace: ${slot.name}`,
+        colors: slot.colors,
+        look: slot.look,
+      };
+      const json = paletteToPortableJson(exportPalette);
+      const filename = makeFilename(slot.name, "json");
+      downloadTextFile(json, filename, "application/json");
+    },
+    [myThemeSlots]
   );
 
   const handleResetPalette = useCallback(() => {
@@ -1045,11 +1214,11 @@ export function AppShell() {
             userPalettes={userPalettes}
             onShowToast={showToast}
             recentPaletteIds={recentPaletteIds}
-            look={look}
-            onLookChange={setLook}
-            fontSize={fontSize}
-            onFontSizeChange={setFontSize}
-            typography={typography}
+            look={effectiveLook}
+            onLookChange={handleLookChange}
+            fontSize={effectiveFontSize}
+            onFontSizeChange={handleFontSizeChange}
+            typography={effectiveTypography}
             rendererTarget={rendererTarget}
             onRendererTargetChange={setRendererTarget}
             lastExampleType={lastExampleType}
@@ -1058,6 +1227,12 @@ export function AppShell() {
             onPreviewModeChange={setPreviewMode}
             hintResetToken={hintResetToken}
             onResetSyntaxHints={handleResetSyntaxHints}
+            myThemeSlots={myThemeSlots}
+            activeMyThemeSlotId={activeMyThemeSlotId}
+            onSelectMyThemeSlot={handleSelectMyThemeSlot}
+            onAddMyThemeSlot={handleAddMyThemeSlot}
+            onDeleteMyThemeSlot={handleDeleteMyThemeSlot}
+            onExportMyThemeSlot={handleExportMyThemeSlot}
           />
         </div>
         <div
@@ -1081,20 +1256,20 @@ export function AppShell() {
               onIncludeMetaCommentsChange={setIncludeMetaComments}
               includeBadge={includeBadge}
               onIncludeBadgeChange={setIncludeBadge}
-              customThemeName={customThemeName}
-              onCustomThemeNameChange={setCustomThemeName}
+              customThemeName={effectiveCustomThemeName}
+              onCustomThemeNameChange={handleCustomThemeNameChange}
               effectiveThemeName={effectiveThemeName}
               userPalettes={userPalettes}
               onSavePalette={handleSavePalette}
               onImportPalette={handleImportPalette}
               onDeleteUserPalette={handleDeleteUserPalette}
               onShowToast={showToast}
-              look={look}
-              onLookChange={setLook}
-              fontSize={fontSize}
-              onFontSizeChange={setFontSize}
-              typography={typography}
-              onTypographyChange={setTypography}
+              look={effectiveLook}
+              onLookChange={handleLookChange}
+              fontSize={effectiveFontSize}
+              onFontSizeChange={handleFontSizeChange}
+              typography={effectiveTypography}
+              onTypographyChange={handleTypographyChange}
               rendererTarget={rendererTarget}
               onRendererTargetChange={setRendererTarget}
               onUseExtractedTheme={handleUseExtractedTheme}
@@ -1102,6 +1277,15 @@ export function AppShell() {
               onNavigateToParityMatrix={handleNavigateToParityMatrix}
               importDiagnostics={importDiagnostics}
               onImportDiagnosticsChange={setImportDiagnostics}
+              myThemeSlots={myThemeSlots}
+              activeMyThemeSlotId={activeMyThemeSlotId}
+              onSelectMyThemeSlot={handleSelectMyThemeSlot}
+              onAddMyThemeSlot={handleAddMyThemeSlot}
+              onDeleteMyThemeSlot={handleDeleteMyThemeSlot}
+              onExportMyThemeSlot={handleExportMyThemeSlot}
+              customThemeNamePlaceholder={
+                activeMyThemeSlotId ? slotDisplayName(activeMyThemeSlotId) : undefined
+              }
             />
           )}
           {activeTab === "examples" && (
@@ -1114,6 +1298,12 @@ export function AppShell() {
               onLoadExample={handleLoadExample}
               initialSelectedId={lastSelectedExampleId}
               onExampleSelect={setLastSelectedExampleId}
+              myThemeSlots={myThemeSlots}
+              activeMyThemeSlotId={activeMyThemeSlotId}
+              onSelectMyThemeSlot={handleSelectMyThemeSlot}
+              onAddMyThemeSlot={handleAddMyThemeSlot}
+              onDeleteMyThemeSlot={handleDeleteMyThemeSlot}
+              onExportMyThemeSlot={handleExportMyThemeSlot}
             />
           )}
           {activeTab === "reference" && (
@@ -1128,6 +1318,12 @@ export function AppShell() {
               onInputChange={setInputCode}
               openParityMatrix={openParityMatrix}
               onParityMatrixOpened={() => setOpenParityMatrix(false)}
+              myThemeSlots={myThemeSlots}
+              activeMyThemeSlotId={activeMyThemeSlotId}
+              onSelectMyThemeSlot={handleSelectMyThemeSlot}
+              onAddMyThemeSlot={handleAddMyThemeSlot}
+              onDeleteMyThemeSlot={handleDeleteMyThemeSlot}
+              onExportMyThemeSlot={handleExportMyThemeSlot}
             />
           )}
         </div>

@@ -6,6 +6,7 @@ import { extractUsedClasses, applyClassFix } from "@/lib/used-classes";
 import { DiagramInventory } from "@/components/DiagramInventory";
 import { ClassBrowser } from "@/components/ClassBrowser";
 import { RENDERER_PROFILES, supportLabel, supportColor } from "@/data/renderer-parity";
+import type { MyThemeSlot } from "@/lib/my-theme-slots";
 
 interface ReferenceTabProps {
   selectedPalette: Palette;
@@ -20,6 +21,12 @@ interface ReferenceTabProps {
   onInputChange?: (code: string) => void;
   openParityMatrix?: boolean;
   onParityMatrixOpened?: () => void;
+  myThemeSlots: MyThemeSlot[];
+  activeMyThemeSlotId: string | null;
+  onSelectMyThemeSlot: (id: string) => void;
+  onAddMyThemeSlot: () => void;
+  onDeleteMyThemeSlot: (id: string) => void;
+  onExportMyThemeSlot: (id: string) => void;
 }
 
 const TAXONOMY_DOCS_URL =
@@ -70,6 +77,12 @@ export function ReferenceTab({
   onInputChange,
   openParityMatrix = false,
   onParityMatrixOpened,
+  myThemeSlots,
+  activeMyThemeSlotId,
+  onSelectMyThemeSlot,
+  onAddMyThemeSlot,
+  onDeleteMyThemeSlot,
+  onExportMyThemeSlot,
 }: ReferenceTabProps) {
   const classDefs = useMemo(() => getClassDefs(selectedPalette), [selectedPalette]);
 
@@ -136,6 +149,12 @@ export function ReferenceTab({
         customColors={customColors}
         onSelectPalette={onSelectPalette}
         tileIdPrefix="reference-palette-tile"
+        myThemeSlots={myThemeSlots}
+        activeMyThemeSlotId={activeMyThemeSlotId}
+        onSelectMyThemeSlot={onSelectMyThemeSlot}
+        onAddMyThemeSlot={onAddMyThemeSlot}
+        onDeleteMyThemeSlot={onDeleteMyThemeSlot}
+        onExportMyThemeSlot={onExportMyThemeSlot}
       />
       <div className="flex-1 overflow-hidden">
         <DiagramInventory embedded />

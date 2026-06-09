@@ -36,6 +36,7 @@ import {
   enforceHierarchy,
   isDefaultTypography,
 } from "@/lib/typography";
+import type { MyThemeSlot } from "@/lib/my-theme-slots";
 
 const FONT_FAMILY_OPTIONS = [
   { label: "DM Sans (default)", value: "DM Sans, system-ui, sans-serif" },
@@ -142,6 +143,13 @@ interface ComposeTabProps {
       warnValues: Array<{ key: string; value: string }>;
     } | null
   ) => void;
+  myThemeSlots: MyThemeSlot[];
+  activeMyThemeSlotId: string | null;
+  onSelectMyThemeSlot: (id: string) => void;
+  onAddMyThemeSlot: () => void;
+  onDeleteMyThemeSlot: (id: string) => void;
+  onExportMyThemeSlot: (id: string) => void;
+  customThemeNamePlaceholder?: string;
 }
 
 /**
@@ -191,6 +199,13 @@ export function ComposeTab({
   onNavigateToParityMatrix,
   importDiagnostics,
   onImportDiagnosticsChange,
+  myThemeSlots,
+  activeMyThemeSlotId,
+  onSelectMyThemeSlot,
+  onAddMyThemeSlot,
+  onDeleteMyThemeSlot,
+  onExportMyThemeSlot,
+  customThemeNamePlaceholder,
 }: ComposeTabProps) {
   const [copiedBootstrap, setCopiedBootstrap] = useState(false);
   const [copiedShare, setCopiedShare] = useState(false);
@@ -470,6 +485,12 @@ export function ComposeTab({
         customColors={customColors}
         onSelectPalette={onSelectPalette}
         tileIdPrefix="compose-palette-tile"
+        myThemeSlots={myThemeSlots}
+        activeMyThemeSlotId={activeMyThemeSlotId}
+        onSelectMyThemeSlot={onSelectMyThemeSlot}
+        onAddMyThemeSlot={onAddMyThemeSlot}
+        onDeleteMyThemeSlot={onDeleteMyThemeSlot}
+        onExportMyThemeSlot={onExportMyThemeSlot}
       />
 
       <div className="flex flex-col md:flex-row flex-1 overflow-hidden min-h-0">
@@ -932,7 +953,7 @@ export function ComposeTab({
                   type="text"
                   value={customThemeName}
                   onChange={(e) => onCustomThemeNameChange(e.target.value)}
-                  placeholder={selectedPalette.name}
+                  placeholder={customThemeNamePlaceholder ?? selectedPalette.name}
                   className="w-full text-xs bg-background border border-border rounded-md px-2.5 py-1.5 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/50"
                 />
                 {effectiveThemeName !== selectedPalette.name && customThemeName.trim() && (

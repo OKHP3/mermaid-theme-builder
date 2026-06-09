@@ -21,6 +21,7 @@ import { getRendererById } from "@/data/renderer-parity";
 import { getFamilySyntaxHint, isHintDismissed } from "@/lib/family-syntax-hints";
 import { type TypographySettings } from "@/lib/typography";
 import type { AppTab } from "@/App";
+import type { MyThemeSlot } from "@/lib/my-theme-slots";
 import { DiagramDetectHeader } from "./apply/DiagramDetectHeader";
 import { RenderWarningSection } from "./apply/RenderWarningSection";
 import { DiagramPreviewPanel, type PreviewMode } from "./apply/DiagramPreviewPanel";
@@ -59,6 +60,12 @@ interface ApplyTabProps {
   onPreviewModeChange: (mode: PreviewMode) => void;
   hintResetToken: number;
   onResetSyntaxHints: () => void;
+  myThemeSlots: MyThemeSlot[];
+  activeMyThemeSlotId: string | null;
+  onSelectMyThemeSlot: (id: string) => void;
+  onAddMyThemeSlot: () => void;
+  onDeleteMyThemeSlot: (id: string) => void;
+  onExportMyThemeSlot: (id: string) => void;
 }
 
 export function ApplyTab({
@@ -93,6 +100,12 @@ export function ApplyTab({
   onPreviewModeChange: setPreviewMode,
   hintResetToken,
   onResetSyntaxHints,
+  myThemeSlots,
+  activeMyThemeSlotId,
+  onSelectMyThemeSlot,
+  onAddMyThemeSlot,
+  onDeleteMyThemeSlot,
+  onExportMyThemeSlot,
 }: ApplyTabProps) {
   const [showColorEditor, setShowColorEditor] = useState(false);
   const [advisoryDismissed, setAdvisoryDismissed] = useState(false);
@@ -309,6 +322,12 @@ export function ApplyTab({
         customColors={customColors}
         onSelectPalette={onSelectPalette}
         tileIdPrefix="apply-palette-tile"
+        myThemeSlots={myThemeSlots}
+        activeMyThemeSlotId={activeMyThemeSlotId}
+        onSelectMyThemeSlot={onSelectMyThemeSlot}
+        onAddMyThemeSlot={onAddMyThemeSlot}
+        onDeleteMyThemeSlot={onDeleteMyThemeSlot}
+        onExportMyThemeSlot={onExportMyThemeSlot}
       />
 
       <DiagramDetectHeader

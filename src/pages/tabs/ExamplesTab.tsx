@@ -14,6 +14,7 @@ import {
   ALL_FAMILIES,
   filterExamples,
 } from "@/lib/examples-filter";
+import type { MyThemeSlot } from "@/lib/my-theme-slots";
 import {
   SUPPORT_STATUS_LABELS,
   SUPPORT_STATUS_STYLES,
@@ -46,6 +47,12 @@ interface ExamplesTabProps {
   onLoadExample: (code: string) => void;
   initialSelectedId?: string;
   onExampleSelect?: (id: string) => void;
+  myThemeSlots: MyThemeSlot[];
+  activeMyThemeSlotId: string | null;
+  onSelectMyThemeSlot: (id: string) => void;
+  onAddMyThemeSlot: () => void;
+  onDeleteMyThemeSlot: (id: string) => void;
+  onExportMyThemeSlot: (id: string) => void;
 }
 
 export function ExamplesTab({
@@ -57,6 +64,12 @@ export function ExamplesTab({
   onLoadExample,
   initialSelectedId,
   onExampleSelect,
+  myThemeSlots,
+  activeMyThemeSlotId,
+  onSelectMyThemeSlot,
+  onAddMyThemeSlot,
+  onDeleteMyThemeSlot,
+  onExportMyThemeSlot,
 }: ExamplesTabProps) {
   const [selectedId, setSelectedId] = useState(() => {
     if (initialSelectedId && ALL_EXAMPLES.some((e) => e.id === initialSelectedId)) {
@@ -158,6 +171,12 @@ export function ExamplesTab({
         customColors={customColors}
         onSelectPalette={onSelectPalette}
         tileIdPrefix="examples-palette-tile"
+        myThemeSlots={myThemeSlots}
+        activeMyThemeSlotId={activeMyThemeSlotId}
+        onSelectMyThemeSlot={onSelectMyThemeSlot}
+        onAddMyThemeSlot={onAddMyThemeSlot}
+        onDeleteMyThemeSlot={onDeleteMyThemeSlot}
+        onExportMyThemeSlot={onExportMyThemeSlot}
       />
       <div className="flex-1 overflow-hidden flex flex-col md:flex-row min-h-0">
         <div
