@@ -320,12 +320,16 @@ export function ExtractTab({
           spellCheck={false}
           aria-label="Paste themed Mermaid diagram here"
         />
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          Works with <code className="font-mono">{"%%{init}%%"}</code> directives and YAML
+          frontmatter
+        </p>
         <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={handleExtract}
             disabled={!pastedCode.trim()}
-            className="px-4 py-2 text-xs font-semibold rounded-md bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="text-xs px-3 py-1.5 rounded-md border border-border bg-background hover:bg-muted hover:border-primary/40 font-medium transition-all disabled:opacity-40 disabled:cursor-not-allowed"
           >
             Extract theme
           </button>
@@ -340,19 +344,6 @@ export function ExtractTab({
           )}
         </div>
       </div>
-
-      {/* Empty state messages */}
-      {status === "idle" && !extracted && (
-        <>
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            Paste a themed diagram above, then click Extract theme
-          </p>
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            Works with <code className="font-mono">{"%%{init}%%"}</code> directives and YAML
-            frontmatter
-          </p>
-        </>
-      )}
 
       {status === "empty" && (
         <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 px-4 py-5 space-y-3">

@@ -495,7 +495,13 @@ export function ComposeTab({
               </button>
             </div>
             <div className={`${extractOpen ? "" : "hidden"}`}>
-              <p className="forge-eyebrow mb-2 mt-1">Extract Theme</p>
+              <hr className="border-border/40 mb-2" />
+              <p className="text-xs font-semibold text-foreground uppercase tracking-[0.07em] mb-1">
+                Extract Theme
+              </p>
+              <p className="text-xs text-muted-foreground leading-relaxed mb-3">
+                Paste a themed diagram above, then click Extract theme
+              </p>
               <ExtractTab
                 embedded
                 onUseExtractedTheme={onUseExtractedTheme}
