@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useId } from "react";
 import { type TypographySettings, generateTypographyCss } from "@/lib/typography";
+import { createStyleCapture } from "@/lib/style-cleanup";
 
 interface MermaidPreviewProps {
   code: string;
@@ -23,31 +24,21 @@ async function getMermaid(): Promise<MermaidType> {
     mermaidInstance = mod.default;
   }
   if (!initializationDone) {
-    const newStyles: HTMLStyleElement[] = [];
-    const observer = new MutationObserver((mutations) => {
-      for (const mutation of mutations) {
-        for (const node of mutation.addedNodes) {
-          if (node instanceof HTMLStyleElement) {
-            newStyles.push(node);
-          }
-        }
-      }
-    });
-    observer.observe(document.head, { childList: true });
-
-    const zenuml = await import("@mermaid-js/mermaid-zenuml");
-    await mermaidInstance.registerExternalDiagrams([zenuml.default]);
-    mermaidInstance.initialize({
-      startOnLoad: false,
-      securityLevel: "strict",
-      suppressErrorRendering: true,
-    });
-
-    observer.disconnect();
-
-    for (const el of newStyles) {
-      zenumlInjectedCss += el.textContent ?? "";
-      el.remove();
+    // ZenUML (@mermaid-js/mermaid-zenuml, Vue-based) injects <style> nodes
+    // into document.head at registerExternalDiagrams() time. Capture them here
+    // so they can be re-injected in a scoped manner only when a ZenUML diagram
+    // is actually displayed — preventing leakage into other diagram renders.
+    const initCapture = createStyleCapture();
+    try {
+      const zenuml = await import("@mermaid-js/mermaid-zenuml");
+      await mermaidInstance.registerExternalDiagrams([zenuml.default]);
+      mermaidInstance.initialize({
+        startOnLoad: false,
+        securityLevel: "strict",
+        suppressErrorRendering: true,
+      });
+    } finally {
+      zenumlInjectedCss = initCapture.finish();
     }
 
     initializationDone = true;
@@ -433,28 +424,20 @@ export function MermaidPreview({ code, className, typography }: MermaidPreviewPr
       try {
         const mermaid = await getMermaid();
 
-        // Watch for any styles injected into document.head during render
-        const renderNewStyles: HTMLStyleElement[] = [];
-        const renderObserver = new MutationObserver((mutations) => {
-          for (const mutation of mutations) {
-            for (const node of mutation.addedNodes) {
-              if (node instanceof HTMLStyleElement) {
-                renderNewStyles.push(node);
-              }
-            }
-          }
-        });
-        renderObserver.observe(document.head, { childList: true });
-
-        const { svg } = await mermaid.render(diagramId, code);
-
-        renderObserver.disconnect();
-
-        // Capture and remove any styles injected during this render
+        // Watch for any styles injected into document.head during render.
+        // Confirmed injectors at render time: vennDiagram chunk (d3 layout CSS),
+        // ganttDiagram chunk (grid/task-bar CSS), and shared dagre/layout chunks.
+        // All captured styles are removed from document.head and re-injected as
+        // scoped <style> inside the preview container so they cannot leak into
+        // other diagram renders or the app UI. The finally block ensures the
+        // observer is always disconnected — even if mermaid.render() throws.
+        const renderCapture = createStyleCapture();
+        let svg: string;
         let renderCapturedCss = "";
-        for (const el of renderNewStyles) {
-          renderCapturedCss += el.textContent ?? "";
-          el.remove();
+        try {
+          ({ svg } = await mermaid.render(diagramId, code));
+        } finally {
+          renderCapturedCss = renderCapture.finish();
         }
 
         // Import-time ZenUML styles are only relevant for ZenUML diagrams;

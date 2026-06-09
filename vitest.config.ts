@@ -18,6 +18,7 @@ export default defineConfig({
       ["src/__tests__/promptScaffoldCopyFlash.test.tsx", "happy-dom"],
       ["src/__tests__/classBrowserPreviewToggle.test.tsx", "happy-dom"],
       ["src/__tests__/diagramSelector.test.tsx", "happy-dom"],
+      ["src/__tests__/styleCleanup.test.ts", "happy-dom"],
     ],
     include: ["src/__tests__/**/*.test.ts", "src/__tests__/**/*.test.tsx"],
     globals: false,
