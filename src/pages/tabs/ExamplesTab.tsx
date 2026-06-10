@@ -112,6 +112,21 @@ export function ExamplesTab({
   const [showMobilePreview, setShowMobilePreview] = useState(false);
   const [showInventory, setShowInventory] = useState(false);
 
+  // All sections collapsed by default
+  const [collapsedSections, setCollapsedSections] = useState<Set<string>>(() => new Set(SECTIONS));
+
+  const toggleSection = useCallback((section: string) => {
+    setCollapsedSections((prev) => {
+      const next = new Set(prev);
+      if (next.has(section)) {
+        next.delete(section);
+      } else {
+        next.add(section);
+      }
+      return next;
+    });
+  }, []);
+
   const filteredExamples = useMemo(() => filterExamples(ALL_EXAMPLES, searchQuery), [searchQuery]);
 
   const filteredSections = useMemo(() => {
@@ -122,6 +137,19 @@ export function ExamplesTab({
     () => ALL_EXAMPLES.find((e) => e.id === selectedId) ?? ALL_EXAMPLES[0],
     [selectedId]
   );
+
+  // Auto-expand the section that contains the active selection
+  useEffect(() => {
+    const section = ALL_EXAMPLES.find((e) => e.id === selectedId)?.section;
+    if (section) {
+      setCollapsedSections((prev) => {
+        if (!prev.has(section)) return prev;
+        const next = new Set(prev);
+        next.delete(section);
+        return next;
+      });
+    }
+  }, [selectedId]);
 
   const detection = useMemo(() => detectDiagram(selectedExample?.content ?? ""), [selectedExample]);
 
@@ -264,32 +292,54 @@ export function ExamplesTab({
           ) : (
             filteredSections.map((section) => {
               const entries = filteredExamples.filter((e) => e.section === section);
+              const isCollapsed = !searchQuery && collapsedSections.has(section);
               return (
                 <div key={section}>
-                  <div className="px-3 pt-3 pb-1.5 sticky top-0 bg-card/90 backdrop-blur z-10 border-b border-border/50">
-                    <p className="forge-eyebrow">{section}</p>
+                  <div className="sticky top-0 bg-card/90 backdrop-blur z-10 border-b border-border/50">
+                    <button
+                      type="button"
+                      onClick={() => toggleSection(section)}
+                      className="w-full flex items-center justify-between px-3 pt-3 pb-1.5 text-left hover:bg-muted/40 transition-colors"
+                    >
+                      <span className="forge-eyebrow">{section}</span>
+                      <svg
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        className={`w-3 h-3 text-muted-foreground/60 transition-transform shrink-0 ${
+                          isCollapsed ? "" : "rotate-180"
+                        }`}
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </button>
                   </div>
-                  <ul className="px-1.5 py-1">
-                    {entries.map((entry) => (
-                      <li key={entry.id}>
-                        <button
-                          data-example-id={entry.id}
-                          onClick={() => {
-                            setSelectedId(entry.id);
-                            onExampleSelect?.(entry.id);
-                            setShowMobilePreview(true);
-                          }}
-                          className={`w-full text-left px-2.5 py-2 rounded-md text-xs transition-all flex items-start gap-2 ${
-                            selectedId === entry.id
-                              ? "bg-primary/10 text-primary font-medium"
-                              : "text-foreground hover:bg-muted"
-                          }`}
-                        >
-                          <span className="flex-1 leading-snug">{entry.label}</span>
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
+                  {!isCollapsed && (
+                    <ul className="px-1.5 py-1">
+                      {entries.map((entry) => (
+                        <li key={entry.id}>
+                          <button
+                            data-example-id={entry.id}
+                            onClick={() => {
+                              setSelectedId(entry.id);
+                              onExampleSelect?.(entry.id);
+                              setShowMobilePreview(true);
+                            }}
+                            className={`w-full text-left px-2.5 py-2 rounded-md text-xs transition-all flex items-start gap-2 ${
+                              selectedId === entry.id
+                                ? "bg-primary/10 text-primary font-medium"
+                                : "text-foreground hover:bg-muted"
+                            }`}
+                          >
+                            <span className="flex-1 leading-snug">{entry.label}</span>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               );
             })
