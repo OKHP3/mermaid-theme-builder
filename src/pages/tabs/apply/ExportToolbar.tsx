@@ -226,6 +226,8 @@ export function ExportToolbar({
         </div>
       )}
       <div className="flex flex-wrap items-center gap-2 px-3 py-2.5">
+        <div className="flex-1" />
+
         <button
           onClick={onOpenColorEditor}
           className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-md border transition-all font-medium ${
@@ -246,8 +248,6 @@ export function ExportToolbar({
             <span className="w-1.5 h-1.5 rounded-full bg-primary inline-block" />
           )}
         </button>
-
-        <div className="flex-1" />
 
         <button
           onClick={() => openInLiveEditor(exportCode)}

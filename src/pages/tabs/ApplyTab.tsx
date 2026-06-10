@@ -397,42 +397,43 @@ export function ApplyTab({
           />
         </div>
 
-        <DiagramPreviewPanel
-          previewMode={previewMode}
-          onPreviewModeChange={setPreviewMode}
-          codeEditorOverride={codeEditorOverride}
-          onCodeEditorOverrideChange={setCodeEditorOverride}
-          effectiveExportCode={effectiveExportCode}
-          activeDiagramCode={activeDiagramCode}
-          themedCode={themedCode}
-          typography={typography}
-          isMultiDiagram={isMultiDiagram}
-          diagrams={diagrams}
-          safeDiagramIdx={safeDiagramIdx}
-          onActiveDiagramIdxChange={setActiveDiagramIdx}
-        />
+        <div className="flex flex-col md:flex-none md:w-[65%] md:min-h-0 md:overflow-hidden">
+          <DiagramPreviewPanel
+            previewMode={previewMode}
+            onPreviewModeChange={setPreviewMode}
+            codeEditorOverride={codeEditorOverride}
+            onCodeEditorOverrideChange={setCodeEditorOverride}
+            effectiveExportCode={effectiveExportCode}
+            activeDiagramCode={activeDiagramCode}
+            themedCode={themedCode}
+            typography={typography}
+            isMultiDiagram={isMultiDiagram}
+            diagrams={diagrams}
+            safeDiagramIdx={safeDiagramIdx}
+            onActiveDiagramIdxChange={setActiveDiagramIdx}
+          />
+          <ExportToolbar
+            warnings={warnings}
+            showCapabilityNote={!!showCapabilityNote}
+            capability={effectiveDetection.capability}
+            hasCustomizations={hasCustomizations}
+            onOpenColorEditor={() => setShowColorEditor(true)}
+            inputCode={inputCode}
+            exportCode={exportCode}
+            effectiveExportCode={effectiveExportCode}
+            selectedPalette={selectedPalette}
+            exportOptions={exportOptions}
+            effectiveThemeName={effectiveThemeName}
+            themedCode={themedCode}
+            typography={typography}
+            allPalettes={allPalettes}
+            rendererProfile={rendererProfile}
+            promptIsThemeOnly={promptIsThemeOnly}
+            onShowScaffoldModal={() => setShowScaffoldModal(true)}
+            onShowToast={onShowToast}
+          />
+        </div>
       </div>
-
-      <ExportToolbar
-        warnings={warnings}
-        showCapabilityNote={!!showCapabilityNote}
-        capability={effectiveDetection.capability}
-        hasCustomizations={hasCustomizations}
-        onOpenColorEditor={() => setShowColorEditor(true)}
-        inputCode={inputCode}
-        exportCode={exportCode}
-        effectiveExportCode={effectiveExportCode}
-        selectedPalette={selectedPalette}
-        exportOptions={exportOptions}
-        effectiveThemeName={effectiveThemeName}
-        themedCode={themedCode}
-        typography={typography}
-        allPalettes={allPalettes}
-        rendererProfile={rendererProfile}
-        promptIsThemeOnly={promptIsThemeOnly}
-        onShowScaffoldModal={() => setShowScaffoldModal(true)}
-        onShowToast={onShowToast}
-      />
 
       {showColorEditor && (
         <ColorEditorPanel

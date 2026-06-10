@@ -42,7 +42,7 @@ export function DiagramPreviewPanel({
   const previewCode = previewMode === "themed" ? themedCode : activeDiagramCode;
 
   return (
-    <div className="flex flex-col md:flex-none md:w-[65%] md:min-h-0 md:overflow-hidden">
+    <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
       <div className="flex items-center gap-2 px-3 py-1.5 border-b border-border bg-card/20 flex-none flex-wrap print-hide">
         <div
           className="flex items-center gap-1"
