@@ -290,9 +290,9 @@ export function ComposeTab({
 
   const [selectedSampleId, setSelectedSampleId] = useState<string>(() => {
     try {
-      return localStorage.getItem("mtb.compose.previewSampleId") ?? "flowchart-basic";
+      return localStorage.getItem("mtb.compose.previewSampleId") ?? "compose-instructions";
     } catch {
-      return "flowchart-basic";
+      return "compose-instructions";
     }
   });
 

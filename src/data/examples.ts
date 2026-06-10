@@ -244,6 +244,27 @@ export const GENERIC_EXAMPLE = `flowchart TD
     F -->|No| H[Return 404]
     G --> I[Send Response]`;
 
+export const COMPOSE_TAB_DEFAULT = `flowchart TD
+  C00(["From Compose tab"])
+  C01["Pick starting palette"]
+  C02["Name reusable theme"]
+  C03["Select rendering look"]
+  C04["Tune primary colors"]
+  C05["Tune support colors"]
+  C06["Configure typography"]
+  C07["Review typography hierarchy"]
+  C08["Preview sample diagram"]
+  C09{"Compatible with target renderers?"}
+  C10["Adjust colors, typography, or look"]
+  C11["Generate reusable theme output"]
+  C12["Copy or export theme contract"]
+  C13(["Reuse in AI prompts or docs"])
+
+  C00 --> C01 --> C02 --> C03 --> C04 --> C05 --> C06 --> C07 --> C08 --> C09
+  C09 -- "Warnings found" --> C10
+  C10 --> C05
+  C09 -- "Looks safe" --> C11 --> C12 --> C13`;
+
 export const APPLY_TAB_DEFAULT = `flowchart TD
   A00(["From Apply tab"])
   A01["Paste Mermaid source code"]
