@@ -401,8 +401,21 @@ export function AppShell() {
       if (typeof persisted.includeBadge === "boolean") setIncludeBadge(persisted.includeBadge);
       if (typeof persisted.customThemeName === "string" && !didApplyShare)
         setCustomThemeName(persisted.customThemeName);
-      if (typeof persisted.inputCode === "string" && persisted.inputCode.trim())
-        setInputCode(persisted.inputCode);
+      if (typeof persisted.inputCode === "string" && persisted.inputCode.trim()) {
+        const knownDefaults = new Set<string>([
+          APPLY_TAB_DEFAULT,
+          GENERIC_EXAMPLE,
+          SHOWCASE_EXAMPLE,
+          ...Object.values(BRAND_EXAMPLES).flatMap(({ flowchart, sequence }) => [
+            flowchart,
+            sequence,
+          ]),
+          ...EXAMPLE_GROUPS.flatMap((g) => g.entries.map((e) => e.content)),
+        ]);
+        if (!knownDefaults.has(persisted.inputCode)) {
+          setInputCode(persisted.inputCode);
+        }
+      }
       if (Array.isArray(persisted.recentPaletteIds)) {
         setRecentPaletteIds(
           persisted.recentPaletteIds
