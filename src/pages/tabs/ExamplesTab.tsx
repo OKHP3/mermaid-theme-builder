@@ -286,11 +286,6 @@ export function ExamplesTab({
                           }`}
                         >
                           <span className="flex-1 leading-snug">{entry.label}</span>
-                          {entry.badge && (
-                            <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground border border-border shrink-0 mt-0.5">
-                              {entry.badge}
-                            </span>
-                          )}
                         </button>
                       </li>
                     ))}
