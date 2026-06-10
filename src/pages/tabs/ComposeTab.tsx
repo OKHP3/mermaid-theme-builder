@@ -15,6 +15,8 @@ import { ColorSwatch } from "@/components/ColorSwatch";
 import { PromptScaffoldModal } from "@/components/PromptScaffoldModal";
 import { GENERIC_EXAMPLE } from "@/data/examples";
 import { EXAMPLE_CATALOG, EXAMPLE_GROUPS } from "@/data/example-library";
+import { detectDiagram } from "@/lib/detector";
+import { DIAGRAM_CAPABILITIES } from "@/data/mermaid-capabilities";
 import { ExtractTab } from "@/pages/tabs/ExtractTab";
 import type { AppTab } from "@/App";
 import {
@@ -309,6 +311,11 @@ export function ComposeTab({
     () => EXAMPLE_CATALOG.find((e) => e.id === selectedSampleId) ?? EXAMPLE_CATALOG[0],
     [selectedSampleId]
   );
+
+  const sampleCapability = useMemo(() => {
+    const family = detectDiagram(sampleEntry.content).family;
+    return DIAGRAM_CAPABILITIES.find((c) => c.id === family) ?? null;
+  }, [sampleEntry]);
 
   // True when the selected preview diagram has limited theme-variable support.
   const isBetaPreview = Boolean(
@@ -1278,11 +1285,16 @@ export function ComposeTab({
               typography={typography}
             />
           </div>
-          {selectedPalette.themeIntent && (
-            <div className="flex-none border-t border-border px-4 py-2.5 bg-card/20">
-              <p className="text-[11px] text-muted-foreground leading-relaxed">
-                <span className="font-medium text-foreground">Use for:</span>{" "}
-                {selectedPalette.themeIntent}
+          {sampleCapability && (
+            <div className="flex-none border-t border-border px-4 py-2 bg-amber-50/60 dark:bg-amber-950/20">
+              <p className="text-[11px] text-amber-700 dark:text-amber-400 leading-relaxed">
+                <span className="font-semibold">{sampleCapability.displayName}:</span>{" "}
+                {sampleCapability.description}
+                {sampleCapability.bestUsedFor && (
+                  <span className="block mt-0.5 text-amber-600/80 dark:text-amber-500/70">
+                    <span className="font-medium">Use for:</span> {sampleCapability.bestUsedFor}
+                  </span>
+                )}
               </p>
             </div>
           )}
