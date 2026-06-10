@@ -1,4 +1,4 @@
-import { COMPOSE_TAB_DEFAULT } from "@/data/examples";
+import { APPLY_TAB_DEFAULT, COMPOSE_TAB_DEFAULT } from "@/data/examples";
 
 export type ExampleCategory = "flow" | "structural" | "data-viz" | "timeline" | "specialty";
 
@@ -1341,6 +1341,14 @@ export const EXAMPLE_CATALOG: ExampleEntry[] = [
     category: "flow",
     content: COMPOSE_TAB_DEFAULT,
     description: "Step-by-step flowchart showing the Compose tab workflow",
+  },
+  {
+    id: "apply-instructions",
+    label: "Apply Tab — How to Use",
+    family: "flowchart",
+    category: "flow",
+    content: APPLY_TAB_DEFAULT,
+    description: "Step-by-step flowchart showing the Apply tab workflow",
   },
   {
     id: "flowchart-basic",
