@@ -599,47 +599,15 @@ export function AppShell() {
     [selectedPalette, effectiveCustomThemeName, hasCustomizations]
   );
 
-  const handleSelectPalette = useCallback(
-    (id: string) => {
-      setActiveMyThemeSlotId(null);
-      setSelectedPaletteId(id);
-      setCustomThemeName("");
-      setRecentPaletteIds((prev) => {
-        const next = [id, ...prev.filter((p) => p !== id)].slice(0, RECENT_PALETTES_MAX);
-        return next;
-      });
-      const knownExamples = new Set<string>([
-        APPLY_TAB_DEFAULT,
-        GENERIC_EXAMPLE,
-        SHOWCASE_EXAMPLE,
-        ...Object.values(BRAND_EXAMPLES).flatMap(({ flowchart, sequence }) => [
-          flowchart,
-          sequence,
-        ]),
-        ...EXAMPLE_GROUPS.flatMap((g) => g.entries.map((e) => e.content)),
-      ]);
-      const willReplace = inputCode.trim() === "" || knownExamples.has(inputCode);
-      const isBrandPalette = BRAND_PALETTES.some((p) => p.id === id);
-      if (isBrandPalette && BRAND_EXAMPLES[id]) {
-        const exType = lastExampleType[id] ?? "flowchart";
-        if (willReplace) {
-          const paletteName = BRAND_PALETTES.find((p) => p.id === id)?.name ?? id;
-          setToast(`Loaded ${paletteName} ${exType} example`);
-        }
-        setInputCode((current) =>
-          current.trim() === "" || knownExamples.has(current) ? BRAND_EXAMPLES[id][exType] : current
-        );
-      } else if (!isBrandPalette) {
-        if (willReplace) {
-          setToast("Loaded Mermaid flowchart example");
-        }
-        setInputCode((current) =>
-          current.trim() === "" || knownExamples.has(current) ? GENERIC_EXAMPLE : current
-        );
-      }
-    },
-    [inputCode, lastExampleType]
-  );
+  const handleSelectPalette = useCallback((id: string) => {
+    setActiveMyThemeSlotId(null);
+    setSelectedPaletteId(id);
+    setCustomThemeName("");
+    setRecentPaletteIds((prev) => {
+      const next = [id, ...prev.filter((p) => p !== id)].slice(0, RECENT_PALETTES_MAX);
+      return next;
+    });
+  }, []);
 
   const handleColorChange = useCallback(
     (key: string, value: string) => {
