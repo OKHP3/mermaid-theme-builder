@@ -1,10 +1,6 @@
 import { useState } from "react";
 
-function makeHint(
-  storageKey: string,
-  title: string,
-  steps: [string, string][]
-) {
+function makeHint(storageKey: string, title: string, steps: [string, string][]) {
   function isHintDismissed(): boolean {
     try {
       return window.localStorage.getItem(storageKey) === "1";
@@ -48,12 +44,13 @@ function makeHint(
           </svg>
 
           <div className="flex-1 min-w-0">
-            <p className="forge-eyebrow text-sky-700 dark:text-sky-300/80 mb-1.5">
-              {title}
-            </p>
+            <p className="forge-eyebrow text-sky-700 dark:text-sky-300/80 mb-1.5">{title}</p>
             <ol className="flex flex-col gap-0.5 sm:flex-row sm:gap-4">
               {steps.map(([num, label]) => (
-                <li key={num} className="flex items-baseline gap-1.5 text-[11px] text-foreground/70">
+                <li
+                  key={num}
+                  className="flex items-baseline gap-1.5 text-[11px] text-foreground/70"
+                >
                   <span className="shrink-0 w-3.5 h-3.5 rounded-full bg-sky-500/20 text-sky-700 dark:text-sky-300 text-[9px] font-bold flex items-center justify-center leading-none">
                     {num}
                   </span>
@@ -99,12 +96,8 @@ export const ThemedTabHint = makeHint(
   ]
 );
 
-export const CodeTabHint = makeHint(
-  "mtb.hint-dismissed.code-tab",
-  "How to use the Code tab",
-  [
-    ["1", "This panel shows the complete themed Mermaid code ready to use"],
-    ["2", "Press Enter or click Edit to make in-place adjustments"],
-    ["3", "Use Styled Code or Download below to export the final output"],
-  ]
-);
+export const CodeTabHint = makeHint("mtb.hint-dismissed.code-tab", "How to use the Code tab", [
+  ["1", "This panel shows the complete themed Mermaid code ready to use"],
+  ["2", "Press Enter or click Edit to make in-place adjustments"],
+  ["3", "Use Styled Code or Download below to export the final output"],
+]);

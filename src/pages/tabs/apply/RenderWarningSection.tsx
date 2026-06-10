@@ -1,5 +1,4 @@
 import { FamilySyntaxHint } from "@/components/FamilySyntaxHint";
-import { getFamilySyntaxHint } from "@/lib/family-syntax-hints";
 import type { DiagramFamily } from "@/data/mermaid-capabilities";
 
 interface RenderWarningSectionProps {
@@ -8,9 +7,7 @@ interface RenderWarningSectionProps {
   onDismissAdvisory: () => void;
   family: DiagramFamily;
   hintResetToken: number;
-  familyHintDismissed: boolean;
   onFamilyHintDismiss: () => void;
-  onResetSyntaxHints: () => void;
 }
 
 export function RenderWarningSection({
@@ -19,9 +16,7 @@ export function RenderWarningSection({
   onDismissAdvisory,
   family,
   hintResetToken,
-  familyHintDismissed,
   onFamilyHintDismiss,
-  onResetSyntaxHints,
 }: RenderWarningSectionProps) {
   return (
     <>
@@ -63,21 +58,6 @@ export function RenderWarningSection({
         resetToken={hintResetToken}
         onDismiss={onFamilyHintDismiss}
       />
-      {familyHintDismissed && getFamilySyntaxHint(family) && (
-        <div className="flex-none border-b border-border/40 bg-transparent px-3 py-1 print-hide flex items-center justify-end">
-          <button
-            type="button"
-            onClick={onResetSyntaxHints}
-            className="text-[10px] text-muted-foreground/50 hover:text-sky-500 dark:hover:text-sky-400 transition-colors inline-flex items-center gap-1"
-            aria-label="Show syntax tip for this diagram type"
-          >
-            <svg viewBox="0 0 16 16" fill="currentColor" className="w-3 h-3" aria-hidden="true">
-              <path d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM0 8a8 8 0 1116 0A8 8 0 010 8zm6.5-1.5A.75.75 0 017.25 6h1a.75.75 0 01.75.75v3.75h.25a.75.75 0 010 1.5h-2a.75.75 0 010-1.5h.25V7.5h-.25a.75.75 0 01-.75-.75zM8 4a1 1 0 110 2 1 1 0 010-2z" />
-            </svg>
-            Show syntax tip
-          </button>
-        </div>
-      )}
     </>
   );
 }

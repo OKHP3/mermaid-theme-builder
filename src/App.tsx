@@ -19,7 +19,12 @@ import {
   getEffectiveThemeName,
 } from "@/lib/palettes";
 import { clearAllDismissals } from "@/lib/family-syntax-hints";
-import { APPLY_TAB_DEFAULT, BRAND_EXAMPLES, GENERIC_EXAMPLE, SHOWCASE_EXAMPLE } from "@/data/examples";
+import {
+  APPLY_TAB_DEFAULT,
+  BRAND_EXAMPLES,
+  GENERIC_EXAMPLE,
+  SHOWCASE_EXAMPLE,
+} from "@/data/examples";
 import { EXAMPLE_GROUPS } from "@/data/example-library";
 import { AppIcon } from "@/components/AppIcon";
 import { ApplyTab } from "@/pages/tabs/ApplyTab";

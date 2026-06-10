@@ -341,6 +341,10 @@ export function ApplyTab({
         onRendererTargetChange={onRendererTargetChange}
         rendererProfile={rendererProfile}
         rendererLookWarning={rendererLookWarning}
+        showSyntaxTipButton={
+          familyHintDismissed && !!getFamilySyntaxHint(effectiveDetection.family)
+        }
+        onResetSyntaxHints={onResetSyntaxHints}
       />
 
       <RenderWarningSection
@@ -349,9 +353,7 @@ export function ApplyTab({
         onDismissAdvisory={() => setAdvisoryDismissed(true)}
         family={effectiveDetection.family}
         hintResetToken={hintResetToken}
-        familyHintDismissed={familyHintDismissed}
         onFamilyHintDismiss={() => setFamilyHintDismissed(true)}
-        onResetSyntaxHints={onResetSyntaxHints}
       />
 
       <div className="md:flex-1 md:overflow-hidden flex flex-col md:flex-row md:min-h-0">
