@@ -1,5 +1,6 @@
 import { DiffView } from "@/components/DiffView";
 import { DiffTabHint } from "@/components/DiffTabHint";
+import { OriginalTabHint, ThemedTabHint, CodeTabHint } from "@/components/PreviewTabHints";
 import { MermaidPreview } from "@/components/MermaidPreview";
 import { HighlightedCode, INIT_HL, COMMENT_HL, HL } from "@/components/HighlightedCode";
 import type { TypographySettings } from "@/lib/typography";
@@ -169,7 +170,10 @@ export function DiagramPreviewPanel({
           </div>
         )}
       </div>
+      {previewMode === "original" && <OriginalTabHint />}
+      {previewMode === "themed" && <ThemedTabHint />}
       {previewMode === "diff" && <DiffTabHint />}
+      {previewMode === "code" && <CodeTabHint />}
       {previewMode === "code" ? (
         codeEditorOverride !== null ? (
           <textarea
