@@ -244,6 +244,33 @@ export const GENERIC_EXAMPLE = `flowchart TD
     F -->|No| H[Return 404]
     G --> I[Send Response]`;
 
+export const APPLY_TAB_DEFAULT = `flowchart TD
+  A00(["From Apply tab"])
+  A01["Paste Mermaid source code"]
+  A02["Detect diagram family"]
+  A03["Review detection results"]
+  A04["Choose active theme"]
+  A05["Generate themed output"]
+  A06["Preview themed diagram"]
+  A07["Compare original and themed views"]
+  A08{"Compatibility advisories?"}
+  A09["Repair source, theme, or target"]
+  A10{"Choose export path"}
+  A11["Copy styled Mermaid code"]
+  A12["Export Markdown bootstrap"]
+  A13["Export AI prompt scaffold"]
+  A14["Open in Mermaid Live Editor"]
+  A15(["Use in target documentation"])
+
+  A00 --> A01 --> A02 --> A03 --> A04 --> A05 --> A06 --> A07 --> A08
+  A08 -- "Warnings found" --> A09
+  A09 --> A01
+  A08 -- "Looks safe" --> A10
+  A10 --> A11 --> A15
+  A10 --> A12 --> A15
+  A10 --> A13 --> A15
+  A10 --> A14 --> A15`;
+
 export const SHOWCASE_EXAMPLE = `---
 config:
   layout: elk

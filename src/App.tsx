@@ -19,7 +19,7 @@ import {
   getEffectiveThemeName,
 } from "@/lib/palettes";
 import { clearAllDismissals } from "@/lib/family-syntax-hints";
-import { BRAND_EXAMPLES, GENERIC_EXAMPLE, SHOWCASE_EXAMPLE } from "@/data/examples";
+import { APPLY_TAB_DEFAULT, BRAND_EXAMPLES, GENERIC_EXAMPLE, SHOWCASE_EXAMPLE } from "@/data/examples";
 import { EXAMPLE_GROUPS } from "@/data/example-library";
 import { AppIcon } from "@/components/AppIcon";
 import { ApplyTab } from "@/pages/tabs/ApplyTab";
@@ -288,9 +288,7 @@ export function AppShell() {
   const [userPalettes, setUserPalettes] = useState<Palette[]>([]);
   const [selectedPaletteId, setSelectedPaletteId] = useState(BRAND_PALETTES[0].id);
   const [customColors, setCustomColors] = useState<Record<string, ThemeColor[]>>({});
-  const [inputCode, setInputCode] = useState(
-    BRAND_EXAMPLES[BRAND_PALETTES[0].id]?.flowchart ?? GENERIC_EXAMPLE
-  );
+  const [inputCode, setInputCode] = useState(APPLY_TAB_DEFAULT);
   const [includeMetaComments, setIncludeMetaComments] = useState(true);
   const [includeBadge, setIncludeBadge] = useState(true);
   const [customThemeName, setCustomThemeName] = useState("");
@@ -598,6 +596,7 @@ export function AppShell() {
         return next;
       });
       const knownExamples = new Set<string>([
+        APPLY_TAB_DEFAULT,
         GENERIC_EXAMPLE,
         SHOWCASE_EXAMPLE,
         ...Object.values(BRAND_EXAMPLES).flatMap(({ flowchart, sequence }) => [
