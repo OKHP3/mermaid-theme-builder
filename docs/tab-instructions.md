@@ -3,18 +3,27 @@
 High-level steps for each tab in Mermaid Theme Builder.
 Format: **Step Title** (3–5 words) — description (8–20 words).
 
+Instruction diagrams: `examples/tab-instructions-compose.mmd` · `examples/tab-instructions-apply.mmd`
+
 ---
 
 ## Compose Tab
 
 **Build and customize your theme**
 
-1. **Pick a starting palette** — Choose a built-in brand palette or press + New to start fresh.
-2. **Set the diagram style** — Select Classic, Neo, or Hand-Drawn to shape the visual rendering.
-3. **Tweak your colors** — Click any color swatch to update primary, secondary, and background values.
-4. **Configure font settings** — Choose font families and sizes for titles, labels, and small text.
-5. **Watch the live preview** — A sample diagram updates instantly as you change any theme setting.
-6. **Export what you need** — Copy a code snippet, download the theme as JSON, or generate an AI prompt.
+1. **Start in Compose** — Open the Compose tab to build or refine a reusable Mermaid theme.
+2. **Choose a starting palette** — Select an existing brand palette or create a new custom one.
+3. **Name the theme** — Give the theme a recognizable name for reuse across diagrams and prompts.
+4. **Select the rendering look** — Choose Classic, Neo, or Hand-Drawn to control visual rendering style.
+5. **Adjust primary colors** — Set primary, secondary, accent, background, border, and text colors.
+6. **Adjust diagram support colors** — Configure colors for nodes, edges, clusters, labels, warnings, and metadata.
+7. **Configure typography settings** — Set title, body, label, and caption fonts along with their sizes.
+8. **Review typography hierarchy** — Confirm title, section, body, and caption sizes follow a readable order.
+9. **Preview the sample diagram** — Watch the built-in preview update live as theme settings change.
+10. **Check renderer compatibility** — Review whether the theme survives target renderers like GitHub, Notion, or Obsidian.
+11. **Generate the reusable theme output** — Produce Mermaid config, Markdown bootstrap, JSON package, or AI prompt scaffold.
+12. **Copy or export the theme** — Save the reusable theme contract for diagrams or AI prompt use.
+13. **Use the theme elsewhere** — Paste the scaffold into ChatGPT, Claude, GitHub docs, or Markdown documentation.
 
 ---
 
@@ -22,11 +31,21 @@ Format: **Step Title** (3–5 words) — description (8–20 words).
 
 **Apply your theme to a diagram**
 
-1. **Paste your diagram code** — Drop any Mermaid source into the editor; the family is auto-detected.
-2. **Check the themed preview** — See your diagram rendered live with the active palette applied.
-3. **Review compatibility advisories** — Read warnings about platforms like GitHub or Notion with limited theme support.
-4. **Switch between view modes** — Toggle Preview, Code, or Diff to compare original and themed output.
-5. **Copy or export the result** — Use the export toolbar to copy, download, or open in Mermaid Live Editor.
+1. **Start in Apply** — Open the Apply tab to style an existing Mermaid diagram.
+2. **Paste Mermaid source code** — Drop any Mermaid diagram source code into the editor input field.
+3. **Detect the diagram family** — Let the app identify the diagram type: flowchart, sequence, class, Gantt, etc.
+4. **Review detection results** — Confirm the detected diagram type and any support limitations or warnings.
+5. **Choose an active theme** — Select the palette or custom theme you want to apply.
+6. **Apply the theme** — Generate a fully themed version of the pasted Mermaid diagram.
+7. **Preview the themed diagram** — View the rendered result using the selected theme and look.
+8. **Compare original and themed output** — Switch between Original, Preview, Code, or Diff views.
+9. **Review compatibility advisories** — Check warnings for renderer limits, unsupported styling, or classDef gaps.
+10. **Repair or adjust if needed** — Modify source, theme, or export target when warnings indicate risk.
+11. **Copy styled Mermaid code** — Copy the themed source with its generated config and init block.
+12. **Export Markdown bootstrap** — Export a reusable Markdown block with the styled diagram and context.
+13. **Export prompt scaffold** — Generate an AI-ready instruction scaffold for future diagram generation.
+14. **Open in Mermaid Live Editor** — Send or copy the result to Mermaid Live for independent validation.
+15. **Use in target documentation** — Paste the styled diagram into GitHub, Notion, Obsidian, or project docs.
 
 ---
 
