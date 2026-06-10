@@ -4,16 +4,9 @@ import { PaletteSelectorBar } from "@/components/PaletteSelectorBar";
 import { generateThemedCode, type ExportOptions } from "@/lib/theme-engine";
 import { detectDiagram } from "@/lib/detector";
 import { MermaidPreview } from "@/components/MermaidPreview";
-import { MermaidReferral } from "@/components/MermaidReferral";
 import { DiagramInventory } from "@/components/DiagramInventory";
 import { SHOWCASE_META } from "@/data/examples";
-import {
-  type ExampleItem,
-  ALL_EXAMPLES,
-  SECTIONS,
-  ALL_FAMILIES,
-  filterExamples,
-} from "@/lib/examples-filter";
+import { type ExampleItem, ALL_EXAMPLES, SECTIONS, filterExamples } from "@/lib/examples-filter";
 import type { MyThemeSlot } from "@/lib/my-theme-slots";
 import {
   SUPPORT_STATUS_LABELS,
@@ -35,8 +28,6 @@ async function writeToClipboard(text: string) {
     document.body.removeChild(el);
   }
 }
-
-const FAMILY_COUNT = ALL_FAMILIES.length;
 
 interface ExamplesTabProps {
   selectedPalette: Palette;
@@ -181,7 +172,7 @@ export function ExamplesTab({
       <div className="flex-1 overflow-hidden flex flex-col md:flex-row min-h-0">
         <div
           ref={sidebarRef}
-          className={`flex flex-col w-full md:w-64 border-b md:border-b-0 md:border-r border-border overflow-y-auto shrink-0 ${
+          className={`flex flex-col w-full md:w-[35%] border-b md:border-b-0 md:border-r border-border overflow-y-auto overflow-x-hidden shrink-0 ${
             showMobilePreview ? "hidden md:flex" : "flex"
           }`}
         >
@@ -366,11 +357,6 @@ export function ExamplesTab({
               </div>
             )}
           </div>
-          {selectedExample && (
-            <div className="flex-none border-t border-border px-4 py-1.5 bg-card/20 print-hide">
-              <MermaidReferral variant="live" />
-            </div>
-          )}
           {selectedExample?.id === "showcase" && (
             <div className="flex-none border-t border-border px-4 py-2 bg-amber-50/60 dark:bg-amber-950/20">
               <p className="text-[11px] text-amber-700 dark:text-amber-400 leading-relaxed">
@@ -387,6 +373,33 @@ export function ExamplesTab({
                 </p>
               </div>
             )}
+          <div className="flex-none border-t border-border bg-card/40 px-3 py-2.5 flex items-center justify-end gap-2">
+            <button
+              onClick={handleLoad}
+              disabled={!selectedExample}
+              className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-md border border-primary bg-primary text-primary-foreground font-medium hover:opacity-90 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5">
+                <path
+                  fillRule="evenodd"
+                  d="M10 3a.75.75 0 01.75.75v10.638l3.96-4.158a.75.75 0 111.08 1.04l-5.25 5.5a.75.75 0 01-1.08 0l-5.25-5.5a.75.75 0 111.08-1.04l3.96 4.158V3.75A.75.75 0 0110 3z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              Load into Apply Tab
+            </button>
+            <button
+              onClick={handleCopyRaw}
+              disabled={!selectedExample}
+              className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-md border font-medium transition-all disabled:opacity-40 disabled:cursor-not-allowed ${
+                copiedRaw
+                  ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                  : "border-border bg-background hover:bg-muted"
+              }`}
+            >
+              {copiedRaw ? "Copied!" : "Copy Raw Code"}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -423,42 +436,6 @@ export function ExamplesTab({
           </div>
         </>
       )}
-
-      <div className="flex-none border-t border-border bg-card/40 px-3 py-2.5 flex flex-wrap items-center gap-2">
-        <button
-          onClick={handleLoad}
-          disabled={!selectedExample}
-          className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-md border border-primary bg-primary text-primary-foreground font-medium hover:opacity-90 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-        >
-          <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5">
-            <path
-              fillRule="evenodd"
-              d="M10 3a.75.75 0 01.75.75v10.638l3.96-4.158a.75.75 0 111.08 1.04l-5.25 5.5a.75.75 0 01-1.08 0l-5.25-5.5a.75.75 0 111.08-1.04l3.96 4.158V3.75A.75.75 0 0110 3z"
-              clipRule="evenodd"
-            />
-          </svg>
-          Load into Apply Tab
-        </button>
-        <button
-          onClick={handleCopyRaw}
-          disabled={!selectedExample}
-          className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-md border font-medium transition-all disabled:opacity-40 disabled:cursor-not-allowed ${
-            copiedRaw
-              ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-              : "border-border bg-background hover:bg-muted"
-          }`}
-        >
-          {copiedRaw ? "Copied!" : "Copy Raw Code"}
-        </button>
-        <div className="flex-1" />
-        <span
-          className="text-[10px] text-muted-foreground/50 hidden sm:block"
-          title={`Families covered: ${ALL_FAMILIES.join(", ")}`}
-        >
-          {ALL_EXAMPLES.length} examples · {FAMILY_COUNT} families · themed with{" "}
-          {selectedPalette.name}
-        </span>
-      </div>
     </div>
   );
 }
