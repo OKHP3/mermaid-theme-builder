@@ -112,8 +112,8 @@ export function ExamplesTab({
   const [showMobilePreview, setShowMobilePreview] = useState(false);
   const [showInventory, setShowInventory] = useState(false);
 
-  // All sections collapsed by default
-  const [collapsedSections, setCollapsedSections] = useState<Set<string>>(() => new Set(SECTIONS));
+  // All sections expanded by default; users can collapse as needed.
+  const [collapsedSections, setCollapsedSections] = useState<Set<string>>(() => new Set());
 
   const toggleSection = useCallback((section: string) => {
     setCollapsedSections((prev) => {

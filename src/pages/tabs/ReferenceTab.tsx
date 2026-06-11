@@ -156,14 +156,14 @@ export function ReferenceTab({
         onDeleteMyThemeSlot={onDeleteMyThemeSlot}
         onExportMyThemeSlot={onExportMyThemeSlot}
       />
-      <div className="flex-1 overflow-hidden">
-        <DiagramInventory embedded />
-      </div>
+      <div className="flex-1 overflow-y-auto">
+        <div className="border-b border-border">
+          <DiagramInventory embedded />
+        </div>
 
-      <div className="flex-none border-t border-border">
         <details
           ref={rendererParityRef}
-          className="group"
+          className="group border-b border-border"
           onToggle={(e) => setRendererParityOpen((e.currentTarget as HTMLDetailsElement).open)}
         >
           <summary className="flex items-center justify-between px-4 py-2.5 cursor-pointer list-none hover:bg-muted/40 transition-colors select-none">
@@ -295,12 +295,10 @@ export function ReferenceTab({
             </div>
           </div>
         </details>
-      </div>
 
-      <div className="flex-none border-t border-border">
         <details
           ref={classLibraryRef}
-          className="group"
+          className="group border-b border-border"
           onToggle={(e) => setClassLibraryOpen((e.currentTarget as HTMLDetailsElement).open)}
         >
           <summary className="flex items-center justify-between px-4 py-2.5 cursor-pointer list-none hover:bg-muted/40 transition-colors select-none">
