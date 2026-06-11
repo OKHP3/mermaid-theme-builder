@@ -9,6 +9,7 @@ import {
 } from "@/lib/my-theme-slots";
 import { paletteToPortableJson, parsePortablePalette } from "@/lib/exporters";
 import { BRAND_PALETTES, type Palette } from "@/lib/palettes";
+import { DEFAULT_TYPOGRAPHY } from "@/lib/typography";
 
 function makeSlot(n: 1 | 2 | 3): MyThemeSlot {
   return createDefaultMyThemeSlot(n);
@@ -186,5 +187,39 @@ describe("My Theme slot export → import round-trip", () => {
     expect(result.ok).toBe(true);
     if (!result.ok) return;
     expect(result.palette.name).toBe("My Custom Palette");
+  });
+});
+
+// ── Import as new slot — typography defaults ───────────────────────────────
+
+describe("createDefaultMyThemeSlot — typography defaults", () => {
+  it("uses valid non-zero fontSize defaults from DEFAULT_TYPOGRAPHY", () => {
+    const slot = createDefaultMyThemeSlot(1);
+    expect(slot.typography.diagramTitle.fontSize).toBe(DEFAULT_TYPOGRAPHY.diagramTitle.fontSize);
+    expect(slot.typography.subgraphTitle.fontSize).toBe(DEFAULT_TYPOGRAPHY.subgraphTitle.fontSize);
+    expect(slot.typography.nestedSubgraphTitle.fontSize).toBe(
+      DEFAULT_TYPOGRAPHY.nestedSubgraphTitle.fontSize
+    );
+    expect(slot.typography.nodeLabel.fontSize).toBe(DEFAULT_TYPOGRAPHY.nodeLabel.fontSize);
+    expect(slot.typography.edgeLabel.fontSize).toBe(DEFAULT_TYPOGRAPHY.edgeLabel.fontSize);
+
+    // All font sizes must be non-zero so generated output never renders font-size: 0px
+    const sizes = [
+      slot.typography.diagramTitle.fontSize,
+      slot.typography.subgraphTitle.fontSize,
+      slot.typography.nestedSubgraphTitle.fontSize,
+      slot.typography.nodeLabel.fontSize,
+      slot.typography.edgeLabel.fontSize,
+    ];
+    for (const s of sizes) {
+      expect(s).toBeGreaterThan(0);
+    }
+  });
+
+  it("deep-copies typography so later mutations do not affect defaults", () => {
+    const slotA = createDefaultMyThemeSlot(1);
+    const slotB = createDefaultMyThemeSlot(2);
+    slotA.typography.nodeLabel.fontSize = 99;
+    expect(slotB.typography.nodeLabel.fontSize).toBe(DEFAULT_TYPOGRAPHY.nodeLabel.fontSize);
   });
 });

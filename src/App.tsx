@@ -740,22 +740,17 @@ export function AppShell() {
     [myThemeSlots]
   );
 
-  const handleImportMyThemeSlot = useCallback(
-    (slot: MyThemeSlot) => {
-      setMyThemeSlots((prev) => {
-        if (prev.length >= 3) return prev;
-        const num = nextSlotNumber(prev);
-        if (num === null) return prev;
-        const newSlot: MyThemeSlot = {
-          ...slot,
-          id: `my-theme-${num}` as MyThemeSlotId,
-        };
-        setActiveMyThemeSlotId(newSlot.id);
-        return [...prev, newSlot];
-      });
-    },
-    []
-  );
+  const handleImportMyThemeSlot = useCallback((palette: { name: string; colors: ThemeColor[] }) => {
+    setMyThemeSlots((prev) => {
+      if (prev.length >= 3) return prev;
+      const num = nextSlotNumber(prev);
+      if (num === null) return prev;
+      const newSlot = createDefaultMyThemeSlot(num, palette.colors);
+      newSlot.name = palette.name;
+      setActiveMyThemeSlotId(newSlot.id);
+      return [...prev, newSlot];
+    });
+  }, []);
 
   const handleResetPalette = useCallback(() => {
     if (activeMyThemeSlotId) {
