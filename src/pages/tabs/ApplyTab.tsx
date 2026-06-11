@@ -66,7 +66,7 @@ interface ApplyTabProps {
   onAddMyThemeSlot?: () => void;
   onDeleteMyThemeSlot?: (id: string) => void;
   onExportMyThemeSlot?: (id: string) => void;
-  onImportMyThemeSlot?: (
+  onImportAsNewSlot?: (
     palette: Palette,
     warnings: {
       invalidValues: Array<{ key: string; value: string }>;
@@ -113,7 +113,7 @@ export function ApplyTab({
   onAddMyThemeSlot = () => {},
   onDeleteMyThemeSlot = () => {},
   onExportMyThemeSlot = () => {},
-  onImportMyThemeSlot = () => {},
+  onImportAsNewSlot = () => {},
 }: ApplyTabProps) {
   const [showColorEditor, setShowColorEditor] = useState(false);
   const [advisoryDismissed, setAdvisoryDismissed] = useState(false);
@@ -336,7 +336,7 @@ export function ApplyTab({
         onAddMyThemeSlot={onAddMyThemeSlot}
         onDeleteMyThemeSlot={onDeleteMyThemeSlot}
         onExportMyThemeSlot={onExportMyThemeSlot}
-        onImportMyThemeSlot={onImportMyThemeSlot}
+        onImportAsNewSlot={onImportAsNewSlot}
         onShowToast={onShowToast}
       />
 

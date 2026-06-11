@@ -18,7 +18,7 @@ interface PaletteSelectorBarProps {
   onAddMyThemeSlot: () => void;
   onDeleteMyThemeSlot: (id: string) => void;
   onExportMyThemeSlot: (id: string) => void;
-  onImportMyThemeSlot?: (
+  onImportAsNewSlot?: (
     palette: Palette,
     warnings: {
       invalidValues: Array<{ key: string; value: string }>;
@@ -40,7 +40,7 @@ export function PaletteSelectorBar({
   onAddMyThemeSlot,
   onDeleteMyThemeSlot,
   onExportMyThemeSlot,
-  onImportMyThemeSlot,
+  onImportAsNewSlot,
   onShowToast,
 }: PaletteSelectorBarProps) {
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
@@ -362,7 +362,7 @@ export function PaletteSelectorBar({
               onShowToast(`Import failed: ${result.error}`);
               return;
             }
-            onImportMyThemeSlot?.(result.palette, {
+            onImportAsNewSlot?.(result.palette, {
               invalidValues: result.invalidValues,
               warnValues: result.warnValues,
             });

@@ -783,6 +783,44 @@ export function AppShell() {
     [activeMyThemeSlotId]
   );
 
+  const handleImportAsNewSlot = useCallback(
+    (
+      palette: Palette,
+      warnings: {
+        invalidValues: Array<{ key: string; value: string }>;
+        warnValues: Array<{ key: string; value: string }>;
+      }
+    ) => {
+      setMyThemeSlots((prev) => {
+        if (prev.length >= 3) return prev;
+        const num = nextSlotNumber(prev);
+        if (num === null) return prev;
+        const newSlot = createDefaultMyThemeSlot(num, palette.colors);
+        newSlot.name = palette.name;
+        setActiveMyThemeSlotId(newSlot.id);
+        if (warnings.invalidValues.length > 0 || warnings.warnValues.length > 0) {
+          const problemKeys = [
+            ...warnings.invalidValues.map((e) => e.key),
+            ...warnings.warnValues.map((e) => e.key),
+          ];
+          setImportDiagnostics({
+            missingKeys: [],
+            unknownKeys: [],
+            invalidValues: warnings.invalidValues,
+            warnValues: warnings.warnValues,
+          });
+          setToast(
+            `Imported "${palette.name}" as new slot. CSS values may not render in Mermaid: ${problemKeys.join(", ")}.`
+          );
+        } else {
+          setToast(`Imported "${palette.name}" as new slot`);
+        }
+        return [...prev, newSlot];
+      });
+    },
+    []
+  );
+
   const handleResetPalette = useCallback(() => {
     if (activeMyThemeSlotId) {
       setMyThemeSlots((prev) =>
@@ -1293,7 +1331,7 @@ export function AppShell() {
             onAddMyThemeSlot={handleAddMyThemeSlot}
             onDeleteMyThemeSlot={handleDeleteMyThemeSlot}
             onExportMyThemeSlot={handleExportMyThemeSlot}
-            onImportMyThemeSlot={handleImportMyThemeSlot}
+            onImportAsNewSlot={handleImportAsNewSlot}
           />
         </div>
         <div
@@ -1345,6 +1383,7 @@ export function AppShell() {
               onDeleteMyThemeSlot={handleDeleteMyThemeSlot}
               onExportMyThemeSlot={handleExportMyThemeSlot}
               onImportMyThemeSlot={handleImportMyThemeSlot}
+              onImportAsNewSlot={handleImportAsNewSlot}
               customThemeNamePlaceholder={
                 activeMyThemeSlotId ? slotDisplayName(activeMyThemeSlotId) : undefined
               }
@@ -1366,7 +1405,8 @@ export function AppShell() {
               onAddMyThemeSlot={handleAddMyThemeSlot}
               onDeleteMyThemeSlot={handleDeleteMyThemeSlot}
               onExportMyThemeSlot={handleExportMyThemeSlot}
-              onImportMyThemeSlot={handleImportMyThemeSlot}
+              onImportAsNewSlot={handleImportAsNewSlot}
+              onShowToast={showToast}
             />
           )}
           {activeTab === "reference" && (
@@ -1387,7 +1427,8 @@ export function AppShell() {
               onAddMyThemeSlot={handleAddMyThemeSlot}
               onDeleteMyThemeSlot={handleDeleteMyThemeSlot}
               onExportMyThemeSlot={handleExportMyThemeSlot}
-              onImportMyThemeSlot={handleImportMyThemeSlot}
+              onImportAsNewSlot={handleImportAsNewSlot}
+              onShowToast={showToast}
             />
           )}
         </div>

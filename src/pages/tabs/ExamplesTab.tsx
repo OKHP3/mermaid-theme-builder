@@ -45,7 +45,7 @@ interface ExamplesTabProps {
   onAddMyThemeSlot?: () => void;
   onDeleteMyThemeSlot?: (id: string) => void;
   onExportMyThemeSlot?: (id: string) => void;
-  onImportMyThemeSlot?: (
+  onImportAsNewSlot?: (
     palette: Palette,
     warnings: {
       invalidValues: Array<{ key: string; value: string }>;
@@ -70,7 +70,7 @@ export function ExamplesTab({
   onAddMyThemeSlot = () => {},
   onDeleteMyThemeSlot = () => {},
   onExportMyThemeSlot = () => {},
-  onImportMyThemeSlot = () => {},
+  onImportAsNewSlot = () => {},
   onShowToast = () => {},
 }: ExamplesTabProps) {
   const [selectedId, setSelectedId] = useState(() => {
@@ -203,7 +203,7 @@ export function ExamplesTab({
         onAddMyThemeSlot={onAddMyThemeSlot}
         onDeleteMyThemeSlot={onDeleteMyThemeSlot}
         onExportMyThemeSlot={onExportMyThemeSlot}
-        onImportMyThemeSlot={onImportMyThemeSlot}
+        onImportAsNewSlot={onImportAsNewSlot}
         onShowToast={onShowToast}
       />
       <div className="flex-1 overflow-hidden flex flex-col md:flex-row min-h-0">

@@ -27,7 +27,7 @@ interface ReferenceTabProps {
   onAddMyThemeSlot?: () => void;
   onDeleteMyThemeSlot?: (id: string) => void;
   onExportMyThemeSlot?: (id: string) => void;
-  onImportMyThemeSlot?: (
+  onImportAsNewSlot?: (
     palette: Palette,
     warnings: {
       invalidValues: Array<{ key: string; value: string }>;
@@ -91,7 +91,7 @@ export function ReferenceTab({
   onAddMyThemeSlot = () => {},
   onDeleteMyThemeSlot = () => {},
   onExportMyThemeSlot = () => {},
-  onImportMyThemeSlot = () => {},
+  onImportAsNewSlot = () => {},
   onShowToast = () => {},
 }: ReferenceTabProps) {
   const classDefs = useMemo(() => getClassDefs(selectedPalette), [selectedPalette]);
@@ -158,7 +158,7 @@ export function ReferenceTab({
         onAddMyThemeSlot={onAddMyThemeSlot}
         onDeleteMyThemeSlot={onDeleteMyThemeSlot}
         onExportMyThemeSlot={onExportMyThemeSlot}
-        onImportMyThemeSlot={onImportMyThemeSlot}
+        onImportAsNewSlot={onImportAsNewSlot}
         onShowToast={onShowToast}
       />
       <div className="flex-1 overflow-y-auto">
