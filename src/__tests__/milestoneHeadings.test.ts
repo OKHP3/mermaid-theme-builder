@@ -3,12 +3,12 @@
  *
  * Purpose
  * -------
- * The "Architecture Hardening (V0.3)" section eyebrow and "What shipped in
- * v0.4 and v0.5" section heading inside TIMELINE_PROJECT_HISTORY are the
- * canonical milestone labels for the project history timeline.  This test
- * locks them in so that any accidental edit to the constant (or to the
- * example-library sync pass) is caught immediately as a test failure rather
- * than silently reaching users.
+ * The "Architecture Hardening (V0.3)" section eyebrow, "What shipped in
+ * v0.4 and v0.5" section heading, and "What shipped in v0.6" section heading
+ * inside TIMELINE_PROJECT_HISTORY are the canonical milestone labels for the
+ * project history timeline.  This test locks them in so that any accidental
+ * edit to the constant (or to the example-library sync pass) is caught
+ * immediately as a test failure rather than silently reaching users.
  *
  * Coverage note
  * -------------
@@ -40,5 +40,9 @@ describe("milestone heading content guard — timeline-overkill-theme-builder-hi
 
   it('full canonical eyebrow label is "Architecture Hardening (V0.3)"', () => {
     expect(entry!.content).toContain("Architecture Hardening (V0.3)");
+  });
+
+  it('section heading contains "What shipped in v0.6"', () => {
+    expect(entry!.content).toContain("What shipped in v0.6");
   });
 });
