@@ -157,9 +157,55 @@ export function ReferenceTab({
         onExportMyThemeSlot={onExportMyThemeSlot}
       />
       <div className="flex-1 overflow-y-auto">
-        <div className="border-b border-border">
-          <DiagramInventory embedded />
-        </div>
+        <details
+          ref={classLibraryRef}
+          className="group border-b border-border"
+          onToggle={(e) => setClassLibraryOpen((e.currentTarget as HTMLDetailsElement).open)}
+        >
+          <summary className="flex items-center justify-between px-4 py-2.5 cursor-pointer list-none hover:bg-muted/40 transition-colors select-none">
+            <div className="flex items-center gap-2">
+              <svg
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                className="w-3.5 h-3.5 text-muted-foreground"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              <span className="text-xs font-medium text-foreground">Class Library</span>
+              {!supportsClassDef && !classLibraryOpen && (
+                <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                  inactive for this diagram type
+                </span>
+              )}
+              <span className="text-[10px] text-muted-foreground">
+                {classDefs.length} classes · {selectedPalette.name}
+              </span>
+            </div>
+            <svg
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              className="w-4 h-4 text-muted-foreground group-open:rotate-180 transition-transform"
+            >
+              <path
+                fillRule="evenodd"
+                d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </summary>
+          <div className="border-t border-border max-h-72 overflow-y-auto">
+            <ClassBrowser
+              classDefs={classDefs}
+              supportsClassDef={supportsClassDef}
+              usedClassNames={usedClassNames}
+              onApplyFix={onInputChange ? handleApplyFix : undefined}
+            />
+          </div>
+        </details>
 
         <details
           ref={rendererParityRef}
@@ -296,55 +342,9 @@ export function ReferenceTab({
           </div>
         </details>
 
-        <details
-          ref={classLibraryRef}
-          className="group border-b border-border"
-          onToggle={(e) => setClassLibraryOpen((e.currentTarget as HTMLDetailsElement).open)}
-        >
-          <summary className="flex items-center justify-between px-4 py-2.5 cursor-pointer list-none hover:bg-muted/40 transition-colors select-none">
-            <div className="flex items-center gap-2">
-              <svg
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                className="w-3.5 h-3.5 text-muted-foreground"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              <span className="text-xs font-medium text-foreground">Class Library</span>
-              {!supportsClassDef && !classLibraryOpen && (
-                <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
-                  inactive for this diagram type
-                </span>
-              )}
-              <span className="text-[10px] text-muted-foreground">
-                {classDefs.length} classes · {selectedPalette.name}
-              </span>
-            </div>
-            <svg
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              className="w-4 h-4 text-muted-foreground group-open:rotate-180 transition-transform"
-            >
-              <path
-                fillRule="evenodd"
-                d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </summary>
-          <div className="border-t border-border max-h-72 overflow-y-auto">
-            <ClassBrowser
-              classDefs={classDefs}
-              supportsClassDef={supportsClassDef}
-              usedClassNames={usedClassNames}
-              onApplyFix={onInputChange ? handleApplyFix : undefined}
-            />
-          </div>
-        </details>
+        <div className="border-b border-border">
+          <DiagramInventory embedded />
+        </div>
       </div>
 
       <div className="flex-none border-t border-border bg-card/40 px-4 py-2 flex flex-wrap items-center gap-x-4 gap-y-1">
