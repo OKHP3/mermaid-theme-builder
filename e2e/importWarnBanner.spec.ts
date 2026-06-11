@@ -54,15 +54,19 @@ const FUNC_COLOR_JSON = JSON.stringify({
  * without opening the OS file picker.
  */
 async function openComposeAndImport(page: Page, json: string): Promise<void> {
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+  });
   await page.goto("/");
   await page.waitForLoadState("load");
 
   // Switch to the Compose tab.
-  await page.getByRole("tab", { name: "Compose" }).first().click();
+  await page.getByRole("tab", { name: "Compose", exact: true }).click();
 
   // The banner lives inside the "Export Theme" collapsible section which
   // starts closed.  Expand it so the banner will be visible after import.
-  const toggle = page.getByRole("button", { name: "Toggle Export Theme" });
+  const toggle = page.locator('button[aria-label="Toggle Export Theme"]:visible');
   await toggle.waitFor({ timeout: 8_000 });
   await toggle.click();
 

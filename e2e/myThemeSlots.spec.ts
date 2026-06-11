@@ -58,14 +58,16 @@ async function openWithState(
   page: Page,
   state?: Record<string, unknown>
 ): Promise<void> {
-  if (state) {
-    await page.addInitScript(
-      ({ key, value }: { key: string; value: string }) => {
+  await page.addInitScript(
+    ({ key, value }: { key: string; value: string | null }) => {
+      localStorage.clear();
+      sessionStorage.clear();
+      if (value) {
         localStorage.setItem(key, value);
-      },
-      { key: LS_KEY, value: JSON.stringify(state) }
-    );
-  }
+      }
+    },
+    { key: LS_KEY, value: state ? JSON.stringify(state) : null }
+  );
   await page.goto("/");
   await page.waitForLoadState("load");
   // Wait for the Compose tab's My Theme 1 tile — the compose tab is the
@@ -165,7 +167,7 @@ test.describe("My Theme slot — add via New button", () => {
     // Fresh load: app starts with one slot (my-theme-1) active by default.
     await openWithState(page);
 
-    const addButton = page.getByRole("button", { name: "Add My Theme workspace" }).first();
+    const addButton = page.getByRole("button", { name: "Add My Theme workspace", exact: true });
     await expect(addButton).toBeVisible();
 
     // Only one My Theme tile should exist at this point.
@@ -188,7 +190,7 @@ test.describe("My Theme slot — add via New button", () => {
   test("New button disappears once three slots exist", async ({ page }) => {
     await openWithState(page);
 
-    const addButton = page.getByRole("button", { name: "Add My Theme workspace" }).first();
+    const addButton = page.getByRole("button", { name: "Add My Theme workspace", exact: true });
 
     // The app starts with one slot; two more clicks reach the 3-slot limit.
     await addButton.click();
@@ -211,7 +213,7 @@ test.describe("My Theme slot — delete via trash icon", () => {
     await openWithState(page);
 
     // Add a second slot so we can delete the first without emptying the bar.
-    const addButton = page.getByRole("button", { name: "Add My Theme workspace" }).first();
+    const addButton = page.getByRole("button", { name: "Add My Theme workspace", exact: true });
     await addButton.click();
     await expect(page.locator(SLOT_TILE_SEL)).toHaveCount(2);
 
@@ -254,8 +256,8 @@ test.describe("My Theme slot — color edit routing", () => {
     // The Compose tab sidebar has color swatches behind a collapsible
     // "Toggle Colors" button (aria-expanded="false" by default). Click it to
     // reveal the swatch section so the hex inputs become visible.
-    const toggleColors = page.getByRole("button", { name: "Toggle Colors" });
-    await toggleColors.first().click();
+    const toggleColors = page.locator('button[aria-label="Toggle Colors"]:visible').first();
+    await toggleColors.click();
 
     // Wait for the first visible hex color text input.
     const hexInput = page

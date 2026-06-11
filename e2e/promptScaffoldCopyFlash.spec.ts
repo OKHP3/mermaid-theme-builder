@@ -44,20 +44,24 @@ async function grantClipboard(context: BrowserContext): Promise<void> {
  * modal.
  */
 async function openScaffoldModal(page: Page): Promise<void> {
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+  });
   await page.goto("/");
   await page.waitForLoadState("load");
 
   // Navigate to the Compose tab (role="tab" per ARIA widget pattern).
-  await page.getByRole("tab", { name: "Compose" }).first().click();
+  await page.getByRole("tab", { name: "Compose", exact: true }).click();
 
   // The "Generate Prompt Pattern" button lives inside the Bootstrap Export
   // as a non-collapsible Bootstrap Export sub-section.  Open My Themes first.
-  const toggleBtn = page.getByRole("button", { name: "Toggle Export Theme" });
+  const toggleBtn = page.locator('button[aria-label="Toggle Export Theme"]:visible');
   await toggleBtn.waitFor({ timeout: 8_000 });
   await toggleBtn.click();
 
   // Wait for the trigger button to be visible before clicking it.
-  const trigger = page.getByRole("button", { name: "Generate Prompt Pattern" });
+  const trigger = page.getByRole("button", { name: "Generate Prompt Pattern", exact: true });
   await trigger.waitFor({ timeout: 4_000 });
   await trigger.click();
 

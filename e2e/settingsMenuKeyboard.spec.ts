@@ -16,6 +16,10 @@ import { test, expect } from "@playwright/test";
 
 test.describe("Settings menu keyboard navigation", () => {
   test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => {
+      window.localStorage.clear();
+      window.sessionStorage.clear();
+    });
     await page.goto("/");
   });
 
@@ -41,7 +45,6 @@ test.describe("Settings menu keyboard navigation", () => {
     const settingsBtn = page.getByRole("button", { name: "Settings", exact: true });
     await settingsBtn.focus();
 
-    // Open the menu with Enter first, then press ArrowDown
     await page.keyboard.press("Enter");
     await page.getByRole("menu", { name: "Settings" }).waitFor({ state: "visible" });
     await page.keyboard.press("ArrowDown");
@@ -51,7 +54,6 @@ test.describe("Settings menu keyboard navigation", () => {
     );
     expect(focusedRole).toBe("menuitem");
 
-    // Confirm it is the *first* menuitem in DOM order
     const isFirstItem = await page.evaluate(() => {
       const items = Array.from(document.querySelectorAll('[role="menuitem"]'));
       return items.length > 0 && items[0] === document.activeElement;
@@ -67,14 +69,11 @@ test.describe("Settings menu keyboard navigation", () => {
     const settingsBtn = page.getByRole("button", { name: "Settings", exact: true });
     await settingsBtn.focus();
 
-    // Press ArrowDown directly on the closed trigger
     await page.keyboard.press("ArrowDown");
 
     const menu = page.getByRole("menu", { name: "Settings" });
     await expect(menu).toBeVisible();
 
-    // The focus is moved inside a requestAnimationFrame callback — wait for it
-    // to settle on a menuitem before asserting, to avoid a RAF-timing race.
     await page.waitForFunction(() => document.activeElement?.getAttribute("role") === "menuitem");
 
     const focusedRole = await page.evaluate(
@@ -93,10 +92,8 @@ test.describe("Settings menu keyboard navigation", () => {
 
     await page.keyboard.press("Escape");
 
-    // Menu should be gone
     await expect(menu).not.toBeVisible();
 
-    // Focus must have returned to the settings trigger
     const isTriggerFocused = await page.evaluate(() => {
       const el = document.activeElement;
       return (
