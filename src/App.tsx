@@ -764,9 +764,11 @@ export function AppShell() {
             invalidValues: warnings.invalidValues,
             warnValues: warnings.warnValues,
           });
-          setToast(`Loaded colors into slot. CSS values may not render in Mermaid: ${keyList}.`);
+          setToast(
+            `Imported "${palette.name}" colors. CSS values may not render in Mermaid: ${keyList}.`
+          );
         } else {
-          setToast(`Loaded "${palette.name}" into slot.`);
+          setToast(`Imported "${palette.name}" colors.`);
         }
       } else {
         setMyThemeSlots((prev) => {
@@ -778,6 +780,7 @@ export function AppShell() {
           setActiveMyThemeSlotId(newSlot.id);
           return [...prev, newSlot];
         });
+        setToast(`Imported "${palette.name}" as a new slot.`);
       }
     },
     [activeMyThemeSlotId]
