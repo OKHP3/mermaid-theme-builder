@@ -310,7 +310,11 @@ export function DiagramInventory({ onClose, embedded = false }: DiagramInventory
           className="w-full flex items-center justify-between px-4 py-2.5 border-b border-border bg-card/80 hover:bg-muted/40 transition-colors select-none cursor-pointer shrink-0"
         >
           <div className="flex items-center gap-2">
-            <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 text-muted-foreground">
+            <svg
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              className="w-3.5 h-3.5 text-muted-foreground"
+            >
               <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" />
             </svg>
             <span className="text-xs font-medium text-foreground">Diagram Inventory</span>
@@ -333,7 +337,11 @@ export function DiagramInventory({ onClose, embedded = false }: DiagramInventory
       ) : (
         <div className="border-b border-border bg-card/80 backdrop-blur px-4 md:px-6 py-2.5 flex items-center justify-between gap-4 shrink-0">
           <div className="flex items-center gap-2">
-            <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 text-muted-foreground">
+            <svg
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              className="w-3.5 h-3.5 text-muted-foreground"
+            >
               <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" />
             </svg>
             <span className="text-xs font-medium text-foreground">Diagram Inventory</span>
@@ -357,128 +365,129 @@ export function DiagramInventory({ onClose, embedded = false }: DiagramInventory
 
       {(!embedded || inventoryOpen) && (
         <>
-      <div className="border-b border-border bg-card/30 px-4 md:px-6 py-1.5 flex items-center gap-0.5 shrink-0">
-        {FILTER_TABS.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setFilter(tab.id)}
-            className={`px-3 py-1 text-xs font-medium rounded transition-all ${
-              filter === tab.id
-                ? "bg-primary/10 text-primary"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-        <div className="flex-1" />
-        <input
-          type="search"
-          aria-label="Search diagram types"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search diagrams…"
-          className="text-xs bg-background border border-border rounded-md px-2.5 py-1 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 w-36 sm:w-44"
-        />
-      </div>
+          <div className="border-b border-border bg-card/30 px-4 md:px-6 py-1.5 flex items-center gap-0.5 shrink-0">
+            {FILTER_TABS.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setFilter(tab.id)}
+                className={`px-3 py-1 text-xs font-medium rounded transition-all ${
+                  filter === tab.id
+                    ? "bg-primary/10 text-primary"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+            <div className="flex-1" />
+            <input
+              type="search"
+              aria-label="Search diagram types"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search diagrams…"
+              className="text-xs bg-background border border-border rounded-md px-2.5 py-1 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 w-36 sm:w-44"
+            />
+          </div>
 
-      <div className={embedded ? "overflow-y-auto max-h-72" : "flex-1 overflow-y-auto"}>
-        {filteredCapabilities.length > 0 && (
-          <div className="px-4 md:px-6 py-4">
-            <div className="flex items-center gap-2 mb-2">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Mermaid Families
-              </h3>
-              <span className="text-[10px] text-muted-foreground/60">
-                {filteredCapabilities.length} entries
-              </span>
-            </div>
-            <div className="border border-border rounded-lg overflow-hidden">
-              <table className="w-full text-left relative">
-                {tableHeader}
-                <tbody>
-                  {filteredCapabilities.map((cap) => (
-                    <CapabilityRow key={cap.id} cap={cap} />
-                  ))}
-                </tbody>
-              </table>
+          <div className={embedded ? "overflow-y-auto max-h-72" : "flex-1 overflow-y-auto"}>
+            {filteredCapabilities.length > 0 && (
+              <div className="px-4 md:px-6 py-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    Mermaid Families
+                  </h3>
+                  <span className="text-[10px] text-muted-foreground/60">
+                    {filteredCapabilities.length} entries
+                  </span>
+                </div>
+                <div className="border border-border rounded-lg overflow-hidden">
+                  <table className="w-full text-left relative">
+                    {tableHeader}
+                    <tbody>
+                      {filteredCapabilities.map((cap) => (
+                        <CapabilityRow key={cap.id} cap={cap} />
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {filteredGaps.length > 0 && (
+              <div className="px-4 md:px-6 py-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    Capability Gaps
+                  </h3>
+                  <span className="text-[10px] text-muted-foreground/60">
+                    {filteredGaps.length} entries
+                  </span>
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-400/20">
+                    Not implementable in Mermaid
+                  </span>
+                </div>
+                <div className="border border-border rounded-lg overflow-hidden">
+                  <table className="w-full text-left relative">
+                    {tableHeader}
+                    <tbody>
+                      {filteredGaps.map((gap) => (
+                        <GapRow key={gap.id} gap={gap} />
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {filteredCapabilities.length === 0 && filteredGaps.length === 0 && (
+              <div className="flex flex-col items-center justify-center py-16 text-center px-4">
+                <svg
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  className="w-8 h-8 text-muted-foreground/30 mb-3"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                <p className="text-sm text-muted-foreground">No results for "{search}"</p>
+                <button
+                  onClick={() => setSearch("")}
+                  className="mt-2 text-xs text-primary hover:underline"
+                >
+                  Clear search
+                </button>
+              </div>
+            )}
+
+            <div className="px-4 md:px-6 py-4 border-t border-border bg-muted/10">
+              <div className="flex flex-wrap gap-x-6 gap-y-2 text-[11px] text-muted-foreground">
+                <div className="flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" /> Stable
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-sky-400 inline-block" /> Beta
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-purple-400 inline-block" />{" "}
+                  Experimental
+                </div>
+                <span className="text-muted-foreground/40">·</span>
+                <span>
+                  Support Status shows whether Mermaid natively supports this diagram type. Theme
+                  Confidence shows how reliably Mermaid Theme Builder can control the visual output.
+                </span>
+              </div>
+              <p className="text-[11px] text-muted-foreground/50 mt-2">
+                Mermaid Theme Builder does not implement unsupported formal notations (BPMN,
+                ArchiMate, SysML). Gaps are tracked for honest reference only. Verified against
+                Mermaid {MERMAID_VERSION_VERIFIED}.
+              </p>
             </div>
           </div>
-        )}
-
-        {filteredGaps.length > 0 && (
-          <div className="px-4 md:px-6 py-4">
-            <div className="flex items-center gap-2 mb-2">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Capability Gaps
-              </h3>
-              <span className="text-[10px] text-muted-foreground/60">
-                {filteredGaps.length} entries
-              </span>
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-400/20">
-                Not implementable in Mermaid
-              </span>
-            </div>
-            <div className="border border-border rounded-lg overflow-hidden">
-              <table className="w-full text-left relative">
-                {tableHeader}
-                <tbody>
-                  {filteredGaps.map((gap) => (
-                    <GapRow key={gap.id} gap={gap} />
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-        {filteredCapabilities.length === 0 && filteredGaps.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-16 text-center px-4">
-            <svg
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              className="w-8 h-8 text-muted-foreground/30 mb-3"
-            >
-              <path
-                fillRule="evenodd"
-                d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z"
-                clipRule="evenodd"
-              />
-            </svg>
-            <p className="text-sm text-muted-foreground">No results for "{search}"</p>
-            <button
-              onClick={() => setSearch("")}
-              className="mt-2 text-xs text-primary hover:underline"
-            >
-              Clear search
-            </button>
-          </div>
-        )}
-
-        <div className="px-4 md:px-6 py-4 border-t border-border bg-muted/10">
-          <div className="flex flex-wrap gap-x-6 gap-y-2 text-[11px] text-muted-foreground">
-            <div className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" /> Stable
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-sky-400 inline-block" /> Beta
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-purple-400 inline-block" /> Experimental
-            </div>
-            <span className="text-muted-foreground/40">·</span>
-            <span>
-              Support Status shows whether Mermaid natively supports this diagram type. Theme
-              Confidence shows how reliably Mermaid Theme Builder can control the visual output.
-            </span>
-          </div>
-          <p className="text-[11px] text-muted-foreground/50 mt-2">
-            Mermaid Theme Builder does not implement unsupported formal notations (BPMN, ArchiMate,
-            SysML). Gaps are tracked for honest reference only. Verified against Mermaid{" "}
-            {MERMAID_VERSION_VERIFIED}.
-          </p>
-        </div>
-      </div>
         </>
       )}
     </div>
