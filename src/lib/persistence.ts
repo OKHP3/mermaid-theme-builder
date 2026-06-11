@@ -1,5 +1,6 @@
 import type { Palette, ThemeColor } from "./palettes";
 import type { TypographySettings } from "./typography";
+import type { MyThemeSlot } from "./my-theme-slots";
 
 export const PERSISTENCE_SCHEMA_VERSION = 1;
 const STORAGE_KEY = "mtb.state.v1";
@@ -21,6 +22,8 @@ export interface PersistedState {
   previewMode?: string;
   lastExampleType?: Record<string, "flowchart" | "sequence">;
   lastSelectedExampleId?: string;
+  myThemeSlots?: MyThemeSlot[];
+  activeMyThemeSlotId?: string | null;
 }
 
 export const DEFAULT_PERSISTED_STATE: Omit<PersistedState, "selectedPaletteId" | "inputCode"> = {

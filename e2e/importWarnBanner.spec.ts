@@ -54,20 +54,24 @@ const FUNC_COLOR_JSON = JSON.stringify({
  * without opening the OS file picker.
  */
 async function openComposeAndImport(page: Page, json: string): Promise<void> {
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+  });
   await page.goto("/");
   await page.waitForLoadState("load");
 
   // Switch to the Compose tab.
-  await page.getByRole("tab", { name: "Compose" }).first().click();
+  await page.getByRole("tab", { name: "Compose", exact: true }).click();
 
-  // The banner lives inside the "My Palettes" collapsible section which
+  // The banner lives inside the "Export Theme" collapsible section which
   // starts closed.  Expand it so the banner will be visible after import.
-  const toggle = page.getByRole("button", { name: "Toggle My Palettes" });
+  const toggle = page.locator('button[aria-label="Toggle Export Theme"]:visible');
   await toggle.waitFor({ timeout: 8_000 });
   await toggle.click();
 
-  // Wait for the Import JSON button to confirm the section is open.
-  await page.getByRole("button", { name: "Import JSON" }).waitFor({ timeout: 4_000 });
+  // Wait for the Export to JSON button to confirm the section is open.
+  await page.getByRole("button", { name: "Export to JSON" }).waitFor({ timeout: 4_000 });
 
   // Feed the JSON directly to the hidden file input — same code path as a
   // real import but without the OS file dialog.
@@ -94,12 +98,13 @@ test.describe("Import warning banner — named CSS color", () => {
     await expect(page.getByText(/Named CSS color/)).toBeVisible({ timeout: 4_000 });
   });
 
-  test("affected key ('primaryColor') and value ('red') appear in the banner", async ({
-    page,
-  }) => {
+  test("affected key ('primaryColor') and value ('red') appear in the banner", async ({ page }) => {
     await openComposeAndImport(page, NAMED_COLOR_JSON);
     // Both key and value must be in the same <li> entry inside the banner.
-    const entry = page.locator("li").filter({ hasText: "primaryColor" }).filter({ hasText: '"red"' });
+    const entry = page
+      .locator("li")
+      .filter({ hasText: "primaryColor" })
+      .filter({ hasText: '"red"' });
     await expect(entry).toBeVisible({ timeout: 4_000 });
   });
 

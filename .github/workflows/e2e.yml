@@ -1,10 +1,9 @@
 name: E2E Tests
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -64,6 +63,9 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v7
         with:
-          name: playwright-report
-          path: playwright-report/
+          name: playwright-failure-artifacts
+          path: |
+            playwright-report/
+            test-results/
           retention-days: 7
+          if-no-files-found: warn

@@ -123,9 +123,9 @@ afterEach(() => {
 // ---------------------------------------------------------------------------
 
 describe("previewPicker — default selection", () => {
-  it("the preview select defaults to 'flowchart-basic' when localStorage is empty", () => {
+  it("the preview select defaults to 'compose-instructions' when localStorage is empty", () => {
     const { container } = renderTab();
-    expect(getPickerSelect(container).value).toBe("flowchart-basic");
+    expect(getPickerSelect(container).value).toBe("compose-instructions");
   });
 
   it("the default id matches EXAMPLE_CATALOG[0].id", () => {

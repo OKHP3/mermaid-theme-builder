@@ -6,6 +6,7 @@ import { extractUsedClasses, applyClassFix } from "@/lib/used-classes";
 import { DiagramInventory } from "@/components/DiagramInventory";
 import { ClassBrowser } from "@/components/ClassBrowser";
 import { RENDERER_PROFILES, supportLabel, supportColor } from "@/data/renderer-parity";
+import type { MyThemeSlot } from "@/lib/my-theme-slots";
 
 interface ReferenceTabProps {
   selectedPalette: Palette;
@@ -20,6 +21,12 @@ interface ReferenceTabProps {
   onInputChange?: (code: string) => void;
   openParityMatrix?: boolean;
   onParityMatrixOpened?: () => void;
+  myThemeSlots?: MyThemeSlot[];
+  activeMyThemeSlotId?: string | null;
+  onSelectMyThemeSlot?: (id: string) => void;
+  onAddMyThemeSlot?: () => void;
+  onDeleteMyThemeSlot?: (id: string) => void;
+  onExportMyThemeSlot?: (id: string) => void;
 }
 
 const TAXONOMY_DOCS_URL =
@@ -70,6 +77,12 @@ export function ReferenceTab({
   onInputChange,
   openParityMatrix = false,
   onParityMatrixOpened,
+  myThemeSlots = [],
+  activeMyThemeSlotId = null,
+  onSelectMyThemeSlot = () => {},
+  onAddMyThemeSlot = () => {},
+  onDeleteMyThemeSlot = () => {},
+  onExportMyThemeSlot = () => {},
 }: ReferenceTabProps) {
   const classDefs = useMemo(() => getClassDefs(selectedPalette), [selectedPalette]);
 
@@ -92,38 +105,31 @@ export function ReferenceTab({
   const rendererParityRef = useRef<HTMLDetailsElement>(null);
   const classLibraryRef = useRef<HTMLDetailsElement>(null);
 
-  // Tracks whether the Renderer Parity Matrix <details> is currently open so
-  // the inactive badge can hide itself when the user manually expands the section.
-  const [rendererParityOpen, setRendererParityOpen] = useState(false);
+  // Single accordion state — only one section open at a time; all collapsed on load.
+  const [openRefSection, setOpenRefSection] = useState<string | null>(null);
+  const classLibraryOpen = openRefSection === "classLibrary";
+  const rendererParityOpen = openRefSection === "rendererParity";
 
-  // Tracks whether the Class Library <details> is currently open so the
-  // inactive badge can hide itself when the user manually expands the section.
-  const [classLibraryOpen, setClassLibraryOpen] = useState(false);
-
-  useEffect(() => {
-    const el = rendererParityRef.current;
-    if (!el) return;
-    const nextOpen = supportsClassDef;
-    el.open = nextOpen;
-    setRendererParityOpen(nextOpen);
-  }, [supportsClassDef]);
-
-  useEffect(() => {
-    const el = classLibraryRef.current;
-    if (!el) return;
-    const nextOpen = supportsClassDef;
-    el.open = nextOpen;
-    setClassLibraryOpen(nextOpen);
-  }, [supportsClassDef]);
+  const handleRefSectionToggle = useCallback((name: string, nowOpen: boolean) => {
+    if (nowOpen) {
+      if (name !== "classLibrary" && classLibraryRef.current) classLibraryRef.current.open = false;
+      if (name !== "rendererParity" && rendererParityRef.current)
+        rendererParityRef.current.open = false;
+      setOpenRefSection(name);
+    } else {
+      setOpenRefSection((prev) => (prev === name ? null : prev));
+    }
+  }, []);
 
   // When navigated here via the beta hint "See support details →" link, force-open
-  // the Renderer Parity Matrix section and scroll it into view.
+  // the Renderer Parity Matrix section via accordion and scroll it into view.
   useEffect(() => {
     if (!openParityMatrix) return;
+    if (classLibraryRef.current) classLibraryRef.current.open = false;
+    setOpenRefSection("rendererParity");
     const el = rendererParityRef.current;
     if (!el) return;
     el.open = true;
-    setRendererParityOpen(true);
     el.scrollIntoView({ behavior: "smooth", block: "start" });
     onParityMatrixOpened?.();
   }, [openParityMatrix, onParityMatrixOpened]);
@@ -136,16 +142,72 @@ export function ReferenceTab({
         customColors={customColors}
         onSelectPalette={onSelectPalette}
         tileIdPrefix="reference-palette-tile"
+        myThemeSlots={myThemeSlots}
+        activeMyThemeSlotId={activeMyThemeSlotId}
+        onSelectMyThemeSlot={onSelectMyThemeSlot}
+        onAddMyThemeSlot={onAddMyThemeSlot}
+        onDeleteMyThemeSlot={onDeleteMyThemeSlot}
+        onExportMyThemeSlot={onExportMyThemeSlot}
       />
-      <div className="flex-1 overflow-hidden">
-        <DiagramInventory embedded />
-      </div>
+      <div className="flex-1 overflow-y-auto">
+        <details
+          ref={classLibraryRef}
+          className="group border-b border-border"
+          onToggle={(e) =>
+            handleRefSectionToggle("classLibrary", (e.currentTarget as HTMLDetailsElement).open)
+          }
+        >
+          <summary className="flex items-center justify-between px-4 py-2.5 cursor-pointer list-none hover:bg-muted/40 transition-colors select-none">
+            <div className="flex items-center gap-2">
+              <svg
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                className="w-3.5 h-3.5 text-muted-foreground"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              <span className="text-xs font-medium text-foreground">Class Library</span>
+              {!supportsClassDef && !classLibraryOpen && (
+                <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                  inactive for this diagram type
+                </span>
+              )}
+              <span className="text-[10px] text-muted-foreground">
+                {classDefs.length} classes · {selectedPalette.name}
+              </span>
+            </div>
+            <svg
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              className="w-4 h-4 text-muted-foreground group-open:rotate-180 transition-transform"
+            >
+              <path
+                fillRule="evenodd"
+                d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </summary>
+          <div className="border-t border-border">
+            <ClassBrowser
+              classDefs={classDefs}
+              supportsClassDef={supportsClassDef}
+              usedClassNames={usedClassNames}
+              onApplyFix={onInputChange ? handleApplyFix : undefined}
+            />
+          </div>
+        </details>
 
-      <div className="flex-none border-t border-border">
         <details
           ref={rendererParityRef}
-          className="group"
-          onToggle={(e) => setRendererParityOpen((e.currentTarget as HTMLDetailsElement).open)}
+          className="group border-b border-border"
+          onToggle={(e) =>
+            handleRefSectionToggle("rendererParity", (e.currentTarget as HTMLDetailsElement).open)
+          }
         >
           <summary className="flex items-center justify-between px-4 py-2.5 cursor-pointer list-none hover:bg-muted/40 transition-colors select-none">
             <div className="flex items-center gap-2">
@@ -178,7 +240,7 @@ export function ReferenceTab({
               />
             </svg>
           </summary>
-          <div className="border-t border-border overflow-x-auto max-h-72 overflow-y-auto">
+          <div className="border-t border-border overflow-x-auto">
             <table className="w-full text-[10px] border-collapse min-w-[640px]">
               <thead>
                 <tr className="bg-muted/40 sticky top-0 z-10">
@@ -276,58 +338,14 @@ export function ReferenceTab({
             </div>
           </div>
         </details>
-      </div>
 
-      <div className="flex-none border-t border-border">
-        <details
-          ref={classLibraryRef}
-          className="group"
-          onToggle={(e) => setClassLibraryOpen((e.currentTarget as HTMLDetailsElement).open)}
-        >
-          <summary className="flex items-center justify-between px-4 py-2.5 cursor-pointer list-none hover:bg-muted/40 transition-colors select-none">
-            <div className="flex items-center gap-2">
-              <svg
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                className="w-3.5 h-3.5 text-muted-foreground"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              <span className="text-xs font-medium text-foreground">Class Library</span>
-              {!supportsClassDef && !classLibraryOpen && (
-                <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
-                  inactive for this diagram type
-                </span>
-              )}
-              <span className="text-[10px] text-muted-foreground">
-                {classDefs.length} classes · {selectedPalette.name}
-              </span>
-            </div>
-            <svg
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              className="w-4 h-4 text-muted-foreground group-open:rotate-180 transition-transform"
-            >
-              <path
-                fillRule="evenodd"
-                d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </summary>
-          <div className="border-t border-border max-h-72 overflow-y-auto">
-            <ClassBrowser
-              classDefs={classDefs}
-              supportsClassDef={supportsClassDef}
-              usedClassNames={usedClassNames}
-              onApplyFix={onInputChange ? handleApplyFix : undefined}
-            />
-          </div>
-        </details>
+        <div className="border-b border-border">
+          <DiagramInventory
+            embedded
+            open={openRefSection === "inventory"}
+            onToggle={() => handleRefSectionToggle("inventory", openRefSection !== "inventory")}
+          />
+        </div>
       </div>
 
       <div className="flex-none border-t border-border bg-card/40 px-4 py-2 flex flex-wrap items-center gap-x-4 gap-y-1">

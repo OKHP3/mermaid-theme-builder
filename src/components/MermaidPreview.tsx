@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useId } from "react";
 import { type TypographySettings, generateTypographyCss } from "@/lib/typography";
+import { createStyleCapture } from "@/lib/style-cleanup";
 
 interface MermaidPreviewProps {
   code: string;
@@ -22,6 +23,12 @@ async function getMermaid(): Promise<MermaidType> {
     mermaidInstance = mod.default;
   }
   if (!initializationDone) {
+    // ZenUML (@mermaid-js/mermaid-zenuml, Vue-based) injects Vue-scoped <style>
+    // nodes using [data-v-*] selectors — these only match Vue component DOM and
+    // are harmless to Mermaid's own SVG output.  Do NOT capture/remove them at
+    // init time: doing so also strips Mermaid's own base CSS (font metrics, size
+    // constraints) which causes the layout engine to produce wrong SVG dimensions
+    // for every subsequent non-ZenUML render, breaking zoom-to-fit.
     const zenuml = await import("@mermaid-js/mermaid-zenuml");
     await mermaidInstance.registerExternalDiagrams([zenuml.default]);
     mermaidInstance.initialize({
@@ -29,6 +36,7 @@ async function getMermaid(): Promise<MermaidType> {
       securityLevel: "strict",
       suppressErrorRendering: true,
     });
+
     initializationDone = true;
   }
   return mermaidInstance;
@@ -135,10 +143,80 @@ function scopedTypographyCss(css: string, scopeId: string): string {
     .join("\n");
 }
 
+function scopeInjectedCss(css: string, scopeId: string): string {
+  if (!css.trim()) return "";
+  const scope = `#${scopeId}`;
+  const out: string[] = [];
+  let pos = 0;
+
+  while (pos < css.length) {
+    const wsEnd = pos;
+    while (pos < css.length && /\s/.test(css[pos])) pos++;
+    if (pos > wsEnd) {
+      out.push(css.slice(wsEnd, pos));
+    }
+    if (pos >= css.length) break;
+
+    if (css.slice(pos, pos + 2) === "/*") {
+      const end = css.indexOf("*/", pos + 2);
+      const commentEnd = end === -1 ? css.length : end + 2;
+      out.push(css.slice(pos, commentEnd));
+      pos = commentEnd;
+      continue;
+    }
+
+    let bracePos = pos;
+    while (bracePos < css.length && css[bracePos] !== "{") bracePos++;
+    if (bracePos >= css.length) {
+      out.push(css.slice(pos));
+      break;
+    }
+
+    const selector = css.slice(pos, bracePos).trim();
+
+    let depth = 1;
+    let blockPos = bracePos + 1;
+    while (blockPos < css.length && depth > 0) {
+      if (css[blockPos] === "{") depth++;
+      else if (css[blockPos] === "}") depth--;
+      blockPos++;
+    }
+    const blockContent = css.slice(bracePos + 1, blockPos - 1);
+
+    if (selector.startsWith("@keyframes") || selector.startsWith("@-")) {
+      out.push(`${selector}{${blockContent}}`);
+    } else if (
+      selector.startsWith("@media") ||
+      selector.startsWith("@supports") ||
+      selector.startsWith("@layer")
+    ) {
+      out.push(`${selector}{${scopeInjectedCss(blockContent, scopeId)}}`);
+    } else if (selector.startsWith("@")) {
+      out.push(`${selector}{${blockContent}}`);
+    } else {
+      const scoped = selector
+        .split(",")
+        .map((s) => {
+          const t = s.trim();
+          if (!t) return s;
+          if (t === ":root") return scope;
+          return `${scope} ${t}`;
+        })
+        .join(",");
+      out.push(`${scoped}{${blockContent}}`);
+    }
+
+    pos = blockPos;
+  }
+
+  return out.join("");
+}
+
 export function MermaidPreview({ code, className, typography }: MermaidPreviewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [svgContent, setSvgContent] = useState<string>("");
+  const [injectedCss, setInjectedCss] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [scale, setScale] = useState(1);
   const [translate, setTranslate] = useState({ x: 0, y: 0 });
@@ -149,6 +227,10 @@ export function MermaidPreview({ code, className, typography }: MermaidPreviewPr
   const translateRef = useRef({ x: 0, y: 0 });
   const lastPinchDistance = useRef<number | null>(null);
   const lastTapTime = useRef<number>(0);
+  // Always-current scale ref so fitToWindow can read the live scale value
+  // without needing it in its dependency array (which would make it unstable).
+  const scaleRef = useRef(1);
+  scaleRef.current = scale;
   const uniqueId = useId().replace(/:/g, "");
 
   const typographyCss = useMemo(() => {
@@ -170,47 +252,63 @@ export function MermaidPreview({ code, className, typography }: MermaidPreviewPr
   const fitToWindow = useCallback(() => {
     const container = containerRef.current;
     if (!container) return;
+
+    const containerW = container.clientWidth;
+    const containerH = container.clientHeight;
+    if (!containerW || !containerH) return;
+
     const svg = container.querySelector("svg");
     if (!svg) return;
 
-    let svgW = 0;
-    let svgH = 0;
+    // Primary: measure the SVG's natural (scale=1) CSS pixel dimensions using
+    // getBoundingClientRect(). This accounts for all ancestor CSS transforms,
+    // including the pan/zoom parent div's scale(S). Dividing by scaleRef.current
+    // recovers the at-scale-1 rendered size regardless of the user's current
+    // zoom level. This avoids the previous approach of inferring pixel dimensions
+    // from max-width style attributes and SVG user units (which breaks when
+    // max-width is a percentage, or when user units ≠ CSS pixels).
+    const rect = svg.getBoundingClientRect();
+    const cur = scaleRef.current;
+    let svgW = rect.width > 0 && cur > 0 ? rect.width / cur : 0;
+    let svgH = rect.height > 0 && cur > 0 ? rect.height / cur : 0;
 
-    // Mermaid sets max-width (CSS pixels) on the SVG element.
-    // viewBox may use a different internal coordinate scale, so max-width
-    // is a more reliable source for the diagram's natural rendered size.
-    const maxWidthStr = svg.style.maxWidth;
-    if (maxWidthStr && !maxWidthStr.includes("%")) {
-      const mw = parseFloat(maxWidthStr);
-      if (mw > 0) {
-        svgW = mw;
-        const vb = svg.viewBox?.baseVal;
-        if (vb && vb.width > 0) {
-          svgH = mw * (vb.height / vb.width);
-        }
+    // Fallback: viewBox dimensions as CSS pixels.
+    // Mermaid sets max-width ≈ viewBox.width, making 1 user unit ≈ 1 CSS pixel.
+    if (!svgW || !svgH) {
+      const vb = svg.viewBox?.baseVal;
+      if (vb && vb.width > 0 && vb.height > 0) {
+        svgW = vb.width;
+        svgH = vb.height;
       }
     }
 
-    // Fallback: use viewBox dimensions directly
-    if (!svgW || !svgH) {
-      svgW = svg.viewBox?.baseVal?.width ?? 0;
-      svgH = svg.viewBox?.baseVal?.height ?? 0;
-    }
-
-    // Fallback: parse explicit width/height attributes (skip "%" values)
-    if (!svgW || !svgH) {
-      const aw = parseFloat(svg.getAttribute("width") ?? "0");
-      const ah = parseFloat(svg.getAttribute("height") ?? "0");
-      if (aw && ah && !svg.getAttribute("width")?.includes("%")) {
-        svgW = aw;
-        svgH = ah;
+    // Optional tighter fit: getBBox returns the tight content bounding box in
+    // SVG user units — smaller than the full viewBox for diagram types that
+    // reserve extra whitespace (e.g. requirementDiagram, Gantt). Only apply
+    // when the tight box is meaningfully smaller to avoid over-zooming diagrams
+    // whose edge labels or arrows approach the viewBox boundary.
+    if (svgW > 0 && svgH > 0) {
+      const vb = svg.viewBox?.baseVal;
+      if (vb && vb.width > 0 && vb.height > 0) {
+        try {
+          const bbox = (svg as SVGGraphicsElement).getBBox();
+          if (bbox.width > 0 && bbox.height > 0) {
+            const pxPerUnit = svgW / vb.width;
+            const tightW = bbox.width * pxPerUnit;
+            const tightH = bbox.height * pxPerUnit;
+            if (tightW > 0 && tightH > 0 && tightW < svgW * 0.9) {
+              svgW = tightW;
+              svgH = tightH;
+            }
+          }
+        } catch {
+          // getBBox() throws when the SVG is not attached to a visible document
+        }
       }
     }
 
     if (!svgW || !svgH) return;
 
-    const containerW = container.clientWidth;
-    const containerH = container.clientHeight;
     const fitScale = clamp(
       Math.min(containerW / svgW, containerH / svgH) * 0.9,
       MIN_SCALE,
@@ -219,7 +317,7 @@ export function MermaidPreview({ code, className, typography }: MermaidPreviewPr
 
     setScale(Math.round(fitScale * 100) / 100);
     setTranslate({ x: 0, y: 0 });
-  }, []);
+  }, []); // containerRef and scaleRef are refs — always current, no stale closure risk
 
   const zoomBy = useCallback((delta: number) => {
     setScale((s) => clamp(Math.round((s + delta) * 100) / 100, MIN_SCALE, MAX_SCALE));
@@ -328,6 +426,7 @@ export function MermaidPreview({ code, className, typography }: MermaidPreviewPr
   useEffect(() => {
     if (!code.trim()) {
       setSvgContent("");
+      setInjectedCss("");
       setError(null);
       setLoading(false);
       return;
@@ -340,9 +439,30 @@ export function MermaidPreview({ code, className, typography }: MermaidPreviewPr
     (async () => {
       try {
         const mermaid = await getMermaid();
-        const { svg } = await mermaid.render(diagramId, code);
+
+        // Watch for any styles injected into document.head during render.
+        // Confirmed injectors at render time: vennDiagram chunk (d3 layout CSS),
+        // ganttDiagram chunk (grid/task-bar CSS), and shared dagre/layout chunks.
+        // All captured styles are removed from document.head and re-injected as
+        // scoped <style> inside the preview container so they cannot leak into
+        // other diagram renders or the app UI. The finally block ensures the
+        // observer is always disconnected — even if mermaid.render() throws.
+        const renderCapture = createStyleCapture();
+        let svg: string;
+        let renderCapturedCss = "";
+        try {
+          ({ svg } = await mermaid.render(diagramId, code));
+        } finally {
+          renderCapturedCss = renderCapture.finish();
+        }
+
+        const capturedCss = renderCapturedCss;
+
         if (!canceled) {
           setSvgContent(svg);
+          setInjectedCss(
+            capturedCss ? scopeInjectedCss(capturedCss, `mermaid-preview-${uniqueId}`) : ""
+          );
           setError(null);
           setLoading(false);
           setStatusAnnouncement("Diagram rendered");
@@ -353,6 +473,7 @@ export function MermaidPreview({ code, className, typography }: MermaidPreviewPr
           const cleanMessage = message.replace(/<br\s*\/?>/gi, "\n").replace(/<[^>]*>/g, "");
           setError(cleanMessage);
           setSvgContent("");
+          setInjectedCss("");
           setLoading(false);
           setStatusAnnouncement(`Render error: ${cleanMessage.slice(0, 100)}`);
         }
@@ -364,9 +485,28 @@ export function MermaidPreview({ code, className, typography }: MermaidPreviewPr
     };
   }, [code, uniqueId]);
 
-  // Auto-fit whenever a new SVG is committed to the DOM
+  // Auto-fit whenever a new SVG is committed to the DOM.
+  // If the container has zero dimensions (e.g., the tab is not yet active or the
+  // panel flex layout has not resolved), defer via ResizeObserver and fit on the
+  // first frame where non-zero dimensions are available.
   useEffect(() => {
-    if (svgContent) fitToWindow();
+    if (!svgContent) return;
+    const container = containerRef.current;
+    if (!container) return;
+
+    if (container.clientWidth > 0 && container.clientHeight > 0) {
+      fitToWindow();
+      return;
+    }
+
+    const ro = new ResizeObserver(() => {
+      if (container.clientWidth > 0 && container.clientHeight > 0) {
+        ro.disconnect();
+        fitToWindow();
+      }
+    });
+    ro.observe(container);
+    return () => ro.disconnect();
   }, [svgContent, fitToWindow]);
 
   const btnBase = "forge-preview-btn";
@@ -378,6 +518,7 @@ export function MermaidPreview({ code, className, typography }: MermaidPreviewPr
   return (
     <div id={previewScopeId} className={`relative overflow-hidden ${className ?? ""}`}>
       {typographyCss && <style>{typographyCss}</style>}
+      {injectedCss && <style>{injectedCss}</style>}
       {/* Always-mounted screen reader live region — stays in the DOM across all render states */}
       <div aria-live="polite" aria-atomic="true" className="sr-only">
         {statusAnnouncement}

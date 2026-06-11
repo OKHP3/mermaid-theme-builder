@@ -1,2 +1,4 @@
-- [Mermaid + Vite ESM entry aliasing](mermaid-vite-esm-entry.md) — alias both to .esm.min.mjs + exclude from optimizeDeps, else .core.mjs causes CJS import failures in browser
-- [Mermaid 11 grammar quirks](mermaid-grammar-quirks.md) — block:id needs end, arch-beta has no end, venn uses set/union keywords, :::class invalid after @{}, eventModeling has no title token
+- [CRLF file editing](crlf-editing.md) — ComposeTab.tsx and several e2e specs are CRLF; Python rb/wb byte-level edits required, edit tool fails
+- [Playwright test isolation](playwright-test-isolation.md) — storageState + default tab must stay "apply"; label renames in app require matching e2e spec updates
+- [Playwright localStorage seeding](playwright-ls-seeding.md) — use addInitScript not goto+evaluate+reload; latter races with React's default initial render
+- [ComposeTab color swatches visibility](compose-tab-color-swatches.md) — Toggle Colors button must be clicked first; Apply tab swatches always in DOM but hidden, filter visible:true

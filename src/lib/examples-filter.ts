@@ -33,7 +33,7 @@ export function buildExampleList(): ExampleItem[] {
       label: `${p.name} — Flowchart`,
       content: ex.flowchart,
       badge: "Brand",
-      section: "OKHP3 Brand",
+      section: "OKHP3 Brand & Showcase",
       family: "flowchart",
     });
     if (ex.sequence) {
@@ -42,7 +42,7 @@ export function buildExampleList(): ExampleItem[] {
         label: `${p.name} — Sequence`,
         content: ex.sequence,
         badge: "Brand",
-        section: "OKHP3 Brand",
+        section: "OKHP3 Brand & Showcase",
         family: "sequence",
       });
     }
@@ -53,7 +53,7 @@ export function buildExampleList(): ExampleItem[] {
     label: SHOWCASE_META.title,
     content: SHOWCASE_EXAMPLE,
     badge: "Advanced / renderer-dependent",
-    section: "Showcase",
+    section: "OKHP3 Brand & Showcase",
   });
 
   EXAMPLE_GROUPS.forEach((group) => {

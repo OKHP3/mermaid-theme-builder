@@ -48,7 +48,7 @@ async function openExamplesTab(page: Page): Promise<void> {
  * such as the family-detector badge).
  */
 async function getSelectedExampleLabel(page: Page): Promise<string> {
-  const selected = page.locator("[data-example-id][class*=\"bg-primary\\/10\"]").first();
+  const selected = page.locator('[data-example-id][class*="bg-primary\\/10"]').first();
   await selected.waitFor({ timeout: 8000 });
   // The label is inside the first span.flex-1 inside the selected button.
   const labelSpan = selected.locator("span.flex-1").first();
@@ -79,7 +79,7 @@ test("selected example persists across a page reload", async ({ page }) => {
   if (hash !== "#examples") {
     await page.getByRole("tab", { name: "Examples" }).first().click();
   }
-  await page.waitForSelector("[data-example-id][class*=\"bg-primary\\/10\"]", { timeout: 8000 });
+  await page.waitForSelector('[data-example-id][class*="bg-primary\\/10"]', { timeout: 8000 });
 
   // Assert the non-default example is still selected after reload.
   const labelAfter = await getSelectedExampleLabel(page);
@@ -90,7 +90,9 @@ test("selected example persists across a page reload", async ({ page }) => {
 // Test 2: stale/unrecognized ID in localStorage → falls back to first example
 // ---------------------------------------------------------------------------
 
-test("stale lastSelectedExampleId in localStorage falls back to first example", async ({ page }) => {
+test("stale lastSelectedExampleId in localStorage falls back to first example", async ({
+  page,
+}) => {
   // Navigate to the app first so we can manipulate localStorage for its origin.
   await page.goto("/");
   await page.waitForLoadState("load");
@@ -98,7 +100,7 @@ test("stale lastSelectedExampleId in localStorage falls back to first example", 
   // Read the current persisted state (if any) to build a valid base state.
   const existingRaw: string | null = await page.evaluate(
     (key: string) => localStorage.getItem(key),
-    LS_KEY,
+    LS_KEY
   );
 
   let base: Record<string, unknown> = {
@@ -125,7 +127,7 @@ test("stale lastSelectedExampleId in localStorage falls back to first example", 
   const staleState = { ...base, lastSelectedExampleId: "this-id-does-not-exist" };
   await page.evaluate(
     ([key, value]: [string, string]) => localStorage.setItem(key, value),
-    [LS_KEY, JSON.stringify(staleState)],
+    [LS_KEY, JSON.stringify(staleState)]
   );
 
   // Reload the page so App hydrates from the stale state.
@@ -134,7 +136,7 @@ test("stale lastSelectedExampleId in localStorage falls back to first example", 
 
   // Open the Examples tab.
   await page.getByRole("tab", { name: "Examples" }).first().click();
-  await page.waitForSelector("[data-example-id][class*=\"bg-primary\\/10\"]", { timeout: 8000 });
+  await page.waitForSelector('[data-example-id][class*="bg-primary\\/10"]', { timeout: 8000 });
 
   // The selected example must NOT be the stale one; it should fall back to
   // the first example (overkill-hill flowchart).

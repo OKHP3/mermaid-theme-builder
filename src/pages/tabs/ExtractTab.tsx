@@ -320,12 +320,16 @@ export function ExtractTab({
           spellCheck={false}
           aria-label="Paste themed Mermaid diagram here"
         />
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          Works with <code className="font-mono">{"%%{init}%%"}</code> directives and YAML
+          frontmatter
+        </p>
         <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={handleExtract}
             disabled={!pastedCode.trim()}
-            className="px-4 py-2 text-xs font-semibold rounded-md bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="flex-1 text-xs px-2 py-1.5 rounded-md border border-border bg-background hover:bg-muted hover:border-primary/40 font-medium transition-all disabled:opacity-40 disabled:cursor-not-allowed"
           >
             Extract theme
           </button>
@@ -340,33 +344,6 @@ export function ExtractTab({
           )}
         </div>
       </div>
-
-      {/* Empty state messages */}
-      {status === "idle" && !extracted && (
-        <div className="rounded-lg border border-dashed border-border bg-muted/20 px-6 py-10 text-center">
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            className="w-8 h-8 mx-auto mb-3 text-muted-foreground/50"
-            aria-hidden="true"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15M14.25 3.104c.251.023.501.05.75.082M19.8 15l-1.8 1.8m0 0l-1.8 1.8M19.8 15l1.8 1.8m-1.8-1.8l-1.8-1.8M9.75 17.25a3.75 3.75 0 117.5 0 3.75 3.75 0 01-7.5 0z"
-            />
-          </svg>
-          <p className="text-sm text-muted-foreground font-medium">
-            Paste a themed diagram above, then click Extract theme
-          </p>
-          <p className="text-xs text-muted-foreground/60 mt-1">
-            Works with <code className="font-mono">{"%%{init}%%"}</code> directives and YAML
-            frontmatter
-          </p>
-        </div>
-      )}
 
       {status === "empty" && (
         <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 px-4 py-5 space-y-3">

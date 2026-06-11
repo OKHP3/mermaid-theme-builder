@@ -40,24 +40,28 @@ async function grantClipboard(context: BrowserContext): Promise<void> {
 
 /**
  * Navigate to the app, switch to the Compose tab, expand the Bootstrap Export
- * section (collapsed by default), and click "Copy Prompt Scaffold" to open the
+ * section (collapsed by default), and click "Generate Prompt Pattern" to open the
  * modal.
  */
 async function openScaffoldModal(page: Page): Promise<void> {
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+  });
   await page.goto("/");
   await page.waitForLoadState("load");
 
   // Navigate to the Compose tab (role="tab" per ARIA widget pattern).
-  await page.getByRole("tab", { name: "Compose" }).first().click();
+  await page.getByRole("tab", { name: "Compose", exact: true }).click();
 
-  // The "Copy Prompt Scaffold" button lives inside the Bootstrap Export
-  // collapsible section (bootstrapOpen defaults to false).  Open it first.
-  const toggleBtn = page.getByRole("button", { name: "Toggle Bootstrap Export" });
+  // The "Generate Prompt Pattern" button lives inside the Bootstrap Export
+  // as a non-collapsible Bootstrap Export sub-section.  Open My Themes first.
+  const toggleBtn = page.locator('button[aria-label="Toggle Export Theme"]:visible');
   await toggleBtn.waitFor({ timeout: 8_000 });
   await toggleBtn.click();
 
   // Wait for the trigger button to be visible before clicking it.
-  const trigger = page.getByRole("button", { name: "Copy Prompt Scaffold" });
+  const trigger = page.getByRole("button", { name: "Generate Prompt Pattern", exact: true });
   await trigger.waitFor({ timeout: 4_000 });
   await trigger.click();
 
@@ -86,10 +90,7 @@ function inPreviewCopyBtn(page: Page, badge: string) {
 // ---------------------------------------------------------------------------
 
 test.describe("PromptScaffoldModal — Path A: main card copy button", () => {
-  test("toggle bar for the copied format gains emerald classes", async ({
-    page,
-    context,
-  }) => {
+  test("toggle bar for the copied format gains emerald classes", async ({ page, context }) => {
     await grantClipboard(context);
     await openScaffoldModal(page);
 
@@ -152,7 +153,7 @@ test.describe("PromptScaffoldModal — Path A: main card copy button", () => {
     // buttons via aria-label^="Preview" (the label used when not previewing), so
     // neither the main card copy button nor the in-preview copy button match.
     await expect(
-      page.locator('[role="dialog"] button[aria-label^="Preview"][class*="bg-emerald-500"]'),
+      page.locator('[role="dialog"] button[aria-label^="Preview"][class*="bg-emerald-500"]')
     ).toHaveCount(1, { timeout: 3_000 });
   });
 });
@@ -201,7 +202,7 @@ test.describe("PromptScaffoldModal — Path B: in-preview copy button", () => {
     // open).  Scope to that specific button to avoid matching the main card
     // copy button or the in-preview copy button which also gain emerald class.
     await expect(
-      page.locator('[role="dialog"] button[aria-label="Hide preview for Format A"]'),
+      page.locator('[role="dialog"] button[aria-label="Hide preview for Format A"]')
     ).toHaveClass(/bg-emerald-500/, { timeout: 3_000 });
   });
 
@@ -240,8 +241,8 @@ test.describe("PromptScaffoldModal — Path B: in-preview copy button", () => {
     await copyBtn.click();
 
     // The button itself changes aria-label to "Copied Format A scaffold" while flashing.
-    await expect(
-      page.getByRole("button", { name: "Copied Format A scaffold" }),
-    ).toBeVisible({ timeout: 3_000 });
+    await expect(page.getByRole("button", { name: "Copied Format A scaffold" })).toBeVisible({
+      timeout: 3_000,
+    });
   });
 });

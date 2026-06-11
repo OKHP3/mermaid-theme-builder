@@ -31,11 +31,11 @@ describe("ExamplesTab — filterExamples (real assembled list)", () => {
   // Section field — "OKHP3 Brand" matches brand palette items via section
   // -------------------------------------------------------------------------
 
-  it('searching "OKHP3 Brand" returns all brand palette entries (section match)', () => {
+  it('searching "OKHP3 Brand" returns entries in the "OKHP3 Brand & Showcase" section (section match)', () => {
     const results = filterExamples(ALL_EXAMPLES, "OKHP3 Brand");
     expect(results.length).toBeGreaterThan(0);
     results.forEach((e) => {
-      expect(e.section).toBe("OKHP3 Brand");
+      expect(e.section).toBe("OKHP3 Brand & Showcase");
     });
   });
 

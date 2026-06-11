@@ -21,6 +21,7 @@ import { getRendererById } from "@/data/renderer-parity";
 import { getFamilySyntaxHint, isHintDismissed } from "@/lib/family-syntax-hints";
 import { type TypographySettings } from "@/lib/typography";
 import type { AppTab } from "@/App";
+import type { MyThemeSlot } from "@/lib/my-theme-slots";
 import { DiagramDetectHeader } from "./apply/DiagramDetectHeader";
 import { RenderWarningSection } from "./apply/RenderWarningSection";
 import { DiagramPreviewPanel, type PreviewMode } from "./apply/DiagramPreviewPanel";
@@ -59,6 +60,12 @@ interface ApplyTabProps {
   onPreviewModeChange: (mode: PreviewMode) => void;
   hintResetToken: number;
   onResetSyntaxHints: () => void;
+  myThemeSlots?: MyThemeSlot[];
+  activeMyThemeSlotId?: string | null;
+  onSelectMyThemeSlot?: (id: string) => void;
+  onAddMyThemeSlot?: () => void;
+  onDeleteMyThemeSlot?: (id: string) => void;
+  onExportMyThemeSlot?: (id: string) => void;
 }
 
 export function ApplyTab({
@@ -93,6 +100,12 @@ export function ApplyTab({
   onPreviewModeChange: setPreviewMode,
   hintResetToken,
   onResetSyntaxHints,
+  myThemeSlots = [],
+  activeMyThemeSlotId = null,
+  onSelectMyThemeSlot = () => {},
+  onAddMyThemeSlot = () => {},
+  onDeleteMyThemeSlot = () => {},
+  onExportMyThemeSlot = () => {},
 }: ApplyTabProps) {
   const [showColorEditor, setShowColorEditor] = useState(false);
   const [advisoryDismissed, setAdvisoryDismissed] = useState(false);
@@ -309,6 +322,12 @@ export function ApplyTab({
         customColors={customColors}
         onSelectPalette={onSelectPalette}
         tileIdPrefix="apply-palette-tile"
+        myThemeSlots={myThemeSlots}
+        activeMyThemeSlotId={activeMyThemeSlotId}
+        onSelectMyThemeSlot={onSelectMyThemeSlot}
+        onAddMyThemeSlot={onAddMyThemeSlot}
+        onDeleteMyThemeSlot={onDeleteMyThemeSlot}
+        onExportMyThemeSlot={onExportMyThemeSlot}
       />
 
       <DiagramDetectHeader
@@ -322,6 +341,10 @@ export function ApplyTab({
         onRendererTargetChange={onRendererTargetChange}
         rendererProfile={rendererProfile}
         rendererLookWarning={rendererLookWarning}
+        showSyntaxTipButton={
+          familyHintDismissed && !!getFamilySyntaxHint(effectiveDetection.family)
+        }
+        onResetSyntaxHints={onResetSyntaxHints}
       />
 
       <RenderWarningSection
@@ -330,9 +353,7 @@ export function ApplyTab({
         onDismissAdvisory={() => setAdvisoryDismissed(true)}
         family={effectiveDetection.family}
         hintResetToken={hintResetToken}
-        familyHintDismissed={familyHintDismissed}
         onFamilyHintDismiss={() => setFamilyHintDismissed(true)}
-        onResetSyntaxHints={onResetSyntaxHints}
       />
 
       <div className="md:flex-1 md:overflow-hidden flex flex-col md:flex-row md:min-h-0">
@@ -376,42 +397,43 @@ export function ApplyTab({
           />
         </div>
 
-        <DiagramPreviewPanel
-          previewMode={previewMode}
-          onPreviewModeChange={setPreviewMode}
-          codeEditorOverride={codeEditorOverride}
-          onCodeEditorOverrideChange={setCodeEditorOverride}
-          effectiveExportCode={effectiveExportCode}
-          activeDiagramCode={activeDiagramCode}
-          themedCode={themedCode}
-          typography={typography}
-          isMultiDiagram={isMultiDiagram}
-          diagrams={diagrams}
-          safeDiagramIdx={safeDiagramIdx}
-          onActiveDiagramIdxChange={setActiveDiagramIdx}
-        />
+        <div className="flex flex-col md:flex-none md:w-[65%] md:min-h-0 md:overflow-hidden">
+          <DiagramPreviewPanel
+            previewMode={previewMode}
+            onPreviewModeChange={setPreviewMode}
+            codeEditorOverride={codeEditorOverride}
+            onCodeEditorOverrideChange={setCodeEditorOverride}
+            effectiveExportCode={effectiveExportCode}
+            activeDiagramCode={activeDiagramCode}
+            themedCode={themedCode}
+            typography={typography}
+            isMultiDiagram={isMultiDiagram}
+            diagrams={diagrams}
+            safeDiagramIdx={safeDiagramIdx}
+            onActiveDiagramIdxChange={setActiveDiagramIdx}
+          />
+          <ExportToolbar
+            warnings={warnings}
+            showCapabilityNote={!!showCapabilityNote}
+            capability={effectiveDetection.capability}
+            hasCustomizations={hasCustomizations}
+            onOpenColorEditor={() => setShowColorEditor(true)}
+            inputCode={inputCode}
+            exportCode={exportCode}
+            effectiveExportCode={effectiveExportCode}
+            selectedPalette={selectedPalette}
+            exportOptions={exportOptions}
+            effectiveThemeName={effectiveThemeName}
+            themedCode={themedCode}
+            typography={typography}
+            allPalettes={allPalettes}
+            rendererProfile={rendererProfile}
+            promptIsThemeOnly={promptIsThemeOnly}
+            onShowScaffoldModal={() => setShowScaffoldModal(true)}
+            onShowToast={onShowToast}
+          />
+        </div>
       </div>
-
-      <ExportToolbar
-        warnings={warnings}
-        showCapabilityNote={!!showCapabilityNote}
-        capability={effectiveDetection.capability}
-        hasCustomizations={hasCustomizations}
-        onOpenColorEditor={() => setShowColorEditor(true)}
-        inputCode={inputCode}
-        exportCode={exportCode}
-        effectiveExportCode={effectiveExportCode}
-        selectedPalette={selectedPalette}
-        exportOptions={exportOptions}
-        effectiveThemeName={effectiveThemeName}
-        themedCode={themedCode}
-        typography={typography}
-        allPalettes={allPalettes}
-        rendererProfile={rendererProfile}
-        promptIsThemeOnly={promptIsThemeOnly}
-        onShowScaffoldModal={() => setShowScaffoldModal(true)}
-        onShowToast={onShowToast}
-      />
 
       {showColorEditor && (
         <ColorEditorPanel

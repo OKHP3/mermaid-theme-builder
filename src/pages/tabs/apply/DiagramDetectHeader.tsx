@@ -15,6 +15,8 @@ interface DiagramDetectHeaderProps {
   onRendererTargetChange: (v: string) => void;
   rendererProfile: RendererProfile | undefined;
   rendererLookWarning: string | null;
+  showSyntaxTipButton?: boolean;
+  onResetSyntaxHints?: () => void;
 }
 
 export function DiagramDetectHeader({
@@ -28,6 +30,8 @@ export function DiagramDetectHeader({
   onRendererTargetChange,
   rendererProfile,
   rendererLookWarning,
+  showSyntaxTipButton = false,
+  onResetSyntaxHints,
 }: DiagramDetectHeaderProps) {
   const [showFamilyMenu, setShowFamilyMenu] = useState(false);
   const [familyMenuPos, setFamilyMenuPos] = useState({ top: 0, left: 0 });
@@ -214,6 +218,26 @@ export function DiagramDetectHeader({
           </span>
         )}
       </div>
+
+      {showSyntaxTipButton && onResetSyntaxHints && (
+        <>
+          <div
+            className="w-px h-3.5 bg-border/60 shrink-0 hidden sm:block ml-auto"
+            aria-hidden="true"
+          />
+          <button
+            type="button"
+            onClick={onResetSyntaxHints}
+            className="shrink-0 text-[10px] text-muted-foreground/50 hover:text-sky-500 dark:hover:text-sky-400 transition-colors inline-flex items-center gap-1"
+            aria-label="Show syntax tip for this diagram type"
+          >
+            <svg viewBox="0 0 16 16" fill="currentColor" className="w-3 h-3" aria-hidden="true">
+              <path d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM0 8a8 8 0 1116 0A8 8 0 010 8zm6.5-1.5A.75.75 0 017.25 6h1a.75.75 0 01.75.75v3.75h.25a.75.75 0 010 1.5h-2a.75.75 0 010-1.5h.25V7.5h-.25a.75.75 0 01-.75-.75zM8 4a1 1 0 110 2 1 1 0 010-2z" />
+            </svg>
+            Show syntax tip
+          </button>
+        </>
+      )}
     </div>
   );
 }

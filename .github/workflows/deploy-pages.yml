@@ -38,6 +38,12 @@ jobs:
       - name: Run tests
         run: pnpm run test
 
+      - name: Type check
+        run: pnpm run typecheck
+
+      - name: Format check
+        run: pnpm prettier --check "src/**/*.{ts,tsx}" "*.ts" "*.json"
+
       - name: Compute base path
         id: base
         run: |

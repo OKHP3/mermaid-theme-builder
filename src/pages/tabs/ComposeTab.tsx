@@ -15,6 +15,8 @@ import { ColorSwatch } from "@/components/ColorSwatch";
 import { PromptScaffoldModal } from "@/components/PromptScaffoldModal";
 import { GENERIC_EXAMPLE } from "@/data/examples";
 import { EXAMPLE_CATALOG, EXAMPLE_GROUPS } from "@/data/example-library";
+import { detectDiagram } from "@/lib/detector";
+import { DIAGRAM_CAPABILITIES } from "@/data/mermaid-capabilities";
 import { ExtractTab } from "@/pages/tabs/ExtractTab";
 import type { AppTab } from "@/App";
 import {
@@ -36,6 +38,7 @@ import {
   enforceHierarchy,
   isDefaultTypography,
 } from "@/lib/typography";
+import type { MyThemeSlot } from "@/lib/my-theme-slots";
 
 const FONT_FAMILY_OPTIONS = [
   { label: "DM Sans (default)", value: "DM Sans, system-ui, sans-serif" },
@@ -142,6 +145,13 @@ interface ComposeTabProps {
       warnValues: Array<{ key: string; value: string }>;
     } | null
   ) => void;
+  myThemeSlots?: MyThemeSlot[];
+  activeMyThemeSlotId?: string | null;
+  onSelectMyThemeSlot?: (id: string) => void;
+  onAddMyThemeSlot?: () => void;
+  onDeleteMyThemeSlot?: (id: string) => void;
+  onExportMyThemeSlot?: (id: string) => void;
+  customThemeNamePlaceholder?: string;
 }
 
 /**
@@ -191,6 +201,13 @@ export function ComposeTab({
   onNavigateToParityMatrix,
   importDiagnostics,
   onImportDiagnosticsChange,
+  myThemeSlots = [],
+  activeMyThemeSlotId = null,
+  onSelectMyThemeSlot = () => {},
+  onAddMyThemeSlot = () => {},
+  onDeleteMyThemeSlot = () => {},
+  onExportMyThemeSlot = () => {},
+  customThemeNamePlaceholder,
 }: ComposeTabProps) {
   const [copiedBootstrap, setCopiedBootstrap] = useState(false);
   const [copiedShare, setCopiedShare] = useState(false);
@@ -203,12 +220,16 @@ export function ComposeTab({
   );
   const [clampedTiers, setClampedTiers] = useState<Set<TypographyTierKey>>(new Set());
   const clampTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
-  const [colorsOpen, setColorsOpen] = useState(false);
-  const [settingsOpen, setSettingsOpen] = useState(false);
-  const [typographyOpen, setTypographyOpen] = useState(false);
-  const [myPalettesOpen, setMyPalettesOpen] = useState(false);
-  const [bootstrapOpen, setBootstrapOpen] = useState(false);
-  const [extractOpen, setExtractOpen] = useState(false);
+  const [openSection, setOpenSection] = useState<string | null>(null);
+  const colorsOpen = openSection === "colors";
+  const lookOpen = openSection === "look";
+  const typographyOpen = openSection === "typography";
+  const myPalettesOpen = openSection === "export";
+  const extractOpen = openSection === "extract";
+  const toggleSection = useCallback(
+    (name: string) => setOpenSection((prev) => (prev === name ? null : name)),
+    []
+  );
 
   const handleTypographyChangeWithClamp = useCallback(
     (proposed: TypographySettings) => {
@@ -276,9 +297,9 @@ export function ComposeTab({
 
   const [selectedSampleId, setSelectedSampleId] = useState<string>(() => {
     try {
-      return localStorage.getItem("mtb.compose.previewSampleId") ?? "flowchart-basic";
+      return localStorage.getItem("mtb.compose.previewSampleId") ?? "compose-instructions";
     } catch {
-      return "flowchart-basic";
+      return "compose-instructions";
     }
   });
 
@@ -295,6 +316,11 @@ export function ComposeTab({
     () => EXAMPLE_CATALOG.find((e) => e.id === selectedSampleId) ?? EXAMPLE_CATALOG[0],
     [selectedSampleId]
   );
+
+  const sampleCapability = useMemo(() => {
+    const family = detectDiagram(sampleEntry.content).family;
+    return DIAGRAM_CAPABILITIES.find((c) => c.id === family) ?? null;
+  }, [sampleEntry]);
 
   // True when the selected preview diagram has limited theme-variable support.
   const isBetaPreview = Boolean(
@@ -471,19 +497,25 @@ export function ComposeTab({
         customColors={customColors}
         onSelectPalette={onSelectPalette}
         tileIdPrefix="compose-palette-tile"
+        myThemeSlots={myThemeSlots}
+        activeMyThemeSlotId={activeMyThemeSlotId}
+        onSelectMyThemeSlot={onSelectMyThemeSlot}
+        onAddMyThemeSlot={onAddMyThemeSlot}
+        onDeleteMyThemeSlot={onDeleteMyThemeSlot}
+        onExportMyThemeSlot={onExportMyThemeSlot}
       />
 
       <div className="flex flex-col md:flex-row flex-1 overflow-hidden min-h-0">
         <div className="flex flex-col w-full md:w-[35%] border-b md:border-b-0 md:border-r border-border overflow-y-auto shrink-0">
           <div className="p-3 border-b border-border">
             <div className="flex items-center justify-between mb-1">
-              <p className="forge-eyebrow">Extract Theme</p>
+              <p className="forge-eyebrow">Import Theme</p>
               <button
                 type="button"
-                onClick={() => setExtractOpen((v) => !v)}
+                onClick={() => toggleSection("extract")}
                 className="p-0.5 text-muted-foreground"
                 aria-expanded={extractOpen}
-                aria-label="Toggle Extract Theme"
+                aria-label="Toggle Import Theme"
               >
                 <svg
                   viewBox="0 0 12 12"
@@ -491,11 +523,34 @@ export function ComposeTab({
                   className={`w-3.5 h-3.5 transition-transform ${extractOpen ? "rotate-180" : ""}`}
                   aria-hidden="true"
                 >
-                  <path d="M3 4.5l3 3 3-3z" />
+                  <path d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" />
                 </svg>
               </button>
             </div>
             <div className={`${extractOpen ? "" : "hidden"}`}>
+              <hr className="border-border/40 mb-2" />
+              <p className="text-[10px] font-semibold uppercase tracking-[0.07em] text-muted-foreground mb-1">
+                Existing Theme
+              </p>
+              <p className="text-[10px] text-muted-foreground leading-relaxed mb-2">
+                Have a theme you&apos;ve already saved, or a palette you&apos;ve built before and
+                want to revisit? Load the JSON here and carry on from where you left off.
+              </p>
+              <button
+                onClick={handleImportClick}
+                className="w-full text-xs px-2 py-1.5 rounded-md border border-border bg-background hover:bg-muted hover:border-primary/40 font-medium transition-all mb-3"
+              >
+                Import from JSON
+              </button>
+              <hr className="border-border/40 mb-2" />
+              <p className="text-[10px] font-semibold uppercase tracking-[0.07em] text-muted-foreground mb-1">
+                Extract Theme
+              </p>
+              <p className="text-[10px] text-muted-foreground leading-relaxed mb-3">
+                Already have a styled Mermaid diagram you love — hand-crafted or AI-generated? Paste
+                it below and this tool will extract the color theme automatically, presetting your
+                palette so you can keep refining from there.
+              </p>
               <ExtractTab
                 embedded
                 onUseExtractedTheme={onUseExtractedTheme}
@@ -506,106 +561,222 @@ export function ComposeTab({
           </div>
 
           <div className="p-3 border-b border-border">
-            <div className="flex items-center justify-between mb-1">
-              <p className="forge-eyebrow">Colors</p>
-              <div className="flex items-center gap-2">
-                {hasCustomizations && (
-                  <button
-                    onClick={onResetPalette}
-                    aria-label={`Reset ${selectedPalette.name} colors to defaults`}
-                    className="text-xs text-muted-foreground hover:text-destructive transition-colors"
-                  >
-                    Reset
-                  </button>
-                )}
+            <p className="forge-eyebrow mb-2">Customize Theme</p>
+            <div>
+              {/* ── Look ── */}
+              <hr className="border-border/40 mb-2" />
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.07em] text-muted-foreground">
+                  Look
+                </p>
                 <button
                   type="button"
-                  onClick={() => setColorsOpen((v) => !v)}
+                  onClick={() => toggleSection("look")}
                   className="p-0.5 text-muted-foreground"
-                  aria-expanded={colorsOpen}
-                  aria-label="Toggle Colors"
+                  aria-expanded={lookOpen}
+                  aria-label="Toggle Look"
                 >
                   <svg
                     viewBox="0 0 12 12"
                     fill="currentColor"
-                    className={`w-3.5 h-3.5 transition-transform ${colorsOpen ? "rotate-180" : ""}`}
+                    className={`w-3.5 h-3.5 transition-transform ${lookOpen ? "rotate-180" : ""}`}
                     aria-hidden="true"
                   >
-                    <path d="M3 4.5l3 3 3-3z" />
+                    <path d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" />
                   </svg>
                 </button>
               </div>
-            </div>
-            <div className={`${colorsOpen ? "" : "hidden"}`}>
-              <p className="text-xs text-muted-foreground mb-2 leading-relaxed">
-                {selectedPalette.description}
-              </p>
-              <div className="grid grid-cols-2 md:grid-cols-1 gap-x-1">
-                {selectedPalette.colors.map((color) => (
-                  <ColorSwatch
-                    key={color.key}
-                    color={
-                      customColors[selectedPaletteId]?.find((c) => c.key === color.key) ?? color
-                    }
-                    onChange={onColorChange}
-                  />
-                ))}
+              <div className={`${lookOpen ? "" : "hidden"}`}>
+                <div className="space-y-3 mb-1">
+                  <div>
+                    <p className="text-[10px] text-muted-foreground mb-1.5 leading-relaxed">
+                      Controls the overall visual style applied to all shapes, connectors, and
+                      labels in your diagram. Choose a rendering mode that fits your content&apos;s
+                      tone.
+                    </p>
+                    <div className="flex gap-1" role="group" aria-label="Look style">
+                      {(
+                        [
+                          {
+                            value: "classic" as MermaidLook,
+                            label: "Classic",
+                            desc: "The original Mermaid style — crisp angles and familiar shapes",
+                          },
+                          {
+                            value: "neo" as MermaidLook,
+                            label: "Neo",
+                            desc: "A modern refresh for Mermaid v11+ — rounder nodes and cleaner connectors",
+                          },
+                          {
+                            value: "handDrawn" as MermaidLook,
+                            label: "Hand Drawn",
+                            desc: "Sketch-like rendering via Rough.js — organic edges for an informal, whiteboard feel",
+                          },
+                        ] as const
+                      ).map((opt) => (
+                        <button
+                          key={opt.value}
+                          type="button"
+                          onClick={() => onLookChange(opt.value)}
+                          title={opt.desc}
+                          aria-pressed={look === opt.value}
+                          className={`flex-1 text-[11px] px-1 py-1.5 rounded-md border font-medium transition-all ${
+                            look === opt.value
+                              ? "border-primary bg-primary/10 text-primary"
+                              : "border-border bg-background hover:bg-muted text-muted-foreground"
+                          }`}
+                        >
+                          {opt.label}
+                        </button>
+                      ))}
+                    </div>
+                    <p className="text-[10px] text-muted-foreground mt-1 leading-relaxed">
+                      {look === "neo"
+                        ? "A modern refresh introduced in Mermaid v11 — rounder nodes, cleaner connectors, polished presentation style."
+                        : look === "handDrawn"
+                          ? "Rough.js-powered sketch style — organic, imperfect edges perfect for wireframes and informal diagrams."
+                          : "The original Mermaid rendering — crisp angles, familiar shapes, consistent across all diagram types."}
+                    </p>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
 
-          <div className="p-3 border-b border-border">
-            <div className="flex items-center justify-between mb-2">
-              <p className="forge-eyebrow">Settings</p>
-              <button
-                type="button"
-                onClick={() => setSettingsOpen((v) => !v)}
-                className="p-0.5 text-muted-foreground"
-                aria-expanded={settingsOpen}
-                aria-label="Toggle Settings"
-              >
-                <svg
-                  viewBox="0 0 12 12"
-                  fill="currentColor"
-                  className={`w-3.5 h-3.5 transition-transform ${settingsOpen ? "rotate-180" : ""}`}
-                  aria-hidden="true"
-                >
-                  <path d="M3 4.5l3 3 3-3z" />
-                </svg>
-              </button>
-            </div>
-            <div className={`${settingsOpen ? "" : "hidden"}`}>
-              <div className="space-y-3">
-                <div>
-                  <label className="text-xs font-medium text-foreground block mb-1.5">Look</label>
-                  <div className="flex gap-1" role="group" aria-label="Look style">
+              {/* ── Colors ── */}
+              <hr className="border-border/40 mb-2 mt-2" />
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.07em] text-muted-foreground">
+                  Colors
+                </p>
+                <div className="flex items-center gap-2">
+                  {hasCustomizations && (
+                    <button
+                      onClick={onResetPalette}
+                      aria-label={`Reset ${selectedPalette.name} colors to defaults`}
+                      className="text-[10px] text-muted-foreground hover:text-destructive transition-colors"
+                    >
+                      Reset
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => toggleSection("colors")}
+                    className="p-0.5 text-muted-foreground"
+                    aria-expanded={colorsOpen}
+                    aria-label="Toggle Colors"
+                  >
+                    <svg
+                      viewBox="0 0 12 12"
+                      fill="currentColor"
+                      className={`w-3.5 h-3.5 transition-transform ${colorsOpen ? "rotate-180" : ""}`}
+                      aria-hidden="true"
+                    >
+                      <path d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <div className={`${colorsOpen ? "" : "hidden"}`}>
+                <p className="text-[10px] text-muted-foreground mb-2 leading-relaxed">
+                  {selectedPalette.description}
+                </p>
+                <div className="grid grid-cols-2 md:grid-cols-1 gap-x-1">
+                  {selectedPalette.colors
+                    .filter((c) => c.key !== "fontFamily")
+                    .map((color) => (
+                      <ColorSwatch
+                        key={color.key}
+                        color={
+                          customColors[selectedPaletteId]?.find((c) => c.key === color.key) ?? color
+                        }
+                        onChange={onColorChange}
+                      />
+                    ))}
+                </div>
+              </div>
+
+              {/* ── Typography ── */}
+              <hr className="border-border/40 mb-2 mt-2" />
+              <div className="flex items-center justify-between mb-1.5">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.07em] text-muted-foreground">
+                  Typography
+                </p>
+                <div className="flex items-center gap-2">
+                  {!isDefaultTypography(typography) && (
+                    <button
+                      type="button"
+                      onClick={() => onTypographyChange(DEFAULT_TYPOGRAPHY)}
+                      aria-label="Reset typography to defaults"
+                      className="text-[10px] text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      Reset
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => toggleSection("typography")}
+                    className="p-0.5 text-muted-foreground"
+                    aria-expanded={typographyOpen}
+                    aria-label="Toggle Typography"
+                  >
+                    <svg
+                      viewBox="0 0 12 12"
+                      fill="currentColor"
+                      className={`w-3.5 h-3.5 transition-transform ${typographyOpen ? "rotate-180" : ""}`}
+                      aria-hidden="true"
+                    >
+                      <path d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <div className={`${typographyOpen ? "" : "hidden"}`}>
+                <div className="mb-3">
+                  <label className="text-xs font-medium text-foreground block mb-1">
+                    Diagram body font
+                  </label>
+                  <FontFamilySelect
+                    value={
+                      customColors[selectedPaletteId]?.find((c) => c.key === "fontFamily")?.value ??
+                      selectedPalette.colors.find((c) => c.key === "fontFamily")?.value ??
+                      "DM Sans, system-ui, sans-serif"
+                    }
+                    onChange={(v) => onColorChange("fontFamily", v)}
+                  />
+                  <p className="text-[10px] text-muted-foreground mt-1 leading-relaxed">
+                    Sets the <code className="font-mono bg-muted rounded px-0.5">fontFamily</code>{" "}
+                    themeVariable in the init directive. Per-tier overrides below.
+                  </p>
+                </div>
+
+                <div className="mb-3">
+                  <label className="text-xs font-medium text-foreground block mb-1.5">
+                    Global base size
+                    <span className="text-[10px] text-muted-foreground font-normal ml-1">
+                      (Mermaid <code className="font-mono bg-muted rounded px-0.5">fontSize</code>)
+                    </span>
+                  </label>
+                  <div
+                    className="flex gap-1 mb-1.5"
+                    role="group"
+                    aria-label="Global base font size preset"
+                  >
                     {(
                       [
-                        {
-                          value: "classic" as MermaidLook,
-                          label: "Classic",
-                          desc: "Standard rendering",
-                        },
-                        {
-                          value: "neo" as MermaidLook,
-                          label: "Neo",
-                          desc: "Mermaid v11+ rounder shapes",
-                        },
-                        {
-                          value: "handDrawn" as MermaidLook,
-                          label: "Hand Drawn",
-                          desc: "Rough.js sketch style",
-                        },
+                        { label: "XS", value: "12px", desc: "Extra small — 12px" },
+                        { label: "S", value: "14px", desc: "Small — 14px" },
+                        { label: "M", value: "16px", desc: "Medium — 16px (default)" },
+                        { label: "L", value: "18px", desc: "Large — 18px" },
+                        { label: "XL", value: "20px", desc: "Extra large — 20px" },
                       ] as const
                     ).map((opt) => (
                       <button
                         key={opt.value}
                         type="button"
-                        onClick={() => onLookChange(opt.value)}
+                        onClick={() => onFontSizeChange(fontSize === opt.value ? "" : opt.value)}
+                        aria-pressed={(fontSize || "16px") === opt.value}
                         title={opt.desc}
-                        aria-pressed={look === opt.value}
-                        className={`flex-1 text-[11px] px-1 py-1.5 rounded-md border font-medium transition-all ${
-                          look === opt.value
+                        className={`flex-1 text-xs py-1 rounded-md border font-medium transition-all ${
+                          (fontSize || "16px") === opt.value
                             ? "border-primary bg-primary/10 text-primary"
                             : "border-border bg-background hover:bg-muted text-muted-foreground"
                         }`}
@@ -614,31 +785,200 @@ export function ComposeTab({
                       </button>
                     ))}
                   </div>
-                  {look !== "classic" && (
-                    <p className="text-[10px] text-muted-foreground mt-1 leading-relaxed">
-                      {look === "neo"
-                        ? "Neo look — requires Mermaid v11+. Rounder nodes, cleaner lines."
-                        : "Hand-drawn sketch style via Rough.js. Great for informal diagrams."}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <label className="text-xs font-medium text-foreground block mb-1">
-                    Theme name
-                  </label>
                   <input
                     type="text"
-                    value={customThemeName}
-                    onChange={(e) => onCustomThemeNameChange(e.target.value)}
-                    placeholder={selectedPalette.name}
-                    className="w-full text-xs bg-background border border-border rounded-md px-2.5 py-1.5 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/50"
+                    value={fontSize}
+                    onChange={(e) => onFontSizeChange(e.target.value)}
+                    placeholder="16px (Mermaid default)"
+                    className="w-full text-[11px] font-mono bg-background border border-border rounded-md px-2 py-1 text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50"
+                    aria-label="Custom font size"
                   />
-                  {effectiveThemeName !== selectedPalette.name && customThemeName.trim() && (
-                    <p className="text-[10px] text-muted-foreground mt-0.5">
-                      Output: {effectiveThemeName}
-                    </p>
-                  )}
                 </div>
+
+                <p className="text-[10px] font-semibold uppercase tracking-[0.07em] text-muted-foreground mb-2">
+                  Tier hierarchy
+                </p>
+                <div className="space-y-2">
+                  {(TIER_ORDER as TypographyTierKey[]).map((key, idx) => {
+                    const tier = typography[key];
+                    const meta = TIER_META[key];
+                    const parentKey = idx > 0 ? (TIER_ORDER as TypographyTierKey[])[idx - 1] : null;
+                    const maxSize = parentKey ? typography[parentKey].fontSize : 48;
+                    const draftValue = tierDraftSizes[key];
+                    const displayValue =
+                      draftValue !== undefined ? draftValue : String(tier.fontSize);
+                    const isClamped = clampedTiers.has(key);
+                    return (
+                      <div
+                        key={key}
+                        className={`rounded-md border px-2.5 py-2 space-y-1.5 transition-colors ${
+                          isClamped
+                            ? "border-amber-400/60 bg-amber-50/40 dark:bg-amber-900/10"
+                            : "border-border/60 bg-muted/20"
+                        }`}
+                        style={{ marginLeft: `${idx * 4}px` }}
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-1.5 min-w-0">
+                            <span
+                              className="font-medium text-foreground leading-tight truncate"
+                              style={{ fontSize: `${Math.min(tier.fontSize, 18)}px` }}
+                            >
+                              {meta.label}
+                            </span>
+                            {isClamped && (
+                              <span
+                                role="status"
+                                aria-live="polite"
+                                className="shrink-0 text-[9px] font-semibold text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-900/30 rounded px-1 py-0.5 leading-tight"
+                              >
+                                clamped to max
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-1 shrink-0">
+                            <button
+                              type="button"
+                              disabled={tier.fontSize <= 8}
+                              onClick={() => {
+                                handleTypographyChangeWithClamp({
+                                  ...typography,
+                                  [key]: { ...tier, fontSize: tier.fontSize - 1 },
+                                });
+                              }}
+                              className="w-5 h-5 flex items-center justify-center rounded border border-border bg-background hover:bg-muted disabled:opacity-30 text-xs font-bold leading-none"
+                              aria-label={`Decrease ${meta.label} size`}
+                            >
+                              −
+                            </button>
+                            <input
+                              type="number"
+                              min={8}
+                              max={maxSize}
+                              value={displayValue}
+                              onChange={(e) => {
+                                setTierDraftSizes((prev) => ({ ...prev, [key]: e.target.value }));
+                              }}
+                              onBlur={(e) => handleTierSizeBlur(key, e.target.value, maxSize)}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") e.currentTarget.blur();
+                              }}
+                              className="w-10 text-[10px] font-mono text-center bg-background border border-border rounded px-1 py-0.5 text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                              aria-label={`${meta.label} font size in pixels`}
+                            />
+                            <span className="text-[9px] text-muted-foreground/60">px</span>
+                            <button
+                              type="button"
+                              disabled={tier.fontSize >= maxSize}
+                              onClick={() => {
+                                handleTypographyChangeWithClamp({
+                                  ...typography,
+                                  [key]: { ...tier, fontSize: tier.fontSize + 1 },
+                                });
+                              }}
+                              className="w-5 h-5 flex items-center justify-center rounded border border-border bg-background hover:bg-muted disabled:opacity-30 text-xs font-bold leading-none"
+                              aria-label={`Increase ${meta.label} size`}
+                            >
+                              +
+                            </button>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="flex-1 h-[3px] bg-border/40 rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-primary/50 rounded-full transition-all duration-150"
+                              style={{
+                                width: `${(tier.fontSize / Math.max(typography.diagramTitle.fontSize, 1)) * 100}%`,
+                              }}
+                            />
+                          </div>
+                          <div
+                            className="h-7 w-9 overflow-hidden flex items-end shrink-0"
+                            aria-hidden="true"
+                            title={`${tier.fontSize}px sample`}
+                          >
+                            <span
+                              className="text-muted-foreground/45 font-semibold leading-none"
+                              style={{ fontSize: `${tier.fontSize}px` }}
+                            >
+                              Aa
+                            </span>
+                          </div>
+                        </div>
+                        <p className="text-[9px] text-muted-foreground/60 leading-snug">
+                          {meta.description}
+                        </p>
+                        <input
+                          type="text"
+                          value={tier.fontFamily}
+                          onChange={(e) => {
+                            handleTypographyChangeWithClamp({
+                              ...typography,
+                              [key]: { ...tier, fontFamily: e.target.value },
+                            });
+                          }}
+                          placeholder="(inherit palette font)"
+                          className="w-full text-[10px] font-mono bg-background border border-border/60 rounded px-1.5 py-0.5 text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50"
+                          aria-label={`${meta.label} font family override`}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+                <p className="text-[10px] text-muted-foreground mt-2 leading-relaxed">
+                  Hierarchy enforced: each tier cannot exceed the tier above. Node Body size maps to
+                  the Mermaid <code className="font-mono bg-muted rounded px-0.5">fontSize</code>{" "}
+                  themeVariable. Other tiers and per-tier font overrides are included in the Prompt
+                  Scaffold export.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-3 border-b border-border">
+            <div className="flex items-center justify-between mb-1">
+              <p className="forge-eyebrow">Export Theme</p>
+              <button
+                type="button"
+                onClick={() => toggleSection("export")}
+                className="p-0.5 text-muted-foreground"
+                aria-expanded={myPalettesOpen}
+                aria-label="Toggle Export Theme"
+              >
+                <svg
+                  viewBox="0 0 12 12"
+                  fill="currentColor"
+                  className={`w-3.5 h-3.5 transition-transform ${myPalettesOpen ? "rotate-180" : ""}`}
+                  aria-hidden="true"
+                >
+                  <path d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" />
+                </svg>
+              </button>
+            </div>
+            <div className={`${myPalettesOpen ? "" : "hidden"}`}>
+              <hr className="border-border/40 mb-2" />
+              <div className="mb-3">
+                <label className="text-xs font-medium text-foreground block mb-1">
+                  My Theme's Name
+                </label>
+                <input
+                  type="text"
+                  value={customThemeName}
+                  onChange={(e) => onCustomThemeNameChange(e.target.value)}
+                  placeholder={customThemeNamePlaceholder ?? selectedPalette.name}
+                  className="w-full text-xs bg-background border border-border rounded-md px-2.5 py-1.5 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/50"
+                />
+                {effectiveThemeName !== selectedPalette.name && customThemeName.trim() && (
+                  <p className="text-[10px] text-muted-foreground mt-0.5">
+                    Output: {effectiveThemeName}
+                  </p>
+                )}
+              </div>
+              <p className="text-[10px] text-muted-foreground mb-3 leading-relaxed">
+                Save the currently selected fonts, colors, and overall look as a named palette/theme
+                JSON file, or share it via URL.
+              </p>
+              <div className="space-y-2 mb-3">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="checkbox"
@@ -658,276 +998,12 @@ export function ComposeTab({
                   <span className="text-xs text-foreground">Include attribution watermark</span>
                 </label>
               </div>
-            </div>
-          </div>
-
-          <div className="p-3 border-b border-border">
-            <div className="flex items-center justify-between mb-1.5">
-              <p className="forge-eyebrow">Typography</p>
-              <div className="flex items-center gap-2">
-                {!isDefaultTypography(typography) && (
-                  <button
-                    type="button"
-                    onClick={() => onTypographyChange(DEFAULT_TYPOGRAPHY)}
-                    aria-label="Reset typography to defaults"
-                    className="text-[10px] text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    Reset
-                  </button>
-                )}
-                <button
-                  type="button"
-                  onClick={() => setTypographyOpen((v) => !v)}
-                  className="p-0.5 text-muted-foreground"
-                  aria-expanded={typographyOpen}
-                  aria-label="Toggle Typography"
-                >
-                  <svg
-                    viewBox="0 0 12 12"
-                    fill="currentColor"
-                    className={`w-3.5 h-3.5 transition-transform ${typographyOpen ? "rotate-180" : ""}`}
-                    aria-hidden="true"
-                  >
-                    <path d="M3 4.5l3 3 3-3z" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-            <div className={`${typographyOpen ? "" : "hidden"}`}>
-              <div className="mb-3">
-                <label className="text-xs font-medium text-foreground block mb-1">
-                  Diagram body font
-                </label>
-                <FontFamilySelect
-                  value={
-                    customColors[selectedPaletteId]?.find((c) => c.key === "fontFamily")?.value ??
-                    selectedPalette.colors.find((c) => c.key === "fontFamily")?.value ??
-                    "DM Sans, system-ui, sans-serif"
-                  }
-                  onChange={(v) => onColorChange("fontFamily", v)}
-                />
-                <p className="text-[10px] text-muted-foreground mt-1 leading-relaxed">
-                  Sets the <code className="font-mono bg-muted rounded px-0.5">fontFamily</code>{" "}
-                  themeVariable in the init directive. Per-tier overrides below.
-                </p>
-              </div>
-
-              <div className="mb-3">
-                <label className="text-xs font-medium text-foreground block mb-1.5">
-                  Global base size
-                  <span className="text-[10px] text-muted-foreground font-normal ml-1">
-                    (Mermaid <code className="font-mono bg-muted rounded px-0.5">fontSize</code>)
-                  </span>
-                </label>
-                <div
-                  className="flex gap-1 mb-1.5"
-                  role="group"
-                  aria-label="Global base font size preset"
-                >
-                  {(
-                    [
-                      { label: "XS", value: "12px", desc: "Extra small — 12px" },
-                      { label: "S", value: "14px", desc: "Small — 14px" },
-                      { label: "M", value: "16px", desc: "Medium — 16px (default)" },
-                      { label: "L", value: "18px", desc: "Large — 18px" },
-                      { label: "XL", value: "20px", desc: "Extra large — 20px" },
-                    ] as const
-                  ).map((opt) => (
-                    <button
-                      key={opt.value}
-                      type="button"
-                      onClick={() => onFontSizeChange(fontSize === opt.value ? "" : opt.value)}
-                      aria-pressed={(fontSize || "16px") === opt.value}
-                      title={opt.desc}
-                      className={`flex-1 text-xs py-1 rounded-md border font-medium transition-all ${
-                        (fontSize || "16px") === opt.value
-                          ? "border-primary bg-primary/10 text-primary"
-                          : "border-border bg-background hover:bg-muted text-muted-foreground"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-                <input
-                  type="text"
-                  value={fontSize}
-                  onChange={(e) => onFontSizeChange(e.target.value)}
-                  placeholder="16px (Mermaid default)"
-                  className="w-full text-[11px] font-mono bg-background border border-border rounded-md px-2 py-1 text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50"
-                  aria-label="Custom font size"
-                />
-              </div>
-
-              <p className="text-[10px] uppercase tracking-wide text-muted-foreground/60 font-semibold mb-2">
-                Tier hierarchy
-              </p>
-              <div className="space-y-2">
-                {(TIER_ORDER as TypographyTierKey[]).map((key, idx) => {
-                  const tier = typography[key];
-                  const meta = TIER_META[key];
-                  const parentKey = idx > 0 ? (TIER_ORDER as TypographyTierKey[])[idx - 1] : null;
-                  const maxSize = parentKey ? typography[parentKey].fontSize : 48;
-                  const draftValue = tierDraftSizes[key];
-                  const displayValue =
-                    draftValue !== undefined ? draftValue : String(tier.fontSize);
-                  const isClamped = clampedTiers.has(key);
-                  return (
-                    <div
-                      key={key}
-                      className={`rounded-md border px-2.5 py-2 space-y-1.5 transition-colors ${
-                        isClamped
-                          ? "border-amber-400/60 bg-amber-50/40 dark:bg-amber-900/10"
-                          : "border-border/60 bg-muted/20"
-                      }`}
-                      style={{ marginLeft: `${idx * 4}px` }}
-                    >
-                      <div className="flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-1.5 min-w-0">
-                          <span
-                            className="font-medium text-foreground leading-tight truncate"
-                            style={{ fontSize: `${Math.min(tier.fontSize, 18)}px` }}
-                          >
-                            {meta.label}
-                          </span>
-                          {isClamped && (
-                            <span
-                              role="status"
-                              aria-live="polite"
-                              className="shrink-0 text-[9px] font-semibold text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-900/30 rounded px-1 py-0.5 leading-tight"
-                            >
-                              clamped to max
-                            </span>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-1 shrink-0">
-                          <button
-                            type="button"
-                            disabled={tier.fontSize <= 8}
-                            onClick={() => {
-                              handleTypographyChangeWithClamp({
-                                ...typography,
-                                [key]: { ...tier, fontSize: tier.fontSize - 1 },
-                              });
-                            }}
-                            className="w-5 h-5 flex items-center justify-center rounded border border-border bg-background hover:bg-muted disabled:opacity-30 text-xs font-bold leading-none"
-                            aria-label={`Decrease ${meta.label} size`}
-                          >
-                            −
-                          </button>
-                          <input
-                            type="number"
-                            min={8}
-                            max={maxSize}
-                            value={displayValue}
-                            onChange={(e) => {
-                              setTierDraftSizes((prev) => ({ ...prev, [key]: e.target.value }));
-                            }}
-                            onBlur={(e) => handleTierSizeBlur(key, e.target.value, maxSize)}
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter") e.currentTarget.blur();
-                            }}
-                            className="w-10 text-[10px] font-mono text-center bg-background border border-border rounded px-1 py-0.5 text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                            aria-label={`${meta.label} font size in pixels`}
-                          />
-                          <span className="text-[9px] text-muted-foreground/60">px</span>
-                          <button
-                            type="button"
-                            disabled={tier.fontSize >= maxSize}
-                            onClick={() => {
-                              handleTypographyChangeWithClamp({
-                                ...typography,
-                                [key]: { ...tier, fontSize: tier.fontSize + 1 },
-                              });
-                            }}
-                            className="w-5 h-5 flex items-center justify-center rounded border border-border bg-background hover:bg-muted disabled:opacity-30 text-xs font-bold leading-none"
-                            aria-label={`Increase ${meta.label} size`}
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="flex-1 h-[3px] bg-border/40 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-primary/50 rounded-full transition-all duration-150"
-                            style={{
-                              width: `${(tier.fontSize / Math.max(typography.diagramTitle.fontSize, 1)) * 100}%`,
-                            }}
-                          />
-                        </div>
-                        <div
-                          className="h-7 w-9 overflow-hidden flex items-end shrink-0"
-                          aria-hidden="true"
-                          title={`${tier.fontSize}px sample`}
-                        >
-                          <span
-                            className="text-muted-foreground/45 font-semibold leading-none"
-                            style={{ fontSize: `${tier.fontSize}px` }}
-                          >
-                            Aa
-                          </span>
-                        </div>
-                      </div>
-                      <p className="text-[9px] text-muted-foreground/60 leading-snug">
-                        {meta.description}
-                      </p>
-                      <input
-                        type="text"
-                        value={tier.fontFamily}
-                        onChange={(e) => {
-                          handleTypographyChangeWithClamp({
-                            ...typography,
-                            [key]: { ...tier, fontFamily: e.target.value },
-                          });
-                        }}
-                        placeholder="(inherit palette font)"
-                        className="w-full text-[10px] font-mono bg-background border border-border/60 rounded px-1.5 py-0.5 text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50"
-                        aria-label={`${meta.label} font family override`}
-                      />
-                    </div>
-                  );
-                })}
-              </div>
-              <p className="text-[10px] text-muted-foreground mt-2 leading-relaxed">
-                Hierarchy enforced: each tier cannot exceed the tier above. Node Body size maps to
-                the Mermaid <code className="font-mono bg-muted rounded px-0.5">fontSize</code>{" "}
-                themeVariable. Other tiers and per-tier font overrides are included in the Prompt
-                Scaffold export.
-              </p>
-            </div>
-          </div>
-
-          <div className="p-3 border-b border-border">
-            <div className="flex items-center justify-between mb-1">
-              <p className="forge-eyebrow">My Palettes</p>
-              <button
-                type="button"
-                onClick={() => setMyPalettesOpen((v) => !v)}
-                className="p-0.5 text-muted-foreground"
-                aria-expanded={myPalettesOpen}
-                aria-label="Toggle My Palettes"
-              >
-                <svg
-                  viewBox="0 0 12 12"
-                  fill="currentColor"
-                  className={`w-3.5 h-3.5 transition-transform ${myPalettesOpen ? "rotate-180" : ""}`}
-                  aria-hidden="true"
-                >
-                  <path d="M3 4.5l3 3 3-3z" />
-                </svg>
-              </button>
-            </div>
-            <div className={`${myPalettesOpen ? "" : "hidden"}`}>
-              <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
-                Save the current colors as a named palette, share it via URL, or import/export JSON.
-              </p>
               <div className="grid grid-cols-2 gap-2">
                 <button
                   onClick={() => setShowSaveDialog(true)}
                   className="text-xs px-2 py-1.5 rounded-md border border-border bg-background hover:bg-muted hover:border-primary/40 font-medium transition-all"
                 >
-                  Save as palette
+                  Save Theme as
                 </button>
                 <button
                   onClick={handleCopyShareLink}
@@ -937,19 +1013,13 @@ export function ComposeTab({
                       : "border-border bg-background hover:bg-muted hover:border-primary/40"
                   }`}
                 >
-                  {copiedShare ? "Link copied!" : "Copy share link"}
+                  {copiedShare ? "Link copied!" : "Share Via URL"}
                 </button>
                 <button
                   onClick={handleExportJson}
-                  className="text-xs px-2 py-1.5 rounded-md border border-border bg-background hover:bg-muted hover:border-primary/40 font-medium transition-all"
+                  className="col-span-2 text-xs px-2 py-1.5 rounded-md border border-border bg-background hover:bg-muted hover:border-primary/40 font-medium transition-all"
                 >
-                  Export JSON
-                </button>
-                <button
-                  onClick={handleImportClick}
-                  className="text-xs px-2 py-1.5 rounded-md border border-border bg-background hover:bg-muted hover:border-primary/40 font-medium transition-all"
-                >
-                  Import JSON
+                  Export to JSON
                 </button>
               </div>
               {userPalettes.length > 0 && (
@@ -974,7 +1044,7 @@ export function ComposeTab({
                   className="w-full mt-2 text-xs px-2 py-1.5 rounded-md border border-border bg-background hover:bg-muted hover:border-primary/40 font-medium transition-all"
                   title={`Export all ${userPalettes.length} saved palette${userPalettes.length === 1 ? "" : "s"} as a single bundle file`}
                 >
-                  Export bundle ({userPalettes.length})
+                  Export All Themes
                 </button>
               )}
               <input
@@ -1128,50 +1198,30 @@ export function ComposeTab({
                       })()}
                   </div>
                 )}
-            </div>
-          </div>
-
-          <div className="p-3">
-            <div className="flex items-center justify-between mb-1">
-              <p className="forge-eyebrow">Bootstrap Export</p>
-              <button
-                type="button"
-                onClick={() => setBootstrapOpen((v) => !v)}
-                className="p-0.5 text-muted-foreground"
-                aria-expanded={bootstrapOpen}
-                aria-label="Toggle Bootstrap Export"
-              >
-                <svg
-                  viewBox="0 0 12 12"
-                  fill="currentColor"
-                  className={`w-3.5 h-3.5 transition-transform ${bootstrapOpen ? "rotate-180" : ""}`}
-                  aria-hidden="true"
-                >
-                  <path d="M3 4.5l3 3 3-3z" />
-                </svg>
-              </button>
-            </div>
-            <div className={`${bootstrapOpen ? "" : "hidden"}`}>
-              <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
-                Paste into your AI before generating diagrams to pre-load the theme.
-              </p>
-              <div className="flex flex-col gap-2">
-                <button
-                  onClick={handleCopyBootstrap}
-                  className={`w-full flex items-center justify-center gap-2 text-xs px-3 py-2 rounded-md border font-medium transition-all ${
-                    copiedBootstrap
-                      ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-                      : "border-primary bg-primary text-primary-foreground hover:opacity-90"
-                  }`}
-                >
-                  {copiedBootstrap ? "Copied!" : "Copy Bootstrap Markdown"}
-                </button>
-                <button
-                  onClick={() => setShowScaffoldModal(true)}
-                  className="w-full flex items-center justify-center gap-2 text-xs px-3 py-2 rounded-md border border-primary/35 bg-primary/8 text-primary hover:bg-primary/14 font-medium transition-all"
-                >
-                  Copy Prompt Scaffold
-                </button>
+              <div className="mt-4 pt-3 border-t border-border">
+                <p className="forge-eyebrow mb-2">Bootstrap Export</p>
+                <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
+                  Pre‑load your custom theme into your AI before generating diagrams to increase the
+                  likelihood that the results match what you expect.
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={handleCopyBootstrap}
+                    className={`text-xs px-2 py-1.5 rounded-md border font-medium transition-all ${
+                      copiedBootstrap
+                        ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                        : "border-border bg-background hover:bg-muted hover:border-primary/40"
+                    }`}
+                  >
+                    {copiedBootstrap ? "Copied!" : "Export as Markdown"}
+                  </button>
+                  <button
+                    onClick={() => setShowScaffoldModal(true)}
+                    className="text-xs px-2 py-1.5 rounded-md border border-border bg-background hover:bg-muted hover:border-primary/40 font-medium transition-all"
+                  >
+                    Generate Prompt Pattern
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -1240,11 +1290,16 @@ export function ComposeTab({
               typography={typography}
             />
           </div>
-          {selectedPalette.themeIntent && (
-            <div className="flex-none border-t border-border px-4 py-2.5 bg-card/20">
-              <p className="text-[11px] text-muted-foreground leading-relaxed">
-                <span className="font-medium text-foreground">Use for:</span>{" "}
-                {selectedPalette.themeIntent}
+          {sampleCapability && (
+            <div className="flex-none border-t border-border px-4 py-2 bg-amber-50/60 dark:bg-amber-950/20">
+              <p className="text-[11px] text-amber-700 dark:text-amber-400 leading-relaxed">
+                <span className="font-semibold">{sampleCapability.displayName}:</span>{" "}
+                {sampleCapability.description}
+                {sampleCapability.bestUsedFor && (
+                  <span className="block mt-0.5 text-amber-600/80 dark:text-amber-500/70">
+                    <span className="font-medium">Use for:</span> {sampleCapability.bestUsedFor}
+                  </span>
+                )}
               </p>
             </div>
           )}

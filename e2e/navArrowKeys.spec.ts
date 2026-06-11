@@ -14,8 +14,7 @@ import { test, expect, type Page } from "@playwright/test";
  */
 
 /** CSS selector for all tab buttons in the desktop nav tablist. */
-const TAB_SEL =
-  'nav[role="tablist"][aria-label="Mermaid Theme Builder sections"] [role="tab"]';
+const TAB_SEL = 'nav[role="tablist"][aria-label="Mermaid Theme Builder sections"] [role="tab"]';
 
 /**
  * Wait until the tab at position `idx` has aria-selected=true AND has
@@ -26,12 +25,12 @@ async function waitForTabFocused(page: Page, idx: number): Promise<void> {
   await page.waitForFunction(
     ({ sel, i }: { sel: string; i: number }) =>
       document.querySelectorAll(sel)[i]?.getAttribute("aria-selected") === "true",
-    { sel: TAB_SEL, i: idx },
+    { sel: TAB_SEL, i: idx }
   );
   await page.waitForFunction(
     ({ sel, i }: { sel: string; i: number }) =>
       document.activeElement === document.querySelectorAll(sel)[i],
-    { sel: TAB_SEL, i: idx },
+    { sel: TAB_SEL, i: idx }
   );
 }
 
@@ -42,9 +41,7 @@ test.describe("Tab bar arrow-key navigation — desktop tablist", () => {
 
   // ── Arrow Right ───────────────────────────────────────────────────────────
 
-  test("Arrow Right moves focus to the next tab and marks it aria-selected", async ({
-    page,
-  }) => {
+  test("Arrow Right moves focus to the next tab and marks it aria-selected", async ({ page }) => {
     const tabCount = await page.locator(TAB_SEL).count();
     expect(tabCount, "desktop tablist must have at least 2 tabs").toBeGreaterThan(1);
 
@@ -52,9 +49,9 @@ test.describe("Tab bar arrow-key navigation — desktop tablist", () => {
     const startIdx = await page.evaluate(
       (sel) =>
         Array.from(document.querySelectorAll(sel)).findIndex(
-          (t) => t.getAttribute("aria-selected") === "true",
+          (t) => t.getAttribute("aria-selected") === "true"
         ),
-      TAB_SEL,
+      TAB_SEL
     );
     expect(startIdx, "a tab must be aria-selected=true on load").toBeGreaterThanOrEqual(0);
 
@@ -69,7 +66,7 @@ test.describe("Tab bar arrow-key navigation — desktop tablist", () => {
         (navSel) =>
           document.activeElement?.getAttribute("role") === "tab" &&
           !!document.activeElement?.closest(navSel),
-        'nav[role="tablist"][aria-label="Mermaid Theme Builder sections"]',
+        'nav[role="tablist"][aria-label="Mermaid Theme Builder sections"]'
       );
       if (onNavTab) {
         tabReached = true;
@@ -83,10 +80,7 @@ test.describe("Tab bar arrow-key navigation — desktop tablist", () => {
     const nextIdx = (startIdx + 1) % tabCount;
     await waitForTabFocused(page, nextIdx);
 
-    await expect(page.locator(TAB_SEL).nth(nextIdx)).toHaveAttribute(
-      "aria-selected",
-      "true",
-    );
+    await expect(page.locator(TAB_SEL).nth(nextIdx)).toHaveAttribute("aria-selected", "true");
   });
 
   // ── Arrow Right wraps (last → first) ─────────────────────────────────────

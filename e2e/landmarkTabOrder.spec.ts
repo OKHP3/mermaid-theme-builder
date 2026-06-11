@@ -40,7 +40,7 @@ interface TabStop {
  */
 async function collectTabStops(
   page: import("@playwright/test").Page,
-  count: number,
+  count: number
 ): Promise<TabStop[]> {
   const stops: TabStop[] = [];
   for (let i = 0; i < count; i++) {
@@ -55,8 +55,7 @@ async function collectTabStops(
         id: el.id || null,
         role: el.getAttribute("role"),
         ariaSelected: el.getAttribute("aria-selected"),
-        href:
-          el instanceof HTMLAnchorElement ? el.getAttribute("href") : null,
+        href: el instanceof HTMLAnchorElement ? el.getAttribute("href") : null,
         inHeader: !!el.closest("header"),
         inNav: !!el.closest('nav[role="tablist"]'),
         inMain: !!el.closest("#main-content"),
@@ -90,13 +89,13 @@ test.describe("Landmark Tab-order guard", () => {
 
   test("active nav tab is reachable by Tab", async () => {
     const activeNavTab = stops.find(
-      (s) => s.inNav && s.role === "tab" && s.ariaSelected === "true",
+      (s) => s.inNav && s.role === "tab" && s.ariaSelected === "true"
     );
     expect(
       activeNavTab,
       `Expected an active nav tab (role=tab aria-selected=true inside nav[role=tablist]) ` +
         `to appear in the first ${stops.length} Tab stops.\n` +
-        `Stops reached:\n${stops.map((s, i) => `  ${i + 1}. <${s.tagName}> id=${s.id} role=${s.role} ariaSelected=${s.ariaSelected} inNav=${s.inNav}`).join("\n")}`,
+        `Stops reached:\n${stops.map((s, i) => `  ${i + 1}. <${s.tagName}> id=${s.id} role=${s.role} ariaSelected=${s.ariaSelected} inNav=${s.inNav}`).join("\n")}`
     ).toBeDefined();
   });
 
@@ -105,7 +104,7 @@ test.describe("Landmark Tab-order guard", () => {
     expect(
       mainStop,
       `Expected at least one Tab stop inside #main-content within the first ${stops.length} Tab stops.\n` +
-        `Stops reached:\n${stops.map((s, i) => `  ${i + 1}. <${s.tagName}> id=${s.id} inMain=${s.inMain} inNav=${s.inNav}`).join("\n")}`,
+        `Stops reached:\n${stops.map((s, i) => `  ${i + 1}. <${s.tagName}> id=${s.id} inMain=${s.inMain} inNav=${s.inNav}`).join("\n")}`
     ).toBeDefined();
   });
 
@@ -114,7 +113,7 @@ test.describe("Landmark Tab-order guard", () => {
     expect(
       footerStop,
       `Expected at least one Tab stop inside <footer> within the first ${stops.length} Tab stops.\n` +
-        `Stops reached:\n${stops.map((s, i) => `  ${i + 1}. <${s.tagName}> id=${s.id} inFooter=${s.inFooter}`).join("\n")}`,
+        `Stops reached:\n${stops.map((s, i) => `  ${i + 1}. <${s.tagName}> id=${s.id} inFooter=${s.inFooter}`).join("\n")}`
     ).toBeDefined();
   });
 });

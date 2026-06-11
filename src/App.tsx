@@ -19,7 +19,12 @@ import {
   getEffectiveThemeName,
 } from "@/lib/palettes";
 import { clearAllDismissals } from "@/lib/family-syntax-hints";
-import { BRAND_EXAMPLES, GENERIC_EXAMPLE, SHOWCASE_EXAMPLE } from "@/data/examples";
+import {
+  APPLY_TAB_DEFAULT,
+  BRAND_EXAMPLES,
+  GENERIC_EXAMPLE,
+  SHOWCASE_EXAMPLE,
+} from "@/data/examples";
 import { EXAMPLE_GROUPS } from "@/data/example-library";
 import { AppIcon } from "@/components/AppIcon";
 import { ApplyTab } from "@/pages/tabs/ApplyTab";
@@ -33,6 +38,14 @@ import {
   type ShareablePayload,
 } from "@/lib/persistence";
 import { type MermaidLook, CLASSDEF_CAPABLE_FAMILIES, getClassDefs } from "@/lib/theme-engine";
+import {
+  type MyThemeSlot,
+  createDefaultMyThemeSlot,
+  nextSlotNumber,
+  isMyThemeSlotId,
+  slotDisplayName,
+} from "@/lib/my-theme-slots";
+import { downloadTextFile, makeFilename, paletteToPortableJson } from "@/lib/exporters";
 import { detectDiagram } from "@/lib/detector";
 import { type TypographySettings, DEFAULT_TYPOGRAPHY } from "@/lib/typography";
 import {
@@ -280,9 +293,7 @@ export function AppShell() {
   const [userPalettes, setUserPalettes] = useState<Palette[]>([]);
   const [selectedPaletteId, setSelectedPaletteId] = useState(BRAND_PALETTES[0].id);
   const [customColors, setCustomColors] = useState<Record<string, ThemeColor[]>>({});
-  const [inputCode, setInputCode] = useState(
-    BRAND_EXAMPLES[BRAND_PALETTES[0].id]?.flowchart ?? GENERIC_EXAMPLE
-  );
+  const [inputCode, setInputCode] = useState(APPLY_TAB_DEFAULT);
   const [includeMetaComments, setIncludeMetaComments] = useState(true);
   const [includeBadge, setIncludeBadge] = useState(true);
   const [customThemeName, setCustomThemeName] = useState("");
@@ -308,6 +319,10 @@ export function AppShell() {
   const settingsBtnRef = useRef<HTMLButtonElement>(null);
   const settingsMenuRef = useRef<HTMLDivElement>(null);
   const [openParityMatrix, setOpenParityMatrix] = useState(false);
+  const [myThemeSlots, setMyThemeSlots] = useState<MyThemeSlot[]>(() => [
+    createDefaultMyThemeSlot(1, BRAND_PALETTES[0].colors),
+  ]);
+  const [activeMyThemeSlotId, setActiveMyThemeSlotId] = useState<string | null>("my-theme-1");
 
   const handleNavigateToParityMatrix = useCallback(() => {
     setActiveTab("reference");
@@ -374,15 +389,10 @@ export function AppShell() {
     if (persisted) {
       if (Array.isArray(persisted.userPalettes))
         setUserPalettes((prev) => {
-          // Dedupe by id; share-token palettes and built-ins win over persisted duplicates.
-          const seen = new Set([...BUILTIN_PALETTES, ...prev].map((p) => p.id));
+          // Dedupe by id; share-token palettes win over persisted duplicates.
+          const seen = new Set(prev.map((p) => p.id));
           const merged = [...prev];
-          for (const p of persisted.userPalettes!) {
-            if (!seen.has(p.id)) {
-              seen.add(p.id);
-              merged.push(p);
-            }
-          }
+          for (const p of persisted.userPalettes!) if (!seen.has(p.id)) merged.push(p);
           return merged;
         });
       if (!didApplyShare && typeof persisted.selectedPaletteId === "string") {
@@ -396,8 +406,21 @@ export function AppShell() {
       if (typeof persisted.includeBadge === "boolean") setIncludeBadge(persisted.includeBadge);
       if (typeof persisted.customThemeName === "string" && !didApplyShare)
         setCustomThemeName(persisted.customThemeName);
-      if (typeof persisted.inputCode === "string" && persisted.inputCode.trim())
-        setInputCode(persisted.inputCode);
+      if (typeof persisted.inputCode === "string" && persisted.inputCode.trim()) {
+        const knownDefaults = new Set<string>([
+          APPLY_TAB_DEFAULT,
+          GENERIC_EXAMPLE,
+          SHOWCASE_EXAMPLE,
+          ...Object.values(BRAND_EXAMPLES).flatMap(({ flowchart, sequence }) => [
+            flowchart,
+            sequence,
+          ]),
+          ...EXAMPLE_GROUPS.flatMap((g) => g.entries.map((e) => e.content)),
+        ]);
+        if (!knownDefaults.has(persisted.inputCode)) {
+          setInputCode(persisted.inputCode);
+        }
+      }
       if (Array.isArray(persisted.recentPaletteIds)) {
         setRecentPaletteIds(
           persisted.recentPaletteIds
@@ -435,6 +458,34 @@ export function AppShell() {
       if (typeof persisted.lastSelectedExampleId === "string" && persisted.lastSelectedExampleId) {
         setLastSelectedExampleId(persisted.lastSelectedExampleId);
       }
+      if (Array.isArray(persisted.myThemeSlots)) {
+        const validSlots = (persisted.myThemeSlots as unknown[]).filter(
+          (s): s is MyThemeSlot =>
+            typeof s === "object" &&
+            s !== null &&
+            "id" in s &&
+            isMyThemeSlotId((s as MyThemeSlot).id) &&
+            Array.isArray((s as MyThemeSlot).colors)
+        );
+        // Apply even when empty — an empty array means the user intentionally
+        // deleted all slots; only the absence of the field means "use default".
+        setMyThemeSlots(validSlots);
+        // Validate active slot ID against the hydrated slots so a stale or
+        // dangling ID (e.g. slot was deleted in another tab) doesn't persist.
+        const validSlotIds = new Set(validSlots.map((s) => s.id));
+        if (persisted.activeMyThemeSlotId === null) {
+          setActiveMyThemeSlotId(null);
+        } else if (
+          typeof persisted.activeMyThemeSlotId === "string" &&
+          isMyThemeSlotId(persisted.activeMyThemeSlotId) &&
+          validSlotIds.has(persisted.activeMyThemeSlotId)
+        ) {
+          setActiveMyThemeSlotId(persisted.activeMyThemeSlotId);
+        } else {
+          // ID references a slot that no longer exists — clear it.
+          setActiveMyThemeSlotId(null);
+        }
+      }
     }
     setHydrated(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -460,6 +511,8 @@ export function AppShell() {
       previewMode,
       lastExampleType,
       lastSelectedExampleId,
+      myThemeSlots,
+      activeMyThemeSlotId,
     });
   }, [
     hydrated,
@@ -478,6 +531,8 @@ export function AppShell() {
     previewMode,
     lastExampleType,
     lastSelectedExampleId,
+    myThemeSlots,
+    activeMyThemeSlotId,
   ]);
 
   // Auto-clear toast after 2.5s
@@ -487,18 +542,27 @@ export function AppShell() {
     return () => clearTimeout(t);
   }, [toast]);
 
-  const allPalettes = useMemo<Palette[]>(() => {
-    const seen = new Set<string>();
-    const merged: Palette[] = [];
-    for (const palette of [...BRAND_PALETTES, ...UTILITY_PALETTES, ...userPalettes]) {
-      if (seen.has(palette.id)) continue;
-      seen.add(palette.id);
-      merged.push(palette);
-    }
-    return merged;
-  }, [userPalettes]);
+  const allPalettes = useMemo<Palette[]>(
+    () => [...BRAND_PALETTES, ...UTILITY_PALETTES, ...userPalettes],
+    [userPalettes]
+  );
+
+  const activeMyThemeSlot = useMemo(
+    () =>
+      activeMyThemeSlotId ? (myThemeSlots.find((s) => s.id === activeMyThemeSlotId) ?? null) : null,
+    [myThemeSlots, activeMyThemeSlotId]
+  );
 
   const selectedPalette = useMemo((): Palette => {
+    if (activeMyThemeSlot) {
+      const base = BRAND_PALETTES[0];
+      return {
+        ...base,
+        id: activeMyThemeSlot.id,
+        name: activeMyThemeSlot.name,
+        colors: activeMyThemeSlot.colors,
+      };
+    }
     const base = allPalettes.find((p) => p.id === selectedPaletteId) ?? BRAND_PALETTES[0];
     const overrides = customColors[selectedPaletteId];
     if (!overrides) return base;
@@ -509,59 +573,59 @@ export function AppShell() {
         return override ?? c;
       }),
     };
-  }, [allPalettes, selectedPaletteId, customColors]);
+  }, [allPalettes, selectedPaletteId, customColors, activeMyThemeSlot]);
 
   const classDefCount = useMemo(() => getClassDefs(selectedPalette).length, [selectedPalette]);
 
-  const hasCustomizations = Boolean(customColors[selectedPaletteId]);
+  const slotBaseColors = useMemo(() => {
+    const builtin = BUILTIN_PALETTES.find((p) => p.id === selectedPaletteId);
+    return (builtin ?? BRAND_PALETTES[0]).colors;
+  }, [selectedPaletteId]);
+
+  const hasSlotColorOverrides = useMemo(() => {
+    if (!activeMyThemeSlot) return false;
+    return activeMyThemeSlot.colors.some((c) => {
+      const base = slotBaseColors.find((b) => b.key === c.key);
+      return base !== undefined && base.value !== c.value;
+    });
+  }, [activeMyThemeSlot, slotBaseColors]);
+
+  const hasCustomizations = activeMyThemeSlotId
+    ? hasSlotColorOverrides
+    : Boolean(customColors[selectedPaletteId]);
+
+  const effectiveCustomThemeName = activeMyThemeSlot ? activeMyThemeSlot.name : customThemeName;
+  const effectiveLook = activeMyThemeSlot ? activeMyThemeSlot.look : look;
+  const effectiveFontSize = activeMyThemeSlot ? activeMyThemeSlot.fontSize : fontSize;
+  const effectiveTypography = activeMyThemeSlot ? activeMyThemeSlot.typography : typography;
 
   const effectiveThemeName = useMemo(
-    () => getEffectiveThemeName(selectedPalette, customThemeName, hasCustomizations),
-    [selectedPalette, customThemeName, hasCustomizations]
+    () => getEffectiveThemeName(selectedPalette, effectiveCustomThemeName, hasCustomizations),
+    [selectedPalette, effectiveCustomThemeName, hasCustomizations]
   );
 
-  const handleSelectPalette = useCallback(
-    (id: string) => {
-      setSelectedPaletteId(id);
-      setCustomThemeName("");
-      setRecentPaletteIds((prev) => {
-        const next = [id, ...prev.filter((p) => p !== id)].slice(0, RECENT_PALETTES_MAX);
-        return next;
-      });
-      const knownExamples = new Set<string>([
-        GENERIC_EXAMPLE,
-        SHOWCASE_EXAMPLE,
-        ...Object.values(BRAND_EXAMPLES).flatMap(({ flowchart, sequence }) => [
-          flowchart,
-          sequence,
-        ]),
-        ...EXAMPLE_GROUPS.flatMap((g) => g.entries.map((e) => e.content)),
-      ]);
-      const willReplace = inputCode.trim() === "" || knownExamples.has(inputCode);
-      const isBrandPalette = BRAND_PALETTES.some((p) => p.id === id);
-      if (isBrandPalette && BRAND_EXAMPLES[id]) {
-        const exType = lastExampleType[id] ?? "flowchart";
-        if (willReplace) {
-          const paletteName = BRAND_PALETTES.find((p) => p.id === id)?.name ?? id;
-          setToast(`Loaded ${paletteName} ${exType} example`);
-        }
-        setInputCode((current) =>
-          current.trim() === "" || knownExamples.has(current) ? BRAND_EXAMPLES[id][exType] : current
-        );
-      } else if (!isBrandPalette) {
-        if (willReplace) {
-          setToast("Loaded Mermaid flowchart example");
-        }
-        setInputCode((current) =>
-          current.trim() === "" || knownExamples.has(current) ? GENERIC_EXAMPLE : current
-        );
-      }
-    },
-    [inputCode, lastExampleType]
-  );
+  const handleSelectPalette = useCallback((id: string) => {
+    setActiveMyThemeSlotId(null);
+    setSelectedPaletteId(id);
+    setCustomThemeName("");
+    setRecentPaletteIds((prev) => {
+      const next = [id, ...prev.filter((p) => p !== id)].slice(0, RECENT_PALETTES_MAX);
+      return next;
+    });
+  }, []);
 
   const handleColorChange = useCallback(
     (key: string, value: string) => {
+      if (activeMyThemeSlotId) {
+        setMyThemeSlots((prev) =>
+          prev.map((s) =>
+            s.id === activeMyThemeSlotId
+              ? { ...s, colors: s.colors.map((c) => (c.key === key ? { ...c, value } : c)) }
+              : s
+          )
+        );
+        return;
+      }
       setCustomColors((prev) => {
         const base = allPalettes.find((p) => p.id === selectedPaletteId);
         if (!base) return prev;
@@ -570,17 +634,127 @@ export function AppShell() {
         return { ...prev, [selectedPaletteId]: updated };
       });
     },
-    [allPalettes, selectedPaletteId]
+    [allPalettes, selectedPaletteId, activeMyThemeSlotId]
+  );
+
+  const handleLookChange = useCallback(
+    (newLook: MermaidLook) => {
+      if (activeMyThemeSlotId) {
+        setMyThemeSlots((prev) =>
+          prev.map((s) => (s.id === activeMyThemeSlotId ? { ...s, look: newLook } : s))
+        );
+      } else {
+        setLook(newLook);
+      }
+    },
+    [activeMyThemeSlotId]
+  );
+
+  const handleFontSizeChange = useCallback(
+    (newSize: string) => {
+      if (activeMyThemeSlotId) {
+        setMyThemeSlots((prev) =>
+          prev.map((s) => (s.id === activeMyThemeSlotId ? { ...s, fontSize: newSize } : s))
+        );
+      } else {
+        setFontSize(newSize);
+      }
+    },
+    [activeMyThemeSlotId]
+  );
+
+  const handleTypographyChange = useCallback(
+    (newTypo: import("@/lib/typography").TypographySettings) => {
+      if (activeMyThemeSlotId) {
+        setMyThemeSlots((prev) =>
+          prev.map((s) => (s.id === activeMyThemeSlotId ? { ...s, typography: newTypo } : s))
+        );
+      } else {
+        setTypography(newTypo);
+      }
+    },
+    [activeMyThemeSlotId]
+  );
+
+  const handleCustomThemeNameChange = useCallback(
+    (newName: string) => {
+      if (activeMyThemeSlotId) {
+        setMyThemeSlots((prev) =>
+          prev.map((s) => (s.id === activeMyThemeSlotId ? { ...s, name: newName } : s))
+        );
+      } else {
+        setCustomThemeName(newName);
+      }
+    },
+    [activeMyThemeSlotId]
+  );
+
+  const handleSelectMyThemeSlot = useCallback((id: string) => {
+    setActiveMyThemeSlotId(id);
+  }, []);
+
+  const handleAddMyThemeSlot = useCallback(() => {
+    setMyThemeSlots((prev) => {
+      if (prev.length >= 3) return prev;
+      const num = nextSlotNumber(prev);
+      if (num === null) return prev;
+      const newSlot = createDefaultMyThemeSlot(num, selectedPalette.colors);
+      setActiveMyThemeSlotId(newSlot.id);
+      return [...prev, newSlot];
+    });
+  }, [selectedPalette.colors]);
+
+  const handleDeleteMyThemeSlot = useCallback(
+    (id: string) => {
+      setMyThemeSlots((prev) => {
+        const idx = prev.findIndex((s) => s.id === id);
+        const next = prev.filter((s) => s.id !== id);
+        if (activeMyThemeSlotId === id) {
+          // Prefer the slot immediately before the deleted one; fall back to
+          // the slot that now occupies the same index (i.e. the one to the right).
+          const nearest = next[idx - 1] ?? next[idx] ?? null;
+          setActiveMyThemeSlotId(nearest ? nearest.id : null);
+        }
+        return next;
+      });
+    },
+    [activeMyThemeSlotId]
+  );
+
+  const handleExportMyThemeSlot = useCallback(
+    (id: string) => {
+      const slot = myThemeSlots.find((s) => s.id === id);
+      if (!slot) return;
+      const exportPalette: Palette = {
+        ...BRAND_PALETTES[0],
+        id: "my-theme-export",
+        name: slot.name,
+        description: `Exported My Theme workspace: ${slot.name}`,
+        colors: slot.colors,
+      };
+      const json = paletteToPortableJson(exportPalette);
+      const filename = makeFilename(slot.name, "theme", "json");
+      downloadTextFile(filename, json, "application/json");
+    },
+    [myThemeSlots]
   );
 
   const handleResetPalette = useCallback(() => {
+    if (activeMyThemeSlotId) {
+      setMyThemeSlots((prev) =>
+        prev.map((s) =>
+          s.id === activeMyThemeSlotId ? { ...s, colors: slotBaseColors.map((c) => ({ ...c })) } : s
+        )
+      );
+      return;
+    }
     setCustomColors((prev) => {
       const next = { ...prev };
       delete next[selectedPaletteId];
       return next;
     });
     setCustomThemeName("");
-  }, [selectedPaletteId]);
+  }, [activeMyThemeSlotId, selectedPaletteId, slotBaseColors]);
 
   /** Reset a single swatch back to its base palette value. If clearing this
    *  override leaves the palette with no remaining customizations, the
@@ -1056,11 +1230,11 @@ export function AppShell() {
             userPalettes={userPalettes}
             onShowToast={showToast}
             recentPaletteIds={recentPaletteIds}
-            look={look}
-            onLookChange={setLook}
-            fontSize={fontSize}
-            onFontSizeChange={setFontSize}
-            typography={typography}
+            look={effectiveLook}
+            onLookChange={handleLookChange}
+            fontSize={effectiveFontSize}
+            onFontSizeChange={handleFontSizeChange}
+            typography={effectiveTypography}
             rendererTarget={rendererTarget}
             onRendererTargetChange={setRendererTarget}
             lastExampleType={lastExampleType}
@@ -1069,6 +1243,12 @@ export function AppShell() {
             onPreviewModeChange={setPreviewMode}
             hintResetToken={hintResetToken}
             onResetSyntaxHints={handleResetSyntaxHints}
+            myThemeSlots={myThemeSlots}
+            activeMyThemeSlotId={activeMyThemeSlotId}
+            onSelectMyThemeSlot={handleSelectMyThemeSlot}
+            onAddMyThemeSlot={handleAddMyThemeSlot}
+            onDeleteMyThemeSlot={handleDeleteMyThemeSlot}
+            onExportMyThemeSlot={handleExportMyThemeSlot}
           />
         </div>
         <div
@@ -1092,20 +1272,20 @@ export function AppShell() {
               onIncludeMetaCommentsChange={setIncludeMetaComments}
               includeBadge={includeBadge}
               onIncludeBadgeChange={setIncludeBadge}
-              customThemeName={customThemeName}
-              onCustomThemeNameChange={setCustomThemeName}
+              customThemeName={effectiveCustomThemeName}
+              onCustomThemeNameChange={handleCustomThemeNameChange}
               effectiveThemeName={effectiveThemeName}
               userPalettes={userPalettes}
               onSavePalette={handleSavePalette}
               onImportPalette={handleImportPalette}
               onDeleteUserPalette={handleDeleteUserPalette}
               onShowToast={showToast}
-              look={look}
-              onLookChange={setLook}
-              fontSize={fontSize}
-              onFontSizeChange={setFontSize}
-              typography={typography}
-              onTypographyChange={setTypography}
+              look={effectiveLook}
+              onLookChange={handleLookChange}
+              fontSize={effectiveFontSize}
+              onFontSizeChange={handleFontSizeChange}
+              typography={effectiveTypography}
+              onTypographyChange={handleTypographyChange}
               rendererTarget={rendererTarget}
               onRendererTargetChange={setRendererTarget}
               onUseExtractedTheme={handleUseExtractedTheme}
@@ -1113,6 +1293,15 @@ export function AppShell() {
               onNavigateToParityMatrix={handleNavigateToParityMatrix}
               importDiagnostics={importDiagnostics}
               onImportDiagnosticsChange={setImportDiagnostics}
+              myThemeSlots={myThemeSlots}
+              activeMyThemeSlotId={activeMyThemeSlotId}
+              onSelectMyThemeSlot={handleSelectMyThemeSlot}
+              onAddMyThemeSlot={handleAddMyThemeSlot}
+              onDeleteMyThemeSlot={handleDeleteMyThemeSlot}
+              onExportMyThemeSlot={handleExportMyThemeSlot}
+              customThemeNamePlaceholder={
+                activeMyThemeSlotId ? slotDisplayName(activeMyThemeSlotId) : undefined
+              }
             />
           )}
           {activeTab === "examples" && (
@@ -1125,6 +1314,12 @@ export function AppShell() {
               onLoadExample={handleLoadExample}
               initialSelectedId={lastSelectedExampleId}
               onExampleSelect={setLastSelectedExampleId}
+              myThemeSlots={myThemeSlots}
+              activeMyThemeSlotId={activeMyThemeSlotId}
+              onSelectMyThemeSlot={handleSelectMyThemeSlot}
+              onAddMyThemeSlot={handleAddMyThemeSlot}
+              onDeleteMyThemeSlot={handleDeleteMyThemeSlot}
+              onExportMyThemeSlot={handleExportMyThemeSlot}
             />
           )}
           {activeTab === "reference" && (
@@ -1139,6 +1334,12 @@ export function AppShell() {
               onInputChange={setInputCode}
               openParityMatrix={openParityMatrix}
               onParityMatrixOpened={() => setOpenParityMatrix(false)}
+              myThemeSlots={myThemeSlots}
+              activeMyThemeSlotId={activeMyThemeSlotId}
+              onSelectMyThemeSlot={handleSelectMyThemeSlot}
+              onAddMyThemeSlot={handleAddMyThemeSlot}
+              onDeleteMyThemeSlot={handleDeleteMyThemeSlot}
+              onExportMyThemeSlot={handleExportMyThemeSlot}
             />
           )}
         </div>

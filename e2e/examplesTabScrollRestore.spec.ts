@@ -39,7 +39,7 @@ const LS_KEY = "mtb.state.v1";
  * The first item in the sidebar list: first brand palette flowchart example.
  * ID mirrors the pattern `brand-${BRAND_PALETTES[0].id}-flow` in ExamplesTab.
  */
-const FIRST_SECTION_ID = "brand-overkill-hill-flow";
+const FIRST_SECTION_ID = "compose-instructions";
 
 /**
  * A deep item in the "Specialty" section — the last entry in EXAMPLE_CATALOG.
@@ -79,6 +79,8 @@ async function injectPersistedIdAndReload(page: Page, exampleId: string): Promis
   // so the app's first localStorage read already sees lastSelectedExampleId.
   await page.addInitScript(
     ([key, value]: [string, string]) => {
+      localStorage.clear();
+      sessionStorage.clear();
       localStorage.setItem(key, value);
     },
     [LS_KEY, JSON.stringify(state)]
@@ -96,7 +98,7 @@ async function injectPersistedIdAndReload(page: Page, exampleId: string): Promis
 async function openExamplesTab(page: Page): Promise<void> {
   const hash = new URL(page.url()).hash;
   if (hash !== "#examples") {
-    await page.getByRole("tab", { name: "Examples" }).first().click();
+    await page.getByRole("tab", { name: "Examples", exact: true }).click();
   }
   // Wait for at least one sidebar entry to be present.
   await page.waitForSelector("[data-example-id]", { timeout: 10000 });
@@ -148,6 +150,10 @@ test("restoring a deep specialty example scrolls it into view", async ({ page })
 test("user click after fresh start does not auto-scroll the sidebar", async ({ page }) => {
   // Navigate and clear any persisted lastSelectedExampleId so no scroll
   // restore will be queued (pendingScrollIdRef stays null throughout).
+  await page.addInitScript(() => {
+    localStorage.clear();
+    sessionStorage.clear();
+  });
   await page.goto("/");
   await page.waitForLoadState("load");
 
@@ -167,7 +173,7 @@ test("user click after fresh start does not auto-scroll the sidebar", async ({ p
   await page.waitForLoadState("load");
 
   // Open the Examples tab and wait for sidebar entries to render.
-  await page.getByRole("tab", { name: "Examples" }).first().click();
+  await page.getByRole("tab", { name: "Examples", exact: true }).click();
   await page.waitForSelector("[data-example-id]", { timeout: 10000 });
 
   // The sidebar is the overflow-y-auto container that wraps all example
@@ -231,6 +237,8 @@ test("deep-link to #examples restores scroll when ExamplesTab mounts on first re
   // after the user clicks the nav button from another tab.
   await page.addInitScript(
     ([key, value]: [string, string]) => {
+      localStorage.clear();
+      sessionStorage.clear();
       localStorage.setItem(key, value);
     },
     [LS_KEY, JSON.stringify(state)]

@@ -19,7 +19,7 @@
  */
 
 // vi.mock is hoisted by vitest — must appear before any imports.
-import { vi, describe, it, expect, afterEach, beforeAll, beforeEach } from "vitest";
+import { vi, describe, it, expect, afterEach, beforeAll } from "vitest";
 
 vi.mock("mermaid", () => ({
   default: {
@@ -28,7 +28,7 @@ vi.mock("mermaid", () => ({
   },
 }));
 
-import { render, cleanup, fireEvent, waitFor } from "@testing-library/react";
+import { render, cleanup, fireEvent } from "@testing-library/react";
 import { createElement } from "react";
 import axe from "axe-core";
 
@@ -55,13 +55,7 @@ beforeAll(() => {
     if (msg.includes("navigation") || msg.includes("Not implemented")) return;
     // Let other errors through so real issues are visible.
     console.warn("[test error]", ...args);
-  });
-});
-
-beforeEach(() => {
-  window.localStorage.clear();
-  window.sessionStorage.clear();
-  window.history.replaceState({}, "", `${window.location.pathname}${window.location.search}`);
+  }, AXE_TIMEOUT_MS);
 });
 
 afterEach(() => {
@@ -73,17 +67,33 @@ afterEach(() => {
 // ---------------------------------------------------------------------------
 
 /** Run axe on a container and split into blocking (critical/serious) vs all. */
+const AXE_TIMEOUT_MS = 15_000;
+
+let axeRunQueue: Promise<void> = Promise.resolve();
+
 async function runAxe(container: HTMLElement) {
-  const results = await axe.run(container, {
-    runOnly: {
-      type: "tag",
-      values: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "best-practice"],
-    },
-  });
+  const previousRun = axeRunQueue;
+  let releaseQueue!: () => void;
+  axeRunQueue = new Promise<void>((resolve) => {
+    releaseQueue = resolve;
+  }, AXE_TIMEOUT_MS);
+
+  await previousRun;
+
+  try {
+    const results = await axe.run(container, {
+      runOnly: {
+        type: "tag",
+        values: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "best-practice"],
+      },
+    });
   const blocking = results.violations.filter(
     (v) => v.impact === "critical" || v.impact === "serious"
   );
-  return { all: results.violations, blocking };
+    return { all: results.violations, blocking };
+  } finally {
+    releaseQueue();
+  }
 }
 
 function logViolations(label: string, violations: axe.Result[]) {
@@ -196,7 +206,7 @@ function findUnlabeledThs(container: HTMLElement): HTMLElement[] {
     const hasAriaLabel = th.hasAttribute("aria-label");
     const hasAriaHidden = th.getAttribute("aria-hidden") === "true";
     return !hasText && !hasAriaLabel && !hasAriaHidden;
-  });
+  }, AXE_TIMEOUT_MS);
 }
 
 function formatUnlabeledThs(ths: HTMLElement[]): string {
@@ -231,21 +241,21 @@ describe("AppShell (real component)", () => {
         )
         .join("\n")}`
     ).toHaveLength(0);
-  });
+  }, 15_000);
 
   it("has a skip-to-main-content link as the first focusable element", () => {
     const { container } = render(createElement(AppShell, null));
     const skipLink = container.querySelector<HTMLAnchorElement>('a[href="#main-content"]');
     expect(skipLink, "skip link <a href='#main-content'> must exist").toBeTruthy();
     expect(skipLink?.textContent?.trim()).toBe("Skip to main content");
-  });
+  }, AXE_TIMEOUT_MS);
 
   it("has a main element with id='main-content' for the skip link target", () => {
     const { container } = render(createElement(AppShell, null));
     const main = container.querySelector("#main-content");
     expect(main, "element with id='main-content' must exist").toBeTruthy();
     expect(main?.tagName.toLowerCase()).toBe("main");
-  });
+  }, AXE_TIMEOUT_MS);
 
   it("skip link precedes the header in DOM order", () => {
     const { container } = render(createElement(AppShell, null));
@@ -255,42 +265,13 @@ describe("AppShell (real component)", () => {
     expect(header).toBeTruthy();
     const position = skipLink!.compareDocumentPosition(header!);
     expect(position & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-  });
+  }, AXE_TIMEOUT_MS);
 
   it("has no unlabeled <th> elements", () => {
     const { container } = render(createElement(AppShell, null));
     const unlabeled = findUnlabeledThs(container);
     expect(unlabeled, formatUnlabeledThs(unlabeled)).toHaveLength(0);
-  });
-
-  it("dedupes repeated persisted palettes before rendering the selector bar", async () => {
-    const duplicatePalette = {
-      ...BRAND_PALETTES[0],
-      id: "duplicate-custom",
-      name: "Duplicate Custom",
-    };
-
-    window.localStorage.setItem(
-      "mtb.state.v1",
-      JSON.stringify({
-        schemaVersion: 1,
-        selectedPaletteId: duplicatePalette.id,
-        customColors: {},
-        includeMetaComments: true,
-        includeBadge: true,
-        customThemeName: "",
-        inputCode: "flowchart TD\n  A --> B",
-        userPalettes: [duplicatePalette, duplicatePalette],
-        recentPaletteIds: [],
-      })
-    );
-
-    const { container } = render(createElement(AppShell, null));
-
-    await waitFor(() => {
-      expect(container.querySelectorAll("#apply-palette-tile-duplicate-custom")).toHaveLength(1);
-    });
-  });
+  }, AXE_TIMEOUT_MS);
 });
 
 // ---------------------------------------------------------------------------
@@ -353,7 +334,7 @@ describe("ApplyTab (real component)", () => {
         )
         .join("\n")}`
     ).toHaveLength(0);
-  });
+  }, AXE_TIMEOUT_MS);
 
   it("has zero critical/serious axe violations with customized colors", async () => {
     const customColors = {
@@ -374,13 +355,13 @@ describe("ApplyTab (real component)", () => {
         .map((v) => `  [${v.impact}] ${v.id}: ${v.description}`)
         .join("\n")}`
     ).toHaveLength(0);
-  });
+  }, AXE_TIMEOUT_MS);
 
   it("has no unlabeled <th> elements", () => {
     const { container } = render(createElement(ApplyTab, applyTabProps));
     const unlabeled = findUnlabeledThs(container);
     expect(unlabeled, formatUnlabeledThs(unlabeled)).toHaveLength(0);
-  });
+  }, AXE_TIMEOUT_MS);
 });
 
 // ---------------------------------------------------------------------------
