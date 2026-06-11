@@ -507,86 +507,78 @@ export function ComposeTab({
 
       <div className="flex flex-col md:flex-row flex-1 overflow-hidden min-h-0">
         <div className="flex flex-col w-full md:w-[35%] border-b md:border-b-0 md:border-r border-border overflow-y-auto shrink-0">
-          <div className="p-3 border-b border-border">
-            <div className="flex items-center justify-between mb-1">
-              <p className="forge-eyebrow">Import Theme</p>
-              <button
-                type="button"
-                onClick={() => toggleSection("extract")}
-                className="p-0.5 text-muted-foreground"
-                aria-expanded={extractOpen}
-                aria-label="Toggle Import Theme"
+          {/* ── Import Theme ── */}
+          <div className="border-b border-border">
+            <button
+              type="button"
+              onClick={() => toggleSection("extract")}
+              className="w-full flex items-center justify-between px-4 py-2.5 text-left hover:bg-muted/40 transition-colors select-none"
+              aria-expanded={extractOpen}
+            >
+              <span className="text-xs font-medium text-foreground">Import Theme</span>
+              <svg
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                className={`w-4 h-4 text-muted-foreground transition-transform shrink-0 ${extractOpen ? "rotate-180" : ""}`}
+                aria-hidden="true"
               >
-                <svg
-                  viewBox="0 0 12 12"
-                  fill="currentColor"
-                  className={`w-3.5 h-3.5 transition-transform ${extractOpen ? "rotate-180" : ""}`}
-                  aria-hidden="true"
+                <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clipRule="evenodd" />
+              </svg>
+            </button>
+            <div className={extractOpen ? "border-t border-border" : "hidden"}>
+              <div className="p-3">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.07em] text-muted-foreground mb-1">
+                  Existing Theme
+                </p>
+                <p className="text-[10px] text-muted-foreground leading-relaxed mb-2">
+                  Have a theme you&apos;ve already saved, or a palette you&apos;ve built before and
+                  want to revisit? Load the JSON here and carry on from where you left off.
+                </p>
+                <button
+                  onClick={handleImportClick}
+                  className="w-full text-xs px-2 py-1.5 rounded-md border border-border bg-background hover:bg-muted hover:border-primary/40 font-medium transition-all mb-3"
                 >
-                  <path d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" />
-                </svg>
-              </button>
-            </div>
-            <div className={`${extractOpen ? "" : "hidden"}`}>
-              <hr className="border-border/40 mb-2" />
-              <p className="text-[10px] font-semibold uppercase tracking-[0.07em] text-muted-foreground mb-1">
-                Existing Theme
-              </p>
-              <p className="text-[10px] text-muted-foreground leading-relaxed mb-2">
-                Have a theme you&apos;ve already saved, or a palette you&apos;ve built before and
-                want to revisit? Load the JSON here and carry on from where you left off.
-              </p>
-              <button
-                onClick={handleImportClick}
-                className="w-full text-xs px-2 py-1.5 rounded-md border border-border bg-background hover:bg-muted hover:border-primary/40 font-medium transition-all mb-3"
-              >
-                Import from JSON
-              </button>
-              <hr className="border-border/40 mb-2" />
-              <p className="text-[10px] font-semibold uppercase tracking-[0.07em] text-muted-foreground mb-1">
-                Extract Theme
-              </p>
-              <p className="text-[10px] text-muted-foreground leading-relaxed mb-3">
-                Already have a styled Mermaid diagram you love — hand-crafted or AI-generated? Paste
-                it below and this tool will extract the color theme automatically, presetting your
-                palette so you can keep refining from there.
-              </p>
-              <ExtractTab
-                embedded
-                onUseExtractedTheme={onUseExtractedTheme}
-                onSwitchTab={onSwitchTab}
-                onShowToast={onShowToast}
-              />
+                  Import from JSON
+                </button>
+                <hr className="border-border/40 mb-2" />
+                <p className="text-[10px] font-semibold uppercase tracking-[0.07em] text-muted-foreground mb-1">
+                  Extract Theme
+                </p>
+                <p className="text-[10px] text-muted-foreground leading-relaxed mb-3">
+                  Already have a styled Mermaid diagram you love — hand-crafted or AI-generated? Paste
+                  it below and this tool will extract the color theme automatically, presetting your
+                  palette so you can keep refining from there.
+                </p>
+                <ExtractTab
+                  embedded
+                  onUseExtractedTheme={onUseExtractedTheme}
+                  onSwitchTab={onSwitchTab}
+                  onShowToast={onShowToast}
+                />
+              </div>
             </div>
           </div>
 
-          <div className="p-3 border-b border-border">
-            <p className="forge-eyebrow mb-2">Customize Theme</p>
-            <div>
-              {/* ── Look ── */}
-              <hr className="border-border/40 mb-2" />
-              <div className="flex items-center justify-between mb-1">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.07em] text-muted-foreground">
-                  Look
-                </p>
-                <button
-                  type="button"
-                  onClick={() => toggleSection("look")}
-                  className="p-0.5 text-muted-foreground"
-                  aria-expanded={lookOpen}
-                  aria-label="Toggle Look"
-                >
-                  <svg
-                    viewBox="0 0 12 12"
-                    fill="currentColor"
-                    className={`w-3.5 h-3.5 transition-transform ${lookOpen ? "rotate-180" : ""}`}
-                    aria-hidden="true"
-                  >
-                    <path d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" />
-                  </svg>
-                </button>
-              </div>
-              <div className={`${lookOpen ? "" : "hidden"}`}>
+          {/* ── Look ── */}
+          <div className="border-b border-border">
+            <button
+              type="button"
+              onClick={() => toggleSection("look")}
+              className="w-full flex items-center justify-between px-4 py-2.5 text-left hover:bg-muted/40 transition-colors select-none"
+              aria-expanded={lookOpen}
+            >
+              <span className="text-xs font-medium text-foreground">Look</span>
+              <svg
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                className={`w-4 h-4 text-muted-foreground transition-transform shrink-0 ${lookOpen ? "rotate-180" : ""}`}
+                aria-hidden="true"
+              >
+                <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clipRule="evenodd" />
+              </svg>
+            </button>
+            <div className={lookOpen ? "border-t border-border" : "hidden"}>
+              <div className="p-3">
                 <div className="space-y-3 mb-1">
                   <div>
                     <p className="text-[10px] text-muted-foreground mb-1.5 leading-relaxed">
@@ -639,43 +631,51 @@ export function ComposeTab({
                     </p>
                   </div>
                 </div>
-              </div>
+            </div>
+          </div>
+          </div>
 
-              {/* ── Colors ── */}
-              <hr className="border-border/40 mb-2 mt-2" />
-              <div className="flex items-center justify-between mb-1">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.07em] text-muted-foreground">
-                  Colors
-                </p>
-                <div className="flex items-center gap-2">
-                  {hasCustomizations && (
-                    <button
-                      onClick={onResetPalette}
-                      aria-label={`Reset ${selectedPalette.name} colors to defaults`}
-                      className="text-[10px] text-muted-foreground hover:text-destructive transition-colors"
-                    >
-                      Reset
-                    </button>
-                  )}
+          {/* ── Colors ── */}
+          <div className="border-b border-border">
+            <div
+              role="button"
+              tabIndex={0}
+              onClick={() => toggleSection("colors")}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  toggleSection("colors");
+                }
+              }}
+              className="flex items-center justify-between px-4 py-2.5 cursor-pointer hover:bg-muted/40 transition-colors select-none"
+              aria-expanded={colorsOpen}
+            >
+              <span className="text-xs font-medium text-foreground">Colors</span>
+              <div className="flex items-center gap-2">
+                {hasCustomizations && (
                   <button
-                    type="button"
-                    onClick={() => toggleSection("colors")}
-                    className="p-0.5 text-muted-foreground"
-                    aria-expanded={colorsOpen}
-                    aria-label="Toggle Colors"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onResetPalette();
+                    }}
+                    aria-label={`Reset ${selectedPalette.name} colors to defaults`}
+                    className="text-[10px] text-muted-foreground hover:text-destructive transition-colors"
                   >
-                    <svg
-                      viewBox="0 0 12 12"
-                      fill="currentColor"
-                      className={`w-3.5 h-3.5 transition-transform ${colorsOpen ? "rotate-180" : ""}`}
-                      aria-hidden="true"
-                    >
-                      <path d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" />
-                    </svg>
+                    Reset
                   </button>
-                </div>
+                )}
+                <svg
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  className={`w-4 h-4 text-muted-foreground transition-transform shrink-0 ${colorsOpen ? "rotate-180" : ""}`}
+                  aria-hidden="true"
+                >
+                  <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clipRule="evenodd" />
+                </svg>
               </div>
-              <div className={`${colorsOpen ? "" : "hidden"}`}>
+            </div>
+            <div className={colorsOpen ? "border-t border-border" : "hidden"}>
+              <div className="p-3">
                 <p className="text-[10px] text-muted-foreground mb-2 leading-relaxed">
                   {selectedPalette.description}
                 </p>
@@ -693,43 +693,51 @@ export function ComposeTab({
                     ))}
                 </div>
               </div>
+            </div>
+          </div>
 
-              {/* ── Typography ── */}
-              <hr className="border-border/40 mb-2 mt-2" />
-              <div className="flex items-center justify-between mb-1.5">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.07em] text-muted-foreground">
-                  Typography
-                </p>
-                <div className="flex items-center gap-2">
-                  {!isDefaultTypography(typography) && (
-                    <button
-                      type="button"
-                      onClick={() => onTypographyChange(DEFAULT_TYPOGRAPHY)}
-                      aria-label="Reset typography to defaults"
-                      className="text-[10px] text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      Reset
-                    </button>
-                  )}
+          {/* ── Typography ── */}
+          <div className="border-b border-border">
+            <div
+              role="button"
+              tabIndex={0}
+              onClick={() => toggleSection("typography")}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  toggleSection("typography");
+                }
+              }}
+              className="flex items-center justify-between px-4 py-2.5 cursor-pointer hover:bg-muted/40 transition-colors select-none"
+              aria-expanded={typographyOpen}
+            >
+              <span className="text-xs font-medium text-foreground">Typography</span>
+              <div className="flex items-center gap-2">
+                {!isDefaultTypography(typography) && (
                   <button
                     type="button"
-                    onClick={() => toggleSection("typography")}
-                    className="p-0.5 text-muted-foreground"
-                    aria-expanded={typographyOpen}
-                    aria-label="Toggle Typography"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onTypographyChange(DEFAULT_TYPOGRAPHY);
+                    }}
+                    aria-label="Reset typography to defaults"
+                    className="text-[10px] text-muted-foreground hover:text-foreground transition-colors"
                   >
-                    <svg
-                      viewBox="0 0 12 12"
-                      fill="currentColor"
-                      className={`w-3.5 h-3.5 transition-transform ${typographyOpen ? "rotate-180" : ""}`}
-                      aria-hidden="true"
-                    >
-                      <path d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" />
-                    </svg>
+                    Reset
                   </button>
-                </div>
+                )}
+                <svg
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  className={`w-4 h-4 text-muted-foreground transition-transform shrink-0 ${typographyOpen ? "rotate-180" : ""}`}
+                  aria-hidden="true"
+                >
+                  <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clipRule="evenodd" />
+                </svg>
               </div>
-              <div className={`${typographyOpen ? "" : "hidden"}`}>
+            </div>
+            <div className={typographyOpen ? "border-t border-border" : "hidden"}>
+              <div className="p-3">
                 <div className="mb-3">
                   <label className="text-xs font-medium text-foreground block mb-1">
                     Diagram body font
@@ -935,29 +943,27 @@ export function ComposeTab({
             </div>
           </div>
 
-          <div className="p-3 border-b border-border">
-            <div className="flex items-center justify-between mb-1">
-              <p className="forge-eyebrow">Export Theme</p>
-              <button
-                type="button"
-                onClick={() => toggleSection("export")}
-                className="p-0.5 text-muted-foreground"
-                aria-expanded={myPalettesOpen}
-                aria-label="Toggle Export Theme"
+          {/* ── Export Theme ── */}
+          <div className="border-b border-border">
+            <button
+              type="button"
+              onClick={() => toggleSection("export")}
+              className="w-full flex items-center justify-between px-4 py-2.5 text-left hover:bg-muted/40 transition-colors select-none"
+              aria-expanded={myPalettesOpen}
+            >
+              <span className="text-xs font-medium text-foreground">Export Theme</span>
+              <svg
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                className={`w-4 h-4 text-muted-foreground transition-transform shrink-0 ${myPalettesOpen ? "rotate-180" : ""}`}
+                aria-hidden="true"
               >
-                <svg
-                  viewBox="0 0 12 12"
-                  fill="currentColor"
-                  className={`w-3.5 h-3.5 transition-transform ${myPalettesOpen ? "rotate-180" : ""}`}
-                  aria-hidden="true"
-                >
-                  <path d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" />
-                </svg>
-              </button>
-            </div>
-            <div className={`${myPalettesOpen ? "" : "hidden"}`}>
-              <hr className="border-border/40 mb-2" />
-              <div className="mb-3">
+                <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clipRule="evenodd" />
+              </svg>
+            </button>
+            <div className={myPalettesOpen ? "border-t border-border" : "hidden"}>
+              <div className="p-3">
+                <div className="mb-3">
                 <label className="text-xs font-medium text-foreground block mb-1">
                   My Theme's Name
                 </label>
@@ -1224,6 +1230,7 @@ export function ComposeTab({
                 </div>
               </div>
             </div>
+          </div>
           </div>
         </div>
 
