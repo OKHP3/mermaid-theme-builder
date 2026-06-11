@@ -18,7 +18,13 @@ interface PaletteSelectorBarProps {
   onAddMyThemeSlot: () => void;
   onDeleteMyThemeSlot: (id: string) => void;
   onExportMyThemeSlot: (id: string) => void;
-  onImportMyThemeSlot: (palette: { name: string; colors: ThemeColor[] }) => void;
+  onImportMyThemeSlot?: (
+    palette: Palette,
+    warnings: {
+      invalidValues: Array<{ key: string; value: string }>;
+      warnValues: Array<{ key: string; value: string }>;
+    }
+  ) => void;
   onShowToast: (msg: string) => void;
 }
 
@@ -356,11 +362,10 @@ export function PaletteSelectorBar({
               onShowToast(`Import failed: ${result.error}`);
               return;
             }
-            onImportMyThemeSlot({
-              name: result.palette.name,
-              colors: result.palette.colors,
+            onImportMyThemeSlot?.(result.palette, {
+              invalidValues: result.invalidValues,
+              warnValues: result.warnValues,
             });
-            onShowToast(`Imported "${result.palette.name}" as new slot`);
           } catch (err) {
             onShowToast(err instanceof Error ? err.message : "Import failed");
           }

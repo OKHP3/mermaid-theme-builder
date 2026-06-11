@@ -151,7 +151,13 @@ interface ComposeTabProps {
   onAddMyThemeSlot?: () => void;
   onDeleteMyThemeSlot?: (id: string) => void;
   onExportMyThemeSlot?: (id: string) => void;
-  onImportMyThemeSlot?: (slot: MyThemeSlot) => void;
+  onImportMyThemeSlot?: (
+    palette: Palette,
+    warnings: {
+      invalidValues: Array<{ key: string; value: string }>;
+      warnValues: Array<{ key: string; value: string }>;
+    }
+  ) => void;
   customThemeNamePlaceholder?: string;
 }
 
@@ -208,7 +214,7 @@ export function ComposeTab({
   onAddMyThemeSlot = () => {},
   onDeleteMyThemeSlot = () => {},
   onExportMyThemeSlot = () => {},
-  onImportMyThemeSlot = () => {},
+  onImportMyThemeSlot,
   customThemeNamePlaceholder,
 }: ComposeTabProps) {
   const [copiedBootstrap, setCopiedBootstrap] = useState(false);
@@ -455,26 +461,39 @@ export function ComposeTab({
             onShowToast(formatImportError(`Import failed: ${result.error}`));
             return;
           }
-          onImportPalette(result.palette);
-          if (
-            result.missingKeys.length > 0 ||
-            result.unknownKeys.length > 0 ||
-            result.invalidValues.length > 0 ||
-            result.warnValues.length > 0
-          ) {
-            onImportDiagnosticsChange({
-              missingKeys: result.missingKeys,
-              unknownKeys: result.unknownKeys,
+          if (activeMyThemeSlotId && onImportMyThemeSlot) {
+            onImportMyThemeSlot(result.palette, {
               invalidValues: result.invalidValues,
               warnValues: result.warnValues,
             });
+          } else {
+            onImportPalette(result.palette);
+            if (
+              result.missingKeys.length > 0 ||
+              result.unknownKeys.length > 0 ||
+              result.invalidValues.length > 0 ||
+              result.warnValues.length > 0
+            ) {
+              onImportDiagnosticsChange({
+                missingKeys: result.missingKeys,
+                unknownKeys: result.unknownKeys,
+                invalidValues: result.invalidValues,
+                warnValues: result.warnValues,
+              });
+            }
           }
         }
       } catch (err) {
         onShowToast(`Import failed: ${err instanceof Error ? err.message : String(err)}`);
       }
     },
-    [onImportPalette, onImportDiagnosticsChange, onShowToast]
+    [
+      onImportPalette,
+      onImportDiagnosticsChange,
+      onShowToast,
+      activeMyThemeSlotId,
+      onImportMyThemeSlot,
+    ]
   );
 
   const handleConfirmSave = useCallback(() => {

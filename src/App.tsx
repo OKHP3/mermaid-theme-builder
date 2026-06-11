@@ -740,17 +740,48 @@ export function AppShell() {
     [myThemeSlots]
   );
 
-  const handleImportMyThemeSlot = useCallback((palette: { name: string; colors: ThemeColor[] }) => {
-    setMyThemeSlots((prev) => {
-      if (prev.length >= 3) return prev;
-      const num = nextSlotNumber(prev);
-      if (num === null) return prev;
-      const newSlot = createDefaultMyThemeSlot(num, palette.colors);
-      newSlot.name = palette.name;
-      setActiveMyThemeSlotId(newSlot.id);
-      return [...prev, newSlot];
-    });
-  }, []);
+  const handleImportMyThemeSlot = useCallback(
+    (
+      palette: Palette,
+      warnings: {
+        invalidValues: Array<{ key: string; value: string }>;
+        warnValues: Array<{ key: string; value: string }>;
+      }
+    ) => {
+      if (activeMyThemeSlotId) {
+        setMyThemeSlots((prev) =>
+          prev.map((s) => (s.id === activeMyThemeSlotId ? { ...s, colors: palette.colors } : s))
+        );
+        if (warnings.invalidValues.length > 0 || warnings.warnValues.length > 0) {
+          const problemKeys = [
+            ...warnings.invalidValues.map((e) => e.key),
+            ...warnings.warnValues.map((e) => e.key),
+          ];
+          const keyList = problemKeys.join(", ");
+          setImportDiagnostics({
+            missingKeys: [],
+            unknownKeys: [],
+            invalidValues: warnings.invalidValues,
+            warnValues: warnings.warnValues,
+          });
+          setToast(`Loaded colors into slot. CSS values may not render in Mermaid: ${keyList}.`);
+        } else {
+          setToast(`Loaded "${palette.name}" into slot.`);
+        }
+      } else {
+        setMyThemeSlots((prev) => {
+          if (prev.length >= 3) return prev;
+          const num = nextSlotNumber(prev);
+          if (num === null) return prev;
+          const newSlot = createDefaultMyThemeSlot(num, palette.colors);
+          newSlot.name = palette.name;
+          setActiveMyThemeSlotId(newSlot.id);
+          return [...prev, newSlot];
+        });
+      }
+    },
+    [activeMyThemeSlotId]
+  );
 
   const handleResetPalette = useCallback(() => {
     if (activeMyThemeSlotId) {

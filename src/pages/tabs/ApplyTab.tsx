@@ -66,7 +66,13 @@ interface ApplyTabProps {
   onAddMyThemeSlot?: () => void;
   onDeleteMyThemeSlot?: (id: string) => void;
   onExportMyThemeSlot?: (id: string) => void;
-  onImportMyThemeSlot?: (slot: MyThemeSlot) => void;
+  onImportMyThemeSlot?: (
+    palette: Palette,
+    warnings: {
+      invalidValues: Array<{ key: string; value: string }>;
+      warnValues: Array<{ key: string; value: string }>;
+    }
+  ) => void;
 }
 
 export function ApplyTab({
