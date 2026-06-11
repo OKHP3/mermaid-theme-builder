@@ -105,38 +105,31 @@ export function ReferenceTab({
   const rendererParityRef = useRef<HTMLDetailsElement>(null);
   const classLibraryRef = useRef<HTMLDetailsElement>(null);
 
-  // Tracks whether the Renderer Parity Matrix <details> is currently open so
-  // the inactive badge can hide itself when the user manually expands the section.
-  const [rendererParityOpen, setRendererParityOpen] = useState(false);
+  // Single accordion state — only one section open at a time; all collapsed on load.
+  const [openRefSection, setOpenRefSection] = useState<string | null>(null);
+  const classLibraryOpen = openRefSection === "classLibrary";
+  const rendererParityOpen = openRefSection === "rendererParity";
 
-  // Tracks whether the Class Library <details> is currently open so the
-  // inactive badge can hide itself when the user manually expands the section.
-  const [classLibraryOpen, setClassLibraryOpen] = useState(false);
-
-  useEffect(() => {
-    const el = rendererParityRef.current;
-    if (!el) return;
-    const nextOpen = supportsClassDef;
-    el.open = nextOpen;
-    setRendererParityOpen(nextOpen);
-  }, [supportsClassDef]);
-
-  useEffect(() => {
-    const el = classLibraryRef.current;
-    if (!el) return;
-    const nextOpen = supportsClassDef;
-    el.open = nextOpen;
-    setClassLibraryOpen(nextOpen);
-  }, [supportsClassDef]);
+  const handleRefSectionToggle = useCallback((name: string, nowOpen: boolean) => {
+    if (nowOpen) {
+      if (name !== "classLibrary" && classLibraryRef.current) classLibraryRef.current.open = false;
+      if (name !== "rendererParity" && rendererParityRef.current)
+        rendererParityRef.current.open = false;
+      setOpenRefSection(name);
+    } else {
+      setOpenRefSection((prev) => (prev === name ? null : prev));
+    }
+  }, []);
 
   // When navigated here via the beta hint "See support details →" link, force-open
-  // the Renderer Parity Matrix section and scroll it into view.
+  // the Renderer Parity Matrix section via accordion and scroll it into view.
   useEffect(() => {
     if (!openParityMatrix) return;
+    if (classLibraryRef.current) classLibraryRef.current.open = false;
+    setOpenRefSection("rendererParity");
     const el = rendererParityRef.current;
     if (!el) return;
     el.open = true;
-    setRendererParityOpen(true);
     el.scrollIntoView({ behavior: "smooth", block: "start" });
     onParityMatrixOpened?.();
   }, [openParityMatrix, onParityMatrixOpened]);
@@ -160,7 +153,9 @@ export function ReferenceTab({
         <details
           ref={classLibraryRef}
           className="group border-b border-border"
-          onToggle={(e) => setClassLibraryOpen((e.currentTarget as HTMLDetailsElement).open)}
+          onToggle={(e) =>
+            handleRefSectionToggle("classLibrary", (e.currentTarget as HTMLDetailsElement).open)
+          }
         >
           <summary className="flex items-center justify-between px-4 py-2.5 cursor-pointer list-none hover:bg-muted/40 transition-colors select-none">
             <div className="flex items-center gap-2">
@@ -197,7 +192,7 @@ export function ReferenceTab({
               />
             </svg>
           </summary>
-          <div className="border-t border-border max-h-72 overflow-y-auto">
+          <div className="border-t border-border">
             <ClassBrowser
               classDefs={classDefs}
               supportsClassDef={supportsClassDef}
@@ -210,7 +205,9 @@ export function ReferenceTab({
         <details
           ref={rendererParityRef}
           className="group border-b border-border"
-          onToggle={(e) => setRendererParityOpen((e.currentTarget as HTMLDetailsElement).open)}
+          onToggle={(e) =>
+            handleRefSectionToggle("rendererParity", (e.currentTarget as HTMLDetailsElement).open)
+          }
         >
           <summary className="flex items-center justify-between px-4 py-2.5 cursor-pointer list-none hover:bg-muted/40 transition-colors select-none">
             <div className="flex items-center gap-2">
@@ -243,7 +240,7 @@ export function ReferenceTab({
               />
             </svg>
           </summary>
-          <div className="border-t border-border overflow-x-auto max-h-72 overflow-y-auto">
+          <div className="border-t border-border overflow-x-auto">
             <table className="w-full text-[10px] border-collapse min-w-[640px]">
               <thead>
                 <tr className="bg-muted/40 sticky top-0 z-10">
@@ -343,7 +340,11 @@ export function ReferenceTab({
         </details>
 
         <div className="border-b border-border">
-          <DiagramInventory embedded />
+          <DiagramInventory
+            embedded
+            open={openRefSection === "inventory"}
+            onToggle={() => handleRefSectionToggle("inventory", openRefSection !== "inventory")}
+          />
         </div>
       </div>
 

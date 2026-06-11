@@ -112,17 +112,18 @@ export function ExamplesTab({
   const [showMobilePreview, setShowMobilePreview] = useState(false);
   const [showInventory, setShowInventory] = useState(false);
 
-  // All sections expanded by default; users can collapse as needed.
-  const [collapsedSections, setCollapsedSections] = useState<Set<string>>(() => new Set());
+  // All sections collapsed on load; accordion — only one open at a time.
+  const [collapsedSections, setCollapsedSections] = useState<Set<string>>(() => new Set(SECTIONS));
 
   const toggleSection = useCallback((section: string) => {
     setCollapsedSections((prev) => {
-      const next = new Set(prev);
-      if (next.has(section)) {
-        next.delete(section);
-      } else {
-        next.add(section);
+      if (prev.has(section)) {
+        // Collapsed → expand this one; collapse all others
+        return new Set(SECTIONS.filter((s) => s !== section));
       }
+      // Expanded → collapse
+      const next = new Set(prev);
+      next.add(section);
       return next;
     });
   }, []);
@@ -138,16 +139,11 @@ export function ExamplesTab({
     [selectedId]
   );
 
-  // Auto-expand the section that contains the active selection
+  // Auto-expand the section that contains the active selection; collapse all others (accordion).
   useEffect(() => {
     const section = ALL_EXAMPLES.find((e) => e.id === selectedId)?.section;
     if (section) {
-      setCollapsedSections((prev) => {
-        if (!prev.has(section)) return prev;
-        const next = new Set(prev);
-        next.delete(section);
-        return next;
-      });
+      setCollapsedSections(new Set(SECTIONS.filter((s) => s !== section)));
     }
   }, [selectedId]);
 

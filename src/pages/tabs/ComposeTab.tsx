@@ -220,11 +220,16 @@ export function ComposeTab({
   );
   const [clampedTiers, setClampedTiers] = useState<Set<TypographyTierKey>>(new Set());
   const clampTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
-  const [colorsOpen, setColorsOpen] = useState(false);
-  const [lookOpen, setLookOpen] = useState(false);
-  const [typographyOpen, setTypographyOpen] = useState(false);
-  const [myPalettesOpen, setMyPalettesOpen] = useState(false);
-  const [extractOpen, setExtractOpen] = useState(false);
+  const [openSection, setOpenSection] = useState<string | null>(null);
+  const colorsOpen = openSection === "colors";
+  const lookOpen = openSection === "look";
+  const typographyOpen = openSection === "typography";
+  const myPalettesOpen = openSection === "export";
+  const extractOpen = openSection === "extract";
+  const toggleSection = useCallback(
+    (name: string) => setOpenSection((prev) => (prev === name ? null : name)),
+    []
+  );
 
   const handleTypographyChangeWithClamp = useCallback(
     (proposed: TypographySettings) => {
@@ -507,7 +512,7 @@ export function ComposeTab({
               <p className="forge-eyebrow">Import Theme</p>
               <button
                 type="button"
-                onClick={() => setExtractOpen((v) => !v)}
+                onClick={() => toggleSection("extract")}
                 className="p-0.5 text-muted-foreground"
                 aria-expanded={extractOpen}
                 aria-label="Toggle Import Theme"
@@ -566,7 +571,7 @@ export function ComposeTab({
                 </p>
                 <button
                   type="button"
-                  onClick={() => setLookOpen((v) => !v)}
+                  onClick={() => toggleSection("look")}
                   className="p-0.5 text-muted-foreground"
                   aria-expanded={lookOpen}
                   aria-label="Toggle Look"
@@ -654,7 +659,7 @@ export function ComposeTab({
                   )}
                   <button
                     type="button"
-                    onClick={() => setColorsOpen((v) => !v)}
+                    onClick={() => toggleSection("colors")}
                     className="p-0.5 text-muted-foreground"
                     aria-expanded={colorsOpen}
                     aria-label="Toggle Colors"
@@ -708,7 +713,7 @@ export function ComposeTab({
                   )}
                   <button
                     type="button"
-                    onClick={() => setTypographyOpen((v) => !v)}
+                    onClick={() => toggleSection("typography")}
                     className="p-0.5 text-muted-foreground"
                     aria-expanded={typographyOpen}
                     aria-label="Toggle Typography"
@@ -935,7 +940,7 @@ export function ComposeTab({
               <p className="forge-eyebrow">Export Theme</p>
               <button
                 type="button"
-                onClick={() => setMyPalettesOpen((v) => !v)}
+                onClick={() => toggleSection("export")}
                 className="p-0.5 text-muted-foreground"
                 aria-expanded={myPalettesOpen}
                 aria-label="Toggle Export Theme"

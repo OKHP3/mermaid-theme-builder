@@ -223,9 +223,16 @@ function GapRow({ gap }: { gap: GapEntry }) {
 interface DiagramInventoryProps {
   onClose?: () => void;
   embedded?: boolean;
+  open?: boolean;
+  onToggle?: () => void;
 }
 
-export function DiagramInventory({ onClose, embedded = false }: DiagramInventoryProps) {
+export function DiagramInventory({
+  onClose,
+  embedded = false,
+  open: controlledOpen,
+  onToggle: onControlledToggle,
+}: DiagramInventoryProps) {
   const [filter, setFilter] = useState<FilterTab>("all");
   const [search, setSearch] = useState("");
 
@@ -289,8 +296,10 @@ export function DiagramInventory({ onClose, embedded = false }: DiagramInventory
     </thead>
   );
 
-  const [inventoryOpen, setInventoryOpen] = useState(true);
+  const [inventoryOpen, setInventoryOpen] = useState(false);
   const toggleInventory = useCallback(() => setInventoryOpen((v) => !v), []);
+  const isOpen = controlledOpen !== undefined ? controlledOpen : inventoryOpen;
+  const handleToggle = onControlledToggle ?? toggleInventory;
 
   const familyCount = DIAGRAM_CAPABILITIES.filter((c) => c.id !== "unknown").length;
   const gapCount = CAPABILITY_GAPS.length;
@@ -306,7 +315,7 @@ export function DiagramInventory({ onClose, embedded = false }: DiagramInventory
       {embedded ? (
         <button
           type="button"
-          onClick={toggleInventory}
+          onClick={handleToggle}
           className="w-full flex items-center justify-between px-4 py-2.5 border-b border-border bg-card/80 hover:bg-muted/40 transition-colors select-none cursor-pointer shrink-0"
         >
           <div className="flex items-center gap-2">
@@ -325,7 +334,7 @@ export function DiagramInventory({ onClose, embedded = false }: DiagramInventory
           <svg
             viewBox="0 0 20 20"
             fill="currentColor"
-            className={`w-4 h-4 text-muted-foreground transition-transform shrink-0 ${inventoryOpen ? "rotate-180" : ""}`}
+            className={`w-4 h-4 text-muted-foreground transition-transform shrink-0 ${isOpen ? "rotate-180" : ""}`}
           >
             <path
               fillRule="evenodd"
@@ -363,7 +372,7 @@ export function DiagramInventory({ onClose, embedded = false }: DiagramInventory
         </div>
       )}
 
-      {(!embedded || inventoryOpen) && (
+      {(!embedded || isOpen) && (
         <>
           <div className="border-b border-border bg-card/30 px-4 md:px-6 py-1.5 flex items-center gap-0.5 shrink-0">
             {FILTER_TABS.map((tab) => (
