@@ -4,7 +4,7 @@
  * Tests for the Theme Preview diagram picker (ComposeTab.tsx lines 244–271).
  *
  * Behaviors covered:
- *   1. Default selection resolves to "flowchart-basic" when localStorage is empty.
+ *   1. Default selection resolves to EXAMPLE_CATALOG[0].id ("compose-instructions") when localStorage is empty.
  *   2. Changing the selection writes to localStorage key "mtb.compose.previewSampleId".
  *   3. An unknown stored id falls back gracefully to EXAMPLE_CATALOG[0] without throwing.
  *   4. The beta render-confidence hint appears/disappears based on the selected entry's badge.
@@ -119,13 +119,13 @@ afterEach(() => {
 });
 
 // ---------------------------------------------------------------------------
-// 1. Default selection — empty localStorage → flowchart-basic
+// 1. Default selection — empty localStorage → EXAMPLE_CATALOG[0] ("compose-instructions")
 // ---------------------------------------------------------------------------
 
 describe("previewPicker — default selection", () => {
-  it("the preview select defaults to 'flowchart-basic' when localStorage is empty", () => {
+  it("the preview select defaults to EXAMPLE_CATALOG[0].id when localStorage is empty", () => {
     const { container } = renderTab();
-    expect(getPickerSelect(container).value).toBe("flowchart-basic");
+    expect(getPickerSelect(container).value).toBe(EXAMPLE_CATALOG[0].id);
   });
 
   it("the default id matches EXAMPLE_CATALOG[0].id", () => {
@@ -133,7 +133,7 @@ describe("previewPicker — default selection", () => {
     expect(getPickerSelect(container).value).toBe(EXAMPLE_CATALOG[0].id);
   });
 
-  it("the mocked preview receives the themed code for flowchart-basic on initial render", () => {
+  it("the mocked preview receives the themed code for the default entry on initial render", () => {
     const { container } = renderTab();
     const preview = getMermaidPreview(container);
     // The code attr is non-empty and begins with the %%{init expected from theming.
@@ -192,7 +192,7 @@ describe("previewPicker — unknown stored id fallback", () => {
     localStorage.setItem(LS_KEY, "completely-unknown-diagram-id-xyz");
     const { container } = renderTab();
     const preview = getMermaidPreview(container);
-    // sampleEntry falls back to EXAMPLE_CATALOG[0] (flowchart-basic) via the ?? operator.
+    // sampleEntry falls back to EXAMPLE_CATALOG[0] via the ?? operator.
     // generateThemedCode always prepends %%{init:...} so the code is non-empty and themed.
     const code = preview.getAttribute("data-code") ?? "";
     expect(code.length).toBeGreaterThan(0);
@@ -281,7 +281,7 @@ describe("previewPicker — option label suffixes", () => {
 // ---------------------------------------------------------------------------
 
 describe("previewPicker — beta render-confidence hint (rendered)", () => {
-  it("no role='note' hint when the default flowchart-basic is selected", () => {
+  it("no role='note' hint when the default entry (compose-instructions) is selected", () => {
     const { container } = renderTab();
     expect(container.querySelector('[role="note"]')).toBeNull();
   });
@@ -339,7 +339,7 @@ describe("previewPicker — beta hint bar details", () => {
   });
 
   it("'See support details' button is absent when no hint is shown", () => {
-    // Default selection is flowchart-basic — no beta hint, so no button.
+    // Default selection is compose-instructions — no beta hint, so no button.
     const { container } = renderTab();
     expect(container.querySelector('[role="note"]')).toBeNull();
     const detailsBtns = Array.from(container.querySelectorAll("button")).filter((b) =>

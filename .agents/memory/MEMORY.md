@@ -2,3 +2,4 @@
 - [Playwright test isolation](playwright-test-isolation.md) — storageState + default tab must stay "apply"; label renames in app require matching e2e spec updates
 - [Playwright localStorage seeding](playwright-ls-seeding.md) — use addInitScript not goto+evaluate+reload; latter races with React's default initial render
 - [ComposeTab color swatches visibility](compose-tab-color-swatches.md) — Toggle Colors button must be clicked first; Apply tab swatches always in DOM but hidden, filter visible:true
+- [ComposeTab JSX balance debugging](composetab-jsx-balance.md) — use TypeScript-aware trace script (skip self-closing L896, L1328) not raw div counts; JSX comments look like section headers but are not divs — check the NEXT line for the actual opener.

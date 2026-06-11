@@ -522,7 +522,11 @@ export function ComposeTab({
                 className={`w-4 h-4 text-muted-foreground transition-transform shrink-0 ${extractOpen ? "rotate-180" : ""}`}
                 aria-hidden="true"
               >
-                <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clipRule="evenodd" />
+                <path
+                  fillRule="evenodd"
+                  d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                  clipRule="evenodd"
+                />
               </svg>
             </button>
             <div className={extractOpen ? "border-t border-border" : "hidden"}>
@@ -545,9 +549,9 @@ export function ComposeTab({
                   Extract Theme
                 </p>
                 <p className="text-[10px] text-muted-foreground leading-relaxed mb-3">
-                  Already have a styled Mermaid diagram you love — hand-crafted or AI-generated? Paste
-                  it below and this tool will extract the color theme automatically, presetting your
-                  palette so you can keep refining from there.
+                  Already have a styled Mermaid diagram you love — hand-crafted or AI-generated?
+                  Paste it below and this tool will extract the color theme automatically,
+                  presetting your palette so you can keep refining from there.
                 </p>
                 <ExtractTab
                   embedded
@@ -574,7 +578,11 @@ export function ComposeTab({
                 className={`w-4 h-4 text-muted-foreground transition-transform shrink-0 ${lookOpen ? "rotate-180" : ""}`}
                 aria-hidden="true"
               >
-                <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clipRule="evenodd" />
+                <path
+                  fillRule="evenodd"
+                  d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                  clipRule="evenodd"
+                />
               </svg>
             </button>
             <div className={lookOpen ? "border-t border-border" : "hidden"}>
@@ -631,8 +639,8 @@ export function ComposeTab({
                     </p>
                   </div>
                 </div>
+              </div>
             </div>
-          </div>
           </div>
 
           {/* ── Colors ── */}
@@ -670,7 +678,11 @@ export function ComposeTab({
                   className={`w-4 h-4 text-muted-foreground transition-transform shrink-0 ${colorsOpen ? "rotate-180" : ""}`}
                   aria-hidden="true"
                 >
-                  <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clipRule="evenodd" />
+                  <path
+                    fillRule="evenodd"
+                    d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                    clipRule="evenodd"
+                  />
                 </svg>
               </div>
             </div>
@@ -732,7 +744,11 @@ export function ComposeTab({
                   className={`w-4 h-4 text-muted-foreground transition-transform shrink-0 ${typographyOpen ? "rotate-180" : ""}`}
                   aria-hidden="true"
                 >
-                  <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clipRule="evenodd" />
+                  <path
+                    fillRule="evenodd"
+                    d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                    clipRule="evenodd"
+                  />
                 </svg>
               </div>
             </div>
@@ -958,279 +974,284 @@ export function ComposeTab({
                 className={`w-4 h-4 text-muted-foreground transition-transform shrink-0 ${myPalettesOpen ? "rotate-180" : ""}`}
                 aria-hidden="true"
               >
-                <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clipRule="evenodd" />
+                <path
+                  fillRule="evenodd"
+                  d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                  clipRule="evenodd"
+                />
               </svg>
             </button>
             <div className={myPalettesOpen ? "border-t border-border" : "hidden"}>
               <div className="p-3">
                 <div className="mb-3">
-                <label className="text-xs font-medium text-foreground block mb-1">
-                  My Theme's Name
-                </label>
-                <input
-                  type="text"
-                  value={customThemeName}
-                  onChange={(e) => onCustomThemeNameChange(e.target.value)}
-                  placeholder={customThemeNamePlaceholder ?? selectedPalette.name}
-                  className="w-full text-xs bg-background border border-border rounded-md px-2.5 py-1.5 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/50"
-                />
-                {effectiveThemeName !== selectedPalette.name && customThemeName.trim() && (
-                  <p className="text-[10px] text-muted-foreground mt-0.5">
-                    Output: {effectiveThemeName}
-                  </p>
-                )}
-              </div>
-              <p className="text-[10px] text-muted-foreground mb-3 leading-relaxed">
-                Save the currently selected fonts, colors, and overall look as a named palette/theme
-                JSON file, or share it via URL.
-              </p>
-              <div className="space-y-2 mb-3">
-                <label className="flex items-center gap-2 cursor-pointer">
+                  <label className="text-xs font-medium text-foreground block mb-1">
+                    My Theme's Name
+                  </label>
                   <input
-                    type="checkbox"
-                    checked={includeMetaComments}
-                    onChange={(e) => onIncludeMetaCommentsChange(e.target.checked)}
-                    className="w-3.5 h-3.5 rounded border-border accent-primary"
+                    type="text"
+                    value={customThemeName}
+                    onChange={(e) => onCustomThemeNameChange(e.target.value)}
+                    placeholder={customThemeNamePlaceholder ?? selectedPalette.name}
+                    className="w-full text-xs bg-background border border-border rounded-md px-2.5 py-1.5 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/50"
                   />
-                  <span className="text-xs text-foreground">Include metadata comments</span>
-                </label>
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={includeBadge}
-                    onChange={(e) => onIncludeBadgeChange(e.target.checked)}
-                    className="w-3.5 h-3.5 rounded border-border accent-primary"
-                  />
-                  <span className="text-xs text-foreground">Include attribution watermark</span>
-                </label>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  onClick={() => setShowSaveDialog(true)}
-                  className="text-xs px-2 py-1.5 rounded-md border border-border bg-background hover:bg-muted hover:border-primary/40 font-medium transition-all"
-                >
-                  Save Theme as
-                </button>
-                <button
-                  onClick={handleCopyShareLink}
-                  className={`text-xs px-2 py-1.5 rounded-md border font-medium transition-all ${
-                    copiedShare
-                      ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-                      : "border-border bg-background hover:bg-muted hover:border-primary/40"
-                  }`}
-                >
-                  {copiedShare ? "Link copied!" : "Share Via URL"}
-                </button>
-                <button
-                  onClick={handleExportJson}
-                  className="col-span-2 text-xs px-2 py-1.5 rounded-md border border-border bg-background hover:bg-muted hover:border-primary/40 font-medium transition-all"
-                >
-                  Export to JSON
-                </button>
-              </div>
-              {userPalettes.length > 0 && (
-                <div className="mt-2 flex flex-col gap-0.5">
-                  <p className="forge-eyebrow text-muted-foreground/50 mb-0.5">Saved palettes</p>
-                  {userPalettes.map((p) => (
-                    <PaletteRow
-                      key={p.id}
-                      palette={p}
-                      selected={p.id === selectedPaletteId}
-                      customized={Boolean(customColors[p.id]?.length)}
-                      onSelect={() => onSelectPalette(p.id)}
-                      swatchIndices={[0, 1, 2]}
-                      onDelete={() => onDeleteUserPalette(p.id)}
-                    />
-                  ))}
+                  {effectiveThemeName !== selectedPalette.name && customThemeName.trim() && (
+                    <p className="text-[10px] text-muted-foreground mt-0.5">
+                      Output: {effectiveThemeName}
+                    </p>
+                  )}
                 </div>
-              )}
-              {userPalettes.length > 0 && (
-                <button
-                  onClick={handleExportBundle}
-                  className="w-full mt-2 text-xs px-2 py-1.5 rounded-md border border-border bg-background hover:bg-muted hover:border-primary/40 font-medium transition-all"
-                  title={`Export all ${userPalettes.length} saved palette${userPalettes.length === 1 ? "" : "s"} as a single bundle file`}
-                >
-                  Export All Themes
-                </button>
-              )}
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".json,application/json"
-                className="hidden"
-                aria-label="Import palette JSON file"
-                onChange={handleFileChosen}
-              />
-              {importDiagnostics &&
-                (importDiagnostics.missingKeys.length > 0 ||
-                  importDiagnostics.unknownKeys.length > 0 ||
-                  importDiagnostics.invalidValues.length > 0 ||
-                  importDiagnostics.warnValues.length > 0) && (
-                  <div className="mt-2 rounded-md border border-amber-400/40 bg-amber-50/60 dark:bg-amber-950/20 dark:border-amber-500/30 p-2.5 text-xs space-y-1.5">
-                    <div className="flex items-start justify-between gap-1">
-                      <span className="font-semibold text-amber-700 dark:text-amber-400">
-                        Palette import warnings
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => onImportDiagnosticsChange(null)}
-                        className="text-amber-600/70 dark:text-amber-400/60 hover:text-amber-800 dark:hover:text-amber-300 leading-none mt-px"
-                        aria-label="Dismiss import warnings"
-                      >
-                        ✕
-                      </button>
-                    </div>
-                    {importDiagnostics.missingKeys.length > 0 && (
-                      <div>
-                        <p className="text-amber-700 dark:text-amber-400 font-medium mb-0.5">
-                          Missing required{" "}
-                          {importDiagnostics.missingKeys.length === 1 ? "key" : "keys"} — diagram
-                          may render with Mermaid defaults:
-                        </p>
-                        <ul className="list-none space-y-0.5 pl-0">
-                          {importDiagnostics.missingKeys.map((k) => (
-                            <li
-                              key={k}
-                              className="font-mono text-amber-800 dark:text-amber-300 bg-amber-100/60 dark:bg-amber-900/30 rounded px-1.5 py-0.5 inline-block mr-1"
-                            >
-                              {k}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                    {importDiagnostics.unknownKeys.length > 0 && (
-                      <div>
-                        <p className="text-amber-600 dark:text-amber-500 mb-0.5">
-                          Unrecognized {importDiagnostics.unknownKeys.length === 1 ? "key" : "keys"}{" "}
-                          — will be passed through but may have no effect:
-                        </p>
-                        <ul className="list-none space-y-0.5 pl-0">
-                          {importDiagnostics.unknownKeys.map((k) => (
-                            <li
-                              key={k}
-                              className="font-mono text-amber-700 dark:text-amber-400 bg-amber-100/40 dark:bg-amber-900/20 rounded px-1.5 py-0.5 inline-block mr-1"
-                            >
-                              {k}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                    {importDiagnostics.invalidValues.length > 0 && (
-                      <div>
-                        <p className="text-amber-700 dark:text-amber-400 font-medium mb-0.5">
-                          Invalid color{" "}
-                          {importDiagnostics.invalidValues.length === 1 ? "value" : "values"} —
-                          diagram may render incorrectly:
-                        </p>
-                        <ul className="list-none space-y-0.5 pl-0">
-                          {importDiagnostics.invalidValues.map(({ key, value }) => (
-                            <li
-                              key={key}
-                              className="font-mono text-amber-800 dark:text-amber-300 bg-amber-100/60 dark:bg-amber-900/30 rounded px-1.5 py-0.5 inline-block mr-1"
-                            >
-                              {key}
-                              {value === "" ? (
-                                <span className="text-amber-600 dark:text-amber-500 not-italic">
-                                  {" "}
-                                  (empty)
-                                </span>
-                              ) : (
-                                <span className="text-amber-600 dark:text-amber-500 not-italic">
-                                  : "{value}"
-                                </span>
-                              )}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                    {importDiagnostics.warnValues.length > 0 &&
-                      (() => {
-                        const CSS_FUNC_RE = /^(rgba?|hsla?)\s*\(/i;
-                        const namedWarn = importDiagnostics.warnValues.filter(
-                          ({ value }) => !CSS_FUNC_RE.test(value)
-                        );
-                        const funcWarn = importDiagnostics.warnValues.filter(({ value }) =>
-                          CSS_FUNC_RE.test(value)
-                        );
-                        return (
-                          <>
-                            {namedWarn.length > 0 && (
-                              <div>
-                                <p className="text-amber-600 dark:text-amber-500 mb-0.5">
-                                  Named CSS {namedWarn.length === 1 ? "color" : "colors"} — may not
-                                  render correctly across all diagram types:
-                                </p>
-                                <ul className="list-none space-y-0.5 pl-0">
-                                  {namedWarn.map(({ key, value }) => (
-                                    <li
-                                      key={key}
-                                      className="font-mono text-amber-700 dark:text-amber-400 bg-amber-100/40 dark:bg-amber-900/20 rounded px-1.5 py-0.5 inline-block mr-1"
-                                    >
-                                      {key}
-                                      <span className="text-amber-600 dark:text-amber-500 not-italic">
-                                        : "{value}"
-                                      </span>
-                                    </li>
-                                  ))}
-                                </ul>
-                              </div>
-                            )}
-                            {funcWarn.length > 0 && (
-                              <div>
-                                <p className="text-amber-600 dark:text-amber-500 mb-0.5">
-                                  CSS color {funcWarn.length === 1 ? "function" : "functions"} — may
-                                  not render correctly across all diagram types:
-                                </p>
-                                <ul className="list-none space-y-0.5 pl-0">
-                                  {funcWarn.map(({ key, value }) => (
-                                    <li
-                                      key={key}
-                                      className="font-mono text-amber-700 dark:text-amber-400 bg-amber-100/40 dark:bg-amber-900/20 rounded px-1.5 py-0.5 inline-block mr-1"
-                                    >
-                                      {key}
-                                      <span className="text-amber-600 dark:text-amber-500 not-italic">
-                                        : "{value}"
-                                      </span>
-                                    </li>
-                                  ))}
-                                </ul>
-                              </div>
-                            )}
-                          </>
-                        );
-                      })()}
-                  </div>
-                )}
-              <div className="mt-4 pt-3 border-t border-border">
-                <p className="forge-eyebrow mb-2">Bootstrap Export</p>
-                <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
-                  Pre‑load your custom theme into your AI before generating diagrams to increase the
-                  likelihood that the results match what you expect.
+                <p className="text-[10px] text-muted-foreground mb-3 leading-relaxed">
+                  Save the currently selected fonts, colors, and overall look as a named
+                  palette/theme JSON file, or share it via URL.
                 </p>
+                <div className="space-y-2 mb-3">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={includeMetaComments}
+                      onChange={(e) => onIncludeMetaCommentsChange(e.target.checked)}
+                      className="w-3.5 h-3.5 rounded border-border accent-primary"
+                    />
+                    <span className="text-xs text-foreground">Include metadata comments</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={includeBadge}
+                      onChange={(e) => onIncludeBadgeChange(e.target.checked)}
+                      className="w-3.5 h-3.5 rounded border-border accent-primary"
+                    />
+                    <span className="text-xs text-foreground">Include attribution watermark</span>
+                  </label>
+                </div>
                 <div className="grid grid-cols-2 gap-2">
                   <button
-                    onClick={handleCopyBootstrap}
+                    onClick={() => setShowSaveDialog(true)}
+                    className="text-xs px-2 py-1.5 rounded-md border border-border bg-background hover:bg-muted hover:border-primary/40 font-medium transition-all"
+                  >
+                    Save Theme as
+                  </button>
+                  <button
+                    onClick={handleCopyShareLink}
                     className={`text-xs px-2 py-1.5 rounded-md border font-medium transition-all ${
-                      copiedBootstrap
+                      copiedShare
                         ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
                         : "border-border bg-background hover:bg-muted hover:border-primary/40"
                     }`}
                   >
-                    {copiedBootstrap ? "Copied!" : "Export as Markdown"}
+                    {copiedShare ? "Link copied!" : "Share Via URL"}
                   </button>
                   <button
-                    onClick={() => setShowScaffoldModal(true)}
-                    className="text-xs px-2 py-1.5 rounded-md border border-border bg-background hover:bg-muted hover:border-primary/40 font-medium transition-all"
+                    onClick={handleExportJson}
+                    className="col-span-2 text-xs px-2 py-1.5 rounded-md border border-border bg-background hover:bg-muted hover:border-primary/40 font-medium transition-all"
                   >
-                    Generate Prompt Pattern
+                    Export to JSON
                   </button>
+                </div>
+                {userPalettes.length > 0 && (
+                  <div className="mt-2 flex flex-col gap-0.5">
+                    <p className="forge-eyebrow text-muted-foreground/50 mb-0.5">Saved palettes</p>
+                    {userPalettes.map((p) => (
+                      <PaletteRow
+                        key={p.id}
+                        palette={p}
+                        selected={p.id === selectedPaletteId}
+                        customized={Boolean(customColors[p.id]?.length)}
+                        onSelect={() => onSelectPalette(p.id)}
+                        swatchIndices={[0, 1, 2]}
+                        onDelete={() => onDeleteUserPalette(p.id)}
+                      />
+                    ))}
+                  </div>
+                )}
+                {userPalettes.length > 0 && (
+                  <button
+                    onClick={handleExportBundle}
+                    className="w-full mt-2 text-xs px-2 py-1.5 rounded-md border border-border bg-background hover:bg-muted hover:border-primary/40 font-medium transition-all"
+                    title={`Export all ${userPalettes.length} saved palette${userPalettes.length === 1 ? "" : "s"} as a single bundle file`}
+                  >
+                    Export All Themes
+                  </button>
+                )}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".json,application/json"
+                  className="hidden"
+                  aria-label="Import palette JSON file"
+                  onChange={handleFileChosen}
+                />
+                {importDiagnostics &&
+                  (importDiagnostics.missingKeys.length > 0 ||
+                    importDiagnostics.unknownKeys.length > 0 ||
+                    importDiagnostics.invalidValues.length > 0 ||
+                    importDiagnostics.warnValues.length > 0) && (
+                    <div className="mt-2 rounded-md border border-amber-400/40 bg-amber-50/60 dark:bg-amber-950/20 dark:border-amber-500/30 p-2.5 text-xs space-y-1.5">
+                      <div className="flex items-start justify-between gap-1">
+                        <span className="font-semibold text-amber-700 dark:text-amber-400">
+                          Palette import warnings
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => onImportDiagnosticsChange(null)}
+                          className="text-amber-600/70 dark:text-amber-400/60 hover:text-amber-800 dark:hover:text-amber-300 leading-none mt-px"
+                          aria-label="Dismiss import warnings"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                      {importDiagnostics.missingKeys.length > 0 && (
+                        <div>
+                          <p className="text-amber-700 dark:text-amber-400 font-medium mb-0.5">
+                            Missing required{" "}
+                            {importDiagnostics.missingKeys.length === 1 ? "key" : "keys"} — diagram
+                            may render with Mermaid defaults:
+                          </p>
+                          <ul className="list-none space-y-0.5 pl-0">
+                            {importDiagnostics.missingKeys.map((k) => (
+                              <li
+                                key={k}
+                                className="font-mono text-amber-800 dark:text-amber-300 bg-amber-100/60 dark:bg-amber-900/30 rounded px-1.5 py-0.5 inline-block mr-1"
+                              >
+                                {k}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                      {importDiagnostics.unknownKeys.length > 0 && (
+                        <div>
+                          <p className="text-amber-600 dark:text-amber-500 mb-0.5">
+                            Unrecognized{" "}
+                            {importDiagnostics.unknownKeys.length === 1 ? "key" : "keys"} — will be
+                            passed through but may have no effect:
+                          </p>
+                          <ul className="list-none space-y-0.5 pl-0">
+                            {importDiagnostics.unknownKeys.map((k) => (
+                              <li
+                                key={k}
+                                className="font-mono text-amber-700 dark:text-amber-400 bg-amber-100/40 dark:bg-amber-900/20 rounded px-1.5 py-0.5 inline-block mr-1"
+                              >
+                                {k}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                      {importDiagnostics.invalidValues.length > 0 && (
+                        <div>
+                          <p className="text-amber-700 dark:text-amber-400 font-medium mb-0.5">
+                            Invalid color{" "}
+                            {importDiagnostics.invalidValues.length === 1 ? "value" : "values"} —
+                            diagram may render incorrectly:
+                          </p>
+                          <ul className="list-none space-y-0.5 pl-0">
+                            {importDiagnostics.invalidValues.map(({ key, value }) => (
+                              <li
+                                key={key}
+                                className="font-mono text-amber-800 dark:text-amber-300 bg-amber-100/60 dark:bg-amber-900/30 rounded px-1.5 py-0.5 inline-block mr-1"
+                              >
+                                {key}
+                                {value === "" ? (
+                                  <span className="text-amber-600 dark:text-amber-500 not-italic">
+                                    {" "}
+                                    (empty)
+                                  </span>
+                                ) : (
+                                  <span className="text-amber-600 dark:text-amber-500 not-italic">
+                                    : "{value}"
+                                  </span>
+                                )}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                      {importDiagnostics.warnValues.length > 0 &&
+                        (() => {
+                          const CSS_FUNC_RE = /^(rgba?|hsla?)\s*\(/i;
+                          const namedWarn = importDiagnostics.warnValues.filter(
+                            ({ value }) => !CSS_FUNC_RE.test(value)
+                          );
+                          const funcWarn = importDiagnostics.warnValues.filter(({ value }) =>
+                            CSS_FUNC_RE.test(value)
+                          );
+                          return (
+                            <>
+                              {namedWarn.length > 0 && (
+                                <div>
+                                  <p className="text-amber-600 dark:text-amber-500 mb-0.5">
+                                    Named CSS {namedWarn.length === 1 ? "color" : "colors"} — may
+                                    not render correctly across all diagram types:
+                                  </p>
+                                  <ul className="list-none space-y-0.5 pl-0">
+                                    {namedWarn.map(({ key, value }) => (
+                                      <li
+                                        key={key}
+                                        className="font-mono text-amber-700 dark:text-amber-400 bg-amber-100/40 dark:bg-amber-900/20 rounded px-1.5 py-0.5 inline-block mr-1"
+                                      >
+                                        {key}
+                                        <span className="text-amber-600 dark:text-amber-500 not-italic">
+                                          : "{value}"
+                                        </span>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              )}
+                              {funcWarn.length > 0 && (
+                                <div>
+                                  <p className="text-amber-600 dark:text-amber-500 mb-0.5">
+                                    CSS color {funcWarn.length === 1 ? "function" : "functions"} —
+                                    may not render correctly across all diagram types:
+                                  </p>
+                                  <ul className="list-none space-y-0.5 pl-0">
+                                    {funcWarn.map(({ key, value }) => (
+                                      <li
+                                        key={key}
+                                        className="font-mono text-amber-700 dark:text-amber-400 bg-amber-100/40 dark:bg-amber-900/20 rounded px-1.5 py-0.5 inline-block mr-1"
+                                      >
+                                        {key}
+                                        <span className="text-amber-600 dark:text-amber-500 not-italic">
+                                          : "{value}"
+                                        </span>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              )}
+                            </>
+                          );
+                        })()}
+                    </div>
+                  )}
+                <div className="mt-4 pt-3 border-t border-border">
+                  <p className="forge-eyebrow mb-2">Bootstrap Export</p>
+                  <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
+                    Pre‑load your custom theme into your AI before generating diagrams to increase
+                    the likelihood that the results match what you expect.
+                  </p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      onClick={handleCopyBootstrap}
+                      className={`text-xs px-2 py-1.5 rounded-md border font-medium transition-all ${
+                        copiedBootstrap
+                          ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                          : "border-border bg-background hover:bg-muted hover:border-primary/40"
+                      }`}
+                    >
+                      {copiedBootstrap ? "Copied!" : "Export as Markdown"}
+                    </button>
+                    <button
+                      onClick={() => setShowScaffoldModal(true)}
+                      className="text-xs px-2 py-1.5 rounded-md border border-border bg-background hover:bg-muted hover:border-primary/40 font-medium transition-all"
+                    >
+                      Generate Prompt Pattern
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
           </div>
         </div>
 
