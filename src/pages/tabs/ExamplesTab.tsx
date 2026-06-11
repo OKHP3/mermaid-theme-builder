@@ -8,6 +8,7 @@ import { DiagramInventory } from "@/components/DiagramInventory";
 import { SHOWCASE_META } from "@/data/examples";
 import { type ExampleItem, ALL_EXAMPLES, SECTIONS, filterExamples } from "@/lib/examples-filter";
 import type { MyThemeSlot } from "@/lib/my-theme-slots";
+import { type ReactNode } from "react";
 import {
   SUPPORT_STATUS_LABELS,
   SUPPORT_STATUS_STYLES,
@@ -44,6 +45,8 @@ interface ExamplesTabProps {
   onAddMyThemeSlot?: () => void;
   onDeleteMyThemeSlot?: (id: string) => void;
   onExportMyThemeSlot?: (id: string) => void;
+  onImportMyThemeSlot?: (slot: MyThemeSlot) => void;
+  onShowToast?: (msg: ReactNode) => void;
 }
 
 export function ExamplesTab({
@@ -61,6 +64,8 @@ export function ExamplesTab({
   onAddMyThemeSlot = () => {},
   onDeleteMyThemeSlot = () => {},
   onExportMyThemeSlot = () => {},
+  onImportMyThemeSlot = () => {},
+  onShowToast = () => {},
 }: ExamplesTabProps) {
   const [selectedId, setSelectedId] = useState(() => {
     if (initialSelectedId && ALL_EXAMPLES.some((e) => e.id === initialSelectedId)) {
@@ -192,6 +197,8 @@ export function ExamplesTab({
         onAddMyThemeSlot={onAddMyThemeSlot}
         onDeleteMyThemeSlot={onDeleteMyThemeSlot}
         onExportMyThemeSlot={onExportMyThemeSlot}
+        onImportMyThemeSlot={onImportMyThemeSlot}
+        onShowToast={onShowToast}
       />
       <div className="flex-1 overflow-hidden flex flex-col md:flex-row min-h-0">
         <div

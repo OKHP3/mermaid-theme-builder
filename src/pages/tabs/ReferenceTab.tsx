@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { Palette, ThemeColor } from "@/lib/palettes";
 import { PaletteSelectorBar } from "@/components/PaletteSelectorBar";
 import { getClassDefs } from "@/lib/theme-engine";
@@ -27,6 +27,8 @@ interface ReferenceTabProps {
   onAddMyThemeSlot?: () => void;
   onDeleteMyThemeSlot?: (id: string) => void;
   onExportMyThemeSlot?: (id: string) => void;
+  onImportMyThemeSlot?: (slot: MyThemeSlot) => void;
+  onShowToast?: (msg: ReactNode) => void;
 }
 
 const TAXONOMY_DOCS_URL =
@@ -83,6 +85,8 @@ export function ReferenceTab({
   onAddMyThemeSlot = () => {},
   onDeleteMyThemeSlot = () => {},
   onExportMyThemeSlot = () => {},
+  onImportMyThemeSlot = () => {},
+  onShowToast = () => {},
 }: ReferenceTabProps) {
   const classDefs = useMemo(() => getClassDefs(selectedPalette), [selectedPalette]);
 
@@ -148,6 +152,8 @@ export function ReferenceTab({
         onAddMyThemeSlot={onAddMyThemeSlot}
         onDeleteMyThemeSlot={onDeleteMyThemeSlot}
         onExportMyThemeSlot={onExportMyThemeSlot}
+        onImportMyThemeSlot={onImportMyThemeSlot}
+        onShowToast={onShowToast}
       />
       <div className="flex-1 overflow-y-auto">
         <details

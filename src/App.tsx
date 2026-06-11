@@ -40,6 +40,7 @@ import {
 import { type MermaidLook, CLASSDEF_CAPABLE_FAMILIES, getClassDefs } from "@/lib/theme-engine";
 import {
   type MyThemeSlot,
+  type MyThemeSlotId,
   createDefaultMyThemeSlot,
   nextSlotNumber,
   isMyThemeSlotId,
@@ -739,6 +740,23 @@ export function AppShell() {
     [myThemeSlots]
   );
 
+  const handleImportMyThemeSlot = useCallback(
+    (slot: MyThemeSlot) => {
+      setMyThemeSlots((prev) => {
+        if (prev.length >= 3) return prev;
+        const num = nextSlotNumber(prev);
+        if (num === null) return prev;
+        const newSlot: MyThemeSlot = {
+          ...slot,
+          id: `my-theme-${num}` as MyThemeSlotId,
+        };
+        setActiveMyThemeSlotId(newSlot.id);
+        return [...prev, newSlot];
+      });
+    },
+    []
+  );
+
   const handleResetPalette = useCallback(() => {
     if (activeMyThemeSlotId) {
       setMyThemeSlots((prev) =>
@@ -1249,6 +1267,7 @@ export function AppShell() {
             onAddMyThemeSlot={handleAddMyThemeSlot}
             onDeleteMyThemeSlot={handleDeleteMyThemeSlot}
             onExportMyThemeSlot={handleExportMyThemeSlot}
+            onImportMyThemeSlot={handleImportMyThemeSlot}
           />
         </div>
         <div
@@ -1299,6 +1318,7 @@ export function AppShell() {
               onAddMyThemeSlot={handleAddMyThemeSlot}
               onDeleteMyThemeSlot={handleDeleteMyThemeSlot}
               onExportMyThemeSlot={handleExportMyThemeSlot}
+              onImportMyThemeSlot={handleImportMyThemeSlot}
               customThemeNamePlaceholder={
                 activeMyThemeSlotId ? slotDisplayName(activeMyThemeSlotId) : undefined
               }
@@ -1320,6 +1340,7 @@ export function AppShell() {
               onAddMyThemeSlot={handleAddMyThemeSlot}
               onDeleteMyThemeSlot={handleDeleteMyThemeSlot}
               onExportMyThemeSlot={handleExportMyThemeSlot}
+              onImportMyThemeSlot={handleImportMyThemeSlot}
             />
           )}
           {activeTab === "reference" && (
@@ -1340,6 +1361,7 @@ export function AppShell() {
               onAddMyThemeSlot={handleAddMyThemeSlot}
               onDeleteMyThemeSlot={handleDeleteMyThemeSlot}
               onExportMyThemeSlot={handleExportMyThemeSlot}
+              onImportMyThemeSlot={handleImportMyThemeSlot}
             />
           )}
         </div>
