@@ -1,8 +1,7 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { BUILTIN_PALETTES } from "@/lib/palettes";
 import type { Palette, ThemeColor } from "@/lib/palettes";
 import { isExtractedPaletteId } from "@/lib/extractor";
-import { parsePortablePalette } from "@/lib/exporters";
 
 const SWATCH_INDICES = [0, 3, 4, 6];
 
@@ -18,13 +17,6 @@ interface PaletteSelectorBarProps {
   onAddMyThemeSlot: () => void;
   onDeleteMyThemeSlot: (id: string) => void;
   onExportMyThemeSlot: (id: string) => void;
-  onImportAsNewSlot?: (
-    palette: Palette,
-    warnings: {
-      invalidValues: Array<{ key: string; value: string }>;
-      warnValues: Array<{ key: string; value: string }>;
-    }
-  ) => void;
   onShowToast: (msg: string) => void;
 }
 
@@ -40,11 +32,9 @@ export function PaletteSelectorBar({
   onAddMyThemeSlot,
   onDeleteMyThemeSlot,
   onExportMyThemeSlot,
-  onImportAsNewSlot,
   onShowToast,
 }: PaletteSelectorBarProps) {
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     if (!pendingDeleteId) return;
@@ -196,42 +186,6 @@ export function PaletteSelectorBar({
             </button>
           )}
 
-          {/* Import JSON as new slot button */}
-          {myThemeSlots.length < 3 ? (
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              title="Import JSON as new slot"
-              aria-label="Import JSON as new slot"
-              className="flex-none flex flex-col items-center justify-center gap-1 px-2 py-1.5 rounded-lg border border-dashed border-border/60 hover:border-primary/50 hover:bg-primary/5 transition-all text-muted-foreground hover:text-primary"
-            >
-              <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4" aria-hidden="true">
-                <path
-                  d="M8 3v10M3 8h10"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                />
-              </svg>
-              <span className="text-[9px] leading-none font-medium whitespace-nowrap">Import</span>
-            </button>
-          ) : (
-            <span
-              className="flex-none flex flex-col items-center justify-center gap-1 px-2 py-1.5 rounded-lg border border-dashed border-border/30 text-muted-foreground/50 cursor-not-allowed"
-              title="All 3 slots are in use — delete one to import"
-            >
-              <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4" aria-hidden="true">
-                <path
-                  d="M8 3v10M3 8h10"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                />
-              </svg>
-              <span className="text-[9px] leading-none font-medium whitespace-nowrap">Import</span>
-            </span>
-          )}
-
           {/* Faint divider between My Theme section and built-in presets */}
           {myThemeSlots.length > 0 && (
             <div className="w-px bg-border/50 self-stretch mx-1 flex-none" aria-hidden="true" />
@@ -343,34 +297,6 @@ export function PaletteSelectorBar({
           </div>
         )}
       </div>
-
-      {/* Hidden file input for JSON import */}
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept=".json,application/json"
-        aria-label="Import palette JSON file"
-        className="hidden"
-        onChange={async (e) => {
-          const file = e.target.files?.[0];
-          e.target.value = "";
-          if (!file) return;
-          try {
-            const text = await file.text();
-            const result = parsePortablePalette(text);
-            if (!result.ok) {
-              onShowToast(`Import failed: ${result.error}`);
-              return;
-            }
-            onImportAsNewSlot?.(result.palette, {
-              invalidValues: result.invalidValues,
-              warnValues: result.warnValues,
-            });
-          } catch (err) {
-            onShowToast(err instanceof Error ? err.message : "Import failed");
-          }
-        }}
-      />
     </>
   );
 }
