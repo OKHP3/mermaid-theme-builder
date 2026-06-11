@@ -440,7 +440,7 @@ classDef askLink fill:#065F46,stroke:#34D399,stroke-width:2px,color:#D1FAE5
 classDef credit fill:#18181B,stroke:#52525B,stroke-width:1px,color:#71717A`;
 
 export const SHOWCASE_META = {
-  title: "OverKill Rube Goldberg Showcase",
+  title: "OKHP3 Rube Goldberg - Showcase",
   description:
     "A deliberately complex sample diagram that demonstrates subgraphs, semantic classes, clickable nodes, attribution, and dark-mode theming.",
   tags: ["Showcase", "Advanced", "Stress test", "Flowchart", "ELK layout", "Clickable links"],

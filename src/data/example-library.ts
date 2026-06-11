@@ -1353,7 +1353,7 @@ flowchart RL
 export const EXAMPLE_CATALOG: ExampleEntry[] = [
   {
     id: "compose-instructions",
-    label: "Compose Tab — How to Use",
+    label: "Flowchart — MTB: Compose Tab (How to Use)",
     family: "flowchart",
     category: "flow",
     content: COMPOSE_TAB_DEFAULT,
@@ -1361,7 +1361,7 @@ export const EXAMPLE_CATALOG: ExampleEntry[] = [
   },
   {
     id: "apply-instructions",
-    label: "Apply Tab — How to Use",
+    label: "Flowchart — MTB: Apply Tab (How to Use)",
     family: "flowchart",
     category: "flow",
     content: APPLY_TAB_DEFAULT,
@@ -1789,7 +1789,7 @@ export const EXAMPLE_CATALOG: ExampleEntry[] = [
   // flow — showcase & contextual examples
   {
     id: "flowchart-theme-engine-contextual",
-    label: "Flowchart — OKH Protocol Dark showcase",
+    label: "Flowchart — OKH Process & Protocol",
     family: "flowchart",
     category: "flow",
     content: FLOWCHART_THEME_ENGINE_CONTEXTUAL,
