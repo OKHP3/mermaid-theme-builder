@@ -374,10 +374,15 @@ export function AppShell() {
     if (persisted) {
       if (Array.isArray(persisted.userPalettes))
         setUserPalettes((prev) => {
-          // Dedupe by id; share-token palettes win over persisted duplicates.
-          const seen = new Set(prev.map((p) => p.id));
+          // Dedupe by id; share-token palettes and built-ins win over persisted duplicates.
+          const seen = new Set([...BUILTIN_PALETTES, ...prev].map((p) => p.id));
           const merged = [...prev];
-          for (const p of persisted.userPalettes!) if (!seen.has(p.id)) merged.push(p);
+          for (const p of persisted.userPalettes!) {
+            if (!seen.has(p.id)) {
+              seen.add(p.id);
+              merged.push(p);
+            }
+          }
           return merged;
         });
       if (!didApplyShare && typeof persisted.selectedPaletteId === "string") {
@@ -482,10 +487,16 @@ export function AppShell() {
     return () => clearTimeout(t);
   }, [toast]);
 
-  const allPalettes = useMemo<Palette[]>(
-    () => [...BRAND_PALETTES, ...UTILITY_PALETTES, ...userPalettes],
-    [userPalettes]
-  );
+  const allPalettes = useMemo<Palette[]>(() => {
+    const seen = new Set<string>();
+    const merged: Palette[] = [];
+    for (const palette of [...BRAND_PALETTES, ...UTILITY_PALETTES, ...userPalettes]) {
+      if (seen.has(palette.id)) continue;
+      seen.add(palette.id);
+      merged.push(palette);
+    }
+    return merged;
+  }, [userPalettes]);
 
   const selectedPalette = useMemo((): Palette => {
     const base = allPalettes.find((p) => p.id === selectedPaletteId) ?? BRAND_PALETTES[0];

@@ -16,11 +16,15 @@ import { test, expect } from "@playwright/test";
 
 test.describe("Settings menu keyboard navigation", () => {
   test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => {
+      window.localStorage.clear();
+      window.sessionStorage.clear();
+    });
     await page.goto("/");
   });
 
   test("Enter on the settings button opens the menu (role=menu is visible)", async ({ page }) => {
-    const settingsBtn = page.getByRole("button", { name: "Settings" });
+    const settingsBtn = page.locator("header").getByRole("button", { name: /^Settings$/ });
     await settingsBtn.focus();
     await page.keyboard.press("Enter");
 
@@ -29,7 +33,7 @@ test.describe("Settings menu keyboard navigation", () => {
   });
 
   test("Space on the settings button opens the menu (role=menu is visible)", async ({ page }) => {
-    const settingsBtn = page.getByRole("button", { name: "Settings" });
+    const settingsBtn = page.locator("header").getByRole("button", { name: /^Settings$/ });
     await settingsBtn.focus();
     await page.keyboard.press("Space");
 
@@ -38,7 +42,7 @@ test.describe("Settings menu keyboard navigation", () => {
   });
 
   test("ArrowDown moves focus to the first role=menuitem after opening", async ({ page }) => {
-    const settingsBtn = page.getByRole("button", { name: "Settings" });
+    const settingsBtn = page.locator("header").getByRole("button", { name: /^Settings$/ });
     await settingsBtn.focus();
 
     // Open the menu with Enter first, then press ArrowDown
@@ -64,7 +68,7 @@ test.describe("Settings menu keyboard navigation", () => {
   test("ArrowDown on the trigger button opens the menu and focuses the first menuitem", async ({
     page,
   }) => {
-    const settingsBtn = page.getByRole("button", { name: "Settings" });
+    const settingsBtn = page.locator("header").getByRole("button", { name: /^Settings$/ });
     await settingsBtn.focus();
 
     // Press ArrowDown directly on the closed trigger
@@ -86,7 +90,7 @@ test.describe("Settings menu keyboard navigation", () => {
   });
 
   test("Escape closes the menu and returns focus to the settings button", async ({ page }) => {
-    const settingsBtn = page.getByRole("button", { name: "Settings" });
+    const settingsBtn = page.locator("header").getByRole("button", { name: /^Settings$/ });
     await settingsBtn.focus();
     await page.keyboard.press("Enter");
 

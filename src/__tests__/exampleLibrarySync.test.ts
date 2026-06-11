@@ -5,6 +5,10 @@ import { EXAMPLE_CATALOG } from "@/data/example-library";
 
 const EXAMPLES_DIR = path.resolve(import.meta.dirname, "../../examples");
 
+function normalizeNewlines(value: string): string {
+  return value.replace(/\r?\n/g, "\n").trim();
+}
+
 const SYNC_CASES: Array<{ catalogId: string; mmdFile: string }> = [
   { catalogId: "block-mermaid-basic", mmdFile: "basic-block.mmd" },
   { catalogId: "c4-mermaid-basic", mmdFile: "basic-c4.mmd" },
@@ -24,8 +28,8 @@ describe("example-library.ts ↔ examples/*.mmd sync guard", () => {
       const filePath = path.join(EXAMPLES_DIR, mmdFile);
       expect(fs.existsSync(filePath), `Source file examples/${mmdFile} does not exist`).toBe(true);
 
-      const fileContent = fs.readFileSync(filePath, "utf-8").trim();
-      expect(entry!.content.trim()).toBe(fileContent);
+      const fileContent = normalizeNewlines(fs.readFileSync(filePath, "utf-8"));
+      expect(normalizeNewlines(entry!.content)).toBe(fileContent);
     });
   }
 });

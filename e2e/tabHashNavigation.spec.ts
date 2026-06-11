@@ -35,20 +35,25 @@ function hashOf(url: string): string {
 test("browser Back restores Examples tab after Apply → Examples → Apply navigation", async ({
   page,
 }) => {
-  // 1. Load the root URL — app defaults to Apply tab.
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+  });
+
+  // 1. Load the root URL and move to Apply explicitly.
   await page.goto("/");
   await page.waitForLoadState("load");
-
-  // Wait for the app shell to finish setting the initial hash.
-  await page.waitForFunction(() => window.location.hash !== "");
-
-  // Confirm we are on Apply (hash should be #apply after init).
-  const initialHash = hashOf(page.url());
-  expect(["#apply", "#"]).toContain(initialHash === "" ? "#" : initialHash);
+  await Promise.all([
+    page.waitForURL((url) => url.hash === "#apply"),
+    page.getByRole("tab", { name: "Apply" }).first().click(),
+  ]);
+  expect(hashOf(page.url())).toBe("#apply");
 
   // 2. Navigate to Examples tab.
-  await page.getByRole("tab", { name: "Examples" }).first().click();
-  await page.waitForFunction(() => window.location.hash === "#examples");
+  await Promise.all([
+    page.waitForURL((url) => url.hash === "#examples"),
+    page.getByRole("tab", { name: "Examples" }).first().click(),
+  ]);
   expect(hashOf(page.url())).toBe("#examples");
 
   // Sidebar must be populated.
@@ -56,17 +61,15 @@ test("browser Back restores Examples tab after Apply → Examples → Apply navi
   await expect(page.locator("[data-example-id]").first()).toBeVisible();
 
   // 3. Navigate back to Apply tab.
-  await page.getByRole("tab", { name: "Apply" }).first().click();
-  await page.waitForFunction(() => window.location.hash === "#apply");
+  await Promise.all([
+    page.waitForURL((url) => url.hash === "#apply"),
+    page.getByRole("tab", { name: "Apply" }).first().click(),
+  ]);
   expect(hashOf(page.url())).toBe("#apply");
 
   // 4. Press the browser Back button.
-  await page.goBack();
+  await Promise.all([page.waitForURL((url) => url.hash === "#examples"), page.goBack()]);
 
-  // URL hash must return to #examples.
-  await page.waitForFunction(() => window.location.hash === "#examples", undefined, {
-    timeout: 5_000,
-  });
   expect(hashOf(page.url())).toBe("#examples");
 
   // 5. The Examples tab content must be visible — at least one sidebar entry.
@@ -79,30 +82,36 @@ test("browser Back restores Examples tab after Apply → Examples → Apply navi
 // ---------------------------------------------------------------------------
 
 test("browser Forward restores Apply tab after Back → Forward cycle", async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+  });
+
   // 1. Load root → Apply tab.
   await page.goto("/");
   await page.waitForLoadState("load");
-  await page.waitForFunction(() => window.location.hash !== "");
+  await Promise.all([
+    page.waitForURL((url) => url.hash === "#apply"),
+    page.getByRole("tab", { name: "Apply" }).first().click(),
+  ]);
 
   // 2. Go to Examples.
-  await page.getByRole("tab", { name: "Examples" }).first().click();
-  await page.waitForFunction(() => window.location.hash === "#examples");
+  await Promise.all([
+    page.waitForURL((url) => url.hash === "#examples"),
+    page.getByRole("tab", { name: "Examples" }).first().click(),
+  ]);
 
   // 3. Go to Apply.
-  await page.getByRole("tab", { name: "Apply" }).first().click();
-  await page.waitForFunction(() => window.location.hash === "#apply");
+  await Promise.all([
+    page.waitForURL((url) => url.hash === "#apply"),
+    page.getByRole("tab", { name: "Apply" }).first().click(),
+  ]);
 
   // 4. Go Back → Examples.
-  await page.goBack();
-  await page.waitForFunction(() => window.location.hash === "#examples", undefined, {
-    timeout: 5_000,
-  });
+  await Promise.all([page.waitForURL((url) => url.hash === "#examples"), page.goBack()]);
 
   // 5. Go Forward → Apply.
-  await page.goForward();
-  await page.waitForFunction(() => window.location.hash === "#apply", undefined, {
-    timeout: 5_000,
-  });
+  await Promise.all([page.waitForURL((url) => url.hash === "#apply"), page.goForward()]);
   expect(hashOf(page.url())).toBe("#apply");
 
   // The Apply tab textarea (diagram code input) must be visible.

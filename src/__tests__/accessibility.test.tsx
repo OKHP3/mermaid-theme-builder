@@ -19,7 +19,7 @@
  */
 
 // vi.mock is hoisted by vitest — must appear before any imports.
-import { vi, describe, it, expect, afterEach, beforeAll } from "vitest";
+import { vi, describe, it, expect, afterEach, beforeAll, beforeEach } from "vitest";
 
 vi.mock("mermaid", () => ({
   default: {
@@ -28,7 +28,7 @@ vi.mock("mermaid", () => ({
   },
 }));
 
-import { render, cleanup, fireEvent } from "@testing-library/react";
+import { render, cleanup, fireEvent, waitFor } from "@testing-library/react";
 import { createElement } from "react";
 import axe from "axe-core";
 
@@ -56,6 +56,12 @@ beforeAll(() => {
     // Let other errors through so real issues are visible.
     console.warn("[test error]", ...args);
   });
+});
+
+beforeEach(() => {
+  window.localStorage.clear();
+  window.sessionStorage.clear();
+  window.history.replaceState({}, "", `${window.location.pathname}${window.location.search}`);
 });
 
 afterEach(() => {
@@ -255,6 +261,35 @@ describe("AppShell (real component)", () => {
     const { container } = render(createElement(AppShell, null));
     const unlabeled = findUnlabeledThs(container);
     expect(unlabeled, formatUnlabeledThs(unlabeled)).toHaveLength(0);
+  });
+
+  it("dedupes repeated persisted palettes before rendering the selector bar", async () => {
+    const duplicatePalette = {
+      ...BRAND_PALETTES[0],
+      id: "duplicate-custom",
+      name: "Duplicate Custom",
+    };
+
+    window.localStorage.setItem(
+      "mtb.state.v1",
+      JSON.stringify({
+        schemaVersion: 1,
+        selectedPaletteId: duplicatePalette.id,
+        customColors: {},
+        includeMetaComments: true,
+        includeBadge: true,
+        customThemeName: "",
+        inputCode: "flowchart TD\n  A --> B",
+        userPalettes: [duplicatePalette, duplicatePalette],
+        recentPaletteIds: [],
+      })
+    );
+
+    const { container } = render(createElement(AppShell, null));
+
+    await waitFor(() => {
+      expect(container.querySelectorAll("#apply-palette-tile-duplicate-custom")).toHaveLength(1);
+    });
   });
 });
 
