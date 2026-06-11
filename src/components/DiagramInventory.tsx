@@ -308,7 +308,7 @@ export function DiagramInventory({
     <div
       className={
         embedded
-          ? "flex flex-col bg-background"
+          ? "flex flex-col"
           : "fixed inset-0 z-50 flex flex-col bg-background overflow-hidden"
       }
     >
@@ -399,7 +399,7 @@ export function DiagramInventory({
             />
           </div>
 
-          <div className={embedded ? "overflow-y-auto max-h-72" : "flex-1 overflow-y-auto"}>
+          <div className={embedded ? "" : "flex-1 overflow-y-auto"}>
             {filteredCapabilities.length > 0 && (
               <div className="px-4 md:px-6 py-4">
                 <div className="flex items-center gap-2 mb-2">
