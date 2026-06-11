@@ -13,6 +13,10 @@ const SYNC_CASES: Array<{ catalogId: string; mmdFile: string }> = [
   { catalogId: "architecture-mermaid-basic", mmdFile: "basic-architecture.mmd" },
   { catalogId: "kanban-mermaid-basic", mmdFile: "basic-kanban.mmd" },
   { catalogId: "packet-mermaid-basic", mmdFile: "basic-packet.mmd" },
+  {
+    catalogId: "timeline-overkill-theme-builder-history",
+    mmdFile: "timeline-overkill-theme-builder-history.mmd",
+  },
 ];
 
 describe("example-library.ts ↔ examples/*.mmd sync guard", () => {

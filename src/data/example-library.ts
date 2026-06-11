@@ -445,7 +445,17 @@ const TIMELINE_PROJECT_HISTORY = `timeline
         2026-04-25 : 3 brand presets defined (OKH, Glee-fully, AskJamie)
                    : Showcase diagram merged (Claude + ChatGPT)
                    : 91-type diagram taxonomy cataloged
-                   : Legal analysis on color palettes completed`;
+                   : Legal analysis on color palettes completed
+    section Architecture Hardening (V0.3)
+        2026-05-05 : Custom app icon shipped
+                   : Brand palette colors corrected
+                   : Render errors fixed (sequence, requirement, fishbone)
+    section What shipped in v0.4 and v0.5
+        2026-05-05 : Reference tab + URL routing
+                   : DiagramInventory and ClassBrowser
+        2026-05-12 : OKH Forge UI system
+                   : Pan and zoom on all previews
+                   : CI/CD pipeline restored`;
 
 const JOURNEY_IDEA_TO_SHIP = `journey
     title From Random Thought to Shipped Tool
@@ -1473,7 +1483,7 @@ export const EXAMPLE_CATALOG: ExampleEntry[] = [
     category: "timeline",
     content: TIMELINE_PROJECT_HISTORY,
     description:
-      "Timeline diagram tracing the Mermaid Theme Builder from origin through V0.2. Shows how palette section-header backgrounds and event-label colors respond to palette changes.",
+      "Timeline diagram tracing the Mermaid Theme Builder from origin through V0.5. Covers Architecture Hardening (V0.3) and what shipped in v0.4 and v0.5. Shows how palette section-header backgrounds and event-label colors respond to palette changes.",
     tags: ["timeline", "project history", "OKH", "milestones", "chronological"],
   },
   {
