@@ -227,6 +227,10 @@ export function MermaidPreview({ code, className, typography }: MermaidPreviewPr
   const translateRef = useRef({ x: 0, y: 0 });
   const lastPinchDistance = useRef<number | null>(null);
   const lastTapTime = useRef<number>(0);
+  // Always-current scale ref so fitToWindow can read the live scale value
+  // without needing it in its dependency array (which would make it unstable).
+  const scaleRef = useRef(1);
+  scaleRef.current = scale;
   const uniqueId = useId().replace(/:/g, "");
 
   const typographyCss = useMemo(() => {
@@ -249,8 +253,6 @@ export function MermaidPreview({ code, className, typography }: MermaidPreviewPr
     const container = containerRef.current;
     if (!container) return;
 
-    // Bail out early if the container has no visible dimensions yet — the caller
-    // is responsible for retrying once the container is properly laid out.
     const containerW = container.clientWidth;
     const containerH = container.clientHeight;
     if (!containerW || !containerH) return;
@@ -258,60 +260,50 @@ export function MermaidPreview({ code, className, typography }: MermaidPreviewPr
     const svg = container.querySelector("svg");
     if (!svg) return;
 
-    let svgW = 0;
-    let svgH = 0;
+    // Primary: measure the SVG's natural (scale=1) CSS pixel dimensions using
+    // getBoundingClientRect(). This accounts for all ancestor CSS transforms,
+    // including the pan/zoom parent div's scale(S). Dividing by scaleRef.current
+    // recovers the at-scale-1 rendered size regardless of the user's current
+    // zoom level. This avoids the previous approach of inferring pixel dimensions
+    // from max-width style attributes and SVG user units (which breaks when
+    // max-width is a percentage, or when user units ≠ CSS pixels).
+    const rect = svg.getBoundingClientRect();
+    const cur = scaleRef.current;
+    let svgW = rect.width > 0 && cur > 0 ? rect.width / cur : 0;
+    let svgH = rect.height > 0 && cur > 0 ? rect.height / cur : 0;
 
-    // Primary: getBBox() returns the tight bounding box of rendered content in
-    // SVG user units, excluding any internal whitespace that Mermaid may allocate
-    // (e.g., requirementDiagram reserves a tall viewBox even for small diagrams).
-    // Convert user units → CSS pixels via max-width / viewBox.width ratio, then
-    // clamp to viewBox dimensions — this ensures diagrams whose edge labels or
-    // arrowheads spill slightly outside the viewBox don't get zoomed further out
-    // than the viewBox-based calculation, while still allowing a tighter fit when
-    // the viewBox has more whitespace than the actual content.
-    try {
-      const bbox = (svg as SVGGraphicsElement).getBBox();
+    // Fallback: viewBox dimensions as CSS pixels.
+    // Mermaid sets max-width ≈ viewBox.width, making 1 user unit ≈ 1 CSS pixel.
+    if (!svgW || !svgH) {
       const vb = svg.viewBox?.baseVal;
-      if (bbox.width > 0 && bbox.height > 0 && vb && vb.width > 0 && vb.height > 0) {
-        const maxWidthStr = svg.style.maxWidth;
-        const mw = maxWidthStr && !maxWidthStr.includes("%") ? parseFloat(maxWidthStr) : vb.width;
-        if (mw > 0) {
-          const cssPerUnit = mw / vb.width;
-          const viewBoxH = vb.height * cssPerUnit;
-          svgW = Math.min(bbox.width * cssPerUnit, mw);
-          svgH = Math.min(bbox.height * cssPerUnit, viewBoxH);
-        }
-      }
-    } catch {
-      // getBBox() throws when the SVG is not attached to a visible document
-    }
-
-    // Fallback: max-width + viewBox aspect ratio
-    if (!svgW || !svgH) {
-      const maxWidthStr = svg.style.maxWidth;
-      if (maxWidthStr && !maxWidthStr.includes("%")) {
-        const mw = parseFloat(maxWidthStr);
-        if (mw > 0) {
-          svgW = mw;
-          const vb = svg.viewBox?.baseVal;
-          if (vb && vb.width > 0) svgH = mw * (vb.height / vb.width);
-        }
+      if (vb && vb.width > 0 && vb.height > 0) {
+        svgW = vb.width;
+        svgH = vb.height;
       }
     }
 
-    // Fallback: viewBox dimensions directly
-    if (!svgW || !svgH) {
-      svgW = svg.viewBox?.baseVal?.width ?? 0;
-      svgH = svg.viewBox?.baseVal?.height ?? 0;
-    }
-
-    // Fallback: explicit width/height attributes (skip "%" values)
-    if (!svgW || !svgH) {
-      const aw = parseFloat(svg.getAttribute("width") ?? "0");
-      const ah = parseFloat(svg.getAttribute("height") ?? "0");
-      if (aw && ah && !svg.getAttribute("width")?.includes("%")) {
-        svgW = aw;
-        svgH = ah;
+    // Optional tighter fit: getBBox returns the tight content bounding box in
+    // SVG user units — smaller than the full viewBox for diagram types that
+    // reserve extra whitespace (e.g. requirementDiagram, Gantt). Only apply
+    // when the tight box is meaningfully smaller to avoid over-zooming diagrams
+    // whose edge labels or arrows approach the viewBox boundary.
+    if (svgW > 0 && svgH > 0) {
+      const vb = svg.viewBox?.baseVal;
+      if (vb && vb.width > 0 && vb.height > 0) {
+        try {
+          const bbox = (svg as SVGGraphicsElement).getBBox();
+          if (bbox.width > 0 && bbox.height > 0) {
+            const pxPerUnit = svgW / vb.width;
+            const tightW = bbox.width * pxPerUnit;
+            const tightH = bbox.height * pxPerUnit;
+            if (tightW > 0 && tightH > 0 && tightW < svgW * 0.9) {
+              svgW = tightW;
+              svgH = tightH;
+            }
+          }
+        } catch {
+          // getBBox() throws when the SVG is not attached to a visible document
+        }
       }
     }
 
@@ -325,7 +317,7 @@ export function MermaidPreview({ code, className, typography }: MermaidPreviewPr
 
     setScale(Math.round(fitScale * 100) / 100);
     setTranslate({ x: 0, y: 0 });
-  }, []);
+  }, []); // containerRef and scaleRef are refs — always current, no stale closure risk
 
   const zoomBy = useCallback((delta: number) => {
     setScale((s) => clamp(Math.round((s + delta) * 100) / 100, MIN_SCALE, MAX_SCALE));
