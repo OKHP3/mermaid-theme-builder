@@ -26,6 +26,11 @@
 
 import { test, expect, type Page } from "@playwright/test";
 
+const CLASS_USAGE_FLOWCHART = `flowchart TD
+  classDef primary fill:#111827,stroke:#c46a2c,color:#e5e7eb
+  A[Start]:::primary --> B[Finish]:::primary
+`;
+
 /**
  * Parse a CSS color string and return its alpha channel as a value between
  * 0 and 1.
@@ -60,17 +65,36 @@ async function fetchCompiledCss(page: Page): Promise<string> {
   });
 }
 
-async function loadApp(page: Page): Promise<void> {
-  await page.addInitScript(() => {
+async function loadApp(page: Page, options?: { inputCode?: string }): Promise<void> {
+  await page.addInitScript((inputCode) => {
     window.localStorage.clear();
     window.sessionStorage.clear();
-  });
+    if (inputCode) {
+      window.localStorage.setItem(
+        "mtb.state.v1",
+        JSON.stringify({
+          schemaVersion: 1,
+          inputCode,
+        })
+      );
+    }
+  }, options?.inputCode ?? null);
   await page.goto("/");
   await page.waitForLoadState("load");
 }
 
 async function switchTab(page: Page, label: string): Promise<void> {
   await page.getByRole("tab", { name: label, exact: true }).first().click();
+}
+
+async function openClassLibrary(page: Page): Promise<void> {
+  const previewButton = page.getByRole("button", { name: "Preview all classDefs" });
+  if (await previewButton.isVisible().catch(() => false)) {
+    return;
+  }
+
+  await page.locator("summary").filter({ hasText: "Class Library" }).first().click();
+  await expect(previewButton).toBeVisible();
 }
 
 test.describe("color-mix @supports guard - compiled CSS", () => {
@@ -108,8 +132,9 @@ test.describe("color-mix @supports guard - compiled CSS", () => {
 
 test.describe("ClassBrowser preview panel - color-mix opacity rendering", () => {
   test.beforeEach(async ({ page }) => {
-    await loadApp(page);
+    await loadApp(page, { inputCode: CLASS_USAGE_FLOWCHART });
     await switchTab(page, "Reference");
+    await openClassLibrary(page);
     await page.getByRole("button", { name: "Preview all classDefs" }).click();
     await page.waitForSelector('button[aria-label="Close preview"]', {
       timeout: 6_000,
@@ -194,8 +219,9 @@ test.describe("ClassBrowser preview panel - color-mix opacity rendering", () => 
 
 test.describe("ClassBrowser toggle buttons - All/Used mode opacity", () => {
   test.beforeEach(async ({ page }) => {
-    await loadApp(page);
+    await loadApp(page, { inputCode: CLASS_USAGE_FLOWCHART });
     await switchTab(page, "Reference");
+    await openClassLibrary(page);
     await page.getByRole("button", { name: "Preview all classDefs" }).click();
     await page.waitForSelector('button[aria-label="Close preview"]', {
       timeout: 6_000,
@@ -340,7 +366,7 @@ test.describe("ExtractTab paste-area - placeholder color-mix opacity", () => {
   test.beforeEach(async ({ page }) => {
     await loadApp(page);
     await switchTab(page, "Compose");
-    await page.getByRole("button", { name: "Toggle Import Theme" }).click();
+    await page.getByRole("button", { name: "Import Theme", exact: true }).click();
     await page.waitForSelector('textarea[aria-label="Paste themed Mermaid diagram here"]', {
       timeout: 6_000,
     });

@@ -64,9 +64,8 @@ async function openComposeAndImport(page: Page, json: string): Promise<void> {
   // Switch to the Compose tab.
   await page.getByRole("tab", { name: "Compose", exact: true }).click();
 
-  // The banner lives inside the "Export Theme" collapsible section which
-  // starts closed.  Expand it so the banner will be visible after import.
-  const toggle = page.locator('button[aria-label="Toggle Export Theme"]:visible');
+  // The banner lives inside the Export Theme section, which starts closed.
+  const toggle = page.getByRole("button", { name: "Export Theme", exact: true });
   await toggle.waitFor({ timeout: 8_000 });
   await toggle.click();
 

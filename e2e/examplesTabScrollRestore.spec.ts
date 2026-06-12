@@ -47,6 +47,7 @@ const FIRST_SECTION_ID = "compose-instructions";
  * a standard viewport without scrolling.
  */
 const DEEP_ITEM_ID = "ishikawa-render-failure";
+const DEEP_SECTION_NAME = "Specialty";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -104,6 +105,28 @@ async function openExamplesTab(page: Page): Promise<void> {
   await page.waitForSelector("[data-example-id]", { timeout: 10000 });
 }
 
+async function expectVisibleInExamplesSidebar(page: Page, exampleId: string): Promise<void> {
+  const isVisibleWithinSidebar = await page.evaluate((id: string) => {
+    const sidebar = document.querySelector<HTMLDivElement>("div.overflow-y-auto:has([data-example-id])");
+    const button = document.querySelector<HTMLElement>(`[data-example-id="${CSS.escape(id)}"]`);
+    if (!sidebar || !button) return false;
+
+    const sidebarRect = sidebar.getBoundingClientRect();
+    const buttonRect = button.getBoundingClientRect();
+
+    return (
+      buttonRect.bottom > sidebarRect.top &&
+      buttonRect.top < sidebarRect.bottom &&
+      buttonRect.right > sidebarRect.left &&
+      buttonRect.left < sidebarRect.right
+    );
+  }, exampleId);
+
+  expect(isVisibleWithinSidebar, `Expected ${exampleId} to be visible within the Examples sidebar.`).toBe(
+    true
+  );
+}
+
 // ---------------------------------------------------------------------------
 // Test 1: first-section item is visible on restore (no-scroll path)
 // ---------------------------------------------------------------------------
@@ -119,7 +142,7 @@ test("restoring a first-section example keeps it visible without scrolling", asy
   await expect(btn).toHaveClass(/bg-primary\/10/);
 
   // The button must be visible in the browser viewport (it is near the top).
-  await expect(btn).toBeInViewport();
+  await expectVisibleInExamplesSidebar(page, FIRST_SECTION_ID);
 });
 
 // ---------------------------------------------------------------------------
@@ -140,7 +163,7 @@ test("restoring a deep specialty example scrolls it into view", async ({ page })
   // brought it from below the fold into the visible sidebar area.
   // Without the scrollIntoView call this assertion would fail because the
   // element is clipped by the sidebar's overflow container.
-  await expect(btn).toBeInViewport();
+  await expectVisibleInExamplesSidebar(page, DEEP_ITEM_ID);
 });
 
 // ---------------------------------------------------------------------------
@@ -175,6 +198,9 @@ test("user click after fresh start does not auto-scroll the sidebar", async ({ p
   // Open the Examples tab and wait for sidebar entries to render.
   await page.getByRole("tab", { name: "Examples", exact: true }).click();
   await page.waitForSelector("[data-example-id]", { timeout: 10000 });
+
+  await page.getByRole("button", { name: DEEP_SECTION_NAME, exact: true }).click();
+  await page.waitForSelector(`[data-example-id="${DEEP_ITEM_ID}"]`, { timeout: 8000 });
 
   // The sidebar is the overflow-y-auto container that wraps all example
   // buttons. It is the only such container that has [data-example-id] descendants.
@@ -262,5 +288,5 @@ test("deep-link to #examples restores scroll when ExamplesTab mounts on first re
 
   // The restored item must be scrolled into view even under the deep-link
   // timing path where hydration and first mount overlap.
-  await expect(btn).toBeInViewport();
+  await expectVisibleInExamplesSidebar(page, DEEP_ITEM_ID);
 });

@@ -253,10 +253,8 @@ test.describe("My Theme slot — color edit routing", () => {
     // BRAND_PALETTES[0].colors, so hex color inputs are rendered in the editor.
     await openWithState(page);
 
-    // The Compose tab sidebar has color swatches behind a collapsible
-    // "Toggle Colors" button (aria-expanded="false" by default). Click it to
-    // reveal the swatch section so the hex inputs become visible.
-    const toggleColors = page.locator('button[aria-label="Toggle Colors"]:visible').first();
+    // The Compose tab sidebar has color swatches behind the collapsed Colors section.
+    const toggleColors = page.getByRole("button", { name: "Colors", exact: true }).first();
     await toggleColors.click();
 
     // Wait for the first visible hex color text input.

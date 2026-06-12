@@ -54,9 +54,8 @@ async function openScaffoldModal(page: Page): Promise<void> {
   // Navigate to the Compose tab (role="tab" per ARIA widget pattern).
   await page.getByRole("tab", { name: "Compose", exact: true }).click();
 
-  // The "Generate Prompt Pattern" button lives inside the Bootstrap Export
-  // as a non-collapsible Bootstrap Export sub-section.  Open My Themes first.
-  const toggleBtn = page.locator('button[aria-label="Toggle Export Theme"]:visible');
+  // The "Generate Prompt Pattern" button lives inside the Export Theme section.
+  const toggleBtn = page.getByRole("button", { name: "Export Theme", exact: true });
   await toggleBtn.waitFor({ timeout: 8_000 });
   await toggleBtn.click();
 

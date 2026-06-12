@@ -98,25 +98,38 @@ export function ExamplesTab({
     }
   }, [initialSelectedId]);
 
+  const [showMobilePreview, setShowMobilePreview] = useState(false);
+  const [showInventory, setShowInventory] = useState(false);
+
+  // All sections collapsed on load; accordion, only one open at a time.
+  const [collapsedSections, setCollapsedSections] = useState<Set<string>>(() => new Set(SECTIONS));
+
   // Once selectedId has caught up to the pending restore target, scroll that
   // item into view and clear the target so subsequent user clicks are unaffected.
   useEffect(() => {
     if (!pendingScrollIdRef.current) return;
     if (selectedId !== pendingScrollIdRef.current) return;
     if (!sidebarRef.current) return;
-    const btn = sidebarRef.current.querySelector<HTMLElement>(
-      `[data-example-id="${CSS.escape(selectedId)}"]`
-    );
-    if (btn) {
-      btn.scrollIntoView({ block: "nearest" });
-      pendingScrollIdRef.current = null;
-    }
-  }, [selectedId]);
-  const [showMobilePreview, setShowMobilePreview] = useState(false);
-  const [showInventory, setShowInventory] = useState(false);
+    let frameA = 0;
+    let frameB = 0;
 
-  // All sections collapsed on load; accordion — only one open at a time.
-  const [collapsedSections, setCollapsedSections] = useState<Set<string>>(() => new Set(SECTIONS));
+    frameA = requestAnimationFrame(() => {
+      frameB = requestAnimationFrame(() => {
+        const btn = sidebarRef.current?.querySelector<HTMLElement>(
+          `[data-example-id="${CSS.escape(selectedId)}"]`
+        );
+        if (btn) {
+          btn.scrollIntoView({ block: "nearest" });
+          pendingScrollIdRef.current = null;
+        }
+      });
+    });
+
+    return () => {
+      cancelAnimationFrame(frameA);
+      cancelAnimationFrame(frameB);
+    };
+  }, [selectedId, collapsedSections]);
 
   const toggleSection = useCallback((section: string) => {
     setCollapsedSections((prev) => {
