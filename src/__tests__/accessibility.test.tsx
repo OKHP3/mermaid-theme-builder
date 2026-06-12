@@ -55,7 +55,7 @@ beforeAll(() => {
     if (msg.includes("navigation") || msg.includes("Not implemented")) return;
     // Let other errors through so real issues are visible.
     console.warn("[test error]", ...args);
-  }, AXE_TIMEOUT_MS);
+  });
 });
 
 afterEach(() => {
@@ -76,7 +76,7 @@ async function runAxe(container: HTMLElement) {
   let releaseQueue!: () => void;
   axeRunQueue = new Promise<void>((resolve) => {
     releaseQueue = resolve;
-  }, AXE_TIMEOUT_MS);
+  });
 
   await previousRun;
 
