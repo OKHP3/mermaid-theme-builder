@@ -87,9 +87,9 @@ async function runAxe(container: HTMLElement) {
         values: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "best-practice"],
       },
     });
-  const blocking = results.violations.filter(
-    (v) => v.impact === "critical" || v.impact === "serious"
-  );
+    const blocking = results.violations.filter(
+      (v) => v.impact === "critical" || v.impact === "serious"
+    );
     return { all: results.violations, blocking };
   } finally {
     releaseQueue();
@@ -243,35 +243,51 @@ describe("AppShell (real component)", () => {
     ).toHaveLength(0);
   }, 15_000);
 
-  it("has a skip-to-main-content link as the first focusable element", () => {
-    const { container } = render(createElement(AppShell, null));
-    const skipLink = container.querySelector<HTMLAnchorElement>('a[href="#main-content"]');
-    expect(skipLink, "skip link <a href='#main-content'> must exist").toBeTruthy();
-    expect(skipLink?.textContent?.trim()).toBe("Skip to main content");
-  }, AXE_TIMEOUT_MS);
+  it(
+    "has a skip-to-main-content link as the first focusable element",
+    () => {
+      const { container } = render(createElement(AppShell, null));
+      const skipLink = container.querySelector<HTMLAnchorElement>('a[href="#main-content"]');
+      expect(skipLink, "skip link <a href='#main-content'> must exist").toBeTruthy();
+      expect(skipLink?.textContent?.trim()).toBe("Skip to main content");
+    },
+    AXE_TIMEOUT_MS
+  );
 
-  it("has a main element with id='main-content' for the skip link target", () => {
-    const { container } = render(createElement(AppShell, null));
-    const main = container.querySelector("#main-content");
-    expect(main, "element with id='main-content' must exist").toBeTruthy();
-    expect(main?.tagName.toLowerCase()).toBe("main");
-  }, AXE_TIMEOUT_MS);
+  it(
+    "has a main element with id='main-content' for the skip link target",
+    () => {
+      const { container } = render(createElement(AppShell, null));
+      const main = container.querySelector("#main-content");
+      expect(main, "element with id='main-content' must exist").toBeTruthy();
+      expect(main?.tagName.toLowerCase()).toBe("main");
+    },
+    AXE_TIMEOUT_MS
+  );
 
-  it("skip link precedes the header in DOM order", () => {
-    const { container } = render(createElement(AppShell, null));
-    const skipLink = container.querySelector('a[href="#main-content"]');
-    const header = container.querySelector("header");
-    expect(skipLink).toBeTruthy();
-    expect(header).toBeTruthy();
-    const position = skipLink!.compareDocumentPosition(header!);
-    expect(position & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-  }, AXE_TIMEOUT_MS);
+  it(
+    "skip link precedes the header in DOM order",
+    () => {
+      const { container } = render(createElement(AppShell, null));
+      const skipLink = container.querySelector('a[href="#main-content"]');
+      const header = container.querySelector("header");
+      expect(skipLink).toBeTruthy();
+      expect(header).toBeTruthy();
+      const position = skipLink!.compareDocumentPosition(header!);
+      expect(position & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    },
+    AXE_TIMEOUT_MS
+  );
 
-  it("has no unlabeled <th> elements", () => {
-    const { container } = render(createElement(AppShell, null));
-    const unlabeled = findUnlabeledThs(container);
-    expect(unlabeled, formatUnlabeledThs(unlabeled)).toHaveLength(0);
-  }, AXE_TIMEOUT_MS);
+  it(
+    "has no unlabeled <th> elements",
+    () => {
+      const { container } = render(createElement(AppShell, null));
+      const unlabeled = findUnlabeledThs(container);
+      expect(unlabeled, formatUnlabeledThs(unlabeled)).toHaveLength(0);
+    },
+    AXE_TIMEOUT_MS
+  );
 });
 
 // ---------------------------------------------------------------------------
@@ -318,50 +334,62 @@ describe("ApplyTab (real component)", () => {
     onResetSyntaxHints: noop,
   };
 
-  it("has zero critical/serious axe violations on initial render", async () => {
-    const { container } = render(createElement(ApplyTab, applyTabProps));
-    const { blocking, all } = await runAxe(container);
-    logViolations("ApplyTab", all);
-    expect(
-      blocking,
-      `Critical/serious violations:\n${blocking
-        .map(
-          (v) =>
-            `  [${v.impact}] ${v.id}: ${v.description}\n  Nodes: ${v.nodes
-              .map((n) => n.html)
-              .slice(0, 2)
-              .join(", ")}`
-        )
-        .join("\n")}`
-    ).toHaveLength(0);
-  }, AXE_TIMEOUT_MS);
+  it(
+    "has zero critical/serious axe violations on initial render",
+    async () => {
+      const { container } = render(createElement(ApplyTab, applyTabProps));
+      const { blocking, all } = await runAxe(container);
+      logViolations("ApplyTab", all);
+      expect(
+        blocking,
+        `Critical/serious violations:\n${blocking
+          .map(
+            (v) =>
+              `  [${v.impact}] ${v.id}: ${v.description}\n  Nodes: ${v.nodes
+                .map((n) => n.html)
+                .slice(0, 2)
+                .join(", ")}`
+          )
+          .join("\n")}`
+      ).toHaveLength(0);
+    },
+    AXE_TIMEOUT_MS
+  );
 
-  it("has zero critical/serious axe violations with customized colors", async () => {
-    const customColors = {
-      [palette.id]: palette.colors.map((c, i) => (i === 0 ? { ...c, value: "#ff5500" } : c)),
-    };
-    const { container } = render(
-      createElement(ApplyTab, {
-        ...applyTabProps,
-        customColors,
-        hasCustomizations: true,
-      })
-    );
-    const { blocking, all } = await runAxe(container);
-    logViolations("ApplyTab (customized)", all);
-    expect(
-      blocking,
-      `Critical/serious violations:\n${blocking
-        .map((v) => `  [${v.impact}] ${v.id}: ${v.description}`)
-        .join("\n")}`
-    ).toHaveLength(0);
-  }, AXE_TIMEOUT_MS);
+  it(
+    "has zero critical/serious axe violations with customized colors",
+    async () => {
+      const customColors = {
+        [palette.id]: palette.colors.map((c, i) => (i === 0 ? { ...c, value: "#ff5500" } : c)),
+      };
+      const { container } = render(
+        createElement(ApplyTab, {
+          ...applyTabProps,
+          customColors,
+          hasCustomizations: true,
+        })
+      );
+      const { blocking, all } = await runAxe(container);
+      logViolations("ApplyTab (customized)", all);
+      expect(
+        blocking,
+        `Critical/serious violations:\n${blocking
+          .map((v) => `  [${v.impact}] ${v.id}: ${v.description}`)
+          .join("\n")}`
+      ).toHaveLength(0);
+    },
+    AXE_TIMEOUT_MS
+  );
 
-  it("has no unlabeled <th> elements", () => {
-    const { container } = render(createElement(ApplyTab, applyTabProps));
-    const unlabeled = findUnlabeledThs(container);
-    expect(unlabeled, formatUnlabeledThs(unlabeled)).toHaveLength(0);
-  }, AXE_TIMEOUT_MS);
+  it(
+    "has no unlabeled <th> elements",
+    () => {
+      const { container } = render(createElement(ApplyTab, applyTabProps));
+      const unlabeled = findUnlabeledThs(container);
+      expect(unlabeled, formatUnlabeledThs(unlabeled)).toHaveLength(0);
+    },
+    AXE_TIMEOUT_MS
+  );
 });
 
 // ---------------------------------------------------------------------------
