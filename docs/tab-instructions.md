@@ -10,6 +10,8 @@ Instruction diagrams: `examples/tab-instructions-compose.mmd` · `examples/tab-i
 
 **Build and Customize a Reusable Mermaid Theme**
 
+> **Lifecycle modes:** Compose, Extract, Update, Export — use this tab to build or refine a governance profile, extract one from existing code, and export it for reuse.
+
 ### 1. Start in Compose
 
 Open the Compose tab to build a new theme or refine an existing one.
@@ -149,6 +151,8 @@ Paste or import the exported theme into:
 ## Apply Tab
 
 **Apply a Theme to an Existing Mermaid Diagram**
+
+> **Lifecycle modes:** Apply, Repair, Export — use this tab to apply a governance profile to existing Mermaid code, diagnose and repair rendering issues, and export the styled result.
 
 ### 1. Start in Apply
 

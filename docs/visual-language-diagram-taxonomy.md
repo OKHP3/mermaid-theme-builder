@@ -1,6 +1,6 @@
 # Visual Language Diagram Taxonomy — Mermaid Theme Builder
 
-> **Document origin:** Migrated from internal Notion workspace (May 2026).  
+> **Document origin:** Migrated from internal Notion workspace (May 2026).
 > **Source of truth:** This file in the repository.
 
 ---
@@ -29,10 +29,10 @@ This taxonomy supports the product by creating a decision layer:
 
 ```
 Diagram universe
-→ Mermaid support status
-→ theming confidence
-→ example index
-→ gap/opportunity backlog
+-> Mermaid support status
+-> theming confidence
+-> example index
+-> gap/opportunity backlog
 ```
 
 ---
@@ -41,16 +41,16 @@ Diagram universe
 
 This taxonomy is the control layer for a three-part operating model:
 
-1. **Diagram Taxonomy**  
+1. **Diagram Taxonomy**
    The broad universe of visual-language diagram types, whether Mermaid supports them or not.
 
-2. **Mermaid Capability Registry**  
+2. **Mermaid Capability Registry**
    The app-facing layer showing what Mermaid Theme Builder can detect, theme, warn about, and demonstrate safely.
 
-3. **Example Library**  
+3. **Example Library**
    The repo/app examples that users can load, inspect, theme, and learn from.
 
-**Strategic statement (north star):**  
+**Strategic statement (north star):**
 "Mermaid Theme Builder should become the layer that helps users understand what kind of diagram they are making, whether Mermaid supports it, how safely it can be themed, what example to start from, and what limitations apply."
 
 ---
@@ -99,13 +99,13 @@ Specific warning language (use in UI copy and example headers where relevant):
 
 This taxonomy has three jobs:
 
-1. **Describe the diagram universe**  
+1. **Describe the diagram universe**
    Capture the common diagram types used across business, technology, design, engineering, strategy, data, and operations.
 
-2. **Classify Mermaid support**  
+2. **Classify Mermaid support**
    Identify whether each diagram type is native, partial, emulatable, a gap, or better handled externally.
 
-3. **Drive product decisions**  
+3. **Drive product decisions**
    Decide whether Mermaid Theme Builder should:
    - provide a native example,
    - provide an emulation example,
@@ -115,6 +115,50 @@ This taxonomy has three jobs:
    - or explicitly exclude from scope.
 
 The taxonomy is not a commitment to implement every diagram type. It is a product intelligence layer.
+
+---
+
+## Choose the Right Diagram
+
+Use this table to identify the right Mermaid diagram family for a given communicative intent. For process and workflow diagrams where BPMN-like semantics matter, start with the BPMN for Mermaid sibling project and then apply visual governance in Mermaid Theme Builder.
+
+| Intent | Recommended Mermaid family | Notes |
+|---|---|---|
+| Systems, trust zones, integrations | `architectureBeta` or flowchart TD | architectureBeta for explicit system topology; flowchart for simpler layouts |
+| Steps, approvals, handoffs (informal) | Flowchart (TD or LR) | Strong theme support; use classDef for role-based node coloring |
+| Steps, approvals, handoffs (formal BPMN) | See BPMN for Mermaid | Mermaid flowchart is an approximation only — not BPMN 2.0 compliant |
+| Calls, requests, API interactions | Sequence diagram | Best for request/response and message flows between actors |
+| State transitions, lifecycle stages | State diagram (`stateDiagram-v2`) | Full theme support; supports nested states |
+| Data models, entity relationships | ER diagram | Partial theme support; no classDef |
+| Object model, software structure | Class diagram | Full theme support; use for UML class hierarchies |
+| Roadmap, phases, rollout schedule | Timeline or Gantt | Timeline for narrative; Gantt for time-boxed scheduling |
+| Strategic positioning, value chain | Wardley map (`wardley-beta`) | Native in Mermaid 11.14+; limited theme support |
+| Domains, concepts, idea structure | Mindmap | Generic theme support; good for hierarchical concept maps |
+| Business metrics, performance data | XY Chart beta | Beta; validate rendering in target environment |
+| Part-to-whole proportions | Pie chart | Generic theme support |
+| Code/deployment dependencies | Git graph | Generic theme support; best for branching strategy diagrams |
+| Version history or branching strategy | Git graph | Generic theme support |
+| Threat model, trust boundary DFD | Flowchart approximation | Not a formal DFD — label as approximation; use security caveats |
+| BPMN process notation | See BPMN for Mermaid | Mermaid does not natively implement BPMN 2.0 semantics |
+| Org chart | Flowchart TD approximation | No native Mermaid org chart — emulatable with flowchart hierarchy |
+| Value stream map | Flowchart approximation | Approximation only; VSM symbols not natively supported |
+
+### Signal words that indicate diagram family
+
+| If the user or diagram description contains... | Consider... |
+|---|---|
+| "flow," "process," "steps," "pipeline," "decision" | Flowchart |
+| "request," "response," "API call," "message," "interaction" | Sequence diagram |
+| "class," "object," "inheritance," "interface," "method" | Class diagram |
+| "state," "transition," "lifecycle," "status" | State diagram |
+| "entity," "table," "relationship," "database," "schema" | ER diagram |
+| "timeline," "milestone," "phase," "rollout," "launch" | Timeline |
+| "schedule," "sprint," "Gantt," "deadline," "date range" | Gantt |
+| "branch," "merge," "commit," "release," "tag" | Git graph |
+| "concept," "idea map," "topic," "hierarchy," "mindmap" | Mindmap |
+| "BPMN," "lane," "pool," "gateway," "business process" | BPMN for Mermaid (sibling project) |
+| "system," "service," "container," "component," "C4" | C4 diagram family |
+| "Wardley," "evolution," "value chain," "positioning" | Wardley map |
 
 ---
 
@@ -137,7 +181,7 @@ Mermaid Theme Builder should not implement new Mermaid diagram grammars inside t
 - maintaining custom diagram syntax outside Mermaid core
 - becoming a competing diagramming language
 
-**Future option:**  
+**Future option:**
 A separate OverKill Hill research project may explore upstream Mermaid contributions for high-value gaps such as BPMN.
 
 ---
@@ -158,8 +202,8 @@ A separate OverKill Hill research project may explore upstream Mermaid contribut
 - Add BPMN to the capability registry as `Gap / Emulatable`.
 - Avoid claiming true BPMN support.
 
-**What may happen later:**  
-A separate research lane may investigate what it would take to propose BPMN support upstream to Mermaid.
+**What may happen later:**
+A separate research lane may investigate what it would take to propose BPMN support upstream to Mermaid. The BPMN for Mermaid sibling project provides the interim structural conventions layer.
 
 ---
 
@@ -184,7 +228,7 @@ A new Mermaid diagram type generally requires:
 13. Submit and iterate on an upstream pull request.
 14. Maintain compatibility as Mermaid evolves.
 
-**Implication:**  
+**Implication:**
 This is outside the Mermaid Theme Builder product lane, but it could become a separate OverKill Hill technical contribution project.
 
 ---
@@ -204,7 +248,7 @@ As of April 2026, Wardley Maps are now a native Mermaid diagram type (`wardley-b
 
 ## Gap Analysis Summary (April 2026 — 91-type catalog)
 
-- **Mermaid: Full support** — 22 types: flowchart, sequence, class, state, ER, gantt, pie, gitGraph, mindmap, timeline, quadrant, journey, block, sankey, xychart, requirement, C4 (×4), zenuml, packet, architecture, kanban, **wardley-beta**
+- **Mermaid: Full support** — 22 types: flowchart, sequence, class, state, ER, gantt, pie, gitGraph, mindmap, timeline, quadrant, journey, block, sankey, xychart, requirement, C4 (x4), zenuml, packet, architecture, kanban, **wardley-beta**
 - **Mermaid: Partial / Emulatable** — 12 types: swimlane, decision tree, org chart, sitemap, activity diagram, component diagram, deployment diagram, dimensional model, WBS, stakeholder map, SWOT, data lineage
 - **Mermaid: No support** — 57 types
 
@@ -214,7 +258,7 @@ As of April 2026, Wardley Maps are now a native Mermaid diagram type (`wardley-b
 |-----|----------------|
 | BPMN (ISO 19510) | Millions of practitioners. No text-diagram tool covers it. |
 | Use Case Diagram (UML) | Core UML. Extremely common in requirements engineering. |
-| Wardley Map | ~~Rapidly growing in CTO/strategy community.~~ **Closed — shipped in v11.14.0.** |
+| Wardley Map | **Closed — shipped in v11.14.0.** |
 | Threat Model (STRIDE/DFD) | Security-first orgs. Growing with DevSecOps. |
 | Org Chart | Universal need. Every organization has one. |
 
@@ -263,11 +307,11 @@ The scope suggests 100–300 hours of focused engineering including grammar desi
 BPMN would be significantly more complex than Wardley Maps:
 
 - Wardley Maps have ~10 element types.
-- BPMN 2.0 has 100+ element types across events (start, intermediate, end × multiple triggers), tasks, gateways (exclusive, parallel, inclusive, complex, event-based), pools, lanes, message flows, data objects, artifacts, and sub-processes.
+- BPMN 2.0 has 100+ element types across events (start, intermediate, end x multiple triggers), tasks, gateways (exclusive, parallel, inclusive, complex, event-based), pools, lanes, message flows, data objects, artifacts, and sub-processes.
 - BPMN has execution semantics — the diagram defines executable process logic.
 - BPMN has a formal metamodel (ISO/IEC 19510).
 
-A BPMN implementation for Mermaid would likely be 3–5× the effort of Wardley Maps, with the additional challenge of deciding which BPMN subset to support.
+A BPMN implementation for Mermaid would likely be 3–5x the effort of Wardley Maps, with the additional challenge of deciding which BPMN subset to support.
 
 ---
 
@@ -298,4 +342,4 @@ Potential article angle: *"Your OKRs Are Invisible Until You Diagram Them"* or *
 
 ---
 
-*Last updated: May 2026. Migrated from Notion; maintained in this repository.*
+*Last updated: 2026-06-20. Migrated from Notion; maintained in this repository.*

@@ -1,6 +1,6 @@
 # Roadmap
 
-## v0.1.0 — Foundation ✅ Shipped (2026-04-23)
+## v0.1.0 — Foundation (Shipped 2026-04-23)
 
 - Static React + Vite + Tailwind CSS v4 app, no backend
 - 15 diagram family auto-detection
@@ -13,7 +13,7 @@
 
 ---
 
-## v0.2.0 — Capability Registry + Persistence ✅ Shipped (2026-04-25)
+## v0.2.0 — Capability Registry + Persistence (Shipped 2026-04-25)
 
 - **Diagram Capability Registry** — 27 families tracked with support levels, confidence, compliance, and example files
 - **10 capability gap entries** — honest "not supported" tracking for BPMN 2.0, ArchiMate, SysML, VSM, etc.
@@ -25,7 +25,7 @@
 - **URL-encoded palette sharing** — hash-fragment encoding
 - **Import/export palette** as JSON; export all as bundle; export as CSS custom properties
 - **Dark/light/system mode toggle**
-- **Keyboard shortcut** `Ctrl+Shift+C` → copy Styled Code
+- **Keyboard shortcut** `Ctrl+Shift+C` to copy Styled Code
 - **Diagram family override** — manual selector
 - **Compose tab** — build and edit custom palettes
 - **Diff view** — three-mode Original / Themed / Diff
@@ -39,7 +39,7 @@
 
 ---
 
-## v0.3.0 — App Icon + Palette Corrections ✅ Shipped (2026-05-05)
+## v0.3.0 — App Icon + Palette Corrections (Shipped 2026-05-05)
 
 - **Custom app icon** — "Forked Flow" SVG + PNG rasters (`scripts/generate-icons.mjs`)
 - **Corrected OKHP3 palette hex values** — accurate colors for OverKill Hill, AskJamie, Glee-fully
@@ -48,7 +48,7 @@
 
 ---
 
-## v0.4.0 — Reference Tab + URL Routing ✅ Shipped (2026-05-05)
+## v0.4.0 — Reference Tab + URL Routing (Shipped 2026-05-05)
 
 - **Reference tab** — `DiagramInventory` + `ClassBrowser` as a standalone tab
 - **URL routing** — tab state encoded in URL hash
@@ -57,7 +57,7 @@
 
 ---
 
-## v0.5.0 — Forge UI System + Pan/Zoom + CI/CD ✅ Shipped (2026-05-12)
+## v0.5.0 — Forge UI System + Pan/Zoom + CI/CD (Shipped 2026-05-12)
 
 - **OKH Forge UI System v0.1.0** — structured design token layer (8 sections, canonical `--okh-forge-*` tokens, utility classes)
 - **`docs/design-system.md`** — design system reference
@@ -67,11 +67,17 @@
 
 ---
 
-## v0.6.0 — Palette Library + Prompt Scaffold Depth
+## v0.6.0 — Governance Profile Export + Prompt Scaffold Depth
 
 **Status:** Active planning
 
-**Goals:** Complete the palette authoring workflow. Make Prompt Scaffold smarter per diagram type. Improve discoverability of existing features.
+**Goals:** Complete the palette authoring workflow. Introduce named governance profiles as a first-class export artifact. Make Prompt Scaffold smarter per diagram type. Improve discoverability of existing features.
+
+### Governance Profile
+- [ ] **Named governance profile export** — bundle palette + look + typography + renderer target + classDef overlay as a single named, shareable artifact (`.theme.json` already exists; formalize the bundle concept)
+- [ ] **Governance profile concept documentation** — shipped (`docs/governance-profiles.md`)
+- [ ] **Diagram output contract documentation** — shipped (`docs/diagram-output-contract.md`)
+- [ ] **OKHP³ Visual Language Stack reference** — shipped (`docs/okhp3-visual-language-stack.md`)
 
 ### Palette
 - [ ] **User palette CRUD** — save, rename, delete, reorder user-created palettes (persist in localStorage)
@@ -83,21 +89,23 @@
 - [ ] **Family-specific Prompt Scaffold templates** — per-family scaffold sections (flowchart, sequence, class, ER)
 
 ### Mermaid 11.14–11.15 Coverage
-- [ ] **Event Modeling example** — add example `.mmd` for the new 11.15 diagram type; update capability registry `examplePending → false`
-- [ ] **Look mode per-family warnings** — show a warning in Apply tab when `look: handDrawn` or `look: neo` is unsupported for the detected diagram family (see `docs/renderer-compatibility.md`)
+- [ ] **Event Modeling example** — add example `.mmd` for the new 11.15 diagram type; update capability registry `examplePending` to false
+- [ ] **Look mode per-family warnings** — show a warning in Apply tab when `look: handDrawn` or `look: neo` is unsupported for the detected diagram family
 - [ ] **Renderer compatibility warnings** — surface "CSS injection blocked on GitHub" and "classDef unsupported for sequence/Gantt" as contextual warnings in the export bar
+- [ ] **Microsoft Loop / M365 Copilot renderer profile** — registered in renderer-parity.ts; surfaced in renderer selector and Reference tab parity matrix
 - [ ] **Timeline direction** — document `LR`/`TD` direction support in capability notes and expose in family-specific overrides
 - [ ] **Root-level `htmlLabels`** — emit at root config level in `%%{init}%%` exports (11.13+ migration: deprecated `flowchart.htmlLabels`)
 
 ### Testing
-- [ ] **Playwright smoke tests** — core pipeline: paste → detect → themed preview renders → Styled Code export contains `%%{init}%%`
+- [ ] **Playwright smoke tests** — core pipeline: paste to detect to themed preview renders to Styled Code export contains `%%{init}%%`
 
 ---
 
-## v0.7.0 — Editor + Accessibility
+## v0.7.0 — Editor + Accessibility + Layout Tier Tokens
 
 **Status:** Planned
 
+- [ ] **Layout tier tokens** — `:::zone.primary`, `:::zone.system`, `:::lane.human`, `:::lane.automated` as semantic classDef additions; encodes structural role, not just color tier (see `docs/governance-profiles.md`)
 - [ ] **Syntax-highlighted code editor** — CodeMirror or Monaco micro-bundle for the paste area
 - [ ] **Auto-load brand example on palette switch** — pre-fill Apply tab with matching example when no code is present
 - [ ] **WCAG 2.1 AA audit** — axe-core review + remediation of critical/serious violations
@@ -114,8 +122,8 @@
 - [ ] **Privacy-respecting analytics** — Plausible or Fathom (no cookies, no diagram content captured)
 - [ ] **GitHub release cadence** — tagged releases with CHANGELOG notes for each version
 - [ ] **Accessibility** — WCAG 2.1 AA verified
-- [ ] Keyboard-navigable palette picker (already partial) ✅
-- [ ] `robots.txt` and `sitemap.xml` ✅
+- [ ] Keyboard-navigable palette picker (already partial)
+- [ ] `robots.txt` and `sitemap.xml`
 
 ---
 

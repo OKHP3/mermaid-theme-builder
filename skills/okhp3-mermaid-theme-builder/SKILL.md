@@ -55,6 +55,32 @@ Visual governance for Mermaid diagram code. Applies brand palettes, generates `%
 
 ---
 
+## OKHP³ Visual Language Stack Context
+
+This skill is the visual governance layer in the OKHP³ Visual Language Stack:
+
+```
+ReFolDec              Recursive decomposition and folding theory
+    |
+skillz                Agent-skill execution substrate (this skill runs here)
+    |
+BPMN for Mermaid      Process structure and workflow modeling layer
+    |
+okhp3-mermaid-theme-builder   <-- YOU ARE HERE
+    |
+Target renderers      GitHub, Notion, Obsidian, M365/Loop, Confluence, Mermaid Live, CLI
+```
+
+**Use this skill** when the task involves visual governance, palette application, renderer profiling, or diagram output contract enforcement.
+
+**Hand off to `okhp3-bpmn-for-mermaid`** when the task involves process structure, workflow notation, or BPMN-like semantics before styling.
+
+**Stack principle:** This skill does not interpret process logic or business semantics. It governs visual output. When both process structure and visual governance are needed, apply `okhp3-bpmn-for-mermaid` first, then this skill.
+
+See `docs/okhp3-visual-language-stack.md` in the tool repository for the authoritative stack reference.
+
+---
+
 ## Support Taxonomy
 
 Before theming, classify the diagram family. Support level determines what outputs are safe to promise.

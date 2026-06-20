@@ -1,6 +1,6 @@
 # Product Positioning — Mermaid Theme Builder
 
-**Last updated:** 2026-05-21  
+**Last updated:** 2026-06-20
 **Derived from:** Market Research (`docs/market-research.md`), three independent research sessions
 
 ---
@@ -38,6 +38,34 @@ The one-sentence version:
 
 ---
 
+## OKHP³ Visual Language Stack
+
+Mermaid Theme Builder is the visual governance layer in the OKHP³ Visual Language Stack — a set of independent but composable tools that cover the full lifecycle of structured visual communication.
+
+```
+ReFolDec              Recursive decomposition and folding theory
+    |
+skillz                Agent-skill execution substrate
+    |
+BPMN for Mermaid      Process structure, notation, and workflow modeling layer
+    |
+Mermaid Theme Builder Visual governance, palette, renderer profile, and style-contract layer
+    |
+Target renderers      GitHub, Notion, Obsidian, M365 Loop, Confluence, Mermaid Live, CLI
+```
+
+Each layer is independent. You can use Mermaid Theme Builder without adopting any other layer. When combined, they form a coherent pipeline from raw intent to governed, brand-consistent visual output.
+
+**Where this product fits:** Mermaid Theme Builder is the last mile before rendering. It does not create diagrams, interpret processes, or understand business logic. It takes any Mermaid code from any source — including AI assistants — and governs its visual output.
+
+**BPMN for Mermaid** is the sibling project for the process structure and workflow modeling layer. When a diagram represents a business process or approval flow, start there for notation conventions, then pass the output through Mermaid Theme Builder for styling.
+
+**Stage 2** of the product roadmap (LLM workflow integration — MCP server, CLI lint) connects this tool to the skillz execution layer, allowing AI agents to load the `okhp3-mermaid-theme-builder` skill and apply governance profiles programmatically.
+
+See `docs/okhp3-visual-language-stack.md` for the full stack reference.
+
+---
+
 ## Target Audience
 
 | Segment | Pain | How Mermaid Theme Builder helps |
@@ -46,7 +74,7 @@ The one-sentence version:
 | **Technical writers** | Diagrams across docs are inconsistent; each engineer uses a different palette | Share a `.mmtheme` URL or Markdown bootstrap as a team standard |
 | **Product managers** | Confluence/Notion diagrams look amateur | Apply a curated palette in 30 seconds without touching Mermaid syntax |
 | **Consultants** | Client deliverables need consistent branding across 15+ architecture diagrams | Generate all diagrams from one Apply tab session with a named palette |
-| **AI power users** | Generate 10+ Mermaid diagrams per week; restyling each is friction | One prompt scaffold → every subsequent LLM diagram arrives pre-styled |
+| **AI power users** | Generate 10+ Mermaid diagrams per week; restyling each is friction | One prompt scaffold — every subsequent LLM diagram arrives pre-styled |
 
 ---
 
@@ -54,14 +82,14 @@ The one-sentence version:
 
 | Feature | Mermaid Live Editor | Mermaid Chart | Mermaid Studio | **Mermaid Theme Builder** |
 |---|---|---|---|---|
-| Visual color editing | Dropdown only | Dropdown only | CSS completions | ✅ Two-way color swatch editor |
-| Multi-family theme | ❌ | ❌ | Partial | ✅ 27+ family capability registry |
-| Renderer compatibility warnings | ❌ | ❌ | ❌ | ✅ Per-renderer warning system |
-| LLM prompt scaffold export | ❌ | ❌ | ❌ | ✅ Prompt Scaffold export |
-| Portable `%%{init}%%` export | Paste only | ❌ | ❌ | ✅ Styled Code + Markdown Bootstrap |
-| Mermaid Live Editor link | ❌ | ❌ | ❌ | ✅ Live Editor button |
-| No login required | ✅ | ❌ | IDE account | ✅ |
-| No diagram content transmitted | ✅ | ❌ | Partial | ✅ |
+| Visual color editing | Dropdown only | Dropdown only | CSS completions | Two-way color swatch editor |
+| Multi-family theme | No | No | Partial | 27+ family capability registry |
+| Renderer compatibility warnings | No | No | No | Per-renderer warning system |
+| LLM prompt scaffold export | No | No | No | Prompt Scaffold export |
+| Portable `%%{init}%%` export | Paste only | No | No | Styled Code + Markdown Bootstrap |
+| Mermaid Live Editor link | No | No | No | Live Editor button |
+| No login required | Yes | No | IDE account | Yes |
+| No diagram content transmitted | Yes | No | Partial | Yes |
 | Pricing | Free | $10–20/seat/mo | $49–99/yr | Free (portfolio project) |
 
 ---
@@ -83,20 +111,21 @@ The three advantages that a well-funded first-party (Mermaid Chart) is unlikely 
 ### Stage 1 — Narrow, Defensible Wedge (current)
 - Theme Bundle artifact: themeVariables JSON + per-family classDef library + LLM prompt template
 - Renderer parity matrix published publicly
-- **Threshold to advance:** ≥500 weekly theme-export users or ≥1 inbound enterprise/docs-team conversation
+- **Threshold to advance:** 500+ weekly theme-export users or 1+ inbound enterprise/docs-team conversation
 
 ### Stage 2 — LLM Workflow Integration
 - MCP server and/or prompt scaffold snippets for Claude, ChatGPT, Cursor, Copilot
 - CLI lint (`mermaid-lint --theme acme.mmtheme path/`) wrapping `mmdc`
-- **Threshold to advance:** Integration adopted by ≥1 documentation platform team or cited in ≥1 Mermaid GitHub thread as the recommended AI workflow approach
+- Connects to the skillz layer — agents load `okhp3-mermaid-theme-builder` and apply governance profiles programmatically
+- **Threshold to advance:** Integration adopted by 1+ documentation platform team or cited in 1+ Mermaid GitHub thread as the recommended AI workflow approach
 
 ### Stage 3 — Enterprise Governance Plane
 - SSO-gated central themes
-- Figma variables → Mermaid themeVariables sync
+- Figma variables to Mermaid themeVariables sync
 - Git pre-commit hook + PR-bot with theme-diff previews
 - Pricing analog: Mermaid Studio's $99/yr/seat, Mermaid Chart Premium tier
 
-**Stages 2 and 3 are deliberately out of scope for v1.0.** The "permanently out of scope" list in ROADMAP.md holds for v1.0.
+**Stages 2 and 3 are deliberately out of scope for v1.0.** The "permanently out of scope" list in `docs/roadmap.md` holds for v1.0.
 
 ---
 

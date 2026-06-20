@@ -180,6 +180,31 @@ export const RENDERER_PROFILES: RendererProfile[] = [
       "Requires Node.js + Chromium (Puppeteer) in CI environment",
     ],
   },
+  {
+    id: "m365-loop",
+    displayName: "Microsoft 365 / Loop / Copilot",
+    shortName: "M365/Loop",
+    url: "https://loop.microsoft.com",
+    sourceUrl:
+      "https://support.microsoft.com/en-us/office/use-mermaid-diagrams-in-microsoft-loop-76f4d4ea-3bfc-40c4-a49c-e6dfb5aee006",
+    notes:
+      "Microsoft Loop and M365 Copilot embed Mermaid diagrams in pages. Prefer the %%{init}%% directive over YAML frontmatter — Loop may not process frontmatter reliably in all versions. Avoid beta and experimental diagram families. Use look: classic — Neo and Hand-Drawn are not reliably available. Custom fonts are ignored; the platform applies Segoe UI / Calibri / Arial. Mermaid version is pinned internally and may lag behind the current release.",
+    looksSupported: { classic: "full", neo: "none", handDrawn: "none" },
+    initDirectiveSupport: "partial",
+    themeVariableSupport: "partial",
+    classDefSupport: "partial",
+    cssInjectionSupport: "none",
+    customFontSupport: "none",
+    mermaidVersionApprox: "varies (pinned internally, may lag current release)",
+    caveats: [
+      "Prefer %%{init}%% directive format — YAML frontmatter may not be processed reliably",
+      "Use look: classic — neo and handDrawn are not reliably available",
+      "Custom fonts ignored — platform applies Segoe UI / Calibri / Arial stack",
+      "CSS injection not supported",
+      "Avoid beta and experimental diagram families",
+      "Mermaid version may lag behind current release",
+    ],
+  },
 ];
 
 export function getRendererById(id: string): RendererProfile | undefined {

@@ -519,6 +519,23 @@ This repository must never contain references to:
 Built-in themes must be original generic palettes or personal OverKill Hill
 ecosystem palettes only.
 
+**OKHP³ Visual Language Stack:**
+
+This repository is the visual governance layer in the OKHP³ Visual Language Stack.
+Sibling projects include:
+
+- **BPMN for Mermaid** (`okhp3-bpmn-for-mermaid`) -- process structure and workflow
+  modeling notation layer
+- **skillz** -- agent-skill execution substrate; this repo ships as the
+  `okhp3-mermaid-theme-builder` skillz-compatible skill package
+- **ReFolDec** -- recursive decomposition and folding theory (upstream conceptual layer)
+
+References to these sibling projects by name are permitted and encouraged in docs,
+skill files, and positioning copy. References must be descriptive only -- do not
+claim features or behaviors for sibling projects that have not been verified.
+
+See `docs/okhp3-visual-language-stack.md` for the authoritative stack reference.
+
 **Canonical disclaimer** -- always include this in README and major docs:
 
 > Mermaid Theme Builder is a personal OverKill Hill P3 project by Jamie Hill.
@@ -647,6 +664,10 @@ Notable docs in `docs/`:
 | `threat-model.md` | STRIDE threat model for this app |
 | `technical-debt-register.md` | Known tech debt items |
 | `roadmap.md` | Feature backlog with completion status |
+| `okhp3-visual-language-stack.md` | OKHP³ Visual Language Stack positioning reference |
+| `governance-profiles.md` | Governance Profile concept, lifecycle modes, semantic color governance |
+| `diagram-output-contract.md` | Structural contract for AI-generated Mermaid output |
+| `copilot-prompt-kit.md` | Microsoft 365 / Loop / Copilot renderer profile and prompt templates |
 
 #### 9.7 Deprecated files and workflows
 

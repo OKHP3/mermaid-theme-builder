@@ -1,17 +1,19 @@
-# Product Brief — Mermaid Theme Builder v0.1
+# Product Brief — Mermaid Theme Builder v0.5.0
 
-**Project:** Mermaid Theme Builder  
-**Owner:** Jamie Hill / OverKill Hill P³  
-**Status:** Public alpha  
-**Last updated:** 2026-04-25
+**Project:** Mermaid Theme Builder
+**Owner:** Jamie Hill / OverKill Hill P³
+**Status:** Active — shipped v0.5.0
+**Last updated:** 2026-06-20
 
 ---
 
 ## What it is
 
-Mermaid Theme Builder is a fully static, browser-only visual governance utility for Mermaid diagrams. It helps you define a visual theme once, apply it to existing Mermaid code, preview the result, and export the themed diagram or a reusable prompt scaffold — so your LLM-generated diagrams stay on-brand.
+Mermaid Theme Builder is a fully static, browser-only visual governance utility for Mermaid diagrams. It helps you define a visual governance profile once, apply it to existing Mermaid code, preview the result, and export the themed diagram or a reusable prompt scaffold — so your LLM-generated diagrams stay on-brand.
 
 Nothing is sent to a server. Your diagram code never leaves your browser.
+
+**Stack context:** Mermaid Theme Builder is the visual governance layer in the OKHP³ Visual Language Stack. Sibling projects include BPMN for Mermaid (process structure and workflow modeling), skillz (agent-skill execution substrate), and ReFolDec (recursive decomposition theory). See `docs/okhp3-visual-language-stack.md` for the full stack reference.
 
 ---
 
@@ -21,23 +23,30 @@ AI assistants (ChatGPT, Claude, Gemini, Cursor, etc.) generate Mermaid diagrams 
 
 Mermaid Theme Builder gives you:
 
-1. A reusable theme expressed as a `%%{init}%%` block
-2. A way to apply that theme to any Mermaid diagram in one click
-3. A "Prompt Scaffold" export that teaches your AI assistant to maintain the theme in future diagrams
+1. A reusable governance profile expressed as a `%%{init}%%` block
+2. A way to apply that profile to any Mermaid diagram in one click
+3. A "Prompt Scaffold" export that teaches your AI assistant to maintain the profile in future diagrams
 
 ---
 
-## Core workflow
+## Core workflow and lifecycle modes
 
 ```
-paste Mermaid → detect diagram family → select/edit theme → themed preview → export
+Compose -> Apply -> Repair (if needed) -> Export
 ```
 
-1. **Paste** — drop in any Mermaid diagram
-2. **Detect** — the app identifies the diagram type and shows theme support level
-3. **Theme** — select a brand preset or edit colors manually
-4. **Preview** — compare Original and Themed side by side
-5. **Export** — copy Styled Code, Markdown Bootstrap, or Prompt Scaffold
+The full lifecycle covers six modes:
+
+| Mode | What you do |
+|---|---|
+| **Compose** | Build or edit a governance profile — palette, typography, look, renderer target |
+| **Apply** | Apply the profile to any Mermaid diagram — paste code, preview, compare |
+| **Extract** | Pull a profile from existing styled Mermaid code |
+| **Update** | Re-apply a changed profile to previously styled diagrams |
+| **Repair** | Fix syntax issues in Mermaid code before or after theming |
+| **Export** | Package the profile as Styled Code, Markdown Bootstrap, Prompt Scaffold, or JSON |
+
+See `docs/governance-profiles.md` for the full lifecycle mode definitions.
 
 ---
 
@@ -74,7 +83,7 @@ paste Mermaid → detect diagram family → select/edit theme → themed preview
 
 ## Diagram Inventory / Capability Registry
 
-Mermaid Theme Builder includes a full Diagram Inventory accessible from the header. The registry answers four questions for every tracked diagram type:
+Mermaid Theme Builder includes a full Diagram Inventory accessible from the Reference tab. The registry answers four questions for every tracked diagram type:
 
 1. **Does Mermaid support it?** — Support Status: Native, Partial, Emulatable, Gap, or External
 2. **How safely can Theme Builder theme it?** — Theme Confidence: High, Medium, Generic Only, Low, or N/A
@@ -87,14 +96,7 @@ Flowchart, Sequence, Class, State, ER, Journey, Gantt, Pie, Quadrant, Requiremen
 ### Capability gaps tracked (10)
 BPMN 2.0, ArchiMate, SysML, Value Stream Map, Service Blueprint, OKR Alignment Map, Data Flow Diagram, Decision Tree, Org Chart, Threat Model DFD.
 
-Gaps are tracked for honest reference only. **Mermaid Theme Builder does not implement unsupported formal notations.** BPMN 2.0 is a high-leverage gap but outside V1 implementation scope. Full new Mermaid diagram type creation is a separate upstream contribution lane.
-
-### Taxonomy vs. capability
-
-Tracking a gap entry in the registry does not mean the tool implements that notation. It means:
-- The notation is relevant to the target audience
-- Users deserve an honest warning when they attempt to approximate it in Mermaid
-- An example slot is reserved for when a credible approximation is documented
+Gaps are tracked for honest reference only. **Mermaid Theme Builder does not implement unsupported formal notations.** BPMN 2.0 is a high-leverage gap but outside V1 implementation scope. Full new Mermaid diagram type creation is a separate upstream contribution lane. For BPMN-like process diagrams, see the BPMN for Mermaid sibling project.
 
 ### Style strategy summary
 
@@ -103,8 +105,6 @@ Tracking a gap entry in the registry does not mean the tool implements that nota
 | **Full** | All themeVariables apply reliably |
 | **Partial** | Most apply; some colors are managed internally |
 | **Limited** | Background/text apply; diagram-specific colors do not |
-
-When a diagram type has limited or partial support, a blue info note appears below the input area with Support Status and Theme Confidence badges.
 
 ---
 
@@ -122,29 +122,35 @@ When a diagram type has limited or partial support, a blue info note appears bel
 
 ---
 
-## Success criteria for V0.1
+## Success criteria (v0.5.0 — completed)
 
-- [ ] Full BFS/employer brand firewall in place
-- [ ] Three OKHP3 brand presets with accurate colors
-- [ ] 25-type capability registry
-- [ ] Capability note shown for non-full diagram types
-- [ ] Three export formats working with metadata
-- [ ] Live side-by-side preview
-- [ ] Fully static — no network calls except Mermaid dependency load at build time
-- [ ] Attribution badge injectable for flowchart only
+- [x] Full BFS/employer brand firewall in place
+- [x] Three OKHP3 brand presets with accurate colors
+- [x] 27-type capability registry (10 gap entries)
+- [x] Capability note shown for non-full diagram types
+- [x] Three export formats working with metadata
+- [x] Live side-by-side preview with pan/zoom
+- [x] Fully static — no network calls except Mermaid dependency load at build time
+- [x] Attribution badge injectable for flowchart only
+- [x] OKH Forge UI System (design token layer)
+- [x] Renderer parity matrix (Reference tab)
+- [x] Class browser (Reference tab)
+- [x] Example library (26 entries, Examples tab)
+- [x] skillz-compatible SKILL.md package (v0.5.0)
 
 ---
 
 ## Roadmap summary
 
-See [roadmap.md](roadmap.md) for the full roadmap.
+See `docs/roadmap.md` for the full roadmap and `docs/okhp3-visual-language-stack.md` for stack positioning.
 
-**V0.2 targets:**
-- LocalStorage palette persistence
-- Diagram type selector with example library
-- Compatibility reference table for all 25 diagram types
+**V0.6 targets:**
+- Governance profile export (named bundle combining palette, look, typography, renderer target)
+- Family-specific Prompt Scaffold templates
+- Renderer compatibility warnings in export bar
+- Playwright smoke tests
 
-**V0.3 targets:**
-- Public alpha announcement
-- GitHub release with signed tag
-- OKHP3 website integration
+**V0.7 targets:**
+- Layout tier tokens (zone.primary, zone.system, lane.human, lane.automated classDef additions)
+- Syntax-highlighted code editor
+- WCAG 2.1 AA audit
