@@ -11,8 +11,8 @@ import {
 const VALID_SUPPORT_VALUES: RendererSupport[] = ["full", "partial", "none", "unknown"];
 
 describe("RENDERER_PROFILES", () => {
-  it("has exactly 7 renderers", () => {
-    expect(RENDERER_PROFILES.length).toBe(7);
+  it("has exactly 8 renderers", () => {
+    expect(RENDERER_PROFILES.length).toBe(8);
   });
 
   it("every renderer has a non-empty id", () => {
