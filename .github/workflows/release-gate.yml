@@ -15,7 +15,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Check CHANGELOG has versioned entry for ${{ github.ref_name }}
         run: bash scripts/check-changelog.sh "${{ github.ref_name }}"

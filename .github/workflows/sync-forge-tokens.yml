@@ -31,7 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out this repo
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Fetch upstream token source
         run: |
