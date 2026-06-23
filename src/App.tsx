@@ -749,6 +749,8 @@ export function AppShell() {
       }
     ) => {
       if (activeMyThemeSlotId) {
+        const activeSlotName =
+          myThemeSlots.find((s) => s.id === activeMyThemeSlotId)?.name ?? "My Theme";
         setMyThemeSlots((prev) =>
           prev.map((s) => (s.id === activeMyThemeSlotId ? { ...s, colors: palette.colors } : s))
         );
@@ -765,10 +767,10 @@ export function AppShell() {
             warnValues: warnings.warnValues,
           });
           setToast(
-            `Imported "${palette.name}" colors. CSS values may not render in Mermaid: ${keyList}.`
+            `Imported "${palette.name}" into "${activeSlotName}". CSS values may not render in Mermaid: ${keyList}.`
           );
         } else {
-          setToast(`Imported "${palette.name}" colors.`);
+          setToast(`Imported "${palette.name}" into "${activeSlotName}".`);
         }
       } else {
         setMyThemeSlots((prev) => {
@@ -780,10 +782,10 @@ export function AppShell() {
           setActiveMyThemeSlotId(newSlot.id);
           return [...prev, newSlot];
         });
-        setToast(`Imported "${palette.name}" as a new slot.`);
+        setToast(`Imported "${palette.name}" into a new My Theme slot.`);
       }
     },
-    [activeMyThemeSlotId]
+    [activeMyThemeSlotId, myThemeSlots]
   );
 
   const handleResetPalette = useCallback(() => {

@@ -242,7 +242,55 @@ test.describe("My Theme slot — delete via trash icon", () => {
 });
 
 // ---------------------------------------------------------------------------
-// 4. Color edits while a slot is active route to the slot, not customColors
+// 4. Import toast includes palette name and slot name
+// ---------------------------------------------------------------------------
+
+test.describe("My Theme slot — import toast", () => {
+  /** A minimal valid palette JSON whose colors are all clean hex values. */
+  const CLEAN_PALETTE_JSON = JSON.stringify({
+    type: "mtb-palette",
+    schemaVersion: 1,
+    id: "toast-test-palette",
+    name: "Toast Test Palette",
+    description: "test",
+    version: "1.0.0",
+    colors: [{ key: "primaryColor", label: "Primary", value: "#aabbcc" }],
+  });
+
+  test("import toast shows palette name and active slot name", async ({ page }) => {
+    // Seed state: slot-1 named "My Theme 1" is active.
+    await openWithState(
+      page,
+      baseState({
+        myThemeSlots: [makeSlot(1)],
+        activeMyThemeSlotId: "my-theme-1",
+      })
+    );
+
+    // Compose tab is the default — no tab click needed.
+    // Expand the Export Theme section so the hidden file input is accessible.
+    const toggle = page.getByRole("button", { name: "Export Theme", exact: true });
+    await toggle.waitFor({ timeout: 8_000 });
+    await toggle.click();
+
+    // Trigger import via the hidden file input (same code path as a real file picker).
+    const fileInput = page.locator('input[aria-label="Import palette JSON file"]');
+    await fileInput.setInputFiles({
+      name: "test-palette.json",
+      mimeType: "application/json",
+      buffer: Buffer.from(CLEAN_PALETTE_JSON),
+    });
+
+    // The success toast must contain both the palette name and the slot name.
+    const toast = page.locator('[role="status"]');
+    await expect(toast).toBeVisible({ timeout: 4_000 });
+    await expect(toast).toContainText("Toast Test Palette");
+    await expect(toast).toContainText("My Theme 1");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 5. Color edits while a slot is active route to the slot, not customColors
 // ---------------------------------------------------------------------------
 
 test.describe("My Theme slot — color edit routing", () => {
