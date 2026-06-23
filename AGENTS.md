@@ -472,6 +472,10 @@ These apply in every session, regardless of task:
 - No new dependencies unless explicitly requested.
 - All user-facing content must use US English per the Language Standard in
   Section 0. UK and Commonwealth spellings are defects, not stylistic variants.
+- Preserve standalone punchy lines. Do not consolidate them into paragraphs.
+- ROY principle: understanding produced / explanation invested. Verbosity must
+  earn its space.
+- AutoCAD version is R10. Locked. Do not suggest upgrades or alternatives.
 
 ---
 
@@ -529,6 +533,7 @@ Sibling projects include:
 - **skillz** -- agent-skill execution substrate; this repo ships as the
   `okhp3-mermaid-theme-builder` skillz-compatible skill package
 - **ReFolDec** -- recursive decomposition and folding theory (upstream conceptual layer)
+- **first-diagram-is-a-liar** (<https://github.com/OKHP3/first-diagram-is-a-liar>) -- related OKHP3 repo
 
 References to these sibling projects by name are permitted and encouraged in docs,
 skill files, and positioning copy. References must be descriptive only -- do not
@@ -679,3 +684,16 @@ referenced by any active workflow:
 
 When deleting these, confirm that no other workflow references them by name
 before executing the delete.
+
+---
+
+#### 9.8 Project references
+
+**Notion anchor:** <https://app.notion.com/p/7bc611bd57454d9185fadccdae11a93f>
+
+**GitHub:** <https://github.com/OKHP3/mermaid-theme-builder>
+
+**Local dev paths:**
+
+- Windows: `C:\Users\jamie\OKH-Local\Projects\mermaid-theme-builder`
+- Mac: `/Volumes/OKH-Local/04_GitHub_Mirrors/mermaid-theme-builder`
