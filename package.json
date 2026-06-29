@@ -37,7 +37,7 @@
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "catalog:",
     "axe-core": "^4.11.4",
-    "happy-dom": "^20.9.0",
+    "happy-dom": "^20.10.6",
     "lightningcss-win32-x64-msvc": "1.32.0",
     "lint-staged": "^17.0.5",
     "pngjs": "^7.0.0",
