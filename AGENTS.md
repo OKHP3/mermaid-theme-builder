@@ -695,5 +695,5 @@ before executing the delete.
 
 **Local dev paths:**
 
-- Windows: `C:\Users\jamie\OKH-Local\Projects\mermaid-theme-builder`
+- Windows: `C:\Users\jamie\OKH-Local\04_GitHub_Mirrors\mermaid-theme-builder`
 - Mac: `/Volumes/OKH-Local/04_GitHub_Mirrors/mermaid-theme-builder`
