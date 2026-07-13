@@ -14,7 +14,7 @@ name: Sync Forge Tokens
 
 on:
   schedule:
-    - cron: "0 13 * * 1"   # Mondays 13:00 UTC
+    - cron: "0 13 * * 1" # Mondays 13:00 UTC
   workflow_dispatch:
 
 permissions:
@@ -40,8 +40,24 @@ jobs:
             "https://raw.githubusercontent.com/${UPSTREAM_REPO}/main/${UPSTREAM_PATH}" \
             -o /tmp/forge-tokens.upstream.css
 
+      - name: Validate upstream token contract
+        id: source
+        run: |
+          for marker in \
+            "--okh-forge-bg:" \
+            "--background:" \
+            "--app-font-sans:"; do
+            if ! grep -Fq -- "$marker" /tmp/forge-tokens.upstream.css; then
+              echo "compatible=false" >> "$GITHUB_OUTPUT"
+              echo "::warning::Upstream CSS does not match the forge-tokens.css contract. Skipping sync until the upstream token source is restored."
+              exit 0
+            fi
+          done
+          echo "compatible=true" >> "$GITHUB_OUTPUT"
+
       - name: Compare against local copy
         id: diff
+        if: steps.source.outputs.compatible == 'true'
         run: |
           if [ ! -f "$LOCAL_PATH" ]; then
             echo "changed=true" >> "$GITHUB_OUTPUT"
@@ -55,11 +71,11 @@ jobs:
           fi
 
       - name: Stage updated token file
-        if: steps.diff.outputs.changed == 'true'
+        if: steps.source.outputs.compatible == 'true' && steps.diff.outputs.changed == 'true'
         run: cp /tmp/forge-tokens.upstream.css "$LOCAL_PATH"
 
       - name: Open pull request on drift
-        if: steps.diff.outputs.changed == 'true'
+        if: steps.source.outputs.compatible == 'true' && steps.diff.outputs.changed == 'true'
         uses: peter-evans/create-pull-request@v8
         with:
           branch: chore/sync-forge-tokens
