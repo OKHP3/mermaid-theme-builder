@@ -215,6 +215,14 @@ describe("detectDiagram — family detection", () => {
     expect(detectDiagram("eventmodeling\n  Command AddItem").family).toBe("eventModeling");
   });
 
+  it.each([
+    ["cynefin-beta", "cynefin"],
+    ["railroad-beta", "railroad"],
+    ["swimlane-beta", "swimlane"],
+  ])("detects %s as the %s family", (syntax, family) => {
+    expect(detectDiagram(syntax).family).toBe(family);
+  });
+
   it("strips %%{init:...}%% directive before detecting family", () => {
     const withInit = '%%{init: {"theme": "dark"}}%%\nflowchart LR\n  A --> B';
     expect(detectDiagram(withInit).family).toBe("flowchart");

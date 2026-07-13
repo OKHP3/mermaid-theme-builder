@@ -1,7 +1,7 @@
 # Renderer Compatibility Reference
 
 **Last updated:** 2026-06-20
-**Mermaid version verified against:** 11.15.0
+**Mermaid version verified against:** 11.16.0
 **Sources:** Claude market research, Perplexity competitive analysis (2026-05-21); Microsoft Loop community reports (2026-06-20)
 
 This document records how different Mermaid rendering environments handle the theming features that Mermaid Theme Builder exports. It is the foundation for the renderer-specific warnings shown in the Apply tab.

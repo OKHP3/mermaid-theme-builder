@@ -1,0 +1,62 @@
+name: Technology Version Audit
+
+on:
+  schedule:
+    - cron: "0 14 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: technology-version-audit
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    name: Audit runtimes and direct dependencies
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run technology version audit
+        run: node scripts/check-technology-versions.mjs --json --fail-on-errors > "$RUNNER_TEMP/technology-version-report.json"
+
+      - name: Add audit summary
+        if: always()
+        run: |
+          if [ -f "$RUNNER_TEMP/technology-version-report.json" ]; then
+            node -e '
+              const fs = require("node:fs");
+              const report = JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP + "/technology-version-report.json", "utf8"));
+              const summary = report.summary;
+              console.log(`Direct npm updates available: ${summary.outdatedNpm}`);
+              console.log(`Audit errors: ${summary.npmErrors + summary.runtimeErrors}`);
+              console.log(`Node.js latest LTS: ${report.runtimes.node.latestLts}`);
+              console.log(`Python latest stable: ${report.runtimes.python.latestStable}`);
+            '
+          else
+            echo "Technology version audit did not produce a report."
+          fi
+
+      - name: Upload audit report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: technology-version-report
+          path: ${{ runner.temp }}/technology-version-report.json
+          if-no-files-found: warn

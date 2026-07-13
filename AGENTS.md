@@ -573,7 +573,7 @@ Any change that breaks this flow is a defect, regardless of other intent.
 
 #### 9.4 Mermaid dependency governance
 
-- Mermaid is used as an npm dependency (currently `11.15.0` -- pinned exactly).
+- Mermaid is used as an npm dependency (currently `11.16.0` -- pinned exactly).
 - Do not fork Mermaid. Do not copy Mermaid source into this repo.
 - Dependency updates must be reviewed and tested before release.
 - After each Mermaid version upgrade, manually update the constants in
@@ -589,7 +589,7 @@ Mermaid dependency is upgraded:
 
 ```typescript
 // src/data/mermaid-capabilities.ts
-export const MERMAID_VERSION_VERIFIED = "11.15.0";
+export const MERMAID_VERSION_VERIFIED = "11.16.0";
 ```
 
 #### 9.5 App-specific conventions

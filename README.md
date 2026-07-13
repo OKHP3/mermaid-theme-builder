@@ -11,7 +11,7 @@ Visual governance for AI-generated Mermaid diagrams — paste, theme, preview, a
 ## Features
 
 - **27+ diagram families** detected with family-specific theming overlays
-- **3 rendering looks** — Classic, Neo, Hand-Drawn — sourced from Mermaid v11.15.0's look API
+- **3 rendering looks** — Classic, Neo, Hand-Drawn — sourced from Mermaid v11.16.0's look API
 - **7 renderer profiles** — mermaid.live, GitHub, GitLab, Notion, Obsidian, Confluence, CLI — with parity matrix and contextual look warnings
 - **5-tier typography hierarchy** — Diagram Title → Subgraph → Nested Subgraph → Node Label → Edge Label — with enforced parent-child sizing constraints
 - **Built-in brand palettes** — Overkill Hill P³, AskJamie, Glee-fully, plus Ocean Depth, Forest Sage, Slate Ember, Violet Mist and more
@@ -34,7 +34,7 @@ Visual governance for AI-generated Mermaid diagrams — paste, theme, preview, a
 
 ---
 
-## Looks (Mermaid v11.15.0)
+## Looks (Mermaid v11.16.0)
 
 | Look | Keyword | Renderer support |
 |------|---------|-----------------|
@@ -107,10 +107,10 @@ See `replit.md` for the full project overview and `AGENTS.md` for contributing r
 |-------|-----------|
 | Framework | React 19 + Vite 8 |
 | Styling | Tailwind CSS v4 |
-| Rendering | Mermaid.js 11.15.0 |
-| Type checking | TypeScript 5.9 (strict) |
+| Rendering | Mermaid.js 11.16.0 |
+| Type checking | TypeScript 7.0 (strict) |
 | Testing | Vitest 4 |
-| Package manager | pnpm 10 (workspaces) |
+| Package manager | pnpm 11 (workspaces) |
 | Hosting | GitHub Pages (static) |
 
 ---

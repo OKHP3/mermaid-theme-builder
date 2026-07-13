@@ -321,8 +321,8 @@ export function ReferenceTab({
                 * Hover renderer name for notes. Caveats marked with asterisk. Looks: Classic / Neo
                 / Hand-Drawn. Capabilities: init = %%{"{"}init{"}"}%% directives, themeVars =
                 themeVariables, classDef = inline node styling, CSS = external stylesheet injection,
-                fonts = custom fontFamily. Data reflects research as of Mermaid 11.15.0 — validate
-                in your target environment.
+                fonts = custom fontFamily. Data reflects research as of Mermaid 11.16.0. Validate in
+                your target environment.
               </p>
               <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-0.5">
                 {RENDERER_PROFILES.map((r) => (

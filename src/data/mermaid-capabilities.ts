@@ -1,4 +1,4 @@
-export const MERMAID_VERSION_VERIFIED = "11.15.0";
+export const MERMAID_VERSION_VERIFIED = "11.16.0";
 
 export type DiagramFamily =
   | "flowchart"
@@ -27,6 +27,9 @@ export type DiagramFamily =
   | "wardley"
   | "treeView"
   | "eventModeling"
+  | "cynefin"
+  | "railroad"
+  | "swimlane"
   | "zenuml"
   | "radar"
   | "unknown";
@@ -37,10 +40,7 @@ export type StyleStrategy = "full" | "partial" | "limited" | "none";
 export type SupportStatus = "native" | "partial" | "emulatable" | "gap" | "external";
 export type ThemeConfidence = "high" | "medium" | "generic-only" | "low" | "not-applicable";
 export type NotationCompliance =
-  | "mermaid-native"
-  | "approximation-only"
-  | "not-supported"
-  | "external-tool-recommended";
+  "mermaid-native" | "approximation-only" | "not-supported" | "external-tool-recommended";
 
 export interface DiagramCapability {
   id: DiagramFamily;
@@ -757,6 +757,84 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
     exampleFile: "eventmodeling-basic.mmd",
     examplePending: false,
     minMermaidVersion: "11.15.0",
+    supportedLooks: ["classic"],
+    unsupportedLooks: ["neo", "handDrawn"],
+  },
+  {
+    id: "cynefin",
+    displayName: "Cynefin Framework",
+    declarations: /^\s*cynefin-beta\b/im,
+    stability: "beta",
+    styleStrategy: "limited",
+    supportsClassDef: false,
+    supportsLinkStyle: false,
+    supportsSubgraphStyle: false,
+    notes:
+      "Beta diagram type introduced in Mermaid 11.16.0. Theming support is limited and renderer-specific details may change.",
+    supportStatus: "native",
+    themeConfidence: "low",
+    notationCompliance: "mermaid-native",
+    description:
+      "Cynefin framework diagram for mapping situations across clear, complicated, complex, chaotic, and disorder domains.",
+    bestUsedFor:
+      "Sense-making workshops, decision context mapping, organizational complexity analysis.",
+    warning:
+      "Beta. Validate Cynefin rendering in the target Mermaid environment before publication.",
+    exampleFile: null,
+    examplePending: true,
+    minMermaidVersion: "11.16.0",
+    supportedLooks: ["classic"],
+    unsupportedLooks: ["neo", "handDrawn"],
+  },
+  {
+    id: "railroad",
+    displayName: "Railroad Diagram",
+    declarations: /^\s*railroad-beta\b/im,
+    stability: "beta",
+    styleStrategy: "limited",
+    supportsClassDef: false,
+    supportsLinkStyle: false,
+    supportsSubgraphStyle: false,
+    notes:
+      "Beta diagram type introduced in Mermaid 11.16.0. Theme variables primarily affect shared background and text surfaces.",
+    supportStatus: "native",
+    themeConfidence: "low",
+    notationCompliance: "mermaid-native",
+    description:
+      "Railroad syntax diagram for documenting valid token sequences and grammar alternatives.",
+    bestUsedFor:
+      "Language syntax references, parser documentation, command and configuration grammar.",
+    warning:
+      "Beta. Validate Railroad Diagram rendering in the target Mermaid environment before publication.",
+    exampleFile: null,
+    examplePending: true,
+    minMermaidVersion: "11.16.0",
+    supportedLooks: ["classic"],
+    unsupportedLooks: ["neo", "handDrawn"],
+  },
+  {
+    id: "swimlane",
+    displayName: "Swimlane Diagram",
+    declarations: /^\s*swimlane-beta\b/im,
+    stability: "beta",
+    styleStrategy: "limited",
+    supportsClassDef: false,
+    supportsLinkStyle: false,
+    supportsSubgraphStyle: false,
+    notes:
+      "Beta diagram type introduced in Mermaid 11.16.0. Theming is limited while the standalone swimlane syntax evolves.",
+    supportStatus: "native",
+    themeConfidence: "low",
+    notationCompliance: "mermaid-native",
+    description:
+      "Swimlane diagram for showing responsibilities and handoffs across people, teams, or systems.",
+    bestUsedFor:
+      "Cross-functional workflows, ownership mapping, service handoffs, and process responsibility analysis.",
+    warning:
+      "Beta. Validate Swimlane Diagram rendering in the target Mermaid environment before publication.",
+    exampleFile: null,
+    examplePending: true,
+    minMermaidVersion: "11.16.0",
     supportedLooks: ["classic"],
     unsupportedLooks: ["neo", "handDrawn"],
   },
