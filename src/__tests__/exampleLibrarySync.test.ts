@@ -28,7 +28,7 @@ describe("example-library.ts ↔ examples/*.mmd sync guard", () => {
       const filePath = path.join(EXAMPLES_DIR, mmdFile);
       expect(fs.existsSync(filePath), `Source file examples/${mmdFile} does not exist`).toBe(true);
 
-      const fileContent = fs.readFileSync(filePath, "utf-8").trim();
+      const fileContent = fs.readFileSync(filePath, "utf-8").trim().replace(/\r\n/g, "\n");
       expect(entry!.content.trim()).toBe(fileContent);
     });
   }
