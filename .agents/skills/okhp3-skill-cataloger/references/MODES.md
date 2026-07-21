@@ -1,4 +1,4 @@
-# okhp3-skill-cataloger — Mode Reference
+# okhp3-skill-cataloger - Mode Reference
 
 The `gen-skills-readme.py` script operates in three modes. Choosing the
 wrong mode produces an empty table or an incorrectly structured catalog.
@@ -9,11 +9,11 @@ wrong mode produces an empty table or an incorrectly structured catalog.
 
 | Mode | Flag | Scans | Writes | Auto-detected? |
 |---|---|---|---|---|
-| `project` | (none) | `.agents/skills/` — flat layout | `.agents/skills/README.md` | Yes |
-| `library` | (none) | `.agents/skills/` — categorized layout | `.agents/skills/README.md` | Yes |
-| Full index | `--full` | Repo root family folders | `SKILLS.md` | N/A — explicit flag |
+| `project` | (none) | `.agents/skills/` - flat layout | `.agents/skills/README.md` | Yes |
+| `library` | (none) | `.agents/skills/` - categorized layout | `.agents/skills/README.md` | Yes |
+| Full index | `--full` | Repo root family folders | `SKILLS.md` | N/A - explicit flag |
 
-`project` and `library` are both "catalog" modes — they differ only in how they
+`project` and `library` are both "catalog" modes - they differ only in how they
 interpret `.agents/skills/`. The `--full` flag is a distinct operation that scans
 the repo root for the distribution surface.
 
@@ -32,7 +32,7 @@ used (the default) and `--full` is not passed.
 | More subdirectories (no `SKILL.md`) | `library` |
 
 Auto-detection is correct in virtually all cases. Use `--mode project` or
-`--mode library` only when you need to override — for example, when a category
+`--mode library` only when you need to override - for example, when a category
 folder happens to contain a stray `SKILL.md` that tricks the detector.
 
 ```bash
@@ -91,7 +91,7 @@ contains skill folders (categorized layout).
 ```
 
 **How to identify:** Subdirectories inside `.agents/skills/` do NOT contain
-`SKILL.md` directly — they contain more subdirectories.
+`SKILL.md` directly - they contain more subdirectories.
 
 **README output:** Skills grouped into sections by category, with a skill
 count per category.
@@ -101,7 +101,7 @@ count per category.
 ## Full index mode (`--full`)
 
 **Use when:** You want to catalog the **distribution surface** of a skills
-library repo — the root-level family folders that contain skills available for
+library repo - the root-level family folders that contain skills available for
 others to install (e.g., the `skillz` repo).
 
 This is NOT a mode of catalog mode. It is a distinct operation triggered by the
@@ -157,7 +157,7 @@ python3 scripts/gen-skills-readme.py --full --output my-index.md
 | `kierans-lifetrkr` | (none / default) | Application repo, catalogs `.agents/skills/` |
 | `mermaid-diagram-bpmn` | (none / default) | Application repo, catalogs `.agents/skills/` |
 | `skillz` | `--full` | Distribution repo, indexes root family folders |
-| `skillz` | (none / default) | Also valid — catalogs skillz's own `.agents/skills/` |
+| `skillz` | (none / default) | Also valid - catalogs skillz's own `.agents/skills/` |
 
 ---
 
@@ -165,12 +165,12 @@ python3 scripts/gen-skills-readme.py --full --output my-index.md
 
 | Repo | Catalog mode | Notes |
 |---|---|---|
-| `kierans-lifetrkr` | project | Small focused set — flat is correct |
+| `kierans-lifetrkr` | project | Small focused set - flat is correct |
 | `mermaid-diagram-bpmn` | project | Skills are flat in `.agents/skills/` |
-| `mermaid-theme-builder` | project | Single skill — flat is correct |
+| `mermaid-theme-builder` | project | Single skill - flat is correct |
 | `skillz` | library (for `.agents/skills/`) | `.agents/skills/` may use category folders |
-| `skillz` with `--full` | library (always) | Root family folders — the distribution surface |
-| `Glee-fullyTools` | library | 50+ tools with sub-skills — category folders required |
+| `skillz` with `--full` | library (always) | Root family folders - the distribution surface |
+| `Glee-fullyTools` | library | 50+ tools with sub-skills - category folders required |
 | Any new project repo | project | Default until category folders are added |
 
 ---
@@ -188,13 +188,13 @@ When a project outgrows a flat structure and you add category folders:
    ```bash
    git mv .agents/skills/celestial-data .agents/skills/core/celestial-data
    ```
-3. Run the cataloger — auto-detection will pick up library mode:
+3. Run the cataloger - auto-detection will pick up library mode:
    ```bash
    python3 scripts/gen-skills-readme.py
    ```
 4. Commit the restructured skills and updated README.
 
-No flag or configuration change needed — auto-detection handles it.
+No flag or configuration change needed - auto-detection handles it.
 
 ---
 
@@ -218,4 +218,4 @@ explicitly until it is cleaned up.
 **Full index finds nothing:**
 If run in an application repo where no root-level family folders exist,
 `--full` writes an empty `SKILLS.md` and reports 0 skills. This is correct
-behavior — it signals that the repo has no distribution surface, not an error.
+behavior - it signals that the repo has no distribution surface, not an error.

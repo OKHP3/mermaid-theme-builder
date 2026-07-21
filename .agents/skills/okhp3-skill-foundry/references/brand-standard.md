@@ -13,10 +13,10 @@ Every OKHP3 skill requires a complete YAML block at the top of SKILL.md:
 ---
 name: okhp3-<skill-name>
 description: >
-  OverKill Hill P³ <short noun phrase -- what the skill does>.
+  OverKill Hill P³ <short noun phrase - what the skill does>.
   <Primary trigger sentence: "Use when...">
   <Secondary triggers: "Also activate when...">
-  <Disambiguation if needed: "This is the authoritative... -- use it even when...">
+  <Disambiguation if needed: "This is the authoritative... - use it even when...">
 license: MIT
 metadata:
   author: Jamie Hill (OverKill Hill P³)
@@ -27,6 +27,8 @@ metadata:
   author-github: https://github.com/OKHP3
 ---
 ```
+
+The package name and directory must match, names must be lowercase hyphenated, and descriptions must stay below 1024 characters. Top-level frontmatter must use only the portable Agent Skills fields. Metadata values must be strings so the package remains portable across clients.
 
 ### Required fields
 

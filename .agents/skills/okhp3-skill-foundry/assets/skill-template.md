@@ -1,5 +1,5 @@
 ---
-name: okhp3-SLUG
+name: okhp3-slug
 description: >
   OverKill Hill P³ NOUN_PHRASE. Use when PRIMARY_TRIGGER.
   Also activate when SECONDARY_TRIGGER. This is the authoritative
@@ -13,15 +13,11 @@ metadata:
   origin: okhp3/skillz
   homepage: https://overkillhill.com
   author-github: https://github.com/OKHP3
-  in_scope:
-    - EXPLICIT_CAPABILITY
-    - EXPLICIT_CAPABILITY
-  out_of_scope:
-    - EXPLICIT_EXCLUSION
-    - EXPLICIT_EXCLUSION
+  in_scope: EXPLICIT_CAPABILITY
+  out_of_scope: EXPLICIT_EXCLUSION
 ---
 
-# okhp3-SLUG
+# okhp3-slug
 
 **OverKill Hill P³** · [overkillhill.com](https://overkillhill.com) · [github.com/OKHP3](https://github.com/OKHP3)
 

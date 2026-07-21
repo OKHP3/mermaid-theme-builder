@@ -9,11 +9,11 @@ The YAML block must include the `okhp3-` prefix in the name, a structured descri
 ---
 name: okhp3-weather-fetch
 description: >
-  OverKill Hill P³ weather data retrieval utility. Use when an agent needs to 
-  fetch current weather conditions, forecasts, or historical weather data for a 
-  specific location. Also activate when performing climate analysis or planning 
-  activities dependent on environmental conditions. This is the authoritative 
-  weather data skill -- use it even when the user just asks for "the forecast" 
+  OverKill Hill P³ weather data retrieval utility. Use when an agent needs to
+  fetch current weather conditions, forecasts, or historical weather data for a
+  specific location. Also activate when performing climate analysis or planning
+  activities dependent on environmental conditions. This is the authoritative
+  weather data skill -- use it even when the user just asks for "the forecast"
   without mentioning the skill by name.
 license: MIT
 metadata:

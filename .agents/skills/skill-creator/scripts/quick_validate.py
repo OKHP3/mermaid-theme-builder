@@ -4,10 +4,28 @@ Quick validation script for skills - minimal version
 """
 
 import sys
-import os
 import re
-import yaml
 from pathlib import Path
+
+def parse_frontmatter(text):
+    match = re.match(r'^---\r?\n(.*?)\r?\n---', text, re.DOTALL)
+    if not match:
+        return None
+    fields = {}
+    lines = match.group(1).splitlines()
+    current = None
+    for line in lines:
+        item = re.match(r'^([A-Za-z0-9_-]+):\s*(.*)$', line)
+        nested = re.match(r'^\s+([A-Za-z0-9_-]+):\s*(.*)$', line)
+        if item:
+            key, value = item.groups()
+            fields[key] = {} if key == 'metadata' and not value.strip() else value.strip('"\'')
+            current = key
+        elif nested and current == 'metadata':
+            if not isinstance(fields.get('metadata'), dict):
+                fields['metadata'] = {}
+            fields['metadata'][nested.group(1)] = nested.group(2).strip('"\'')
+    return fields
 
 def validate_skill(skill_path):
     """Basic validation of a skill"""
@@ -23,20 +41,9 @@ def validate_skill(skill_path):
     if not content.startswith('---'):
         return False, "No YAML frontmatter found"
 
-    # Extract frontmatter
-    match = re.match(r'^---\n(.*?)\n---', content, re.DOTALL)
-    if not match:
+    frontmatter = parse_frontmatter(content)
+    if not isinstance(frontmatter, dict):
         return False, "Invalid frontmatter format"
-
-    frontmatter_text = match.group(1)
-
-    # Parse YAML frontmatter
-    try:
-        frontmatter = yaml.safe_load(frontmatter_text)
-        if not isinstance(frontmatter, dict):
-            return False, "Frontmatter must be a YAML dictionary"
-    except yaml.YAMLError as e:
-        return False, f"Invalid YAML in frontmatter: {e}"
 
     # Define allowed properties
     ALLOWED_PROPERTIES = {'name', 'description', 'license', 'allowed-tools', 'metadata', 'compatibility'}
@@ -97,7 +104,7 @@ if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: python quick_validate.py <skill_directory>")
         sys.exit(1)
-    
+
     valid, message = validate_skill(sys.argv[1])
     print(message)
     sys.exit(0 if valid else 1)
