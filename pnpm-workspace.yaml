@@ -69,7 +69,6 @@ onlyBuiltDependencies:
   - "@swc/core"
   - esbuild
   - msw
-  - simple-git-hooks
   - unrs-resolver
 
 overrides:
