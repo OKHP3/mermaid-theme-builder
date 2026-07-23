@@ -40,7 +40,7 @@
     "axe-core": "^4.12.1",
     "happy-dom": "^20.10.6",
     "lightningcss-win32-x64-msvc": "1.32.0",
-    "lint-staged": "^17.0.8",
+    "lint-staged": "^17.1.0",
     "pngjs": "^7.0.0",
     "prettier": "^3.9.5",
     "react": "catalog:",
