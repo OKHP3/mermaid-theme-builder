@@ -31,7 +31,7 @@ jobs:
           cache: pnpm
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --ignore-scripts
 
       - name: Run technology version audit
         run: node scripts/check-technology-versions.mjs --json --fail-on-errors > "$RUNNER_TEMP/technology-version-report.json"
