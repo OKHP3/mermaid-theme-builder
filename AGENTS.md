@@ -538,10 +538,13 @@ workflow definitions, documentation, and recent Git history.
   a palette and renderer profile -> preview original and themed output -> copy
   or export.
 - **Known guidance gap:** Older planning and README text still refers to a
-  legacy `skills/` path. The current skill path is
-  `.agents/skills/okhp3-mermaid-theme-builder/`. The link-check script also
-  scans the legacy path, so its skill coverage should be updated in a separate
-  maintenance task.
+  legacy `skills/` path. The tested canonical skill package is
+  `.agents/skills/okhp3-mermaid-theme-builder/`. A tracked `skills/` tree still
+  exists as a legacy or export copy and remains referenced by older README and
+  roadmap material. Do not assume the two copies are synchronized. Reconcile
+  the legacy tree deliberately before changing or removing it. The link-check
+  script also scans the legacy path, so its skill coverage should be updated in
+  a separate maintenance task.
 - **Maintenance rule:** When the package, runtime, workspace layout, workflow
   names, skill path, or release status changes, update this snapshot and the
   relevant inventory entries using verified repository evidence. Do not treat
