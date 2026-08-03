@@ -151,6 +151,13 @@ interface ComposeTabProps {
   onAddMyThemeSlot?: () => void;
   onDeleteMyThemeSlot?: (id: string) => void;
   onExportMyThemeSlot?: (id: string) => void;
+  onImportAsNewSlot?: (
+    palette: Palette,
+    warnings: {
+      invalidValues: Array<{ key: string; value: string }>;
+      warnValues: Array<{ key: string; value: string }>;
+    }
+  ) => void;
   onImportMyThemeSlot?: (
     palette: Palette,
     warnings: {
@@ -214,6 +221,7 @@ export function ComposeTab({
   onAddMyThemeSlot = () => {},
   onDeleteMyThemeSlot = () => {},
   onExportMyThemeSlot = () => {},
+  onImportAsNewSlot,
   onImportMyThemeSlot,
   customThemeNamePlaceholder,
 }: ComposeTabProps) {
@@ -524,6 +532,7 @@ export function ComposeTab({
         onAddMyThemeSlot={onAddMyThemeSlot}
         onDeleteMyThemeSlot={onDeleteMyThemeSlot}
         onExportMyThemeSlot={onExportMyThemeSlot}
+        onImportAsNewSlot={onImportAsNewSlot}
         onShowToast={onShowToast}
       />
 

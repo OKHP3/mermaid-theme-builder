@@ -45,6 +45,13 @@ interface ExamplesTabProps {
   onAddMyThemeSlot?: () => void;
   onDeleteMyThemeSlot?: (id: string) => void;
   onExportMyThemeSlot?: (id: string) => void;
+  onImportAsNewSlot?: (
+    palette: import("@/lib/palettes").Palette,
+    warnings: {
+      invalidValues: Array<{ key: string; value: string }>;
+      warnValues: Array<{ key: string; value: string }>;
+    }
+  ) => void;
   onShowToast?: (msg: ReactNode) => void;
 }
 
@@ -63,6 +70,7 @@ export function ExamplesTab({
   onAddMyThemeSlot = () => {},
   onDeleteMyThemeSlot = () => {},
   onExportMyThemeSlot = () => {},
+  onImportAsNewSlot,
   onShowToast = () => {},
 }: ExamplesTabProps) {
   const [selectedId, setSelectedId] = useState(() => {
@@ -208,6 +216,7 @@ export function ExamplesTab({
         onAddMyThemeSlot={onAddMyThemeSlot}
         onDeleteMyThemeSlot={onDeleteMyThemeSlot}
         onExportMyThemeSlot={onExportMyThemeSlot}
+        onImportAsNewSlot={onImportAsNewSlot}
         onShowToast={onShowToast}
       />
       <div className="flex-1 overflow-hidden flex flex-col md:flex-row min-h-0">
