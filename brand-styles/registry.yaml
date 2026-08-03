@@ -1,0 +1,13 @@
+schema_version: "1.0"
+last_updated: "2026-08-03"
+notes: >
+  Brand style registry for the Mermaid Theme Builder project.
+  Profiles are captured from declared design sources and marked with their
+  evidence level. Do not blend profiles without creating a new named profile.
+profiles:
+  - id: overkill-hill
+    display_name: OverKill Hill P³
+    path: profiles/overkill-hill.yaml
+    status: active
+    tags: [industrial, technical, dark, forge]
+    notes: Primary brand for all OverKill Hill P³ tooling, including this app.
