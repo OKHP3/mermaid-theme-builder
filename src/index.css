@@ -41,6 +41,29 @@
     outline-offset: 2px;
     border-radius: 4px;
   }
+
+  /* Prevent double-tap zoom delay on touch devices */
+  button,
+  [role="button"],
+  a,
+  input[type="submit"],
+  input[type="button"],
+  label[for] {
+    touch-action: manipulation;
+  }
+
+  /* Respect prefers-reduced-motion — disable entrance/exit animations;
+     retain instant color/opacity feedback so controls feel responsive */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
