@@ -6,6 +6,7 @@ import { extractUsedClasses, applyClassFix } from "@/lib/used-classes";
 import { DiagramInventory } from "@/components/DiagramInventory";
 import { ClassBrowser } from "@/components/ClassBrowser";
 import { RENDERER_PROFILES, supportLabel, supportColor } from "@/data/renderer-parity";
+import { PUBLIC_MERMAID_SKILLS, SKILL_ROLE_META } from "@/data/skills-catalog";
 import type { MyThemeSlot } from "@/lib/my-theme-slots";
 
 interface ReferenceTabProps {
@@ -33,6 +34,7 @@ interface ReferenceTabProps {
 const TAXONOMY_DOCS_URL =
   "https://github.com/OKHP3/mermaid-theme-builder/blob/main/docs/visual-language-diagram-taxonomy.md";
 const GITHUB_REPO_URL = "https://github.com/OKHP3/mermaid-theme-builder";
+const SKILLS_FAMILY_URL = "https://github.com/OKHP3/mermaid-theme-builder/tree/main/skills";
 
 const LOOK_COLS = [
   { key: "classic" as const, label: "Classic" },
@@ -349,6 +351,100 @@ export function ReferenceTab({
             onToggle={() => handleRefSectionToggle("inventory", openRefSection !== "inventory")}
           />
         </div>
+
+        {/* ── Agent Skills ──────────────────────────────────────────────── */}
+        <details
+          className="group border-b border-border"
+          open={openRefSection === "skills"}
+          onToggle={(e) =>
+            handleRefSectionToggle("skills", (e.currentTarget as HTMLDetailsElement).open)
+          }
+        >
+          <summary className="flex items-center justify-between px-4 py-2.5 cursor-pointer list-none hover:bg-muted/40 transition-colors select-none">
+            <div className="flex items-center gap-2">
+              {/* puzzle-piece / skills icon */}
+              <svg
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                className="w-3.5 h-3.5 text-muted-foreground"
+              >
+                <path d="M10 3.5a1.5 1.5 0 013 0V4a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-.5a1.5 1.5 0 000 3h.5a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-.5a1.5 1.5 0 00-3 0v.5a1 1 0 01-1 1H6a1 1 0 01-1-1v-3a1 1 0 00-1-1h-.5a1.5 1.5 0 010-3H4a1 1 0 001-1V6a1 1 0 011-1h3a1 1 0 001-1v-.5z" />
+              </svg>
+              <span className="text-xs font-medium text-foreground">Mermaid Agent Skills</span>
+              <span className="text-[10px] text-muted-foreground">
+                {PUBLIC_MERMAID_SKILLS.length} skills · publicly installable
+              </span>
+            </div>
+            <svg
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              className="w-4 h-4 text-muted-foreground group-open:rotate-180 transition-transform"
+            >
+              <path
+                fillRule="evenodd"
+                d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </summary>
+
+          <div className="border-t border-border divide-y divide-border/50">
+            <p className="px-4 py-2.5 text-[11px] text-muted-foreground leading-relaxed">
+              These Agent Skills are open-source and installable in any AI client that supports the
+              Skills format.{" "}
+              <a
+                href={SKILLS_FAMILY_URL}
+                target="_blank"
+                rel="noreferrer noopener"
+                className="text-primary underline underline-offset-2 hover:text-primary/80 transition-colors"
+              >
+                Browse all on GitHub ↗
+              </a>
+            </p>
+
+            {PUBLIC_MERMAID_SKILLS.map((skill) => {
+              const meta = SKILL_ROLE_META[skill.role];
+              return (
+                <div
+                  key={skill.name}
+                  className="px-4 py-2.5 flex items-start gap-3 hover:bg-muted/30 transition-colors"
+                >
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap mb-0.5">
+                      <span className="text-xs font-medium text-foreground">
+                        {skill.displayName}
+                      </span>
+                      <span
+                        className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full border ${meta.className}`}
+                      >
+                        {meta.label}
+                      </span>
+                      <span className="text-[10px] font-mono text-muted-foreground/60">
+                        v{skill.version}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-muted-foreground leading-relaxed">
+                      {skill.description}
+                    </p>
+                  </div>
+                  <a
+                    href={skill.githubUrl}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    aria-label={`View ${skill.displayName} skill on GitHub`}
+                    className="shrink-0 mt-0.5 text-muted-foreground/50 hover:text-primary transition-colors"
+                    title="View SKILL.md on GitHub"
+                  >
+                    <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5">
+                      <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+                      <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+                    </svg>
+                  </a>
+                </div>
+              );
+            })}
+          </div>
+        </details>
       </div>
 
       <div className="flex-none border-t border-border bg-card/40 px-4 py-2 flex flex-wrap items-center gap-x-4 gap-y-1">

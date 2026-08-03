@@ -40,10 +40,7 @@ export type StyleStrategy = "full" | "partial" | "limited" | "none";
 export type SupportStatus = "native" | "partial" | "emulatable" | "gap" | "external";
 export type ThemeConfidence = "high" | "medium" | "generic-only" | "low" | "not-applicable";
 export type NotationCompliance =
-  | "mermaid-native"
-  | "approximation-only"
-  | "not-supported"
-  | "external-tool-recommended";
+  "mermaid-native" | "approximation-only" | "not-supported" | "external-tool-recommended";
 
 export interface DiagramCapability {
   id: DiagramFamily;
