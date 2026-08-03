@@ -4,10 +4,33 @@ notes: >
   Brand style registry for the Mermaid Theme Builder project.
   Profiles are captured from declared design sources and marked with their
   evidence level. Do not blend profiles without creating a new named profile.
+
+  okhp3-forge is the canonical Forge UI system profile shared across all
+  OverKill Hill P³ companion apps (authoritative copy lives in the
+  mermaid-diagram-bpmn repo; kept in sync via the forge-tokens.css upstream).
+  okhp3-forge-diagram is its always-dark diagram/code-panel sub-system.
+  overkill-hill is the broader OverKill Hill P³ brand identity profile.
 profiles:
+  - id: okhp3-forge
+    display_name: OKH Forge UI System
+    path: profiles/okhp3-forge.yaml
+    status: active
+    version: "1.0.0"
+    tags: [industrial, warm, technical, forge, okhp3]
+    notes: Canonical Forge UI system — warm-paper surfaces, teal header, rust-orange actions.
+
+  - id: okhp3-forge-diagram
+    display_name: OKH Forge Diagram Surface
+    path: profiles/okhp3-forge-diagram.yaml
+    status: active
+    version: "1.0.0"
+    parent: okhp3-forge
+    tags: [dark, diagram, mermaid, code-panel, forge, okhp3, always-dark]
+    notes: Always-dark diagram and code-panel sub-system. Use inside Mermaid renders and code editors.
+
   - id: overkill-hill
     display_name: OverKill Hill P³
     path: profiles/overkill-hill.yaml
     status: active
     tags: [industrial, technical, dark, forge]
-    notes: Primary brand for all OverKill Hill P³ tooling, including this app.
+    notes: Broader OverKill Hill P³ brand identity; okhp3-forge is the SPA-specific application of this identity.

@@ -1,0 +1,183 @@
+schema_version: "1.0"
+style:
+  id: okhp3-forge
+  display_name: OKH Forge UI System
+  version: "1.0.0"
+  status: active
+  purpose: >
+    A warm-industrial design language for OverKill Hill P³ tools — structured
+    like a craftsperson's workshop, with warm paper surfaces, deep teal headers,
+    rust-orange primary actions, and monospaced code panels.
+  owner_context: owned
+  tags: [industrial, warm, technical, forge, okhp3, dark-header, dual-mode]
+  created_on: "2026-08-03"
+  updated_on: "2026-08-03"
+
+  sources:
+    - type: css
+      locator: src/styles/forge-tokens.css
+      authority: declared
+      sampled_on: "2026-08-03"
+      notes: >
+        Canonical raw palette. Declares all --okh-forge-* hex primitives, font
+        families, header/footer surface tokens, blueprint grid sizes, and
+        Mermaid render tokens. This file is the upstream source for all
+        OverKill Hill P³ companion apps.
+    - type: css
+      locator: https://github.com/OKHP3/mermaid-diagram-bpmn/blob/main/brand-styles/profiles/okhp3-forge.yaml
+      authority: declared
+      sampled_on: "2026-08-03"
+      notes: >
+        Cross-reference profile from the mermaid-diagram-bpmn companion app
+        (same owner, same token source). Used to confirm naming consistency
+        across apps.
+
+  evidence_summary:
+    declared: >
+      All color values, font families, radius, shadow, and surface roles are
+      read directly from CSS custom-property declarations in forge-tokens.css.
+      No visual inference was used for color values.
+    observed: none
+    inferred: >
+      The "warm-industrial workshop" emotional register is drawn from the
+      combination of parchment backgrounds, forge-teal structural accent,
+      rust-orange action color, and dark code panels — consistent with the
+      inline comment labels ("warm paper", "forge teal", "workbench panel").
+
+  evidence:
+    - claim: Page background is warm off-white (#f0ebe5)
+      source: src/styles/forge-tokens.css — --okh-forge-bg
+      authority: declared
+      confidence: high
+    - claim: Card surface is lighter warm paper (#f6f2ee)
+      source: src/styles/forge-tokens.css — --okh-forge-paper
+      authority: declared
+      confidence: high
+    - claim: Primary text is deep navy (#0f172a)
+      source: src/styles/forge-tokens.css — --okh-forge-ink
+      authority: declared
+      confidence: high
+    - claim: Structural accent and always-dark header/footer is forge teal (#1c3a34)
+      source: src/styles/forge-tokens.css — --okh-forge-teal / --forge-header-bg
+      authority: declared
+      confidence: high
+    - claim: Primary action color is rust-orange (#c46a2c)
+      source: src/styles/forge-tokens.css — --okh-forge-rust
+      authority: declared
+      confidence: high
+    - claim: Secondary accent is warm amber (#e6a03c)
+      source: src/styles/forge-tokens.css — --okh-forge-amber
+      authority: declared
+      confidence: high
+    - claim: Code/workbench panel uses deep dark teal (#0f1f1c) base with warm parchment text (#d4c9b5)
+      source: src/styles/forge-tokens.css — --okh-forge-code-bg / --okh-forge-code-fg
+      authority: declared
+      confidence: high
+    - claim: Blueprint 28px grid texture applied to page body
+      source: src/styles/forge-tokens.css — --forge-grid-size / --forge-grid-light / --forge-grid-dark
+      authority: declared
+      confidence: high
+    - claim: Display font is Alfa Slab One with Georgia/serif fallback
+      source: src/styles/forge-tokens.css — --app-font-display
+      authority: declared
+      confidence: high
+    - claim: Body font is DM Sans
+      source: src/styles/forge-tokens.css — --app-font-sans
+      authority: declared
+      confidence: high
+    - claim: Mono font is JetBrains Mono with Fira Code fallback
+      source: src/styles/forge-tokens.css — --app-font-mono
+      authority: declared
+      confidence: high
+
+  tokens:
+    color:
+      raw:
+        forge_bg:      "#f0ebe5"   # warm paper page background
+        forge_paper:   "#f6f2ee"   # lighter card surface
+        forge_ink:     "#0f172a"   # primary text / deep navy
+        forge_teal:    "#1c3a34"   # header + always-dark surfaces
+        forge_rust:    "#c46a2c"   # primary action / brand accent
+        forge_amber:   "#e6a03c"   # secondary accent / warm highlight
+        forge_code_bg: "#0f1f1c"   # code / workbench panel background
+        forge_code_fg: "#d4c9b5"   # code / workbench panel text
+      surface:
+        header_bg:     "var(--okh-forge-teal)"   # always-dark
+        header_fg:     "#e5e7eb"
+        header_muted:  "rgba(229, 231, 235, 0.55)"
+        header_border: "rgba(255, 255, 255, 0.07)"
+        footer_bg:     "#0f1a17"
+        footer_fg:     "rgba(229, 231, 235, 0.45)"
+        footer_border: "rgba(255, 255, 255, 0.08)"
+      mermaid:
+        primary_color:        "#111827"
+        primary_text_color:   "#e5e7eb"
+        text_color:           "#e5e7eb"   # alias — matches okhp3-forge-diagram naming
+        primary_border_color: "#c46a2c"
+        line_color:           "#c46a2c"
+        cluster_bg:           "#0d1117"
+    typography:
+      roles:
+        display:
+          family: Alfa Slab One
+          fallback: [Georgia, serif]
+          notes: Use for decisive display-level headings only.
+        body:
+          family: DM Sans
+          fallback: [system-ui, -apple-system, sans-serif]
+          notes: Use for all body text and UI copy.
+        mono:
+          family: JetBrains Mono
+          fallback: [Fira Code, monospace]
+          notes: Use for code panels, labels, and technical details.
+    geometry:
+      blueprint_grid: 28px
+      radius: 0.75rem
+    texture:
+      blueprint_grid_light: "rgba(0, 0, 0, 0.028)"
+      blueprint_grid_dark:  "rgba(255, 255, 255, 0.018)"
+
+  direction:
+    visual_narrative: Warm-industrial workshop — precise, durable, and heat-tempered.
+    components:
+      - warm paper surfaces for page and cards
+      - always-dark teal header and footer regardless of light/dark mode
+      - rust-orange for primary actions and interactive accents
+      - dark code panels (always-dark) for workbench and editor surfaces
+      - blueprint dot/grid texture on the page background
+    imagery:
+      - mechanical, workshop, blueprint, durable material metaphor
+      - schematic and technical editorial rhythm
+    motion:
+      - fast 150ms feedback for hover/focus states
+      - measured 300ms transitions for panel and section changes
+    avoid:
+      - generic neon cyberpunk aesthetics
+      - sterile enterprise blue palettes
+      - whimsical decorative overload
+      - cool purple or blue border/line colors in diagram surfaces
+
+  application:
+    suitable_targets: [spa, documentation, presentation, image-brief]
+    accessibility_notes:
+      - Verify contrast for rust-orange (#c46a2c) on dark backgrounds
+      - Preserve visible keyboard focus with rust-orange ring
+      - Font fallback: Georgia/serif activates when Alfa Slab One is unavailable
+    target_constraints:
+      - Preserve existing SPA behavior and framework conventions
+      - forge-tokens.css is the upstream source — do not edit downstream copies directly
+      - Always-dark header/footer must not participate in light/dark mode toggling
+    acceptance_checks:
+      - --okh-forge-* raw tokens match the upstream forge-tokens.css
+      - Header/footer surfaces are always-dark (teal/near-black) in both modes
+      - Rust-orange primary action passes contrast against both light and dark surfaces
+      - Blueprint grid visible but subtle on both warm-paper and dark-mode backgrounds
+      - Font fallback chain verified: Alfa Slab One → Georgia → serif
+
+  conflicts: []
+  confidence:
+    overall: high
+    notes: >
+      All color values sourced from declared CSS custom-property declarations.
+      Cross-referenced against the mermaid-diagram-bpmn companion app's
+      okhp3-forge.yaml profile (same owner) for naming consistency.

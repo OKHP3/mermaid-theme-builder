@@ -1,0 +1,137 @@
+schema_version: "1.0"
+style:
+  id: okhp3-forge-diagram
+  display_name: OKH Forge Diagram Surface
+  version: "1.0.0"
+  status: active
+  purpose: >
+    The always-dark diagram and code-panel sub-system of the OKH Forge UI.
+    Deep navy (#0f1f1c) base, warm parchment text, rust-orange borders and
+    lines. Used exclusively inside Mermaid diagram renders and code-editor
+    panels. Suitable for diagram-embedding contexts, iframe embeds, standalone
+    render targets, and any surface that hosts Mermaid output.
+  owner_context: owned
+  tags: [dark, diagram, mermaid, code-panel, forge, okhp3, always-dark]
+  created_on: "2026-08-03"
+  updated_on: "2026-08-03"
+
+  parent_profile: okhp3-forge
+  parent_notes: >
+    This profile is a standalone extraction of the diagram/code-panel variant
+    documented in okhp3-forge.yaml. It carries only the tokens relevant to the
+    diagram surface so it can be applied independently without importing the
+    full page-level Forge system.
+
+  sources:
+    - type: css
+      locator: src/styles/forge-tokens.css
+      authority: declared
+      sampled_on: "2026-08-03"
+      notes: >
+        :root — --mermaid-* canonical render tokens and --okh-forge-code-*
+        panel primitives. All diagram and code-panel hex values declared here.
+    - type: css
+      locator: https://github.com/OKHP3/mermaid-diagram-bpmn/blob/main/brand-styles/profiles/okhp3-forge-diagram.yaml
+      authority: declared
+      sampled_on: "2026-08-03"
+      notes: >
+        Cross-reference profile from the mermaid-diagram-bpmn companion app
+        (same owner). Used to confirm naming consistency across apps.
+
+  evidence_summary:
+    declared: >
+      All color values are read directly from CSS custom-property declarations
+      in forge-tokens.css and utility-class rules in index.css. No visual
+      inference was used for color values.
+    observed: none
+    inferred: >
+      The "deep-navy workshop" register is drawn from the near-black base
+      (#0f1f1c), parchment text (#d4c9b5), and rust-orange structural lines —
+      consistent with the "code / workbench panel" label in forge-tokens.css.
+
+  evidence:
+    - claim: Diagram and code-panel base background is deep dark teal (#0f1f1c)
+      source: src/styles/forge-tokens.css — --okh-forge-code-bg
+      authority: declared
+      confidence: high
+      notes: Labeled "code / workbench panel background". Always-dark regardless of theme mode.
+    - claim: Panel text is warm parchment (#d4c9b5)
+      source: src/styles/forge-tokens.css — --okh-forge-code-fg
+      authority: declared
+      confidence: high
+    - claim: Mermaid node fill is near-black (#111827)
+      source: src/styles/forge-tokens.css — --mermaid-primary-color
+      authority: declared
+      confidence: high
+    - claim: Mermaid node text and general diagram text is cool grey (#e5e7eb)
+      source: src/styles/forge-tokens.css — --mermaid-primary-text-color / --mermaid-text-color
+      authority: declared
+      confidence: high
+      notes: Both token names declared — --mermaid-text-color is an alias for cross-app compatibility.
+    - claim: All diagram borders, lines, and edges are rust-orange (#c46a2c)
+      source: src/styles/forge-tokens.css — --mermaid-primary-border-color / --mermaid-line-color
+      authority: declared
+      confidence: high
+    - claim: Cluster/swim-lane fill is deeper near-black (#0d1117)
+      source: src/styles/forge-tokens.css — --mermaid-cluster-bg
+      authority: declared
+      confidence: high
+
+  tokens:
+    color:
+      panel:
+        base_bg:    "#0f1f1c"   # always-dark code/diagram panel
+        base_fg:    "#d4c9b5"   # warm parchment panel text
+      mermaid:
+        primary_color:        "#111827"   # node fill
+        primary_text_color:   "#e5e7eb"   # node text
+        text_color:           "#e5e7eb"   # alias for cross-app compat
+        primary_border_color: "#c46a2c"   # node borders
+        line_color:           "#c46a2c"   # edges and connectors
+        cluster_bg:           "#0d1117"   # swim-lane / cluster pool fill
+
+  direction:
+    components:
+      - "Always-dark panel base (#0f1f1c) — never theme-responsive"
+      - "Rust-orange (#c46a2c) for all diagram borders, lines, and edges"
+      - "Near-black node fill (#111827) with warm parchment/grey node text"
+      - "Deeper cluster fill (#0d1117) for swim-lane pools — subtle depth without border"
+    motion:
+      - "No decorative animation inside diagram renders"
+      - "Respect prefers-reduced-motion for any panel transitions"
+    avoid:
+      - "White or light-mode backgrounds inside the diagram panel"
+      - "Cool blue or purple border/line colors — keep rust-orange as the single accent"
+      - "Switching to page-level semantic tokens (--background, --foreground) inside diagram panels"
+      - "Alfa Slab One in node labels — reserve the display font for page headings"
+
+  application:
+    suitable_targets: [diagram-embed, iframe, code-editor, mermaid-renderer]
+    accessibility_notes:
+      - "Node text (#e5e7eb) on node fill (#111827): ~17:1 — passes AAA"
+      - "Panel text (#d4c9b5) on panel bg (#0f1f1c): high contrast parchment-on-near-black"
+      - "Rust-orange (#c46a2c) on near-black (#111827): ~3.5:1 — use for borders/lines, not small text"
+    target_constraints:
+      - "This profile is always-dark — do not apply .dark class toggling to the diagram panel"
+      - "Mermaid JS runtime must read --mermaid-* tokens or receive themeVariables directly"
+    acceptance_checks:
+      - "--okh-forge-code-bg (#0f1f1c) applied to panel background"
+      - "--mermaid-line-color and --mermaid-primary-border-color both resolve to #c46a2c"
+      - "--mermaid-text-color and --mermaid-primary-text-color both declared (alias pair)"
+      - "Cluster background (#0d1117) is visually distinct from panel base (#0f1f1c)"
+      - "No page-level warm-paper tokens bleed into the diagram surface"
+
+  conflicts:
+    - with: okhp3-forge dark-mode variant
+      resolution: >
+        The dark-mode variant of okhp3-forge shifts page surfaces to dark navy.
+        The diagram surface (#0f1f1c) is a separate always-dark token that does
+        not participate in the dark-mode switch. Do not use okhp3-forge
+        dark-mode tokens inside diagram panels.
+
+  confidence:
+    overall: high
+    notes: >
+      All color values sourced from declared CSS custom-property declarations.
+      Cross-referenced against the mermaid-diagram-bpmn companion app's
+      okhp3-forge-diagram.yaml profile (same owner) for naming consistency.
