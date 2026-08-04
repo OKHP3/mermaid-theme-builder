@@ -120,6 +120,40 @@ bash scripts/check-links.sh
 
 ---
 
+## Pre-release: version strings
+
+Run the automated check first — it catches the most common drift:
+
+```bash
+pnpm run check:version-strings
+```
+
+- [ ] `pnpm run check:version-strings` exits 0 (CI also runs this on every PR)
+- [ ] `TOOL_VERSION` in `src/lib/theme-engine.ts` matches the new `package.json` version
+- [ ] `docs/attribution.md` sample attribution line (`%% Created with: Mermaid Theme Builder vX.Y.Z`) updated to new version
+- [ ] Palette `toolVersion` fields in `src/lib/exporters.ts`, `src/lib/extractor.ts`, `src/lib/palettes.ts`, and `src/App.tsx` updated if the palette schema version changed (note: palette schema version is independent of the app version — only bump if palette output format changed)
+
+---
+
+## Pre-release: screenshot
+
+Retake the README screenshot so `docs/screenshot-v0.5.0.jpg` stays current:
+
+```bash
+pnpm build && pnpm serve &
+pnpm run capture-screenshot
+# then: git add docs/screenshot-v0.5.0.jpg && git commit -m "chore: refresh README screenshot for vX.Y.Z"
+```
+
+Alternatively, the `capture-screenshot` job in `release-gate.yml` runs automatically
+on every version tag and uploads the refreshed image as a GitHub Actions artifact
+(retained 30 days) — download and commit if needed.
+
+- [ ] `docs/screenshot-v0.5.0.jpg` visually reflects the current UI
+- [ ] README.md `![screenshot]` link still resolves (filename unchanged for v0.5.x)
+
+---
+
 ## Pre-release: documentation
 
 - [ ] **CHANGELOG.md** — move all items from `[Unreleased]` into a new `## [x.y.z] — YYYY-MM-DD` section; add the comparison link in the footer block (e.g. `[x.y.z]: https://github.com/OKHP3/mermaid-theme-builder/compare/vPREV...vNEXT`); confirm an empty `[Unreleased]` section remains for future development items

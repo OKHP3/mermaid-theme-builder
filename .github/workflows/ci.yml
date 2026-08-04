@@ -41,4 +41,7 @@ jobs:
         run: pnpm run typecheck
 
       - name: Format check (Prettier)
-        run: pnpm prettier --check "src/**/*.{ts,tsx}" "*.ts" "*.json"
+        run: pnpm prettier --check "src/**/*.{ts,tsx,css}" "*.ts" "*.json"
+
+      - name: Version string check
+        run: pnpm run check:version-strings
