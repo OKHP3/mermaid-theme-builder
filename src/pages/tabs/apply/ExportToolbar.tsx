@@ -64,6 +64,12 @@ interface ExportToolbarProps {
   promptIsThemeOnly: boolean;
   onShowScaffoldModal: () => void;
   onShowToast: (msg: ReactNode) => void;
+  /**
+   * Test seam only — seeds the initial copiedType state so unit tests can
+   * assert badge visibility during the "Copied!" flash without needing to
+   * trigger the actual async copy flow.  Never set this in production code.
+   */
+  _testInitialCopiedType?: ExportType | null;
 }
 
 export function ExportToolbar({
@@ -85,8 +91,9 @@ export function ExportToolbar({
   promptIsThemeOnly,
   onShowScaffoldModal,
   onShowToast,
+  _testInitialCopiedType = null,
 }: ExportToolbarProps) {
-  const [copiedType, setCopiedType] = useState<ExportType | null>(null);
+  const [copiedType, setCopiedType] = useState<ExportType | null>(_testInitialCopiedType);
   const [downloadingType, setDownloadingType] = useState<DownloadType | null>(null);
   const [showDownloadMenu, setShowDownloadMenu] = useState(false);
 

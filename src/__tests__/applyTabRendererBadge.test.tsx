@@ -42,6 +42,7 @@ import { render, screen, cleanup } from "@testing-library/react";
 import { fireEvent } from "@testing-library/dom";
 import { createElement, act } from "react";
 import { ApplyTab } from "@/pages/tabs/ApplyTab";
+import { ExportToolbar } from "@/pages/tabs/apply/ExportToolbar";
 import { BRAND_PALETTES } from "@/lib/palettes";
 import { DEFAULT_TYPOGRAPHY } from "@/lib/typography";
 import { getRendererById } from "@/data/renderer-parity";
@@ -268,5 +269,78 @@ describe("ApplyTab copy button — renderer badge hides during 'Copied!' flash (
 
     // Badge still present after the flash expires.
     expect(getPromptCopyBtn().querySelector('[title*="tailored for"]')).not.toBeNull();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 5. Direct ExportToolbar unit test — badge hidden when copiedType = "prompt"
+//
+// Clicking "Prompt Scaffold" in production opens the scaffold modal (early
+// return in handleCopy), so copiedType is never set to "prompt" via normal
+// user interaction. ExportToolbar accepts `_testInitialCopiedType` as a test
+// seam so we can seed the state directly and verify the guard holds.
+// ---------------------------------------------------------------------------
+
+const TOOLBAR_BASE_PROPS = {
+  warnings: [] as string[],
+  showCapabilityNote: false,
+  capability: undefined as import("@/lib/detector").DetectionResult["capability"],
+  hasCustomizations: false,
+  onOpenColorEditor: noop,
+  inputCode: DIAGRAM,
+  exportCode: DIAGRAM,
+  effectiveExportCode: DIAGRAM,
+  selectedPalette: PALETTE,
+  exportOptions: {
+    palette: PALETTE,
+    diagramFamily: "flowchart" as import("@/lib/theme-engine").ExportOptions["diagramFamily"],
+    includeMetaComments: false,
+    includeBadge: false,
+  },
+  effectiveThemeName: PALETTE.name,
+  themedCode: DIAGRAM,
+  typography: DEFAULT_TYPOGRAPHY,
+  allPalettes: BRAND_PALETTES,
+  rendererProfile: GITHUB,
+  promptIsThemeOnly: false,
+  onShowScaffoldModal: noop,
+  onShowToast: noop,
+};
+
+describe("ExportToolbar — renderer badge hidden when copiedType is 'prompt' (Task #438)", () => {
+  it("renderer badge is absent on the Prompt Scaffold button when _testInitialCopiedType is 'prompt'", () => {
+    const { container } = render(
+      createElement(ExportToolbar, {
+        ...TOOLBAR_BASE_PROPS,
+        _testInitialCopiedType: "prompt",
+      })
+    );
+
+    // The Prompt Scaffold button text changes to "Copied!" in this state.
+    const promptBtn = Array.from(container.querySelectorAll<HTMLButtonElement>("button")).find(
+      (b) => b.textContent?.includes("Copied!")
+    );
+    expect(promptBtn, "expected the Prompt Scaffold button to be in Copied! state").toBeDefined();
+
+    // The renderer badge must NOT be present while copied = true.
+    const badge = promptBtn!.querySelector('[title*="tailored for"]');
+    expect(badge, "renderer badge must be absent while the button shows 'Copied!'").toBeNull();
+  });
+
+  it("renderer badge is present on the Prompt Scaffold button when not in copied state (baseline)", () => {
+    const { container } = render(
+      createElement(ExportToolbar, {
+        ...TOOLBAR_BASE_PROPS,
+        _testInitialCopiedType: null,
+      })
+    );
+
+    const promptBtn = Array.from(container.querySelectorAll<HTMLButtonElement>("button")).find(
+      (b) => b.textContent?.includes("Prompt Scaffold")
+    );
+    expect(promptBtn, "expected the Prompt Scaffold button to be visible").toBeDefined();
+
+    const badge = promptBtn!.querySelector('[title*="tailored for"]');
+    expect(badge, "renderer badge must be present when not in copied state").not.toBeNull();
   });
 });
