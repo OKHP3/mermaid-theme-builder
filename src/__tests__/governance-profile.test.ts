@@ -338,6 +338,106 @@ describe("profileToPortableJson + parseGovernanceProfile round-trip", () => {
   });
 });
 
+// ─── Share URL v2 encode / decode round-trip ─────────────────────────────────
+
+describe("ShareablePayload v2 encode → decode round-trip (look + rendererTarget)", () => {
+  // Import inline to avoid polluting the top-level imports with persistence utils
+  // that are not the core subject of this test file.
+  it("paletteToShareablePayload emits v:2 when look is non-classic", async () => {
+    const { paletteToShareablePayload } = await import("@/lib/persistence");
+    const palette = {
+      id: "test",
+      name: "T",
+      colors: TEST_COLORS,
+    } as import("@/lib/palettes").Palette;
+    const payload = paletteToShareablePayload(palette as never, "", { look: "neo" });
+    expect(payload.v).toBe(2);
+    expect(payload.look).toBe("neo");
+  });
+
+  it("paletteToShareablePayload emits v:2 when rendererTarget is set", async () => {
+    const { paletteToShareablePayload } = await import("@/lib/persistence");
+    const palette = {
+      id: "test",
+      name: "T",
+      colors: TEST_COLORS,
+    } as import("@/lib/palettes").Palette;
+    const payload = paletteToShareablePayload(palette as never, "", { rendererTarget: "github" });
+    expect(payload.v).toBe(2);
+    expect(payload.rendererTarget).toBe("github");
+  });
+
+  it("paletteToShareablePayload emits v:1 with classic look and no rendererTarget", async () => {
+    const { paletteToShareablePayload } = await import("@/lib/persistence");
+    const palette = {
+      id: "test",
+      name: "T",
+      colors: TEST_COLORS,
+    } as import("@/lib/palettes").Palette;
+    const payload = paletteToShareablePayload(palette as never, "", { look: "classic" });
+    expect(payload.v).toBe(1);
+    expect(payload.look).toBeUndefined();
+  });
+
+  it("decodeShareableTheme preserves look and rendererTarget from v2 payload", async () => {
+    const { paletteToShareablePayload, encodeShareableTheme, decodeShareableTheme } =
+      await import("@/lib/persistence");
+    const palette = {
+      id: "test",
+      name: "T",
+      colors: TEST_COLORS,
+    } as import("@/lib/palettes").Palette;
+    const payload = paletteToShareablePayload(palette as never, "", {
+      look: "handDrawn",
+      rendererTarget: "obsidian",
+    });
+    const token = encodeShareableTheme(payload);
+    const decoded = decodeShareableTheme(token);
+    expect(decoded).not.toBeNull();
+    expect(decoded!.v).toBe(2);
+    expect(decoded!.look).toBe("handDrawn");
+    expect(decoded!.rendererTarget).toBe("obsidian");
+  });
+
+  it("decodeShareableTheme round-trips themeVariables alongside v2 fields", async () => {
+    const { paletteToShareablePayload, encodeShareableTheme, decodeShareableTheme } =
+      await import("@/lib/persistence");
+    const palette = {
+      id: "test",
+      name: "T",
+      colors: TEST_COLORS,
+    } as import("@/lib/palettes").Palette;
+    const payload = paletteToShareablePayload(palette as never, "My Theme", {
+      look: "neo",
+      rendererTarget: "github",
+    });
+    const token = encodeShareableTheme(payload);
+    const decoded = decodeShareableTheme(token);
+    expect(decoded!.themeVariables["primaryColor"]).toBe("#1a73e8");
+    expect(decoded!.customThemeName).toBe("My Theme");
+    expect(decoded!.look).toBe("neo");
+    expect(decoded!.rendererTarget).toBe("github");
+  });
+
+  it("decodeShareableTheme returns undefined look/rendererTarget for v1 tokens", async () => {
+    const { encodeShareableTheme, decodeShareableTheme } = await import("@/lib/persistence");
+    const v1Payload: import("@/lib/persistence").ShareablePayload = {
+      v: 1,
+      themeVariables: { primaryColor: "#fff" },
+      paletteName: "Legacy",
+    };
+    const token = encodeShareableTheme(v1Payload);
+    const decoded = decodeShareableTheme(token);
+    expect(decoded!.look).toBeUndefined();
+    expect(decoded!.rendererTarget).toBeUndefined();
+  });
+
+  it("decodeShareableTheme returns null for malformed input", async () => {
+    const { decodeShareableTheme } = await import("@/lib/persistence");
+    expect(decodeShareableTheme("not-base64-at-all")).toBeNull();
+  });
+});
+
 // ─── buildProfileHeaderComment ───────────────────────────────────────────────
 
 describe("buildProfileHeaderComment", () => {

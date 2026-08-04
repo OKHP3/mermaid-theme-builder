@@ -397,6 +397,15 @@ export function AppShell() {
       setUserPalettes((prev) => [...prev, palette]);
       setSelectedPaletteId(palette.id);
       if (share.customThemeName) setCustomThemeName(share.customThemeName);
+      // v2 share tokens carry look + rendererTarget — apply when present.
+      // Coerce look to a known value; unknown strings silently fall back to "classic".
+      const validLooks = ["classic", "neo", "handDrawn"] as const;
+      if (share.look && (validLooks as readonly string[]).includes(share.look)) {
+        setLook(share.look as (typeof validLooks)[number]);
+      }
+      if (typeof share.rendererTarget === "string") {
+        setRendererTarget(share.rendererTarget);
+      }
       setToast(`Loaded shared theme: ${palette.name}`);
       clearShareToken();
       didApplyShare = true;
@@ -860,8 +869,10 @@ export function AppShell() {
               : s
           )
         );
-        // Restore app-level renderer / format from the profile
-        if (profile.rendererTarget) setRendererTarget(profile.rendererTarget);
+        // Restore app-level renderer / format from the profile.
+        // Always apply — an empty rendererTarget intentionally clears any
+        // previously-set renderer; truthy-gating would silently skip that.
+        setRendererTarget(profile.rendererTarget);
         if (profile.outputFormat) setOutputFormat(profile.outputFormat);
 
         const warnNote = importWarnings.length > 0 ? ` (${importWarnings.length} advisory)` : "";
@@ -876,7 +887,7 @@ export function AppShell() {
           if (num === null) return prev;
           const newSlot = { ...slot, id: `my-theme-${num}` as MyThemeSlotId };
           setActiveMyThemeSlotId(newSlot.id);
-          if (profile.rendererTarget) setRendererTarget(profile.rendererTarget);
+          setRendererTarget(profile.rendererTarget);
           if (profile.outputFormat) setOutputFormat(profile.outputFormat);
           const warnNote = importWarnings.length > 0 ? ` (${importWarnings.length} advisory)` : "";
           setToast(`Imported profile "${profile.name}" into a new My Theme slot${warnNote}.`);

@@ -153,6 +153,9 @@ export function decodeShareableTheme(token: string): ShareablePayload | null {
       paletteId: typeof parsed.paletteId === "string" ? parsed.paletteId : undefined,
       customThemeName:
         typeof parsed.customThemeName === "string" ? parsed.customThemeName : undefined,
+      // v2 fields — preserved as-is; the caller is responsible for applying them
+      look: typeof parsed.look === "string" ? parsed.look : undefined,
+      rendererTarget: typeof parsed.rendererTarget === "string" ? parsed.rendererTarget : undefined,
     };
     return out;
   } catch (err) {
