@@ -2,13 +2,30 @@ import { APPLY_TAB_DEFAULT, COMPOSE_TAB_DEFAULT } from "@/data/examples";
 
 export type ExampleCategory = "flow" | "structural" | "data-viz" | "timeline" | "specialty";
 
+/**
+ * Canonical badge token values for ExampleEntry.badge.
+ * Using this union lets TypeScript catch typos (e.g. "beta" or "BETA") at
+ * compile time rather than silently skipping the chip renderer or picker
+ * suffix logic at runtime.
+ *
+ * When a new value is needed, add it here AND update BadgeChip in
+ * ExamplesTab.tsx and previewOptionLabel in ComposeTab.tsx as appropriate.
+ */
+export type BadgeToken =
+  | "Beta"
+  | "Experimental"
+  | "Canonical"
+  | "Canonical · Beta"
+  | "Beta — may not render in all environments"
+  | "BPMN approx. only";
+
 export interface ExampleEntry {
   id: string;
   label: string;
   family: string;
   category: ExampleCategory;
   content: string;
-  badge?: string;
+  badge?: BadgeToken;
   description?: string;
   tags?: string[];
 }
