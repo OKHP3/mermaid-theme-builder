@@ -131,4 +131,41 @@ test.describe("Settings menu — action outcomes", () => {
     await expect(page.getByRole("status")).toBeVisible({ timeout: 3000 });
     await expect(page.getByRole("status")).toContainText("Recent palette history cleared.");
   });
+
+  // ---------------------------------------------------------------------------
+  // 4. Reset all syntax tips — dismissed hint reappears in the Apply tab
+  // ---------------------------------------------------------------------------
+
+  test('"Reset all syntax tips" makes a dismissed FamilySyntaxHint reappear in the Apply tab', async ({
+    page,
+  }) => {
+    // 1. Navigate to the Apply tab and paste a flowchart so the hint bar appears.
+    await page.getByRole("tab", { name: "Apply" }).first().click();
+    await page.getByLabel("Mermaid diagram code input").waitFor({ state: "visible" });
+    await page.getByLabel("Mermaid diagram code input").fill("flowchart TD\n  A[Start] --> B[End]");
+
+    // 2. The FamilySyntaxHint bar for "flowchart" must be visible.
+    const hintBar = page.getByRole("note", { name: "Syntax tips for flowchart" });
+    await expect(hintBar).toBeVisible({ timeout: 5000 });
+
+    // 3. Dismiss the hint using its close button.
+    await page.getByRole("button", { name: "Dismiss flowchart syntax tip" }).click();
+
+    // 4. Hint bar must be gone after dismissal.
+    await expect(hintBar).not.toBeVisible({ timeout: 3000 });
+
+    // 5. Click "Reset all syntax tips" in the Settings menu.
+    await openMenu(page);
+    await page.getByRole("menuitem", { name: "Reset all syntax tips" }).click();
+
+    // Menu closes and toast appears (existing coverage).
+    await expect(page.getByRole("menu", { name: "Settings" })).not.toBeVisible({
+      timeout: 3000,
+    });
+    await expect(page.getByRole("status")).toContainText("Syntax tips restored.");
+
+    // 6. The hint bar must reappear — React re-reads dismissal state via
+    //    the hintResetToken that is incremented alongside clearAllDismissals().
+    await expect(hintBar).toBeVisible({ timeout: 5000 });
+  });
 });
