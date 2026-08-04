@@ -31,6 +31,9 @@ import {
   expectNoInitContentColor,
   expectCommentColor,
   expectNoCommentColor,
+  countKeywordColorOccurrences,
+  countInitBracketColorOccurrences,
+  countInitContentColorOccurrences,
 } from "./helpers/hlAssert";
 
 /** Render a ReactNode to HTML string for assertion. */
@@ -90,8 +93,8 @@ describe("highlightInitDirectiveLine — bracket/content split", () => {
   it("produces at least 2 differently-colored spans", () => {
     const line = `%%{init: {"theme": "base"}}%%`;
     const html = hl(highlightInitDirectiveLine(line, 0));
-    const bracketMatches = (html.match(new RegExp(`color:${INIT_HL.bracket}`, "g")) ?? []).length;
-    const contentMatches = (html.match(new RegExp(`color:${INIT_HL.content}`, "g")) ?? []).length;
+    const bracketMatches = countInitBracketColorOccurrences(html);
+    const contentMatches = countInitContentColorOccurrences(html);
     // Two bracket spans (open + close) plus one content span
     expect(bracketMatches).toBeGreaterThanOrEqual(1);
     expect(contentMatches).toBeGreaterThanOrEqual(1);
@@ -100,7 +103,7 @@ describe("highlightInitDirectiveLine — bracket/content split", () => {
   it("bracket color appears for both %%{ and }%%", () => {
     const line = `%%{init: {"theme": "base"}}%%`;
     const html = hl(highlightInitDirectiveLine(line, 0));
-    const colorCount = (html.match(new RegExp(`color:${INIT_HL.bracket}`, "g")) ?? []).length;
+    const colorCount = countInitBracketColorOccurrences(html);
     expect(colorCount).toBe(2);
   });
 
@@ -282,7 +285,7 @@ describe("highlightMermaidCodeBlock — edge cases", () => {
     const html = hl(highlightMermaidCodeBlock(block));
     expectKeywordColor(html);
     // Two classDef keyword spans
-    const kwMatches = (html.match(new RegExp(`color:${HL.keyword}`, "g")) ?? []).length;
+    const kwMatches = countKeywordColorOccurrences(html);
     expect(kwMatches).toBe(2);
   });
 

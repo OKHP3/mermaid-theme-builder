@@ -124,3 +124,32 @@ export function expectCommentColor(html: string): void {
 export function expectNoCommentColor(html: string): void {
   expect(html).not.toContain(`color:${COMMENT_HL.text}`);
 }
+
+// ── Count helpers — for occurrence-counting assertions ────────────────────
+// Use these instead of raw `html.match(new RegExp(`color:${HL.*}`, "g"))` in
+// test files so the pattern lives in one place and tests read as plain English.
+
+/** Returns the number of classDef keyword-color occurrences (`color:${HL.keyword}`). */
+export function countKeywordColorOccurrences(html: string): number {
+  return (html.match(new RegExp(`color:${HL.keyword}`, "g")) ?? []).length;
+}
+
+/** Returns the number of classDef property-key-color occurrences (`color:${HL.key}`). */
+export function countPropKeyColorOccurrences(html: string): number {
+  return (html.match(new RegExp(`color:${HL.key}`, "g")) ?? []).length;
+}
+
+/** Returns the number of hex-value-color occurrences (`color:${HL.hex}`). */
+export function countHexColorOccurrences(html: string): number {
+  return (html.match(new RegExp(`color:${HL.hex}`, "g")) ?? []).length;
+}
+
+/** Returns the number of init-directive bracket-color occurrences (`color:${INIT_HL.bracket}`). */
+export function countInitBracketColorOccurrences(html: string): number {
+  return (html.match(new RegExp(`color:${INIT_HL.bracket}`, "g")) ?? []).length;
+}
+
+/** Returns the number of init-directive content-color occurrences (`color:${INIT_HL.content}`). */
+export function countInitContentColorOccurrences(html: string): number {
+  return (html.match(new RegExp(`color:${INIT_HL.content}`, "g")) ?? []).length;
+}

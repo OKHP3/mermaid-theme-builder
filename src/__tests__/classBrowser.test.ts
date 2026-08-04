@@ -21,6 +21,8 @@ import {
   expectValueColor,
   expectNoValueColor,
   expectPunctColor,
+  countPropKeyColorOccurrences,
+  countHexColorOccurrences,
 } from "./helpers/hlAssert";
 
 /**
@@ -883,7 +885,7 @@ describe("highlightClassDefLine — property key color", () => {
 
   it("renders 'stroke' key in forge teal (#5fa89a)", () => {
     const html = hl(highlightClassDefLine("classDef foo fill:#1e3a5f,stroke:#3b82f6", 0));
-    const keyColorCount = (html.match(new RegExp(`color:${HL.key}`, "g")) ?? []).length;
+    const keyColorCount = countPropKeyColorOccurrences(html);
     // Two property keys: fill and stroke
     expect(keyColorCount).toBeGreaterThanOrEqual(2);
   });
@@ -929,7 +931,7 @@ describe("highlightClassDefLine — hex value color", () => {
     const html = hl(
       highlightClassDefLine("classDef foo fill:#1e3a5f,stroke:#3b82f6,color:#ffffff", 0)
     );
-    const hexColorCount = (html.match(new RegExp(`color:${HL.hex}`, "g")) ?? []).length;
+    const hexColorCount = countHexColorOccurrences(html);
     expect(hexColorCount).toBeGreaterThanOrEqual(3);
   });
 });
@@ -1046,7 +1048,7 @@ describe("highlightPropsSegment — key color", () => {
 
   it("multiple keys all get teal color", () => {
     const html = hlProps("fill:#111,stroke:#222,color:#333");
-    const count = (html.match(new RegExp(`color:${HL.key}`, "g")) ?? []).length;
+    const count = countPropKeyColorOccurrences(html);
     expect(count).toBeGreaterThanOrEqual(3);
   });
 });
