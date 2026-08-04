@@ -307,6 +307,78 @@ const TOOLBAR_BASE_PROPS = {
   onShowToast: noop,
 };
 
+// ---------------------------------------------------------------------------
+// 6. Styled Code copy button is always badge-free (Task #439)
+//
+// The badge is gated on `type === "prompt" && !copied && rendererProfile`
+// (ExportToolbar.tsx ~line 324). Because the Styled Code button has type
+// "code", it can never satisfy that guard. A test locks this in so a future
+// refactor that widens the badge condition would fail CI.
+// ---------------------------------------------------------------------------
+
+describe("ExportToolbar — Styled Code copy button is always badge-free", () => {
+  it("no renderer badge on the Styled Code button when rendererProfile is set", () => {
+    const { container } = render(
+      createElement(ExportToolbar, {
+        ...TOOLBAR_BASE_PROPS,
+        _testInitialCopiedType: null,
+      })
+    );
+
+    const codeBtn = Array.from(container.querySelectorAll<HTMLButtonElement>("button")).find((b) =>
+      b.textContent?.includes("Styled Code")
+    );
+    expect(codeBtn, "Styled Code button must be present").toBeDefined();
+
+    // The renderer badge must NOT appear on the Styled Code button.
+    const badge = codeBtn!.querySelector('[title*="tailored for"]');
+    expect(badge, "renderer badge must be absent from the Styled Code button").toBeNull();
+  });
+
+  it("no renderer badge on the Styled Code button even during its own 'Copied!' flash", () => {
+    // Seed copiedType = "code" via the test seam — this is when the button
+    // shows "Copied!" and is the only state where a widened badge guard could
+    // accidentally render a badge (because `!copied` would still be false for
+    // type === "code", but `type === "prompt"` is also false, so the guard
+    // still blocks it regardless).
+    const { container } = render(
+      createElement(ExportToolbar, {
+        ...TOOLBAR_BASE_PROPS,
+        _testInitialCopiedType: "code",
+      })
+    );
+
+    // The Styled Code button should be in "Copied!" state.
+    const copiedBtn = Array.from(container.querySelectorAll<HTMLButtonElement>("button")).find(
+      (b) => b.textContent?.includes("Copied!")
+    );
+    expect(copiedBtn, "expected one button in Copied! state").toBeDefined();
+
+    // No renderer badge even in the copied state.
+    const badge = copiedBtn!.querySelector('[title*="tailored for"]');
+    expect(
+      badge,
+      "renderer badge must be absent from Styled Code even during Copied! flash"
+    ).toBeNull();
+  });
+
+  it("no renderer badge on the Styled Code button at the ApplyTab level with rendererTarget set", () => {
+    render(createElement(ApplyTab, { ...BASE_PROPS, rendererTarget: "github" }));
+
+    const codeBtn = screen.getByRole("button", { name: "Styled Code" });
+    expect(codeBtn.textContent).not.toContain(GITHUB.shortName);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 5. Direct ExportToolbar unit test — badge hidden when copiedType = "prompt"
+//
+// Clicking "Prompt Scaffold" in production opens the scaffold modal (early
+// return in handleCopy), so copiedType is never set to "prompt" via normal
+// user interaction. ExportToolbar accepts `_testInitialCopiedType` as a test
+// seam so we can seed the state directly and verify the guard holds.
+// ---------------------------------------------------------------------------
+
 describe("ExportToolbar — renderer badge hidden when copiedType is 'prompt' (Task #438)", () => {
   it("renderer badge is absent on the Prompt Scaffold button when _testInitialCopiedType is 'prompt'", () => {
     const { container } = render(
