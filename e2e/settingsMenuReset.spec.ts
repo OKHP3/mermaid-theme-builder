@@ -87,7 +87,30 @@ test.describe("Settings menu — Reset all palette customizations confirmation f
   });
 
   // ---------------------------------------------------------------------------
-  // Test 3 — clicking Cancel restores the original button; menu stays open
+  // Test 3 — reset toast disappears automatically after ~2.5 s
+  // ---------------------------------------------------------------------------
+
+  test("reset toast disappears automatically after ~2.5 seconds", async ({ page }) => {
+    // Open menu, enter confirm state, click Confirm.
+    await page.getByRole("button", { name: "Settings", exact: true }).click();
+    await expect(page.getByRole("menu", { name: "Settings" })).toBeVisible();
+    await page.getByRole("menuitem", { name: "Reset all palette customizations" }).click();
+    await expect(page.getByText("Reset all?")).toBeVisible();
+    await page.getByRole("menuitem", { name: "Confirm" }).click();
+
+    // Toast must appear immediately.
+    await expect(page.getByRole("status")).toBeVisible({ timeout: 3000 });
+    await expect(page.getByRole("status")).toContainText("All palette customizations reset.");
+
+    // Wait 3.5 s (buffer above the 2.5 s auto-clear threshold).
+    await page.waitForTimeout(3500);
+
+    // Toast must have disappeared on its own — no manual dismiss needed.
+    await expect(page.getByRole("status")).not.toBeVisible();
+  });
+
+  // ---------------------------------------------------------------------------
+  // Test 4 — clicking Cancel restores the original button; menu stays open
   // ---------------------------------------------------------------------------
 
   test("clicking Cancel dismisses the confirm UI and keeps the menu open", async ({ page }) => {
