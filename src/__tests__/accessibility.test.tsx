@@ -764,6 +764,14 @@ describe("DiagramInventory (standalone full-screen view)", () => {
         .join("\n")}`
     ).toHaveLength(0);
   });
+
+  it("has no unlabeled <th> elements", () => {
+    const { container } = render(
+      createElement(DiagramInventory, { embedded: false, onClose: vi.fn() })
+    );
+    const unlabeled = findUnlabeledThs(container);
+    expect(unlabeled, formatUnlabeledThs(unlabeled)).toHaveLength(0);
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -806,5 +814,26 @@ describe("DiagramInventory (ExamplesTab modal state)", () => {
         )
         .join("\n")}`
     ).toHaveLength(0);
+  });
+
+  it("has no unlabeled <th> elements when inventory modal is open", () => {
+    const noop = vi.fn();
+    const { container } = render(
+      createElement(ExamplesTab, {
+        selectedPalette: BRAND_PALETTES[0],
+        selectedPaletteId: BRAND_PALETTES[0].id,
+        allPalettes: BRAND_PALETTES,
+        customColors: {},
+        onSelectPalette: noop,
+        onLoadExample: noop,
+      })
+    );
+    const browseBtn = Array.from(container.querySelectorAll("button")).find((b) =>
+      b.textContent?.includes("Browse all supported families")
+    );
+    expect(browseBtn, "'Browse all supported families' button must exist").toBeTruthy();
+    fireEvent.click(browseBtn!);
+    const unlabeled = findUnlabeledThs(container);
+    expect(unlabeled, formatUnlabeledThs(unlabeled)).toHaveLength(0);
   });
 });
