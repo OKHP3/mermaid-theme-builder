@@ -24,7 +24,7 @@
     "pre-commit": "pnpm lint-staged"
   },
   "lint-staged": {
-    "*.{ts,tsx,json}": "prettier --write"
+    "*.{ts,tsx,json,css}": "prettier --write"
   },
   "devDependencies": {
     "@mermaid-js/mermaid-zenuml": "^0.2.3",

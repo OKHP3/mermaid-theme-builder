@@ -69,12 +69,12 @@ isValidation = true
 name = "format"
 author = "agent"
 
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "pnpm prettier --check \"src/**/*.{ts,tsx}\" \"*.ts\" \"*.json\""
-
 [workflows.workflow.metadata]
 isValidation = true
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pnpm prettier --check \"src/**/*.{ts,tsx,css}\" \"*.ts\" \"*.json\""
 
 [agent]
 stack = "PNPM_WORKSPACE"

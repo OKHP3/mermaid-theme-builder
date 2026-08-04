@@ -32,7 +32,7 @@
 
   /* Display font for major headings (h1 in header) */
   header h1 {
-    font-family: 'Alfa Slab One', system-ui, sans-serif;
+    font-family: "Alfa Slab One", system-ui, sans-serif;
   }
 
   /* Accessible keyboard-focus ring */
@@ -160,7 +160,7 @@
 }
 
 .forge-card-title {
-  font-size: 0.8125rem;   /* 13px */
+  font-size: 0.8125rem; /* 13px */
   font-weight: 600;
   color: hsl(var(--foreground));
   letter-spacing: -0.01em;
@@ -208,7 +208,9 @@
   font-size: 0.8125rem;
   font-weight: 500;
   border-bottom: 2px solid transparent;
-  transition: color 0.15s, border-color 0.15s;
+  transition:
+    color 0.15s,
+    border-color 0.15s;
   color: hsl(var(--foreground) / 0.55);
 }
 
@@ -255,8 +257,13 @@
   cursor: pointer;
   transition: opacity 0.15s;
 }
-.forge-btn-primary:hover    { opacity: 0.88; }
-.forge-btn-primary:disabled { opacity: 0.40; cursor: not-allowed; }
+.forge-btn-primary:hover {
+  opacity: 0.88;
+}
+.forge-btn-primary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
 
 /* Outline — warm paper background */
 .forge-btn-outline {
@@ -271,13 +278,18 @@
   background-color: hsl(var(--card));
   color: hsl(var(--foreground));
   cursor: pointer;
-  transition: background-color 0.15s, border-color 0.15s;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s;
 }
 .forge-btn-outline:hover {
   background-color: hsl(var(--muted));
   border-color: hsl(var(--primary) / 0.35);
 }
-.forge-btn-outline:disabled { opacity: 0.40; cursor: not-allowed; }
+.forge-btn-outline:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
 
 /* Accent — rust tint, not solid */
 .forge-btn-accent {
@@ -294,8 +306,13 @@
   cursor: pointer;
   transition: background-color 0.15s;
 }
-.forge-btn-accent:hover    { background-color: hsl(var(--primary) / 0.14); }
-.forge-btn-accent:disabled { opacity: 0.40; cursor: not-allowed; }
+.forge-btn-accent:hover {
+  background-color: hsl(var(--primary) / 0.14);
+}
+.forge-btn-accent:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
 
 /* CTA — hero gradient pill for marketing / external link surfaces */
 .forge-btn-cta {
@@ -312,8 +329,13 @@
   cursor: pointer;
   transition: opacity 0.15s;
 }
-.forge-btn-cta:hover    { opacity: 0.90; }
-.forge-btn-cta:disabled { opacity: 0.40; cursor: not-allowed; }
+.forge-btn-cta:hover {
+  opacity: 0.9;
+}
+.forge-btn-cta:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
 
 /* ── Header text elements ─────────────────────────────────────────────── */
 
@@ -331,7 +353,7 @@
   border-radius: 4px;
   background: rgba(255, 255, 255, 0.08);
   color: var(--forge-header-slug);
-  border: 1px solid rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   line-height: 1;
   vertical-align: middle;
 }
@@ -369,19 +391,22 @@
 
 .forge-header-meta {
   font-family: var(--app-font-mono);
-  color: rgba(229, 231, 235, 0.40);
+  color: rgba(229, 231, 235, 0.4);
 }
 
 .forge-header-icon-btn {
   padding: 6px;
   border-radius: 6px;
   border: 1px solid rgba(255, 255, 255, 0.15);
-  color: rgba(229, 231, 235, 0.60);
-  transition: border-color 0.15s, background-color 0.15s, color 0.15s;
+  color: rgba(229, 231, 235, 0.6);
+  transition:
+    border-color 0.15s,
+    background-color 0.15s,
+    color 0.15s;
 }
 
 .forge-header-icon-btn:hover {
-  border-color: rgba(255, 255, 255, 0.30);
+  border-color: rgba(255, 255, 255, 0.3);
   background-color: rgba(255, 255, 255, 0.08);
   color: #e5e7eb;
 }
@@ -402,7 +427,7 @@
 }
 
 .forge-mobile-nav-item:hover {
-  color: rgba(229, 231, 235, 0.80);
+  color: rgba(229, 231, 235, 0.8);
 }
 
 .forge-mobile-nav-item-active {
@@ -429,7 +454,7 @@
 
 .forge-footer-link {
   font-size: 10px;
-  color: rgba(229, 231, 235, 0.40);
+  color: rgba(229, 231, 235, 0.4);
   transition: color 0.15s;
   text-decoration: none;
 }
@@ -442,7 +467,7 @@
 
 .forge-preview-controls {
   background-color: rgba(15, 31, 28, 0.88);
-  border: 1px solid rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 6px;
   padding: 2px 4px;
   backdrop-filter: blur(4px);
@@ -457,8 +482,10 @@
   width: 24px;
   height: 24px;
   border-radius: 4px;
-  transition: color 0.1s, background-color 0.1s;
-  color: rgba(212, 201, 181, 0.70);   /* --okh-forge-code-fg at 70% */
+  transition:
+    color 0.1s,
+    background-color 0.1s;
+  color: rgba(212, 201, 181, 0.7); /* --okh-forge-code-fg at 70% */
 }
 
 .forge-preview-btn:hover {
@@ -471,7 +498,7 @@
 }
 
 .forge-preview-btn:disabled {
-  opacity: 0.30;
+  opacity: 0.3;
   cursor: not-allowed;
 }
 
@@ -481,7 +508,7 @@
   line-height: 1;
   min-width: 38px;
   text-align: center;
-  color: rgba(212, 201, 181, 0.55);   /* --okh-forge-code-fg at 55% */
+  color: rgba(212, 201, 181, 0.55); /* --okh-forge-code-fg at 55% */
   user-select: none;
 }
 
@@ -504,8 +531,10 @@
   }
 
   /* Elevation overlays — layered on top of interactive surfaces */
-  .no-default-hover-elevate {}
-  .no-default-active-elevate {}
+  .no-default-hover-elevate {
+  }
+  .no-default-active-elevate {
+  }
 
   .toggle-elevate::before,
   .toggle-elevate-2::before {
@@ -573,13 +602,18 @@
     margin: 1cm;
   }
 
-  html, body {
+  html,
+  body {
     background: #ffffff !important;
     color: #000000 !important;
   }
 
-  header, nav, [data-print-hide], .print-hide,
-  [role="tablist"], [role="dialog"] {
+  header,
+  nav,
+  [data-print-hide],
+  .print-hide,
+  [role="tablist"],
+  [role="dialog"] {
     display: none !important;
   }
 
