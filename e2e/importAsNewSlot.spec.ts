@@ -259,6 +259,52 @@ test.describe("Import as new slot — disabled at 3 slots", () => {
 });
 
 // ---------------------------------------------------------------------------
+// 2b. Disabled state via New button — Import hidden after clicking New twice
+// ---------------------------------------------------------------------------
+//
+// This describe block exercises the React-state path rather than hydration:
+// it starts from the default single-slot state and reaches the 3-slot limit by
+// clicking "Add My Theme workspace" twice.  The Import-button visibility
+// condition (`myThemeSlots.length < 3`) could diverge from the seeded-state
+// path if it were ever guarded by a separate piece of state, so we test both.
+
+test.describe("Import as new slot — disabled after clicking New twice", () => {
+  test("Import button is hidden once 3 slots exist via the New button", async ({ page }) => {
+    // Fresh load — no seeded state, 1 slot by default.
+    await openOnApplyTab(page);
+    await expect(page.locator(APPLY_SLOT_SEL)).toHaveCount(1);
+
+    // Click New to add slot 2.
+    await page.getByRole("button", { name: "Add My Theme workspace", exact: true }).click();
+    await page.locator(`#${APPLY_PREFIX}-my-theme-2`).waitFor({ timeout: 8_000 });
+
+    // Click New again to add slot 3.
+    await page.getByRole("button", { name: "Add My Theme workspace", exact: true }).click();
+    await page.locator(`#${APPLY_PREFIX}-my-theme-3`).waitFor({ timeout: 8_000 });
+
+    // At 3 slots the Import button must not be present.
+    await expect(page.getByRole("button", { name: "Import JSON as new slot" })).toBeHidden();
+  });
+
+  test("disabled indicator appears with correct title after clicking New twice", async ({
+    page,
+  }) => {
+    await openOnApplyTab(page);
+
+    await page.getByRole("button", { name: "Add My Theme workspace", exact: true }).click();
+    await page.locator(`#${APPLY_PREFIX}-my-theme-2`).waitFor({ timeout: 8_000 });
+
+    await page.getByRole("button", { name: "Add My Theme workspace", exact: true }).click();
+    await page.locator(`#${APPLY_PREFIX}-my-theme-3`).waitFor({ timeout: 8_000 });
+
+    // The disabled indicator must be visible with the correct explanatory title.
+    await expect(page.getByTitle("All 3 slots are in use — delete one to import")).toBeVisible({
+      timeout: 4_000,
+    });
+  });
+});
+
+// ---------------------------------------------------------------------------
 // 3. Warning path — CSS color values produce a warning toast
 // ---------------------------------------------------------------------------
 
