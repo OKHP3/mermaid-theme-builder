@@ -19,6 +19,9 @@ jobs:
     timeout-minutes: 10
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
       - name: Setup pnpm + Node.js
         uses: ./.github/actions/setup-pnpm
 

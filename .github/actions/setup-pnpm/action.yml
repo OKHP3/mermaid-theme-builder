@@ -1,8 +1,10 @@
 name: Setup pnpm + Node.js
 description: >
-  Checks out the repository, sets up pnpm, configures Node.js with the pnpm
-  cache, and runs `pnpm install --frozen-lockfile --ignore-scripts`.
-  Centralising these four steps means a single version bump here propagates
+  Sets up pnpm, configures Node.js with the pnpm cache, and runs
+  `pnpm install --frozen-lockfile --ignore-scripts`.
+  NOTE: the calling workflow must run `actions/checkout` before this action —
+  local composite actions are resolved from the checked-out workspace.
+  Centralising these three steps means a single version bump here propagates
   to every workflow that uses this action.
 
 inputs:
@@ -14,9 +16,6 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Checkout
-      uses: actions/checkout@v6
-
     - name: Setup pnpm
       uses: pnpm/action-setup@v6
 
