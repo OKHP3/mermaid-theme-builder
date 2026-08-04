@@ -20,6 +20,8 @@
     "check:source-refs": "node scripts/check-source-refs.mjs",
     "check:version-strings": "node scripts/check-version-strings.mjs",
     "check:technology-versions": "node scripts/check-technology-versions.mjs",
+    "format": "prettier --check \"src/**/*.{ts,tsx,css}\" \"*.ts\" \"*.json\"",
+    "format:write": "prettier --write \"src/**/*.{ts,tsx,css}\" \"*.ts\" \"*.json\"",
     "lint": "tsc --noEmit"
   },
   "simple-git-hooks": {

@@ -74,7 +74,7 @@ isValidation = true
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "pnpm prettier --check \"src/**/*.{ts,tsx,css}\" \"*.ts\" \"*.json\""
+args = "pnpm run format"
 
 [agent]
 stack = "PNPM_WORKSPACE"
