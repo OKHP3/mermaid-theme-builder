@@ -24,6 +24,8 @@ jobs:
     name: Capture README screenshot
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    permissions:
+      contents: write   # required to push the refreshed screenshot back to main
     env:
       PORT: "4173"
       BASE_PATH: /mermaid-theme-builder/
@@ -69,3 +71,14 @@ jobs:
           name: readme-screenshot-${{ github.ref_name }}
           path: docs/screenshot-v0.5.0.jpg
           retention-days: 30
+
+      - name: Commit and push refreshed screenshot to main
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/screenshot-v0.5.0.jpg
+          # Exit 0 if nothing changed so the job does not fail on a no-op.
+          git diff --cached --quiet && echo "Screenshot unchanged, nothing to commit." && exit 0
+          git commit -m "chore: refresh README screenshot for ${{ github.ref_name }} [skip ci]"
+          # Push the new commit to main (the tag checkout is detached HEAD).
+          git push origin HEAD:refs/heads/main
