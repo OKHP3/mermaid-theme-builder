@@ -291,4 +291,18 @@ describe("EXAMPLE_CATALOG — data integrity", () => {
       `duplicate ids found in EXAMPLE_CATALOG: ${duplicates.join(", ")}`
     ).toHaveLength(0);
   });
+
+  it("ALL_EXAMPLES assembled list has no duplicate ids across all sources", () => {
+    const ids = ALL_EXAMPLES.map((e) => e.id);
+    const seen = new Set<string>();
+    const duplicates: string[] = [];
+    for (const id of ids) {
+      if (seen.has(id)) duplicates.push(id);
+      seen.add(id);
+    }
+    expect(
+      duplicates,
+      `duplicate ids found across assembled ALL_EXAMPLES (catalog + brand previews + showcase): ${duplicates.join(", ")}`
+    ).toHaveLength(0);
+  });
 });
