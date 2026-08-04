@@ -67,41 +67,30 @@
 
 ---
 
-## v0.6.0 — Governance Profile Export + Prompt Scaffold Depth
+## v0.6.0 — P0 Capability Fixes + Documentation Truth Sync (Shipped 2026-08-04)
 
-**Status:** Active planning
+**Tag:** `v0.6.0`
 
-**Goals:** Complete the palette authoring workflow. Introduce named governance profiles as a first-class export artifact. Make Prompt Scaffold smarter per diagram type. Improve discoverability of existing features.
+### Shipped
+- **Extract tab restored** — dedicated Extract nav tab re-registered; `#extract` URL resolves
+- **Renderer-aware output format toggle** — `%%{init}%%` / YAML frontmatter pill in Apply ExportToolbar; defaults per renderer; persisted
+- **Stroke/border width control** — "Node border width" button group in Compose Look section (Default / 1–4 px)
+- **YAML frontmatter generation** — `buildFrontmatter()` aligned with `buildInitDirective` for look, family, typography
+- **8-renderer README** — m365-loop / Microsoft Loop added to the README parity matrix table
+- **Skills catalog regenerated** — 10 skills; okhp3-mermaid-governance v1.1.0 and okhp3-skill-promotion v0.1.0 now appear
+- **Documentation truth sync** — README family count, Exports section, Tabs table, and renderer count all match the live app
+- **Neutral Enterprise retired** — removed from planning documents (was never in code)
 
-### Governance Profile
-- [ ] **Named governance profile export** — bundle palette + look + typography + renderer target + classDef overlay as a single named, shareable artifact (`.theme.json` already exists; formalize the bundle concept)
-- [ ] **Governance profile concept documentation** — shipped (`docs/governance-profiles.md`)
-- [ ] **Diagram output contract documentation** — shipped (`docs/diagram-output-contract.md`)
-- [ ] **OKHP³ Visual Language Stack reference** — shipped (`docs/okhp3-visual-language-stack.md`)
-
-### Palette
-- [ ] **User palette CRUD** — save, rename, delete, reorder user-created palettes (persist in localStorage)
-- [ ] **"Copy share link" button** — surface URL-encoded palette sharing prominently in palette editor UI (encoding already exists in persistence.ts)
-- [ ] 3–5 additional community palettes (not brand-locked)
-
-### Export
-- [ ] **Export preview pane** — read-only code pane showing all three export formats before copy/download
-- [ ] **Family-specific Prompt Scaffold templates** — per-family scaffold sections (flowchart, sequence, class, ER)
-
-### Mermaid 11.14–11.15 Coverage
-- [ ] **Event Modeling example** — add example `.mmd` for the new 11.15 diagram type; update capability registry `examplePending` to false
-- [ ] **Look mode per-family warnings** — show a warning in Apply tab when `look: handDrawn` or `look: neo` is unsupported for the detected diagram family
-- [ ] **Renderer compatibility warnings** — surface "CSS injection blocked on GitHub" and "classDef unsupported for sequence/Gantt" as contextual warnings in the export bar
-- [ ] **Microsoft Loop / M365 Copilot renderer profile** — registered in renderer-parity.ts; surfaced in renderer selector and Reference tab parity matrix
-- [ ] **Timeline direction** — document `LR`/`TD` direction support in capability notes and expose in family-specific overrides
-- [ ] **Root-level `htmlLabels`** — emit at root config level in `%%{init}%%` exports (11.13+ migration: deprecated `flowchart.htmlLabels`)
-
-### Testing
-- [ ] **Playwright smoke tests** — core pipeline: paste to detect to themed preview renders to Styled Code export contains `%%{init}%%`
+### v1.0.0 evaluation
+Privacy-respecting analytics and a completed WCAG 2.1 AA audit remain open. v1.0.0 is not yet earned.
 
 ---
 
-## v0.7.0 — Editor + Accessibility + Layout Tier Tokens
+## v0.7.0 — Governance Profiles (Planned)
+
+---
+
+## v0.8.0 — Editor + Accessibility + Layout Tier Tokens
 
 **Status:** Planned
 
@@ -124,6 +113,21 @@
 - [ ] **Accessibility** — WCAG 2.1 AA verified
 - [ ] Keyboard-navigable palette picker (already partial)
 - [ ] `robots.txt` and `sitemap.xml`
+
+---
+
+## Version Policy
+
+**Cadence:** Tag a new version after every sprint that ships at least one user-visible feature or behavior change. Do not leave the repo 700 commits ahead of the last tag.
+
+**Rule for agents:** Before marking a task that touches user-visible behavior as complete, check whether a version bump is warranted. If yes, update `package.json`, add a `CHANGELOG.md` entry, commit, tag, and push the tag to GitHub. A GitHub release is required for any tag that crosses a minor version boundary (e.g. v0.5.0 → v0.6.0).
+
+**Earning versions:**
+- `v0.x.y` patch: bug fixes and internal refactors with no user-visible behavior change.
+- `v0.x.0` minor: any shipped user-visible feature or capability, however small.
+- `v1.0.0`: earned only when all v1.0.0 gates in the roadmap pass (currently: analytics + WCAG 2.1 AA audit + full keyboard navigation). Do not tag v1.0.0 until every gate is explicitly checked and passes.
+
+This policy is enforced in `AGENTS.md` Section 9.
 
 ---
 

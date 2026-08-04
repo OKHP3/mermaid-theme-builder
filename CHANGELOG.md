@@ -7,27 +7,42 @@ Versions follow [Semantic Versioning](https://semver.org/).
 
 ---
 
-## [Unreleased] — v0.6.0
+## [Unreleased]
 
-Palette authoring, smarter Prompt Scaffold, and Mermaid 11.14–11.15 coverage.
+---
 
-### Planned — Palette
-- User palette CRUD — save, rename, delete, and reorder custom palettes (localStorage)
-- "Copy share link" button — surface URL-encoded palette sharing in the palette editor UI
-- 3–5 additional community palettes (not brand-locked)
+## [0.6.0] — 2026-08-04
 
-### Planned — Export
-- Export preview pane — read-only pane showing all three export formats before copy/download
-- Family-specific Prompt Scaffold templates — per-family scaffold sections (flowchart, sequence, class, ER)
+Phase 2 P0 capability fixes, plus documentation truth sync across all public surfaces.
 
-### Planned — Mermaid 11.14–11.15 Coverage
-- Event Modeling example — add `.mmd` for the new 11.15 diagram type; update capability registry
-- Look mode per-family warnings — warn in Apply tab when `look: handDrawn` or `look: neo` is unsupported for the detected family
-- Renderer compatibility warnings — surface "CSS injection blocked on GitHub" and "classDef unsupported for sequence/Gantt" as contextual export-bar warnings
-- Root-level `htmlLabels` — emit at root config level in `%%{init}%%` exports (11.13+ migration: deprecated `flowchart.htmlLabels`)
+### Added
+- **Extract tab restored** — dedicated Extract nav tab re-registered in `AppTab`, `TAB_CONFIG`, and the hash router. `#extract` URL resolves to the tab. The embedded Extract shortcut in Compose is retained for Compose-flow users.
+- **Renderer-aware output format toggle** — `%%{init}%%` / YAML frontmatter two-button pill in the Apply tab ExportToolbar. Defaults to the renderer-recommended format (`getRendererDefaultOutputFormat` in `renderer-parity.ts`): frontmatter for mermaid.live, GitHub, Obsidian; `%%{init}%%` for all others. User preference persisted to localStorage.
+- **Stroke/border width control** — "Node border width" button group (Default / 1 px / 2 px / 3 px / 4 px) in the Compose tab Look section, matching the existing font-size stepper pattern. Wired through `buildClassDefLibrary` / `buildClassDefString` in `theme-engine.ts` as a global classDef `stroke-width` override.
+- **YAML frontmatter generation** — `buildFrontmatter()` extended to accept `family`, `look`, `fontSize`, and `typography`, applying the same overlay logic as `buildInitDirective`. `generateThemedCode()` now respects `options.outputFormat`.
 
-### Planned — Testing
-- Playwright smoke tests — core pipeline: paste → detect → themed preview renders → Styled Code export contains `%%{init}%%`
+### Changed
+- **Renderer parity matrix** — README and Reference tab now correctly show 8 renderers; m365-loop / Microsoft 365 / Loop row added to the README summary table.
+- **Skills catalog** — regenerated to include all 10 skills: `okhp3-mermaid-governance` v1.1.0 and `okhp3-skill-promotion` v0.1.0 added to the README catalog block.
+- **README** — family count updated from "27+" to "31 (18 native, 13 partial/beta) + 10 documented gaps"; Exports section rewritten to document all 8 Download formats; Tabs table updated to include Extract.
+- **package.json** — version bumped to 0.6.0.
+
+### Removed
+- **Neutral Enterprise palette** — references removed from planning documents. The palette was never implemented in code; no user-facing change.
+
+### Version tag evaluation — v1.0.0 gate check
+
+| Gate | Status | Evidence |
+|------|--------|---------|
+| Extract tab accessible | Pass | `AppTab` includes "extract"; `TAB_CONFIG` entry present; `#extract` resolves |
+| Renderer-aware format generation | Pass | `getRendererDefaultOutputFormat` in `renderer-parity.ts`; `outputFormat` wired through App to ExportToolbar |
+| Stroke/border width control | Pass | Button group in Compose Look section; `buildClassDefLibrary` accepts `strokeWidth` |
+| All tests pass | Pass | 2585 unit tests; typecheck clean |
+| Privacy-respecting analytics | Fail | Not yet implemented — v1.0.0 gate per roadmap |
+| WCAG 2.1 AA accessibility audit | Fail | axe-core audit not yet run — v1.0.0 gate per roadmap |
+| GitHub release cadence established | Pass | This release; version policy added to `AGENTS.md` |
+
+**Verdict: v0.6.0.** v1.0.0 requires analytics and a completed accessibility audit. Both remain open.
 
 ---
 
@@ -133,7 +148,8 @@ Palette authoring, smarter Prompt Scaffold, and Mermaid 11.14–11.15 coverage.
 
 ---
 
-[Unreleased]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.2.0...v0.3.0
