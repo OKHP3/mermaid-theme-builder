@@ -707,6 +707,79 @@ describe("typographyToScaffoldSection — font family column", () => {
   });
 });
 
+describe("typographyToScaffoldSection — pipe character escaping", () => {
+  it("escapes a pipe in the font family so the table cell is not split", () => {
+    const settings: TypographySettings = {
+      ...DEFAULT_TYPOGRAPHY,
+      nodeLabel: { fontSize: 14, fontFamily: "Font | Fallback" },
+    };
+    const result = typographyToScaffoldSection(settings);
+    // The raw unescaped pipe must not appear in a data row.
+    const dataRows = result
+      .split("\n")
+      .filter((l) => l.startsWith("|") && !l.startsWith("|---") && !l.startsWith("| Tier"));
+    for (const row of dataRows) {
+      // Strip the leading and trailing delimiter, then check no bare pipe remains.
+      const inner = row.slice(1, -1);
+      expect(inner).not.toContain(" | Font | Fallback | ");
+    }
+    // The escaped form must be present.
+    expect(result).toContain("Font \\| Fallback");
+  });
+
+  it("each data row has exactly 4 pipe-separated columns after escaping", () => {
+    const settings: TypographySettings = {
+      ...DEFAULT_TYPOGRAPHY,
+      diagramTitle: { fontSize: 20, fontFamily: "A | B | C" },
+      nodeLabel: { fontSize: 14, fontFamily: "Safe Font" },
+    };
+    const result = typographyToScaffoldSection(settings);
+    const dataRows = result
+      .split("\n")
+      .filter((l) => l.startsWith("|") && !l.startsWith("|---") && !l.startsWith("| Tier"));
+    expect(dataRows).toHaveLength(5);
+    // A valid GFM table row with 4 columns: `| col1 | col2 | col3 | col4 |`
+    // After escaping, splitting on unescaped `|` gives exactly 6 parts
+    // (empty, col1, col2, col3, col4, empty).
+    for (const row of dataRows) {
+      // Split on `|` that is NOT preceded by `\`.
+      const cols = row.split(/(?<!\\)\|/);
+      // Leading and trailing empty strings from the outer delimiters → 6 parts total.
+      expect(cols).toHaveLength(6);
+    }
+  });
+
+  it("pipe in the placeholder value is also escaped", () => {
+    // Manually test the placeholder path: fontFamily empty → falls back to
+    // "(palette fontFamily)" which contains no pipe, but we verify general
+    // pipe escaping logic still applies when fontFamily is exactly "|".
+    const settings: TypographySettings = {
+      ...DEFAULT_TYPOGRAPHY,
+      edgeLabel: { fontSize: 12, fontFamily: "|" },
+    };
+    const result = typographyToScaffoldSection(settings);
+    expect(result).toContain("\\|");
+    // The table must still have the correct number of columns per row.
+    const dataRows = result
+      .split("\n")
+      .filter((l) => l.startsWith("|") && !l.startsWith("|---") && !l.startsWith("| Tier"));
+    for (const row of dataRows) {
+      const cols = row.split(/(?<!\\)\|/);
+      expect(cols).toHaveLength(6);
+    }
+  });
+
+  it("safe font names without pipes are not altered", () => {
+    const settings: TypographySettings = {
+      ...DEFAULT_TYPOGRAPHY,
+      nodeLabel: { fontSize: 14, fontFamily: "Inter, 'DM Sans', sans-serif" },
+    };
+    const result = typographyToScaffoldSection(settings);
+    expect(result).toContain("Inter, 'DM Sans', sans-serif");
+    expect(result).not.toContain("\\|");
+  });
+});
+
 // ---------------------------------------------------------------------------
 // 9. generateTypographyCss — snapshot tests
 //

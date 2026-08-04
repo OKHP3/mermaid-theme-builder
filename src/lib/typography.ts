@@ -128,7 +128,9 @@ export function typographyToScaffoldSection(settings: TypographySettings): strin
   const rows = TIER_ORDER.map((key) => {
     const tier = settings[key];
     const meta = TIER_META[key];
-    const ff = tier.fontFamily || "(palette fontFamily)";
+    // Escape pipe characters so a font-family value like "Font | Fallback" does
+    // not split the Markdown table cell into extra columns.
+    const ff = (tier.fontFamily || "(palette fontFamily)").replace(/\|/g, "\\|");
     return `| ${meta.label} | ${meta.description} | ${tier.fontSize}px | ${ff} |`;
   });
   return `## Typography Hierarchy
