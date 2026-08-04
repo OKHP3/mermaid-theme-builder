@@ -17,6 +17,30 @@ import {
   NOTATION_COMPLIANCE_LABELS,
 } from "@/data/mermaid-capabilities";
 
+/**
+ * Color-coded badge chip for Beta / Experimental examples.
+ * Beta → amber palette; Experimental → violet palette.
+ * Returns null for Canonical-only or unrecognised badge values.
+ */
+function BadgeChip({ badge }: { badge?: string }) {
+  if (!badge) return null;
+  if (badge.includes("Experimental")) {
+    return (
+      <span className="inline-flex items-center shrink-0 text-[9px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded-full border bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400 border-violet-200 dark:border-violet-700/50">
+        Experimental
+      </span>
+    );
+  }
+  if (badge.includes("Beta")) {
+    return (
+      <span className="inline-flex items-center shrink-0 text-[9px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded-full border bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-700/50">
+        Beta
+      </span>
+    );
+  }
+  return null;
+}
+
 async function writeToClipboard(text: string) {
   try {
     await navigator.clipboard.writeText(text);
@@ -357,6 +381,7 @@ export function ExamplesTab({
                             }`}
                           >
                             <span className="flex-1 leading-snug">{entry.label}</span>
+                            <BadgeChip badge={entry.badge} />
                           </button>
                         </li>
                       ))}
@@ -392,6 +417,7 @@ export function ExamplesTab({
               <span className="text-xs font-medium text-muted-foreground truncate">
                 {selectedExample?.label ?? "Select an example"}
               </span>
+              <BadgeChip badge={selectedExample?.badge} />
             </div>
             <span className="text-xs text-muted-foreground/60 shrink-0 ml-2">Themed preview</span>
           </div>
