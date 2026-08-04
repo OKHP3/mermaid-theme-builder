@@ -244,6 +244,34 @@ describe("AppShell settings menu — dismissal", () => {
 
     expect(screen.queryByRole("menu", { name: "Settings" })).toBeNull();
   });
+
+  it("focus returns to the Settings button after Escape dismissal", async () => {
+    render(createElement(AppShell));
+    await openMenu();
+
+    await act(async () => {
+      fireEvent.keyDown(document, { key: "Escape" });
+    });
+
+    const btn = screen.getByRole("button", { name: "Settings" });
+    expect(document.activeElement).toBe(btn);
+  });
+
+  it("a pointerdown inside the settings menu does NOT close it", async () => {
+    render(createElement(AppShell));
+    await openMenu();
+
+    // Fire pointerdown on the menu element itself — the handler checks
+    // settingsMenuRef.current?.contains(e.target) and returns early when the
+    // event originates inside the popover.
+    const menuEl = screen.getByRole("menu", { name: "Settings" });
+    await act(async () => {
+      fireEvent.pointerDown(menuEl);
+    });
+
+    // Menu must still be open.
+    expect(screen.getByRole("menu", { name: "Settings" })).toBeDefined();
+  });
 });
 
 // ---------------------------------------------------------------------------
