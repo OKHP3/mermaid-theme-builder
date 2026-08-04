@@ -55,9 +55,20 @@ const FONT_FAMILY_OPTIONS = [
   { label: "system-ui", value: "system-ui, -apple-system, sans-serif" },
 ];
 
-function FontFamilySelect({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+function FontFamilySelect({
+  value,
+  onChange,
+  tierLabel,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  /** Human-readable tier name used to build per-tier aria-labels (e.g. "Node Label"). */
+  tierLabel?: string;
+}) {
   const isPreset = FONT_FAMILY_OPTIONS.some((o) => o.value === value);
   const selectValue = isPreset ? value : "__custom__";
+  const presetLabel = tierLabel ? `${tierLabel} font family preset` : "Font family preset";
+  const customLabel = tierLabel ? `${tierLabel} font family override` : "Custom font family value";
   return (
     <div className="space-y-1">
       <select
@@ -68,7 +79,7 @@ function FontFamilySelect({ value, onChange }: { value: string; onChange: (v: st
           onChange(v);
         }}
         className="w-full text-xs bg-background border border-border rounded-md px-2.5 py-1.5 text-foreground focus:outline-none focus:ring-1 focus:ring-primary/50"
-        aria-label="Font family preset"
+        aria-label={presetLabel}
       >
         {FONT_FAMILY_OPTIONS.map((o) => (
           <option key={o.value} value={o.value}>
@@ -81,9 +92,9 @@ function FontFamilySelect({ value, onChange }: { value: string; onChange: (v: st
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        placeholder="font-family value"
-        className="w-full text-[11px] font-mono bg-background border border-border rounded-md px-2 py-1 text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50"
-        aria-label="Custom font family value"
+        placeholder="(inherit palette font)"
+        className="w-full text-[10px] font-mono bg-background border border-border/60 rounded px-1.5 py-0.5 text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50"
+        aria-label={customLabel}
       />
     </div>
   );
@@ -967,18 +978,15 @@ export function ComposeTab({
                         <p className="text-[9px] text-muted-foreground/60 leading-snug">
                           {meta.description}
                         </p>
-                        <input
-                          type="text"
+                        <FontFamilySelect
                           value={tier.fontFamily}
-                          onChange={(e) => {
+                          onChange={(v) =>
                             handleTypographyChangeWithClamp({
                               ...typography,
-                              [key]: { ...tier, fontFamily: e.target.value },
-                            });
-                          }}
-                          placeholder="(inherit palette font)"
-                          className="w-full text-[10px] font-mono bg-background border border-border/60 rounded px-1.5 py-0.5 text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50"
-                          aria-label={`${meta.label} font family override`}
+                              [key]: { ...tier, fontFamily: v },
+                            })
+                          }
+                          tierLabel={meta.label}
                         />
                         {tier.fontFamily && (
                           <span

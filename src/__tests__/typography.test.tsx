@@ -22,7 +22,7 @@ vi.mock("mermaid", () => ({
   },
 }));
 
-import { render, cleanup } from "@testing-library/react";
+import { render, cleanup, fireEvent } from "@testing-library/react";
 import { createElement } from "react";
 
 import {
@@ -1073,5 +1073,148 @@ describe("ComposeTab — font family live preview", () => {
     expect(styleAfter).toBe(styleBefore);
     // And it must equal sanitizeFontFamily applied to the original value.
     expect(styleAfter).toBe(sanitizeFontFamily(original.edgeLabel.fontFamily));
+  });
+});
+
+// ---------------------------------------------------------------------------
+// FontFamilySelect in typography tier rows
+//
+// Acceptance criteria (task #504):
+//   1. Each tier row renders a preset dropdown (<select>) and a custom text input.
+//   2. Picking a preset from the dropdown immediately updates the fontFamily value
+//      and makes the live "Aa" preview span appear.
+//   3. Typing a custom font name in the text input also updates the value —
+//      users are not restricted to the preset list.
+// ---------------------------------------------------------------------------
+
+describe("ComposeTab — FontFamilySelect in typography tier rows", () => {
+  const palette = BRAND_PALETTES[0];
+  const noop = vi.fn();
+
+  function makeProps(
+    typography: TypographySettings,
+    onTypographyChange: (t: TypographySettings) => void = noop
+  ) {
+    return {
+      selectedPalette: palette,
+      selectedPaletteId: palette.id,
+      onSelectPalette: noop,
+      customColors: {},
+      onColorChange: noop,
+      onResetPalette: noop,
+      hasCustomizations: false,
+      includeMetaComments: true,
+      onIncludeMetaCommentsChange: noop,
+      includeBadge: false,
+      onIncludeBadgeChange: noop,
+      customThemeName: "",
+      onCustomThemeNameChange: noop,
+      effectiveThemeName: palette.name,
+      userPalettes: [],
+      onSavePalette: noop,
+      onImportPalette: noop,
+      onDeleteUserPalette: noop,
+      onShowToast: noop,
+      look: "classic" as const,
+      onLookChange: noop,
+      fontSize: "",
+      onFontSizeChange: noop,
+      typography,
+      onTypographyChange,
+      rendererTarget: "",
+      onRendererTargetChange: noop,
+      onUseExtractedTheme: noop,
+      onSwitchTab: noop,
+      onNavigateToParityMatrix: noop,
+      importDiagnostics: null,
+      onImportDiagnosticsChange: noop,
+    };
+  }
+
+  it("renders a preset <select> and a custom text <input> for each of the five tiers", () => {
+    const { container } = render(createElement(ComposeTab, makeProps(DEFAULT_TYPOGRAPHY)));
+    // Each tier row's FontFamilySelect renders one <select aria-label="… font family preset">
+    // and one <input aria-label="… font family override"> per TIER_META label.
+    const selects = container.querySelectorAll('[aria-label$="font family preset"]');
+    const inputs = container.querySelectorAll('[aria-label$="font family override"]');
+    // There are 5 typography tier rows; each gets one select + one input.
+    expect(selects.length).toBeGreaterThanOrEqual(5);
+    expect(inputs.length).toBeGreaterThanOrEqual(5);
+  });
+
+  it("selecting a preset option calls onTypographyChange with the preset value", () => {
+    const onChange = vi.fn();
+    const { container } = render(
+      createElement(ComposeTab, makeProps(DEFAULT_TYPOGRAPHY, onChange))
+    );
+
+    // Grab the preset select for "Node Label".
+    const select = container.querySelector(
+      '[aria-label="Node Label font family preset"]'
+    ) as HTMLSelectElement | null;
+    expect(select).not.toBeNull();
+
+    // Change to the "Inter" preset (value "Inter, system-ui, sans-serif").
+    fireEvent.change(select!, { target: { value: "Inter, system-ui, sans-serif" } });
+
+    // onTypographyChange must have been called at least once.
+    expect(onChange).toHaveBeenCalled();
+    // The most-recent call must carry the chosen preset value on nodeLabel.
+    const lastCall = onChange.mock.calls[onChange.mock.calls.length - 1][0] as TypographySettings;
+    expect(lastCall.nodeLabel.fontFamily).toBe("Inter, system-ui, sans-serif");
+  });
+
+  it("selecting a preset causes the live 'Aa' preview span to appear", () => {
+    const { container, rerender } = render(
+      createElement(ComposeTab, makeProps(DEFAULT_TYPOGRAPHY))
+    );
+
+    // No preview span yet — fontFamily is empty.
+    expect(container.querySelector('[aria-label="Node Label font family preview"]')).toBeNull();
+
+    // Rerender with the preset applied.
+    const withPreset: TypographySettings = {
+      ...DEFAULT_TYPOGRAPHY,
+      nodeLabel: { fontSize: 14, fontFamily: "Inter, system-ui, sans-serif" },
+    };
+    rerender(createElement(ComposeTab, makeProps(withPreset)));
+
+    const preview = container.querySelector(
+      '[aria-label="Node Label font family preview"]'
+    ) as HTMLElement | null;
+    expect(preview).not.toBeNull();
+    expect(preview!.textContent?.trim()).toBe("Aa");
+  });
+
+  it("typing a custom font name in the text input calls onTypographyChange with that value", () => {
+    const onChange = vi.fn();
+    const { container } = render(
+      createElement(ComposeTab, makeProps(DEFAULT_TYPOGRAPHY, onChange))
+    );
+
+    const input = container.querySelector(
+      '[aria-label="Edge Label font family override"]'
+    ) as HTMLInputElement | null;
+    expect(input).not.toBeNull();
+
+    fireEvent.change(input!, { target: { value: "My Custom Font" } });
+
+    expect(onChange).toHaveBeenCalled();
+    const lastCall = onChange.mock.calls[onChange.mock.calls.length - 1][0] as TypographySettings;
+    expect(lastCall.edgeLabel.fontFamily).toBe("My Custom Font");
+  });
+
+  it("the custom text input reflects an existing fontFamily value (controlled)", () => {
+    const typography: TypographySettings = {
+      ...DEFAULT_TYPOGRAPHY,
+      diagramTitle: { fontSize: 20, fontFamily: "Roboto, sans-serif" },
+    };
+    const { container } = render(createElement(ComposeTab, makeProps(typography)));
+
+    const input = container.querySelector(
+      '[aria-label="Diagram Title font family override"]'
+    ) as HTMLInputElement | null;
+    expect(input).not.toBeNull();
+    expect(input!.value).toBe("Roboto, sans-serif");
   });
 });
