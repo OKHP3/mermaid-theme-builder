@@ -16,6 +16,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run --config vitest.config.ts",
     "test:e2e": "bash scripts/run-e2e.sh",
+    "capture-screenshot": "node scripts/capture-screenshot.mjs",
     "check:technology-versions": "node scripts/check-technology-versions.mjs",
     "lint": "tsc --noEmit"
   },

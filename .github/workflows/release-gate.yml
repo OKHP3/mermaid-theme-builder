@@ -19,3 +19,53 @@ jobs:
 
       - name: Check CHANGELOG has versioned entry for ${{ github.ref_name }}
         run: bash scripts/check-changelog.sh "${{ github.ref_name }}"
+
+  capture-screenshot:
+    name: Capture README screenshot
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PORT: "4173"
+      BASE_PATH: /mermaid-theme-builder/
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --ignore-scripts
+
+      - name: Install Playwright Chromium
+        run: pnpm exec playwright install chromium --with-deps
+
+      - name: Build
+        run: pnpm build
+
+      - name: Start preview server
+        run: pnpm serve &
+
+      - name: Wait for server
+        run: |
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:4173/mermaid-theme-builder/ && echo "Server ready" && break
+            echo "Waiting... attempt $i"
+            sleep 2
+          done
+
+      - name: Capture screenshot
+        run: pnpm run capture-screenshot
+
+      - name: Upload screenshot artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: readme-screenshot-${{ github.ref_name }}
+          path: docs/screenshot-v0.5.0.jpg
+          retention-days: 30
