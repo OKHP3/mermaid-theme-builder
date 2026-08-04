@@ -369,4 +369,70 @@ describe("ApplyTab — code-editor override: auto-clear is scoped to the active 
       container.querySelector("textarea[aria-label='Styled code output — edit before copying']")
     ).not.toBeNull();
   });
+
+  it("palette switch immediately clears only the active diagram's override; other overrides are invalidated lazily on next visit", async () => {
+    const altPalette = BRAND_PALETTES[1];
+    const { container, rerender } = render(createElement(ApplyTab, makeProps(MULTI_INPUT)));
+
+    // 1. Enter edit mode for diagram 0 — sets override[0] = exportCode_0.
+    await act(async () => {
+      fireEvent.click(screen.getByTitle("Edit the styled code before copying"));
+    });
+    expect(
+      container.querySelector("textarea[aria-label='Styled code output — edit before copying']")
+    ).not.toBeNull();
+
+    // 2. Switch to diagram 1. First visit — no previous exportCode for idx 1
+    //    → auto-clear does not fire → override[0] is preserved for now.
+    await act(async () => {
+      fireEvent.click(screen.getByLabelText("Next diagram"));
+    });
+    // Diagram 1 has no override yet → HighlightedCode shown, not textarea.
+    expect(
+      container.querySelector("textarea[aria-label='Styled code output — edit before copying']")
+    ).toBeNull();
+
+    // 3. Enter edit mode for diagram 1 — sets override[1] = exportCode_1.
+    await act(async () => {
+      fireEvent.click(screen.getByTitle("Edit the styled code before copying"));
+    });
+    expect(
+      container.querySelector("textarea[aria-label='Styled code output — edit before copying']")
+    ).not.toBeNull();
+
+    // 4. Switch palette while diagram 1 is active. A different palette produces
+    //    different exportCode for ALL diagrams, but the hook only checks the active
+    //    diagram (idx 1) against its previously recorded exportCode → override[1]
+    //    is cleared immediately. Override[0] still sits in the Map, not yet evicted.
+    act(() => {
+      rerender(
+        createElement(ApplyTab, {
+          ...makeProps(MULTI_INPUT),
+          selectedPalette: altPalette,
+          selectedPaletteId: altPalette.id,
+          effectiveThemeName: altPalette.name,
+        })
+      );
+    });
+
+    // Diagram 1 (active): override immediately cleared → textarea is gone.
+    expect(
+      container.querySelector("textarea[aria-label='Styled code output — edit before copying']")
+    ).toBeNull();
+
+    // 5. Switch back to diagram 0. The hook now runs for idx 0: it compares
+    //    the new exportCode (palette2 colors) against the previously stored value
+    //    (palette1 colors) and detects the mismatch → override[0] is also cleared
+    //    at this point. This is correct: the edit was based on palette1 output and
+    //    would be stale/misleading with palette2 active.
+    await act(async () => {
+      fireEvent.click(screen.getByLabelText("Previous diagram"));
+    });
+
+    // Diagram 0's override is also cleared on visit — the palette change
+    // invalidated its base code, so the stale edit is correctly discarded.
+    expect(
+      container.querySelector("textarea[aria-label='Styled code output — edit before copying']")
+    ).toBeNull();
+  });
 });
