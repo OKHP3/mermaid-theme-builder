@@ -78,6 +78,54 @@ check(
 );
 
 // ---------------------------------------------------------------------------
+// 3. Palette toolVersion consistency across the four source files
+//
+//    toolVersion is the palette output schema version — a distinct concept from
+//    the app version in package.json — so it is NOT required to match `version`.
+//    What IS required is that all four files agree with each other; a drift where
+//    one file still says "0.3.0" while others say "0.4.0" is the failure mode
+//    this check guards against.
+// ---------------------------------------------------------------------------
+
+const TOOL_VERSION_FILES = [
+  "src/lib/exporters.ts",
+  "src/lib/extractor.ts",
+  "src/lib/palettes.ts",
+  "src/App.tsx",
+];
+
+const TOOL_VERSION_RE = /toolVersion:\s*["']([^"']+)["']/;
+
+const toolVersions = TOOL_VERSION_FILES.map((file) => {
+  const src = read(file);
+  const match = TOOL_VERSION_RE.exec(src);
+  return { file, value: match ? match[1] : null };
+});
+
+const foundValues = toolVersions.map((t) => t.value);
+const definedValues = foundValues.filter((v) => v !== null);
+const canonical = definedValues[0] ?? null;
+const allAgree = canonical !== null && definedValues.every((v) => v === canonical);
+
+if (!allAgree) {
+  const report = toolVersions
+    .map(({ file, value }) => {
+      const tag = value === canonical ? "✓" : "✗";
+      return `    ${tag} ${file}: ${value !== null ? `"${value}"` : "(not found)"}`;
+    })
+    .join("\n");
+  errors.push(
+    `  ✗ Palette toolVersion consistency across ${TOOL_VERSION_FILES.length} files\n` +
+      `      Values found:\n${report}\n` +
+      `      Fix: update all toolVersion fields to the same string before releasing.`
+  );
+} else {
+  console.log(
+    `  ✓ Palette toolVersion is "${canonical}" in all ${TOOL_VERSION_FILES.length} files`
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Result
 // ---------------------------------------------------------------------------
 
