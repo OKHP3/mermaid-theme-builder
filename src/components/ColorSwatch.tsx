@@ -88,8 +88,8 @@ export function ColorSwatch({ color, onChange, isOverridden = false, onReset }: 
           />
           {hasFontFamilyInjectionChars(localValue) && (
             <p className="text-[10px] text-amber-600 dark:text-amber-400 mt-0.5 leading-tight">
-              Contains <code className="font-mono">{"; { }"}</code> — unsafe characters will be
-              stripped from the export.
+              Contains <code className="font-mono">; &#123; &#125;</code> — unsafe characters will
+              be stripped from the export.
             </p>
           )}
         </div>
