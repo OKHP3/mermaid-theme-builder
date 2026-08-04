@@ -158,11 +158,6 @@ export function ApplyTab({
   const safeDiagramIdx = Math.min(activeDiagramIdx, diagrams.length - 1);
   const activeDiagramCode = diagrams[safeDiagramIdx]?.content ?? inputCode;
 
-  // Reset the advisory banner whenever the user picks a different target renderer.
-  useEffect(() => {
-    setAdvisoryDismissed(false);
-  }, [rendererTarget]);
-
   const detection = useMemo(() => detectDiagram(activeDiagramCode), [activeDiagramCode]);
 
   // Effective detection — applies the user's manual family override on top of
@@ -180,6 +175,13 @@ export function ApplyTab({
       capability: cap ?? null,
     };
   }, [detection, familyOverride]);
+
+  // Reset the advisory banner when the renderer target changes OR when the
+  // detected diagram family changes — the new family may surface new advisories
+  // that the user hasn't seen yet.
+  useEffect(() => {
+    setAdvisoryDismissed(false);
+  }, [rendererTarget, effectiveDetection.family]);
 
   // Track whether the current family's syntax hint is dismissed so we can
   // offer a "Show tip" restore affordance. Re-evaluates when the family
@@ -368,11 +370,9 @@ export function ApplyTab({
       />
 
       <PreflightPanel
-        warnings={warnings}
         exportAdvisories={exportAdvisories}
         advisoryDismissed={advisoryDismissed}
         onDismissAdvisory={() => setAdvisoryDismissed(true)}
-        showCapabilityNote={!!showCapabilityNote}
         capability={effectiveDetection.capability}
         family={effectiveDetection.family}
         hintResetToken={hintResetToken}
@@ -443,8 +443,9 @@ export function ApplyTab({
             onActiveDiagramIdxChange={setActiveDiagramIdx}
           />
           <ExportToolbar
-            warnings={[]}
-            showCapabilityNote={false}
+            warnings={warnings}
+            showCapabilityNote={!!showCapabilityNote}
+            capability={effectiveDetection.capability}
             hasCustomizations={hasCustomizations}
             onOpenColorEditor={() => setShowColorEditor(true)}
             inputCode={inputCode}

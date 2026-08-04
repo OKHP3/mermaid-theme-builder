@@ -250,16 +250,17 @@ function StatusIcon({ status }: { status: PreflightItem["status"] }) {
 }
 
 interface PreflightPanelProps {
-  warnings: string[];
+  /** Renderer-target compatibility advisories (dismissible). */
   exportAdvisories: string[];
   advisoryDismissed: boolean;
   onDismissAdvisory: () => void;
-  showCapabilityNote: boolean;
+  /** Capability metadata for the structured preflight report. */
   capability: DiagramCapability | null;
   family: DiagramFamily;
   hintResetToken: number;
   onFamilyHintDismiss: () => void;
   rendererProfile: RendererProfile | undefined;
+  /** Look-incompatibility warning from the renderer profile (dismissible). */
   rendererLookWarning: string | null;
   look: MermaidLook;
   selectedPalette: Palette;
@@ -269,11 +270,9 @@ interface PreflightPanelProps {
 }
 
 export function PreflightPanel({
-  warnings,
   exportAdvisories,
   advisoryDismissed,
   onDismissAdvisory,
-  showCapabilityNote,
   capability,
   family,
   hintResetToken,
@@ -288,13 +287,10 @@ export function PreflightPanel({
 }: PreflightPanelProps) {
   const [expanded, setExpanded] = useState(false);
 
-  // All issues combined for the summary line
-  const allIssues = [
-    ...exportAdvisories,
-    ...(rendererLookWarning ? [rendererLookWarning] : []),
-    ...warnings,
-    ...(showCapabilityNote && capability?.warning ? [capability.warning] : []),
-  ];
+  // Only renderer advisories are shown here — they are dismissible per session.
+  // Detector warnings and capability notes remain in ExportToolbar so they are
+  // always visible regardless of advisory dismissal.
+  const allIssues = [...exportAdvisories, ...(rendererLookWarning ? [rendererLookWarning] : [])];
   const hasAnyIssue = allIssues.length > 0;
 
   // Build the structured report (only needed when expanded)
