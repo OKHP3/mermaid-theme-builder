@@ -284,7 +284,7 @@ describe("ApplyTab copy button — renderer badge hides during 'Copied!' flash (
 const TOOLBAR_BASE_PROPS = {
   warnings: [] as string[],
   showCapabilityNote: false,
-  capability: undefined as import("@/lib/detector").DetectionResult["capability"],
+  capability: undefined as unknown as import("@/lib/detector").DetectionResult["capability"],
   hasCustomizations: false,
   onOpenColorEditor: noop,
   inputCode: DIAGRAM,
