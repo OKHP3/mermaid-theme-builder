@@ -1,16 +1,26 @@
 import { defineConfig, devices } from "@playwright/test";
 import { execSync } from "child_process";
+import { existsSync } from "fs";
 
 let chromiumExecutablePath: string | undefined;
 if (!process.env.CI) {
+  // Build a prioritised list of candidate paths and take the first that exists.
+  // Using direct PATH scanning avoids spawning a shell (`which`) that may have a
+  // different environment when Playwright evaluates this config in a subprocess.
+  const candidates: (string | undefined)[] = [
+    process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH,
+    // Check every directory on PATH for a `chromium` binary (covers Nix store entries).
+    ...(process.env.PATH ?? "").split(":").map((d) => `${d}/chromium`),
+  ];
+
+  // Also try `which chromium` as a fallback in case PATH differs.
   try {
-    const path =
-      process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH ??
-      execSync("which chromium", { encoding: "utf8" }).trim();
-    if (path) chromiumExecutablePath = path;
+    candidates.push(execSync("which chromium", { encoding: "utf8" }).trim());
   } catch {
-    // system chromium not available; fall through to Playwright bundled browser
+    // ignore — `which` may not be available
   }
+
+  chromiumExecutablePath = candidates.find((p): p is string => !!p && existsSync(p));
 }
 
 // Production-build preview server port — matches the CI workflow env.
@@ -51,7 +61,14 @@ export default defineConfig({
       name: "chromium",
       use: {
         ...devices["Desktop Chrome"],
-        ...(chromiumExecutablePath ? { executablePath: chromiumExecutablePath } : {}),
+        ...(chromiumExecutablePath
+          ? {
+              // In Playwright 1.44+ the default Chromium browser is the
+              // headless shell; executablePath must be inside launchOptions
+              // to override the resolved binary path.
+              launchOptions: { executablePath: chromiumExecutablePath },
+            }
+          : {}),
       },
     },
   ],
