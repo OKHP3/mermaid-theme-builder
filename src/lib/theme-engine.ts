@@ -11,6 +11,7 @@ import {
   buildRendererHeaderComment,
   getRendererById,
 } from "../data/renderer-parity";
+import { MERMAID_VERSION_VERIFIED } from "../data/mermaid-capabilities";
 
 // ── Markdown output sanitizers ──────────────────────────────────────────────
 // These helpers prevent attacker-controlled palette metadata (imported via
@@ -326,13 +327,18 @@ export function generateMarkdownExport(
 
   const disclaimerNote = `\n> _Mermaid Theme Builder is a personal [OverKill Hill P³](https://overkillhill.com) project by Jamie Hill. All transformations are local — your diagram code never leaves the browser._`;
 
+  const rendererTargetSection = options.rendererTarget
+    ? `\n**Target renderer:** ${sanitizeMdText(options.rendererTarget)}  `
+    : "";
+
   return `# Mermaid Diagram — ${themeName} Theme
 
 **Theme:** ${displayLabel}  
 **Theme ID:** \`${paletteId}\`  
 **Version:** ${sanitizeMdText(palette.version)}  
 **Generated:** ${now}  
-**Tool:** [Mermaid Theme Builder](${TOOL_URL})${sourceSection}${intentSection}
+**Mermaid version:** ${MERMAID_VERSION_VERIFIED}  
+**Tool:** [Mermaid Theme Builder](${TOOL_URL})${rendererTargetSection}${sourceSection}${intentSection}
 
 ## Usage
 

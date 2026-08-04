@@ -23,7 +23,7 @@ import { type TypographySettings } from "@/lib/typography";
 import type { AppTab } from "@/App";
 import type { MyThemeSlot } from "@/lib/my-theme-slots";
 import { DiagramDetectHeader } from "./apply/DiagramDetectHeader";
-import { RenderWarningSection } from "./apply/RenderWarningSection";
+import { PreflightPanel } from "./apply/PreflightPanel";
 import { DiagramPreviewPanel, type PreviewMode } from "./apply/DiagramPreviewPanel";
 import { ExportToolbar } from "./apply/ExportToolbar";
 import { ColorEditorPanel } from "./apply/ColorEditorPanel";
@@ -367,13 +367,23 @@ export function ApplyTab({
         onResetSyntaxHints={onResetSyntaxHints}
       />
 
-      <RenderWarningSection
+      <PreflightPanel
+        warnings={warnings}
         exportAdvisories={exportAdvisories}
         advisoryDismissed={advisoryDismissed}
         onDismissAdvisory={() => setAdvisoryDismissed(true)}
+        showCapabilityNote={!!showCapabilityNote}
+        capability={effectiveDetection.capability}
         family={effectiveDetection.family}
         hintResetToken={hintResetToken}
         onFamilyHintDismiss={() => setFamilyHintDismissed(true)}
+        rendererProfile={rendererProfile}
+        rendererLookWarning={rendererLookWarning}
+        look={look}
+        selectedPalette={selectedPalette}
+        outputFormat={outputFormat}
+        onOutputFormatChange={onOutputFormatChange}
+        inputCode={inputCode}
       />
 
       <div className="md:flex-1 md:overflow-hidden flex flex-col md:flex-row md:min-h-0">
@@ -433,9 +443,8 @@ export function ApplyTab({
             onActiveDiagramIdxChange={setActiveDiagramIdx}
           />
           <ExportToolbar
-            warnings={warnings}
-            showCapabilityNote={!!showCapabilityNote}
-            capability={effectiveDetection.capability}
+            warnings={[]}
+            showCapabilityNote={false}
             hasCustomizations={hasCustomizations}
             onOpenColorEditor={() => setShowColorEditor(true)}
             inputCode={inputCode}

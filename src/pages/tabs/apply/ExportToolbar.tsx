@@ -47,9 +47,12 @@ const DOWNLOAD_LABELS: Record<DownloadType, string> = {
 };
 
 interface ExportToolbarProps {
-  warnings: string[];
-  showCapabilityNote: boolean;
-  capability: DetectionResult["capability"];
+  /** @deprecated Pass warnings to PreflightPanel in the parent instead. */
+  warnings?: string[];
+  /** @deprecated Pass capability note to PreflightPanel in the parent instead. */
+  showCapabilityNote?: boolean;
+  /** @deprecated Pass capability to PreflightPanel in the parent instead. */
+  capability?: DetectionResult["capability"];
   hasCustomizations: boolean;
   onOpenColorEditor: () => void;
   inputCode: string;
@@ -76,8 +79,8 @@ interface ExportToolbarProps {
 }
 
 export function ExportToolbar({
-  warnings,
-  showCapabilityNote,
+  warnings = [],
+  showCapabilityNote = false,
   capability,
   hasCustomizations,
   onOpenColorEditor,
@@ -101,6 +104,7 @@ export function ExportToolbar({
   const [copiedType, setCopiedType] = useState<ExportType | null>(_testInitialCopiedType);
   const [downloadingType, setDownloadingType] = useState<DownloadType | null>(null);
   const [showDownloadMenu, setShowDownloadMenu] = useState(false);
+  const [showExportPreview, setShowExportPreview] = useState(false);
 
   useEffect(() => {
     if (!showDownloadMenu) return;
@@ -237,8 +241,60 @@ export function ExportToolbar({
           <CapabilityNote capability={capability} />
         </div>
       )}
+      {/* Export preview pane — read-only, shows the currently-selected export code */}
+      {showExportPreview && inputCode.trim() && (
+        <div className="border-b border-border bg-muted/30">
+          <div className="flex items-center justify-between px-3 py-1.5 border-b border-border/50">
+            <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">
+              Export Preview
+              <span className="ml-2 normal-case font-normal text-foreground/60">
+                {outputFormat === "frontmatter" ? "YAML frontmatter" : "%%{init}%% directive"}
+              </span>
+            </span>
+            <button
+              type="button"
+              onClick={() => setShowExportPreview(false)}
+              aria-label="Close export preview"
+              className="text-muted-foreground/60 hover:text-muted-foreground transition-colors"
+            >
+              <svg viewBox="0 0 16 16" fill="currentColor" className="w-3 h-3">
+                <path d="M3.72 3.72a.75.75 0 011.06 0L8 6.94l3.22-3.22a.75.75 0 111.06 1.06L9.06 8l3.22 3.22a.75.75 0 11-1.06 1.06L8 9.06l-3.22 3.22a.75.75 0 01-1.06-1.06L6.94 8 3.72 4.78a.75.75 0 010-1.06z" />
+              </svg>
+            </button>
+          </div>
+          <pre
+            aria-label="Export code preview"
+            aria-readonly="true"
+            className="overflow-auto max-h-40 px-3 py-2 text-[10px] font-mono text-foreground/80 whitespace-pre leading-relaxed select-all"
+          >
+            {effectiveExportCode}
+          </pre>
+        </div>
+      )}
       <div className="flex flex-wrap items-center gap-2 px-3 py-2.5">
         <div className="flex-1" />
+
+        {/* Export preview toggle */}
+        {inputCode.trim() && (
+          <button
+            type="button"
+            onClick={() => setShowExportPreview((v) => !v)}
+            title={
+              showExportPreview ? "Hide export preview" : "Preview the export output before copying"
+            }
+            aria-pressed={showExportPreview}
+            className={`flex items-center gap-1 text-[10px] px-2 py-1 rounded border font-medium transition-colors ${
+              showExportPreview
+                ? "border-primary/40 bg-primary/8 text-primary"
+                : "border-border text-muted-foreground hover:bg-muted hover:text-foreground"
+            }`}
+          >
+            <svg viewBox="0 0 16 16" fill="currentColor" className="w-3 h-3">
+              <path d="M1.679 7.932c.412-.621 1.242-1.75 2.366-2.717C5.175 4.242 6.527 3.5 8 3.5c1.473 0 2.824.742 3.955 1.715 1.124.967 1.954 2.096 2.366 2.717a.119.119 0 010 .136c-.412.621-1.242 1.75-2.366 2.717C10.825 11.758 9.473 12.5 8 12.5c-1.473 0-2.824-.742-3.955-1.715C2.92 9.818 2.09 8.689 1.679 8.068a.119.119 0 010-.136zM8 11a3 3 0 100-6 3 3 0 000 6z" />
+            </svg>
+            {showExportPreview ? "Hide" : "Preview"}
+          </button>
+        )}
 
         {/* Format toggle: init-directive vs YAML frontmatter */}
         <div

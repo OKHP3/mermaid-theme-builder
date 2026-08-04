@@ -27,6 +27,7 @@ import {
   downloadTextFile,
   makeFilename,
 } from "@/lib/exporters";
+import { parseGovernanceProfile, GOVERNANCE_PROFILE_TYPE } from "@/lib/governance-profile";
 import { encodeShareableTheme, paletteToShareablePayload } from "@/lib/persistence";
 import { formatImportError } from "@/lib/importErrorFormat";
 import {
@@ -180,6 +181,10 @@ interface ComposeTabProps {
       warnValues: Array<{ key: string; value: string }>;
     }
   ) => void;
+  onImportGovernanceProfile?: (
+    profile: import("@/lib/governance-profile").GovernanceProfile,
+    warnings: string[]
+  ) => void;
   customThemeNamePlaceholder?: string;
 }
 
@@ -240,6 +245,7 @@ export function ComposeTab({
   onExportMyThemeSlot = () => {},
   onImportAsNewSlot,
   onImportMyThemeSlot,
+  onImportGovernanceProfile,
   customThemeNamePlaceholder,
 }: ComposeTabProps) {
   const [copiedBootstrap, setCopiedBootstrap] = useState(false);
@@ -391,14 +397,17 @@ export function ComposeTab({
   );
 
   const handleCopyShareLink = useCallback(async () => {
-    const payload = paletteToShareablePayload(selectedPalette, customThemeName);
+    const payload = paletteToShareablePayload(selectedPalette, customThemeName, {
+      look: look !== "classic" ? look : undefined,
+      rendererTarget: rendererTarget || undefined,
+    });
     const token = encodeShareableTheme(payload);
     const url = new URL(window.location.href);
     url.searchParams.set("theme", token);
     await writeToClipboard(url.toString());
     setCopiedShare(true);
     setTimeout(() => setCopiedShare(false), 2000);
-  }, [selectedPalette, customThemeName]);
+  }, [selectedPalette, customThemeName, look, rendererTarget]);
 
   const handleExportJson = useCallback(() => {
     downloadTextFile(
@@ -443,6 +452,38 @@ export function ComposeTab({
           }
         } catch {
           // parsePortablePalette will surface the JSON error below
+        }
+
+        // Route governance profile imports through their own callback
+        if (topLevelType === GOVERNANCE_PROFILE_TYPE) {
+          if (onImportGovernanceProfile) {
+            const result = parseGovernanceProfile(text);
+            if (!result.ok) {
+              onShowToast(formatImportError(`Profile import failed: ${result.error}`));
+              return;
+            }
+            onImportGovernanceProfile(result.profile, result.warnings);
+          } else {
+            // onImportGovernanceProfile not wired — parse colors only as palette
+            const result = parseGovernanceProfile(text);
+            if (!result.ok) {
+              onShowToast(formatImportError(`Profile import failed: ${result.error}`));
+              return;
+            }
+            const paletteResult = parsePortablePalette(
+              JSON.stringify({
+                type: "mtb-palette",
+                version: "0.0.0",
+                id: result.profile.id,
+                name: result.profile.name,
+                themeVariables: Object.fromEntries(
+                  result.profile.colors.map((c) => [c.key, c.value])
+                ),
+              })
+            );
+            if (paletteResult.ok) onImportPalette(paletteResult.palette);
+          }
+          return;
         }
 
         if (topLevelType === "mtb-palette-bundle") {
@@ -522,6 +563,7 @@ export function ComposeTab({
       onShowToast,
       activeMyThemeSlotId,
       onImportMyThemeSlot,
+      onImportGovernanceProfile,
     ]
   );
 

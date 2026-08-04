@@ -104,6 +104,10 @@ export interface ShareablePayload {
   paletteId?: string;
   themeVariables: Record<string, string>;
   customThemeName?: string;
+  /** v2+ only: Mermaid look variant. */
+  look?: string;
+  /** v2+ only: renderer target ID. */
+  rendererTarget?: string;
 }
 
 function bytesToBase64Url(bytes: Uint8Array): string {
@@ -159,16 +163,20 @@ export function decodeShareableTheme(token: string): ShareablePayload | null {
 
 export function paletteToShareablePayload(
   palette: Palette,
-  customThemeName: string
+  customThemeName: string,
+  opts?: { look?: string; rendererTarget?: string }
 ): ShareablePayload {
   const themeVariables: Record<string, string> = {};
   for (const c of palette.colors) themeVariables[c.key] = c.value;
+  const hasExtras = (opts?.look && opts.look !== "classic") || opts?.rendererTarget;
   return {
-    v: 1,
+    v: hasExtras ? 2 : 1,
     paletteId: palette.id,
     paletteName: palette.name,
     themeVariables,
     customThemeName: customThemeName || undefined,
+    look: hasExtras && opts?.look && opts.look !== "classic" ? opts.look : undefined,
+    rendererTarget: opts?.rendererTarget || undefined,
   };
 }
 

@@ -50,6 +50,13 @@ import {
   slotDisplayName,
 } from "@/lib/my-theme-slots";
 import { downloadTextFile, makeFilename, paletteToPortableJson } from "@/lib/exporters";
+import {
+  migrateSlotToProfile,
+  profileToPortableJson,
+  profileToSlot,
+  parseGovernanceProfile,
+  type GovernanceProfile,
+} from "@/lib/governance-profile";
 import { detectDiagram } from "@/lib/detector";
 import { type TypographySettings, DEFAULT_TYPOGRAPHY } from "@/lib/typography";
 import {
@@ -765,18 +772,19 @@ export function AppShell() {
     (id: string) => {
       const slot = myThemeSlots.find((s) => s.id === id);
       if (!slot) return;
-      const exportPalette: Palette = {
-        ...BRAND_PALETTES[0],
-        id: "my-theme-export",
-        name: slot.name,
-        description: `Exported My Theme workspace: ${slot.name}`,
-        colors: slot.colors,
-      };
-      const json = paletteToPortableJson(exportPalette);
-      const filename = makeFilename(slot.name, "theme", "json");
+      // Export as a full GovernanceProfile JSON — includes look, typography,
+      // rendererTarget, outputFormat, and schemaVersion so it can be imported
+      // back with full fidelity.
+      const profile = migrateSlotToProfile(slot, {
+        rendererTarget,
+        outputFormat,
+        strokeWidth,
+      });
+      const json = profileToPortableJson(profile);
+      const filename = makeFilename(slot.name, "profile", "json");
       downloadTextFile(filename, json, "application/json");
     },
-    [myThemeSlots]
+    [myThemeSlots, rendererTarget, outputFormat, strokeWidth]
   );
 
   const handleImportMyThemeSlot = useCallback(
@@ -822,6 +830,58 @@ export function AppShell() {
           return [...prev, newSlot];
         });
         setToast(`Imported "${palette.name}" into a new My Theme slot.`);
+      }
+    },
+    [activeMyThemeSlotId, myThemeSlots]
+  );
+
+  /**
+   * Import a full GovernanceProfile JSON into the active (or a new) slot,
+   * and restore the renderer target + output format from the profile.
+   */
+  const handleImportGovernanceProfile = useCallback(
+    (profile: GovernanceProfile, importWarnings: string[]) => {
+      const slot = profileToSlot(profile);
+
+      if (activeMyThemeSlotId) {
+        const activeSlotName =
+          myThemeSlots.find((s) => s.id === activeMyThemeSlotId)?.name ?? "My Theme";
+        setMyThemeSlots((prev) =>
+          prev.map((s) =>
+            s.id === activeMyThemeSlotId
+              ? {
+                  ...s,
+                  name: slot.name,
+                  colors: slot.colors,
+                  look: slot.look,
+                  fontSize: slot.fontSize,
+                  typography: slot.typography,
+                }
+              : s
+          )
+        );
+        // Restore app-level renderer / format from the profile
+        if (profile.rendererTarget) setRendererTarget(profile.rendererTarget);
+        if (profile.outputFormat) setOutputFormat(profile.outputFormat);
+
+        const warnNote = importWarnings.length > 0 ? ` (${importWarnings.length} advisory)` : "";
+        setToast(`Imported profile "${profile.name}" into "${activeSlotName}"${warnNote}.`);
+      } else {
+        setMyThemeSlots((prev) => {
+          if (prev.length >= 3) {
+            setToast("All 3 My Theme slots are in use — delete one before importing.");
+            return prev;
+          }
+          const num = nextSlotNumber(prev);
+          if (num === null) return prev;
+          const newSlot = { ...slot, id: `my-theme-${num}` as MyThemeSlotId };
+          setActiveMyThemeSlotId(newSlot.id);
+          if (profile.rendererTarget) setRendererTarget(profile.rendererTarget);
+          if (profile.outputFormat) setOutputFormat(profile.outputFormat);
+          const warnNote = importWarnings.length > 0 ? ` (${importWarnings.length} advisory)` : "";
+          setToast(`Imported profile "${profile.name}" into a new My Theme slot${warnNote}.`);
+          return [...prev, newSlot];
+        });
       }
     },
     [activeMyThemeSlotId, myThemeSlots]
@@ -1496,6 +1556,7 @@ export function AppShell() {
               onExportMyThemeSlot={handleExportMyThemeSlot}
               onImportAsNewSlot={handleImportAsNewSlot}
               onImportMyThemeSlot={handleImportMyThemeSlot}
+              onImportGovernanceProfile={handleImportGovernanceProfile}
               customThemeNamePlaceholder={
                 activeMyThemeSlotId ? slotDisplayName(activeMyThemeSlotId) : undefined
               }
