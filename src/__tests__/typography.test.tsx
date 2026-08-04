@@ -807,6 +807,20 @@ describe("generateTypographyCss — snapshots", () => {
     `);
   });
 
+  it("font-family-only tier change: emits a single font-family declaration with no font-size rule", () => {
+    // nodeLabel fontSize stays at the default (14px) — only fontFamily is set.
+    // The output must contain exactly one declaration: font-family, no font-size.
+    const settings: TypographySettings = {
+      ...DEFAULT_TYPOGRAPHY,
+      nodeLabel: { fontSize: 14, fontFamily: "DM Sans" },
+    };
+    expect(generateTypographyCss(settings)).toMatchInlineSnapshot(`
+      "/* Mermaid typography hierarchy — flowchart/subgraph targets */
+      /* Node Label */
+      .node .label { font-family: DM Sans; }"
+    `);
+  });
+
   it("fully-modified settings with fallback stacks: all five tiers in order", () => {
     const settings: TypographySettings = {
       diagramTitle: { fontSize: 24, fontFamily: "Alfa Slab One" },
