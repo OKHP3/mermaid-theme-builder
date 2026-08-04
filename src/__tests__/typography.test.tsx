@@ -30,6 +30,8 @@ import {
   isDefaultTypography,
   generateTypographyCss,
   typographyToScaffoldSection,
+  hasFontFamilyInjectionChars,
+  sanitizeFontFamily,
   DEFAULT_TYPOGRAPHY,
   TIER_ORDER,
   type TypographySettings,
@@ -522,6 +524,114 @@ describe("generateTypographyCss — CSS validity: brace balance on fully-modifie
     const result = generateTypographyCss(fullyModified);
     const ruleLines = result.split("\n").filter((l) => l.startsWith("."));
     expect(ruleLines).toHaveLength(5);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 8. hasFontFamilyInjectionChars & sanitizeFontFamily
+// ---------------------------------------------------------------------------
+
+describe("hasFontFamilyInjectionChars — detection", () => {
+  it("returns false for a plain font name", () => {
+    expect(hasFontFamilyInjectionChars("Roboto")).toBe(false);
+  });
+
+  it("returns false for a name with spaces", () => {
+    expect(hasFontFamilyInjectionChars("DM Sans")).toBe(false);
+  });
+
+  it("returns false for a fallback stack with commas", () => {
+    expect(hasFontFamilyInjectionChars("DM Sans, sans-serif")).toBe(false);
+  });
+
+  it("returns false for a quoted name", () => {
+    expect(hasFontFamilyInjectionChars("'DM Sans', sans-serif")).toBe(false);
+  });
+
+  it("returns true when value contains a semicolon", () => {
+    expect(hasFontFamilyInjectionChars("Roboto; color: red")).toBe(true);
+  });
+
+  it("returns true when value contains an opening brace", () => {
+    expect(hasFontFamilyInjectionChars("Roboto { color: red")).toBe(true);
+  });
+
+  it("returns true when value contains a closing brace", () => {
+    expect(hasFontFamilyInjectionChars("Roboto } color: red")).toBe(true);
+  });
+
+  it("returns true when value contains multiple injection characters", () => {
+    expect(hasFontFamilyInjectionChars("Bad;{Font}")).toBe(true);
+  });
+});
+
+describe("sanitizeFontFamily — stripping", () => {
+  it("leaves a safe font name unchanged", () => {
+    expect(sanitizeFontFamily("Roboto")).toBe("Roboto");
+  });
+
+  it("leaves a fallback stack unchanged", () => {
+    expect(sanitizeFontFamily("DM Sans, sans-serif")).toBe("DM Sans, sans-serif");
+  });
+
+  it("strips a semicolon", () => {
+    expect(sanitizeFontFamily("Roboto; color: red")).toBe("Roboto color: red");
+  });
+
+  it("strips an opening brace", () => {
+    expect(sanitizeFontFamily("Font{Name")).toBe("FontName");
+  });
+
+  it("strips a closing brace", () => {
+    expect(sanitizeFontFamily("Font}Name")).toBe("FontName");
+  });
+
+  it("strips all three unsafe characters at once", () => {
+    expect(sanitizeFontFamily("Bad;{Font}")).toBe("BadFont");
+  });
+
+  it("returns an empty string when the input is only unsafe characters", () => {
+    expect(sanitizeFontFamily(";{}")).toBe("");
+  });
+});
+
+describe("generateTypographyCss — sanitizes fontFamily on export", () => {
+  it("strips a semicolon from fontFamily before emitting the CSS rule", () => {
+    const settings: TypographySettings = {
+      ...DEFAULT_TYPOGRAPHY,
+      nodeLabel: { fontSize: 14, fontFamily: "Roboto; color: red" },
+    };
+    const result = generateTypographyCss(settings);
+    // The injected semicolon must be gone from the font-family value
+    expect(result).not.toContain("Roboto; color: red");
+    // The sanitized value should appear in a well-formed declaration
+    expect(result).toContain("font-family: Roboto color: red;");
+  });
+
+  it("strips braces from fontFamily so the CSS block stays balanced", () => {
+    const settings: TypographySettings = {
+      ...DEFAULT_TYPOGRAPHY,
+      diagramTitle: { fontSize: 20, fontFamily: "Bad{Font}" },
+    };
+    const result = generateTypographyCss(settings);
+    const ruleLines = result.split("\n").filter((l) => l.startsWith("."));
+    expect(ruleLines.length).toBeGreaterThan(0);
+    for (const line of ruleLines) {
+      expect(line.trim()).toMatch(/\}$/);
+    }
+    // Value should have braces stripped
+    expect(result).toContain("font-family: BadFont;");
+  });
+
+  it("braces remain balanced when fontFamily contains injection characters", () => {
+    const settings: TypographySettings = {
+      ...DEFAULT_TYPOGRAPHY,
+      edgeLabel: { fontSize: 12, fontFamily: "X;{Y}Z" },
+    };
+    const result = generateTypographyCss(settings);
+    const opens = [...result].filter((c) => c === "{").length;
+    const closes = [...result].filter((c) => c === "}").length;
+    expect(opens).toBe(closes);
   });
 });
 

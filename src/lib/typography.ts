@@ -88,6 +88,25 @@ export function isDefaultTypography(settings: TypographySettings): boolean {
   );
 }
 
+/**
+ * Characters that break a CSS property value if injected verbatim.
+ * A semicolon ends the declaration early; braces open/close rule blocks.
+ */
+const FONT_FAMILY_UNSAFE_RE = /[;{}]/;
+
+/** Returns true if the font-family value contains characters that would corrupt CSS output. */
+export function hasFontFamilyInjectionChars(value: string): boolean {
+  return FONT_FAMILY_UNSAFE_RE.test(value);
+}
+
+/**
+ * Strips characters from a fontFamily value that would break CSS property syntax.
+ * The sanitized value is safe to emit verbatim inside a `font-family: ...;` declaration.
+ */
+export function sanitizeFontFamily(value: string): string {
+  return value.replace(/[;{}]/g, "");
+}
+
 export function generateTypographyCss(settings: TypographySettings): string {
   const lines: string[] = ["/* Mermaid typography hierarchy — flowchart/subgraph targets */"];
   for (const key of TIER_ORDER) {
@@ -96,7 +115,7 @@ export function generateTypographyCss(settings: TypographySettings): string {
     const rules: string[] = [];
     if (tier.fontSize !== DEFAULT_TYPOGRAPHY[key].fontSize)
       rules.push(`font-size: ${tier.fontSize}px;`);
-    if (tier.fontFamily) rules.push(`font-family: ${tier.fontFamily};`);
+    if (tier.fontFamily) rules.push(`font-family: ${sanitizeFontFamily(tier.fontFamily)};`);
     if (rules.length > 0) {
       lines.push(`/* ${meta.label} */`);
       lines.push(`${meta.cssProp} { ${rules.join(" ")} }`);

@@ -37,6 +37,7 @@ import {
   DEFAULT_TYPOGRAPHY,
   enforceHierarchy,
   isDefaultTypography,
+  hasFontFamilyInjectionChars,
 } from "@/lib/typography";
 import type { MyThemeSlot } from "@/lib/my-theme-slots";
 
@@ -976,6 +977,11 @@ export function ComposeTab({
                           className="w-full text-[10px] font-mono bg-background border border-border/60 rounded px-1.5 py-0.5 text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50"
                           aria-label={`${meta.label} font family override`}
                         />
+                        {hasFontFamilyInjectionChars(tier.fontFamily) && (
+                          <p className="text-[9px] text-destructive leading-snug mt-0.5">
+                            Contains ; &#123; or &#125; — stripped on export
+                          </p>
+                        )}
                       </div>
                     );
                   })}
