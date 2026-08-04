@@ -82,6 +82,27 @@ test.describe("Settings menu keyboard navigation", () => {
     expect(focusedRole).toBe("menuitem");
   });
 
+  test("ArrowUp on the trigger button opens the menu and focuses the last menuitem", async ({
+    page,
+  }) => {
+    const settingsBtn = page.getByRole("button", { name: "Settings", exact: true });
+    await settingsBtn.focus();
+
+    await page.keyboard.press("ArrowUp");
+
+    const menu = page.getByRole("menu", { name: "Settings" });
+    await expect(menu).toBeVisible();
+
+    // ArrowUp-on-trigger must land on the LAST menuitem (mirror of ArrowDown → first).
+    await page.waitForFunction(() => document.activeElement?.getAttribute("role") === "menuitem");
+
+    const isLastItem = await page.evaluate(() => {
+      const items = Array.from(document.querySelectorAll('[role="menuitem"]'));
+      return items.length > 0 && items[items.length - 1] === document.activeElement;
+    });
+    expect(isLastItem, "Expected focus to land on the last role=menuitem after ArrowUp").toBe(true);
+  });
+
   test("Escape closes the menu and returns focus to the settings button", async ({ page }) => {
     const settingsBtn = page.getByRole("button", { name: "Settings", exact: true });
     await settingsBtn.focus();
