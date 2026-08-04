@@ -638,3 +638,66 @@ describe("generateThemedCode — state diagram body is preserved", () => {
     });
   }
 });
+
+// ---------------------------------------------------------------------------
+// 25. customThemeName snapshots — flowchart with badge enabled
+//
+// The badge node is the only deterministic place customThemeName appears in
+// generateThemedCode output (meta comments include a live timestamp and are
+// not snapshot-safe).  With includeBadge: true the badge line reads:
+//   MTB_ATTR(["Styled with <customThemeName> via Mermaid Theme Builder"])
+// Snapshotting the full output here locks in both the %%{init} block AND the
+// badge for every BRAND_PALETTE.  A mutation to the custom-name injection or
+// badge formatting is immediately visible as a diff failure.
+//
+// To update after an intentional badge or theme-name change:
+//   pnpm vitest run -u src/__tests__/paletteOutputSnapshot.test.ts
+// ---------------------------------------------------------------------------
+
+const CUSTOM_THEME_NAME = "My Forge Theme";
+
+describe(`generateThemedCode snapshots — customThemeName "${CUSTOM_THEME_NAME}" × SIMPLE_DIAGRAM (badge enabled)`, () => {
+  for (const palette of BRAND_PALETTES) {
+    it(`palette "${palette.name}" (id: ${palette.id}) matches snapshot`, () => {
+      const output = generateThemedCode(SIMPLE_DIAGRAM, {
+        ...baseOptions(palette, "flowchart"),
+        includeBadge: true,
+        customThemeName: CUSTOM_THEME_NAME,
+      });
+      expect(output).toMatchSnapshot();
+    });
+  }
+});
+
+describe(`generateThemedCode — customThemeName "${CUSTOM_THEME_NAME}" appears in badge for every palette`, () => {
+  for (const palette of BRAND_PALETTES) {
+    it(`palette "${palette.name}" badge contains custom name`, () => {
+      const output = generateThemedCode(SIMPLE_DIAGRAM, {
+        ...baseOptions(palette, "flowchart"),
+        includeBadge: true,
+        customThemeName: CUSTOM_THEME_NAME,
+      });
+      expect(output).toContain(`Styled with ${CUSTOM_THEME_NAME} via Mermaid Theme Builder`);
+    });
+  }
+});
+
+describe(`generateThemedCode — customThemeName "${CUSTOM_THEME_NAME}" does not bleed into another palette's badge`, () => {
+  it("all BRAND_PALETTE badge outputs are unique", () => {
+    const outputs = BRAND_PALETTES.map((p) =>
+      generateThemedCode(SIMPLE_DIAGRAM, {
+        ...baseOptions(p, "flowchart"),
+        includeBadge: true,
+        customThemeName: CUSTOM_THEME_NAME,
+      })
+    );
+    for (let i = 0; i < outputs.length; i++) {
+      for (let j = i + 1; j < outputs.length; j++) {
+        expect(
+          outputs[i],
+          `palette "${BRAND_PALETTES[i].name}" and "${BRAND_PALETTES[j].name}" produced identical badge output`
+        ).not.toBe(outputs[j]);
+      }
+    }
+  });
+});

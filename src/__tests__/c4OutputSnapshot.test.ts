@@ -209,3 +209,54 @@ describe("C4 snapshot — diagram body preserved", () => {
     });
   }
 });
+
+// ---------------------------------------------------------------------------
+// 6. customThemeName — meta comment carries the custom name for C4 output
+//
+// c4Diagram is not in BADGE_SAFE_FAMILIES so the badge node is never emitted.
+// The only deterministic vector for customThemeName in generateThemedCode is
+// the meta-comment block (%%{init} itself does not include the name).
+// Meta comments include a live timestamp so a full toMatchSnapshot() is not
+// stable — instead we target exactly the "%%\ Theme:" line which is
+// timestamp-free and directly encodes the custom name.
+//
+// Catches: customThemeName being silently dropped, name escaping changing, or
+// the %% Theme comment being removed from buildMetaComments.
+// ---------------------------------------------------------------------------
+
+const C4_CUSTOM_THEME_NAME = "My Forge Theme";
+
+describe(`C4 customThemeName — "%% Theme:" line reflects "${C4_CUSTOM_THEME_NAME}"`, () => {
+  for (const fixture of C4_SNAPSHOT_FIXTURES) {
+    const content = getCatalogContent(fixture.id);
+
+    for (const palette of BRAND_PALETTES) {
+      it(`${fixture.id} / "${palette.name}": %% Theme: contains custom name`, () => {
+        const output = generateThemedCode(content, {
+          ...c4Options(palette),
+          includeMetaComments: true,
+          customThemeName: C4_CUSTOM_THEME_NAME,
+        });
+        const themeLine = output.split("\n").find((l) => l.startsWith("%% Theme:"));
+        expect(themeLine).toBe(`%% Theme: ${C4_CUSTOM_THEME_NAME}`);
+      });
+    }
+  }
+});
+
+describe(`C4 customThemeName — "%% Theme:" line reflects palette name when customThemeName is empty`, () => {
+  for (const fixture of C4_SNAPSHOT_FIXTURES) {
+    const content = getCatalogContent(fixture.id);
+
+    for (const palette of BRAND_PALETTES) {
+      it(`${fixture.id} / "${palette.name}": %% Theme: falls back to palette name`, () => {
+        const output = generateThemedCode(content, {
+          ...c4Options(palette),
+          includeMetaComments: true,
+        });
+        const themeLine = output.split("\n").find((l) => l.startsWith("%% Theme:"));
+        expect(themeLine).toBe(`%% Theme: ${palette.name}`);
+      });
+    }
+  }
+});
