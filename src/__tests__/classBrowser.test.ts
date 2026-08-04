@@ -476,6 +476,74 @@ describe("ClassBrowser — unrecognized class name warning", () => {
     expect(alertSection).toContain(":::ghost");
     expect(alertSection).not.toContain(":::primary");
   });
+
+  // ── Clearing boundary (Task #406) ──────────────────────────────────────────
+
+  it("warning clears when the only unrecognized name is replaced with the correct classDef name", () => {
+    // Before fix: "prmary" is a typo — warning is visible.
+    const before = render({
+      supportsClassDef: true,
+      usedClassNames: new Set(["prmary"]),
+    });
+    expect(before).toContain("Unrecognized class name");
+
+    // After fix: "primary" is a valid classDef — warning is absent.
+    const after = render({
+      supportsClassDef: true,
+      usedClassNames: new Set(["primary"]),
+    });
+    expect(after).not.toContain("Unrecognized class");
+    expect(after).not.toContain("Check for typos");
+  });
+
+  it("warning clears when the last bad annotation is removed (usedClassNames goes empty)", () => {
+    // Before removal: typo present — warning shown.
+    const before = render({
+      supportsClassDef: true,
+      usedClassNames: new Set(["ghost"]),
+    });
+    expect(before).toContain("Unrecognized class name");
+
+    // After removal: no annotations at all — warning gone.
+    const after = render({
+      supportsClassDef: true,
+      usedClassNames: new Set(),
+    });
+    expect(after).not.toContain("Unrecognized class");
+  });
+
+  it("warning clears when all unrecognized names are corrected (multiple typos fixed together)", () => {
+    // Both names are unrecognized — plural heading shown.
+    const before = render({
+      supportsClassDef: true,
+      usedClassNames: new Set(["typo1", "typo2"]),
+    });
+    expect(before).toContain("Unrecognized class names");
+
+    // Both corrected — no warning.
+    const after = render({
+      supportsClassDef: true,
+      usedClassNames: new Set(["primary", "secondary"]),
+    });
+    expect(after).not.toContain("Unrecognized class");
+    expect(after).not.toContain("Check for typos");
+  });
+
+  it("warning clears when the one remaining bad name is fixed, leaving a valid name behind", () => {
+    // One valid, one bad → warning shown for the bad one.
+    const before = render({
+      supportsClassDef: true,
+      usedClassNames: new Set(["primary", "ghost"]),
+    });
+    expect(before).toContain("Unrecognized class name");
+
+    // Both now valid → warning gone.
+    const after = render({
+      supportsClassDef: true,
+      usedClassNames: new Set(["primary", "secondary"]),
+    });
+    expect(after).not.toContain("Unrecognized class");
+  });
 });
 
 describe("ClassBrowser — Fix button rendering (unrecognized class typo suggestions)", () => {
