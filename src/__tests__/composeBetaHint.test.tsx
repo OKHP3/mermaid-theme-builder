@@ -23,6 +23,27 @@ vi.mock("mermaid", () => ({
   },
 }));
 
+// Inject a synthetic "Experimental" entry into the catalog so the
+// Experimental branch of previewBadgeLabel can be exercised in tests.
+// No entry with badge "Experimental" ships in the real catalog, so we
+// extend it here without touching production data.
+vi.mock("@/data/example-library", async (importActual) => {
+  const actual = await importActual<typeof import("@/data/example-library")>();
+  const experimentalEntry: (typeof actual.EXAMPLE_CATALOG)[number] = {
+    id: "experimental-test-entry",
+    label: "Experimental Test",
+    family: "flowchart",
+    category: "flow",
+    badge: "Experimental",
+    content: "flowchart TD\n  A --> B",
+    description: "Synthetic entry for Experimental branch tests",
+  };
+  return {
+    ...actual,
+    EXAMPLE_CATALOG: [...actual.EXAMPLE_CATALOG, experimentalEntry],
+  };
+});
+
 import { render, screen, cleanup, fireEvent } from "@testing-library/react";
 import { createElement } from "react";
 import { ComposeTab } from "@/pages/tabs/ComposeTab";
@@ -120,5 +141,34 @@ describe("ComposeTab — beta hint bar 'See support details →' button", () => 
     render(createElement(ComposeTab, makeBaseProps()));
 
     expect(screen.queryByRole("button", { name: "See support details →" })).toBeNull();
+  });
+});
+
+describe("ComposeTab — beta hint bar Experimental label", () => {
+  it("shows 'Experimental diagram type' (not 'Beta diagram type') for an Experimental-badged entry", () => {
+    localStorage.setItem(PREVIEW_SAMPLE_KEY, "experimental-test-entry");
+    render(createElement(ComposeTab, makeBaseProps()));
+
+    // The hint bar text must contain "Experimental diagram type".
+    expect(screen.getByText(/Experimental diagram type/)).toBeDefined();
+    // It must NOT say "Beta diagram type".
+    expect(screen.queryByText(/Beta diagram type/)).toBeNull();
+  });
+
+  it("'See support details →' button is still present for Experimental entries", () => {
+    localStorage.setItem(PREVIEW_SAMPLE_KEY, "experimental-test-entry");
+    render(createElement(ComposeTab, makeBaseProps()));
+
+    expect(screen.getByRole("button", { name: "See support details →" })).toBeDefined();
+  });
+
+  it("clicking 'See support details →' calls onNavigateToParityMatrix for Experimental entries", () => {
+    localStorage.setItem(PREVIEW_SAMPLE_KEY, "experimental-test-entry");
+    const spy = vi.fn();
+    render(createElement(ComposeTab, makeBaseProps({ onNavigateToParityMatrix: spy })));
+
+    fireEvent.click(screen.getByRole("button", { name: "See support details →" }));
+
+    expect(spy).toHaveBeenCalledTimes(1);
   });
 });
