@@ -809,6 +809,22 @@ export function ClassBrowser({
                     aria-label={`Copy :::${n}`}
                     title={`Click to copy :::${n}`}
                   >
+                    {isJustCopied && (
+                      <svg
+                        viewBox="0 0 10 10"
+                        fill="none"
+                        className="inline w-2.5 h-2.5 mr-0.5 align-middle"
+                        aria-hidden="true"
+                      >
+                        <path
+                          d="M2 5.2l2 2 4-4"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    )}
                     {`:::${n}`}
                   </button>
                   {i < unusedClassNames.length - 1 && ", "}

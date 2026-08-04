@@ -135,3 +135,95 @@ describe("ClassBrowser — unused indicator copy buttons", () => {
     expect(copyBtn.getAttribute("tabindex")).not.toBe("-1");
   });
 });
+
+// ---------------------------------------------------------------------------
+// Checkmark flash (Task #404)
+// ---------------------------------------------------------------------------
+
+describe("ClassBrowser — indicator button checkmark flash after copy", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.runAllTimers();
+    vi.useRealTimers();
+  });
+
+  it("checkmark SVG is absent before any copy action", () => {
+    render(
+      createElement(ClassBrowser, {
+        classDefs: SAMPLE_CLASS_DEFS,
+        supportsClassDef: true,
+        usedClassNames: new Set(["primary"]),
+      })
+    );
+
+    const copyBtn = screen.getByRole("button", { name: "Copy :::secondary" });
+    expect(copyBtn.querySelector("svg")).toBeNull();
+  });
+
+  it("checkmark SVG appears inside the indicator button immediately after click", async () => {
+    render(
+      createElement(ClassBrowser, {
+        classDefs: SAMPLE_CLASS_DEFS,
+        supportsClassDef: true,
+        usedClassNames: new Set(["primary"]),
+      })
+    );
+
+    const copyBtn = screen.getByRole("button", { name: "Copy :::secondary" });
+    await act(async () => {
+      fireEvent.click(copyBtn);
+    });
+
+    expect(copyBtn.querySelector("svg")).not.toBeNull();
+  });
+
+  it("checkmark SVG disappears after the 1800 ms flash window", async () => {
+    render(
+      createElement(ClassBrowser, {
+        classDefs: SAMPLE_CLASS_DEFS,
+        supportsClassDef: true,
+        usedClassNames: new Set(["primary"]),
+      })
+    );
+
+    const copyBtn = screen.getByRole("button", { name: "Copy :::secondary" });
+    await act(async () => {
+      fireEvent.click(copyBtn);
+    });
+
+    // Flash is active — SVG present.
+    expect(copyBtn.querySelector("svg")).not.toBeNull();
+
+    // Advance past the 1800 ms copiedState timeout.
+    act(() => {
+      vi.advanceTimersByTime(1900);
+    });
+
+    expect(copyBtn.querySelector("svg")).toBeNull();
+  });
+
+  it("only the clicked button shows the checkmark — other indicator buttons are unaffected", async () => {
+    render(
+      createElement(ClassBrowser, {
+        classDefs: SAMPLE_CLASS_DEFS,
+        supportsClassDef: true,
+        // "ghost" is not in SAMPLE_CLASS_DEFS so both primary and secondary are unused
+        usedClassNames: new Set(["ghost"]),
+      })
+    );
+
+    const primaryBtn = screen.getByRole("button", { name: "Copy :::primary" });
+    const secondaryBtn = screen.getByRole("button", { name: "Copy :::secondary" });
+
+    await act(async () => {
+      fireEvent.click(primaryBtn);
+    });
+
+    // Clicked button has checkmark; the other does not.
+    expect(primaryBtn.querySelector("svg")).not.toBeNull();
+    expect(secondaryBtn.querySelector("svg")).toBeNull();
+  });
+});
