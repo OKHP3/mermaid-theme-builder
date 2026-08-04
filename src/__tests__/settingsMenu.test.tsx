@@ -339,4 +339,59 @@ describe("Settings menu — Clear all settings", () => {
       expect(Object.keys((saved.customColors as Record<string, unknown>) ?? {}).length).toBe(0);
     });
   });
+
+  it("resets includeMetaComments to true — seeded false becomes true after clearing", async () => {
+    // SEEDED_STATE seeds includeMetaComments: false; the default is true.
+    localStorage.setItem(STORAGE_KEY, SEEDED_STATE);
+    render(createElement(App, null));
+    openSettingsMenu();
+    fireEvent.click(screen.getByText("Clear all settings"));
+
+    await waitFor(() => {
+      const saved = getPersistedState();
+      expect(saved.includeMetaComments).toBe(true);
+    });
+  });
+
+  it("resets includeBadge to true — seeded false becomes true after clearing", async () => {
+    // SEEDED_STATE seeds includeBadge: false; the default is true.
+    localStorage.setItem(STORAGE_KEY, SEEDED_STATE);
+    render(createElement(App, null));
+    openSettingsMenu();
+    fireEvent.click(screen.getByText("Clear all settings"));
+
+    await waitFor(() => {
+      const saved = getPersistedState();
+      expect(saved.includeBadge).toBe(true);
+    });
+  });
+
+  it("resets apply-tab previewMode to 'themed' — seeded 'original' becomes 'themed' after clearing", async () => {
+    // SEEDED_STATE seeds previewMode: "original"; the default is "themed".
+    localStorage.setItem(STORAGE_KEY, SEEDED_STATE);
+    render(createElement(App, null));
+    openSettingsMenu();
+    fireEvent.click(screen.getByText("Clear all settings"));
+
+    await waitFor(() => {
+      const saved = getPersistedState();
+      expect(saved.previewMode).toBe("themed");
+    });
+  });
+
+  it("resets inputCode to the default diagram — seeded empty string is replaced by the factory default", async () => {
+    // SEEDED_STATE seeds inputCode: ""; the handler sets it to APPLY_TAB_DEFAULT.
+    localStorage.setItem(STORAGE_KEY, SEEDED_STATE);
+    render(createElement(App, null));
+    openSettingsMenu();
+    fireEvent.click(screen.getByText("Clear all settings"));
+
+    await waitFor(() => {
+      const saved = getPersistedState();
+      // APPLY_TAB_DEFAULT is the non-empty flowchart example used as the
+      // factory default; the seeded empty string must be replaced.
+      expect(typeof saved.inputCode).toBe("string");
+      expect((saved.inputCode as string).length).toBeGreaterThan(0);
+    });
+  });
 });

@@ -1248,14 +1248,28 @@ export function AppShell() {
                   type="button"
                   role="menuitem"
                   onClick={() => {
+                    // Erase both localStorage keys atomically.
                     clearPersistedState();
+                    // Reset every persisted React state field to its factory default.
+                    setSelectedPaletteId(BRAND_PALETTES[0].id);
                     setCustomColors({});
+                    setIncludeMetaComments(true);
+                    setIncludeBadge(true);
                     setCustomThemeName("");
-                    setRecentPaletteIds([]);
+                    setInputCode(APPLY_TAB_DEFAULT);
                     setUserPalettes([]);
-                    setTypography(DEFAULT_TYPOGRAPHY);
+                    setRecentPaletteIds([]);
                     setLook("classic");
                     setFontSize("");
+                    setTypography(DEFAULT_TYPOGRAPHY);
+                    setRendererTarget("");
+                    setPreviewMode("themed");
+                    setLastExampleType({});
+                    setLastSelectedExampleId("");
+                    setMyThemeSlots([createDefaultMyThemeSlot(1, BRAND_PALETTES[0].colors)]);
+                    setActiveMyThemeSlotId("my-theme-1");
+                    // Clear hint dismissals so all syntax tips reappear.
+                    clearAllDismissals();
                     setHintResetToken((t) => t + 1);
                     setToast("All settings cleared.");
                     setShowSettingsMenu(false);
