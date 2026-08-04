@@ -42,6 +42,7 @@ import { EXAMPLE_CATALOG } from "@/data/example-library";
 const C4_SNAPSHOT_FIXTURES = [
   { id: "c4-container-learning-platform", keyword: "C4Container" },
   { id: "c4-component-api-server", keyword: "C4Component" },
+  { id: "c4-dynamic-user-login", keyword: "C4Dynamic" },
 ] as const;
 
 // ---------------------------------------------------------------------------

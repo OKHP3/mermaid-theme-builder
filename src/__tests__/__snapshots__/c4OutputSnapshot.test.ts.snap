@@ -191,3 +191,75 @@ C4Container
     Rel(api, payment, "Processes payments via", "HTTPS")
     Rel(spa, cdn, "Loads assets from", "HTTPS")"
 `;
+
+exports[`C4 snapshot — c4-dynamic-user-login (C4Dynamic) > palette "AskJamie" (id: askjamie) matches snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"personBkg": "#fdfbf7", "personBorder": "#2d6f7e", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "lineColor": "#2d6f7e", "titleColor": "#2d6f7e", "primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "clusterBkg": "#e8f4f7", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+C4Dynamic
+    title Dynamic Diagram — User Login Across Containers
+
+    Person(user, "Learner", "Authenticates to access courses")
+
+    Boundary(platform, "Learning Platform") {
+        Container(spa, "Single-Page App", "React", "Hosts the login form and session state")
+        Container(api, "API Server", "Node.js", "Validates credentials and issues session tokens")
+        ContainerDb(db, "Primary Database", "PostgreSQL", "Stores user records and active sessions")
+    }
+
+    System_Ext(idp, "Identity Provider", "Issues OAuth 2.0 tokens")
+
+    Rel(user, spa, "1. Submits login form", "HTTPS")
+    Rel(spa, api, "2. POST /auth/login", "HTTPS / JSON")
+    Rel(api, idp, "3. Redirect to SSO", "OAuth 2.0")
+    Rel(idp, api, "4. Returns auth code", "OAuth 2.0")
+    Rel(api, db, "5. Upsert user session", "SQL")
+    Rel(api, spa, "6. Issues session token", "HTTPS / JSON")
+    Rel(spa, user, "7. Redirects to dashboard", "Browser")"
+`;
+
+exports[`C4 snapshot — c4-dynamic-user-login (C4Dynamic) > palette "Glee-fully" (id: glee-fully) matches snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"personBkg": "#fffdfa", "personBorder": "#d94f63", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "lineColor": "#d94f63", "titleColor": "#d94f63", "primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "clusterBkg": "#f9f3ef", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+C4Dynamic
+    title Dynamic Diagram — User Login Across Containers
+
+    Person(user, "Learner", "Authenticates to access courses")
+
+    Boundary(platform, "Learning Platform") {
+        Container(spa, "Single-Page App", "React", "Hosts the login form and session state")
+        Container(api, "API Server", "Node.js", "Validates credentials and issues session tokens")
+        ContainerDb(db, "Primary Database", "PostgreSQL", "Stores user records and active sessions")
+    }
+
+    System_Ext(idp, "Identity Provider", "Issues OAuth 2.0 tokens")
+
+    Rel(user, spa, "1. Submits login form", "HTTPS")
+    Rel(spa, api, "2. POST /auth/login", "HTTPS / JSON")
+    Rel(api, idp, "3. Redirect to SSO", "OAuth 2.0")
+    Rel(idp, api, "4. Returns auth code", "OAuth 2.0")
+    Rel(api, db, "5. Upsert user session", "SQL")
+    Rel(api, spa, "6. Issues session token", "HTTPS / JSON")
+    Rel(spa, user, "7. Redirects to dashboard", "Browser")"
+`;
+
+exports[`C4 snapshot — c4-dynamic-user-login (C4Dynamic) > palette "OKHP3" (id: overkill-hill) matches snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"personBkg": "#111827", "personBorder": "#c46a2c", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "lineColor": "#c46a2c", "titleColor": "#c46a2c", "primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "clusterBkg": "#0d1117", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+C4Dynamic
+    title Dynamic Diagram — User Login Across Containers
+
+    Person(user, "Learner", "Authenticates to access courses")
+
+    Boundary(platform, "Learning Platform") {
+        Container(spa, "Single-Page App", "React", "Hosts the login form and session state")
+        Container(api, "API Server", "Node.js", "Validates credentials and issues session tokens")
+        ContainerDb(db, "Primary Database", "PostgreSQL", "Stores user records and active sessions")
+    }
+
+    System_Ext(idp, "Identity Provider", "Issues OAuth 2.0 tokens")
+
+    Rel(user, spa, "1. Submits login form", "HTTPS")
+    Rel(spa, api, "2. POST /auth/login", "HTTPS / JSON")
+    Rel(api, idp, "3. Redirect to SSO", "OAuth 2.0")
+    Rel(idp, api, "4. Returns auth code", "OAuth 2.0")
+    Rel(api, db, "5. Upsert user session", "SQL")
+    Rel(api, spa, "6. Issues session token", "HTTPS / JSON")
+    Rel(spa, user, "7. Redirects to dashboard", "Browser")"
+`;
