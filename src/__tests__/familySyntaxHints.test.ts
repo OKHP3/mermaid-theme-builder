@@ -13,7 +13,7 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { getFamilySyntaxHint } from "@/lib/family-syntax-hints";
+import { getFamilySyntaxHint, getAllFamilySyntaxHints } from "@/lib/family-syntax-hints";
 import type { ClassDefStatus } from "@/lib/family-syntax-hints";
 import { CLASSDEF_CAPABLE_FAMILIES } from "@/lib/theme-engine";
 import type { DiagramFamily } from "@/data/mermaid-capabilities";
@@ -221,6 +221,28 @@ describe("getFamilySyntaxHint — shape integrity for all registered hints", () 
 //    The first run after adding this block creates the snapshot file; all
 //    subsequent CI runs guard against unintentional mutations.
 // ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// 6. Count guard — catches accidental deletion of HINTS entries (Task #435)
+//
+// The snapshot tests in section 5 will NOT catch a deleted entry: if a family
+// is removed from HINTS, its snapshot test disappears from the run and Vitest
+// reports no failure. This test queries the real HINTS array via
+// getAllFamilySyntaxHints() and asserts the exact count, independently of the
+// snapshot list.  A deletion that removes both the HINTS entry and its entry
+// from ALL_HINT_FAMILIES below will still fail here.
+// ---------------------------------------------------------------------------
+
+describe("HINTS registry — count guard (Task #435)", () => {
+  it("HINTS registry has exactly 28 entries", () => {
+    const all = getAllFamilySyntaxHints();
+    expect(
+      all.length,
+      `Expected 28 HINTS entries but found ${all.length}. ` +
+        `If you intentionally added or removed a hint, update this count.`
+    ).toBe(28);
+  });
+});
 
 describe("getFamilySyntaxHint — content snapshots (all 28 registered hints)", () => {
   const ALL_HINT_FAMILIES: DiagramFamily[] = [

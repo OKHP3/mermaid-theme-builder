@@ -235,6 +235,18 @@ export function getFamilySyntaxHint(family: DiagramFamily): FamilySyntaxHint | n
   return HINT_MAP.get(family) ?? null;
 }
 
+/**
+ * Returns a shallow copy of the full HINTS registry array.
+ *
+ * Exported so tests can assert count-based guards independently of the
+ * per-family snapshot tests — if an entry is deleted from HINTS the
+ * snapshot test for that family silently disappears, but a count guard
+ * against this function will still fail.
+ */
+export function getAllFamilySyntaxHints(): FamilySyntaxHint[] {
+  return [...HINTS];
+}
+
 const STORAGE_PREFIX = "mtb.hint-dismissed.";
 
 function storageKey(family: DiagramFamily): string {
