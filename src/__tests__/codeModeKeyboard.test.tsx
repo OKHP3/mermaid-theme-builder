@@ -291,6 +291,30 @@ describe("Code mode wrapper — Enter key activates edit mode", () => {
     ).not.toBeNull();
     expect(container.querySelector("pre[aria-label='Styled code output']")).toBeNull();
   });
+
+  it("pressing Space on the <pre> does NOT activate edit mode", () => {
+    const { container } = render(createElement(CodeModePanel, { code: SAMPLE_CODE }));
+    const pre = container.querySelector("pre[aria-label='Styled code output']") as HTMLElement;
+    act(() => {
+      fireEvent.keyDown(pre, { key: " " });
+    });
+    expect(container.querySelector("pre[aria-label='Styled code output']")).not.toBeNull();
+    expect(
+      container.querySelector("textarea[aria-label='Styled code output — edit before copying']")
+    ).toBeNull();
+  });
+
+  it("pressing ArrowDown on the <pre> does NOT activate edit mode", () => {
+    const { container } = render(createElement(CodeModePanel, { code: SAMPLE_CODE }));
+    const pre = container.querySelector("pre[aria-label='Styled code output']") as HTMLElement;
+    act(() => {
+      fireEvent.keyDown(pre, { key: "ArrowDown" });
+    });
+    expect(container.querySelector("pre[aria-label='Styled code output']")).not.toBeNull();
+    expect(
+      container.querySelector("textarea[aria-label='Styled code output — edit before copying']")
+    ).toBeNull();
+  });
 });
 
 describe("Code mode wrapper — Escape key cancels edit mode", () => {
