@@ -485,24 +485,45 @@ function extractColors(html: string): string[] {
   return [...html.matchAll(/color:([^;"]+)/g)].map((m) => m[1]);
 }
 
+/**
+ * Assert that the color span at `index` in `html` equals `expectedColor`.
+ *
+ * The `tokenLabel` is embedded in the failure message so a failing test
+ * immediately says *which token* was wrong rather than just showing a raw
+ * hex code and an index.
+ *
+ * @example
+ * expectSpanColor(html, 0, INIT_HL.bracket, "%%{ opener");
+ * // On failure: "span[0] (%%{ opener): expected '#c8a870' toEqual '#8da89a'"
+ */
+function expectSpanColor(
+  html: string,
+  index: number,
+  expectedColor: string,
+  tokenLabel: string
+): void {
+  const colors = extractColors(html);
+  expect(colors[index], `span[${index}] (${tokenLabel})`).toBe(expectedColor);
+}
+
 describe("highlightInitDirectiveLine — bracket vs content assignment", () => {
   const LINE = `%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#1e3a5f"}}}%%`;
 
   it("the first color span (%%{ opener) uses INIT_HL.bracket", () => {
-    const colors = extractColors(hl(highlightInitDirectiveLine(LINE, 0)));
-    expect(colors[0]).toBe(INIT_HL.bracket);
+    const html = hl(highlightInitDirectiveLine(LINE, 0));
+    expectSpanColor(html, 0, INIT_HL.bracket, "%%{ opener");
   });
 
   it("the second color span (directive body) uses INIT_HL.content, not INIT_HL.bracket", () => {
-    const colors = extractColors(hl(highlightInitDirectiveLine(LINE, 0)));
-    expect(colors[1]).toBe(INIT_HL.content);
-    expect(colors[1]).not.toBe(INIT_HL.bracket);
+    const html = hl(highlightInitDirectiveLine(LINE, 0));
+    expectSpanColor(html, 1, INIT_HL.content, "directive body");
+    expect(extractColors(html)[1]).not.toBe(INIT_HL.bracket);
   });
 
   it("the third color span (}%% closer) uses INIT_HL.bracket, not INIT_HL.content", () => {
-    const colors = extractColors(hl(highlightInitDirectiveLine(LINE, 0)));
-    expect(colors[2]).toBe(INIT_HL.bracket);
-    expect(colors[2]).not.toBe(INIT_HL.content);
+    const html = hl(highlightInitDirectiveLine(LINE, 0));
+    expectSpanColor(html, 2, INIT_HL.bracket, "}%% closer");
+    expect(extractColors(html)[2]).not.toBe(INIT_HL.content);
   });
 
   it("exactly three color spans are emitted for a well-formed directive", () => {
@@ -515,14 +536,14 @@ describe("highlightClassDefLine — keyword vs name assignment", () => {
   const LINE = "classDef primary fill:#1e3a5f,stroke:#3b82f6";
 
   it("the first color span ('classDef' word) uses HL.keyword", () => {
-    const colors = extractColors(hl(highlightClassDefLine(LINE, 0)));
-    expect(colors[0]).toBe(HL.keyword);
+    const html = hl(highlightClassDefLine(LINE, 0));
+    expectSpanColor(html, 0, HL.keyword, "'classDef' keyword");
   });
 
   it("the second color span (class name) uses HL.name, not HL.keyword", () => {
-    const colors = extractColors(hl(highlightClassDefLine(LINE, 0)));
-    expect(colors[1]).toBe(HL.name);
-    expect(colors[1]).not.toBe(HL.keyword);
+    const html = hl(highlightClassDefLine(LINE, 0));
+    expectSpanColor(html, 1, HL.name, "class name identifier");
+    expect(extractColors(html)[1]).not.toBe(HL.keyword);
   });
 
   it("HL.keyword and HL.name are distinct so position tests are meaningful", () => {
@@ -534,13 +555,15 @@ describe("highlightCommentLine — color assignment", () => {
   const LINE = "%% This is a theme comment";
 
   it("the only color applied is COMMENT_HL.text", () => {
-    const colors = extractColors(hl(highlightCommentLine(LINE, 0)));
+    const html = hl(highlightCommentLine(LINE, 0));
+    const colors = extractColors(html);
     expect(colors).toHaveLength(1);
-    expect(colors[0]).toBe(COMMENT_HL.text);
+    expectSpanColor(html, 0, COMMENT_HL.text, "%% comment line");
   });
 
   it("COMMENT_HL.text is the color, not INIT_HL.bracket or any HL color", () => {
-    const colors = extractColors(hl(highlightCommentLine(LINE, 0)));
+    const html = hl(highlightCommentLine(LINE, 0));
+    const colors = extractColors(html);
     expect(colors[0]).not.toBe(INIT_HL.bracket);
     expect(colors[0]).not.toBe(INIT_HL.content);
     expect(colors[0]).not.toBe(HL.keyword);
@@ -562,42 +585,45 @@ describe("highlightCommentLine — color assignment", () => {
 
 describe("highlightPropsSegment — key vs value vs punct assignment", () => {
   // Input with one hex value, one non-hex value, and comma separators.
-  // fill:#1e3a5f  → key(fill) colon(:) hex(#1e3a5f)
-  // ,             → punct(,)
-  // color:bold    → key(color) colon(:) value(bold)
+  // Span order:
+  //   [0] key   — "fill"
+  //   [1] punct — ":"
+  //   [2] hex   — "#1e3a5f"
+  //   [3] punct — ","
+  //   [4] key   — "color"
+  //   [5] punct — ":"
+  //   [6] value — "bold"
   const PROPS = "fill:#1e3a5f,color:bold";
 
   it("the first color span (key token before colon) uses HL.key", () => {
-    const colors = extractColors(hl(highlightPropsSegment(PROPS, "test")));
-    expect(colors[0]).toBe(HL.key);
+    const html = hl(highlightPropsSegment(PROPS, "test"));
+    expectSpanColor(html, 0, HL.key, "key token 'fill'");
   });
 
   it("the color span for a hex value uses HL.hex, not HL.value", () => {
-    const colors = extractColors(hl(highlightPropsSegment(PROPS, "test")));
-    // Order: key(fill)[0] colon[1] hex(#1e3a5f)[2]
-    expect(colors[2]).toBe(HL.hex);
-    expect(colors[2]).not.toBe(HL.value);
+    const html = hl(highlightPropsSegment(PROPS, "test"));
+    expectSpanColor(html, 2, HL.hex, "hex value '#1e3a5f'");
+    expect(extractColors(html)[2]).not.toBe(HL.value);
   });
 
   it("the color span for a non-hex value uses HL.value, not HL.hex", () => {
-    const colors = extractColors(hl(highlightPropsSegment(PROPS, "test")));
-    // Order: key(fill)[0] colon[1] hex[2] punct(,)[3] key(color)[4] colon[5] value(bold)[6]
-    expect(colors[6]).toBe(HL.value);
-    expect(colors[6]).not.toBe(HL.hex);
+    const html = hl(highlightPropsSegment(PROPS, "test"));
+    expectSpanColor(html, 6, HL.value, "non-hex value 'bold'");
+    expect(extractColors(html)[6]).not.toBe(HL.hex);
   });
 
   it("the colon separator uses HL.punct, not HL.key or HL.value", () => {
-    const colors = extractColors(hl(highlightPropsSegment(PROPS, "test")));
-    // colon is at index 1 (after key at 0)
-    expect(colors[1]).toBe(HL.punct);
+    const html = hl(highlightPropsSegment(PROPS, "test"));
+    expectSpanColor(html, 1, HL.punct, "colon after 'fill'");
+    const colors = extractColors(html);
     expect(colors[1]).not.toBe(HL.key);
     expect(colors[1]).not.toBe(HL.value);
   });
 
   it("the comma separator between pairs uses HL.punct, not HL.key or HL.value", () => {
-    const colors = extractColors(hl(highlightPropsSegment(PROPS, "test")));
-    // comma is at index 3 (after key[0] colon[1] hex[2])
-    expect(colors[3]).toBe(HL.punct);
+    const html = hl(highlightPropsSegment(PROPS, "test"));
+    expectSpanColor(html, 3, HL.punct, "comma between pairs");
+    const colors = extractColors(html);
     expect(colors[3]).not.toBe(HL.key);
     expect(colors[3]).not.toBe(HL.hex);
   });
