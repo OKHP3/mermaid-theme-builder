@@ -34,6 +34,11 @@ describe("formatImportError", () => {
     expect(result).toBe("Bundle import failed: Expected type 'mtb-palette-bundle'.");
   });
 
+  it("passes through a generic catch-block error message unchanged", () => {
+    const result = formatImportError("Import failed: Could not read file.");
+    expect(result).toBe("Import failed: Could not read file.");
+  });
+
   it("highlights different type suffixes (object, boolean)", () => {
     for (const got of ["object", "boolean"]) {
       const node = formatImportError(`Field 'id' must be a string, got ${got}.`);

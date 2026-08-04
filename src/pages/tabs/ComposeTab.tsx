@@ -494,7 +494,9 @@ export function ComposeTab({
           }
         }
       } catch (err) {
-        onShowToast(`Import failed: ${err instanceof Error ? err.message : String(err)}`);
+        onShowToast(
+          formatImportError(`Import failed: ${err instanceof Error ? err.message : String(err)}`)
+        );
       }
     },
     [
