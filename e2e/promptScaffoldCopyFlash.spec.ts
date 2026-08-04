@@ -245,3 +245,82 @@ test.describe("PromptScaffoldModal — Path B: in-preview copy button", () => {
     });
   });
 });
+
+// ---------------------------------------------------------------------------
+// Path C — dismiss without copying preserves the "last used" badge
+// ---------------------------------------------------------------------------
+
+test.describe("PromptScaffoldModal — Path C: dismiss without copying preserves last-used badge", () => {
+  /**
+   * Open the scaffold modal with a pre-seeded scaffold format preference so
+   * the "last used" badge is already shown on first open.
+   */
+  async function openScaffoldModalWithPreference(page: Page, format: string): Promise<void> {
+    await page.addInitScript((fmt) => {
+      window.localStorage.clear();
+      window.sessionStorage.clear();
+      window.localStorage.setItem("mtb-scaffold-format", fmt);
+    }, format);
+
+    await page.goto("/");
+    await page.waitForLoadState("load");
+
+    await page.getByRole("tab", { name: "Compose", exact: true }).click();
+
+    const toggleBtn = page.getByRole("button", { name: "Export Theme", exact: true });
+    await toggleBtn.waitFor({ timeout: 8_000 });
+    await toggleBtn.click();
+
+    const trigger = page.getByRole("button", { name: "Generate Prompt Pattern", exact: true });
+    await trigger.waitFor({ timeout: 4_000 });
+    await trigger.click();
+
+    await page.waitForSelector('[role="dialog"]', { timeout: 8_000 });
+  }
+
+  test("'last used' badge is visible on the Format B card when formatB is pre-seeded", async ({
+    page,
+  }) => {
+    await openScaffoldModalWithPreference(page, "formatB");
+
+    // The Format B card should carry the "last used" pill.
+    await expect(page.locator('[role="dialog"]').getByText("last used")).toBeVisible({
+      timeout: 4_000,
+    });
+  });
+
+  test("dismissing with the X button (no copy) keeps the badge when modal is reopened", async ({
+    page,
+  }) => {
+    await openScaffoldModalWithPreference(page, "formatB");
+
+    // Confirm badge is visible before dismissal.
+    const dialog = page.locator('[role="dialog"]');
+    await expect(dialog.getByText("last used")).toBeVisible({ timeout: 4_000 });
+
+    // Click the X button without copying.
+    await page.getByRole("button", { name: "Close" }).click();
+    await expect(dialog).toBeHidden({ timeout: 3_000 });
+
+    // Re-open the modal.
+    await page.getByRole("button", { name: "Generate Prompt Pattern", exact: true }).click();
+    await page.waitForSelector('[role="dialog"]', { timeout: 8_000 });
+
+    // The "last used" badge must still be present — dismiss must not clear the preference.
+    await expect(page.locator('[role="dialog"]').getByText("last used")).toBeVisible({
+      timeout: 4_000,
+    });
+  });
+
+  test("localStorage still holds 'formatB' after dismiss without copying", async ({ page }) => {
+    await openScaffoldModalWithPreference(page, "formatB");
+
+    // Dismiss without copying.
+    await page.getByRole("button", { name: "Close" }).click();
+    await expect(page.locator('[role="dialog"]')).toBeHidden({ timeout: 3_000 });
+
+    // Verify localStorage was not mutated by the dismiss action.
+    const stored = await page.evaluate(() => localStorage.getItem("mtb-scaffold-format"));
+    expect(stored).toBe("formatB");
+  });
+});
