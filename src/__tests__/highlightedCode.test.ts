@@ -22,6 +22,16 @@ import {
   highlightMermaidCodeLine,
   highlightMermaidCodeBlock,
 } from "@/components/HighlightedCode";
+import {
+  expectKeywordColor,
+  expectNoKeywordColor,
+  expectInitBracketColor,
+  expectNoInitBracketColor,
+  expectInitContentColor,
+  expectNoInitContentColor,
+  expectCommentColor,
+  expectNoCommentColor,
+} from "./helpers/hlAssert";
 
 /** Render a ReactNode to HTML string for assertion. */
 function hl(node: import("react").ReactNode): string {
@@ -58,7 +68,7 @@ describe("highlightInitDirectiveLine — bracket color on %%{", () => {
   it("applies bracket color to the %%{ opening delimiter", () => {
     const line = `%%{init: {"theme": "base", "themeVariables": {}}}%%`;
     const html = hl(highlightInitDirectiveLine(line, 0));
-    expect(html).toContain(`color:${INIT_HL.bracket}`);
+    expectInitBracketColor(html);
     expect(html).toContain("%%{");
   });
 
@@ -71,7 +81,7 @@ describe("highlightInitDirectiveLine — bracket color on %%{", () => {
   it("applies content color to the directive body", () => {
     const line = `%%{init: {"theme": "base"}}%%`;
     const html = hl(highlightInitDirectiveLine(line, 0));
-    expect(html).toContain(`color:${INIT_HL.content}`);
+    expectInitContentColor(html);
     expect(html).toContain(`init: {&quot;theme&quot;: &quot;base&quot;}`);
   });
 });
@@ -97,7 +107,7 @@ describe("highlightInitDirectiveLine — bracket/content split", () => {
   it("does not bleed classDef keyword color into init directive", () => {
     const line = `%%{init: {"theme": "base"}}%%`;
     const html = hl(highlightInitDirectiveLine(line, 0));
-    expect(html).not.toContain(`color:${HL.keyword}`);
+    expectNoKeywordColor(html);
   });
 });
 
@@ -106,7 +116,7 @@ describe("highlightInitDirectiveLine — malformed input fallback", () => {
     const line = "%%{init: {incomplete";
     const html = hl(highlightInitDirectiveLine(line, 0));
     // Fallback renders the whole line in bracket color
-    expect(html).toContain(`color:${INIT_HL.bracket}`);
+    expectInitBracketColor(html);
     expect(html).toContain("%%{init");
   });
 
@@ -128,12 +138,12 @@ describe("highlightInitDirectiveLine — realistic themeEngine output", () => {
 
   it("applies the bracket color at least once", () => {
     const html = hl(highlightInitDirectiveLine(realLine, 0));
-    expect(html).toContain(`color:${INIT_HL.bracket}`);
+    expectInitBracketColor(html);
   });
 
   it("applies the content color at least once", () => {
     const html = hl(highlightInitDirectiveLine(realLine, 0));
-    expect(html).toContain(`color:${INIT_HL.content}`);
+    expectInitContentColor(html);
   });
 
   it("contains the init keyword text in the output", () => {
@@ -155,13 +165,13 @@ describe("highlightMermaidCodeLine — routes %%{...}%% lines to init highlighte
   it("applies init bracket color to lines starting with %%{", () => {
     const line = `%%{init: {"theme": "base"}}%%`;
     const html = hl(highlightMermaidCodeLine(line, 0));
-    expect(html).toContain(`color:${INIT_HL.bracket}`);
+    expectInitBracketColor(html);
   });
 
   it("applies init content color to lines starting with %%{", () => {
     const line = `%%{init: {"theme": "base"}}%%`;
     const html = hl(highlightMermaidCodeLine(line, 0));
-    expect(html).toContain(`color:${INIT_HL.content}`);
+    expectInitContentColor(html);
   });
 });
 
@@ -169,14 +179,14 @@ describe("highlightMermaidCodeLine — routes classDef lines to classDef highlig
   it("applies classDef rust-orange to keyword on classDef lines", () => {
     const line = "classDef primary fill:#1e3a5f,stroke:#ffffff";
     const html = hl(highlightMermaidCodeLine(line, 0));
-    expect(html).toContain(`color:${HL.keyword}`);
+    expectKeywordColor(html);
     expect(html).toContain("classDef");
   });
 
   it("does NOT apply init bracket color to classDef lines", () => {
     const line = "classDef primary fill:#1e3a5f";
     const html = hl(highlightMermaidCodeLine(line, 0));
-    expect(html).not.toContain(`color:${INIT_HL.bracket}`);
+    expectNoInitBracketColor(html);
   });
 });
 
@@ -185,8 +195,8 @@ describe("highlightMermaidCodeLine — plain diagram lines", () => {
     const line = "flowchart TD";
     const html = hl(highlightMermaidCodeLine(line, 0));
     expect(html).toContain("flowchart TD");
-    expect(html).not.toContain(`color:${INIT_HL.bracket}`);
-    expect(html).not.toContain(`color:${HL.keyword}`);
+    expectNoInitBracketColor(html);
+    expectNoKeywordColor(html);
   });
 
   it("renders node definition lines as plain text", () => {
@@ -203,7 +213,7 @@ describe("highlightMermaidCodeLine — plain diagram lines", () => {
     // 'classDefSomething' without space after 'classDef' is not a directive
     const line = "classDefSomething fill:#ff0000";
     const html = hl(highlightMermaidCodeLine(line, 0));
-    expect(html).not.toContain(`color:${HL.keyword}`);
+    expectNoKeywordColor(html);
   });
 });
 
@@ -212,7 +222,7 @@ describe("highlightMermaidCodeLine — classDef with tab separator is still rout
     const line = "classDef\tprimary fill:#1e3a5f";
     const html = hl(highlightMermaidCodeLine(line, 0));
     // /^classDef\s/ matches tab, so it is routed to classDef highlighter
-    expect(html).toContain(`color:${HL.keyword}`);
+    expectKeywordColor(html);
   });
 });
 
@@ -234,12 +244,12 @@ describe("highlightMermaidCodeBlock — multi-line block", () => {
 
   it("applies init bracket color for the %%{init}%% line", () => {
     const html = hl(highlightMermaidCodeBlock(block));
-    expect(html).toContain(`color:${INIT_HL.bracket}`);
+    expectInitBracketColor(html);
   });
 
   it("applies classDef rust-orange for the classDef line", () => {
     const html = hl(highlightMermaidCodeBlock(block));
-    expect(html).toContain(`color:${HL.keyword}`);
+    expectKeywordColor(html);
   });
 
   it("preserves plain diagram lines in the output", () => {
@@ -270,7 +280,7 @@ describe("highlightMermaidCodeBlock — edge cases", () => {
   it("handles a block of only classDef lines", () => {
     const block = "classDef a fill:#111\nclassDef b fill:#222";
     const html = hl(highlightMermaidCodeBlock(block));
-    expect(html).toContain(`color:${HL.keyword}`);
+    expectKeywordColor(html);
     // Two classDef keyword spans
     const kwMatches = (html.match(new RegExp(`color:${HL.keyword}`, "g")) ?? []).length;
     expect(kwMatches).toBe(2);
@@ -279,7 +289,7 @@ describe("highlightMermaidCodeBlock — edge cases", () => {
   it("handles a block of only init directive lines", () => {
     const block = `%%{init: {"theme": "base"}}%%`;
     const html = hl(highlightMermaidCodeBlock(block));
-    expect(html).toContain(`color:${INIT_HL.bracket}`);
+    expectInitBracketColor(html);
   });
 
   it("handles mixed init + classDef + plain lines in correct order", () => {
@@ -290,8 +300,8 @@ describe("highlightMermaidCodeBlock — edge cases", () => {
       "classDef highlight fill:#ff0",
     ].join("\n");
     const html = hl(highlightMermaidCodeBlock(block));
-    expect(html).toContain(`color:${INIT_HL.bracket}`);
-    expect(html).toContain(`color:${HL.keyword}`);
+    expectInitBracketColor(html);
+    expectKeywordColor(html);
     // renderToString HTML-escapes > as &gt;
     expect(html).toContain("Alice-&gt;&gt;Bob");
   });
@@ -326,22 +336,22 @@ describe("COMMENT_HL constants", () => {
 describe("highlightCommentLine — applies comment color", () => {
   it("renders the comment color on a bare %% line", () => {
     const html = hl(highlightCommentLine("%% section label", 0));
-    expect(html).toContain(`color:${COMMENT_HL.text}`);
+    expectCommentColor(html);
   });
 
   it("renders the comment color when the line has leading %% with no space", () => {
     const html = hl(highlightCommentLine("%%no-space-comment", 0));
-    expect(html).toContain(`color:${COMMENT_HL.text}`);
+    expectCommentColor(html);
   });
 
   it("does not apply init bracket color to comment lines", () => {
     const html = hl(highlightCommentLine("%% authored by Jamie", 0));
-    expect(html).not.toContain(`color:${INIT_HL.bracket}`);
+    expectNoInitBracketColor(html);
   });
 
   it("does not apply classDef rust-orange to comment lines", () => {
     const html = hl(highlightCommentLine("%% metadata", 0));
-    expect(html).not.toContain(`color:${HL.keyword}`);
+    expectNoKeywordColor(html);
   });
 });
 
@@ -361,7 +371,7 @@ describe("highlightCommentLine — text preservation", () => {
   it("preserves an empty-body comment (%% only)", () => {
     const html = hl(highlightCommentLine("%%", 0));
     expect(html).toContain("%%");
-    expect(html).toContain(`color:${COMMENT_HL.text}`);
+    expectCommentColor(html);
   });
 
   it("renders without throwing on an empty string", () => {
@@ -376,7 +386,7 @@ describe("highlightCommentLine — text preservation", () => {
 describe("highlightMermaidCodeLine — routes %% comment lines to comment highlighter", () => {
   it("applies comment color to a %% comment line", () => {
     const html = hl(highlightMermaidCodeLine("%% section label", 0));
-    expect(html).toContain(`color:${COMMENT_HL.text}`);
+    expectCommentColor(html);
   });
 
   it("applies italic style to a %% comment line", () => {
@@ -391,7 +401,7 @@ describe("highlightMermaidCodeLine — routes %% comment lines to comment highli
 
   it("routes %% with no following space as a comment", () => {
     const html = hl(highlightMermaidCodeLine("%%inline-comment", 0));
-    expect(html).toContain(`color:${COMMENT_HL.text}`);
+    expectCommentColor(html);
   });
 });
 
@@ -399,25 +409,25 @@ describe("highlightMermaidCodeLine — does NOT route %%{ lines to comment highl
   it("does not apply comment color to a %%{init}%% line", () => {
     const line = `%%{init: {"theme": "base"}}%%`;
     const html = hl(highlightMermaidCodeLine(line, 0));
-    expect(html).not.toContain(`color:${COMMENT_HL.text}`);
+    expectNoCommentColor(html);
   });
 
   it("still applies init bracket color to a %%{init}%% line", () => {
     const line = `%%{init: {"theme": "base"}}%%`;
     const html = hl(highlightMermaidCodeLine(line, 0));
-    expect(html).toContain(`color:${INIT_HL.bracket}`);
+    expectInitBracketColor(html);
   });
 });
 
 describe("highlightMermaidCodeLine — comment lines do not bleed into other routes", () => {
   it("plain diagram lines are not treated as comments", () => {
     const html = hl(highlightMermaidCodeLine("flowchart TD", 0));
-    expect(html).not.toContain(`color:${COMMENT_HL.text}`);
+    expectNoCommentColor(html);
   });
 
   it("classDef lines are not treated as comments", () => {
     const html = hl(highlightMermaidCodeLine("classDef primary fill:#1e3a5f", 0));
-    expect(html).not.toContain(`color:${COMMENT_HL.text}`);
+    expectNoCommentColor(html);
   });
 });
 
@@ -440,19 +450,19 @@ describe("highlightMermaidCodeBlock — comment lines in a mixed block", () => {
 
   it("applies comment color for the %% comment line", () => {
     const html = hl(highlightMermaidCodeBlock(block));
-    expect(html).toContain(`color:${COMMENT_HL.text}`);
+    expectCommentColor(html);
   });
 
   it("preserves init bracket color alongside comment color in the same block", () => {
     const html = hl(highlightMermaidCodeBlock(block));
-    expect(html).toContain(`color:${INIT_HL.bracket}`);
-    expect(html).toContain(`color:${COMMENT_HL.text}`);
+    expectInitBracketColor(html);
+    expectCommentColor(html);
   });
 
   it("preserves classDef rust-orange alongside comment color in the same block", () => {
     const html = hl(highlightMermaidCodeBlock(block));
-    expect(html).toContain(`color:${HL.keyword}`);
-    expect(html).toContain(`color:${COMMENT_HL.text}`);
+    expectKeywordColor(html);
+    expectCommentColor(html);
   });
 
   it("preserves the comment text in the block output", () => {
