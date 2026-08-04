@@ -465,4 +465,70 @@ describe("ApplyTab — code-editor override: auto-clear is scoped to the active 
       container.querySelector("textarea[aria-label='Styled code output — edit before copying']")
     ).toBeNull();
   });
+
+  it("look change immediately clears only the active diagram's override; other overrides are invalidated lazily on next visit", async () => {
+    // Render with look='classic'. The look value feeds into exportCode via
+    // generateThemedCode, so changing it produces a different exportCode for
+    // ALL diagrams — the hook must only clear the active diagram's override
+    // immediately, leaving the others to be evicted lazily on their next visit.
+    const { container, rerender } = render(createElement(ApplyTab, makeProps(MULTI_INPUT)));
+
+    // 1. Enter edit mode for diagram 0 — sets override[0] = exportCode_0.
+    await act(async () => {
+      fireEvent.click(screen.getByTitle("Edit the styled code before copying"));
+    });
+    expect(
+      container.querySelector("textarea[aria-label='Styled code output — edit before copying']")
+    ).not.toBeNull();
+
+    // 2. Switch to diagram 1. First visit: no previous exportCode for idx 1
+    //    → auto-clear does NOT fire → override[0] is preserved for now.
+    await act(async () => {
+      fireEvent.click(screen.getByLabelText("Next diagram"));
+    });
+    // Diagram 1 has no override yet → textarea is absent.
+    expect(
+      container.querySelector("textarea[aria-label='Styled code output — edit before copying']")
+    ).toBeNull();
+
+    // 3. Enter edit mode for diagram 1 — sets override[1] = exportCode_1.
+    await act(async () => {
+      fireEvent.click(screen.getByTitle("Edit the styled code before copying"));
+    });
+    expect(
+      container.querySelector("textarea[aria-label='Styled code output — edit before copying']")
+    ).not.toBeNull();
+
+    // 4. Change look from 'classic' to 'neo' while diagram 1 is active.
+    //    A different look produces different exportCode for ALL diagrams, but
+    //    the hook compares only the active diagram (idx 1) against its previously
+    //    recorded exportCode → override[1] is cleared immediately.
+    //    Override[0] still sits in the Map; not yet evicted.
+    act(() => {
+      rerender(
+        createElement(ApplyTab, {
+          ...makeProps(MULTI_INPUT),
+          look: "neo" as const,
+        })
+      );
+    });
+
+    // Diagram 1 (active): override immediately cleared → textarea is gone.
+    expect(
+      container.querySelector("textarea[aria-label='Styled code output — edit before copying']")
+    ).toBeNull();
+
+    // 5. Switch back to diagram 0. The hook now runs for idx 0: it compares
+    //    the new exportCode (neo look) against the previously stored value
+    //    (classic look) and detects the mismatch → override[0] is cleared at
+    //    this point. The stale edit from the old look is correctly discarded.
+    await act(async () => {
+      fireEvent.click(screen.getByLabelText("Previous diagram"));
+    });
+
+    // Diagram 0's override is also cleared on visit.
+    expect(
+      container.querySelector("textarea[aria-label='Styled code output — edit before copying']")
+    ).toBeNull();
+  });
 });
