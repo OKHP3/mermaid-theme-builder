@@ -228,58 +228,63 @@ describe("getFamilySyntaxHint — shape integrity for all registered hints", () 
 // The snapshot tests in section 5 will NOT catch a deleted entry: if a family
 // is removed from HINTS, its snapshot test disappears from the run and Vitest
 // reports no failure. This test queries the real HINTS array via
-// getAllFamilySyntaxHints() and asserts the exact count, independently of the
-// snapshot list.  A deletion that removes both the HINTS entry and its entry
-// from ALL_HINT_FAMILIES below will still fail here.
+// getAllFamilySyntaxHints() and asserts the exact count against
+// ALL_HINT_FAMILIES.length (the canonical snapshot list) — no magic number.
+// A deletion that removes a HINTS entry without removing its ALL_HINT_FAMILIES
+// entry will still fail here; the converse is caught by the snapshot tests.
 // ---------------------------------------------------------------------------
 
+// Canonical list of every registered hint family.  Adding a new diagram
+// family requires updating this array AND adding an entry to HINTS in
+// family-syntax-hints.ts — both guards enforce the pairing.
+const ALL_HINT_FAMILIES: DiagramFamily[] = [
+  // Original 13 — already covered by structural tests above
+  "flowchart",
+  "gantt",
+  "pie",
+  "mindmap",
+  "erDiagram",
+  "classDiagram",
+  "stateDiagram",
+  "sequenceDiagram",
+  "block",
+  "timeline",
+  "xychart",
+  "quadrantChart",
+  "sankey",
+  // Additional 15 added in Task #271
+  "journey",
+  "gitGraph",
+  "requirementDiagram",
+  "c4Diagram",
+  "architectureBeta",
+  "packet",
+  "kanban",
+  "zenuml",
+  "radar",
+  "treemap",
+  "venn",
+  "ishikawa",
+  "wardley",
+  "treeView",
+  "eventModeling",
+];
+
 describe("HINTS registry — count guard (Task #435)", () => {
-  it("HINTS registry has exactly 28 entries", () => {
+  it("HINTS registry length matches ALL_HINT_FAMILIES", () => {
     const all = getAllFamilySyntaxHints();
     expect(
       all.length,
-      `Expected 28 HINTS entries but found ${all.length}. ` +
-        `If you intentionally added or removed a hint, update this count.`
-    ).toBe(28);
+      `getAllFamilySyntaxHints() returned ${all.length} entries but ALL_HINT_FAMILIES has ` +
+        `${ALL_HINT_FAMILIES.length}. Add the new family to ALL_HINT_FAMILIES (or remove ` +
+        `it from HINTS) to keep the two lists in sync.`
+    ).toBe(ALL_HINT_FAMILIES.length);
   });
 });
 
-describe("getFamilySyntaxHint — content snapshots (all 28 registered hints)", () => {
-  const ALL_HINT_FAMILIES: DiagramFamily[] = [
-    // Original 13 — already covered by structural tests above
-    "flowchart",
-    "gantt",
-    "pie",
-    "mindmap",
-    "erDiagram",
-    "classDiagram",
-    "stateDiagram",
-    "sequenceDiagram",
-    "block",
-    "timeline",
-    "xychart",
-    "quadrantChart",
-    "sankey",
-    // Additional 15 added in Task #271
-    "journey",
-    "gitGraph",
-    "requirementDiagram",
-    "c4Diagram",
-    "architectureBeta",
-    "packet",
-    "kanban",
-    "zenuml",
-    "radar",
-    "treemap",
-    "venn",
-    "ishikawa",
-    "wardley",
-    "treeView",
-    "eventModeling",
-  ];
-
-  it("ALL_HINT_FAMILIES list has exactly 28 entries", () => {
-    expect(ALL_HINT_FAMILIES).toHaveLength(28);
+describe(`getFamilySyntaxHint — content snapshots (all ${ALL_HINT_FAMILIES.length} registered hints)`, () => {
+  it("ALL_HINT_FAMILIES list length matches HINTS registry", () => {
+    expect(ALL_HINT_FAMILIES).toHaveLength(getAllFamilySyntaxHints().length);
   });
 
   for (const family of ALL_HINT_FAMILIES) {
