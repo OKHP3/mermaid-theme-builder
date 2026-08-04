@@ -349,4 +349,63 @@ describe("ClassBrowser — All / Used preview panel toggle", () => {
     expect(container.querySelector('[data-preview-toggle="all"]')).toBeNull();
     expect(container.querySelector('[data-preview-toggle="used"]')).toBeNull();
   });
+
+  it("clicking 'All' saves the preference — it is restored when the preview is reopened", () => {
+    const { container } = renderWithUsed();
+    openPreview(container);
+
+    // Switch to All mode — saveStoredPreviewMode("all") is called.
+    act(() => {
+      fireEvent.click(screen.getByTitle("Show all classDefs"));
+    });
+
+    // Close the preview.
+    act(() => {
+      fireEvent.click(screen.getByLabelText("Close preview"));
+    });
+    expect(container.querySelector("pre")).toBeNull();
+
+    // Reopen — loadStoredPreviewMode() should restore "all".
+    act(() => {
+      fireEvent.click(screen.getByLabelText("Preview all classDefs"));
+    });
+
+    const reopenedPre = container.querySelector("pre")!;
+    // "All" mode: both primary and secondary appear in the pre.
+    expect(reopenedPre.textContent).toContain("primary");
+    expect(reopenedPre.textContent).toContain("secondary");
+  });
+
+  it("clicking 'Used' saves the preference — it is restored when the preview is reopened", () => {
+    // Pre-seed localStorage with "all" so the initial open lands in "all" mode
+    // (not the smart-default "used" path). Switching to "used" then explicitly
+    // saves the "used" preference, which must survive the close/reopen cycle.
+    localStorage.setItem("mtb.classBrowser.previewMode", "all");
+
+    const { container } = renderWithUsed();
+    openPreview(container); // restores stored "all" → secondary visible
+
+    const initialPre = container.querySelector("pre")!;
+    expect(initialPre.textContent).toContain("secondary"); // confirmed: in "all" mode
+
+    // Switch to Used mode — saveStoredPreviewMode("used") is called.
+    act(() => {
+      fireEvent.click(container.querySelector<HTMLButtonElement>('[data-preview-toggle="used"]')!);
+    });
+
+    // Close the preview.
+    act(() => {
+      fireEvent.click(screen.getByLabelText("Close preview"));
+    });
+
+    // Reopen — loadStoredPreviewMode() should restore "used".
+    act(() => {
+      fireEvent.click(screen.getByLabelText("Preview all classDefs"));
+    });
+
+    const reopenedPre = container.querySelector("pre")!;
+    // "Used" mode: only primary appears; secondary is excluded.
+    expect(reopenedPre.textContent).toContain("primary");
+    expect(reopenedPre.textContent).not.toContain("secondary");
+  });
 });
