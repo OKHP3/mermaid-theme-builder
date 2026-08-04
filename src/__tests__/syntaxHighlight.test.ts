@@ -33,6 +33,7 @@ import {
   highlightMermaidCodeLine,
   highlightMermaidCodeBlock,
 } from "@/lib/syntax-highlight";
+import { countKeywordColorOccurrences, countInitBracketColorOccurrences } from "./helpers/hlAssert";
 
 /** Render a ReactNode to an HTML string for assertion. */
 function hl(node: import("react").ReactNode): string {
@@ -224,7 +225,7 @@ describe("highlightClassDefBlock — multi-line block", () => {
 
   it("applies HL.keyword color for both classDef lines", () => {
     const html = hl(highlightClassDefBlock(block));
-    const count = (html.match(new RegExp(`color:${HL.keyword}`, "g")) ?? []).length;
+    const count = countKeywordColorOccurrences(html);
     expect(count).toBe(2);
   });
 
@@ -252,7 +253,7 @@ describe("highlightInitDirectiveLine — well-formed directive", () => {
 
   it("applies INIT_HL.bracket to %%{ and }%%", () => {
     const html = hl(highlightInitDirectiveLine(line, 0));
-    const count = (html.match(new RegExp(`color:${INIT_HL.bracket}`, "g")) ?? []).length;
+    const count = countInitBracketColorOccurrences(html);
     expect(count).toBe(2);
   });
 
