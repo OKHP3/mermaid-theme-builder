@@ -149,6 +149,14 @@ describe("Settings menu — Reset all syntax tips", () => {
     fireEvent.click(screen.getByText("Reset all syntax tips"));
     expect(getMenu()).toBeNull();
   });
+
+  it("does not clear the ClassBrowser preview-mode preference (PREVIEW_MODE_KEY survives)", () => {
+    localStorage.setItem(PREVIEW_MODE_KEY, "used");
+    render(createElement(App, null));
+    openSettingsMenu();
+    fireEvent.click(screen.getByText("Reset all syntax tips"));
+    expect(localStorage.getItem(PREVIEW_MODE_KEY)).toBe("used");
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -227,6 +235,15 @@ describe("Settings menu — Reset all palette customizations (confirm flow)", ()
     fireEvent.click(screen.getByText("Cancel"));
     expect(screen.queryByRole("status")).toBeNull();
   });
+
+  it("does not clear the ClassBrowser preview-mode preference after Confirm (PREVIEW_MODE_KEY survives)", () => {
+    localStorage.setItem(PREVIEW_MODE_KEY, "used");
+    render(createElement(App, null));
+    openSettingsMenu();
+    fireEvent.click(screen.getByText("Reset all palette customizations"));
+    fireEvent.click(screen.getByText("Confirm"));
+    expect(localStorage.getItem(PREVIEW_MODE_KEY)).toBe("used");
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -260,6 +277,14 @@ describe("Settings menu — Clear recent palette history", () => {
       const saved = getPersistedState();
       expect(saved.recentPaletteIds).toEqual([]);
     });
+  });
+
+  it("does not clear the ClassBrowser preview-mode preference (PREVIEW_MODE_KEY survives)", () => {
+    localStorage.setItem(PREVIEW_MODE_KEY, "used");
+    render(createElement(App, null));
+    openSettingsMenu();
+    fireEvent.click(screen.getByText("Clear recent palette history"));
+    expect(localStorage.getItem(PREVIEW_MODE_KEY)).toBe("used");
   });
 });
 
