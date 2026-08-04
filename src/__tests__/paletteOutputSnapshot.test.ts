@@ -336,3 +336,305 @@ describe("generateThemedCode — ER diagram body is preserved", () => {
     });
   }
 });
+
+// ===========================================================================
+// GANTT FAMILY
+// ===========================================================================
+
+/**
+ * Minimal gantt diagram — exercises the gantt family overlay
+ * (taskBkgColor, taskTextColor, gridColor, activeTaskBorderColor, etc.).
+ */
+const GANTT_DIAGRAM =
+  "gantt\n  title Project Plan\n  dateFormat YYYY-MM-DD\n  section Phase 1\n  Design :a1, 2024-01-01, 7d\n  section Phase 2\n  Build :a2, after a1, 14d";
+
+// ---------------------------------------------------------------------------
+// 13. Snapshot per palette — BRAND_PALETTES × GANTT_DIAGRAM
+// ---------------------------------------------------------------------------
+
+describe("generateThemedCode snapshots — BRAND_PALETTES × GANTT_DIAGRAM", () => {
+  for (const palette of BRAND_PALETTES) {
+    it(`palette "${palette.name}" (id: ${palette.id}) gantt snapshot`, () => {
+      const output = generateThemedCode(GANTT_DIAGRAM, baseOptions(palette, "gantt"));
+      expect(output).toMatchSnapshot();
+    });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// 14. Cross-palette uniqueness — gantt outputs are distinct
+// ---------------------------------------------------------------------------
+
+describe("generateThemedCode — each BRAND_PALETTE produces a distinct gantt output", () => {
+  it("all brand palette gantt outputs are unique", () => {
+    const outputs = BRAND_PALETTES.map((palette) =>
+      generateThemedCode(GANTT_DIAGRAM, baseOptions(palette, "gantt"))
+    );
+
+    for (let i = 0; i < outputs.length; i++) {
+      for (let j = i + 1; j < outputs.length; j++) {
+        expect(
+          outputs[i],
+          `Gantt: palette "${BRAND_PALETTES[i].name}" and "${BRAND_PALETTES[j].name}" produced identical output`
+        ).not.toBe(outputs[j]);
+      }
+    }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 15. Structural invariants — gantt family overlay variables are populated
+//     from the correct palette color keys
+// ---------------------------------------------------------------------------
+
+describe("generateThemedCode — gantt overlay variables resolve from palette", () => {
+  for (const palette of BRAND_PALETTES) {
+    it(`palette "${palette.name}" gantt output contains taskBkgColor = primaryColor`, () => {
+      const output = generateThemedCode(GANTT_DIAGRAM, baseOptions(palette, "gantt"));
+      const primary = paletteColor(palette, "primaryColor");
+      expect(output).toContain(`"taskBkgColor": "${primary}"`);
+    });
+
+    it(`palette "${palette.name}" gantt output contains gridColor = lineColor`, () => {
+      const output = generateThemedCode(GANTT_DIAGRAM, baseOptions(palette, "gantt"));
+      const line = paletteColor(palette, "lineColor");
+      expect(output).toContain(`"gridColor": "${line}"`);
+    });
+
+    it(`palette "${palette.name}" gantt output contains activeTaskBorderColor = primaryBorderColor`, () => {
+      const output = generateThemedCode(GANTT_DIAGRAM, baseOptions(palette, "gantt"));
+      const border = paletteColor(palette, "primaryBorderColor");
+      expect(output).toContain(`"activeTaskBorderColor": "${border}"`);
+    });
+
+    it(`palette "${palette.name}" gantt output does not contain another palette's primaryColor`, () => {
+      const output = generateThemedCode(GANTT_DIAGRAM, baseOptions(palette, "gantt"));
+      const ownPrimary = paletteColor(palette, "primaryColor");
+      for (const other of BRAND_PALETTES) {
+        if (other.id === palette.id) continue;
+        const otherPrimary = paletteColor(other, "primaryColor");
+        if (otherPrimary === ownPrimary) continue;
+        expect(
+          output,
+          `Gantt: palette "${palette.name}" contains primaryColor from "${other.name}" (${otherPrimary})`
+        ).not.toContain(otherPrimary);
+      }
+    });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// 16. Diagram body integrity — gantt diagram body is preserved
+// ---------------------------------------------------------------------------
+
+describe("generateThemedCode — gantt diagram body is preserved", () => {
+  for (const palette of BRAND_PALETTES) {
+    it(`palette "${palette.name}" preserves the gantt diagram body`, () => {
+      const output = generateThemedCode(GANTT_DIAGRAM, baseOptions(palette, "gantt"));
+      expect(output).toContain("gantt");
+      expect(output).toContain("title Project Plan");
+      expect(output).toContain("Design :a1, 2024-01-01, 7d");
+    });
+  }
+});
+
+// ===========================================================================
+// PIE FAMILY
+// ===========================================================================
+
+/**
+ * Minimal pie chart — exercises the pie family overlay
+ * (pie1, pie2, pie3, pieTitleTextColor, pieSectionTextColor, etc.).
+ */
+const PIE_DIAGRAM = 'pie title Distribution\n  "Alpha" : 40\n  "Beta" : 35\n  "Gamma" : 25';
+
+// ---------------------------------------------------------------------------
+// 17. Snapshot per palette — BRAND_PALETTES × PIE_DIAGRAM
+// ---------------------------------------------------------------------------
+
+describe("generateThemedCode snapshots — BRAND_PALETTES × PIE_DIAGRAM", () => {
+  for (const palette of BRAND_PALETTES) {
+    it(`palette "${palette.name}" (id: ${palette.id}) pie snapshot`, () => {
+      const output = generateThemedCode(PIE_DIAGRAM, baseOptions(palette, "pie"));
+      expect(output).toMatchSnapshot();
+    });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// 18. Cross-palette uniqueness — pie outputs are distinct
+// ---------------------------------------------------------------------------
+
+describe("generateThemedCode — each BRAND_PALETTE produces a distinct pie output", () => {
+  it("all brand palette pie outputs are unique", () => {
+    const outputs = BRAND_PALETTES.map((palette) =>
+      generateThemedCode(PIE_DIAGRAM, baseOptions(palette, "pie"))
+    );
+
+    for (let i = 0; i < outputs.length; i++) {
+      for (let j = i + 1; j < outputs.length; j++) {
+        expect(
+          outputs[i],
+          `Pie: palette "${BRAND_PALETTES[i].name}" and "${BRAND_PALETTES[j].name}" produced identical output`
+        ).not.toBe(outputs[j]);
+      }
+    }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 19. Structural invariants — pie family overlay variables are populated
+//     from the correct palette color keys
+// ---------------------------------------------------------------------------
+
+describe("generateThemedCode — pie overlay variables resolve from palette", () => {
+  for (const palette of BRAND_PALETTES) {
+    it(`palette "${palette.name}" pie output contains pie1 = primaryColor`, () => {
+      const output = generateThemedCode(PIE_DIAGRAM, baseOptions(palette, "pie"));
+      const primary = paletteColor(palette, "primaryColor");
+      expect(output).toContain(`"pie1": "${primary}"`);
+    });
+
+    it(`palette "${palette.name}" pie output contains pie2 = secondaryColor`, () => {
+      const output = generateThemedCode(PIE_DIAGRAM, baseOptions(palette, "pie"));
+      const secondary = paletteColor(palette, "secondaryColor");
+      expect(output).toContain(`"pie2": "${secondary}"`);
+    });
+
+    it(`palette "${palette.name}" pie output contains pieTitleTextColor = titleColor`, () => {
+      const output = generateThemedCode(PIE_DIAGRAM, baseOptions(palette, "pie"));
+      const title = paletteColor(palette, "titleColor");
+      expect(output).toContain(`"pieTitleTextColor": "${title}"`);
+    });
+
+    it(`palette "${palette.name}" pie output does not contain another palette's primaryColor`, () => {
+      const output = generateThemedCode(PIE_DIAGRAM, baseOptions(palette, "pie"));
+      const ownPrimary = paletteColor(palette, "primaryColor");
+      for (const other of BRAND_PALETTES) {
+        if (other.id === palette.id) continue;
+        const otherPrimary = paletteColor(other, "primaryColor");
+        if (otherPrimary === ownPrimary) continue;
+        expect(
+          output,
+          `Pie: palette "${palette.name}" contains primaryColor from "${other.name}" (${otherPrimary})`
+        ).not.toContain(otherPrimary);
+      }
+    });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// 20. Diagram body integrity — pie diagram body is preserved
+// ---------------------------------------------------------------------------
+
+describe("generateThemedCode — pie diagram body is preserved", () => {
+  for (const palette of BRAND_PALETTES) {
+    it(`palette "${palette.name}" preserves the pie diagram body`, () => {
+      const output = generateThemedCode(PIE_DIAGRAM, baseOptions(palette, "pie"));
+      expect(output).toContain("pie");
+      expect(output).toContain("title Distribution");
+      expect(output).toContain('"Alpha" : 40');
+    });
+  }
+});
+
+// ===========================================================================
+// STATE DIAGRAM FAMILY
+// ===========================================================================
+
+/**
+ * Minimal state diagram — exercises the stateDiagram family overlay
+ * (stateBkg, transitionColor, compositeBorder, labelColor, etc.).
+ */
+const STATE_DIAGRAM =
+  "stateDiagram-v2\n  [*] --> Idle\n  Idle --> Running : start\n  Running --> Idle : stop\n  Running --> [*]";
+
+// ---------------------------------------------------------------------------
+// 21. Snapshot per palette — BRAND_PALETTES × STATE_DIAGRAM
+// ---------------------------------------------------------------------------
+
+describe("generateThemedCode snapshots — BRAND_PALETTES × STATE_DIAGRAM", () => {
+  for (const palette of BRAND_PALETTES) {
+    it(`palette "${palette.name}" (id: ${palette.id}) state snapshot`, () => {
+      const output = generateThemedCode(STATE_DIAGRAM, baseOptions(palette, "stateDiagram"));
+      expect(output).toMatchSnapshot();
+    });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// 22. Cross-palette uniqueness — state diagram outputs are distinct
+// ---------------------------------------------------------------------------
+
+describe("generateThemedCode — each BRAND_PALETTE produces a distinct state output", () => {
+  it("all brand palette state diagram outputs are unique", () => {
+    const outputs = BRAND_PALETTES.map((palette) =>
+      generateThemedCode(STATE_DIAGRAM, baseOptions(palette, "stateDiagram"))
+    );
+
+    for (let i = 0; i < outputs.length; i++) {
+      for (let j = i + 1; j < outputs.length; j++) {
+        expect(
+          outputs[i],
+          `State: palette "${BRAND_PALETTES[i].name}" and "${BRAND_PALETTES[j].name}" produced identical output`
+        ).not.toBe(outputs[j]);
+      }
+    }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 23. Structural invariants — stateDiagram family overlay variables are
+//     populated from the correct palette color keys
+// ---------------------------------------------------------------------------
+
+describe("generateThemedCode — stateDiagram overlay variables resolve from palette", () => {
+  for (const palette of BRAND_PALETTES) {
+    it(`palette "${palette.name}" state output contains stateBkg = primaryColor`, () => {
+      const output = generateThemedCode(STATE_DIAGRAM, baseOptions(palette, "stateDiagram"));
+      const primary = paletteColor(palette, "primaryColor");
+      expect(output).toContain(`"stateBkg": "${primary}"`);
+    });
+
+    it(`palette "${palette.name}" state output contains transitionColor = lineColor`, () => {
+      const output = generateThemedCode(STATE_DIAGRAM, baseOptions(palette, "stateDiagram"));
+      const line = paletteColor(palette, "lineColor");
+      expect(output).toContain(`"transitionColor": "${line}"`);
+    });
+
+    it(`palette "${palette.name}" state output contains compositeBorder = primaryBorderColor`, () => {
+      const output = generateThemedCode(STATE_DIAGRAM, baseOptions(palette, "stateDiagram"));
+      const border = paletteColor(palette, "primaryBorderColor");
+      expect(output).toContain(`"compositeBorder": "${border}"`);
+    });
+
+    it(`palette "${palette.name}" state output does not contain another palette's primaryColor`, () => {
+      const output = generateThemedCode(STATE_DIAGRAM, baseOptions(palette, "stateDiagram"));
+      const ownPrimary = paletteColor(palette, "primaryColor");
+      for (const other of BRAND_PALETTES) {
+        if (other.id === palette.id) continue;
+        const otherPrimary = paletteColor(other, "primaryColor");
+        if (otherPrimary === ownPrimary) continue;
+        expect(
+          output,
+          `State: palette "${palette.name}" contains primaryColor from "${other.name}" (${otherPrimary})`
+        ).not.toContain(otherPrimary);
+      }
+    });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// 24. Diagram body integrity — state diagram body is preserved
+// ---------------------------------------------------------------------------
+
+describe("generateThemedCode — state diagram body is preserved", () => {
+  for (const palette of BRAND_PALETTES) {
+    it(`palette "${palette.name}" preserves the state diagram body`, () => {
+      const output = generateThemedCode(STATE_DIAGRAM, baseOptions(palette, "stateDiagram"));
+      expect(output).toContain("stateDiagram-v2");
+      expect(output).toContain("[*] --> Idle");
+      expect(output).toContain("Running --> Idle : stop");
+    });
+  }
+});

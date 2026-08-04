@@ -21,6 +21,63 @@ erDiagram
   ORDER ||--|{ LINE-ITEM : contains"
 `;
 
+exports[`generateThemedCode snapshots — BRAND_PALETTES × GANTT_DIAGRAM > palette "AskJamie" (id: askjamie) gantt snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"sectionBkgColor": "#fdfbf7", "altSectionBkgColor": "#e1ecef", "sectionBkgColor2": "#f6f2ee", "taskBkgColor": "#fdfbf7", "taskTextColor": "#2e2b29", "taskTextLightColor": "#2e2b29", "taskTextOutsideColor": "#2d6f7e", "taskTextDarkColor": "#2d6f7e", "activeTaskBkgColor": "#f6f2ee", "activeTaskBorderColor": "#2d6f7e", "doneTaskBkgColor": "#e1ecef", "doneTaskBorderColor": "#2d6f7e", "critBkgColor": "#dc2626", "critBorderColor": "#7f1d1d", "gridColor": "#2d6f7e", "todayLineColor": "#2d6f7e", "excludeBkgColor": "#e1ecef", "primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+gantt
+  title Project Plan
+  dateFormat YYYY-MM-DD
+  section Phase 1
+  Design :a1, 2024-01-01, 7d
+  section Phase 2
+  Build :a2, after a1, 14d"
+`;
+
+exports[`generateThemedCode snapshots — BRAND_PALETTES × GANTT_DIAGRAM > palette "Glee-fully" (id: glee-fully) gantt snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"sectionBkgColor": "#fffdfa", "altSectionBkgColor": "#e5d9ce", "sectionBkgColor2": "#f6f2ee", "taskBkgColor": "#fffdfa", "taskTextColor": "#2e2b29", "taskTextLightColor": "#2e2b29", "taskTextOutsideColor": "#d94f63", "taskTextDarkColor": "#d94f63", "activeTaskBkgColor": "#f6f2ee", "activeTaskBorderColor": "#d94f63", "doneTaskBkgColor": "#e5d9ce", "doneTaskBorderColor": "#d94f63", "critBkgColor": "#dc2626", "critBorderColor": "#7f1d1d", "gridColor": "#d94f63", "todayLineColor": "#d94f63", "excludeBkgColor": "#e5d9ce", "primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+gantt
+  title Project Plan
+  dateFormat YYYY-MM-DD
+  section Phase 1
+  Design :a1, 2024-01-01, 7d
+  section Phase 2
+  Build :a2, after a1, 14d"
+`;
+
+exports[`generateThemedCode snapshots — BRAND_PALETTES × GANTT_DIAGRAM > palette "OKHP3" (id: overkill-hill) gantt snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"sectionBkgColor": "#111827", "altSectionBkgColor": "#1c3a34", "sectionBkgColor2": "#181f26", "taskBkgColor": "#111827", "taskTextColor": "#e5e7eb", "taskTextLightColor": "#e5e7eb", "taskTextOutsideColor": "#c46a2c", "taskTextDarkColor": "#c46a2c", "activeTaskBkgColor": "#181f26", "activeTaskBorderColor": "#c46a2c", "doneTaskBkgColor": "#1c3a34", "doneTaskBorderColor": "#c46a2c", "critBkgColor": "#dc2626", "critBorderColor": "#7f1d1d", "gridColor": "#c46a2c", "todayLineColor": "#c46a2c", "excludeBkgColor": "#1c3a34", "primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+gantt
+  title Project Plan
+  dateFormat YYYY-MM-DD
+  section Phase 1
+  Design :a1, 2024-01-01, 7d
+  section Phase 2
+  Build :a2, after a1, 14d"
+`;
+
+exports[`generateThemedCode snapshots — BRAND_PALETTES × PIE_DIAGRAM > palette "AskJamie" (id: askjamie) pie snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"pie1": "#fdfbf7", "pie2": "#f6f2ee", "pie3": "#e1ecef", "pie4": "#2d6f7e", "pie5": "#2d6f7e", "pieTitleTextColor": "#2d6f7e", "pieSectionTextColor": "#2e2b29", "pieLegendTextColor": "#2d6f7e", "primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+pie title Distribution
+  "Alpha" : 40
+  "Beta" : 35
+  "Gamma" : 25"
+`;
+
+exports[`generateThemedCode snapshots — BRAND_PALETTES × PIE_DIAGRAM > palette "Glee-fully" (id: glee-fully) pie snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"pie1": "#fffdfa", "pie2": "#f6f2ee", "pie3": "#e5d9ce", "pie4": "#d94f63", "pie5": "#d94f63", "pieTitleTextColor": "#d94f63", "pieSectionTextColor": "#2e2b29", "pieLegendTextColor": "#d94f63", "primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+pie title Distribution
+  "Alpha" : 40
+  "Beta" : 35
+  "Gamma" : 25"
+`;
+
+exports[`generateThemedCode snapshots — BRAND_PALETTES × PIE_DIAGRAM > palette "OKHP3" (id: overkill-hill) pie snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"pie1": "#111827", "pie2": "#181f26", "pie3": "#1c3a34", "pie4": "#c46a2c", "pie5": "#c46a2c", "pieTitleTextColor": "#c46a2c", "pieSectionTextColor": "#e5e7eb", "pieLegendTextColor": "#c46a2c", "primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+pie title Distribution
+  "Alpha" : 40
+  "Beta" : 35
+  "Gamma" : 25"
+`;
+
 exports[`generateThemedCode snapshots — BRAND_PALETTES × SEQUENCE_DIAGRAM > palette "AskJamie" (id: askjamie) sequence snapshot 1`] = `
 "%%{init: {"theme": "base", "themeVariables": {"actorBkg": "#fdfbf7", "actorBorder": "#2d6f7e", "actorTextColor": "#2e2b29", "actorLineColor": "#2d6f7e", "signalColor": "#2d6f7e", "signalTextColor": "#2d6f7e", "labelBoxBkgColor": "#f6f2ee", "labelBoxBorderColor": "#2d6f7e", "labelTextColor": "#2e2b29", "loopTextColor": "#2d6f7e", "noteBkgColor": "#e1ecef", "noteBorderColor": "#2d6f7e", "noteTextColor": "#2d6f7e", "activationBkgColor": "#f6f2ee", "activationBorderColor": "#2d6f7e", "sequenceNumberColor": "#2e2b29", "primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
 sequenceDiagram
@@ -67,4 +124,31 @@ exports[`generateThemedCode snapshots — BRAND_PALETTES × SIMPLE_DIAGRAM > pal
 flowchart TD
   A[User Request] --> B[Validate Input]
   B --> C[Return Response]"
+`;
+
+exports[`generateThemedCode snapshots — BRAND_PALETTES × STATE_DIAGRAM > palette "AskJamie" (id: askjamie) state snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"labelColor": "#2d6f7e", "altBackground": "#f6f2ee", "compositeBackground": "#e8f4f7", "compositeBorder": "#2d6f7e", "compositeTitleBackground": "#fdfbf7", "innerEndBackground": "#2d6f7e", "specialStateColor": "#2d6f7e", "transitionColor": "#2d6f7e", "transitionLabelColor": "#2d6f7e", "stateLabelColor": "#2d6f7e", "stateBkg": "#fdfbf7", "labelBackgroundColor": "#f6f2ee", "primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+stateDiagram-v2
+  [*] --> Idle
+  Idle --> Running : start
+  Running --> Idle : stop
+  Running --> [*]"
+`;
+
+exports[`generateThemedCode snapshots — BRAND_PALETTES × STATE_DIAGRAM > palette "Glee-fully" (id: glee-fully) state snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"labelColor": "#d94f63", "altBackground": "#f6f2ee", "compositeBackground": "#f9f3ef", "compositeBorder": "#d94f63", "compositeTitleBackground": "#fffdfa", "innerEndBackground": "#d94f63", "specialStateColor": "#d94f63", "transitionColor": "#d94f63", "transitionLabelColor": "#d94f63", "stateLabelColor": "#d94f63", "stateBkg": "#fffdfa", "labelBackgroundColor": "#fff7f1", "primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+stateDiagram-v2
+  [*] --> Idle
+  Idle --> Running : start
+  Running --> Idle : stop
+  Running --> [*]"
+`;
+
+exports[`generateThemedCode snapshots — BRAND_PALETTES × STATE_DIAGRAM > palette "OKHP3" (id: overkill-hill) state snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"labelColor": "#c46a2c", "altBackground": "#181f26", "compositeBackground": "#0d1117", "compositeBorder": "#c46a2c", "compositeTitleBackground": "#111827", "innerEndBackground": "#c46a2c", "specialStateColor": "#c46a2c", "transitionColor": "#c46a2c", "transitionLabelColor": "#c46a2c", "stateLabelColor": "#c46a2c", "stateBkg": "#111827", "labelBackgroundColor": "#111827", "primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+stateDiagram-v2
+  [*] --> Idle
+  Idle --> Running : start
+  Running --> Idle : stop
+  Running --> [*]"
 `;
