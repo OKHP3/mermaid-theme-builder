@@ -41,6 +41,12 @@ const BETA_SAMPLE_ID = "sankey-effort-to-output";
 // Test
 // ---------------------------------------------------------------------------
 
+/**
+ * Non-beta sample ID used to clear the hint bar.
+ * "compose-instructions" has no badge — it is the default placeholder entry.
+ */
+const NON_BETA_SAMPLE_ID = "compose-instructions";
+
 test("'See support details →' switches to Reference tab and reveals Renderer Parity Matrix", async ({
   page,
 }) => {
@@ -81,4 +87,39 @@ test("'See support details →' switches to Reference tab and reveals Renderer P
   await expect(page.getByText("Renderer Parity Matrix", { exact: false })).toBeVisible({
     timeout: 8_000,
   });
+});
+
+test("beta hint bar disappears when the preview picker switches to a non-beta diagram", async ({
+  page,
+}) => {
+  // 1. Seed localStorage with the beta sample so the hint bar is visible on load.
+  await page.addInitScript(
+    ({ key, value }: { key: string; value: string }) => {
+      window.localStorage.clear();
+      window.sessionStorage.clear();
+      window.localStorage.setItem(key, value);
+    },
+    { key: LS_PREVIEW_KEY, value: BETA_SAMPLE_ID }
+  );
+
+  await page.goto("/");
+  await page.waitForLoadState("load");
+
+  // 2. Switch to the Compose tab.
+  await Promise.all([
+    page.waitForURL((url) => url.hash === "#compose"),
+    page.getByRole("tab", { name: "Compose" }).first().click(),
+  ]);
+
+  // 3. Confirm the hint bar is initially visible.
+  const seeDetailsBtn = page.getByRole("button", { name: "See support details →" });
+  await seeDetailsBtn.waitFor({ state: "visible", timeout: 8_000 });
+
+  // 4. Switch the preview picker to a non-beta diagram.
+  const picker = page.getByLabel("Preview diagram");
+  await picker.selectOption(NON_BETA_SAMPLE_ID);
+
+  // 5. The hint bar must disappear — the "See support details →" button should
+  //    no longer be attached to the DOM.
+  await expect(seeDetailsBtn).not.toBeAttached({ timeout: 5_000 });
 });
