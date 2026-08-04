@@ -61,6 +61,9 @@ import { clearAllDismissals } from "@/lib/family-syntax-hints";
 /** localStorage key used by the persistence module (src/lib/persistence.ts). */
 const STORAGE_KEY = "mtb.state.v1";
 
+/** Secondary key for the ClassBrowser preview-mode preference. */
+const PREVIEW_MODE_KEY = "mtb.classBrowser.previewMode";
+
 /**
  * A minimal seeded state that gives App non-empty customColors and
  * recentPaletteIds so the state-mutation tests have something to verify.
@@ -256,6 +259,84 @@ describe("Settings menu — Clear recent palette history", () => {
     await waitFor(() => {
       const saved = getPersistedState();
       expect(saved.recentPaletteIds).toEqual([]);
+    });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 4. Clear all settings
+// ---------------------------------------------------------------------------
+
+describe("Settings menu — Clear all settings", () => {
+  it('shows the "All settings cleared." toast after clicking', () => {
+    render(createElement(App, null));
+    openSettingsMenu();
+    fireEvent.click(screen.getByText("Clear all settings"));
+    expect(getToast()).toContain("All settings cleared.");
+  });
+
+  it("closes the settings menu after the action", () => {
+    render(createElement(App, null));
+    openSettingsMenu();
+    expect(getMenu()).not.toBeNull();
+    fireEvent.click(screen.getByText("Clear all settings"));
+    expect(getMenu()).toBeNull();
+  });
+
+  it("clears seeded customColors — the saved state has an empty customColors after clicking", async () => {
+    // App's persistence useEffect re-saves state after the handler resets React
+    // state, so STORAGE_KEY is not null — but it must reflect cleared values.
+    localStorage.setItem(STORAGE_KEY, SEEDED_STATE);
+    render(createElement(App, null));
+    openSettingsMenu();
+    fireEvent.click(screen.getByText("Clear all settings"));
+
+    await waitFor(() => {
+      const saved = getPersistedState();
+      expect(Object.keys((saved.customColors as Record<string, unknown>) ?? {}).length).toBe(0);
+    });
+  });
+
+  it("clears seeded recentPaletteIds — the saved state has an empty array after clicking", async () => {
+    localStorage.setItem(STORAGE_KEY, SEEDED_STATE);
+    render(createElement(App, null));
+    openSettingsMenu();
+    fireEvent.click(screen.getByText("Clear all settings"));
+
+    await waitFor(() => {
+      const saved = getPersistedState();
+      expect(saved.recentPaletteIds).toEqual([]);
+    });
+  });
+
+  it("clears the preview-mode key — PREVIEW_MODE_KEY is null after clicking", () => {
+    // PREVIEW_MODE_KEY has no re-save useEffect, so it stays null after
+    // clearPersistedState() runs — unlike STORAGE_KEY which is re-written
+    // with the default state by App's persistence useEffect.
+    localStorage.setItem(STORAGE_KEY, SEEDED_STATE);
+    localStorage.setItem(PREVIEW_MODE_KEY, "used");
+    render(createElement(App, null));
+    openSettingsMenu();
+    fireEvent.click(screen.getByText("Clear all settings"));
+    // clearPersistedState is synchronous — PREVIEW_MODE_KEY is erased before
+    // the next microtask tick.
+    expect(localStorage.getItem(PREVIEW_MODE_KEY)).toBeNull();
+  });
+
+  it("atomically erases both keys — PREVIEW_MODE_KEY null and customColors cleared", async () => {
+    localStorage.setItem(STORAGE_KEY, SEEDED_STATE);
+    localStorage.setItem(PREVIEW_MODE_KEY, "all");
+    render(createElement(App, null));
+    openSettingsMenu();
+    fireEvent.click(screen.getByText("Clear all settings"));
+
+    // PREVIEW_MODE_KEY is synchronously null.
+    expect(localStorage.getItem(PREVIEW_MODE_KEY)).toBeNull();
+
+    // Seeded customizations are gone from the re-saved state blob.
+    await waitFor(() => {
+      const saved = getPersistedState();
+      expect(Object.keys((saved.customColors as Record<string, unknown>) ?? {}).length).toBe(0);
     });
   });
 });
