@@ -301,6 +301,36 @@ describe("ApplyTab — diagram selector sync: selector hidden after content shri
     expect(capturedMermaidCode).toContain("flowchart");
     expect(capturedMermaidCode).not.toContain("sequenceDiagram");
   });
+
+  it("'code' preview shows diagram 0 styled output after selector sync", async () => {
+    // In "code" mode, DiagramPreviewPanel renders HighlightedCode (a <pre>) with
+    // effectiveExportCode — the themed output for the active diagram.  After the
+    // selector sync clamps activeDiagramIdx back to 0, that <pre> must reflect
+    // diagram 0 (flowchart), not the sequenceDiagram the user had navigated to.
+    const { rerender, container } = render(
+      createElement(ApplyTab, { ...makeProps(MULTI_INPUT), previewMode: "code" as const })
+    );
+
+    // Navigate to diagram 2 (sequenceDiagram).
+    const nextBtn = screen.getByLabelText("Next diagram");
+    await act(async () => {
+      fireEvent.click(nextBtn);
+    });
+
+    // Shrink to single-diagram content — selector sync clamps activeDiagramIdx to 0.
+    act(() => {
+      rerender(
+        createElement(ApplyTab, { ...makeProps(SINGLE_INPUT), previewMode: "code" as const })
+      );
+    });
+
+    // The code panel (<pre aria-label="Styled code output">) must be present and
+    // its text content must reflect diagram 0 (flowchart), not diagram 1.
+    const codePanel = container.querySelector('[aria-label="Styled code output"]');
+    expect(codePanel).not.toBeNull();
+    expect(codePanel?.textContent).toContain("flowchart");
+    expect(codePanel?.textContent).not.toContain("sequenceDiagram");
+  });
 });
 
 // ---------------------------------------------------------------------------
