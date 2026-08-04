@@ -22,6 +22,7 @@
  *     actual file I/O is required.
  */
 
+import { readFileSync } from "node:fs";
 import { test, expect, type Page } from "@playwright/test";
 
 // ---------------------------------------------------------------------------
@@ -192,6 +193,50 @@ test("Download → .theme.json triggers a file download with a .json filename", 
   const download = await downloadPromise;
 
   expect(download.suggestedFilename()).toMatch(/\.json$/);
+});
+
+// ---------------------------------------------------------------------------
+// Test 8 — Download menu → .md file contains fenced code block + %%{init}%%
+// ---------------------------------------------------------------------------
+
+test("Download → .md file contains a ```mermaid fenced block with %%{init}%% metadata", async ({
+  page,
+}) => {
+  await gotoApply(page);
+  await pasteDiagram(page, FLOWCHART);
+
+  // Open the download menu.
+  const downloadBtn = page.getByRole("button", { name: "Download" });
+  await expect(downloadBtn).toBeEnabled();
+  await downloadBtn.click();
+
+  // The menu item for Markdown shows the label ".md" (from DOWNLOAD_LABELS).
+  const downloadPromise = page.waitForEvent("download");
+  await page.getByRole("button", { name: ".md" }).click();
+  const download = await downloadPromise;
+
+  // 1. Filename must end in .md.
+  expect(download.suggestedFilename()).toMatch(/\.md$/);
+
+  // 2. File content must contain a fenced ```mermaid code block.
+  //    generateMarkdownExport always wraps the themed code in:
+  //      ```mermaid
+  //      %%{init: ...}%%
+  //      <diagram code>
+  //      ```
+  const filePath = await download.path();
+  expect(filePath).toBeTruthy();
+  const content = readFileSync(filePath!, "utf8");
+
+  expect(content).toContain("```mermaid");
+
+  // 3. The %%{init}%% directive must be present — this is the critical
+  //    palette metadata that applies the theme.  A regression in
+  //    generateMarkdownExport that drops the init block would be caught here.
+  expect(content).toContain("%%{init:");
+
+  // 4. The original diagram code must survive inside the block.
+  expect(content).toContain("flowchart TD");
 });
 
 // ---------------------------------------------------------------------------
