@@ -21,7 +21,7 @@
  */
 
 // vi.mock must be hoisted before any imports due to vitest static analysis.
-import { vi, describe, it, expect, afterEach } from "vitest";
+import { vi, describe, it, expect, afterEach, beforeEach } from "vitest";
 
 vi.mock("mermaid", () => ({
   default: {
@@ -34,9 +34,13 @@ vi.mock("@/components/PaletteSelectorBar", () => ({
   PaletteSelectorBar: () => null,
 }));
 
+vi.mock("@/lib/clipboard", () => ({
+  writeToClipboard: vi.fn().mockResolvedValue(undefined),
+}));
+
 import { render, screen, cleanup } from "@testing-library/react";
 import { fireEvent } from "@testing-library/dom";
-import { createElement } from "react";
+import { createElement, act } from "react";
 import { ApplyTab } from "@/pages/tabs/ApplyTab";
 import { BRAND_PALETTES } from "@/lib/palettes";
 import { DEFAULT_TYPOGRAPHY } from "@/lib/typography";
@@ -192,5 +196,77 @@ describe("ApplyTab copy button — renderer badge on Prompt Scaffold", () => {
     render(createElement(ApplyTab, { ...BASE_PROPS, rendererTarget: "" }));
 
     expect(getPromptCopyBtn().textContent).not.toContain(GITHUB.shortName);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 4. Renderer badge hides during "Copied!" flash on Prompt Scaffold (Task #438)
+//
+// ExportToolbar gates the badge on `type === "prompt" && !copied` where
+// `copied = copiedType === type`.  The test below validates the discriminator
+// logic — that only copiedType === "prompt" would hide the badge, not a copy
+// action on a different button.
+//
+// Drift note: clicking "Prompt Scaffold" in ExportToolbar calls onShowScaffoldModal()
+// and returns early — setCopiedType("prompt") is never reached in current code, so
+// the "Copied!" state for the prompt button cannot be triggered via normal user
+// interaction. The guard is defensive (protects against future code changes). The
+// test validates the discriminator by clicking "Styled Code" (which DOES enter
+// copiedType="code") and asserting the prompt badge is unaffected.
+// ---------------------------------------------------------------------------
+
+describe("ApplyTab copy button — renderer badge hides during 'Copied!' flash (Task #438)", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.runAllTimers();
+    vi.useRealTimers();
+  });
+
+  it("renderer badge is present on Prompt Scaffold button before any copy action", () => {
+    render(createElement(ApplyTab, { ...BASE_PROPS, rendererTarget: "github" }));
+
+    const badge = getPromptCopyBtn().querySelector('[title*="tailored for"]');
+    expect(badge, "badge should be present before any copy action").not.toBeNull();
+  });
+
+  it("renderer badge stays visible on Prompt Scaffold while Styled Code is in 'Copied!' state", async () => {
+    render(createElement(ApplyTab, { ...BASE_PROPS, rendererTarget: "github" }));
+
+    // Confirm badge is present before clicking anything.
+    expect(getPromptCopyBtn().querySelector('[title*="tailored for"]')).not.toBeNull();
+
+    // Click "Styled Code" — this sets copiedType = "code" in ExportToolbar.
+    fireEvent.click(screen.getByRole("button", { name: "Styled Code" }));
+    // Flush the writeToClipboard promise, then let React commit the state update.
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    // "Styled Code" button should now show "Copied!" (copiedType = "code").
+    // The button text changes, so look for it by content rather than name.
+    const codeBtns = screen
+      .getAllByRole("button")
+      .filter((b) => b.textContent?.includes("Copied!"));
+    expect(codeBtns.length, "expected one button in 'Copied!' state").toBeGreaterThan(0);
+
+    // The Prompt Scaffold badge must STILL be present:
+    // copiedType is "code", not "prompt", so copied = (copiedType === "prompt") = false,
+    // and the !copied guard allows the badge to render.
+    const badgeDuringFlash = getPromptCopyBtn().querySelector('[title*="tailored for"]');
+    expect(
+      badgeDuringFlash,
+      "renderer badge must remain on Prompt Scaffold while copiedType is 'code', not 'prompt'"
+    ).not.toBeNull();
+
+    // Advance past the 2-second copy-flash timeout to reset copiedType.
+    act(() => {
+      vi.advanceTimersByTime(2100);
+    });
+
+    // Badge still present after the flash expires.
+    expect(getPromptCopyBtn().querySelector('[title*="tailored for"]')).not.toBeNull();
   });
 });
