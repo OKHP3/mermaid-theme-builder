@@ -31,6 +31,7 @@ import { createElement } from "react";
 import { ApplyTab } from "@/pages/tabs/ApplyTab";
 import { BRAND_PALETTES } from "@/lib/palettes";
 import { DEFAULT_TYPOGRAPHY } from "@/lib/typography";
+import { getRendererById } from "@/data/renderer-parity";
 
 // ---------------------------------------------------------------------------
 // Fixtures
@@ -50,6 +51,8 @@ const NO_CLASSDEF_TITLE =
   "This diagram type only supports palette-level theming, not per-node color classes";
 
 const PALETTE = BRAND_PALETTES[0];
+// "github" is a well-known renderer with shortName "GitHub".
+const GITHUB = getRendererById("github")!;
 
 function noop() {}
 
@@ -215,5 +218,60 @@ describe("ApplyTab download dropdown — No classDef badge in markdown row", () 
     const { container } = render(createElement(ApplyTab, { ...BASE_PROPS, inputCode: PIE }));
     openDownloadMenu(container);
     expect(getMenuRowBadges(container, ".md")).toHaveLength(1);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 5. Both badges coexist in the same download-menu row (Task #440)
+//
+// The renderer shortName badge and the "No classDef" badge are rendered by
+// two independent JSX conditions (lines 394-398 and 399-406 in ExportToolbar).
+// A refactor that accidentally used `else if` would silently suppress one.
+// These tests verify both are present simultaneously in each relevant row.
+// ---------------------------------------------------------------------------
+
+describe("ApplyTab download dropdown — renderer badge and No classDef badge coexist", () => {
+  it("scaffold (.txt) row shows both renderer shortName and No classDef when both conditions apply", () => {
+    const { container } = render(
+      createElement(ApplyTab, { ...BASE_PROPS, inputCode: GANTT, rendererTarget: "github" })
+    );
+    openDownloadMenu(container);
+
+    const scaffoldRow = screen.getByText(".txt").closest("button") as HTMLElement;
+    expect(scaffoldRow.textContent).toContain(GITHUB.shortName);
+    expect(scaffoldRow.textContent).toContain("No classDef");
+  });
+
+  it("markdown (.md) row shows both renderer shortName and No classDef when both conditions apply", () => {
+    const { container } = render(
+      createElement(ApplyTab, { ...BASE_PROPS, inputCode: GANTT, rendererTarget: "github" })
+    );
+    openDownloadMenu(container);
+
+    const mdRow = screen.getByText(".md").closest("button") as HTMLElement;
+    expect(mdRow.textContent).toContain(GITHUB.shortName);
+    expect(mdRow.textContent).toContain("No classDef");
+  });
+
+  it("scaffold row shows only the renderer badge when family is classDef-capable (no No classDef)", () => {
+    const { container } = render(
+      createElement(ApplyTab, { ...BASE_PROPS, inputCode: FLOWCHART, rendererTarget: "github" })
+    );
+    openDownloadMenu(container);
+
+    const scaffoldRow = screen.getByText(".txt").closest("button") as HTMLElement;
+    expect(scaffoldRow.textContent).toContain(GITHUB.shortName);
+    expect(scaffoldRow.textContent).not.toContain("No classDef");
+  });
+
+  it("scaffold row shows only the No classDef badge when no renderer target is set", () => {
+    const { container } = render(
+      createElement(ApplyTab, { ...BASE_PROPS, inputCode: GANTT, rendererTarget: "" })
+    );
+    openDownloadMenu(container);
+
+    const scaffoldRow = screen.getByText(".txt").closest("button") as HTMLElement;
+    expect(scaffoldRow.textContent).not.toContain(GITHUB.shortName);
+    expect(scaffoldRow.textContent).toContain("No classDef");
   });
 });
