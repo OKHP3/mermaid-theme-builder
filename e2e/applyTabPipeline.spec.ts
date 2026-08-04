@@ -196,7 +196,41 @@ test("Download → .theme.json triggers a file download with a .json filename", 
 });
 
 // ---------------------------------------------------------------------------
-// Test 8 — Download menu → .md file contains fenced code block + %%{init}%%
+// Test 8 — "Markdown" copy button copies a fenced code block to clipboard
+// ---------------------------------------------------------------------------
+
+test("'Markdown' copy button copies a ```mermaid fenced block with %%{init}%% to clipboard", async ({
+  page,
+  context,
+}) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await gotoApply(page);
+  await pasteDiagram(page, FLOWCHART);
+
+  const markdownBtn = page.getByRole("button", { name: "Markdown" });
+  await expect(markdownBtn).toBeVisible();
+  await expect(markdownBtn).toBeEnabled();
+  await markdownBtn.click();
+
+  // Button should flash "Copied!" immediately.
+  await expect(page.getByRole("button", { name: /Copied!/ })).toBeVisible({ timeout: 3000 });
+
+  const clipText = await page.evaluate(() => navigator.clipboard.readText());
+
+  // Must contain the fenced Mermaid code block.
+  expect(clipText).toContain("```mermaid");
+
+  // The %%{init: block carries the palette theme variables — this is the
+  // critical regression check: if generateMarkdownExport drops the init
+  // directive the diagram will render without the chosen theme.
+  expect(clipText).toContain("%%{init:");
+
+  // The original diagram source must survive inside the fenced block.
+  expect(clipText).toContain("flowchart TD");
+});
+
+// ---------------------------------------------------------------------------
+// Test 9 — Download menu → .md file contains fenced code block + %%{init}%%
 // ---------------------------------------------------------------------------
 
 test("Download → .md file contains a ```mermaid fenced block with %%{init}%% metadata", async ({

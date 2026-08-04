@@ -281,7 +281,7 @@ export function ExportToolbar({
           Live Editor
         </button>
 
-        {(["code", "prompt"] as ExportType[]).map((type) => {
+        {(["code", "markdown", "prompt"] as ExportType[]).map((type) => {
           const copied = copiedType === type;
           const disabled = !inputCode.trim() && type !== "prompt";
           const isPrimary = type === "code";
