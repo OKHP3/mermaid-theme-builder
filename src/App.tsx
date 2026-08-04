@@ -799,7 +799,10 @@ export function AppShell() {
       }
     ) => {
       setMyThemeSlots((prev) => {
-        if (prev.length >= 3) return prev;
+        if (prev.length >= 3) {
+          setToast("All 3 My Theme slots are in use — delete one before importing.");
+          return prev;
+        }
         const num = nextSlotNumber(prev);
         if (num === null) return prev;
         const newSlot = createDefaultMyThemeSlot(num, palette.colors);

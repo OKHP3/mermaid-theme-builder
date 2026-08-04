@@ -305,7 +305,63 @@ test.describe("Import as new slot — disabled after clicking New twice", () => 
 });
 
 // ---------------------------------------------------------------------------
-// 3. Warning path — CSS color values produce a warning toast
+// 3. Full-slots guard — toast appears when all 3 slots are occupied
+// ---------------------------------------------------------------------------
+//
+// The Import button is replaced by a disabled span when slots are full, but
+// the hidden <input> that processes the file is always present in the DOM.
+// If the user somehow triggers it (e.g. two tabs with different slot counts),
+// handleImportAsNewSlot should show a toast rather than silently ignoring the
+// file.
+
+test.describe("Import as new slot — full-slots guard toast", () => {
+  test("shows 'All 3 slots are in use' toast when import is attempted at capacity", async ({
+    page,
+  }) => {
+    // Seed 3 slots so the app loads at capacity.
+    await openOnApplyTab(
+      page,
+      baseState({
+        myThemeSlots: [makeSlot(1), makeSlot(2), makeSlot(3)],
+        activeMyThemeSlotId: "my-theme-1",
+      })
+    );
+
+    await page.locator(`#${APPLY_PREFIX}-my-theme-3`).waitFor({ timeout: 8_000 });
+
+    // Trigger the hidden file input directly — the Import button is hidden but
+    // the <input> element is always present in the DOM.
+    await importViaFileInput(page, CLEAN_PALETTE_JSON);
+
+    // A toast with the capacity message must appear.
+    const toast = page.locator('[role="status"]');
+    await expect(toast).toBeVisible({ timeout: 4_000 });
+    await expect(toast).toContainText("All 3 My Theme slots are in use");
+  });
+
+  test("slot count stays at 3 — no new slot is created when guard fires", async ({ page }) => {
+    await openOnApplyTab(
+      page,
+      baseState({
+        myThemeSlots: [makeSlot(1), makeSlot(2), makeSlot(3)],
+        activeMyThemeSlotId: "my-theme-1",
+      })
+    );
+
+    await page.locator(`#${APPLY_PREFIX}-my-theme-3`).waitFor({ timeout: 8_000 });
+
+    await importViaFileInput(page, CLEAN_PALETTE_JSON);
+
+    // Toast must appear first so we know the handler ran.
+    await expect(page.locator('[role="status"]')).toBeVisible({ timeout: 4_000 });
+
+    // Slot count must remain at 3.
+    await expect(page.locator(APPLY_SLOT_SEL)).toHaveCount(3);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 4. Warning path — CSS color values produce a warning toast
 // ---------------------------------------------------------------------------
 
 test.describe("Import as new slot — CSS value warning toast", () => {
