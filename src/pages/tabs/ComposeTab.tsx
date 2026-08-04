@@ -38,6 +38,7 @@ import {
   enforceHierarchy,
   isDefaultTypography,
   hasFontFamilyInjectionChars,
+  sanitizeFontFamily,
 } from "@/lib/typography";
 import type { MyThemeSlot } from "@/lib/my-theme-slots";
 
@@ -977,6 +978,15 @@ export function ComposeTab({
                           className="w-full text-[10px] font-mono bg-background border border-border/60 rounded px-1.5 py-0.5 text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50"
                           aria-label={`${meta.label} font family override`}
                         />
+                        {tier.fontFamily && (
+                          <span
+                            aria-label={`${meta.label} font family preview`}
+                            style={{ fontFamily: sanitizeFontFamily(tier.fontFamily) }}
+                            className="block mt-1 text-sm text-foreground/70 leading-none select-none"
+                          >
+                            Aa
+                          </span>
+                        )}
                         {hasFontFamilyInjectionChars(tier.fontFamily) && (
                           <p className="text-[9px] text-destructive leading-snug mt-0.5">
                             Contains ; &#123; or &#125; — stripped on export

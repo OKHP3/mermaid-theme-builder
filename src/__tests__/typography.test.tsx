@@ -793,3 +793,132 @@ describe("typographyToScaffoldSection — full output pin for DEFAULT_TYPOGRAPHY
     expect(typographyToScaffoldSection(DEFAULT_TYPOGRAPHY)).toEqual(expected);
   });
 });
+
+// ---------------------------------------------------------------------------
+// Font family live preview — ComposeTab render tests
+// ---------------------------------------------------------------------------
+
+describe("ComposeTab — font family live preview", () => {
+  const palette = BRAND_PALETTES[0];
+  const noop = vi.fn();
+
+  function makeProps(typography: TypographySettings) {
+    return {
+      selectedPalette: palette,
+      selectedPaletteId: palette.id,
+      onSelectPalette: noop,
+      customColors: {},
+      onColorChange: noop,
+      onResetPalette: noop,
+      hasCustomizations: false,
+      includeMetaComments: true,
+      onIncludeMetaCommentsChange: noop,
+      includeBadge: false,
+      onIncludeBadgeChange: noop,
+      customThemeName: "",
+      onCustomThemeNameChange: noop,
+      effectiveThemeName: palette.name,
+      userPalettes: [],
+      onSavePalette: noop,
+      onImportPalette: noop,
+      onDeleteUserPalette: noop,
+      onShowToast: noop,
+      look: "classic" as const,
+      onLookChange: noop,
+      fontSize: "",
+      onFontSizeChange: noop,
+      typography,
+      onTypographyChange: noop,
+      rendererTarget: "",
+      onRendererTargetChange: noop,
+      onUseExtractedTheme: noop,
+      onSwitchTab: noop,
+      onNavigateToParityMatrix: noop,
+      importDiagnostics: null,
+      onImportDiagnosticsChange: noop,
+    };
+  }
+
+  it("renders no font-family preview spans when all fontFamily values are empty", () => {
+    const { container } = render(createElement(ComposeTab, makeProps(DEFAULT_TYPOGRAPHY)));
+    const previews = container.querySelectorAll('[aria-label*="font family preview"]');
+    expect(previews).toHaveLength(0);
+  });
+
+  it("renders a preview span when a single tier has a fontFamily set", () => {
+    const typography: TypographySettings = {
+      ...DEFAULT_TYPOGRAPHY,
+      nodeLabel: { fontSize: 14, fontFamily: "Roboto" },
+    };
+    const { container } = render(createElement(ComposeTab, makeProps(typography)));
+    const previews = container.querySelectorAll('[aria-label*="font family preview"]');
+    expect(previews).toHaveLength(1);
+  });
+
+  it("preview span is labelled after its tier", () => {
+    const typography: TypographySettings = {
+      ...DEFAULT_TYPOGRAPHY,
+      diagramTitle: { fontSize: 20, fontFamily: "DM Sans" },
+    };
+    const { container } = render(createElement(ComposeTab, makeProps(typography)));
+    const preview = container.querySelector('[aria-label="Diagram Title font family preview"]');
+    expect(preview).not.toBeNull();
+  });
+
+  it("preview span has the correct font-family inline style", () => {
+    const typography: TypographySettings = {
+      ...DEFAULT_TYPOGRAPHY,
+      edgeLabel: { fontSize: 12, fontFamily: "JetBrains Mono" },
+    };
+    const { container } = render(createElement(ComposeTab, makeProps(typography)));
+    const preview = container.querySelector(
+      '[aria-label="Edge Label font family preview"]'
+    ) as HTMLElement | null;
+    expect(preview).not.toBeNull();
+    // happy-dom may quote multi-word font names; normalise by stripping outer quotes
+    expect(preview!.style.fontFamily.replace(/^"(.*)"$/, "$1")).toBe("JetBrains Mono");
+  });
+
+  it("renders five preview spans when all tiers have a fontFamily set", () => {
+    const typography: TypographySettings = {
+      diagramTitle: { fontSize: 20, fontFamily: "Alfa Slab One" },
+      subgraphTitle: { fontSize: 16, fontFamily: "DM Sans" },
+      nestedSubgraphTitle: { fontSize: 14, fontFamily: "DM Sans" },
+      nodeLabel: { fontSize: 14, fontFamily: "JetBrains Mono" },
+      edgeLabel: { fontSize: 12, fontFamily: "Inter" },
+    };
+    const { container } = render(createElement(ComposeTab, makeProps(typography)));
+    const previews = container.querySelectorAll('[aria-label*="font family preview"]');
+    expect(previews).toHaveLength(5);
+  });
+
+  it("preview span uses the sanitized font-family value (strips injection chars)", () => {
+    const unsafe = "Roboto;color:red{";
+    const typography: TypographySettings = {
+      ...DEFAULT_TYPOGRAPHY,
+      nodeLabel: { fontSize: 14, fontFamily: unsafe },
+    };
+    const { container } = render(createElement(ComposeTab, makeProps(typography)));
+    const preview = container.querySelector(
+      '[aria-label="Node Label font family preview"]'
+    ) as HTMLElement | null;
+    expect(preview).not.toBeNull();
+    // Inline style must use the sanitized value, not the raw unsafe string
+    expect(preview!.style.fontFamily).toBe(sanitizeFontFamily(unsafe));
+    expect(preview!.style.fontFamily).not.toContain(";");
+    expect(preview!.style.fontFamily).not.toContain("{");
+  });
+
+  it("preview span displays 'Aa' as its text content", () => {
+    const typography: TypographySettings = {
+      ...DEFAULT_TYPOGRAPHY,
+      subgraphTitle: { fontSize: 16, fontFamily: "DM Sans" },
+    };
+    const { container } = render(createElement(ComposeTab, makeProps(typography)));
+    const preview = container.querySelector(
+      '[aria-label="Subgraph Title font family preview"]'
+    ) as HTMLElement | null;
+    expect(preview).not.toBeNull();
+    expect(preview!.textContent?.trim()).toBe("Aa");
+  });
+});
