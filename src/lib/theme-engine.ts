@@ -285,7 +285,10 @@ export function generateMarkdownExport(
   const { customThemeName } = options;
   const rawThemeName = customThemeName?.trim() || palette.name;
   const themeName = sanitizeMdText(rawThemeName);
-  const isCustom = !!customThemeName?.trim() && customThemeName.trim() !== palette.name;
+  // isCustom is true whenever the caller supplies any non-empty customThemeName,
+  // even if it happens to match the palette's own name exactly.  The user set
+  // it intentionally, so the "Custom — based on" label must always appear.
+  const isCustom = !!customThemeName?.trim();
   const displayLabel = sanitizeMdText(
     isCustom ? `Custom — based on ${palette.name}` : palette.name
   );
@@ -648,7 +651,9 @@ function buildScaffold(
 ): string {
   const { diagramFamily, customThemeName } = options;
   const themeName = sanitizeMdText(customThemeName?.trim() || palette.name);
-  const isCustom = !!customThemeName?.trim() && customThemeName.trim() !== palette.name;
+  // isCustom is true whenever the caller supplies any non-empty customThemeName,
+  // even if it happens to match the palette's own name exactly.
+  const isCustom = !!customThemeName?.trim();
   const displayLabel = sanitizeMdText(
     isCustom ? `Custom — based on ${palette.name}` : palette.name
   );

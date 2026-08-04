@@ -404,3 +404,40 @@ describe("generatePromptScaffoldWithFormat structural invariants — customTheme
     });
   }
 });
+
+// ---------------------------------------------------------------------------
+// 9. customThemeName === palette.name boundary — "Custom — based on" must
+//    still appear even when the user's custom name is identical to the
+//    palette name (any non-empty customThemeName is always treated as custom)
+// ---------------------------------------------------------------------------
+
+describe("generateMarkdownExport — customThemeName equal to palette.name is still treated as custom", () => {
+  for (const palette of BRAND_PALETTES) {
+    it(`palette "${palette.name}" shows "Custom — based on" when customThemeName equals the palette name`, () => {
+      const opts: ExportOptions = { ...baseOptions(palette), customThemeName: palette.name };
+      const themedCode = generateThemedCode(SIMPLE_DIAGRAM, opts);
+      const output = generateMarkdownExport(themedCode, palette, opts);
+      expect(output).toContain("Custom — based on");
+      expect(output).toContain(palette.name);
+    });
+
+    it(`palette "${palette.name}" markdown Theme: line contains "Custom — based on" when customThemeName equals the palette name`, () => {
+      const opts: ExportOptions = { ...baseOptions(palette), customThemeName: palette.name };
+      const themedCode = generateThemedCode(SIMPLE_DIAGRAM, opts);
+      const output = generateMarkdownExport(themedCode, palette, opts);
+      const themeLine = output.split("\n").find((l) => l.startsWith("**Theme:**"));
+      expect(themeLine).toContain("Custom — based on");
+    });
+  }
+});
+
+describe("generatePromptScaffoldWithFormat — customThemeName equal to palette.name is still treated as custom", () => {
+  for (const palette of BRAND_PALETTES) {
+    it(`palette "${palette.name}" format "both" shows "Custom — based on" when customThemeName equals the palette name`, () => {
+      const opts: ExportOptions = { ...baseOptions(palette), customThemeName: palette.name };
+      const output = generatePromptScaffoldWithFormat(palette, opts, "both");
+      expect(output).toContain("Custom — based on");
+      expect(output).toContain(palette.name);
+    });
+  }
+});
