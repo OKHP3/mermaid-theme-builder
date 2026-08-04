@@ -708,6 +708,57 @@ describe("typographyToScaffoldSection — font family column", () => {
 });
 
 // ---------------------------------------------------------------------------
+// 9. generateTypographyCss — snapshot tests
+//
+// Snapshot the full string output so any unintended change to whitespace,
+// comment phrasing, declaration order, or tier ordering causes CI to fail and
+// requires an intentional `vitest --update-snapshots` update.
+// ---------------------------------------------------------------------------
+
+describe("generateTypographyCss — snapshots", () => {
+  it("default settings: only the header comment is emitted", () => {
+    expect(generateTypographyCss(DEFAULT_TYPOGRAPHY)).toMatchInlineSnapshot(
+      `"/* Mermaid typography hierarchy — flowchart/subgraph targets */"`
+    );
+  });
+
+  it("single-tier override: one section comment + one rule line", () => {
+    const settings: TypographySettings = {
+      ...DEFAULT_TYPOGRAPHY,
+      edgeLabel: { fontSize: 10, fontFamily: "JetBrains Mono" },
+    };
+    expect(generateTypographyCss(settings)).toMatchInlineSnapshot(`
+      "/* Mermaid typography hierarchy — flowchart/subgraph targets */
+      /* Edge Label */
+      .edgeLabel { font-size: 10px; font-family: JetBrains Mono; }"
+    `);
+  });
+
+  it("fully-modified settings with fallback stacks: all five tiers in order", () => {
+    const settings: TypographySettings = {
+      diagramTitle: { fontSize: 24, fontFamily: "Alfa Slab One" },
+      subgraphTitle: { fontSize: 20, fontFamily: "'DM Sans', sans-serif" },
+      nestedSubgraphTitle: { fontSize: 16, fontFamily: "DM Sans" },
+      nodeLabel: { fontSize: 13, fontFamily: "JetBrains Mono, monospace" },
+      edgeLabel: { fontSize: 11, fontFamily: "Inter, sans-serif" },
+    };
+    expect(generateTypographyCss(settings)).toMatchInlineSnapshot(`
+      "/* Mermaid typography hierarchy — flowchart/subgraph targets */
+      /* Diagram Title */
+      .label { font-size: 24px; font-family: Alfa Slab One; }
+      /* Subgraph Title */
+      .cluster-label { font-size: 20px; font-family: 'DM Sans', sans-serif; }
+      /* Nested Subgraph */
+      .cluster-label .nodeLabel { font-size: 16px; font-family: DM Sans; }
+      /* Node Label */
+      .node .label { font-size: 13px; font-family: JetBrains Mono, monospace; }
+      /* Edge Label */
+      .edgeLabel { font-size: 11px; font-family: Inter, sans-serif; }"
+    `);
+  });
+});
+
+// ---------------------------------------------------------------------------
 // 8. typographyToScaffoldSection — full output pin
 //
 // Pins the complete string returned by typographyToScaffoldSection for
