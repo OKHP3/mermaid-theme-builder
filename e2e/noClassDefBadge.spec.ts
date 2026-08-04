@@ -154,3 +154,48 @@ test("'No classDef' badge is absent on .md and .txt rows for a flowchart (classD
   await expect(mdRow.getByText("No classDef", { exact: true })).toBeHidden();
   await expect(txtRow.getByText("No classDef", { exact: true })).toBeHidden();
 });
+
+test("'No classDef' badge disappears after switching from sankey to flowchart without a page reload", async ({
+  page,
+}) => {
+  await gotoApply(page);
+
+  // Step 1 — paste sankey and confirm the badge is present.
+  await pasteDiagram(page, SANKEY);
+  await expect(
+    page
+      .locator("button")
+      .filter({ hasText: /Sankey/i })
+      .first()
+  ).toBeVisible({ timeout: 8_000 });
+
+  await openDownloadMenu(page);
+
+  const { mdRow: sankeyMdRow, txtRow: sankeyTxtRow } = getDownloadRows(page);
+  await expect(sankeyMdRow.getByText("No classDef", { exact: true })).toBeVisible({
+    timeout: 5_000,
+  });
+  await expect(sankeyTxtRow.getByText("No classDef", { exact: true })).toBeVisible({
+    timeout: 5_000,
+  });
+
+  // Step 2 — close the download menu.
+  await page.keyboard.press("Escape");
+  await expect(page.getByText(".mermaid", { exact: true }).first()).toBeHidden({ timeout: 3_000 });
+
+  // Step 3 — replace the diagram with a flowchart and wait for detection to update.
+  await pasteDiagram(page, FLOWCHART);
+  await expect(
+    page
+      .locator("button")
+      .filter({ hasText: /^Flowchart$/ })
+      .first()
+  ).toBeVisible({ timeout: 8_000 });
+
+  // Step 4 — reopen the download menu and confirm the badge is gone.
+  await openDownloadMenu(page);
+
+  const { mdRow: fcMdRow, txtRow: fcTxtRow } = getDownloadRows(page);
+  await expect(fcMdRow.getByText("No classDef", { exact: true })).toBeHidden();
+  await expect(fcTxtRow.getByText("No classDef", { exact: true })).toBeHidden();
+});
