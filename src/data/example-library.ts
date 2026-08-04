@@ -1967,14 +1967,14 @@ export const EXAMPLE_CATALOG: ExampleEntry[] = [
     tags: ["kanban", "project management", "OKH", "alpha", "beta"],
   },
 
-  // Venn — governance triangle (beta)
+  // Venn — governance triangle (experimental)
   {
     id: "venn-governance-triangle",
     label: "Venn — governance triangle",
     family: "venn",
     category: "specialty",
     content: VENN_GOVERNANCE_TRIANGLE,
-    badge: "Beta — may not render in all environments",
+    badge: "Experimental",
     description:
       "Venn diagram showing the three-way overlap of Measure, Document, and Diagram — the Visual Governance triangle at the core of the OKH methodology.",
     tags: ["venn", "governance", "OKH", "beta", "set diagram"],

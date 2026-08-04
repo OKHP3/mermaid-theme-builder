@@ -112,7 +112,56 @@ test("Beta chip appears for a Wardley entry in the Specialty section", async ({ 
 });
 
 // ---------------------------------------------------------------------------
-// Test 5 — Entries without a badge show no chip
+// Test 5 — Experimental chip is visible in the sidebar and preview header
+// ---------------------------------------------------------------------------
+
+test("Experimental chip is visible in the Specialty sidebar next to the Venn entry", async ({
+  page,
+}) => {
+  await openExamplesTab(page);
+  await expandSection(page, "Specialty");
+
+  // venn-governance-triangle has badge: "Experimental" — the violet chip.
+  const vennButton = page.locator('[data-example-id="venn-governance-triangle"]');
+  await expect(vennButton).toBeVisible({ timeout: 5000 });
+
+  const chip = vennButton.getByText("Experimental");
+  await expect(chip).toBeVisible();
+});
+
+test("Experimental chip carries violet color styling", async ({ page }) => {
+  await openExamplesTab(page);
+  await expandSection(page, "Specialty");
+
+  const vennButton = page.locator('[data-example-id="venn-governance-triangle"]');
+  await expect(vennButton).toBeVisible({ timeout: 5000 });
+
+  const chip = vennButton.locator("span").filter({ hasText: "Experimental" }).first();
+  await expect(chip).toBeVisible();
+
+  const className = await chip.getAttribute("class");
+  expect(className).toMatch(/violet/);
+});
+
+test("Experimental chip also appears in the preview header after selecting the Venn entry", async ({
+  page,
+}) => {
+  await openExamplesTab(page);
+  await expandSection(page, "Specialty");
+
+  const vennButton = page.locator('[data-example-id="venn-governance-triangle"]');
+  await expect(vennButton).toBeVisible({ timeout: 5000 });
+  await vennButton.click();
+
+  // At least 2 visible "Experimental" texts: sidebar + preview header.
+  const chips = page.getByText("Experimental");
+  await expect(chips.first()).toBeVisible({ timeout: 3000 });
+  const count = await chips.count();
+  expect(count).toBeGreaterThanOrEqual(2);
+});
+
+// ---------------------------------------------------------------------------
+// Test 9 — Entries without a badge show no chip
 // ---------------------------------------------------------------------------
 
 test("Sidebar entries without a badge show no chip text", async ({ page }) => {
