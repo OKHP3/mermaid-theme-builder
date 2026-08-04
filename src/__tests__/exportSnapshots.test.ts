@@ -311,10 +311,10 @@ describe("generatePromptScaffoldWithFormat cross-palette uniqueness", () => {
 });
 
 // ---------------------------------------------------------------------------
-// 7. customThemeName snapshots — one palette with customThemeName: "My Brand"
+// 7. customThemeName snapshots — all BRAND_PALETTES × customThemeName: "My Brand"
 // ---------------------------------------------------------------------------
 
-/** Options with a custom theme name applied to the first BRAND_PALETTE. */
+/** Options with a custom theme name applied to the given palette. */
 function customNameOptions(palette: (typeof BRAND_PALETTES)[number]): ExportOptions {
   return {
     ...baseOptions(palette),
@@ -323,23 +323,25 @@ function customNameOptions(palette: (typeof BRAND_PALETTES)[number]): ExportOpti
 }
 
 describe("generateMarkdownExport snapshots — customThemeName path", () => {
-  it(`palette "${BRAND_PALETTES[0].name}" with customThemeName "My Brand" matches snapshot`, () => {
-    const palette = BRAND_PALETTES[0];
-    const opts = customNameOptions(palette);
-    const themedCode = generateThemedCode(SIMPLE_DIAGRAM, opts);
-    const output = generateMarkdownExport(themedCode, palette, opts);
-    expect(output).toMatchSnapshot();
-  });
+  for (const palette of BRAND_PALETTES) {
+    it(`palette "${palette.name}" (id: ${palette.id}) with customThemeName "My Brand" matches snapshot`, () => {
+      const opts = customNameOptions(palette);
+      const themedCode = generateThemedCode(SIMPLE_DIAGRAM, opts);
+      const output = generateMarkdownExport(themedCode, palette, opts);
+      expect(output).toMatchSnapshot();
+    });
+  }
 });
 
 describe("generatePromptScaffoldWithFormat snapshots — customThemeName path", () => {
-  for (const format of SCAFFOLD_FORMATS) {
-    it(`palette "${BRAND_PALETTES[0].name}" format "${format}" with customThemeName "My Brand" matches snapshot`, () => {
-      const palette = BRAND_PALETTES[0];
-      const opts = customNameOptions(palette);
-      const output = generatePromptScaffoldWithFormat(palette, opts, format);
-      expect(output).toMatchSnapshot();
-    });
+  for (const palette of BRAND_PALETTES) {
+    for (const format of SCAFFOLD_FORMATS) {
+      it(`palette "${palette.name}" format "${format}" with customThemeName "My Brand" matches snapshot`, () => {
+        const opts = customNameOptions(palette);
+        const output = generatePromptScaffoldWithFormat(palette, opts, format);
+        expect(output).toMatchSnapshot();
+      });
+    }
   }
 });
 
@@ -348,59 +350,57 @@ describe("generatePromptScaffoldWithFormat snapshots — customThemeName path", 
 // ---------------------------------------------------------------------------
 
 describe("generateMarkdownExport structural invariants — customThemeName", () => {
-  it(`palette "${BRAND_PALETTES[0].name}" markdown contains "Custom — based on" label`, () => {
-    const palette = BRAND_PALETTES[0];
-    const opts = customNameOptions(palette);
-    const themedCode = generateThemedCode(SIMPLE_DIAGRAM, opts);
-    const output = generateMarkdownExport(themedCode, palette, opts);
-    expect(output).toContain("Custom — based on");
-    expect(output).toContain(palette.name);
-  });
+  for (const palette of BRAND_PALETTES) {
+    it(`palette "${palette.name}" markdown contains "Custom — based on" label`, () => {
+      const opts = customNameOptions(palette);
+      const themedCode = generateThemedCode(SIMPLE_DIAGRAM, opts);
+      const output = generateMarkdownExport(themedCode, palette, opts);
+      expect(output).toContain("Custom — based on");
+      expect(output).toContain(palette.name);
+    });
 
-  it(`palette "${BRAND_PALETTES[0].name}" markdown H1 contains the custom theme name "My Brand"`, () => {
-    const palette = BRAND_PALETTES[0];
-    const opts = customNameOptions(palette);
-    const themedCode = generateThemedCode(SIMPLE_DIAGRAM, opts);
-    const output = generateMarkdownExport(themedCode, palette, opts);
-    expect(output).toContain("# Mermaid Diagram — My Brand Theme");
-  });
+    it(`palette "${palette.name}" markdown H1 contains the custom theme name "My Brand"`, () => {
+      const opts = customNameOptions(palette);
+      const themedCode = generateThemedCode(SIMPLE_DIAGRAM, opts);
+      const output = generateMarkdownExport(themedCode, palette, opts);
+      expect(output).toContain("# Mermaid Diagram — My Brand Theme");
+    });
 
-  it(`palette "${BRAND_PALETTES[0].name}" markdown Theme: line contains "Custom — based on"`, () => {
-    const palette = BRAND_PALETTES[0];
-    const opts = customNameOptions(palette);
-    const themedCode = generateThemedCode(SIMPLE_DIAGRAM, opts);
-    const output = generateMarkdownExport(themedCode, palette, opts);
-    const themeLine = output.split("\n").find((l) => l.startsWith("**Theme:**"));
-    expect(themeLine).toContain("Custom — based on");
-    expect(themeLine).toContain(palette.name);
-  });
+    it(`palette "${palette.name}" markdown Theme: line contains "Custom — based on"`, () => {
+      const opts = customNameOptions(palette);
+      const themedCode = generateThemedCode(SIMPLE_DIAGRAM, opts);
+      const output = generateMarkdownExport(themedCode, palette, opts);
+      const themeLine = output.split("\n").find((l) => l.startsWith("**Theme:**"));
+      expect(themeLine).toContain("Custom — based on");
+      expect(themeLine).toContain(palette.name);
+    });
 
-  it(`palette "${BRAND_PALETTES[0].name}" markdown output differs from non-custom output`, () => {
-    const palette = BRAND_PALETTES[0];
-    const standardOpts = baseOptions(palette);
-    const customOpts = customNameOptions(palette);
-    const themedCode = generateThemedCode(SIMPLE_DIAGRAM, standardOpts);
-    const standardOutput = generateMarkdownExport(themedCode, palette, standardOpts);
-    const customOutput = generateMarkdownExport(themedCode, palette, customOpts);
-    expect(customOutput).not.toBe(standardOutput);
-  });
+    it(`palette "${palette.name}" markdown output differs from non-custom output`, () => {
+      const standardOpts = baseOptions(palette);
+      const customOpts = customNameOptions(palette);
+      const themedCode = generateThemedCode(SIMPLE_DIAGRAM, standardOpts);
+      const standardOutput = generateMarkdownExport(themedCode, palette, standardOpts);
+      const customOutput = generateMarkdownExport(themedCode, palette, customOpts);
+      expect(customOutput).not.toBe(standardOutput);
+    });
+  }
 });
 
 describe("generatePromptScaffoldWithFormat structural invariants — customThemeName", () => {
-  it(`palette "${BRAND_PALETTES[0].name}" format "both" scaffold contains "Custom — based on"`, () => {
-    const palette = BRAND_PALETTES[0];
-    const opts = customNameOptions(palette);
-    const output = generatePromptScaffoldWithFormat(palette, opts, "both");
-    expect(output).toContain("Custom — based on");
-    expect(output).toContain(palette.name);
-  });
+  for (const palette of BRAND_PALETTES) {
+    it(`palette "${palette.name}" format "both" scaffold contains "Custom — based on"`, () => {
+      const opts = customNameOptions(palette);
+      const output = generatePromptScaffoldWithFormat(palette, opts, "both");
+      expect(output).toContain("Custom — based on");
+      expect(output).toContain(palette.name);
+    });
 
-  it(`palette "${BRAND_PALETTES[0].name}" format "both" scaffold output differs from non-custom output`, () => {
-    const palette = BRAND_PALETTES[0];
-    const standardOpts = baseOptions(palette);
-    const customOpts = customNameOptions(palette);
-    const standardOutput = generatePromptScaffoldWithFormat(palette, standardOpts, "both");
-    const customOutput = generatePromptScaffoldWithFormat(palette, customOpts, "both");
-    expect(customOutput).not.toBe(standardOutput);
-  });
+    it(`palette "${palette.name}" format "both" scaffold output differs from non-custom output`, () => {
+      const standardOpts = baseOptions(palette);
+      const customOpts = customNameOptions(palette);
+      const standardOutput = generatePromptScaffoldWithFormat(palette, standardOpts, "both");
+      const customOutput = generatePromptScaffoldWithFormat(palette, customOpts, "both");
+      expect(customOutput).not.toBe(standardOutput);
+    });
+  }
 });
