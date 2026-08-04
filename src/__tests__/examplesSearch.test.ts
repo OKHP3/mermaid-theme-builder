@@ -260,4 +260,35 @@ describe("EXAMPLE_CATALOG — data integrity", () => {
       `expected ≥ 25 enriched catalog entries, found ${enriched.length}`
     ).toBeGreaterThanOrEqual(25);
   });
+
+  // ---------------------------------------------------------------------------
+  // ID uniqueness guard (Task #433)
+  //
+  // A duplicate id causes the byId lookup map above (and the same map built in
+  // ExamplesTab.tsx) to silently drop the earlier entry — last writer wins.
+  // This test catches that regression before it reaches the UI.
+  // ---------------------------------------------------------------------------
+
+  it("every EXAMPLE_CATALOG entry has a non-empty string id", () => {
+    EXAMPLE_CATALOG.forEach((entry, index) => {
+      expect(
+        typeof entry.id === "string" && entry.id.trim().length > 0,
+        `entry at index ${index} has a blank or missing id (found: ${JSON.stringify(entry.id)})`
+      ).toBe(true);
+    });
+  });
+
+  it("every EXAMPLE_CATALOG id is unique — no duplicates", () => {
+    const ids = EXAMPLE_CATALOG.map((e) => e.id);
+    const seen = new Set<string>();
+    const duplicates: string[] = [];
+    for (const id of ids) {
+      if (seen.has(id)) duplicates.push(id);
+      seen.add(id);
+    }
+    expect(
+      duplicates,
+      `duplicate ids found in EXAMPLE_CATALOG: ${duplicates.join(", ")}`
+    ).toHaveLength(0);
+  });
 });
