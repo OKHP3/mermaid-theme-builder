@@ -141,6 +141,8 @@ interface ComposeTabProps {
   onTypographyChange: (t: TypographySettings) => void;
   rendererTarget: string;
   onRendererTargetChange: (v: string) => void;
+  strokeWidth?: number;
+  onStrokeWidthChange?: (v: number | undefined) => void;
   onUseExtractedTheme: (palette: Palette, codeWithClassDefs?: string) => void;
   onSwitchTab: (tab: AppTab) => void;
   onNavigateToParityMatrix: () => void;
@@ -223,6 +225,8 @@ export function ComposeTab({
   onTypographyChange,
   rendererTarget,
   onRendererTargetChange,
+  strokeWidth,
+  onStrokeWidthChange,
   onUseExtractedTheme,
   onSwitchTab,
   onNavigateToParityMatrix,
@@ -312,6 +316,7 @@ export function ComposeTab({
       fontSize: fontSize || undefined,
       typography,
       rendererTarget,
+      strokeWidth,
     }),
     [
       selectedPalette,
@@ -321,6 +326,7 @@ export function ComposeTab({
       fontSize,
       typography,
       rendererTarget,
+      strokeWidth,
     ]
   );
 
@@ -684,6 +690,44 @@ export function ComposeTab({
                           : "The original Mermaid rendering — crisp angles, familiar shapes, consistent across all diagram types."}
                     </p>
                   </div>
+
+                  {/* Node border width */}
+                  {onStrokeWidthChange && (
+                    <div>
+                      <p className="text-[10px] text-muted-foreground mb-1.5 leading-relaxed">
+                        Global{" "}
+                        <code className="font-mono bg-muted rounded px-0.5">stroke-width</code>{" "}
+                        applied to all exported{" "}
+                        <code className="font-mono bg-muted rounded px-0.5">classDef</code> lines.
+                        Default preserves individual classDef settings.
+                      </p>
+                      <div className="flex gap-1" role="group" aria-label="Node border width">
+                        {(
+                          [
+                            { label: "Default", value: undefined },
+                            { label: "1px", value: 1 },
+                            { label: "2px", value: 2 },
+                            { label: "3px", value: 3 },
+                            { label: "4px", value: 4 },
+                          ] as const
+                        ).map((opt) => (
+                          <button
+                            key={opt.label}
+                            type="button"
+                            onClick={() => onStrokeWidthChange(opt.value)}
+                            aria-pressed={strokeWidth === opt.value}
+                            className={`flex-1 text-[11px] px-1 py-1.5 rounded-md border font-medium transition-all ${
+                              strokeWidth === opt.value
+                                ? "border-primary bg-primary/10 text-primary"
+                                : "border-border bg-background hover:bg-muted text-muted-foreground"
+                            }`}
+                          >
+                            {opt.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

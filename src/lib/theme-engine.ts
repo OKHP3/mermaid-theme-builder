@@ -83,6 +83,19 @@ export interface ExportOptions {
   fontSize?: string;
   typography?: TypographySettings;
   rendererTarget?: string;
+  /**
+   * Output format for the theme directive.
+   * - "init-directive" (default): universal %%{init}%% format, Mermaid v9+.
+   * - "frontmatter": YAML frontmatter block, requires Mermaid v10.5+.
+   * When omitted, "init-directive" is used.
+   */
+  outputFormat?: "init-directive" | "frontmatter";
+  /**
+   * Global classDef stroke-width override in pixels.
+   * When set, applies to all exported classDef lines, replacing any per-classDef
+   * stroke-width values. When omitted, per-classDef defaults are preserved.
+   */
+  strokeWidth?: number;
 }
 
 const TOOL_URL = "https://overkillhill.com/projects/mermaid-theme-builder/";
@@ -259,17 +272,20 @@ export function generateThemedCode(originalCode: string, options: ExportOptions)
     .replace(/\n\s*click MTB_ATTR.*\n?/g, "")
     .trimStart();
 
-  const initDirective = buildInitDirective(
-    palette,
-    diagramFamily,
-    options.look,
-    options.fontSize,
-    options.typography
-  );
+  const themeDirective =
+    options.outputFormat === "frontmatter"
+      ? buildFrontmatter(palette, diagramFamily, options.look, options.fontSize, options.typography)
+      : buildInitDirective(
+          palette,
+          diagramFamily,
+          options.look,
+          options.fontSize,
+          options.typography
+        );
   const metaComments = includeMetaComments ? buildMetaComments(palette, themeName) : null;
   const badge = includeBadge ? buildBadgeNode(palette, themeName, diagramFamily) : null;
 
-  const parts = [initDirective];
+  const parts = [themeDirective];
   if (metaComments) parts.push(metaComments);
   parts.push(strippedCode.trimEnd());
   if (badge) parts.push(badge);
@@ -385,21 +401,37 @@ Do NOT use this theme for:
 }
 
 /** Build a YAML frontmatter block (Mermaid v10.5+ format).
- *  Returns the full ---...--- block as a string.
+ *  Returns the full ---...--- block as a string. Applies the same overlay
+ *  logic as buildInitDirective so output is consistent across both formats.
  */
-function buildFrontmatter(palette: Palette): string {
-  const vars = buildThemeVars(palette);
-  const themeLines = Object.entries(vars)
+function buildFrontmatter(
+  palette: Palette,
+  family: DiagramFamily = "flowchart",
+  look?: MermaidLook,
+  fontSize?: string,
+  typography?: TypographySettings
+): string {
+  const baseVars = buildThemeVars(palette);
+  const overlay = familyThemeOverlay(palette, family);
+  const vars: Record<string, string> = { ...overlay, ...baseVars };
+
+  if (typography) applyTypographyToVars(vars, typography);
+  if (fontSize) vars["fontSize"] = fontSize;
+
+  const varEntries = Object.entries(vars)
+    .filter(([k]) => k !== "fontFamily")
     .map(([k, v]) => `    ${k}: "${v}"`)
     .join("\n");
 
-  return `---
-# Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported
-config:
-  theme: base
-  themeVariables:
-${themeLines}
----`;
+  const fontFamilyLine = vars["fontFamily"]
+    ? `    fontFamily: "${sanitizeFontFamily(vars["fontFamily"])}"`
+    : null;
+
+  const themeLines = [varEntries, fontFamilyLine].filter(Boolean).join("\n");
+  const lookLine = look && look !== "classic" ? `  look: ${look}\n` : "";
+  const archLine = family === "architectureBeta" ? `  architecture:\n    randomize: false\n` : "";
+
+  return `---\n# Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported\nconfig:\n  theme: base\n${lookLine}${archLine}  themeVariables:\n${themeLines}\n---`;
 }
 
 /** Serialize a single ClassDef object to a Mermaid `classDef` line.
@@ -412,13 +444,27 @@ ${themeLines}
  *  @param fontSizeRule Optional `font-size:Npx` rule to append (used by the
  *                      export path when a non-default node font size is set).
  */
-export function buildClassDefString(def: ClassDef, fontSizeRule?: string): string {
+export function buildClassDefString(
+  def: ClassDef,
+  fontSizeRule?: string,
+  strokeWidthOverride?: string
+): string {
+  // When a global stroke-width override is provided, strip any per-classDef
+  // stroke-width from the extra field so the two never conflict.
+  let effectiveExtra = def.extra;
+  if (strokeWidthOverride !== undefined) {
+    effectiveExtra = effectiveExtra
+      .replace(/\bstroke-width\s*:[^,}]+,?/g, "")
+      .replace(/,+$/, "")
+      .trim();
+  }
   const parts = [
     `fill:${def.fill}`,
     `stroke:${def.stroke}`,
     `color:${def.color}`,
-    def.extra,
+    effectiveExtra,
     fontSizeRule ?? "",
+    strokeWidthOverride ?? "",
   ].filter(Boolean);
   return `classDef ${def.name} ${parts.join(",")}`;
 }
@@ -433,7 +479,11 @@ export function buildClassDefString(def: ClassDef, fontSizeRule?: string): strin
  *  Mermaid default (16px), a `font-size:Npx` rule is appended to each
  *  classDef so the exported block respects the typography settings.
  */
-function buildClassDefLibrary(palette: Palette, typography?: TypographySettings): string {
+function buildClassDefLibrary(
+  palette: Palette,
+  typography?: TypographySettings,
+  strokeWidth?: number
+): string {
   // Mermaid's built-in default fontSize is 16px. Only emit font-size on classDefs
   // when the user has explicitly chosen a different nodeLabel size.
   const mermaidDefaultFontSize = 16;
@@ -442,9 +492,10 @@ function buildClassDefLibrary(palette: Palette, typography?: TypographySettings)
     nodeFontSize !== undefined && nodeFontSize !== mermaidDefaultFontSize
       ? `font-size:${nodeFontSize}px`
       : "";
+  const strokeWidthRule = strokeWidth !== undefined ? `stroke-width:${strokeWidth}px` : undefined;
 
   return getClassDefs(palette)
-    .map((def) => `    ${buildClassDefString(def, fontSizeRule)}`)
+    .map((def) => `    ${buildClassDefString(def, fontSizeRule, strokeWidthRule)}`)
     .join("\n");
 }
 
@@ -681,8 +732,14 @@ function buildScaffold(
     options.fontSize,
     options.typography
   );
-  const frontmatterBlock = buildFrontmatter(palette);
-  const classDefBlock = buildClassDefLibrary(palette, options.typography);
+  const frontmatterBlock = buildFrontmatter(
+    palette,
+    diagramFamily,
+    options.look,
+    options.fontSize,
+    options.typography
+  );
+  const classDefBlock = buildClassDefLibrary(palette, options.typography, options.strokeWidth);
   const subgraphBlock = buildSubgraphTiers(palette);
   const brandGuidance = getBrandGuidance(palette);
 

@@ -22,6 +22,7 @@ import {
 import { openInLiveEditor } from "@/lib/live-editor";
 import { writeToClipboard } from "@/lib/clipboard";
 import type { RendererProfile } from "@/data/renderer-parity";
+import { getRendererDefaultOutputFormat } from "@/data/renderer-parity";
 import type { DetectionResult } from "@/lib/detector";
 import type { TypographySettings } from "@/lib/typography";
 
@@ -64,6 +65,8 @@ interface ExportToolbarProps {
   promptIsThemeOnly: boolean;
   onShowScaffoldModal: () => void;
   onShowToast: (msg: ReactNode) => void;
+  outputFormat?: "init-directive" | "frontmatter";
+  onOutputFormatChange?: (format: "init-directive" | "frontmatter") => void;
   /**
    * Test seam only — seeds the initial copiedType state so unit tests can
    * assert badge visibility during the "Copied!" flash without needing to
@@ -91,6 +94,8 @@ export function ExportToolbar({
   promptIsThemeOnly,
   onShowScaffoldModal,
   onShowToast,
+  outputFormat = "init-directive",
+  onOutputFormatChange,
   _testInitialCopiedType = null,
 }: ExportToolbarProps) {
   const [copiedType, setCopiedType] = useState<ExportType | null>(_testInitialCopiedType);
@@ -234,6 +239,59 @@ export function ExportToolbar({
       )}
       <div className="flex flex-wrap items-center gap-2 px-3 py-2.5">
         <div className="flex-1" />
+
+        {/* Format toggle: init-directive vs YAML frontmatter */}
+        <div
+          className="flex items-center rounded-md border border-border overflow-hidden"
+          title="Theme directive output format"
+          role="group"
+          aria-label="Theme directive format"
+        >
+          {(
+            [
+              {
+                value: "init-directive" as const,
+                label: "%%{init}%%",
+                tip: "Universal %%{init}%% directive — Mermaid v9+, works everywhere",
+              },
+              {
+                value: "frontmatter" as const,
+                label: "YAML",
+                tip: "YAML frontmatter — Mermaid v10.5+; recommended for GitHub, Obsidian, mermaid.live",
+              },
+            ] as const
+          ).map((opt) => {
+            const isActive = outputFormat === opt.value;
+            const rendererRecommends =
+              rendererProfile && getRendererDefaultOutputFormat(rendererProfile.id) === opt.value;
+            return (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => onOutputFormatChange?.(opt.value)}
+                title={
+                  rendererRecommends
+                    ? `${opt.tip} — recommended for ${rendererProfile!.shortName}`
+                    : opt.tip
+                }
+                aria-pressed={isActive}
+                className={`relative text-[10px] px-2 py-1 font-mono font-medium transition-colors ${
+                  isActive
+                    ? "bg-primary/15 text-primary"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                }`}
+              >
+                {opt.label}
+                {rendererRecommends && !isActive && (
+                  <span
+                    className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-primary"
+                    aria-hidden="true"
+                  />
+                )}
+              </button>
+            );
+          })}
+        </div>
 
         <button
           onClick={onOpenColorEditor}

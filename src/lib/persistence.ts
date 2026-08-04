@@ -24,6 +24,10 @@ export interface PersistedState {
   lastSelectedExampleId?: string;
   myThemeSlots?: MyThemeSlot[];
   activeMyThemeSlotId?: string | null;
+  /** Persisted output format preference: "init-directive" or "frontmatter". */
+  outputFormat?: string;
+  /** Persisted global classDef stroke-width override in pixels. */
+  strokeWidth?: number;
 }
 
 export const DEFAULT_PERSISTED_STATE: Omit<PersistedState, "selectedPaletteId" | "inputCode"> = {

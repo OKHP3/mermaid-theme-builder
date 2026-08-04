@@ -54,6 +54,9 @@ interface ApplyTabProps {
   typography: TypographySettings;
   rendererTarget: string;
   onRendererTargetChange: (v: string) => void;
+  outputFormat?: "init-directive" | "frontmatter";
+  onOutputFormatChange?: (format: "init-directive" | "frontmatter") => void;
+  strokeWidth?: number;
   lastExampleType: Record<string, "flowchart" | "sequence">;
   onRecordExampleType: (id: string, type: "flowchart" | "sequence") => void;
   previewMode: PreviewMode;
@@ -101,6 +104,9 @@ export function ApplyTab({
   typography,
   rendererTarget,
   onRendererTargetChange,
+  outputFormat = "init-directive",
+  onOutputFormatChange,
+  strokeWidth,
   lastExampleType: _lastExampleType,
   onRecordExampleType: _onRecordExampleType,
   previewMode,
@@ -240,6 +246,8 @@ export function ApplyTab({
       fontSize: fontSize || undefined,
       typography,
       rendererTarget,
+      outputFormat,
+      strokeWidth,
     }),
     [
       selectedPalette,
@@ -251,6 +259,8 @@ export function ApplyTab({
       fontSize,
       typography,
       rendererTarget,
+      outputFormat,
+      strokeWidth,
     ]
   );
 
@@ -441,6 +451,8 @@ export function ApplyTab({
             promptIsThemeOnly={promptIsThemeOnly}
             onShowScaffoldModal={() => setShowScaffoldModal(true)}
             onShowToast={onShowToast}
+            outputFormat={outputFormat}
+            onOutputFormatChange={onOutputFormatChange}
           />
         </div>
       </div>
