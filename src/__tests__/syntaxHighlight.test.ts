@@ -529,3 +529,85 @@ describe("highlightClassDefLine — keyword vs name assignment", () => {
     expect(HL.keyword).not.toBe(HL.name);
   });
 });
+
+describe("highlightCommentLine — color assignment", () => {
+  const LINE = "%% This is a theme comment";
+
+  it("the only color applied is COMMENT_HL.text", () => {
+    const colors = extractColors(hl(highlightCommentLine(LINE, 0)));
+    expect(colors).toHaveLength(1);
+    expect(colors[0]).toBe(COMMENT_HL.text);
+  });
+
+  it("COMMENT_HL.text is the color, not INIT_HL.bracket or any HL color", () => {
+    const colors = extractColors(hl(highlightCommentLine(LINE, 0)));
+    expect(colors[0]).not.toBe(INIT_HL.bracket);
+    expect(colors[0]).not.toBe(INIT_HL.content);
+    expect(colors[0]).not.toBe(HL.keyword);
+    expect(colors[0]).not.toBe(HL.name);
+  });
+
+  it("fontStyle italic is present in the rendered output", () => {
+    const html = hl(highlightCommentLine(LINE, 0));
+    expect(html).toContain("font-style:italic");
+  });
+
+  it("COMMENT_HL.text is distinct from every other color constant (position tests are meaningful)", () => {
+    expect(COMMENT_HL.text).not.toBe(INIT_HL.bracket);
+    expect(COMMENT_HL.text).not.toBe(INIT_HL.content);
+    expect(COMMENT_HL.text).not.toBe(HL.keyword);
+    expect(COMMENT_HL.text).not.toBe(HL.key);
+  });
+});
+
+describe("highlightPropsSegment — key vs value vs punct assignment", () => {
+  // Input with one hex value, one non-hex value, and comma separators.
+  // fill:#1e3a5f  → key(fill) colon(:) hex(#1e3a5f)
+  // ,             → punct(,)
+  // color:bold    → key(color) colon(:) value(bold)
+  const PROPS = "fill:#1e3a5f,color:bold";
+
+  it("the first color span (key token before colon) uses HL.key", () => {
+    const colors = extractColors(hl(highlightPropsSegment(PROPS, "test")));
+    expect(colors[0]).toBe(HL.key);
+  });
+
+  it("the color span for a hex value uses HL.hex, not HL.value", () => {
+    const colors = extractColors(hl(highlightPropsSegment(PROPS, "test")));
+    // Order: key(fill)[0] colon[1] hex(#1e3a5f)[2]
+    expect(colors[2]).toBe(HL.hex);
+    expect(colors[2]).not.toBe(HL.value);
+  });
+
+  it("the color span for a non-hex value uses HL.value, not HL.hex", () => {
+    const colors = extractColors(hl(highlightPropsSegment(PROPS, "test")));
+    // Order: key(fill)[0] colon[1] hex[2] punct(,)[3] key(color)[4] colon[5] value(bold)[6]
+    expect(colors[6]).toBe(HL.value);
+    expect(colors[6]).not.toBe(HL.hex);
+  });
+
+  it("the colon separator uses HL.punct, not HL.key or HL.value", () => {
+    const colors = extractColors(hl(highlightPropsSegment(PROPS, "test")));
+    // colon is at index 1 (after key at 0)
+    expect(colors[1]).toBe(HL.punct);
+    expect(colors[1]).not.toBe(HL.key);
+    expect(colors[1]).not.toBe(HL.value);
+  });
+
+  it("the comma separator between pairs uses HL.punct, not HL.key or HL.value", () => {
+    const colors = extractColors(hl(highlightPropsSegment(PROPS, "test")));
+    // comma is at index 3 (after key[0] colon[1] hex[2])
+    expect(colors[3]).toBe(HL.punct);
+    expect(colors[3]).not.toBe(HL.key);
+    expect(colors[3]).not.toBe(HL.hex);
+  });
+
+  it("HL.key, HL.hex, HL.value, and HL.punct are all distinct (position tests are meaningful)", () => {
+    expect(HL.key).not.toBe(HL.hex);
+    expect(HL.key).not.toBe(HL.value);
+    expect(HL.key).not.toBe(HL.punct);
+    expect(HL.hex).not.toBe(HL.value);
+    expect(HL.hex).not.toBe(HL.punct);
+    expect(HL.value).not.toBe(HL.punct);
+  });
+});
