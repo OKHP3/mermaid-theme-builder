@@ -204,7 +204,7 @@ export function ExtractTab({
         url: "https://overkillhill.com/projects/mermaid-theme-builder/",
         themeName: name,
         toolName: "Mermaid Theme Builder",
-        toolVersion: "0.5.0",
+        toolVersion: "0.3.0",
       },
     };
   }, [extracted, status, editedVars, themeName]);

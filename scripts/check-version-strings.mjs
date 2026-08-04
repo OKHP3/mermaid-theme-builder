@@ -78,51 +78,99 @@ check(
 );
 
 // ---------------------------------------------------------------------------
-// 3. Palette toolVersion consistency across the four source files
+// 3. Palette toolVersion consistency — dynamic scan of all production sources
 //
 //    toolVersion is the palette output schema version — a distinct concept from
 //    the app version in package.json — so it is NOT required to match `version`.
-//    What IS required is that all four files agree with each other; a drift where
-//    one file still says "0.3.0" while others say "0.4.0" is the failure mode
-//    this check guards against.
+//    What IS required is that every production toolVersion occurrence agrees
+//    with every other one.  A drift where one file still says "0.3.0" while
+//    another says "0.4.0" is silently dangerous and this check guards against it.
+//
+//    Strategy:
+//      - Recursively scan src/**/*.{ts,tsx} for lines containing toolVersion:
+//      - Exclude test files (src/__tests__/**) which use synthetic fixture values
+//      - Collect EVERY matching occurrence (not just first-per-file) so multi-
+//        entry files cannot hide drift
+//      - Assert all collected values are identical
 // ---------------------------------------------------------------------------
 
-const TOOL_VERSION_FILES = [
-  "src/lib/exporters.ts",
-  "src/lib/extractor.ts",
-  "src/lib/palettes.ts",
-  "src/App.tsx",
-];
+import { readdirSync, statSync } from "node:fs";
 
-const TOOL_VERSION_RE = /toolVersion:\s*["']([^"']+)["']/;
+/** Recursively collect *.ts / *.tsx paths under a directory. */
+function collectTsFiles(dir) {
+  const results = [];
+  for (const entry of readdirSync(dir)) {
+    const full = resolve(dir, entry);
+    if (statSync(full).isDirectory()) {
+      results.push(...collectTsFiles(full));
+    } else if (entry.endsWith(".ts") || entry.endsWith(".tsx")) {
+      results.push(full);
+    }
+  }
+  return results;
+}
 
-const toolVersions = TOOL_VERSION_FILES.map((file) => {
-  const src = read(file);
-  const match = TOOL_VERSION_RE.exec(src);
-  return { file, value: match ? match[1] : null };
-});
+const TOOL_VERSION_LINE_RE = /toolVersion:\s*["']([^"']+)["']/g;
 
-const foundValues = toolVersions.map((t) => t.value);
-const definedValues = foundValues.filter((v) => v !== null);
-const canonical = definedValues[0] ?? null;
-const allAgree = canonical !== null && definedValues.every((v) => v === canonical);
+/** Returns all toolVersion values found in a source string. */
+function extractAllToolVersions(src) {
+  const hits = [];
+  let m;
+  while ((m = TOOL_VERSION_LINE_RE.exec(src)) !== null) {
+    hits.push(m[1]);
+  }
+  return hits;
+}
 
-if (!allAgree) {
-  const report = toolVersions
-    .map(({ file, value }) => {
-      const tag = value === canonical ? "✓" : "✗";
-      return `    ${tag} ${file}: ${value !== null ? `"${value}"` : "(not found)"}`;
-    })
-    .join("\n");
+const srcDir = resolve(root, "src");
+const testDir = resolve(root, "src/__tests__");
+
+const allTsFiles = collectTsFiles(srcDir).filter(
+  // Exclude test fixtures — they deliberately use synthetic versions.
+  (f) => !f.startsWith(testDir)
+);
+
+/** @type {Array<{file: string, value: string}>} */
+const toolVersionOccurrences = [];
+
+for (const absPath of allTsFiles) {
+  const rel = absPath.slice(root.length + 1);
+  const src = readFileSync(absPath, "utf8");
+  const values = extractAllToolVersions(src);
+  for (const value of values) {
+    toolVersionOccurrences.push({ file: rel, value });
+  }
+}
+
+if (toolVersionOccurrences.length === 0) {
   errors.push(
-    `  ✗ Palette toolVersion consistency across ${TOOL_VERSION_FILES.length} files\n` +
-      `      Values found:\n${report}\n` +
-      `      Fix: update all toolVersion fields to the same string before releasing.`
+    `  ✗ Palette toolVersion consistency\n` +
+      `      No toolVersion occurrences found in src/ (excluding __tests__).\n` +
+      `      Expected at least one production file to declare it.`
   );
 } else {
-  console.log(
-    `  ✓ Palette toolVersion is "${canonical}" in all ${TOOL_VERSION_FILES.length} files`
-  );
+  const canonical = toolVersionOccurrences[0].value;
+  const disagreements = toolVersionOccurrences.filter((o) => o.value !== canonical);
+
+  if (disagreements.length === 0) {
+    console.log(
+      `  ✓ Palette toolVersion is "${canonical}" in all ` +
+        `${toolVersionOccurrences.length} production occurrence(s) across ` +
+        `${new Set(toolVersionOccurrences.map((o) => o.file)).size} file(s)`
+    );
+  } else {
+    const report = toolVersionOccurrences
+      .map(({ file, value }) => {
+        const tag = value === canonical ? "✓" : "✗";
+        return `    ${tag} ${file}: "${value}"`;
+      })
+      .join("\n");
+    errors.push(
+      `  ✗ Palette toolVersion consistency — ${disagreements.length} occurrence(s) disagree with canonical "${canonical}"\n` +
+        `      Occurrences:\n${report}\n` +
+        `      Fix: update all toolVersion fields to the same string before releasing.`
+    );
+  }
 }
 
 // ---------------------------------------------------------------------------
