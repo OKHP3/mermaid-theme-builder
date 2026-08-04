@@ -294,6 +294,76 @@ describe("generateMarkdownExport source URL section", () => {
     expect(output).not.toContain("**Brand sources:**");
     expect(output).not.toContain("javascript:");
   });
+
+  it("does NOT include '**Brand sources:**' when all sourceUrls are unparseable strings", () => {
+    const base = BRAND_PALETTES[0];
+    const paletteUnparseable = {
+      ...base,
+      sourceUrls: ["not a url", "also not a url", "   "],
+    };
+
+    const opts = baseOptions(paletteUnparseable);
+    const themedCode = generateThemedCode(SIMPLE_DIAGRAM, opts);
+    const output = generateMarkdownExport(themedCode, paletteUnparseable, opts);
+
+    expect(output).not.toContain("**Brand sources:**");
+  });
+
+  it("does NOT include '**Brand sources:**' for ftp:// (non-http/https scheme)", () => {
+    const base = BRAND_PALETTES[0];
+    const paletteFtp = {
+      ...base,
+      sourceUrls: ["ftp://old.example.com/theme.css"],
+    };
+
+    const opts = baseOptions(paletteFtp);
+    const themedCode = generateThemedCode(SIMPLE_DIAGRAM, opts);
+    const output = generateMarkdownExport(themedCode, paletteFtp, opts);
+
+    expect(output).not.toContain("**Brand sources:**");
+    expect(output).not.toContain("ftp://");
+  });
+
+  it("leaves no stray angle brackets when all sourceUrls are malformed", () => {
+    const base = BRAND_PALETTES[0];
+    const paletteMalformed = {
+      ...base,
+      sourceUrls: ["not a url", "ftp://old.example.com", "javascript:void(0)"],
+    };
+
+    const opts = baseOptions(paletteMalformed);
+    const themedCode = generateThemedCode(SIMPLE_DIAGRAM, opts);
+    const output = generateMarkdownExport(themedCode, paletteMalformed, opts);
+
+    // No stray <url> angle bracket pairs from a partially-rendered source section.
+    // The Brand sources line should be absent entirely, so no leftover '<' or '>'
+    // that belong to it can appear on the Tool: line or elsewhere.
+    expect(output).not.toContain("**Brand sources:**");
+    // The only angle brackets allowed are those inside the known static links
+    // (mermaid.live, overkillhill.com) — not from sourceUrls.
+    const brandSourcesIndex = output.indexOf("**Brand sources:**");
+    expect(brandSourcesIndex).toBe(-1);
+  });
+
+  it("markdown is structurally intact (heading, Usage, Attribution) when all sourceUrls are malformed", () => {
+    const base = BRAND_PALETTES[0];
+    const paletteMalformed = {
+      ...base,
+      sourceUrls: ["not a url", "ftp://old.example.com"],
+    };
+
+    const opts = baseOptions(paletteMalformed);
+    const themedCode = generateThemedCode(SIMPLE_DIAGRAM, opts);
+    const output = generateMarkdownExport(themedCode, paletteMalformed, opts);
+
+    // All structural sections must still be present — malformed URLs must not
+    // corrupt or truncate the surrounding markdown.
+    expect(output).toContain("# Mermaid Diagram —");
+    expect(output).toContain("## Usage");
+    expect(output).toContain("## Attribution");
+    expect(output).toContain("**Generated:** 2025-01-15");
+    expect(output).toContain("```mermaid\n");
+  });
 });
 
 // ---------------------------------------------------------------------------
