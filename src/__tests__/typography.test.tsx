@@ -1008,4 +1008,70 @@ describe("ComposeTab — font family live preview", () => {
     expect(preview).not.toBeNull();
     expect(preview!.textContent?.trim()).toBe("Aa");
   });
+
+  // -------------------------------------------------------------------------
+  // Round-trip: fontFamily survives JSON serialization (mirrors persistence
+  // save/load path used for user palettes and stored app state).
+  // -------------------------------------------------------------------------
+
+  it("fontFamily is byte-for-byte identical after JSON stringify → parse round-trip", () => {
+    // Multi-word name with a fallback stack — spaces and commas must survive.
+    const original: TypographySettings = {
+      ...DEFAULT_TYPOGRAPHY,
+      nodeLabel: { fontSize: 14, fontFamily: "DM Sans, sans-serif" },
+    };
+    const parsed = JSON.parse(JSON.stringify(original)) as TypographySettings;
+    expect(parsed.nodeLabel.fontFamily).toBe("DM Sans, sans-serif");
+  });
+
+  it("all five tier fontFamily values survive a full JSON round-trip unchanged", () => {
+    const original: TypographySettings = {
+      diagramTitle: { fontSize: 24, fontFamily: "Alfa Slab One" },
+      subgraphTitle: { fontSize: 20, fontFamily: "'DM Sans', sans-serif" },
+      nestedSubgraphTitle: { fontSize: 16, fontFamily: "JetBrains Mono, monospace" },
+      nodeLabel: { fontSize: 13, fontFamily: "Inter, Arial, sans-serif" },
+      edgeLabel: { fontSize: 11, fontFamily: "Roboto" },
+    };
+    const parsed = JSON.parse(JSON.stringify(original)) as TypographySettings;
+    for (const key of TIER_ORDER) {
+      expect(parsed[key].fontFamily).toBe(original[key].fontFamily);
+    }
+  });
+
+  it("preview span font-family style is identical before and after a JSON round-trip", () => {
+    // Simulates the persistence path: App serialises TypographySettings to
+    // localStorage (JSON.stringify) then re-reads it on the next load
+    // (JSON.parse). The preview span must render the same font-family style
+    // both times — no silent mutation of the value.
+    const original: TypographySettings = {
+      ...DEFAULT_TYPOGRAPHY,
+      edgeLabel: { fontSize: 12, fontFamily: "DM Sans" },
+    };
+
+    // Render before the round-trip.
+    const { container: before, unmount } = render(createElement(ComposeTab, makeProps(original)));
+    const spanBefore = before.querySelector(
+      '[aria-label="Edge Label font family preview"]'
+    ) as HTMLElement | null;
+    expect(spanBefore).not.toBeNull();
+    // happy-dom may quote multi-word font names; normalise by stripping outer quotes.
+    const styleBefore = spanBefore!.style.fontFamily.replace(/^"(.*)"$/, "$1");
+    unmount();
+
+    // Simulate the persistence round-trip.
+    const roundTripped = JSON.parse(JSON.stringify(original)) as TypographySettings;
+
+    // Render after the round-trip.
+    const { container: after } = render(createElement(ComposeTab, makeProps(roundTripped)));
+    const spanAfter = after.querySelector(
+      '[aria-label="Edge Label font family preview"]'
+    ) as HTMLElement | null;
+    expect(spanAfter).not.toBeNull();
+    const styleAfter = spanAfter!.style.fontFamily.replace(/^"(.*)"$/, "$1");
+
+    // The style must be identical — round-trip must not mutate the value.
+    expect(styleAfter).toBe(styleBefore);
+    // And it must equal sanitizeFontFamily applied to the original value.
+    expect(styleAfter).toBe(sanitizeFontFamily(original.edgeLabel.fontFamily));
+  });
 });
