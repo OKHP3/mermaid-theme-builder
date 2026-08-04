@@ -2,6 +2,7 @@ import { useState, useCallback, useMemo, useRef, useEffect, type ReactNode } fro
 import type { Palette, ThemeColor } from "@/lib/palettes";
 import { ColorSwatch } from "@/components/ColorSwatch";
 import { DiffView } from "@/components/DiffView";
+import { ExtractDiffHint } from "@/components/ExtractDiffHint";
 import { MermaidPreview } from "@/components/MermaidPreview";
 import {
   extractTheme,
@@ -591,6 +592,7 @@ export function ExtractTab({
                   className="rounded-lg border border-border overflow-hidden"
                   style={{ minHeight: 280 }}
                 >
+                  <ExtractDiffHint />
                   <DiffView oldText={pastedCode} newText={rethemedCode} className="h-[280px]" />
                 </div>
               )}
