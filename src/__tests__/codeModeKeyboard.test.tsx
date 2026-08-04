@@ -72,6 +72,9 @@ function CodeModePanel({ code }: { code: string }): ReactElement {
         value: effectiveExportCode,
         onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) =>
           setCodeEditorOverride(e.target.value),
+        onKeyDown: (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+          if (e.key === "Escape") setCodeEditorOverride(null);
+        },
         "aria-label": "Styled code output — edit before copying",
       }),
       createElement(
@@ -91,6 +94,9 @@ function CodeModePanel({ code }: { code: string }): ReactElement {
     createElement(HighlightedCode, {
       code: effectiveExportCode,
       "aria-label": "Styled code output",
+      onKeyDown: (e: React.KeyboardEvent<HTMLPreElement>) => {
+        if (e.key === "Enter") setCodeEditorOverride(effectiveExportCode);
+      },
     }),
     effectiveExportCode
       ? createElement(
@@ -270,6 +276,40 @@ describe("Code mode wrapper — Edit / Reset toggle", () => {
       fireEvent.click(screen.getByTitle("Discard edits and reset to computed output"));
     });
     expect(container.querySelector("pre")!.getAttribute("tabindex")).toBe("0");
+  });
+});
+
+describe("Code mode wrapper — Enter key activates edit mode", () => {
+  it("pressing Enter on the <pre> replaces it with a textarea", () => {
+    const { container } = render(createElement(CodeModePanel, { code: SAMPLE_CODE }));
+    const pre = container.querySelector("pre[aria-label='Styled code output']") as HTMLElement;
+    act(() => {
+      fireEvent.keyDown(pre, { key: "Enter" });
+    });
+    expect(
+      container.querySelector("textarea[aria-label='Styled code output — edit before copying']")
+    ).not.toBeNull();
+    expect(container.querySelector("pre[aria-label='Styled code output']")).toBeNull();
+  });
+});
+
+describe("Code mode wrapper — Escape key cancels edit mode", () => {
+  it("pressing Escape on the textarea restores the <pre> and removes the textarea", () => {
+    const { container } = render(createElement(CodeModePanel, { code: SAMPLE_CODE }));
+    act(() => {
+      fireEvent.click(screen.getByTitle("Edit the styled code before copying"));
+    });
+    const textarea = container.querySelector(
+      "textarea[aria-label='Styled code output — edit before copying']"
+    ) as HTMLElement;
+    expect(textarea).not.toBeNull();
+    act(() => {
+      fireEvent.keyDown(textarea, { key: "Escape" });
+    });
+    expect(container.querySelector("pre[aria-label='Styled code output']")).not.toBeNull();
+    expect(
+      container.querySelector("textarea[aria-label='Styled code output — edit before copying']")
+    ).toBeNull();
   });
 });
 
