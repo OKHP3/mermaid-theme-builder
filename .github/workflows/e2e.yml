@@ -24,20 +24,8 @@ jobs:
       NODE_ENV: production
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v6
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: 24
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile --ignore-scripts
+      - name: Setup pnpm + Node.js
+        uses: ./.github/actions/setup-pnpm
 
       - name: Cache Playwright browsers
         id: playwright-cache

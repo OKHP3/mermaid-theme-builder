@@ -1,0 +1,31 @@
+name: Setup pnpm + Node.js
+description: >
+  Checks out the repository, sets up pnpm, configures Node.js with the pnpm
+  cache, and runs `pnpm install --frozen-lockfile --ignore-scripts`.
+  Centralising these four steps means a single version bump here propagates
+  to every workflow that uses this action.
+
+inputs:
+  node-version:
+    description: Node.js version to install
+    required: false
+    default: "24"
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v6
+
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v6
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v6
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: pnpm
+
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile --ignore-scripts
+      shell: bash
