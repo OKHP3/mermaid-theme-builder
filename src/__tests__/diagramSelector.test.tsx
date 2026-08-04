@@ -275,6 +275,32 @@ describe("ApplyTab — diagram selector sync: selector hidden after content shri
     expect(capturedDiffNew).toContain("flowchart");
     expect(capturedDiffNew).not.toContain("sequenceDiagram");
   });
+
+  it("'original' preview shows diagram 0 content after selector sync", async () => {
+    capturedMermaidCode = undefined;
+    const { rerender } = render(
+      createElement(ApplyTab, { ...makeProps(MULTI_INPUT), previewMode: "original" as const })
+    );
+
+    // Navigate to diagram 2 (sequenceDiagram).
+    const nextBtn = screen.getByLabelText("Next diagram");
+    await act(async () => {
+      fireEvent.click(nextBtn);
+    });
+
+    // Shrink to single-diagram content — selector sync clamps activeDiagramIdx to 0.
+    // In "original" mode, MermaidPreview receives activeDiagramCode directly (not
+    // themedCode), so this exercises a different prop path than the "themed" test.
+    act(() => {
+      rerender(
+        createElement(ApplyTab, { ...makeProps(SINGLE_INPUT), previewMode: "original" as const })
+      );
+    });
+
+    // The MermaidPreview code prop must reflect diagram 0 (flowchart), not diagram 1.
+    expect(capturedMermaidCode).toContain("flowchart");
+    expect(capturedMermaidCode).not.toContain("sequenceDiagram");
+  });
 });
 
 // ---------------------------------------------------------------------------
