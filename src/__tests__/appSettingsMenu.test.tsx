@@ -275,7 +275,55 @@ describe("AppShell settings menu — dismissal", () => {
 });
 
 // ---------------------------------------------------------------------------
-// 5. Keyboard navigation — ArrowDown / ArrowUp / Home / End within the menu
+// 5. Trigger-button keyboard — ArrowDown / ArrowUp open menu with correct focus
+//    (WAI-ARIA §3.15 Menu Button pattern; these fire on the *button*, not the
+//    open menu, and use requestAnimationFrame to wait for the menu to mount)
+// ---------------------------------------------------------------------------
+
+describe("AppShell settings menu — trigger button arrow keys", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("ArrowDown on the closed trigger opens the menu and focuses the first menuitem", async () => {
+    render(createElement(AppShell));
+    const btn = screen.getByRole("button", { name: "Settings" });
+
+    vi.useFakeTimers();
+    await act(async () => {
+      fireEvent.keyDown(btn, { key: "ArrowDown" });
+    });
+    // Flush the requestAnimationFrame that focuses the first item.
+    act(() => {
+      vi.runAllTimers();
+    });
+
+    expect(screen.getByRole("menu", { name: "Settings" })).toBeDefined();
+    const items = screen.getAllByRole("menuitem");
+    expect(document.activeElement).toBe(items[0]);
+  });
+
+  it("ArrowUp on the closed trigger opens the menu and focuses the last menuitem", async () => {
+    render(createElement(AppShell));
+    const btn = screen.getByRole("button", { name: "Settings" });
+
+    vi.useFakeTimers();
+    await act(async () => {
+      fireEvent.keyDown(btn, { key: "ArrowUp" });
+    });
+    // Flush the requestAnimationFrame that focuses the last item.
+    act(() => {
+      vi.runAllTimers();
+    });
+
+    expect(screen.getByRole("menu", { name: "Settings" })).toBeDefined();
+    const items = screen.getAllByRole("menuitem");
+    expect(document.activeElement).toBe(items[items.length - 1]);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 6. Keyboard navigation — ArrowDown / ArrowUp / Home / End within the menu
 // ---------------------------------------------------------------------------
 
 describe("AppShell settings menu — arrow-key navigation", () => {

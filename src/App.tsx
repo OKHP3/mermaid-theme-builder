@@ -1076,6 +1076,20 @@ export function AppShell() {
                       ?.querySelector<HTMLElement>('[role="menuitem"]')
                       ?.focus();
                   }
+                } else if (e.key === "ArrowUp") {
+                  // WAI-ARIA §3.15: ArrowUp opens menu and focuses the last item.
+                  e.preventDefault();
+                  const focusLast = () => {
+                    const items =
+                      settingsMenuRef.current?.querySelectorAll<HTMLElement>('[role="menuitem"]');
+                    if (items?.length) items[items.length - 1].focus();
+                  };
+                  if (!showSettingsMenu) {
+                    setShowSettingsMenu(true);
+                    requestAnimationFrame(focusLast);
+                  } else {
+                    focusLast();
+                  }
                 }
               }}
               aria-label="Settings"
