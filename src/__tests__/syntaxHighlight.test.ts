@@ -468,3 +468,64 @@ describe("highlightMermaidCodeBlock — edge cases", () => {
     expect((html.match(/\n/g) ?? []).length).toBe(3);
   });
 });
+
+// ===========================================================================
+// Mutation-style wiring tests — assert that each constant is assigned to the
+// correct span by position, not merely that it "appears somewhere".
+//
+// These catch transpositions such as INIT_HL.bracket ↔ INIT_HL.content or
+// HL.keyword ↔ HL.name that all previous tests would miss.
+//
+// Strategy: render to HTML, extract the ordered sequence of inline color
+// values via /color:([^;"]+)/g, then assert each position individually.
+// ===========================================================================
+
+/** Extract all inline color values from an HTML string in document order. */
+function extractColors(html: string): string[] {
+  return [...html.matchAll(/color:([^;"]+)/g)].map((m) => m[1]);
+}
+
+describe("highlightInitDirectiveLine — bracket vs content assignment", () => {
+  const LINE = `%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#1e3a5f"}}}%%`;
+
+  it("the first color span (%%{ opener) uses INIT_HL.bracket", () => {
+    const colors = extractColors(hl(highlightInitDirectiveLine(LINE, 0)));
+    expect(colors[0]).toBe(INIT_HL.bracket);
+  });
+
+  it("the second color span (directive body) uses INIT_HL.content, not INIT_HL.bracket", () => {
+    const colors = extractColors(hl(highlightInitDirectiveLine(LINE, 0)));
+    expect(colors[1]).toBe(INIT_HL.content);
+    expect(colors[1]).not.toBe(INIT_HL.bracket);
+  });
+
+  it("the third color span (}%% closer) uses INIT_HL.bracket, not INIT_HL.content", () => {
+    const colors = extractColors(hl(highlightInitDirectiveLine(LINE, 0)));
+    expect(colors[2]).toBe(INIT_HL.bracket);
+    expect(colors[2]).not.toBe(INIT_HL.content);
+  });
+
+  it("exactly three color spans are emitted for a well-formed directive", () => {
+    const colors = extractColors(hl(highlightInitDirectiveLine(LINE, 0)));
+    expect(colors).toHaveLength(3);
+  });
+});
+
+describe("highlightClassDefLine — keyword vs name assignment", () => {
+  const LINE = "classDef primary fill:#1e3a5f,stroke:#3b82f6";
+
+  it("the first color span ('classDef' word) uses HL.keyword", () => {
+    const colors = extractColors(hl(highlightClassDefLine(LINE, 0)));
+    expect(colors[0]).toBe(HL.keyword);
+  });
+
+  it("the second color span (class name) uses HL.name, not HL.keyword", () => {
+    const colors = extractColors(hl(highlightClassDefLine(LINE, 0)));
+    expect(colors[1]).toBe(HL.name);
+    expect(colors[1]).not.toBe(HL.keyword);
+  });
+
+  it("HL.keyword and HL.name are distinct so position tests are meaningful", () => {
+    expect(HL.keyword).not.toBe(HL.name);
+  });
+});
