@@ -311,3 +311,95 @@ describe("PromptScaffoldModal — round-trip: copy then re-open shows badge", ()
     expect(container.textContent).toContain("Your last-used format is highlighted");
   });
 });
+
+// ---------------------------------------------------------------------------
+// 7. Dismiss path — closing without copying preserves the stored preference
+// ---------------------------------------------------------------------------
+
+describe("PromptScaffoldModal — dismiss without copying preserves badge", () => {
+  /** Click the X button (aria-label="Close") and advance past the 150ms animation. */
+  function dismissModal(container: HTMLElement) {
+    const closeBtn = container.querySelector<HTMLButtonElement>('button[aria-label="Close"]');
+    if (!closeBtn) throw new Error("Close button (aria-label='Close') not found");
+    act(() => {
+      fireEvent.click(closeBtn);
+    });
+    act(() => {
+      vi.advanceTimersByTime(200); // 150ms animation + buffer
+    });
+  }
+
+  it("Format A badge is still present on re-open after dismissing with the X button", () => {
+    localStorage.setItem(SCAFFOLD_FORMAT_KEY, "formatA");
+    const props = buildProps();
+    const { container, rerender } = render(createElement(PromptScaffoldModal, props));
+
+    // Badge is visible on initial open.
+    expect(getLastUsedBadges(container)).toHaveLength(1);
+    expect(getLastUsedBadges(container)[0].closest("button")?.textContent).toContain("Format A");
+
+    dismissModal(container);
+
+    expect(props.onClose).toHaveBeenCalledTimes(1);
+
+    // localStorage is untouched by handleClose.
+    expect(localStorage.getItem(SCAFFOLD_FORMAT_KEY)).toBe("formatA");
+
+    // Re-open: badge still shows Format A.
+    rerender(createElement(PromptScaffoldModal, { ...props, open: false }));
+    rerender(createElement(PromptScaffoldModal, { ...props, open: true }));
+
+    const badges = getLastUsedBadges(container);
+    expect(badges).toHaveLength(1);
+    expect(badges[0].closest("button")?.textContent).toContain("Format A");
+  });
+
+  it("Format B badge is still present on re-open after dismissing with the X button", () => {
+    localStorage.setItem(SCAFFOLD_FORMAT_KEY, "formatB");
+    const props = buildProps();
+    const { container, rerender } = render(createElement(PromptScaffoldModal, props));
+
+    dismissModal(container);
+
+    // localStorage is unchanged.
+    expect(localStorage.getItem(SCAFFOLD_FORMAT_KEY)).toBe("formatB");
+
+    rerender(createElement(PromptScaffoldModal, { ...props, open: false }));
+    rerender(createElement(PromptScaffoldModal, { ...props, open: true }));
+
+    const badges = getLastUsedBadges(container);
+    expect(badges).toHaveLength(1);
+    expect(badges[0].closest("button")?.textContent).toContain("Format B");
+  });
+
+  it("dismissing when localStorage is empty does not create a spurious preference", () => {
+    // Nothing seeded in localStorage.
+    const props = buildProps();
+    const { container, rerender } = render(createElement(PromptScaffoldModal, props));
+
+    expect(getLastUsedBadges(container)).toHaveLength(0);
+
+    dismissModal(container);
+
+    // localStorage must remain empty — handleClose must not write anything.
+    expect(localStorage.getItem(SCAFFOLD_FORMAT_KEY)).toBeNull();
+
+    rerender(createElement(PromptScaffoldModal, { ...props, open: false }));
+    rerender(createElement(PromptScaffoldModal, { ...props, open: true }));
+
+    expect(getLastUsedBadges(container)).toHaveLength(0);
+  });
+
+  it("subtitle still says 'highlighted' on re-open after dismiss when a preference exists", () => {
+    localStorage.setItem(SCAFFOLD_FORMAT_KEY, "both");
+    const props = buildProps();
+    const { container, rerender } = render(createElement(PromptScaffoldModal, props));
+
+    dismissModal(container);
+
+    rerender(createElement(PromptScaffoldModal, { ...props, open: false }));
+    rerender(createElement(PromptScaffoldModal, { ...props, open: true }));
+
+    expect(container.textContent).toContain("Your last-used format is highlighted");
+  });
+});
