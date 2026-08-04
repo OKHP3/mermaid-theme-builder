@@ -701,3 +701,335 @@ describe(`generateThemedCode — customThemeName "${CUSTOM_THEME_NAME}" does not
     }
   });
 });
+
+// ===========================================================================
+// CLASS DIAGRAM FAMILY
+// ===========================================================================
+
+/**
+ * Minimal class diagram — exercises the classDiagram family overlay
+ * (classBorder, relationColor, classText, relationLabelColor).
+ */
+const CLASS_DIAGRAM =
+  "classDiagram\n  class Animal {\n    +String name\n    +makeSound() void\n  }\n  class Dog {\n    +fetch() void\n  }\n  Animal <|-- Dog";
+
+describe("generateThemedCode snapshots — BRAND_PALETTES × CLASS_DIAGRAM", () => {
+  for (const palette of BRAND_PALETTES) {
+    it(`palette "${palette.name}" (id: ${palette.id}) classDiagram snapshot`, () => {
+      const output = generateThemedCode(CLASS_DIAGRAM, baseOptions(palette, "classDiagram"));
+      expect(output).toMatchSnapshot();
+    });
+  }
+});
+
+describe("generateThemedCode — each BRAND_PALETTE produces a distinct classDiagram output", () => {
+  it("all brand palette classDiagram outputs are unique", () => {
+    const outputs = BRAND_PALETTES.map((palette) =>
+      generateThemedCode(CLASS_DIAGRAM, baseOptions(palette, "classDiagram"))
+    );
+    for (let i = 0; i < outputs.length; i++) {
+      for (let j = i + 1; j < outputs.length; j++) {
+        expect(
+          outputs[i],
+          `ClassDiagram: palette "${BRAND_PALETTES[i].name}" and "${BRAND_PALETTES[j].name}" produced identical output`
+        ).not.toBe(outputs[j]);
+      }
+    }
+  });
+});
+
+describe("generateThemedCode — classDiagram overlay variables resolve from palette", () => {
+  for (const palette of BRAND_PALETTES) {
+    it(`palette "${palette.name}" classDiagram output contains classBorder = primaryBorderColor`, () => {
+      const output = generateThemedCode(CLASS_DIAGRAM, baseOptions(palette, "classDiagram"));
+      const border = paletteColor(palette, "primaryBorderColor");
+      expect(output).toContain(`"classBorder": "${border}"`);
+    });
+
+    it(`palette "${palette.name}" classDiagram output contains relationColor = lineColor`, () => {
+      const output = generateThemedCode(CLASS_DIAGRAM, baseOptions(palette, "classDiagram"));
+      const line = paletteColor(palette, "lineColor");
+      expect(output).toContain(`"relationColor": "${line}"`);
+    });
+
+    it(`palette "${palette.name}" classDiagram output contains classText = primaryTextColor`, () => {
+      const output = generateThemedCode(CLASS_DIAGRAM, baseOptions(palette, "classDiagram"));
+      const text = paletteColor(palette, "primaryTextColor");
+      expect(output).toContain(`"classText": "${text}"`);
+    });
+
+    it(`palette "${palette.name}" classDiagram output does not contain another palette's primaryColor`, () => {
+      const output = generateThemedCode(CLASS_DIAGRAM, baseOptions(palette, "classDiagram"));
+      const ownPrimary = paletteColor(palette, "primaryColor");
+      for (const other of BRAND_PALETTES) {
+        if (other.id === palette.id) continue;
+        const otherPrimary = paletteColor(other, "primaryColor");
+        if (otherPrimary === ownPrimary) continue;
+        expect(
+          output,
+          `ClassDiagram: palette "${palette.name}" contains primaryColor from "${other.name}" (${otherPrimary})`
+        ).not.toContain(otherPrimary);
+      }
+    });
+  }
+});
+
+describe("generateThemedCode — classDiagram body is preserved", () => {
+  for (const palette of BRAND_PALETTES) {
+    it(`palette "${palette.name}" preserves the classDiagram body`, () => {
+      const output = generateThemedCode(CLASS_DIAGRAM, baseOptions(palette, "classDiagram"));
+      expect(output).toContain("classDiagram");
+      expect(output).toContain("class Animal");
+      expect(output).toContain("Animal <|-- Dog");
+    });
+  }
+});
+
+// ===========================================================================
+// GITGRAPH FAMILY
+// ===========================================================================
+
+/**
+ * Minimal git graph — exercises the gitGraph family overlay
+ * (git0, git1, git2, gitBranchLabel0, commitLabelColor, etc.).
+ */
+const GITGRAPH_DIAGRAM =
+  "gitGraph\n  commit\n  branch feature\n  checkout feature\n  commit\n  checkout main\n  merge feature";
+
+describe("generateThemedCode snapshots — BRAND_PALETTES × GITGRAPH_DIAGRAM", () => {
+  for (const palette of BRAND_PALETTES) {
+    it(`palette "${palette.name}" (id: ${palette.id}) gitGraph snapshot`, () => {
+      const output = generateThemedCode(GITGRAPH_DIAGRAM, baseOptions(palette, "gitGraph"));
+      expect(output).toMatchSnapshot();
+    });
+  }
+});
+
+describe("generateThemedCode — each BRAND_PALETTE produces a distinct gitGraph output", () => {
+  it("all brand palette gitGraph outputs are unique", () => {
+    const outputs = BRAND_PALETTES.map((palette) =>
+      generateThemedCode(GITGRAPH_DIAGRAM, baseOptions(palette, "gitGraph"))
+    );
+    for (let i = 0; i < outputs.length; i++) {
+      for (let j = i + 1; j < outputs.length; j++) {
+        expect(
+          outputs[i],
+          `GitGraph: palette "${BRAND_PALETTES[i].name}" and "${BRAND_PALETTES[j].name}" produced identical output`
+        ).not.toBe(outputs[j]);
+      }
+    }
+  });
+});
+
+describe("generateThemedCode — gitGraph overlay variables resolve from palette", () => {
+  for (const palette of BRAND_PALETTES) {
+    it(`palette "${palette.name}" gitGraph output contains git0 = primaryColor`, () => {
+      const output = generateThemedCode(GITGRAPH_DIAGRAM, baseOptions(palette, "gitGraph"));
+      const primary = paletteColor(palette, "primaryColor");
+      expect(output).toContain(`"git0": "${primary}"`);
+    });
+
+    it(`palette "${palette.name}" gitGraph output contains git1 = secondaryColor`, () => {
+      const output = generateThemedCode(GITGRAPH_DIAGRAM, baseOptions(palette, "gitGraph"));
+      const secondary = paletteColor(palette, "secondaryColor");
+      expect(output).toContain(`"git1": "${secondary}"`);
+    });
+
+    it(`palette "${palette.name}" gitGraph output contains git2 = lineColor`, () => {
+      const output = generateThemedCode(GITGRAPH_DIAGRAM, baseOptions(palette, "gitGraph"));
+      const line = paletteColor(palette, "lineColor");
+      expect(output).toContain(`"git2": "${line}"`);
+    });
+
+    it(`palette "${palette.name}" gitGraph output does not contain another palette's primaryColor`, () => {
+      const output = generateThemedCode(GITGRAPH_DIAGRAM, baseOptions(palette, "gitGraph"));
+      const ownPrimary = paletteColor(palette, "primaryColor");
+      for (const other of BRAND_PALETTES) {
+        if (other.id === palette.id) continue;
+        const otherPrimary = paletteColor(other, "primaryColor");
+        if (otherPrimary === ownPrimary) continue;
+        expect(
+          output,
+          `GitGraph: palette "${palette.name}" contains primaryColor from "${other.name}" (${otherPrimary})`
+        ).not.toContain(otherPrimary);
+      }
+    });
+  }
+});
+
+describe("generateThemedCode — gitGraph body is preserved", () => {
+  for (const palette of BRAND_PALETTES) {
+    it(`palette "${palette.name}" preserves the gitGraph body`, () => {
+      const output = generateThemedCode(GITGRAPH_DIAGRAM, baseOptions(palette, "gitGraph"));
+      expect(output).toContain("gitGraph");
+      expect(output).toContain("branch feature");
+      expect(output).toContain("merge feature");
+    });
+  }
+});
+
+// ===========================================================================
+// QUADRANTCHART FAMILY
+// ===========================================================================
+
+/**
+ * Minimal quadrant chart — exercises the quadrantChart family overlay
+ * (quadrant1Fill, quadrant2Fill, quadrantPointFill, quadrantTitleFill, etc.).
+ */
+const QUADRANT_DIAGRAM =
+  "quadrantChart\n  title Effort vs Impact\n  x-axis Low Effort --> High Effort\n  y-axis Low Impact --> High Impact\n  Quick wins: [0.2, 0.8]\n  Major projects: [0.8, 0.8]";
+
+describe("generateThemedCode snapshots — BRAND_PALETTES × QUADRANT_DIAGRAM", () => {
+  for (const palette of BRAND_PALETTES) {
+    it(`palette "${palette.name}" (id: ${palette.id}) quadrantChart snapshot`, () => {
+      const output = generateThemedCode(QUADRANT_DIAGRAM, baseOptions(palette, "quadrantChart"));
+      expect(output).toMatchSnapshot();
+    });
+  }
+});
+
+describe("generateThemedCode — each BRAND_PALETTE produces a distinct quadrantChart output", () => {
+  it("all brand palette quadrantChart outputs are unique", () => {
+    const outputs = BRAND_PALETTES.map((palette) =>
+      generateThemedCode(QUADRANT_DIAGRAM, baseOptions(palette, "quadrantChart"))
+    );
+    for (let i = 0; i < outputs.length; i++) {
+      for (let j = i + 1; j < outputs.length; j++) {
+        expect(
+          outputs[i],
+          `QuadrantChart: palette "${BRAND_PALETTES[i].name}" and "${BRAND_PALETTES[j].name}" produced identical output`
+        ).not.toBe(outputs[j]);
+      }
+    }
+  });
+});
+
+describe("generateThemedCode — quadrantChart overlay variables resolve from palette", () => {
+  for (const palette of BRAND_PALETTES) {
+    it(`palette "${palette.name}" quadrantChart output contains quadrant1Fill = primaryColor`, () => {
+      const output = generateThemedCode(QUADRANT_DIAGRAM, baseOptions(palette, "quadrantChart"));
+      const primary = paletteColor(palette, "primaryColor");
+      expect(output).toContain(`"quadrant1Fill": "${primary}"`);
+    });
+
+    it(`palette "${palette.name}" quadrantChart output contains quadrantPointFill = lineColor`, () => {
+      const output = generateThemedCode(QUADRANT_DIAGRAM, baseOptions(palette, "quadrantChart"));
+      const line = paletteColor(palette, "lineColor");
+      expect(output).toContain(`"quadrantPointFill": "${line}"`);
+    });
+
+    it(`palette "${palette.name}" quadrantChart output contains quadrant2Fill = secondaryColor`, () => {
+      const output = generateThemedCode(QUADRANT_DIAGRAM, baseOptions(palette, "quadrantChart"));
+      const secondary = paletteColor(palette, "secondaryColor");
+      expect(output).toContain(`"quadrant2Fill": "${secondary}"`);
+    });
+
+    it(`palette "${palette.name}" quadrantChart output does not contain another palette's primaryColor`, () => {
+      const output = generateThemedCode(QUADRANT_DIAGRAM, baseOptions(palette, "quadrantChart"));
+      const ownPrimary = paletteColor(palette, "primaryColor");
+      for (const other of BRAND_PALETTES) {
+        if (other.id === palette.id) continue;
+        const otherPrimary = paletteColor(other, "primaryColor");
+        if (otherPrimary === ownPrimary) continue;
+        expect(
+          output,
+          `QuadrantChart: palette "${palette.name}" contains primaryColor from "${other.name}" (${otherPrimary})`
+        ).not.toContain(otherPrimary);
+      }
+    });
+  }
+});
+
+describe("generateThemedCode — quadrantChart body is preserved", () => {
+  for (const palette of BRAND_PALETTES) {
+    it(`palette "${palette.name}" preserves the quadrantChart body`, () => {
+      const output = generateThemedCode(QUADRANT_DIAGRAM, baseOptions(palette, "quadrantChart"));
+      expect(output).toContain("quadrantChart");
+      expect(output).toContain("Effort vs Impact");
+      expect(output).toContain("Quick wins");
+    });
+  }
+});
+
+// ===========================================================================
+// TIMELINE FAMILY
+// ===========================================================================
+
+/**
+ * Minimal timeline diagram — exercises the timeline family overlay
+ * (cScale0–cScale11, cycling primary → secondary → tertiary etc.).
+ */
+const TIMELINE_DIAGRAM =
+  "timeline\n  title Product Roadmap\n  section Q1\n    Design : Wireframes\n  section Q2\n    Build : Core features\n  section Q3\n    Launch : Public release";
+
+describe("generateThemedCode snapshots — BRAND_PALETTES × TIMELINE_DIAGRAM", () => {
+  for (const palette of BRAND_PALETTES) {
+    it(`palette "${palette.name}" (id: ${palette.id}) timeline snapshot`, () => {
+      const output = generateThemedCode(TIMELINE_DIAGRAM, baseOptions(palette, "timeline"));
+      expect(output).toMatchSnapshot();
+    });
+  }
+});
+
+describe("generateThemedCode — each BRAND_PALETTE produces a distinct timeline output", () => {
+  it("all brand palette timeline outputs are unique", () => {
+    const outputs = BRAND_PALETTES.map((palette) =>
+      generateThemedCode(TIMELINE_DIAGRAM, baseOptions(palette, "timeline"))
+    );
+    for (let i = 0; i < outputs.length; i++) {
+      for (let j = i + 1; j < outputs.length; j++) {
+        expect(
+          outputs[i],
+          `Timeline: palette "${BRAND_PALETTES[i].name}" and "${BRAND_PALETTES[j].name}" produced identical output`
+        ).not.toBe(outputs[j]);
+      }
+    }
+  });
+});
+
+describe("generateThemedCode — timeline overlay variables resolve from palette", () => {
+  for (const palette of BRAND_PALETTES) {
+    it(`palette "${palette.name}" timeline output contains cScale0 = primaryColor`, () => {
+      const output = generateThemedCode(TIMELINE_DIAGRAM, baseOptions(palette, "timeline"));
+      const primary = paletteColor(palette, "primaryColor");
+      expect(output).toContain(`"cScale0": "${primary}"`);
+    });
+
+    it(`palette "${palette.name}" timeline output contains cScale1 = secondaryColor`, () => {
+      const output = generateThemedCode(TIMELINE_DIAGRAM, baseOptions(palette, "timeline"));
+      const secondary = paletteColor(palette, "secondaryColor");
+      expect(output).toContain(`"cScale1": "${secondary}"`);
+    });
+
+    it(`palette "${palette.name}" timeline output contains cScale2 = tertiaryColor`, () => {
+      const output = generateThemedCode(TIMELINE_DIAGRAM, baseOptions(palette, "timeline"));
+      const tertiary = paletteColor(palette, "tertiaryColor");
+      expect(output).toContain(`"cScale2": "${tertiary}"`);
+    });
+
+    it(`palette "${palette.name}" timeline output does not contain another palette's primaryColor`, () => {
+      const output = generateThemedCode(TIMELINE_DIAGRAM, baseOptions(palette, "timeline"));
+      const ownPrimary = paletteColor(palette, "primaryColor");
+      for (const other of BRAND_PALETTES) {
+        if (other.id === palette.id) continue;
+        const otherPrimary = paletteColor(other, "primaryColor");
+        if (otherPrimary === ownPrimary) continue;
+        expect(
+          output,
+          `Timeline: palette "${palette.name}" contains primaryColor from "${other.name}" (${otherPrimary})`
+        ).not.toContain(otherPrimary);
+      }
+    });
+  }
+});
+
+describe("generateThemedCode — timeline body is preserved", () => {
+  for (const palette of BRAND_PALETTES) {
+    it(`palette "${palette.name}" preserves the timeline body`, () => {
+      const output = generateThemedCode(TIMELINE_DIAGRAM, baseOptions(palette, "timeline"));
+      expect(output).toContain("timeline");
+      expect(output).toContain("Product Roadmap");
+      expect(output).toContain("Public release");
+    });
+  }
+});
