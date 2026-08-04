@@ -27,7 +27,7 @@ import {
   type ExportOptions,
   type ScaffoldFormat,
 } from "@/lib/theme-engine";
-import { BRAND_PALETTES } from "@/lib/palettes";
+import { BRAND_PALETTES, BUILTIN_PALETTES } from "@/lib/palettes";
 
 // ---------------------------------------------------------------------------
 // Fixture
@@ -192,6 +192,107 @@ describe("generateMarkdownExport cross-palette uniqueness", () => {
     });
     const unique = new Set(outputs);
     expect(unique.size).toBe(BRAND_PALETTES.length);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 5b. Source URL presence / absence in markdown export
+// ---------------------------------------------------------------------------
+
+describe("generateMarkdownExport source URL section", () => {
+  it("includes '**Brand sources:**' and all source URLs when palette has sourceUrls", () => {
+    // overkill-hill is a brand preset with two source URLs
+    const palette = BRAND_PALETTES.find((p) => p.id === "overkill-hill")!;
+    expect(palette.sourceUrls?.length).toBeGreaterThan(0);
+
+    const opts = baseOptions(palette);
+    const themedCode = generateThemedCode(SIMPLE_DIAGRAM, opts);
+    const output = generateMarkdownExport(themedCode, palette, opts);
+
+    expect(output).toContain("**Brand sources:**");
+    for (const url of palette.sourceUrls!) {
+      expect(output).toContain(url);
+    }
+  });
+
+  it("includes all source URLs for every brand palette that declares them", () => {
+    for (const palette of BRAND_PALETTES.filter((p) => p.sourceUrls?.length)) {
+      const opts = baseOptions(palette);
+      const themedCode = generateThemedCode(SIMPLE_DIAGRAM, opts);
+      const output = generateMarkdownExport(themedCode, palette, opts);
+
+      expect(output).toContain("**Brand sources:**");
+      for (const url of palette.sourceUrls!) {
+        expect(output).toContain(url);
+      }
+    }
+  });
+
+  it("does NOT include '**Brand sources:**' when palette has no sourceUrls", () => {
+    const palettesWithoutUrls = BUILTIN_PALETTES.filter(
+      (p) => !p.sourceUrls || p.sourceUrls.length === 0
+    );
+    expect(palettesWithoutUrls.length).toBeGreaterThan(0);
+
+    for (const palette of palettesWithoutUrls) {
+      const opts = baseOptions(palette);
+      const themedCode = generateThemedCode(SIMPLE_DIAGRAM, opts);
+      const output = generateMarkdownExport(themedCode, palette, opts);
+      expect(output).not.toContain("**Brand sources:**");
+    }
+  });
+
+  it("does NOT include '**Brand sources:**' for a synthetic palette with sourceUrls: undefined", () => {
+    const base = BRAND_PALETTES[0];
+    const paletteNoUrls = { ...base, sourceUrls: undefined };
+
+    const opts = baseOptions(paletteNoUrls);
+    const themedCode = generateThemedCode(SIMPLE_DIAGRAM, opts);
+    const output = generateMarkdownExport(themedCode, paletteNoUrls, opts);
+
+    expect(output).not.toContain("**Brand sources:**");
+  });
+
+  it("does NOT include '**Brand sources:**' for a synthetic palette with sourceUrls: []", () => {
+    const base = BRAND_PALETTES[0];
+    const paletteEmptyUrls = { ...base, sourceUrls: [] };
+
+    const opts = baseOptions(paletteEmptyUrls);
+    const themedCode = generateThemedCode(SIMPLE_DIAGRAM, opts);
+    const output = generateMarkdownExport(themedCode, paletteEmptyUrls, opts);
+
+    expect(output).not.toContain("**Brand sources:**");
+  });
+
+  it("omits invalid (non-http/https) URLs from the source section, keeping valid ones", () => {
+    const base = BRAND_PALETTES[0];
+    const paletteWithBadUrl = {
+      ...base,
+      sourceUrls: ["javascript:alert(1)", "https://overkillhill.com"],
+    };
+
+    const opts = baseOptions(paletteWithBadUrl);
+    const themedCode = generateThemedCode(SIMPLE_DIAGRAM, opts);
+    const output = generateMarkdownExport(themedCode, paletteWithBadUrl, opts);
+
+    expect(output).toContain("**Brand sources:**");
+    expect(output).toContain("https://overkillhill.com");
+    expect(output).not.toContain("javascript:");
+  });
+
+  it("does NOT include '**Brand sources:**' when all sourceUrls are invalid schemes", () => {
+    const base = BRAND_PALETTES[0];
+    const paletteAllBadUrls = {
+      ...base,
+      sourceUrls: ["javascript:alert(1)", "data:text/html,<h1>hi</h1>"],
+    };
+
+    const opts = baseOptions(paletteAllBadUrls);
+    const themedCode = generateThemedCode(SIMPLE_DIAGRAM, opts);
+    const output = generateMarkdownExport(themedCode, paletteAllBadUrls, opts);
+
+    expect(output).not.toContain("**Brand sources:**");
+    expect(output).not.toContain("javascript:");
   });
 });
 
