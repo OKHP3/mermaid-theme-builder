@@ -288,3 +288,26 @@ test("paste sequenceDiagram → family chip shows 'Sequence Diagram'", async ({ 
       .first()
   ).toBeVisible({ timeout: 5000 });
 });
+
+// ---------------------------------------------------------------------------
+// Test 10 — Live Editor button opens mermaid.live in a new tab
+// ---------------------------------------------------------------------------
+
+test("Live Editor button opens mermaid.live in a new tab", async ({ page }) => {
+  await gotoApply(page);
+  await pasteDiagram(page, FLOWCHART);
+
+  const liveEditorBtn = page.getByRole("button", { name: "Live Editor" });
+  await expect(liveEditorBtn).toBeVisible();
+  await expect(liveEditorBtn).toBeEnabled();
+
+  // window.open(..., "_blank", "noopener,noreferrer") triggers a Playwright popup event.
+  const popupPromise = page.waitForEvent("popup");
+  await liveEditorBtn.click();
+  const popup = await popupPromise;
+
+  // The URL is built synchronously in openInLiveEditor() before window.open is called,
+  // so the popup already has the full mermaid.live URL on navigation start.
+  await popup.waitForLoadState("domcontentloaded");
+  expect(popup.url()).toMatch(/^https:\/\/mermaid\.live/);
+});
