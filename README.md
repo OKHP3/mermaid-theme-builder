@@ -1,5 +1,9 @@
 # Mermaid Theme Builder
 
+[![CI](https://github.com/OKHP3/mermaid-theme-builder/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/OKHP3/mermaid-theme-builder/actions/workflows/ci.yml)
+[![E2E](https://github.com/OKHP3/mermaid-theme-builder/actions/workflows/e2e.yml/badge.svg?branch=main)](https://github.com/OKHP3/mermaid-theme-builder/actions/workflows/e2e.yml)
+[![Skill Tests](https://github.com/OKHP3/mermaid-theme-builder/actions/workflows/skill-tests.yml/badge.svg?branch=main)](https://github.com/OKHP3/mermaid-theme-builder/actions/workflows/skill-tests.yml)
+
 Visual governance for AI-generated Mermaid diagrams — paste, theme, preview, and export with renderer-aware scaffolding. Reduces follow-on AI prompts with pre-prompt scaffold exports tuned for your target renderer.
 
 **[Live Tool](https://okhp3.github.io/mermaid-theme-builder/)** · **[Project Page](https://overkillhill.com/projects/mermaid-theme-builder/)** · **[Article](https://overkillhill.com/writings/first-diagram-is-a-liar/)**
