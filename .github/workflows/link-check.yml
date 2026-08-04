@@ -23,3 +23,18 @@ jobs:
 
       - name: Check internal Markdown links
         run: bash scripts/check-links.sh
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --ignore-scripts
+
+      - name: Check TypeScript source cross-references
+        run: pnpm run check:source-refs

@@ -13,7 +13,7 @@ const BASE_OPTIONS: ExportOptions = {
 };
 
 /**
- * Tests for resolveScaffoldFormat (src/lib/scaffoldPrefs.ts).
+ * Tests for resolveScaffoldFormat (src/lib/scaffold-prefs.ts).
  * That function is the single validator used by both PromptScaffoldModal and
  * ApplyTab — it guards against invalid or missing localStorage values.
  */

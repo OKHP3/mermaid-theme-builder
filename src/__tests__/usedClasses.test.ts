@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { extractUsedClasses } from "@/lib/used-classes";
 
 /**
- * Tests for extractUsedClasses (src/lib/usedClasses.ts).
+ * Tests for extractUsedClasses (src/lib/used-classes.ts).
  * That function is the single source of truth used by ReferenceTab.tsx — any
  * regression in the regex or early-return path will break these tests.
  *

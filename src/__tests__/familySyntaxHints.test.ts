@@ -1,5 +1,5 @@
 /**
- * Tests for the getFamilySyntaxHint registry in src/lib/familySyntaxHints.ts.
+ * Tests for the getFamilySyntaxHint registry in src/lib/family-syntax-hints.ts.
  *
  * Behaviors covered:
  *   1. getFamilySyntaxHint returns a non-null result for every family in

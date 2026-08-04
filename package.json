@@ -17,6 +17,7 @@
     "test": "vitest run --config vitest.config.ts",
     "test:e2e": "bash scripts/run-e2e.sh",
     "capture-screenshot": "node scripts/capture-screenshot.mjs",
+    "check:source-refs": "node scripts/check-source-refs.mjs",
     "check:version-strings": "node scripts/check-version-strings.mjs",
     "check:technology-versions": "node scripts/check-technology-versions.mjs",
     "lint": "tsc --noEmit"
