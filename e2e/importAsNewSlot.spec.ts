@@ -361,7 +361,57 @@ test.describe("Import as new slot — full-slots guard toast", () => {
 });
 
 // ---------------------------------------------------------------------------
-// 4. Warning path — CSS color values produce a warning toast
+// 4. Error path — malformed or invalid JSON produces an "Import failed" toast
+// ---------------------------------------------------------------------------
+//
+// PaletteSelectorBar's file-input onChange calls
+//   onShowToast(`Import failed: ${result.error}`)
+// when parsePortablePalette returns { ok: false }.  These tests confirm that
+// path surfaces the failure in the UI instead of disappearing silently.
+
+/** Truncated JSON — SyntaxError from JSON.parse. */
+const TRUNCATED_JSON = '{ "type": "mtb-palette"';
+
+/** Syntactically valid JSON but wrong `type` field. */
+const WRONG_TYPE_JSON = JSON.stringify({ type: "not-a-palette", schemaVersion: 1 });
+
+test.describe("Import as new slot — error path", () => {
+  test("truncated JSON shows 'Import failed' toast", async ({ page }) => {
+    await openOnApplyTab(page);
+
+    await importViaFileInput(page, TRUNCATED_JSON);
+
+    const toast = page.locator('[role="status"]');
+    await expect(toast).toBeVisible({ timeout: 4_000 });
+    await expect(toast).toContainText("Import failed");
+  });
+
+  test("wrong-type JSON shows 'Import failed' toast", async ({ page }) => {
+    await openOnApplyTab(page);
+
+    await importViaFileInput(page, WRONG_TYPE_JSON);
+
+    const toast = page.locator('[role="status"]');
+    await expect(toast).toBeVisible({ timeout: 4_000 });
+    await expect(toast).toContainText("Import failed");
+  });
+
+  test("no new slot is created when JSON is malformed", async ({ page }) => {
+    await openOnApplyTab(page);
+    await expect(page.locator(APPLY_SLOT_SEL)).toHaveCount(1);
+
+    await importViaFileInput(page, TRUNCATED_JSON);
+
+    // Toast must appear to confirm the handler ran.
+    await expect(page.locator('[role="status"]')).toBeVisible({ timeout: 4_000 });
+
+    // Slot count must remain at 1 — no phantom slot created.
+    await expect(page.locator(APPLY_SLOT_SEL)).toHaveCount(1);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 5. Warning path — CSS color values produce a warning toast
 // ---------------------------------------------------------------------------
 
 test.describe("Import as new slot — CSS value warning toast", () => {
