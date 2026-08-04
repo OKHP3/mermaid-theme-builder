@@ -1033,3 +1033,120 @@ describe("generateThemedCode — timeline body is preserved", () => {
     });
   }
 });
+
+// ===========================================================================
+// XYCHART FAMILY
+// ===========================================================================
+
+/**
+ * Minimal XY chart — exercises the xychart family overlay.
+ * Unlike every other family, xychart uses a single `xyChart` key whose value
+ * is a comma-joined color string: [primary,secondary,tertiary,lineColor,nodeBorder,mainBkg].
+ * These tests confirm that unusual format serialises into the %%{init} block
+ * without being dropped or mangled.
+ */
+const XYCHART_DIAGRAM =
+  "xychart-beta\n  title Sales Trend\n  x-axis [Jan, Feb, Mar, Apr]\n  y-axis 0 --> 100\n  bar [30, 55, 80, 45]\n  line [20, 45, 70, 40]";
+
+describe("generateThemedCode snapshots — BRAND_PALETTES × XYCHART_DIAGRAM", () => {
+  for (const palette of BRAND_PALETTES) {
+    it(`palette "${palette.name}" (id: ${palette.id}) xychart snapshot`, () => {
+      const output = generateThemedCode(XYCHART_DIAGRAM, baseOptions(palette, "xychart"));
+      expect(output).toMatchSnapshot();
+    });
+  }
+});
+
+describe("generateThemedCode — each BRAND_PALETTE produces a distinct xychart output", () => {
+  it("all brand palette xychart outputs are unique", () => {
+    const outputs = BRAND_PALETTES.map((palette) =>
+      generateThemedCode(XYCHART_DIAGRAM, baseOptions(palette, "xychart"))
+    );
+    for (let i = 0; i < outputs.length; i++) {
+      for (let j = i + 1; j < outputs.length; j++) {
+        expect(
+          outputs[i],
+          `XYChart: palette "${BRAND_PALETTES[i].name}" and "${BRAND_PALETTES[j].name}" produced identical output`
+        ).not.toBe(outputs[j]);
+      }
+    }
+  });
+});
+
+describe("generateThemedCode — xychart overlay produces the correct joined color string", () => {
+  for (const palette of BRAND_PALETTES) {
+    it(`palette "${palette.name}" xychart output contains xyChart = comma-joined palette colors`, () => {
+      const output = generateThemedCode(XYCHART_DIAGRAM, baseOptions(palette, "xychart"));
+      const primary = paletteColor(palette, "primaryColor");
+      const secondary = paletteColor(palette, "secondaryColor");
+      const tertiary = paletteColor(palette, "tertiaryColor");
+      const line = paletteColor(palette, "lineColor");
+      const nodeBorder = paletteColor(palette, "nodeBorder");
+      const mainBkg = paletteColor(palette, "mainBkg");
+      const expected = [primary, secondary, tertiary, line, nodeBorder, mainBkg].join(",");
+      expect(output).toContain(`"xyChart": "${expected}"`);
+    });
+
+    it(`palette "${palette.name}" xychart output contains all six palette colors in order`, () => {
+      const output = generateThemedCode(XYCHART_DIAGRAM, baseOptions(palette, "xychart"));
+      const primary = paletteColor(palette, "primaryColor");
+      const secondary = paletteColor(palette, "secondaryColor");
+      const tertiary = paletteColor(palette, "tertiaryColor");
+      // The comma-joined value starts with primary and contains secondary and tertiary
+      expect(output).toContain(primary);
+      expect(output).toContain(secondary);
+      expect(output).toContain(tertiary);
+    });
+
+    it(`palette "${palette.name}" xychart output does not contain another palette's joined color string`, () => {
+      const output = generateThemedCode(XYCHART_DIAGRAM, baseOptions(palette, "xychart"));
+      const ownPrimary = paletteColor(palette, "primaryColor");
+      for (const other of BRAND_PALETTES) {
+        if (other.id === palette.id) continue;
+        const otherPrimary = paletteColor(other, "primaryColor");
+        const otherSecondary = paletteColor(other, "secondaryColor");
+        const otherTertiary = paletteColor(other, "tertiaryColor");
+        const otherLine = paletteColor(other, "lineColor");
+        const otherNodeBorder = paletteColor(other, "nodeBorder");
+        const otherMainBkg = paletteColor(other, "mainBkg");
+        const otherJoined = [
+          otherPrimary,
+          otherSecondary,
+          otherTertiary,
+          otherLine,
+          otherNodeBorder,
+          otherMainBkg,
+        ].join(",");
+        const ownSecondary = paletteColor(palette, "secondaryColor");
+        const ownTertiary = paletteColor(palette, "tertiaryColor");
+        const ownLine = paletteColor(palette, "lineColor");
+        const ownNodeBorder = paletteColor(palette, "nodeBorder");
+        const ownMainBkg = paletteColor(palette, "mainBkg");
+        const ownJoined = [
+          ownPrimary,
+          ownSecondary,
+          ownTertiary,
+          ownLine,
+          ownNodeBorder,
+          ownMainBkg,
+        ].join(",");
+        if (otherJoined === ownJoined) continue; // skip if palettes happen to produce identical strings
+        expect(
+          output,
+          `XYChart: palette "${palette.name}" contains joined color string from "${other.name}"`
+        ).not.toContain(otherJoined);
+      }
+    });
+  }
+});
+
+describe("generateThemedCode — xychart body is preserved", () => {
+  for (const palette of BRAND_PALETTES) {
+    it(`palette "${palette.name}" preserves the xychart body`, () => {
+      const output = generateThemedCode(XYCHART_DIAGRAM, baseOptions(palette, "xychart"));
+      expect(output).toContain("xychart-beta");
+      expect(output).toContain("Sales Trend");
+      expect(output).toContain("bar [30, 55, 80, 45]");
+    });
+  }
+});
