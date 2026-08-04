@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import type { ThemeColor } from "@/lib/palettes";
+import { hasFontFamilyInjectionChars } from "@/lib/typography";
 
 interface ColorSwatchProps {
   color: ThemeColor;
@@ -85,6 +86,12 @@ export function ColorSwatch({ color, onChange, isOverridden = false, onReset }: 
             aria-label={`Font family for ${color.label}`}
             className="text-xs text-muted-foreground bg-transparent border-0 p-0 w-full focus:outline-none focus:text-foreground"
           />
+          {hasFontFamilyInjectionChars(localValue) && (
+            <p className="text-[10px] text-amber-600 dark:text-amber-400 mt-0.5 leading-tight">
+              Contains <code className="font-mono">{"; { }"}</code> — unsafe characters will be
+              stripped from the export.
+            </p>
+          )}
         </div>
       </div>
     );

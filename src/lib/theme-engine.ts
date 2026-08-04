@@ -1,7 +1,11 @@
 import type { Palette } from "./palettes";
 import type { DiagramFamily } from "./detector";
 import { familyThemeOverlay } from "./family-theming";
-import { typographyToScaffoldSection, type TypographySettings } from "./typography";
+import {
+  typographyToScaffoldSection,
+  type TypographySettings,
+  sanitizeFontFamily,
+} from "./typography";
 import {
   rendererToScaffoldSection,
   buildRendererHeaderComment,
@@ -173,7 +177,9 @@ function buildInitDirective(
     .map(([k, v]) => `"${k}": "${v}"`)
     .join(", ");
 
-  const fontFamilyEntry = vars["fontFamily"] ? `"fontFamily": "${vars["fontFamily"]}"` : null;
+  const fontFamilyEntry = vars["fontFamily"]
+    ? `"fontFamily": "${sanitizeFontFamily(vars["fontFamily"])}"`
+    : null;
   const themeVarsStr = [varEntries, fontFamilyEntry].filter(Boolean).join(", ");
 
   const lookEntry = look && look !== "classic" ? `"look": "${look}", ` : "";

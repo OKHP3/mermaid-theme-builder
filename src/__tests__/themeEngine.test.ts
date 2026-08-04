@@ -1043,6 +1043,54 @@ describe("typography → init directive mapping", () => {
     expect(init).toContain("DM Sans");
     expect(init).not.toContain("Georgia, serif");
   });
+
+  it("palette-level fontFamily with a semicolon injection is sanitized in the init directive", () => {
+    const unsafePalette = {
+      ...palette,
+      colors: palette.colors.map((c) =>
+        c.key === "fontFamily" ? { ...c, value: "Roboto; color: red" } : c
+      ),
+    };
+    const result = generateThemedCode(SIMPLE_FLOWCHART, {
+      ...BASE_OPTIONS,
+      palette: unsafePalette,
+    });
+    const init = extractInitDirective(result);
+    expect(init).toContain('"fontFamily": "Roboto color: red"');
+    expect(init).not.toContain(";");
+  });
+
+  it("palette-level fontFamily with braces injection is sanitized in the init directive", () => {
+    const unsafePalette = {
+      ...palette,
+      colors: palette.colors.map((c) =>
+        c.key === "fontFamily" ? { ...c, value: "Font{inject}Name" } : c
+      ),
+    };
+    const result = generateThemedCode(SIMPLE_FLOWCHART, {
+      ...BASE_OPTIONS,
+      palette: unsafePalette,
+    });
+    const init = extractInitDirective(result);
+    expect(init).toContain('"fontFamily": "FontinjectName"');
+    // The raw unsafe value must not appear verbatim in the output.
+    expect(init).not.toContain('"fontFamily": "Font{inject}Name"');
+  });
+
+  it("safe palette fontFamily is emitted verbatim (no over-sanitization)", () => {
+    const safePalette = {
+      ...palette,
+      colors: palette.colors.map((c) =>
+        c.key === "fontFamily" ? { ...c, value: "Inter, 'DM Sans', sans-serif" } : c
+      ),
+    };
+    const result = generateThemedCode(SIMPLE_FLOWCHART, {
+      ...BASE_OPTIONS,
+      palette: safePalette,
+    });
+    const init = extractInitDirective(result);
+    expect(init).toContain('"fontFamily": "Inter, \'DM Sans\', sans-serif"');
+  });
 });
 
 describe("buildClassDefString", () => {
