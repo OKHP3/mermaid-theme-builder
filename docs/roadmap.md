@@ -1,6 +1,6 @@
 # Roadmap
 
-> **Status as of 2026-08-04 (ground-truth audit):** `v0.5.0` (2026-05-12) is still the only git tag, but `main` has shipped 700 commits since then (verified via `git log v0.5.0..HEAD`), with the exact HEAD commit deployed live at every push. Treat this repo as a rolling release past v0.5.0, not a static snapshot — several "planned" v0.6.0 items below are already shipped (see checkmarks). The live app's Reference tab currently catalogs 31 diagram families (vs this doc's older counts) and a 9-skill Agent Skills catalog (vs the single-skill framing elsewhere in this repo's docs). Full findings: `AUDIT-2026-08-04` in the private Notion tracker.
+> **Status as of 2026-08-05:** Tags: `v0.5.0` (2026-05-12), `v0.6.0` (2026-08-04), `v0.6.1` (2026-08-05). The live app's Reference tab catalogs 31 diagram families and a 10-skill Agent Skills catalog. Evidence log for the v0.6.1 sprint: `docs/evidence-log-v061.md`.
 
 ## v0.1.0 — Foundation (Shipped 2026-04-23)
 
@@ -71,8 +71,7 @@
 
 ## v0.6.0 — P0 Capability Fixes + Documentation Truth Sync (Shipped 2026-08-04)
 
-**Status:** In progress. Further along than "planning" suggests. 700 commits landed on `main` since the v0.5.0 tag. Several items below are confirmed shipped as of the 2026-08-04 audit (checked).
-**Tag:** `v0.6.0`
+**Status:** Shipped. Tag: `v0.6.0`.
 
 ### Shipped
 - **Extract tab restored** — dedicated Extract nav tab re-registered; `#extract` URL resolves
@@ -80,7 +79,7 @@
 - **Stroke/border width control** — "Node border width" button group in Compose Look section (Default / 1–4 px)
 - **YAML frontmatter generation** — `buildFrontmatter()` aligned with `buildInitDirective` for look, family, typography
 - **8-renderer README** — m365-loop / Microsoft Loop added to the README parity matrix table
-- **Skills catalog regenerated** — 10 skills; okhp3-mermaid-governance v1.1.0 and okhp3-skill-promotion v0.1.0 now appear
+- **Skills catalog (README)** — auto-generated README catalog block regenerated to 10 skills; `okhp3-mermaid-governance` v1.1.0 and `okhp3-skill-promotion` v0.1.0 appear. Note: `src/data/skills-catalog.ts` (app Reference tab) registration of `okhp3-skill-promotion` completed in v0.6.1.
 - **Documentation truth sync** — README family count, Exports section, Tabs table, and renderer count all match the live app
 - **Neutral Enterprise retired** — removed from planning documents (was never in code)
 
@@ -112,6 +111,22 @@
 
 ### v1.0.0 evaluation
 Privacy-respecting analytics and a completed WCAG 2.1 AA audit remain open. v1.0.0 is not yet earned.
+
+---
+
+## v0.6.1 — Privacy Fix, Length Safety, Skills Truth Sync (Shipped 2026-08-05)
+
+**Status:** Shipped. Tag: `v0.6.1`. Evidence log: `docs/evidence-log-v061.md`.
+
+### Shipped
+- **GA4 analytics removed** — measurement ID `G-VJ1BKXS27H` removed; `usePageTracking` hook deleted; zero outbound network requests during normal use
+- **Privacy copy corrected** — README updated to accurately reflect no data collection
+- **DECISIONS_NEEDED.md** — standing process record for ambiguous product decisions; analytics policy resolved as Option A (no analytics)
+- **Windows portability** — `preinstall`, `run-e2e`, and `start-e2e-server` scripts rewritten in cross-platform MJS; `playwright.config.ts` rewrote Chromium detection and path handling using `path.delimiter` / `path.sep`
+- **Init-directive length warning** — Mermaid parser-level ceiling confirmed absent (measured across 8.14.x / 10.5.x / 11.x); `initDirectiveSafeLength` field added to all 8 renderer profiles; `checkInitDirectiveLength()` utility wired into Apply tab `exportAdvisories`; 28 unit tests
+- **Skills catalog reconciled** — `src/data/skills-catalog.ts` (app Reference tab) updated to register all 10 skills; `okhp3-skill-promotion` v0.1.0 added; stale README drift notes removed
+- **Version truth sync** — `package.json` → 0.6.1; `TOOL_VERSION` → 0.6.1; `okhp3-mermaid-theme-builder` skill version → 0.6.1; `docs/attribution.md` updated; `CHANGELOG.md [0.6.0]` overstatement corrected
+- **PWA claim** — README updated to "installable as a PWA" (service worker + manifest confirmed present at `public/sw.js` + `public/manifest.webmanifest`)
 
 ---
 

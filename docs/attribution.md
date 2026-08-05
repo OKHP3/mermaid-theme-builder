@@ -15,7 +15,7 @@ When enabled, all generated Mermaid code includes a block of `%%` comment lines 
 
 ```mermaid
 %%{init: {"theme": "base", "themeVariables": { ... }}}%%
-%% Created with: Mermaid Theme Builder v0.6.0
+%% Created with: Mermaid Theme Builder v0.6.1
 %% Tool: https://overkillhill.com/projects/mermaid-theme-builder/
 %% Theme: OKHP3
 %% Theme ID: overkill-hill

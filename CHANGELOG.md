@@ -2,7 +2,7 @@
 
 ---
 
-## [0.6.1-pre] - 2026-08-05
+## [0.6.1] - 2026-08-05
 
 Privacy integrity fix, process governance scaffolding, renderer-aware init-directive length warning, and skills catalog truth sync.
 
@@ -31,7 +31,7 @@ Phase 2 P0 capability fixes, plus documentation truth sync across all public sur
 
 ### Changed
 - **Renderer parity matrix**: README and Reference tab now correctly show 8 renderers; m365-loop / Microsoft 365 / Loop row added to the README summary table.
-- **Skills catalog**: regenerated to include all 10 skills: `okhp3-mermaid-governance` v1.1.0 and `okhp3-skill-promotion` v0.1.0 added to the README catalog block.
+- **Skills catalog (README)**: auto-generated README catalog block regenerated to 10 skills; `okhp3-mermaid-governance` v1.1.0 and `okhp3-skill-promotion` v0.1.0 now appear in the README table. Note: registration of `okhp3-skill-promotion` in `src/data/skills-catalog.ts` (app Reference tab) was completed in v0.6.1.
 - **README**: family count updated from "27+" to "31 (18 native, 13 partial/beta) + 10 documented gaps"; Exports section rewritten to document all 8 Download formats; Tabs table updated to include Extract.
 - **package.json**: version bumped to 0.6.0.
 
@@ -52,5 +52,6 @@ Phase 2 P0 capability fixes, plus documentation truth sync across all public sur
 
 **Verdict: v0.6.0.** v1.0.0 requires analytics and a completed accessibility audit. Both remain open.
 
-[Unreleased]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.6.1...HEAD
+[0.6.1]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.5.0...v0.6.0

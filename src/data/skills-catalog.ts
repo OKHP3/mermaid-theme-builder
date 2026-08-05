@@ -76,7 +76,7 @@ export const PUBLIC_MERMAID_SKILLS: PublicSkill[] = [
   {
     name: "okhp3-mermaid-theme-builder",
     displayName: "Theme Builder",
-    version: "0.6.0",
+    version: "0.6.1",
     role: "tooling",
     description:
       "Apply reusable color palettes and visual governance to Mermaid diagrams — themeVariables blocks, %%{init}%% configuration, and renderer-safe styled output.",
