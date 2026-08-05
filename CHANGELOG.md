@@ -2,6 +2,21 @@
 
 ---
 
+## [0.6.1-pre] - 2026-08-05
+
+Privacy integrity fix and process governance scaffolding.
+
+### Removed
+- **Google Analytics (GA4)**: measurement ID `G-VJ1BKXS27H` removed from `index.html`; `usePageTracking` hook deleted and all call sites removed from `App.tsx`. The app now makes zero outbound network requests during normal use. This corrects a contradiction between the public "no data collection" claim and the actual runtime behaviour.
+
+### Changed
+- **Privacy copy**: README feature list updated to state explicitly that Mermaid code, palette data, and exports stay in the browser and no data is sent to any server.
+
+### Added
+- **`DECISIONS_NEEDED.md`**: standing process record at repo root. Any future proposal to add analytics must open an entry here and wait for explicit owner sign-off before any tracking code is written. Analytics policy entry included and resolved.
+
+---
+
 ## [0.6.0] - 2026-08-04
 
 Phase 2 P0 capability fixes, plus documentation truth sync across all public surfaces.

@@ -8,7 +8,6 @@ import {
   type ReactNode,
 } from "react";
 import { useThemeMode, type ThemeMode } from "@/hooks/useThemeMode";
-import { usePageTracking } from "@/hooks/usePageTracking";
 import {
   BUILTIN_PALETTES,
   BRAND_PALETTES,
@@ -313,7 +312,6 @@ export function AppShell() {
     const TABS: AppTab[] = ["apply", "compose", "examples", "reference", "extract"];
     return TABS.includes(h as AppTab) ? (h as AppTab) : "compose";
   });
-  usePageTracking(activeTab);
   const [hydrated, setHydrated] = useState(false);
   const [toast, setToast] = useState<ReactNode | null>(null);
   const [userPalettes, setUserPalettes] = useState<Palette[]>([]);

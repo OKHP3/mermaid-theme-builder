@@ -26,7 +26,7 @@ Visual governance for AI-generated Mermaid diagrams — paste, theme, preview, a
 - **Renderer-aware warnings** — contextual alerts when selected look is unsupported by target renderer
 - **Stroke/border width control** — per-diagram node border width stepper in Compose (Default, 1–4 px)
 - **Extract mode** — dedicated Extract tab to pull a theme from existing themed Mermaid code
-- **100% client-side** — no backend, no login, no data collection
+- **100% client-side, no data collection** — your Mermaid code, palette data, and exports stay in your browser; no data is sent to any server. No backend, no login, no analytics.
 
 ---
 
