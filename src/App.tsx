@@ -1533,6 +1533,9 @@ export function AppShell() {
             onAddMyThemeSlot={handleAddMyThemeSlot}
             onDeleteMyThemeSlot={handleDeleteMyThemeSlot}
             onExportMyThemeSlot={handleExportMyThemeSlot}
+            onDuplicateMyThemeSlot={handleDuplicateMyThemeSlot}
+            onMoveMyThemeSlotUp={handleMoveMyThemeSlotUp}
+            onMoveMyThemeSlotDown={handleMoveMyThemeSlotDown}
             onImportAsNewSlot={handleImportAsNewSlot}
           />
         </div>

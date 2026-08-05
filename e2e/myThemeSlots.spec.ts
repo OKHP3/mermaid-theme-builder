@@ -348,7 +348,68 @@ test.describe("My Theme slot — color edit routing", () => {
 });
 
 // ---------------------------------------------------------------------------
-// 6. Duplicate action creates a copy, activates it, and gives it "(copy)" name
+// 6. Lifecycle buttons on the Apply tab (always-mounted) are fully wired
+// ---------------------------------------------------------------------------
+
+test.describe("My Theme slot — lifecycle buttons on Apply tab", () => {
+  const APPLY_PREFIX = "apply-palette-tile";
+
+  test("Duplicate from Apply tab creates a slot and persists to localStorage", async ({ page }) => {
+    await openWithState(page);
+
+    // The Apply tab is always mounted but hidden; its palette bar tiles exist
+    // in the DOM with the apply-palette-tile-* prefix.
+    const applySlot1 = page.locator(`#${APPLY_PREFIX}-my-theme-1`);
+    await applySlot1.waitFor({ timeout: 8_000 });
+
+    // Hover the Apply-tab slot-1 tile and click its Duplicate button.
+    await applySlot1.hover();
+    const dupBtn = page.getByRole("button", { name: "Duplicate My Theme 1" }).nth(1);
+    await dupBtn.click({ force: true });
+
+    // Wait for auto-save.
+    await page.waitForTimeout(300);
+
+    // The new slot must be persisted in localStorage.
+    const raw = await page.evaluate((key: string) => localStorage.getItem(key), LS_KEY);
+    expect(raw).not.toBeNull();
+    const state = JSON.parse(raw!) as { myThemeSlots?: Array<{ id: string; name: string }> };
+    expect(state.myThemeSlots).toHaveLength(2);
+    expect(state.myThemeSlots!.some((s) => s.name === "My Theme 1 (copy)")).toBe(true);
+  });
+
+  test("Move Down from Apply tab reorders slots and persists to localStorage", async ({ page }) => {
+    await openWithState(
+      page,
+      baseState({
+        myThemeSlots: [makeSlot(1), makeSlot(2)],
+        activeMyThemeSlotId: "my-theme-1",
+      })
+    );
+
+    const applySlot1 = page.locator(`#${APPLY_PREFIX}-my-theme-1`);
+    await applySlot1.waitFor({ timeout: 8_000 });
+
+    // Move slot-1 down via the Apply-tab action bar.
+    await applySlot1.hover();
+    const moveDownBtn = page.getByRole("button", { name: "Move My Theme 1 down" }).nth(1);
+    await moveDownBtn.click({ force: true });
+
+    // Wait for auto-save.
+    await page.waitForTimeout(300);
+
+    const raw = await page.evaluate((key: string) => localStorage.getItem(key), LS_KEY);
+    expect(raw).not.toBeNull();
+    const state = JSON.parse(raw!) as { myThemeSlots?: Array<{ id: string }> };
+    const slots = state.myThemeSlots ?? [];
+    expect(slots).toHaveLength(2);
+    expect(slots[0].id).toBe("my-theme-2");
+    expect(slots[1].id).toBe("my-theme-1");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 7. Duplicate action creates a copy, activates it, and gives it "(copy)" name
 // ---------------------------------------------------------------------------
 
 test.describe("My Theme slot — duplicate", () => {
