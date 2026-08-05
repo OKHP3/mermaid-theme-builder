@@ -19,7 +19,7 @@ compatibility: >
   text.
 metadata:
   author: Jamie Hill (OverKill Hill P³)
-  version: "0.6.0"
+  version: "0.6.1"
   category: diagram-governance
   origin: okhp3/mermaid-theme-builder
   homepage: https://overkillhill.com

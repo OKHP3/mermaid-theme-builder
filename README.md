@@ -214,7 +214,7 @@ See `skills/okhp3-mermaid-theme-builder/README.md` for full install instructions
 | [okhp3-mermaid-governance](skills/okhp3-mermaid-governance/SKILL.md) | OverKill Hill P³ Mermaid governance profile manager. Use when establishing a visual and behavioral... | 1.1.0 |
 | [okhp3-mermaid-publish](skills/okhp3-mermaid-publish/SKILL.md) | Rendering, exporting, and publishing finished Mermaid diagrams. Use after a diagram has passed ok... | 0.3.0 |
 | [okhp3-mermaid-repair](skills/okhp3-mermaid-repair/SKILL.md) | Syntax repair for broken Mermaid diagrams. Use when a .mmd file or fenced Mermaid block fails to ... | 0.3.0 |
-| [okhp3-mermaid-theme-builder](skills/okhp3-mermaid-theme-builder/SKILL.md) | Apply reusable color palettes and visual governance to Mermaid diagram code. Use this skill when ... | 0.6.0 |
+| [okhp3-mermaid-theme-builder](skills/okhp3-mermaid-theme-builder/SKILL.md) | Apply reusable color palettes and visual governance to Mermaid diagram code. Use this skill when ... | 0.6.1 |
 | [okhp3-mermaid-update](skills/okhp3-mermaid-update/SKILL.md) | Style-preserving update of an existing Mermaid diagram. Use when the user provides an existing .m... | 0.3.0 |
 | [okhp3-skill-promotion](skills/okhp3-skill-promotion/SKILL.md) | Promote and synchronize a project-local Agent Skill into a portable, reviewable distribution pack... | 0.1.0 |
 
