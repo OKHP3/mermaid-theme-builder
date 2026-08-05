@@ -185,6 +185,9 @@ interface ComposeTabProps {
     profile: import("@/lib/governance-profile").GovernanceProfile,
     warnings: string[]
   ) => void;
+  onDuplicateMyThemeSlot?: (id: string) => void;
+  onMoveMyThemeSlotUp?: (id: string) => void;
+  onMoveMyThemeSlotDown?: (id: string) => void;
   customThemeNamePlaceholder?: string;
 }
 
@@ -246,6 +249,9 @@ export function ComposeTab({
   onImportAsNewSlot,
   onImportMyThemeSlot,
   onImportGovernanceProfile,
+  onDuplicateMyThemeSlot,
+  onMoveMyThemeSlotUp,
+  onMoveMyThemeSlotDown,
   customThemeNamePlaceholder,
 }: ComposeTabProps) {
   const [copiedBootstrap, setCopiedBootstrap] = useState(false);
@@ -597,6 +603,9 @@ export function ComposeTab({
         onExportMyThemeSlot={onExportMyThemeSlot}
         onImportAsNewSlot={onImportAsNewSlot}
         onShowToast={onShowToast}
+        onDuplicateMyThemeSlot={onDuplicateMyThemeSlot}
+        onMoveMyThemeSlotUp={onMoveMyThemeSlotUp}
+        onMoveMyThemeSlotDown={onMoveMyThemeSlotDown}
       />
 
       <div className="flex flex-col md:flex-row flex-1 overflow-hidden min-h-0">

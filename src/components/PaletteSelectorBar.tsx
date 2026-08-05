@@ -26,6 +26,9 @@ interface PaletteSelectorBarProps {
     }
   ) => void;
   onShowToast: (msg: string) => void;
+  onDuplicateMyThemeSlot?: (id: string) => void;
+  onMoveMyThemeSlotUp?: (id: string) => void;
+  onMoveMyThemeSlotDown?: (id: string) => void;
 }
 
 export function PaletteSelectorBar({
@@ -42,6 +45,9 @@ export function PaletteSelectorBar({
   onExportMyThemeSlot,
   onImportAsNewSlot,
   onShowToast,
+  onDuplicateMyThemeSlot,
+  onMoveMyThemeSlotUp,
+  onMoveMyThemeSlotDown,
 }: PaletteSelectorBarProps) {
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -111,11 +117,14 @@ export function PaletteSelectorBar({
           onKeyDown={handleKeyDown}
         >
           {/* My Theme slot tiles */}
-          {myThemeSlots.map((slot) => {
+          {myThemeSlots.map((slot, slotIndex) => {
             const swatchColors = SWATCH_INDICES.map((i) => slot.colors[i]?.value ?? "#888");
             const isActive = activeMyThemeSlotId === slot.id;
             const displayName =
               slot.name.length > 15 ? slot.name.slice(0, 14) + "\u2026" : slot.name;
+            const isFirst = slotIndex === 0;
+            const isLast = slotIndex === myThemeSlots.length - 1;
+            const slotsFull = myThemeSlots.length >= 3;
             return (
               <div key={slot.id} className="relative flex-none group/slot">
                 <button
@@ -125,7 +134,7 @@ export function PaletteSelectorBar({
                   tabIndex={isActive ? 0 : -1}
                   onClick={() => onSelectMyThemeSlot(slot.id)}
                   title={slot.name}
-                  className={`flex flex-col items-center gap-1 px-2 pt-1.5 pb-1.5 pr-5 rounded-lg transition-all border focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
+                  className={`flex flex-col items-center gap-1 px-2 pt-1.5 pb-5 pr-5 rounded-lg transition-all border focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
                     isActive
                       ? "border-primary/60 bg-primary/8 shadow-sm"
                       : "border-transparent hover:border-border hover:bg-muted/40"
@@ -171,6 +180,86 @@ export function PaletteSelectorBar({
                     />
                   </svg>
                 </button>
+                {/* Lifecycle action bar — Move Up, Move Down, Duplicate (revealed on hover / focus) */}
+                <div
+                  className="absolute bottom-0.5 left-0 right-0 flex justify-center gap-0.5 opacity-0 group-hover/slot:opacity-100 focus-within:opacity-100 [@media(pointer:coarse)]:opacity-100 transition-opacity pointer-events-none group-hover/slot:pointer-events-auto focus-within:pointer-events-auto"
+                  aria-hidden="false"
+                >
+                  {/* Move Up */}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onMoveMyThemeSlotUp?.(slot.id);
+                    }}
+                    disabled={isFirst}
+                    aria-label={`Move ${slot.name} up`}
+                    title={`Move ${slot.name} up`}
+                    className="p-0.5 rounded text-muted-foreground hover:text-foreground hover:bg-muted/60 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-muted-foreground focus-visible:outline focus-visible:outline-1 focus-visible:outline-primary transition-colors"
+                  >
+                    <svg viewBox="0 0 16 16" fill="none" className="w-3 h-3" aria-hidden="true">
+                      <path
+                        d="M4 10l4-4 4 4"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </button>
+                  {/* Move Down */}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onMoveMyThemeSlotDown?.(slot.id);
+                    }}
+                    disabled={isLast}
+                    aria-label={`Move ${slot.name} down`}
+                    title={`Move ${slot.name} down`}
+                    className="p-0.5 rounded text-muted-foreground hover:text-foreground hover:bg-muted/60 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-muted-foreground focus-visible:outline focus-visible:outline-1 focus-visible:outline-primary transition-colors"
+                  >
+                    <svg viewBox="0 0 16 16" fill="none" className="w-3 h-3" aria-hidden="true">
+                      <path
+                        d="M4 6l4 4 4-4"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </button>
+                  {/* Duplicate */}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDuplicateMyThemeSlot?.(slot.id);
+                    }}
+                    disabled={slotsFull}
+                    aria-label={`Duplicate ${slot.name}`}
+                    title={slotsFull ? "All 3 slots in use" : `Duplicate ${slot.name}`}
+                    className="p-0.5 rounded text-muted-foreground hover:text-foreground hover:bg-muted/60 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-muted-foreground focus-visible:outline focus-visible:outline-1 focus-visible:outline-primary transition-colors"
+                  >
+                    <svg viewBox="0 0 16 16" fill="none" className="w-3 h-3" aria-hidden="true">
+                      <path
+                        d="M6 4H4a1 1 0 00-1 1v7a1 1 0 001 1h7a1 1 0 001-1v-2"
+                        stroke="currentColor"
+                        strokeWidth="1.2"
+                        strokeLinecap="round"
+                      />
+                      <rect
+                        x="6"
+                        y="2"
+                        width="7"
+                        height="7"
+                        rx="1"
+                        stroke="currentColor"
+                        strokeWidth="1.2"
+                      />
+                    </svg>
+                  </button>
+                </div>
               </div>
             );
           })}

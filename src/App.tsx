@@ -47,6 +47,9 @@ import {
   nextSlotNumber,
   isMyThemeSlotId,
   slotDisplayName,
+  duplicateSlot,
+  moveSlotUp,
+  moveSlotDown,
 } from "@/lib/my-theme-slots";
 import { downloadTextFile, makeFilename, paletteToPortableJson } from "@/lib/exporters";
 import {
@@ -937,6 +940,26 @@ export function AppShell() {
     []
   );
 
+  const handleDuplicateMyThemeSlot = useCallback((id: string) => {
+    setMyThemeSlots((prev) => {
+      const result = duplicateSlot(prev, id);
+      if (!result) {
+        setToast("All 3 My Theme slots are in use — delete one before duplicating.");
+        return prev;
+      }
+      setActiveMyThemeSlotId(result.newSlotId);
+      return result.slots;
+    });
+  }, []);
+
+  const handleMoveMyThemeSlotUp = useCallback((id: string) => {
+    setMyThemeSlots((prev) => moveSlotUp(prev, id));
+  }, []);
+
+  const handleMoveMyThemeSlotDown = useCallback((id: string) => {
+    setMyThemeSlots((prev) => moveSlotDown(prev, id));
+  }, []);
+
   const handleResetPalette = useCallback(() => {
     if (activeMyThemeSlotId) {
       setMyThemeSlots((prev) =>
@@ -1566,6 +1589,9 @@ export function AppShell() {
               onImportAsNewSlot={handleImportAsNewSlot}
               onImportMyThemeSlot={handleImportMyThemeSlot}
               onImportGovernanceProfile={handleImportGovernanceProfile}
+              onDuplicateMyThemeSlot={handleDuplicateMyThemeSlot}
+              onMoveMyThemeSlotUp={handleMoveMyThemeSlotUp}
+              onMoveMyThemeSlotDown={handleMoveMyThemeSlotDown}
               customThemeNamePlaceholder={
                 activeMyThemeSlotId ? slotDisplayName(activeMyThemeSlotId) : undefined
               }

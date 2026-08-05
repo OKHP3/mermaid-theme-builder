@@ -54,3 +54,60 @@ export function nextSlotNumber(slots: MyThemeSlot[]): (1 | 2 | 3) | null {
 export function isMyThemeSlotId(id: unknown): id is MyThemeSlotId {
   return typeof id === "string" && (MY_THEME_SLOT_IDS as readonly string[]).includes(id);
 }
+
+// ── Lifecycle operations (pure — no React state) ─────────────────────────────
+
+/**
+ * Duplicate a slot: deep-copy source into the next available slot id, appending
+ * " (copy)" to the name.  Returns the new slots array and the new slot's id, or
+ * null when all 3 slots are already in use or the source id is not found.
+ */
+export function duplicateSlot(
+  slots: MyThemeSlot[],
+  sourceId: string
+): { slots: MyThemeSlot[]; newSlotId: MyThemeSlotId } | null {
+  const source = slots.find((s) => s.id === sourceId);
+  if (!source) return null;
+  const num = nextSlotNumber(slots);
+  if (num === null) return null;
+  const newId = `my-theme-${num}` as MyThemeSlotId;
+  const copy: MyThemeSlot = {
+    id: newId,
+    name: `${source.name} (copy)`,
+    colors: source.colors.map((c) => ({ ...c })),
+    look: source.look,
+    fontSize: source.fontSize,
+    typography: {
+      diagramTitle: { ...source.typography.diagramTitle },
+      subgraphTitle: { ...source.typography.subgraphTitle },
+      nestedSubgraphTitle: { ...source.typography.nestedSubgraphTitle },
+      nodeLabel: { ...source.typography.nodeLabel },
+      edgeLabel: { ...source.typography.edgeLabel },
+    },
+  };
+  return { slots: [...slots, copy], newSlotId: newId };
+}
+
+/**
+ * Move a slot one position toward the start of the array.
+ * No-op (returns same reference) if already first or id not found.
+ */
+export function moveSlotUp(slots: MyThemeSlot[], id: string): MyThemeSlot[] {
+  const idx = slots.findIndex((s) => s.id === id);
+  if (idx <= 0) return slots;
+  const next = [...slots];
+  [next[idx - 1], next[idx]] = [next[idx], next[idx - 1]];
+  return next;
+}
+
+/**
+ * Move a slot one position toward the end of the array.
+ * No-op (returns same reference) if already last or id not found.
+ */
+export function moveSlotDown(slots: MyThemeSlot[], id: string): MyThemeSlot[] {
+  const idx = slots.findIndex((s) => s.id === id);
+  if (idx < 0 || idx >= slots.length - 1) return slots;
+  const next = [...slots];
+  [next[idx], next[idx + 1]] = [next[idx + 1], next[idx]];
+  return next;
+}

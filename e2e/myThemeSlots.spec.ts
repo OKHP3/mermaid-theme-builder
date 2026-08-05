@@ -54,10 +54,7 @@ const SLOT_TILE_SEL = `[role="radio"][id^="${PREFIX}-my-theme-"]`;
  * avoids the race where tile-1 (from React's default initial state) appears
  * before the hydration effect fires and the extra tiles are added.
  */
-async function openWithState(
-  page: Page,
-  state?: Record<string, unknown>
-): Promise<void> {
+async function openWithState(page: Page, state?: Record<string, unknown>): Promise<void> {
   await page.addInitScript(
     ({ key, value }: { key: string; value: string | null }) => {
       localStorage.clear();
@@ -104,9 +101,7 @@ function makeSlot(n: 1 | 2 | 3) {
 }
 
 /** Base persisted state (caller adds myThemeSlots and activeMyThemeSlotId). */
-function baseState(
-  extra: Record<string, unknown> = {}
-): Record<string, unknown> {
+function baseState(extra: Record<string, unknown> = {}): Record<string, unknown> {
   return {
     schemaVersion: 1,
     selectedPaletteId: "overkill-hill",
@@ -293,6 +288,8 @@ test.describe("My Theme slot — import toast", () => {
 // 5. Color edits while a slot is active route to the slot, not customColors
 // ---------------------------------------------------------------------------
 
+// (section 6 and 7 appear below after section 5)
+
 test.describe("My Theme slot — color edit routing", () => {
   test("editing a color writes to the active slot's colors, not to customColors", async ({
     page,
@@ -325,10 +322,7 @@ test.describe("My Theme slot — color edit routing", () => {
     await page.waitForTimeout(300);
 
     // Read the persisted state from localStorage.
-    const raw = await page.evaluate(
-      (key: string) => localStorage.getItem(key),
-      LS_KEY
-    );
+    const raw = await page.evaluate((key: string) => localStorage.getItem(key), LS_KEY);
     expect(raw, "localStorage must contain persisted state after a color edit").not.toBeNull();
 
     const state = JSON.parse(raw!) as {
@@ -350,5 +344,206 @@ test.describe("My Theme slot — color edit routing", () => {
       leakedToBuiltin,
       "new color must NOT leak into customColors for the built-in palette"
     ).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 6. Duplicate action creates a copy, activates it, and gives it "(copy)" name
+// ---------------------------------------------------------------------------
+
+test.describe("My Theme slot — duplicate", () => {
+  test("Duplicate button creates a second slot and auto-activates it", async ({ page }) => {
+    await openWithState(page);
+
+    // Only one slot at start.
+    await expect(page.locator(SLOT_TILE_SEL)).toHaveCount(1);
+
+    const slot1 = page.locator(`#${PREFIX}-my-theme-1`);
+
+    // Hover slot-1 to reveal the action bar.
+    await slot1.hover();
+
+    // Click Duplicate. force:true bypasses the CSS opacity transition.
+    const dupBtn = page.getByRole("button", { name: "Duplicate My Theme 1" });
+    await dupBtn.click({ force: true });
+
+    // A second tile must appear.
+    await expect(page.locator(SLOT_TILE_SEL)).toHaveCount(2);
+
+    // The new slot (my-theme-2) should be auto-activated.
+    const slot2 = page.locator(`#${PREFIX}-my-theme-2`);
+    await expect(slot2).toHaveAttribute("aria-checked", "true");
+
+    // The original slot must now be inactive.
+    await expect(slot1).toHaveAttribute("aria-checked", "false");
+
+    // The new slot's title attribute must carry the "(copy)" suffix.
+    await expect(slot2).toHaveAttribute("title", "My Theme 1 (copy)");
+  });
+
+  test("Duplicate button is disabled when 3 slots already exist", async ({ page }) => {
+    await openWithState(
+      page,
+      baseState({
+        myThemeSlots: [makeSlot(1), makeSlot(2), makeSlot(3)],
+        activeMyThemeSlotId: "my-theme-1",
+      })
+    );
+
+    const slot1 = page.locator(`#${PREFIX}-my-theme-1`);
+    await slot1.hover();
+
+    const dupBtn = page.getByRole("button", { name: "Duplicate My Theme 1" });
+    await expect(dupBtn).toBeDisabled();
+  });
+
+  test("Duplicate stores the new slot in localStorage", async ({ page }) => {
+    await openWithState(page);
+
+    const slot1 = page.locator(`#${PREFIX}-my-theme-1`);
+    await slot1.hover();
+    await page.getByRole("button", { name: "Duplicate My Theme 1" }).click({ force: true });
+
+    // Wait for auto-save to flush.
+    await page.waitForTimeout(300);
+
+    const raw = await page.evaluate((key: string) => localStorage.getItem(key), LS_KEY);
+    expect(raw).not.toBeNull();
+
+    const state = JSON.parse(raw!) as {
+      myThemeSlots?: Array<{ id: string; name: string }>;
+      activeMyThemeSlotId?: string;
+    };
+
+    const slots = state.myThemeSlots ?? [];
+    expect(slots).toHaveLength(2);
+
+    const copy = slots.find((s) => s.name === "My Theme 1 (copy)");
+    expect(copy, "copy slot must be present in persisted state").toBeDefined();
+    expect(copy!.id).toBe("my-theme-2");
+
+    // Active slot must be the newly duplicated one.
+    expect(state.activeMyThemeSlotId).toBe("my-theme-2");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 7. Move Up / Move Down reorders slots and the order persists in localStorage
+// ---------------------------------------------------------------------------
+
+test.describe("My Theme slot — move up / move down", () => {
+  test("Move Up button moves the target slot one position toward the start", async ({ page }) => {
+    await openWithState(
+      page,
+      baseState({
+        myThemeSlots: [makeSlot(1), makeSlot(2)],
+        activeMyThemeSlotId: "my-theme-1",
+      })
+    );
+
+    const slotTiles = page.locator(SLOT_TILE_SEL);
+    await page.locator(`#${PREFIX}-my-theme-2`).waitFor({ timeout: 8_000 });
+
+    // Initial order: slot-1 first, slot-2 second.
+    await expect(slotTiles.nth(0)).toHaveAttribute("id", `${PREFIX}-my-theme-1`);
+    await expect(slotTiles.nth(1)).toHaveAttribute("id", `${PREFIX}-my-theme-2`);
+
+    // Hover slot-2 and click Move Up.
+    const slot2 = page.locator(`#${PREFIX}-my-theme-2`);
+    await slot2.hover();
+    await page.getByRole("button", { name: "Move My Theme 2 up" }).click({ force: true });
+
+    // slot-2 must now appear first.
+    await expect(slotTiles.nth(0)).toHaveAttribute("id", `${PREFIX}-my-theme-2`);
+    await expect(slotTiles.nth(1)).toHaveAttribute("id", `${PREFIX}-my-theme-1`);
+  });
+
+  test("Move Down button moves the target slot one position toward the end", async ({ page }) => {
+    await openWithState(
+      page,
+      baseState({
+        myThemeSlots: [makeSlot(1), makeSlot(2)],
+        activeMyThemeSlotId: "my-theme-1",
+      })
+    );
+
+    await page.locator(`#${PREFIX}-my-theme-2`).waitFor({ timeout: 8_000 });
+    const slotTiles = page.locator(SLOT_TILE_SEL);
+
+    // Hover slot-1 and click Move Down.
+    const slot1 = page.locator(`#${PREFIX}-my-theme-1`);
+    await slot1.hover();
+    await page.getByRole("button", { name: "Move My Theme 1 down" }).click({ force: true });
+
+    // slot-2 must now appear first.
+    await expect(slotTiles.nth(0)).toHaveAttribute("id", `${PREFIX}-my-theme-2`);
+    await expect(slotTiles.nth(1)).toHaveAttribute("id", `${PREFIX}-my-theme-1`);
+  });
+
+  test("Move Up is disabled for the first slot", async ({ page }) => {
+    await openWithState(
+      page,
+      baseState({
+        myThemeSlots: [makeSlot(1), makeSlot(2)],
+        activeMyThemeSlotId: "my-theme-1",
+      })
+    );
+
+    await page.locator(`#${PREFIX}-my-theme-2`).waitFor({ timeout: 8_000 });
+
+    const slot1 = page.locator(`#${PREFIX}-my-theme-1`);
+    await slot1.hover();
+    const moveUpBtn = page.getByRole("button", { name: "Move My Theme 1 up" });
+    await expect(moveUpBtn).toBeDisabled();
+  });
+
+  test("Move Down is disabled for the last slot", async ({ page }) => {
+    await openWithState(
+      page,
+      baseState({
+        myThemeSlots: [makeSlot(1), makeSlot(2)],
+        activeMyThemeSlotId: "my-theme-1",
+      })
+    );
+
+    await page.locator(`#${PREFIX}-my-theme-2`).waitFor({ timeout: 8_000 });
+
+    const slot2 = page.locator(`#${PREFIX}-my-theme-2`);
+    await slot2.hover();
+    const moveDownBtn = page.getByRole("button", { name: "Move My Theme 2 down" });
+    await expect(moveDownBtn).toBeDisabled();
+  });
+
+  test("reordered slot position persists to localStorage", async ({ page }) => {
+    await openWithState(
+      page,
+      baseState({
+        myThemeSlots: [makeSlot(1), makeSlot(2)],
+        activeMyThemeSlotId: "my-theme-1",
+      })
+    );
+
+    await page.locator(`#${PREFIX}-my-theme-2`).waitFor({ timeout: 8_000 });
+
+    // Move slot-2 up.
+    const slot2 = page.locator(`#${PREFIX}-my-theme-2`);
+    await slot2.hover();
+    await page.getByRole("button", { name: "Move My Theme 2 up" }).click({ force: true });
+
+    // Wait for auto-save to flush.
+    await page.waitForTimeout(300);
+
+    // Read localStorage and verify order.
+    const raw = await page.evaluate((key: string) => localStorage.getItem(key), LS_KEY);
+    expect(raw).not.toBeNull();
+
+    const state = JSON.parse(raw!) as {
+      myThemeSlots?: Array<{ id: string }>;
+    };
+
+    const slots = state.myThemeSlots ?? [];
+    expect(slots).toHaveLength(2);
+    expect(slots[0].id, "slot-2 must be first after move-up").toBe("my-theme-2");
+    expect(slots[1].id, "slot-1 must be second after move-up").toBe("my-theme-1");
   });
 });
