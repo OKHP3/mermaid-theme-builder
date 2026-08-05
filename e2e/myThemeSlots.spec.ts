@@ -354,18 +354,25 @@ test.describe("My Theme slot — color edit routing", () => {
 test.describe("My Theme slot — lifecycle buttons on Apply tab", () => {
   const APPLY_PREFIX = "apply-palette-tile";
 
+  /**
+   * Navigate to the Apply tab so its palette bar becomes visible and
+   * interactive.  The Apply tab panel is always mounted in the DOM but carries
+   * `hidden` when another tab is active, so we must click through to it
+   * before hovering its tiles.
+   */
+  async function openApplyTab(page: Page) {
+    await page.getByRole("tab", { name: "Apply" }).click();
+    await page.locator(`#${APPLY_PREFIX}-my-theme-1`).waitFor({ state: "visible", timeout: 8_000 });
+  }
+
   test("Duplicate from Apply tab creates a slot and persists to localStorage", async ({ page }) => {
     await openWithState(page);
+    await openApplyTab(page);
 
-    // The Apply tab is always mounted but hidden; its palette bar tiles exist
-    // in the DOM with the apply-palette-tile-* prefix.
+    // Hover slot-1 in the Apply-tab palette bar and click its Duplicate button.
     const applySlot1 = page.locator(`#${APPLY_PREFIX}-my-theme-1`);
-    await applySlot1.waitFor({ timeout: 8_000 });
-
-    // Hover the Apply-tab slot-1 tile and click its Duplicate button.
     await applySlot1.hover();
-    const dupBtn = page.getByRole("button", { name: "Duplicate My Theme 1" }).nth(1);
-    await dupBtn.click({ force: true });
+    await page.getByRole("button", { name: "Duplicate My Theme 1" }).click({ force: true });
 
     // Wait for auto-save.
     await page.waitForTimeout(300);
@@ -386,14 +393,12 @@ test.describe("My Theme slot — lifecycle buttons on Apply tab", () => {
         activeMyThemeSlotId: "my-theme-1",
       })
     );
-
-    const applySlot1 = page.locator(`#${APPLY_PREFIX}-my-theme-1`);
-    await applySlot1.waitFor({ timeout: 8_000 });
+    await openApplyTab(page);
 
     // Move slot-1 down via the Apply-tab action bar.
+    const applySlot1 = page.locator(`#${APPLY_PREFIX}-my-theme-1`);
     await applySlot1.hover();
-    const moveDownBtn = page.getByRole("button", { name: "Move My Theme 1 down" }).nth(1);
-    await moveDownBtn.click({ force: true });
+    await page.getByRole("button", { name: "Move My Theme 1 down" }).click({ force: true });
 
     // Wait for auto-save.
     await page.waitForTimeout(300);
