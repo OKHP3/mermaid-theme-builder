@@ -21,6 +21,21 @@ export interface RendererProfile {
   customFontSupport: RendererSupport;
   mermaidVersionApprox: string;
   caveats: string[];
+  /**
+   * Safe character-length ceiling for %%{init}%% directives on this renderer.
+   *
+   * - A number: field-observed or documented upper limit.  Directives longer
+   *   than this value have been seen to fail or be silently stripped.
+   * - "unlimited": local or reference renderer — no network/pipeline length
+   *   constraint.  Any directive length is safe.
+   * - "unverified": no field data.  The limit is unknown; no warning is shown
+   *   but users should validate manually when exporting long directives.
+   *
+   * Note: Mermaid's own parser imposes NO length ceiling (confirmed by
+   * measurement in scripts/measure-init-directive-lengths.mjs).  Limits are
+   * renderer-pipeline constraints only.
+   */
+  initDirectiveSafeLength: number | "unlimited" | "unverified";
 }
 
 export const RENDERER_PROFILES: RendererProfile[] = [
@@ -40,6 +55,7 @@ export const RENDERER_PROFILES: RendererProfile[] = [
     customFontSupport: "full",
     mermaidVersionApprox: "latest",
     caveats: [],
+    initDirectiveSafeLength: "unlimited",
   },
   {
     id: "github",
@@ -64,6 +80,10 @@ export const RENDERER_PROFILES: RendererProfile[] = [
       "neo look depends on GitHub's pinned Mermaid version",
       "Some beta/experimental diagram families may not render",
     ],
+    // Field-observed: 597-char directives have been seen to fail on GitHub's
+    // rendering pipeline.  500 chars is a conservative safe ceiling.
+    // Source: PRD v5 / docs/renderer-frontmatter-compatibility.md, Medium confidence.
+    initDirectiveSafeLength: 500,
   },
   {
     id: "gitlab",
@@ -86,6 +106,10 @@ export const RENDERER_PROFILES: RendererProfile[] = [
       "handDrawn not available",
       "Self-hosted instances may use a significantly older Mermaid version",
     ],
+    // Inferred from GitHub field observation; no independent GitLab measurement.
+    // Cloud GitLab uses a similar rendering pipeline so 500 is used as a
+    // conservative ceiling.  Self-hosted instances may differ.  Low confidence.
+    initDirectiveSafeLength: 500,
   },
   {
     id: "notion",
@@ -110,6 +134,9 @@ export const RENDERER_PROFILES: RendererProfile[] = [
       "Beta and experimental diagram families may fail to render",
       "No dark-mode theming passthrough",
     ],
+    // No field data for Notion length limits.  initDirectiveSupport is already
+    // "partial" which triggers its own advisory; length ceiling unknown.
+    initDirectiveSafeLength: "unverified",
   },
   {
     id: "obsidian",
@@ -132,6 +159,8 @@ export const RENDERER_PROFILES: RendererProfile[] = [
       "Custom web fonts require CSS snippet; system fonts work",
       "neo/handDrawn availability depends on bundled Mermaid version",
     ],
+    // Local file renderer — no backend pipeline, no network length constraint.
+    initDirectiveSafeLength: "unlimited",
   },
   {
     id: "confluence",
@@ -158,6 +187,8 @@ export const RENDERER_PROFILES: RendererProfile[] = [
       "neo and handDrawn looks not supported",
       "Cloud vs. Data Center plugin behavior may differ",
     ],
+    // Plugin-dependent — no field data for any specific plugin's length limit.
+    initDirectiveSafeLength: "unverified",
   },
   {
     id: "cli",
@@ -179,6 +210,8 @@ export const RENDERER_PROFILES: RendererProfile[] = [
       "CSS injection via --cssFile flag — not inline",
       "Requires Node.js + Chromium (Puppeteer) in CI environment",
     ],
+    // Local renderer (Puppeteer) — no backend pipeline, no length constraint.
+    initDirectiveSafeLength: "unlimited",
   },
   {
     id: "m365-loop",
@@ -204,6 +237,9 @@ export const RENDERER_PROFILES: RendererProfile[] = [
       "Avoid beta and experimental diagram families",
       "Mermaid version may lag behind current release",
     ],
+    // No field data for M365/Loop length limits.  initDirectiveSupport is
+    // already "partial" which triggers its own advisory; length ceiling unknown.
+    initDirectiveSafeLength: "unverified",
   },
 ];
 

@@ -10,10 +10,12 @@ import {
   generateThemedCode,
   generatePromptScaffoldWithFormat,
   CLASSDEF_CAPABLE_FAMILIES,
+  computeInitDirectiveLength,
   type ExportOptions,
   type ScaffoldFormat,
   type MermaidLook,
 } from "@/lib/theme-engine";
+import { checkInitDirectiveLength } from "@/lib/init-directive-length";
 import { writeToClipboard } from "@/lib/clipboard";
 import { PromptScaffoldModal } from "@/components/PromptScaffoldModal";
 import { isExtractedPaletteId } from "@/lib/extractor";
@@ -227,8 +229,37 @@ export function ApplyTab({
       );
     }
 
+    // Init-directive length advisory — only relevant when the output format is
+    // "init-directive" (frontmatter has no length concern) and the renderer
+    // has a measured numeric ceiling.  "unlimited" renderers are always safe;
+    // "unverified" renderers get no advisory (no data to warn on).
+    if (outputFormat === "init-directive") {
+      const dirLength = computeInitDirectiveLength(
+        selectedPalette,
+        effectiveDetection.family,
+        look,
+        fontSize || undefined,
+        typography
+      );
+      const check = checkInitDirectiveLength(dirLength, r);
+      if (check.status === "caution") {
+        advisories.push(
+          `%%{init}%% directive (${check.directiveLength} chars) may exceed ${r.shortName}'s ${check.ceiling}-char rendering limit — validate before publishing`
+        );
+      }
+    }
+
     return advisories;
-  }, [inputCode, selectedPalette, effectiveDetection.family, rendererTarget]);
+  }, [
+    inputCode,
+    selectedPalette,
+    effectiveDetection.family,
+    rendererTarget,
+    outputFormat,
+    look,
+    fontSize,
+    typography,
+  ]);
 
   const isExtracted = isExtractedPaletteId(selectedPaletteId);
 

@@ -214,6 +214,35 @@ function buildInitDirective(
   return `%%{init: {${lookEntry}"theme": "base", ${archEntry}${extraConfig}"themeVariables": {${themeVarsStr}}}}%%`;
 }
 
+/**
+ * Returns the character length of the %%{init}%% directive that would be
+ * generated for the given palette and options.
+ *
+ * Use this in combination with checkInitDirectiveLength() from
+ * @/lib/init-directive-length to determine whether the generated directive
+ * would exceed a renderer's known safe ceiling — without constructing the
+ * full themed output.
+ *
+ * @example
+ * ```ts
+ * import { computeInitDirectiveLength } from "@/lib/theme-engine";
+ * import { checkInitDirectiveLength } from "@/lib/init-directive-length";
+ *
+ * const len = computeInitDirectiveLength(palette, family, look, fontSize, typography);
+ * const check = checkInitDirectiveLength(len, rendererProfile);
+ * if (check.status === "caution") { ... }
+ * ```
+ */
+export function computeInitDirectiveLength(
+  palette: Palette,
+  family: DiagramFamily,
+  look?: MermaidLook,
+  fontSize?: string,
+  typography?: TypographySettings
+): number {
+  return buildInitDirective(palette, family, look, fontSize, typography).length;
+}
+
 function buildMetaComments(palette: Palette, themeName: string): string {
   const now = new Date().toISOString();
   const safeThemeName = sanitizeMdText(themeName);

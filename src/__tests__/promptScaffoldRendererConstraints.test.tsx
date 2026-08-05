@@ -48,6 +48,7 @@ function makeProfile(overrides: Partial<RendererProfile> = {}): RendererProfile 
     customFontSupport: "full",
     mermaidVersionApprox: "",
     caveats: [],
+    initDirectiveSafeLength: "unlimited",
     ...overrides,
   };
 }

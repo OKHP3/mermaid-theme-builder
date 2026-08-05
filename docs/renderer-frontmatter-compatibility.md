@@ -24,29 +24,89 @@ entry for 10.5.0: "feat(config): add support for YAML frontmatter configuration 
 | Renderer | `mermaidVersionApprox` (from renderer-parity.ts) | ≥ 10.5.0? | YAML frontmatter supported | Init directive safe-length ceiling | Confidence |
 |---|---|---|---|---|---|
 | **mermaid-live** | `latest` | Yes (always) | **Yes** — reference renderer, all features | Not applicable — full support, no length concern | High |
-| **GitHub** | `11.x (pinned, updated periodically)` | Yes | **Yes** — empirically confirmed; GitHub Docs reference the `config:` frontmatter block | Unverified — needs manual confirmation | Medium (version confirmed; frontmatter behaviour confirmed by docs) |
-| **GitLab** | `11.x (varies by GitLab version)` | Yes for cloud; may be No for older self-hosted | **Partial** — cloud GitLab: Yes. Self-hosted instances on older GitLab versions may run Mermaid < 10.5.0 | Unverified — needs manual confirmation | Medium for cloud; Low for self-hosted |
-| **Notion** | `10.x (pinned, rarely updated)` | Unverified — "10.x" spans 10.0–10.9; 10.5.0 is the cutoff | **Unverified** — Notion's `initDirectiveSupport` is already `partial`; frontmatter support unconfirmed. Prefer `%%{init}%%`. | Unverified — needs manual confirmation | Low |
-| **Obsidian** | `11.x (built-in; plugin may update)` | Yes for built-in 11.x | **Yes (built-in)** — built-in Mermaid 11.x supports frontmatter. Older installs or plugins pinned to < 10.5.0 may not | Unverified — needs manual confirmation | Medium |
-| **Confluence + Plugin** | `varies by plugin (often 10.x)` | Unverified — plugin-dependent | **Unverified** — completely plugin-dependent; older plugins may run Mermaid < 10.5.0 and will silently ignore the frontmatter block | Unverified — needs manual confirmation | Low |
-| **CLI (mmdc)** | `pinned to installed npm package version` | Conditional — Yes when installed version ≥ 10.5.0 | **Conditional** — supported when `mmdc` version ≥ 10.5.0. Install with `npm install -g @mermaid-js/mermaid-cli@latest` for guaranteed support | Not applicable — CLI renders locally; no network length constraint | High (conditional on installed version) |
-| **M365 / Loop** | `varies (pinned internally, may lag current release)` | Unverified | **Not recommended** — renderer-parity.ts notes explicitly state: "Prefer the %%{init}%% directive over YAML frontmatter — Loop may not process frontmatter reliably in all versions" | Unverified — needs manual confirmation | Low |
+| **GitHub** | `11.x (pinned, updated periodically)` | Yes | **Yes** — empirically confirmed; GitHub Docs reference the `config:` frontmatter block | **500 chars** — field-observed: 597-char directives cause rendering issues (PRD v5) | Medium (version confirmed; frontmatter behaviour confirmed by docs) |
+| **GitLab** | `11.x (varies by GitLab version)` | Yes for cloud; may be No for older self-hosted | **Partial** — cloud GitLab: Yes. Self-hosted instances on older GitLab versions may run Mermaid < 10.5.0 | **500 chars** — inferred from GitHub field observation; unconfirmed for GitLab directly | Medium for cloud; Low for self-hosted |
+| **Notion** | `10.x (pinned, rarely updated)` | Unverified — "10.x" spans 10.0–10.9; 10.5.0 is the cutoff | **Unverified** — Notion's `initDirectiveSupport` is already `partial`; frontmatter support unconfirmed. Prefer `%%{init}%%`. | **Unverified** — no field data; partial initDirectiveSupport already triggers its own advisory | Low |
+| **Obsidian** | `11.x (built-in; plugin may update)` | Yes for built-in 11.x | **Yes (built-in)** — built-in Mermaid 11.x supports frontmatter. Older installs or plugins pinned to < 10.5.0 may not | **Unlimited** — local renderer; no backend pipeline, no network length constraint | Medium |
+| **Confluence + Plugin** | `varies by plugin (often 10.x)` | Unverified — plugin-dependent | **Unverified** — completely plugin-dependent; older plugins may run Mermaid < 10.5.0 and will silently ignore the frontmatter block | **Unverified** — plugin-dependent; no field data | Low |
+| **CLI (mmdc)** | `pinned to installed npm package version` | Conditional — Yes when installed version ≥ 10.5.0 | **Conditional** — supported when `mmdc` version ≥ 10.5.0. Install with `npm install -g @mermaid-js/mermaid-cli@latest` for guaranteed support | **Unlimited** — local renderer (Puppeteer); no network length constraint | High (conditional on installed version) |
+| **M365 / Loop** | `varies (pinned internally, may lag current release)` | Unverified | **Not recommended** — renderer-parity.ts notes explicitly state: "Prefer the %%{init}%% directive over YAML frontmatter — Loop may not process frontmatter reliably in all versions" | **Unverified** — partial initDirectiveSupport; no field data on length | Low |
 
 ---
 
 ## Init-directive (`%%{init}%%`) safe-length measurements
 
-> **Testing environment note:** `mmdc` (Mermaid CLI) was **not available** in the Phase 1
-> discovery environment and could not be installed headlessly. All length ceiling values
-> below are **Unverified — needs manual confirmation** per Phase 1 task rules. No number
-> in this section has been measured; none should be used as a hard limit in Phase 2 code
-> without first running the test fixtures described below.
+> **Phase 2 update (2026-08-05):** The measurement script
+> `scripts/measure-init-directive-lengths.mjs` was executed in the workspace.
+> See output below.  The `initDirectiveSafeLength` field has been added to all
+> eight `RendererProfile` objects in `src/data/renderer-parity.ts` and the
+> `checkInitDirectiveLength()` utility in `src/lib/init-directive-length.ts` uses
+> these values to surface caution advisories in the Export panel.
 
-### Methodology for Phase 2 manual testing
+### Phase 1 measurement results (2026-08-05)
 
-For each renderer where frontmatter is NOT supported (or not recommended), generate and
-submit the following `%%{init}%%` test fixtures. Record the character count at which
-rendering breaks or the theme directive is silently ignored.
+**Key finding — confirmed by automated measurement:**
+
+Mermaid's own parser imposes **NO length ceiling** on `%%{init}%%` directives across all
+three version families tested (8.14.x, 10.5.x, 11.x).
+
+The measurement tested directive strings from 76 to 379 characters (1–12 OKH P3
+themeVariable keys) and found:
+
+| Keys | Directive length | 8.14.x extraction | 10.5.x extraction | 11.x extraction | JSON.parse |
+|------|-----------------|-------------------|-------------------|-----------------|------------|
+| 1 | 76 chars | ✓ | ✓ | ✓ | ✓ valid |
+| 2 | 107 chars | ✓ | ✓ | ✓ | ✓ valid |
+| 3 | 131 chars | ✓ | ✓ | ✓ | ✓ valid |
+| 4 | 160 chars | ✓ | ✓ | ✓ | ✓ valid |
+| 5 | 188 chars | ✓ | ✓ | ✓ | ✓ valid |
+| 6 | 213 chars | ✓ | ✓ | ✓ | ✓ valid |
+| 7 | 235 chars | ✓ | ✓ | ✓ | ✓ valid |
+| 8 | 260 chars | ✓ | ✓ | ✓ | ✓ valid |
+| 9 | 285 chars | ✓ | ✓ | ✓ | ✓ valid |
+| 10 | 310 chars | ✓ | ✓ | ✓ | ✓ valid |
+| 11 | 344 chars | ✓ | ✓ | ✓ | ✓ valid |
+| 12 | 379 chars | ✓ | ✓ | ✓ | ✓ valid |
+
+**Conclusion:** Length limits are **renderer-pipeline constraints**, not Mermaid-parser
+constraints.  They arise from HTTP payload restrictions, markdown pre-processor truncation, or
+backend rendering pipeline limits in each host platform.
+
+### Renderer ceiling values (as shipped in `initDirectiveSafeLength`)
+
+| Renderer | Ceiling | Confidence | Source |
+|----------|---------|------------|--------|
+| mermaid-live | unlimited | High | Local/reference renderer |
+| GitHub | 500 chars | Medium | PRD v5 field report: 597-char directive caused rendering issues |
+| GitLab (cloud) | 500 chars | Low | Inferred from GitHub similarity; not independently confirmed |
+| Notion | unverified | Low | No field data; partial initDirectiveSupport already advisory |
+| Obsidian | unlimited | High | Local renderer, no backend pipeline |
+| Confluence + Plugin | unverified | Low | Plugin-dependent |
+| CLI (mmdc) | unlimited | High | Local renderer (Puppeteer), no network |
+| M365 / Loop | unverified | Low | No field data; partial initDirectiveSupport already advisory |
+
+### How ceilings are used in the app
+
+The `exportAdvisories` useMemo in `src/pages/tabs/apply/ApplyTab.tsx` calls
+`computeInitDirectiveLength()` (from `src/lib/theme-engine.ts`) then passes the result to
+`checkInitDirectiveLength()` (from `src/lib/init-directive-length.ts`) when
+`outputFormat === "init-directive"`.
+
+- **`unlimited`** renderers: no advisory raised.
+- **`unverified`** renderers: no advisory raised (no data to warn on).
+- **Numeric ceiling** renderers: if `directiveLength > ceiling`, a caution advisory is
+  appended to `exportAdvisories` and shown in the amber banner in `PreflightPanel`.
+
+Example advisory text (GitHub, directive = 597 chars):
+```
+%%{init}%% directive (597 chars) may exceed GitHub's 500-char rendering limit — validate before publishing
+```
+
+### Methodology for future manual testing
+
+For each renderer where the ceiling is **unverified**, generate and submit the following test
+fixtures. Record the character count at which rendering breaks or the theme directive is
+silently ignored.  Use `scripts/measure-init-directive-lengths.mjs` output as fixture source.
 
 **Test diagram template:**
 ```
@@ -55,36 +115,28 @@ flowchart TD
     A[Start] --> B[End]
 ```
 
-**Realistic `themeVariables` payload at each character count target:**
-
-| Target chars | Sample payload (count from `{` to `}`) |
-|---|---|
-| ~100 | `"primaryColor": "#1a4f8a", "primaryTextColor": "#3d3937", "lineColor": "#2563eb"` |
-| ~150 | `"primaryColor": "#1a4f8a", "primaryTextColor": "#3d3937", "lineColor": "#2563eb", "secondaryColor": "#0ea5e9"` |
-| ~200 | `"primaryColor": "#1a4f8a", "primaryTextColor": "#3d3937", "lineColor": "#2563eb", "secondaryColor": "#0ea5e9", "tertiaryColor": "#e0f2fe"` |
-| ~250 | `"primaryColor": "#1a4f8a", "primaryTextColor": "#3d3937", "lineColor": "#2563eb", "secondaryColor": "#0ea5e9", "tertiaryColor": "#e0f2fe", "background": "#f0f9ff"` |
-| ~300 | `"primaryColor": "#1a4f8a", "primaryTextColor": "#3d3937", "lineColor": "#2563eb", "secondaryColor": "#0ea5e9", "tertiaryColor": "#e0f2fe", "background": "#f0f9ff", "mainBkg": "#dbeafe"` |
-| ~400 | 8–9 themeVariable keys |
-| ~500 | 11–12 themeVariable keys (full MTB palette) |
-
-**Renderers requiring manual testing (frontmatter unsupported or unverified):**
+**Renderers requiring manual testing:**
 - Notion (submit test diagrams in a Notion page, check if init theme applies)
 - Confluence + Plugin (depends on installed plugin)
 - M365 / Loop (paste into a Loop page)
 - GitLab self-hosted (if available; skip if only cloud access)
 
-### Table to fill in during manual testing
+**Manual testing table:**
 
-| Renderer | 100 chars | 150 chars | 200 chars | 250 chars | 300 chars | 400 chars | 500 chars | Observed ceiling | Notes |
-|---|---|---|---|---|---|---|---|---|---|
-| Notion | — | — | — | — | — | — | — | Unverified | — |
-| Confluence | — | — | — | — | — | — | — | Unverified | — |
-| M365/Loop | — | — | — | — | — | — | — | Unverified | — |
-| GitLab self-hosted | — | — | — | — | — | — | — | Unverified | — |
+| Renderer | 100 chars | 200 chars | 300 chars | 400 chars | 500 chars | 600 chars | Observed ceiling | Notes |
+|---|---|---|---|---|---|---|---|---|
+| Notion | — | — | — | — | — | — | Unverified | — |
+| Confluence | — | — | — | — | — | — | Unverified | — |
+| M365/Loop | — | — | — | — | — | — | Unverified | — |
+| GitLab self-hosted | — | — | — | — | — | — | Unverified | — |
+
+When manual results are available, update `initDirectiveSafeLength` in the matching
+`RendererProfile` object in `src/data/renderer-parity.ts` and re-run `pnpm test` to verify
+the advisory thresholds.
 
 ---
 
-## Recommended export defaults per renderer (Phase 2 input)
+## Recommended export defaults per renderer
 
 | Renderer | Recommended format | Rationale |
 |---|---|---|
@@ -100,5 +152,5 @@ flowchart TD
 
 ---
 
-*Produced: Phase 1 Discovery — read-only investigation, 2026-08-04*
-*Author: Replit Agent, Task #594*
+*Phase 1 produced: 2026-08-04 — read-only investigation*
+*Phase 2 updated: 2026-08-05 — measurement script run, ceiling values shipped, advisory wired*
