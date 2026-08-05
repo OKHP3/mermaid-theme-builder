@@ -4,16 +4,18 @@
 
 ## [0.6.1-pre] - 2026-08-05
 
-Privacy integrity fix and process governance scaffolding.
+Privacy integrity fix, process governance scaffolding, renderer-aware init-directive length warning, and skills catalog truth sync.
 
 ### Removed
 - **Google Analytics (GA4)**: measurement ID `G-VJ1BKXS27H` removed from `index.html`; `usePageTracking` hook deleted and all call sites removed from `App.tsx`. The app now makes zero outbound network requests during normal use. This corrects a contradiction between the public "no data collection" claim and the actual runtime behaviour.
 
 ### Changed
 - **Privacy copy**: README feature list updated to state explicitly that Mermaid code, palette data, and exports stay in the browser and no data is sent to any server.
+- **Skills catalog reconciled**: `src/data/skills-catalog.ts` now registers all 10 skills on disk. `okhp3-skill-promotion` v0.1.0 was present in `skills/` and listed in the README auto-catalog but missing from the app's Reference tab source. Added. Stale drift notes removed from `README.md`.
 
 ### Added
 - **`DECISIONS_NEEDED.md`**: standing process record at repo root. Any future proposal to add analytics must open an entry here and wait for explicit owner sign-off before any tracking code is written. Analytics policy entry included and resolved.
+- **Renderer-aware init-directive length warning**: `src/lib/init-directive-length.ts` new utility; `initDirectiveSafeLength` field added to all 8 renderer profiles (GitHub/GitLab: 500 chars field-observed; mermaid.live/Obsidian/CLI: unlimited; Notion/Confluence/M365: unverified). Advisory wired into `exportAdvisories` in `ApplyTab.tsx`; fires when directive exceeds renderer ceiling. 28 unit tests added.
 
 ---
 

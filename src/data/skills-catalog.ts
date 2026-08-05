@@ -83,6 +83,15 @@ export const PUBLIC_MERMAID_SKILLS: PublicSkill[] = [
     githubUrl: `${SKILLS_BASE_URL}/okhp3-mermaid-theme-builder/SKILL.md`,
   },
   {
+    name: "okhp3-skill-promotion",
+    displayName: "Skill Promotion",
+    version: "0.1.0",
+    role: "tooling",
+    description:
+      "Promote and synchronize a project-local Agent Skill into a portable, reviewable distribution package — provenance record, canonical family assignment, and safe handoff into OKHP3/skillz.",
+    githubUrl: `${SKILLS_BASE_URL}/okhp3-skill-promotion/SKILL.md`,
+  },
+  {
     name: "okhp3-mermaid-governance",
     displayName: "Governance",
     version: "1.1.0",
