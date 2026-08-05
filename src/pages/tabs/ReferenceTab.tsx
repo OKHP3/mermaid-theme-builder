@@ -28,6 +28,9 @@ interface ReferenceTabProps {
   onAddMyThemeSlot?: () => void;
   onDeleteMyThemeSlot?: (id: string) => void;
   onExportMyThemeSlot?: (id: string) => void;
+  onDuplicateMyThemeSlot?: (id: string) => void;
+  onMoveMyThemeSlotUp?: (id: string) => void;
+  onMoveMyThemeSlotDown?: (id: string) => void;
   onImportAsNewSlot?: (
     palette: import("@/lib/palettes").Palette,
     warnings: {
@@ -93,6 +96,9 @@ export function ReferenceTab({
   onAddMyThemeSlot = () => {},
   onDeleteMyThemeSlot = () => {},
   onExportMyThemeSlot = () => {},
+  onDuplicateMyThemeSlot,
+  onMoveMyThemeSlotUp,
+  onMoveMyThemeSlotDown,
   onImportAsNewSlot,
   onShowToast = () => {},
 }: ReferenceTabProps) {
@@ -160,6 +166,9 @@ export function ReferenceTab({
         onAddMyThemeSlot={onAddMyThemeSlot}
         onDeleteMyThemeSlot={onDeleteMyThemeSlot}
         onExportMyThemeSlot={onExportMyThemeSlot}
+        onDuplicateMyThemeSlot={onDuplicateMyThemeSlot}
+        onMoveMyThemeSlotUp={onMoveMyThemeSlotUp}
+        onMoveMyThemeSlotDown={onMoveMyThemeSlotDown}
         onImportAsNewSlot={onImportAsNewSlot}
         onShowToast={onShowToast}
       />
