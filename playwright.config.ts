@@ -1,24 +1,30 @@
 import { defineConfig, devices } from "@playwright/test";
-import { execSync } from "child_process";
 import { existsSync } from "fs";
+import { delimiter, sep } from "path";
 
 let chromiumExecutablePath: string | undefined;
 if (!process.env.CI) {
   // Build a prioritised list of candidate paths and take the first that exists.
-  // Using direct PATH scanning avoids spawning a shell (`which`) that may have a
-  // different environment when Playwright evaluates this config in a subprocess.
+  //
+  // Using direct PATH scanning avoids spawning a shell (`which`) that may not
+  // be available on all platforms (Windows cmd.exe / PowerShell do not have
+  // `which`). On Windows executables carry a .exe suffix; on POSIX they do not.
+  //
+  // `delimiter` is ":" on POSIX, ";" on Windows.
+  // `sep` is "/" on POSIX, "\" on Windows.
+  const exeSuffix = process.platform === "win32" ? ".exe" : "";
+  const binaryNames = [
+    `chromium${exeSuffix}`,
+    `chromium-browser${exeSuffix}`,
+    `chrome${exeSuffix}`,
+  ];
+  const pathDirs = (process.env.PATH ?? "").split(delimiter);
+
   const candidates: (string | undefined)[] = [
     process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH,
-    // Check every directory on PATH for a `chromium` binary (covers Nix store entries).
-    ...(process.env.PATH ?? "").split(":").map((d) => `${d}/chromium`),
+    // Check every directory on PATH for known Chromium binary names.
+    ...pathDirs.flatMap((d) => binaryNames.map((b) => `${d}${sep}${b}`)),
   ];
-
-  // Also try `which chromium` as a fallback in case PATH differs.
-  try {
-    candidates.push(execSync("which chromium", { encoding: "utf8" }).trim());
-  } catch {
-    // ignore — `which` may not be available
-  }
 
   chromiumExecutablePath = candidates.find((p): p is string => !!p && existsSync(p));
 }
@@ -40,10 +46,14 @@ export default defineConfig({
   workers: 1,
   reporter: "list",
   webServer: {
-    // Build a production bundle then serve it with `vite preview`.
+    // Cross-platform build + preview server via a Node script.
+    // ENV vars (PORT, BASE_PATH) are set inside the script using the Node API
+    // rather than POSIX inline `VAR=val command` syntax so this works on
+    // Windows as well as Linux / macOS.
+    //
     // CI pre-builds and pre-starts the server before invoking Playwright, so
     // reuseExistingServer:true lets it skip the command entirely in CI.
-    command: `PORT=${PREVIEW_PORT} BASE_PATH=${PREVIEW_BASE} pnpm build && PORT=${PREVIEW_PORT} BASE_PATH=${PREVIEW_BASE} pnpm serve`,
+    command: "node scripts/start-e2e-server.mjs",
     url: PREVIEW_URL,
     reuseExistingServer: true,
     timeout: 180_000,

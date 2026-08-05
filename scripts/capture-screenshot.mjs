@@ -17,9 +17,8 @@
  * invoking this script, so no extra flags are needed there.
  */
 
-import { execSync } from "node:child_process";
 import { existsSync, mkdirSync } from "node:fs";
-import { dirname, resolve } from "node:path";
+import { dirname, resolve, delimiter, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium } from "@playwright/test";
 
@@ -49,14 +48,21 @@ if (!targetUrl) {
 
 let chromiumExecutablePath;
 if (!process.env.CI) {
-  try {
-    const path =
-      process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH ??
-      execSync("which chromium", { encoding: "utf8" }).trim();
-    if (path) chromiumExecutablePath = path;
-  } catch {
-    // system chromium not available — fall through to Playwright bundled browser
-  }
+  // Cross-platform Chromium detection — no `which` (unavailable on Windows).
+  // `delimiter` is ":" on POSIX, ";" on Windows.
+  // `sep` is "/" on POSIX, "\" on Windows.
+  const exeSuffix = process.platform === "win32" ? ".exe" : "";
+  const binaryNames = [
+    `chromium${exeSuffix}`,
+    `chromium-browser${exeSuffix}`,
+    `chrome${exeSuffix}`,
+  ];
+  const pathDirs = (process.env.PATH ?? "").split(delimiter);
+  const candidates = [
+    process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH,
+    ...pathDirs.flatMap((d) => binaryNames.map((b) => `${d}${sep}${b}`)),
+  ];
+  chromiumExecutablePath = candidates.find((p) => !!p && existsSync(p));
 }
 
 // ---------------------------------------------------------------------------

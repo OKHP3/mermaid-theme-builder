@@ -120,6 +120,28 @@ pnpm dev  # Use the workflow runner, not bare pnpm dev
 
 See `replit.md` for the full project overview and `AGENTS.md` for contributing rules.
 
+### Development on Windows
+
+All scripts in this repo are cross-platform. No WSL or bash is required.
+
+**Prerequisites:** Node.js ≥ 24, pnpm ≥ 10, Git.
+
+```powershell
+pnpm install
+pnpm dev
+```
+
+**Running E2E tests on Windows:**
+
+```powershell
+# Install Playwright's bundled Chromium (one-time)
+pnpm exec playwright install --with-deps chromium
+
+pnpm test:e2e
+```
+
+`pnpm test:e2e` invokes `scripts/run-e2e.mjs`, which on Windows runs Playwright directly (bypassing the NixOS-specific `LD_LIBRARY_PATH` setup in `scripts/run-e2e.sh` that is only relevant on Replit/NixOS).
+
 ---
 
 ## Tech Stack
