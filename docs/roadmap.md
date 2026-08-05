@@ -1,5 +1,7 @@
 # Roadmap
 
+> **Status as of 2026-08-04 (ground-truth audit):** `v0.5.0` (2026-05-12) is still the only git tag, but `main` has shipped 700 commits since then (verified via `git log v0.5.0..HEAD`), with the exact HEAD commit deployed live at every push. Treat this repo as a rolling release past v0.5.0, not a static snapshot — several "planned" v0.6.0 items below are already shipped (see checkmarks). The live app's Reference tab currently catalogs 31 diagram families (vs this doc's older counts) and a 9-skill Agent Skills catalog (vs the single-skill framing elsewhere in this repo's docs). Full findings: `AUDIT-2026-08-04` in the private Notion tracker.
+
 ## v0.1.0 — Foundation (Shipped 2026-04-23)
 
 - Static React + Vite + Tailwind CSS v4 app, no backend
@@ -69,15 +71,15 @@
 
 ## v0.6.0 — Governance Profile Export + Prompt Scaffold Depth
 
-**Status:** Active planning
+**Status:** In progress — further along than "planning" suggests. 700 commits landed on `main` since the v0.5.0 tag; several items below are confirmed shipped as of the 2026-08-04 audit (checked).
 
 **Goals:** Complete the palette authoring workflow. Introduce named governance profiles as a first-class export artifact. Make Prompt Scaffold smarter per diagram type. Improve discoverability of existing features.
 
 ### Governance Profile
 - [ ] **Named governance profile export** — bundle palette + look + typography + renderer target + classDef overlay as a single named, shareable artifact (`.theme.json` already exists; formalize the bundle concept)
-- [ ] **Governance profile concept documentation** — shipped (`docs/governance-profiles.md`)
-- [ ] **Diagram output contract documentation** — shipped (`docs/diagram-output-contract.md`)
-- [ ] **OKHP³ Visual Language Stack reference** — shipped (`docs/okhp3-visual-language-stack.md`)
+- [x] **Governance profile concept documentation** — shipped (`docs/governance-profiles.md`) — file existence confirmed 2026-08-04
+- [x] **Diagram output contract documentation** — shipped (`docs/diagram-output-contract.md`) — file existence confirmed 2026-08-04
+- [x] **OKHP³ Visual Language Stack reference** — shipped (`docs/okhp3-visual-language-stack.md`) — file existence confirmed 2026-08-04
 
 ### Palette
 - [ ] **User palette CRUD** — save, rename, delete, reorder user-created palettes (persist in localStorage)
@@ -97,7 +99,7 @@
 - [ ] **Root-level `htmlLabels`** — emit at root config level in `%%{init}%%` exports (11.13+ migration: deprecated `flowchart.htmlLabels`)
 
 ### Testing
-- [ ] **Playwright smoke tests** — core pipeline: paste to detect to themed preview renders to Styled Code export contains `%%{init}%%`
+- [x] **Playwright smoke tests** — confirmed shipped and actively growing: `e2e/` has 25+ spec files and a wired `test:e2e` script as of 2026-08-04, well beyond the original "core pipeline" smoke-test scope
 
 ---
 

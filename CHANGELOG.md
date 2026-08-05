@@ -11,6 +11,8 @@ Versions follow [Semantic Versioning](https://semver.org/).
 
 Palette authoring, smarter Prompt Scaffold, and Mermaid 11.14–11.15 coverage.
 
+**2026-08-04 ground-truth audit note:** this doc, the README, and the private Notion tracker had all drifted independently since the v0.5.0 tag (2026-05-12) — `main` has taken 700 commits in that span with no version bump. A live-app + repo audit corrected several stale claims across all three surfaces on this date, including: diagram-family count (31 cataloged, not "27+"), export-format count (3 confirmed, the "5 export formats" claim recorded elsewhere was never accurate), the Agent Skills catalog (9 skills live in-app; the README's auto-generated table shows 8 and is missing `okhp3-mermaid-governance` v1.1.0), and several `docs/roadmap.md` v0.6.0 items that were already shipped but still marked unchecked. See `docs/roadmap.md` for the corrected checklist.
+
 ### Planned — Palette
 - User palette CRUD — save, rename, delete, and reorder custom palettes (localStorage)
 - "Copy share link" button — surface URL-encoded palette sharing in the palette editor UI
