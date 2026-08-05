@@ -27,6 +27,7 @@ import {
   downloadTextFile,
   makeFilename,
 } from "@/lib/exporters";
+import { parseGovernanceProfile, GOVERNANCE_PROFILE_TYPE } from "@/lib/governance-profile";
 import { encodeShareableTheme, paletteToShareablePayload } from "@/lib/persistence";
 import { formatImportError } from "@/lib/importErrorFormat";
 import {
@@ -141,6 +142,8 @@ interface ComposeTabProps {
   onTypographyChange: (t: TypographySettings) => void;
   rendererTarget: string;
   onRendererTargetChange: (v: string) => void;
+  strokeWidth?: number;
+  onStrokeWidthChange?: (v: number | undefined) => void;
   onUseExtractedTheme: (palette: Palette, codeWithClassDefs?: string) => void;
   onSwitchTab: (tab: AppTab) => void;
   onNavigateToParityMatrix: () => void;
@@ -177,6 +180,10 @@ interface ComposeTabProps {
       invalidValues: Array<{ key: string; value: string }>;
       warnValues: Array<{ key: string; value: string }>;
     }
+  ) => void;
+  onImportGovernanceProfile?: (
+    profile: import("@/lib/governance-profile").GovernanceProfile,
+    warnings: string[]
   ) => void;
   customThemeNamePlaceholder?: string;
 }
@@ -223,6 +230,8 @@ export function ComposeTab({
   onTypographyChange,
   rendererTarget,
   onRendererTargetChange,
+  strokeWidth,
+  onStrokeWidthChange,
   onUseExtractedTheme,
   onSwitchTab,
   onNavigateToParityMatrix,
@@ -236,6 +245,7 @@ export function ComposeTab({
   onExportMyThemeSlot = () => {},
   onImportAsNewSlot,
   onImportMyThemeSlot,
+  onImportGovernanceProfile,
   customThemeNamePlaceholder,
 }: ComposeTabProps) {
   const [copiedBootstrap, setCopiedBootstrap] = useState(false);
@@ -312,6 +322,7 @@ export function ComposeTab({
       fontSize: fontSize || undefined,
       typography,
       rendererTarget,
+      strokeWidth,
     }),
     [
       selectedPalette,
@@ -321,6 +332,7 @@ export function ComposeTab({
       fontSize,
       typography,
       rendererTarget,
+      strokeWidth,
     ]
   );
 
@@ -385,14 +397,17 @@ export function ComposeTab({
   );
 
   const handleCopyShareLink = useCallback(async () => {
-    const payload = paletteToShareablePayload(selectedPalette, customThemeName);
+    const payload = paletteToShareablePayload(selectedPalette, customThemeName, {
+      look: look !== "classic" ? look : undefined,
+      rendererTarget: rendererTarget || undefined,
+    });
     const token = encodeShareableTheme(payload);
     const url = new URL(window.location.href);
     url.searchParams.set("theme", token);
     await writeToClipboard(url.toString());
     setCopiedShare(true);
     setTimeout(() => setCopiedShare(false), 2000);
-  }, [selectedPalette, customThemeName]);
+  }, [selectedPalette, customThemeName, look, rendererTarget]);
 
   const handleExportJson = useCallback(() => {
     downloadTextFile(
@@ -437,6 +452,38 @@ export function ComposeTab({
           }
         } catch {
           // parsePortablePalette will surface the JSON error below
+        }
+
+        // Route governance profile imports through their own callback
+        if (topLevelType === GOVERNANCE_PROFILE_TYPE) {
+          if (onImportGovernanceProfile) {
+            const result = parseGovernanceProfile(text);
+            if (!result.ok) {
+              onShowToast(formatImportError(`Profile import failed: ${result.error}`));
+              return;
+            }
+            onImportGovernanceProfile(result.profile, result.warnings);
+          } else {
+            // onImportGovernanceProfile not wired — parse colors only as palette
+            const result = parseGovernanceProfile(text);
+            if (!result.ok) {
+              onShowToast(formatImportError(`Profile import failed: ${result.error}`));
+              return;
+            }
+            const paletteResult = parsePortablePalette(
+              JSON.stringify({
+                type: "mtb-palette",
+                version: "0.0.0",
+                id: result.profile.id,
+                name: result.profile.name,
+                themeVariables: Object.fromEntries(
+                  result.profile.colors.map((c) => [c.key, c.value])
+                ),
+              })
+            );
+            if (paletteResult.ok) onImportPalette(paletteResult.palette);
+          }
+          return;
         }
 
         if (topLevelType === "mtb-palette-bundle") {
@@ -516,6 +563,7 @@ export function ComposeTab({
       onShowToast,
       activeMyThemeSlotId,
       onImportMyThemeSlot,
+      onImportGovernanceProfile,
     ]
   );
 
@@ -684,6 +732,44 @@ export function ComposeTab({
                           : "The original Mermaid rendering — crisp angles, familiar shapes, consistent across all diagram types."}
                     </p>
                   </div>
+
+                  {/* Node border width */}
+                  {onStrokeWidthChange && (
+                    <div>
+                      <p className="text-[10px] text-muted-foreground mb-1.5 leading-relaxed">
+                        Global{" "}
+                        <code className="font-mono bg-muted rounded px-0.5">stroke-width</code>{" "}
+                        applied to all exported{" "}
+                        <code className="font-mono bg-muted rounded px-0.5">classDef</code> lines.
+                        Default preserves individual classDef settings.
+                      </p>
+                      <div className="flex gap-1" role="group" aria-label="Node border width">
+                        {(
+                          [
+                            { label: "Default", value: undefined },
+                            { label: "1px", value: 1 },
+                            { label: "2px", value: 2 },
+                            { label: "3px", value: 3 },
+                            { label: "4px", value: 4 },
+                          ] as const
+                        ).map((opt) => (
+                          <button
+                            key={opt.label}
+                            type="button"
+                            onClick={() => onStrokeWidthChange(opt.value)}
+                            aria-pressed={strokeWidth === opt.value}
+                            className={`flex-1 text-[11px] px-1 py-1.5 rounded-md border font-medium transition-all ${
+                              strokeWidth === opt.value
+                                ? "border-primary bg-primary/10 text-primary"
+                                : "border-border bg-background hover:bg-muted text-muted-foreground"
+                            }`}
+                          >
+                            {opt.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

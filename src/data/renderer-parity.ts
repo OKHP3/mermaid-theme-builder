@@ -331,3 +331,21 @@ export function rendererToScaffoldSection(rendererId: string, look?: string): st
 
   return lines.join("\n");
 }
+
+/**
+ * Returns the recommended output format for a given renderer ID, based on
+ * Phase 1 discovery findings (docs/renderer-frontmatter-compatibility.md).
+ *
+ * - "frontmatter": Mermaid v10.5+ YAML format — preferred where confirmed
+ * - "init-directive": universal %%{init}%% format — safe fallback for all others
+ *
+ * NOTE: Safe-length ceilings for %%{init}%% are unverified for most renderers.
+ * Use hedged language when surfacing limits to users; never hardcode measured numbers.
+ */
+export function getRendererDefaultOutputFormat(
+  rendererId: string
+): "init-directive" | "frontmatter" {
+  // Renderers with confirmed Mermaid v10.5+ and tested frontmatter support.
+  const frontmatterPreferred = new Set(["mermaid-live", "github", "obsidian"]);
+  return frontmatterPreferred.has(rendererId) ? "frontmatter" : "init-directive";
+}

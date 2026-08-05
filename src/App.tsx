@@ -32,6 +32,7 @@ import { ApplyTab } from "@/pages/tabs/ApplyTab";
 import { ComposeTab } from "@/pages/tabs/ComposeTab";
 import { ExamplesTab } from "@/pages/tabs/ExamplesTab";
 import { ReferenceTab } from "@/pages/tabs/ReferenceTab";
+import { ExtractTab } from "@/pages/tabs/ExtractTab";
 import {
   loadPersistedState,
   savePersistedState,
@@ -49,6 +50,13 @@ import {
   slotDisplayName,
 } from "@/lib/my-theme-slots";
 import { downloadTextFile, makeFilename, paletteToPortableJson } from "@/lib/exporters";
+import {
+  migrateSlotToProfile,
+  profileToPortableJson,
+  profileToSlot,
+  parseGovernanceProfile,
+  type GovernanceProfile,
+} from "@/lib/governance-profile";
 import { detectDiagram } from "@/lib/detector";
 import { type TypographySettings, DEFAULT_TYPOGRAPHY } from "@/lib/typography";
 import {
@@ -58,7 +66,7 @@ import {
   hasExtractableTheme,
 } from "@/lib/extractor";
 
-export type AppTab = "apply" | "compose" | "examples" | "reference";
+export type AppTab = "apply" | "compose" | "examples" | "reference" | "extract";
 
 class ErrorBoundary extends Component<{ children: ReactNode }, { error: Error | null }> {
   state: { error: Error | null } = { error: null };
@@ -152,6 +160,20 @@ const TAB_CONFIG: {
     icon: (
       <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
         <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" />
+      </svg>
+    ),
+  },
+  {
+    id: "extract",
+    label: "Extract",
+    icon: (
+      <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+        <path
+          fillRule="evenodd"
+          d="M10 2a.75.75 0 01.75.75v8.614l3.205-3.129a.75.75 0 111.09 1.03l-4.25 4.5a.75.75 0 01-1.09 0l-4.25-4.5a.75.75 0 111.09-1.03L9.25 11.364V2.75A.75.75 0 0110 2z"
+          clipRule="evenodd"
+        />
+        <path d="M3.5 12.75a.75.75 0 00-1.5 0v2.5A2.75 2.75 0 004.75 18h10.5A2.75 2.75 0 0018 15.25v-2.5a.75.75 0 00-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5z" />
       </svg>
     ),
   },
@@ -288,7 +310,7 @@ function ThemeModeToggle({
 export function AppShell() {
   const [activeTab, setActiveTab] = useState<AppTab>(() => {
     const h = window.location.hash.slice(1);
-    const TABS: AppTab[] = ["apply", "compose", "examples", "reference"];
+    const TABS: AppTab[] = ["apply", "compose", "examples", "reference", "extract"];
     return TABS.includes(h as AppTab) ? (h as AppTab) : "compose";
   });
   usePageTracking(activeTab);
@@ -327,6 +349,10 @@ export function AppShell() {
     createDefaultMyThemeSlot(1, BRAND_PALETTES[0].colors),
   ]);
   const [activeMyThemeSlotId, setActiveMyThemeSlotId] = useState<string | null>("my-theme-1");
+  const [outputFormat, setOutputFormat] = useState<"init-directive" | "frontmatter">(
+    "init-directive"
+  );
+  const [strokeWidth, setStrokeWidth] = useState<number | undefined>(undefined);
 
   const handleNavigateToParityMatrix = useCallback(() => {
     setActiveTab("reference");
@@ -349,7 +375,7 @@ export function AppShell() {
   // Without this listener the URL hash changes but React state stays stale,
   // so pressing Back would show the wrong tab with the correct URL.
   useEffect(() => {
-    const TABS: AppTab[] = ["apply", "compose", "examples", "reference"];
+    const TABS: AppTab[] = ["apply", "compose", "examples", "reference", "extract"];
     const onHashChange = () => {
       const h = window.location.hash.slice(1);
       if (TABS.includes(h as AppTab)) {
@@ -371,6 +397,15 @@ export function AppShell() {
       setUserPalettes((prev) => [...prev, palette]);
       setSelectedPaletteId(palette.id);
       if (share.customThemeName) setCustomThemeName(share.customThemeName);
+      // v2 share tokens carry look + rendererTarget — apply when present.
+      // Coerce look to a known value; unknown strings silently fall back to "classic".
+      const validLooks = ["classic", "neo", "handDrawn"] as const;
+      if (share.look && (validLooks as readonly string[]).includes(share.look)) {
+        setLook(share.look as (typeof validLooks)[number]);
+      }
+      if (typeof share.rendererTarget === "string") {
+        setRendererTarget(share.rendererTarget);
+      }
       setToast(`Loaded shared theme: ${palette.name}`);
       clearShareToken();
       didApplyShare = true;
@@ -490,6 +525,19 @@ export function AppShell() {
           setActiveMyThemeSlotId(null);
         }
       }
+      if (
+        typeof persisted.outputFormat === "string" &&
+        (persisted.outputFormat === "init-directive" || persisted.outputFormat === "frontmatter")
+      ) {
+        setOutputFormat(persisted.outputFormat);
+      }
+      if (
+        typeof persisted.strokeWidth === "number" &&
+        persisted.strokeWidth >= 1 &&
+        persisted.strokeWidth <= 8
+      ) {
+        setStrokeWidth(persisted.strokeWidth);
+      }
     }
     setHydrated(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -517,6 +565,8 @@ export function AppShell() {
       lastSelectedExampleId,
       myThemeSlots,
       activeMyThemeSlotId,
+      outputFormat,
+      strokeWidth,
     });
   }, [
     hydrated,
@@ -537,6 +587,8 @@ export function AppShell() {
     lastSelectedExampleId,
     myThemeSlots,
     activeMyThemeSlotId,
+    outputFormat,
+    strokeWidth,
   ]);
 
   // Auto-clear toast after 2.5s
@@ -729,18 +781,19 @@ export function AppShell() {
     (id: string) => {
       const slot = myThemeSlots.find((s) => s.id === id);
       if (!slot) return;
-      const exportPalette: Palette = {
-        ...BRAND_PALETTES[0],
-        id: "my-theme-export",
-        name: slot.name,
-        description: `Exported My Theme workspace: ${slot.name}`,
-        colors: slot.colors,
-      };
-      const json = paletteToPortableJson(exportPalette);
-      const filename = makeFilename(slot.name, "theme", "json");
+      // Export as a full GovernanceProfile JSON — includes look, typography,
+      // rendererTarget, outputFormat, and schemaVersion so it can be imported
+      // back with full fidelity.
+      const profile = migrateSlotToProfile(slot, {
+        rendererTarget,
+        outputFormat,
+        strokeWidth,
+      });
+      const json = profileToPortableJson(profile);
+      const filename = makeFilename(slot.name, "profile", "json");
       downloadTextFile(filename, json, "application/json");
     },
-    [myThemeSlots]
+    [myThemeSlots, rendererTarget, outputFormat, strokeWidth]
   );
 
   const handleImportMyThemeSlot = useCallback(
@@ -786,6 +839,60 @@ export function AppShell() {
           return [...prev, newSlot];
         });
         setToast(`Imported "${palette.name}" into a new My Theme slot.`);
+      }
+    },
+    [activeMyThemeSlotId, myThemeSlots]
+  );
+
+  /**
+   * Import a full GovernanceProfile JSON into the active (or a new) slot,
+   * and restore the renderer target + output format from the profile.
+   */
+  const handleImportGovernanceProfile = useCallback(
+    (profile: GovernanceProfile, importWarnings: string[]) => {
+      const slot = profileToSlot(profile);
+
+      if (activeMyThemeSlotId) {
+        const activeSlotName =
+          myThemeSlots.find((s) => s.id === activeMyThemeSlotId)?.name ?? "My Theme";
+        setMyThemeSlots((prev) =>
+          prev.map((s) =>
+            s.id === activeMyThemeSlotId
+              ? {
+                  ...s,
+                  name: slot.name,
+                  colors: slot.colors,
+                  look: slot.look,
+                  fontSize: slot.fontSize,
+                  typography: slot.typography,
+                }
+              : s
+          )
+        );
+        // Restore app-level renderer / format from the profile.
+        // Always apply — an empty rendererTarget intentionally clears any
+        // previously-set renderer; truthy-gating would silently skip that.
+        setRendererTarget(profile.rendererTarget);
+        if (profile.outputFormat) setOutputFormat(profile.outputFormat);
+
+        const warnNote = importWarnings.length > 0 ? ` (${importWarnings.length} advisory)` : "";
+        setToast(`Imported profile "${profile.name}" into "${activeSlotName}"${warnNote}.`);
+      } else {
+        setMyThemeSlots((prev) => {
+          if (prev.length >= 3) {
+            setToast("All 3 My Theme slots are in use — delete one before importing.");
+            return prev;
+          }
+          const num = nextSlotNumber(prev);
+          if (num === null) return prev;
+          const newSlot = { ...slot, id: `my-theme-${num}` as MyThemeSlotId };
+          setActiveMyThemeSlotId(newSlot.id);
+          setRendererTarget(profile.rendererTarget);
+          if (profile.outputFormat) setOutputFormat(profile.outputFormat);
+          const warnNote = importWarnings.length > 0 ? ` (${importWarnings.length} advisory)` : "";
+          setToast(`Imported profile "${profile.name}" into a new My Theme slot${warnNote}.`);
+          return [...prev, newSlot];
+        });
       }
     },
     [activeMyThemeSlotId, myThemeSlots]
@@ -1390,6 +1497,9 @@ export function AppShell() {
             typography={effectiveTypography}
             rendererTarget={rendererTarget}
             onRendererTargetChange={setRendererTarget}
+            outputFormat={outputFormat}
+            onOutputFormatChange={setOutputFormat}
+            strokeWidth={strokeWidth}
             lastExampleType={lastExampleType}
             onRecordExampleType={handleRecordExampleType}
             previewMode={previewMode}
@@ -1442,6 +1552,8 @@ export function AppShell() {
               onTypographyChange={handleTypographyChange}
               rendererTarget={rendererTarget}
               onRendererTargetChange={setRendererTarget}
+              strokeWidth={strokeWidth}
+              onStrokeWidthChange={setStrokeWidth}
               onUseExtractedTheme={handleUseExtractedTheme}
               onSwitchTab={setActiveTab}
               onNavigateToParityMatrix={handleNavigateToParityMatrix}
@@ -1455,6 +1567,7 @@ export function AppShell() {
               onExportMyThemeSlot={handleExportMyThemeSlot}
               onImportAsNewSlot={handleImportAsNewSlot}
               onImportMyThemeSlot={handleImportMyThemeSlot}
+              onImportGovernanceProfile={handleImportGovernanceProfile}
               customThemeNamePlaceholder={
                 activeMyThemeSlotId ? slotDisplayName(activeMyThemeSlotId) : undefined
               }
@@ -1499,6 +1612,13 @@ export function AppShell() {
               onDeleteMyThemeSlot={handleDeleteMyThemeSlot}
               onExportMyThemeSlot={handleExportMyThemeSlot}
               onImportAsNewSlot={handleImportAsNewSlot}
+              onShowToast={showToast}
+            />
+          )}
+          {activeTab === "extract" && (
+            <ExtractTab
+              onUseExtractedTheme={handleUseExtractedTheme}
+              onSwitchTab={setActiveTab}
               onShowToast={showToast}
             />
           )}

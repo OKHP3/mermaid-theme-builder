@@ -23,7 +23,7 @@ import { type TypographySettings } from "@/lib/typography";
 import type { AppTab } from "@/App";
 import type { MyThemeSlot } from "@/lib/my-theme-slots";
 import { DiagramDetectHeader } from "./apply/DiagramDetectHeader";
-import { RenderWarningSection } from "./apply/RenderWarningSection";
+import { PreflightPanel } from "./apply/PreflightPanel";
 import { DiagramPreviewPanel, type PreviewMode } from "./apply/DiagramPreviewPanel";
 import { ExportToolbar } from "./apply/ExportToolbar";
 import { ColorEditorPanel } from "./apply/ColorEditorPanel";
@@ -54,6 +54,9 @@ interface ApplyTabProps {
   typography: TypographySettings;
   rendererTarget: string;
   onRendererTargetChange: (v: string) => void;
+  outputFormat?: "init-directive" | "frontmatter";
+  onOutputFormatChange?: (format: "init-directive" | "frontmatter") => void;
+  strokeWidth?: number;
   lastExampleType: Record<string, "flowchart" | "sequence">;
   onRecordExampleType: (id: string, type: "flowchart" | "sequence") => void;
   previewMode: PreviewMode;
@@ -101,6 +104,9 @@ export function ApplyTab({
   typography,
   rendererTarget,
   onRendererTargetChange,
+  outputFormat = "init-directive",
+  onOutputFormatChange,
+  strokeWidth,
   lastExampleType: _lastExampleType,
   onRecordExampleType: _onRecordExampleType,
   previewMode,
@@ -152,11 +158,6 @@ export function ApplyTab({
   const safeDiagramIdx = Math.min(activeDiagramIdx, diagrams.length - 1);
   const activeDiagramCode = diagrams[safeDiagramIdx]?.content ?? inputCode;
 
-  // Reset the advisory banner whenever the user picks a different target renderer.
-  useEffect(() => {
-    setAdvisoryDismissed(false);
-  }, [rendererTarget]);
-
   const detection = useMemo(() => detectDiagram(activeDiagramCode), [activeDiagramCode]);
 
   // Effective detection — applies the user's manual family override on top of
@@ -174,6 +175,13 @@ export function ApplyTab({
       capability: cap ?? null,
     };
   }, [detection, familyOverride]);
+
+  // Reset the advisory banner when the renderer target changes OR when the
+  // detected diagram family changes — the new family may surface new advisories
+  // that the user hasn't seen yet.
+  useEffect(() => {
+    setAdvisoryDismissed(false);
+  }, [rendererTarget, effectiveDetection.family]);
 
   // Track whether the current family's syntax hint is dismissed so we can
   // offer a "Show tip" restore affordance. Re-evaluates when the family
@@ -240,6 +248,8 @@ export function ApplyTab({
       fontSize: fontSize || undefined,
       typography,
       rendererTarget,
+      outputFormat,
+      strokeWidth,
     }),
     [
       selectedPalette,
@@ -251,6 +261,8 @@ export function ApplyTab({
       fontSize,
       typography,
       rendererTarget,
+      outputFormat,
+      strokeWidth,
     ]
   );
 
@@ -357,13 +369,21 @@ export function ApplyTab({
         onResetSyntaxHints={onResetSyntaxHints}
       />
 
-      <RenderWarningSection
+      <PreflightPanel
         exportAdvisories={exportAdvisories}
         advisoryDismissed={advisoryDismissed}
         onDismissAdvisory={() => setAdvisoryDismissed(true)}
+        capability={effectiveDetection.capability}
         family={effectiveDetection.family}
         hintResetToken={hintResetToken}
         onFamilyHintDismiss={() => setFamilyHintDismissed(true)}
+        rendererProfile={rendererProfile}
+        rendererLookWarning={rendererLookWarning}
+        look={look}
+        selectedPalette={selectedPalette}
+        outputFormat={outputFormat}
+        onOutputFormatChange={onOutputFormatChange}
+        inputCode={inputCode}
       />
 
       <div className="md:flex-1 md:overflow-hidden flex flex-col md:flex-row md:min-h-0">
@@ -441,6 +461,8 @@ export function ApplyTab({
             promptIsThemeOnly={promptIsThemeOnly}
             onShowScaffoldModal={() => setShowScaffoldModal(true)}
             onShowToast={onShowToast}
+            outputFormat={outputFormat}
+            onOutputFormatChange={onOutputFormatChange}
           />
         </div>
       </div>

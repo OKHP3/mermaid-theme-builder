@@ -24,6 +24,10 @@ export interface PersistedState {
   lastSelectedExampleId?: string;
   myThemeSlots?: MyThemeSlot[];
   activeMyThemeSlotId?: string | null;
+  /** Persisted output format preference: "init-directive" or "frontmatter". */
+  outputFormat?: string;
+  /** Persisted global classDef stroke-width override in pixels. */
+  strokeWidth?: number;
 }
 
 export const DEFAULT_PERSISTED_STATE: Omit<PersistedState, "selectedPaletteId" | "inputCode"> = {
@@ -100,6 +104,10 @@ export interface ShareablePayload {
   paletteId?: string;
   themeVariables: Record<string, string>;
   customThemeName?: string;
+  /** v2+ only: Mermaid look variant. */
+  look?: string;
+  /** v2+ only: renderer target ID. */
+  rendererTarget?: string;
 }
 
 function bytesToBase64Url(bytes: Uint8Array): string {
@@ -145,6 +153,9 @@ export function decodeShareableTheme(token: string): ShareablePayload | null {
       paletteId: typeof parsed.paletteId === "string" ? parsed.paletteId : undefined,
       customThemeName:
         typeof parsed.customThemeName === "string" ? parsed.customThemeName : undefined,
+      // v2 fields — preserved as-is; the caller is responsible for applying them
+      look: typeof parsed.look === "string" ? parsed.look : undefined,
+      rendererTarget: typeof parsed.rendererTarget === "string" ? parsed.rendererTarget : undefined,
     };
     return out;
   } catch (err) {
@@ -155,16 +166,20 @@ export function decodeShareableTheme(token: string): ShareablePayload | null {
 
 export function paletteToShareablePayload(
   palette: Palette,
-  customThemeName: string
+  customThemeName: string,
+  opts?: { look?: string; rendererTarget?: string }
 ): ShareablePayload {
   const themeVariables: Record<string, string> = {};
   for (const c of palette.colors) themeVariables[c.key] = c.value;
+  const hasExtras = (opts?.look && opts.look !== "classic") || opts?.rendererTarget;
   return {
-    v: 1,
+    v: hasExtras ? 2 : 1,
     paletteId: palette.id,
     paletteName: palette.name,
     themeVariables,
     customThemeName: customThemeName || undefined,
+    look: hasExtras && opts?.look && opts.look !== "classic" ? opts.look : undefined,
+    rendererTarget: opts?.rendererTarget || undefined,
   };
 }
 

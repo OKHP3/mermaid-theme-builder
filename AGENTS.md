@@ -525,7 +525,7 @@ workflow definitions, documentation, and recent Git history.
 - **Vision, inferred:** Serve as the visual governance layer in the OKHP3
   Visual Language Stack while remaining a small, static, privacy-respecting
   utility.
-- **Current status, confirmed:** The root package is version `0.5.0`, and the
+- **Current status, confirmed:** The root package is version `0.6.0`, and the
   application source plus CI and GitHub Pages deployment workflows are present.
   The README documents a live URL, but this alignment pass did not independently
   verify remote deployment health. Version `0.6.0` is active planning, and
@@ -734,6 +734,21 @@ referenced by any active workflow:
 
 When deleting these, confirm that no other workflow references them by name
 before executing the delete.
+
+---
+
+#### 9.9 Version policy
+
+Tag a new version after every sprint that ships at least one user-visible feature or behavior change. Do not let the repo drift more than a handful of commits ahead of the latest tag.
+
+**Rules:**
+- `v0.x.y` patch: bug fixes and internal refactors with no user-visible behavior change.
+- `v0.x.0` minor: any shipped user-visible feature or capability.
+- `v1.0.0`: earned only when all v1.0.0 gates in `docs/roadmap.md` pass explicitly (currently: analytics + WCAG 2.1 AA + full keyboard navigation). Do not tag v1.0.0 until every gate is checked and passes.
+
+**Workflow for agents:** Before marking a task that touches user-visible behavior as complete, check whether a version bump is warranted. If yes: update `package.json`, add a `CHANGELOG.md` entry under a new dated version header (never fold into [Unreleased] if you're shipping a tag), commit, create the annotated tag (`git tag -a vX.Y.Z -m "..."`), and push the tag to GitHub (`git push origin vX.Y.Z`). Create a GitHub release for any new minor version, using the CHANGELOG entry as the release body.
+
+The detailed version policy rationale is in `docs/roadmap.md` "Version Policy" section.
 
 ---
 
