@@ -81,6 +81,7 @@ interface ApplyTabProps {
       warnValues: Array<{ key: string; value: string }>;
     }
   ) => void;
+  advancedMermaidConfig?: import("@/lib/theme-engine").AdvancedMermaidConfig;
 }
 
 export function ApplyTab({
@@ -128,6 +129,7 @@ export function ApplyTab({
   onMoveMyThemeSlotUp,
   onMoveMyThemeSlotDown,
   onImportAsNewSlot,
+  advancedMermaidConfig = {},
 }: ApplyTabProps) {
   const [showColorEditor, setShowColorEditor] = useState(false);
   const [advisoryDismissed, setAdvisoryDismissed] = useState(false);
@@ -245,7 +247,8 @@ export function ApplyTab({
         effectiveDetection.family,
         look,
         fontSize || undefined,
-        typography
+        typography,
+        Object.keys(advancedMermaidConfig).length > 0 ? advancedMermaidConfig : undefined
       );
       const check = checkInitDirectiveLength(dirLength, r);
       if (check.status === "caution") {
@@ -265,6 +268,7 @@ export function ApplyTab({
     look,
     fontSize,
     typography,
+    advancedMermaidConfig,
   ]);
 
   const isExtracted = isExtractedPaletteId(selectedPaletteId);
@@ -287,6 +291,8 @@ export function ApplyTab({
       rendererTarget,
       outputFormat,
       strokeWidth,
+      advancedMermaidConfig:
+        Object.keys(advancedMermaidConfig).length > 0 ? advancedMermaidConfig : undefined,
     }),
     [
       selectedPalette,
@@ -300,6 +306,7 @@ export function ApplyTab({
       rendererTarget,
       outputFormat,
       strokeWidth,
+      advancedMermaidConfig,
     ]
   );
 

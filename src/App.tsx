@@ -354,6 +354,9 @@ export function AppShell() {
     "init-directive"
   );
   const [strokeWidth, setStrokeWidth] = useState<number | undefined>(undefined);
+  const [advancedMermaidConfig, setAdvancedMermaidConfig] = useState<
+    import("@/lib/theme-engine").AdvancedMermaidConfig
+  >({});
 
   const handleNavigateToParityMatrix = useCallback(() => {
     setActiveTab("reference");
@@ -539,6 +542,16 @@ export function AppShell() {
       ) {
         setStrokeWidth(persisted.strokeWidth);
       }
+      if (persisted.advancedMermaidConfig && typeof persisted.advancedMermaidConfig === "object") {
+        const amc = persisted.advancedMermaidConfig;
+        const clean: import("@/lib/theme-engine").AdvancedMermaidConfig = {};
+        if (typeof amc.htmlLabels === "boolean") clean.htmlLabels = amc.htmlLabels;
+        if (typeof amc.deterministicIds === "boolean")
+          clean.deterministicIds = amc.deterministicIds;
+        if (typeof amc.deterministicIDSeed === "string")
+          clean.deterministicIDSeed = amc.deterministicIDSeed;
+        setAdvancedMermaidConfig(clean);
+      }
     }
     setHydrated(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -568,6 +581,7 @@ export function AppShell() {
       activeMyThemeSlotId,
       outputFormat,
       strokeWidth,
+      advancedMermaidConfig,
     });
   }, [
     hydrated,
@@ -590,6 +604,7 @@ export function AppShell() {
     activeMyThemeSlotId,
     outputFormat,
     strokeWidth,
+    advancedMermaidConfig,
   ]);
 
   // Auto-clear toast after 2.5s
@@ -789,12 +804,16 @@ export function AppShell() {
         rendererTarget,
         outputFormat,
         strokeWidth,
+        advancedMermaidConfig:
+          Object.keys(advancedMermaidConfig).length > 0
+            ? (advancedMermaidConfig as Record<string, unknown>)
+            : undefined,
       });
       const json = profileToPortableJson(profile);
       const filename = makeFilename(slot.name, "profile", "json");
       downloadTextFile(filename, json, "application/json");
     },
-    [myThemeSlots, rendererTarget, outputFormat, strokeWidth]
+    [myThemeSlots, rendererTarget, outputFormat, strokeWidth, advancedMermaidConfig]
   );
 
   const handleImportMyThemeSlot = useCallback(
@@ -846,6 +865,23 @@ export function AppShell() {
   );
 
   /**
+   * Read the advancedMermaidConfig from an imported GovernanceProfile and
+   * apply it to local state. Only trusted field types are accepted.
+   */
+  const applyAdvancedConfigFromProfile = useCallback((raw: Record<string, unknown> | undefined) => {
+    if (!raw || typeof raw !== "object") {
+      setAdvancedMermaidConfig({});
+      return;
+    }
+    const clean: import("@/lib/theme-engine").AdvancedMermaidConfig = {};
+    if (typeof raw.htmlLabels === "boolean") clean.htmlLabels = raw.htmlLabels;
+    if (typeof raw.deterministicIds === "boolean") clean.deterministicIds = raw.deterministicIds;
+    if (typeof raw.deterministicIDSeed === "string")
+      clean.deterministicIDSeed = raw.deterministicIDSeed;
+    setAdvancedMermaidConfig(clean);
+  }, []);
+
+  /**
    * Import a full GovernanceProfile JSON into the active (or a new) slot,
    * and restore the renderer target + output format from the profile.
    */
@@ -875,6 +911,7 @@ export function AppShell() {
         // previously-set renderer; truthy-gating would silently skip that.
         setRendererTarget(profile.rendererTarget);
         if (profile.outputFormat) setOutputFormat(profile.outputFormat);
+        applyAdvancedConfigFromProfile(profile.advancedMermaidConfig);
 
         const warnNote = importWarnings.length > 0 ? ` (${importWarnings.length} advisory)` : "";
         setToast(`Imported profile "${profile.name}" into "${activeSlotName}"${warnNote}.`);
@@ -890,13 +927,14 @@ export function AppShell() {
           setActiveMyThemeSlotId(newSlot.id);
           setRendererTarget(profile.rendererTarget);
           if (profile.outputFormat) setOutputFormat(profile.outputFormat);
+          applyAdvancedConfigFromProfile(profile.advancedMermaidConfig);
           const warnNote = importWarnings.length > 0 ? ` (${importWarnings.length} advisory)` : "";
           setToast(`Imported profile "${profile.name}" into a new My Theme slot${warnNote}.`);
           return [...prev, newSlot];
         });
       }
     },
-    [activeMyThemeSlotId, myThemeSlots]
+    [activeMyThemeSlotId, myThemeSlots] // eslint-disable-line react-hooks/exhaustive-deps
   );
 
   const handleImportAsNewSlot = useCallback(
@@ -1537,6 +1575,7 @@ export function AppShell() {
             onMoveMyThemeSlotUp={handleMoveMyThemeSlotUp}
             onMoveMyThemeSlotDown={handleMoveMyThemeSlotDown}
             onImportAsNewSlot={handleImportAsNewSlot}
+            advancedMermaidConfig={advancedMermaidConfig}
           />
         </div>
         <div
@@ -1598,6 +1637,8 @@ export function AppShell() {
               customThemeNamePlaceholder={
                 activeMyThemeSlotId ? slotDisplayName(activeMyThemeSlotId) : undefined
               }
+              advancedMermaidConfig={advancedMermaidConfig}
+              onAdvancedMermaidConfigChange={setAdvancedMermaidConfig}
             />
           )}
           {activeTab === "examples" && (

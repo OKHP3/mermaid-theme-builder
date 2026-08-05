@@ -189,6 +189,8 @@ interface ComposeTabProps {
   onMoveMyThemeSlotUp?: (id: string) => void;
   onMoveMyThemeSlotDown?: (id: string) => void;
   customThemeNamePlaceholder?: string;
+  advancedMermaidConfig?: import("@/lib/theme-engine").AdvancedMermaidConfig;
+  onAdvancedMermaidConfigChange?: (v: import("@/lib/theme-engine").AdvancedMermaidConfig) => void;
 }
 
 /**
@@ -253,6 +255,8 @@ export function ComposeTab({
   onMoveMyThemeSlotUp,
   onMoveMyThemeSlotDown,
   customThemeNamePlaceholder,
+  advancedMermaidConfig = {},
+  onAdvancedMermaidConfigChange,
 }: ComposeTabProps) {
   const [copiedBootstrap, setCopiedBootstrap] = useState(false);
   const [copiedShare, setCopiedShare] = useState(false);
@@ -269,6 +273,7 @@ export function ComposeTab({
   const colorsOpen = openSection === "colors";
   const lookOpen = openSection === "look";
   const typographyOpen = openSection === "typography";
+  const advancedOpen = openSection === "advanced";
   const myPalettesOpen = openSection === "export";
   const extractOpen = openSection === "extract";
   const toggleSection = useCallback(
@@ -329,6 +334,8 @@ export function ComposeTab({
       typography,
       rendererTarget,
       strokeWidth,
+      advancedMermaidConfig:
+        Object.keys(advancedMermaidConfig).length > 0 ? advancedMermaidConfig : undefined,
     }),
     [
       selectedPalette,
@@ -339,6 +346,7 @@ export function ComposeTab({
       typography,
       rendererTarget,
       strokeWidth,
+      advancedMermaidConfig,
     ]
   );
 
@@ -1106,6 +1114,182 @@ export function ComposeTab({
                   the Mermaid <code className="font-mono bg-muted rounded px-0.5">fontSize</code>{" "}
                   themeVariable. Other tiers and per-tier font overrides are included in the Prompt
                   Scaffold export.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* ── Advanced ── */}
+          <div className="border-b border-border">
+            <div
+              role="button"
+              tabIndex={0}
+              onClick={() => toggleSection("advanced")}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  toggleSection("advanced");
+                }
+              }}
+              className="flex items-center justify-between px-4 py-2.5 cursor-pointer hover:bg-muted/40 transition-colors select-none"
+              aria-expanded={advancedOpen}
+            >
+              <span className="text-xs font-medium text-foreground">Advanced</span>
+              <div className="flex items-center gap-2">
+                {(advancedMermaidConfig.htmlLabels !== undefined ||
+                  advancedMermaidConfig.deterministicIds !== undefined) && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onAdvancedMermaidConfigChange?.({});
+                    }}
+                    aria-label="Reset advanced options to defaults"
+                    className="text-[10px] text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Reset
+                  </button>
+                )}
+                <svg
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  className={`w-4 h-4 text-muted-foreground transition-transform shrink-0 ${advancedOpen ? "rotate-180" : ""}`}
+                  aria-hidden="true"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
+            </div>
+            <div className={advancedOpen ? "border-t border-border" : "hidden"}>
+              <div className="p-3 space-y-4">
+                {/* htmlLabels */}
+                <div>
+                  <div className="flex items-center justify-between gap-2">
+                    <label
+                      htmlFor="advanced-htmlLabels"
+                      className="text-xs font-medium text-foreground leading-none"
+                    >
+                      HTML labels
+                    </label>
+                    <button
+                      id="advanced-htmlLabels"
+                      type="button"
+                      role="switch"
+                      aria-checked={advancedMermaidConfig.htmlLabels === true}
+                      onClick={() =>
+                        onAdvancedMermaidConfigChange?.({
+                          ...advancedMermaidConfig,
+                          htmlLabels: advancedMermaidConfig.htmlLabels === true ? undefined : true,
+                        })
+                      }
+                      className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50 ${
+                        advancedMermaidConfig.htmlLabels === true
+                          ? "bg-primary"
+                          : "bg-muted-foreground/30"
+                      }`}
+                    >
+                      <span
+                        className={`pointer-events-none inline-block h-4 w-4 rounded-full bg-white shadow-sm transition-transform ${
+                          advancedMermaidConfig.htmlLabels === true
+                            ? "translate-x-4"
+                            : "translate-x-0"
+                        }`}
+                      />
+                    </button>
+                  </div>
+                  <p className="text-[10px] text-muted-foreground mt-1 leading-relaxed">
+                    Emits{" "}
+                    <code className="font-mono bg-muted rounded px-0.5">"htmlLabels": true</code> at
+                    the root <code className="font-mono bg-muted rounded px-0.5">config</code>{" "}
+                    level. Flowchart / graph families only — ignored by other diagram types.
+                  </p>
+                </div>
+
+                {/* deterministicIds */}
+                <div>
+                  <div className="flex items-center justify-between gap-2">
+                    <label
+                      htmlFor="advanced-deterministicIds"
+                      className="text-xs font-medium text-foreground leading-none"
+                    >
+                      Deterministic IDs
+                    </label>
+                    <button
+                      id="advanced-deterministicIds"
+                      type="button"
+                      role="switch"
+                      aria-checked={advancedMermaidConfig.deterministicIds === true}
+                      onClick={() =>
+                        onAdvancedMermaidConfigChange?.({
+                          ...advancedMermaidConfig,
+                          deterministicIds:
+                            advancedMermaidConfig.deterministicIds === true ? undefined : true,
+                          // Clear seed when disabling
+                          deterministicIDSeed:
+                            advancedMermaidConfig.deterministicIds === true
+                              ? undefined
+                              : advancedMermaidConfig.deterministicIDSeed,
+                        })
+                      }
+                      className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50 ${
+                        advancedMermaidConfig.deterministicIds === true
+                          ? "bg-primary"
+                          : "bg-muted-foreground/30"
+                      }`}
+                    >
+                      <span
+                        className={`pointer-events-none inline-block h-4 w-4 rounded-full bg-white shadow-sm transition-transform ${
+                          advancedMermaidConfig.deterministicIds === true
+                            ? "translate-x-4"
+                            : "translate-x-0"
+                        }`}
+                      />
+                    </button>
+                  </div>
+                  <p className="text-[10px] text-muted-foreground mt-1 leading-relaxed">
+                    Generates stable, predictable SVG node IDs — useful for diff-ing or embedding
+                    Mermaid diagrams in reproducible pipelines.
+                  </p>
+
+                  {/* deterministicIDSeed — only enabled when deterministicIds is on */}
+                  <div className="mt-2">
+                    <label
+                      htmlFor="advanced-deterministicIDSeed"
+                      className={`text-[10px] font-medium block mb-1 transition-colors ${
+                        advancedMermaidConfig.deterministicIds === true
+                          ? "text-foreground"
+                          : "text-muted-foreground/50"
+                      }`}
+                    >
+                      ID seed{" "}
+                      <span className="font-normal text-muted-foreground/60">(optional)</span>
+                    </label>
+                    <input
+                      id="advanced-deterministicIDSeed"
+                      type="text"
+                      disabled={advancedMermaidConfig.deterministicIds !== true}
+                      value={advancedMermaidConfig.deterministicIDSeed ?? ""}
+                      onChange={(e) =>
+                        onAdvancedMermaidConfigChange?.({
+                          ...advancedMermaidConfig,
+                          deterministicIDSeed: e.target.value || undefined,
+                        })
+                      }
+                      placeholder="my-diagram-seed"
+                      className="w-full text-[11px] font-mono bg-background border border-border rounded-md px-2 py-1 text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 disabled:opacity-40 disabled:cursor-not-allowed"
+                      aria-label="Deterministic ID seed"
+                    />
+                  </div>
+                </div>
+
+                <p className="text-[10px] text-muted-foreground leading-relaxed">
+                  These keys are emitted at root{" "}
+                  <code className="font-mono bg-muted rounded px-0.5">config</code> level — never
+                  under a family sub-key. Supported by Mermaid v10+.
                 </p>
               </div>
             </div>

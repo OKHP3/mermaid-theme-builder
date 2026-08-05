@@ -146,6 +146,7 @@ export function migrateSlotToProfile(
     rendererTarget?: string;
     outputFormat?: "init-directive" | "frontmatter";
     strokeWidth?: number;
+    advancedMermaidConfig?: Record<string, unknown>;
   },
   now?: string
 ): GovernanceProfile {
@@ -162,6 +163,7 @@ export function migrateSlotToProfile(
     rendererTarget: appState?.rendererTarget ?? "",
     outputFormat: appState?.outputFormat ?? "init-directive",
     strokeWidth: appState?.strokeWidth,
+    advancedMermaidConfig: appState?.advancedMermaidConfig,
     createdAt: ts,
     updatedAt: ts,
     mermaidVersionVerified: MERMAID_VERSION_VERIFIED,

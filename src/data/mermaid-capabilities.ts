@@ -63,6 +63,8 @@ export interface DiagramCapability {
   minMermaidVersion?: string;
   supportedLooks?: ("classic" | "neo" | "handDrawn")[];
   unsupportedLooks?: ("classic" | "neo" | "handDrawn")[];
+  /** Whether the `htmlLabels` root config key is meaningful for this family. */
+  htmlLabelsSupported?: boolean;
 }
 
 export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
@@ -90,6 +92,7 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
     minMermaidVersion: "10.0.0",
     supportedLooks: ["classic", "neo", "handDrawn"],
     unsupportedLooks: [],
+    htmlLabelsSupported: true,
   },
   {
     id: "sequenceDiagram",

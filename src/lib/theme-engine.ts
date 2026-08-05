@@ -68,6 +68,24 @@ function sanitizeSourceUrl(u: string): string | null {
 
 export type MermaidLook = "classic" | "neo" | "handDrawn";
 
+/**
+ * Advanced Mermaid config overrides emitted at the **root** `config` level
+ * (not nested under a family sub-key like `flowchart.htmlLabels`).
+ *
+ * - `htmlLabels` — render node labels as HTML.  Meaningful for flowchart/graph
+ *   families only; Mermaid ignores it for other families.  Emit at root level;
+ *   the deprecated `flowchart.htmlLabels` path is never used.
+ * - `deterministicIds` — generate stable, deterministic SVG node IDs instead
+ *   of sequential counters.  Useful when diffing or embedding Mermaid SVGs.
+ * - `deterministicIDSeed` — seed string for the deterministic ID generator.
+ *   Only meaningful (and only emitted) when `deterministicIds` is `true`.
+ */
+export interface AdvancedMermaidConfig {
+  htmlLabels?: boolean;
+  deterministicIds?: boolean;
+  deterministicIDSeed?: string;
+}
+
 export interface WatermarkOptions {
   enabled: boolean;
   themeName: string;
@@ -97,6 +115,13 @@ export interface ExportOptions {
    * stroke-width values. When omitted, per-classDef defaults are preserved.
    */
   strokeWidth?: number;
+  /**
+   * Advanced Mermaid config keys emitted at root `config` level.
+   * `htmlLabels` — render node labels as HTML (flowchart/graph only).
+   * `deterministicIds` — generate stable SVG node IDs.
+   * `deterministicIDSeed` — seed for deterministicIds (emitted only when deterministicIds is true).
+   */
+  advancedMermaidConfig?: AdvancedMermaidConfig;
 }
 
 const TOOL_URL = "https://overkillhill.com/projects/mermaid-theme-builder/";
@@ -162,12 +187,37 @@ function applyTypographyToVars(vars: Record<string, string>, typography: Typogra
   }
 }
 
+/** Build the JSON entries for advanced root config keys. Returns a trailing ", " string or "". */
+function buildAdvancedInitEntries(advanced?: AdvancedMermaidConfig): string {
+  if (!advanced) return "";
+  const parts: string[] = [];
+  if (advanced.htmlLabels !== undefined) parts.push(`"htmlLabels": ${advanced.htmlLabels}`);
+  if (advanced.deterministicIds !== undefined)
+    parts.push(`"deterministicIds": ${advanced.deterministicIds}`);
+  if (advanced.deterministicIds && advanced.deterministicIDSeed)
+    parts.push(`"deterministicIDSeed": "${advanced.deterministicIDSeed}"`);
+  return parts.length > 0 ? parts.join(", ") + ", " : "";
+}
+
+/** Build the YAML lines for advanced root config keys. Returns lines with trailing "\n" or "". */
+function buildAdvancedFrontmatterLines(advanced?: AdvancedMermaidConfig): string {
+  if (!advanced) return "";
+  const lines: string[] = [];
+  if (advanced.htmlLabels !== undefined) lines.push(`  htmlLabels: ${advanced.htmlLabels}`);
+  if (advanced.deterministicIds !== undefined)
+    lines.push(`  deterministicIds: ${advanced.deterministicIds}`);
+  if (advanced.deterministicIds && advanced.deterministicIDSeed)
+    lines.push(`  deterministicIDSeed: "${advanced.deterministicIDSeed}"`);
+  return lines.length > 0 ? lines.join("\n") + "\n" : "";
+}
+
 function buildInitDirective(
   palette: Palette,
   family: DiagramFamily = "flowchart",
   look?: MermaidLook,
   fontSize?: string,
-  typography?: TypographySettings
+  typography?: TypographySettings,
+  advanced?: AdvancedMermaidConfig
 ): string {
   const baseVars = buildThemeVars(palette);
   const overlay = familyThemeOverlay(palette, family);
@@ -211,7 +261,8 @@ function buildInitDirective(
     }
   }
 
-  return `%%{init: {${lookEntry}"theme": "base", ${archEntry}${extraConfig}"themeVariables": {${themeVarsStr}}}}%%`;
+  const advancedEntries = buildAdvancedInitEntries(advanced);
+  return `%%{init: {${advancedEntries}${lookEntry}"theme": "base", ${archEntry}${extraConfig}"themeVariables": {${themeVarsStr}}}}%%`;
 }
 
 /**
@@ -238,9 +289,10 @@ export function computeInitDirectiveLength(
   family: DiagramFamily,
   look?: MermaidLook,
   fontSize?: string,
-  typography?: TypographySettings
+  typography?: TypographySettings,
+  advanced?: AdvancedMermaidConfig
 ): number {
-  return buildInitDirective(palette, family, look, fontSize, typography).length;
+  return buildInitDirective(palette, family, look, fontSize, typography, advanced).length;
 }
 
 function buildMetaComments(palette: Palette, themeName: string): string {
@@ -304,13 +356,21 @@ export function generateThemedCode(originalCode: string, options: ExportOptions)
 
   const themeDirective =
     options.outputFormat === "frontmatter"
-      ? buildFrontmatter(palette, diagramFamily, options.look, options.fontSize, options.typography)
+      ? buildFrontmatter(
+          palette,
+          diagramFamily,
+          options.look,
+          options.fontSize,
+          options.typography,
+          options.advancedMermaidConfig
+        )
       : buildInitDirective(
           palette,
           diagramFamily,
           options.look,
           options.fontSize,
-          options.typography
+          options.typography,
+          options.advancedMermaidConfig
         );
   const metaComments = includeMetaComments ? buildMetaComments(palette, themeName) : null;
   const badge = includeBadge ? buildBadgeNode(palette, themeName, diagramFamily) : null;
@@ -444,7 +504,8 @@ function buildFrontmatter(
   family: DiagramFamily = "flowchart",
   look?: MermaidLook,
   fontSize?: string,
-  typography?: TypographySettings
+  typography?: TypographySettings,
+  advanced?: AdvancedMermaidConfig
 ): string {
   const baseVars = buildThemeVars(palette);
   const overlay = familyThemeOverlay(palette, family);
@@ -465,8 +526,9 @@ function buildFrontmatter(
   const themeLines = [varEntries, fontFamilyLine].filter(Boolean).join("\n");
   const lookLine = look && look !== "classic" ? `  look: ${look}\n` : "";
   const archLine = family === "architectureBeta" ? `  architecture:\n    randomize: false\n` : "";
+  const advancedLines = buildAdvancedFrontmatterLines(advanced);
 
-  return `---\n# Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported\nconfig:\n  theme: base\n${lookLine}${archLine}  themeVariables:\n${themeLines}\n---`;
+  return `---\n# Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported\nconfig:\n  theme: base\n${advancedLines}${lookLine}${archLine}  themeVariables:\n${themeLines}\n---`;
 }
 
 /** Serialize a single ClassDef object to a Mermaid `classDef` line.

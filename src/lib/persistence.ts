@@ -28,6 +28,12 @@ export interface PersistedState {
   outputFormat?: string;
   /** Persisted global classDef stroke-width override in pixels. */
   strokeWidth?: number;
+  /** Persisted advanced Mermaid config overrides (htmlLabels, deterministicIds, seed). */
+  advancedMermaidConfig?: {
+    htmlLabels?: boolean;
+    deterministicIds?: boolean;
+    deterministicIDSeed?: string;
+  };
 }
 
 export const DEFAULT_PERSISTED_STATE: Omit<PersistedState, "selectedPaletteId" | "inputCode"> = {
