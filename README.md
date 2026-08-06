@@ -26,8 +26,8 @@ Visual governance for AI-generated Mermaid diagrams — paste, theme, preview, a
 - **Renderer-aware warnings** — contextual alerts when selected look is unsupported by target renderer
 - **Stroke/border width control** — per-diagram node border width stepper in Compose (Default, 1–4 px)
 - **Extract mode** — dedicated Extract tab to pull a theme from existing themed Mermaid code
-- **100% client-side, no data collection** — your Mermaid code, palette data, and exports stay in your browser; no data is sent to any server. No backend, no login, no analytics.
-- **Installable as a PWA** — service worker and web app manifest included; add to home screen or desktop for offline-capable access
+- **100% client-side** — your Mermaid code, palette data, and exports stay in your browser. No backend, no login, no analytics. UI fonts load from Google Fonts (fonts.googleapis.com) on first visit; no diagram data or palette data leaves the browser.
+- **Installable as a PWA** — service worker and web app manifest included; add to home screen or desktop for offline-capable access (app shell is cached; Google Fonts require a network connection)
 
 ---
 
@@ -80,7 +80,7 @@ Full parity matrix with caveats is available in the **Reference** tab of the liv
 
 **Documented capability gaps (10):** BPMN 2.0, ArchiMate, SysML, Value-Stream Map, Service Blueprint, OKR Alignment Map, DFD, Decision Tree, Org Chart, Threat Model DFD — tracked with "not natively supported" status so users know why they render as generic flowcharts.
 
-> The in-app **Reference** tab is the canonical source of truth: 31 families total, 21 with native/emulatable support and 10 tracked as explicit capability gaps. The list above enumerates 38 named types and hasn't been reconciled against the live registry item-for-item. Don't treat "27+" as current either way.
+> The in-app **Reference** tab is the canonical source of truth: 31 families total (18 native, 13 partial/beta) and 10 tracked as explicit capability gaps.
 
 Capabilities documented per family: stability, look support, themeVariable confidence, classDef support, linkStyle support, subgraph support, `minMermaidVersion`.
 
