@@ -6,6 +6,9 @@ export default defineConfig({
   plugins: [react()],
   test: {
     environment: "node",
+    setupFiles: ["src/__tests__/setup/storage-isolation.ts"],
+    clearMocks: true,
+    restoreMocks: true,
     environmentMatchGlobs: [
       ["src/__tests__/applyTab.test.ts", "happy-dom"],
       ["src/__tests__/exporters-browser.test.ts", "happy-dom"],
