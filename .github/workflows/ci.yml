@@ -1,6 +1,8 @@
 name: CI
 
 on:
+  push:
+    branches: [main]
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -36,3 +38,6 @@ jobs:
 
       - name: Version string check
         run: pnpm run check:version-strings
+
+      - name: Documentation truth check
+        run: pnpm run check:doc-truth
