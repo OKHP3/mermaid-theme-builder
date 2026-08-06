@@ -40,6 +40,20 @@ interface ReferenceTabProps {
     }
   ) => void;
   onShowToast?: (msg: ReactNode) => void;
+  /** Currently selected renderer target id (e.g. "github", "obsidian"). */
+  rendererTarget?: string;
+  /** User's current output format preference. */
+  outputFormat?: "init-directive" | "frontmatter";
+  /**
+   * Copy the themed export code, formatted correctly for the given renderer, to
+   * the clipboard.  The callback handles format selection and toast notification.
+   */
+  onCopyForRenderer?: (rendererId: string) => Promise<void>;
+  /**
+   * Copy the active profile's share URL to the clipboard.  Provided only when
+   * an active slot exists so the button can be conditionally disabled/hidden.
+   */
+  onCopyShareLink?: () => Promise<void>;
 }
 
 const TAXONOMY_DOCS_URL =
@@ -80,6 +94,56 @@ function SupportBadge({ support }: { support: import("@/data/renderer-parity").R
   );
 }
 
+/** Small icon — external link arrow */
+function ExternalLinkIcon({ className = "w-3.5 h-3.5" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 20 20" fill="currentColor" className={className}>
+      <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+      <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+    </svg>
+  );
+}
+
+/** Small copy-to-clipboard icon */
+function CopyIcon({ className = "w-3 h-3" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 20 20" fill="currentColor" className={className}>
+      <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
+      <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
+    </svg>
+  );
+}
+
+/** Small checkmark icon for "Copied!" feedback */
+function CheckIcon({ className = "w-3 h-3" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 20 20" fill="currentColor" className={className}>
+      <path
+        fillRule="evenodd"
+        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+        clipRule="evenodd"
+      />
+    </svg>
+  );
+}
+
+/** Chevron down (rotates 180° via group-open in parent) */
+function ChevronIcon() {
+  return (
+    <svg
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      className="w-4 h-4 text-muted-foreground group-open:rotate-180 transition-transform"
+    >
+      <path
+        fillRule="evenodd"
+        d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+        clipRule="evenodd"
+      />
+    </svg>
+  );
+}
+
 export function ReferenceTab({
   selectedPalette,
   selectedPaletteId,
@@ -103,6 +167,10 @@ export function ReferenceTab({
   onShowProfileDetails,
   onImportAsNewSlot,
   onShowToast = () => {},
+  rendererTarget = "",
+  outputFormat = "init-directive",
+  onCopyForRenderer,
+  onCopyShareLink,
 }: ReferenceTabProps) {
   const classDefs = useMemo(() => getClassDefs(selectedPalette), [selectedPalette]);
 
@@ -153,6 +221,31 @@ export function ReferenceTab({
     el.scrollIntoView({ behavior: "smooth", block: "start" });
     onParityMatrixOpened?.();
   }, [openParityMatrix, onParityMatrixOpened]);
+
+  // ── Distribution section copy state ────────────────────────────────────────
+  // Track which renderer's copy button was last clicked so we can flash
+  // "Copied!" feedback briefly.
+  const [copiedForRenderer, setCopiedForRenderer] = useState<string | null>(null);
+  const [shareLinked, setShareLinked] = useState(false);
+
+  const handleDistributeCopy = useCallback(
+    async (rendererId: string) => {
+      if (!onCopyForRenderer) return;
+      await onCopyForRenderer(rendererId);
+      setCopiedForRenderer(rendererId);
+      // Clear after a short delay; guard against fast double-clicks on other
+      // buttons by comparing the id before clearing.
+      setTimeout(() => setCopiedForRenderer((prev) => (prev === rendererId ? null : prev)), 1800);
+    },
+    [onCopyForRenderer]
+  );
+
+  const handleClickShareLink = useCallback(async () => {
+    if (!onCopyShareLink) return;
+    await onCopyShareLink();
+    setShareLinked(true);
+    setTimeout(() => setShareLinked(false), 1800);
+  }, [onCopyShareLink]);
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
@@ -206,17 +299,7 @@ export function ReferenceTab({
                 {classDefs.length} classes · {selectedPalette.name}
               </span>
             </div>
-            <svg
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              className="w-4 h-4 text-muted-foreground group-open:rotate-180 transition-transform"
-            >
-              <path
-                fillRule="evenodd"
-                d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                clipRule="evenodd"
-              />
-            </svg>
+            <ChevronIcon />
           </summary>
           <div className="border-t border-border">
             <ClassBrowser
@@ -254,17 +337,7 @@ export function ReferenceTab({
                 {RENDERER_PROFILES.length} renderers · look + theming support
               </span>
             </div>
-            <svg
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              className="w-4 h-4 text-muted-foreground group-open:rotate-180 transition-transform"
-            >
-              <path
-                fillRule="evenodd"
-                d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                clipRule="evenodd"
-              />
-            </svg>
+            <ChevronIcon />
           </summary>
           <div className="border-t border-border overflow-x-auto">
             <table className="w-full text-[10px] border-collapse min-w-[640px]">
@@ -365,6 +438,186 @@ export function ReferenceTab({
           </div>
         </details>
 
+        {/* ── Use in… Distribution Center ──────────────────────────────────── */}
+        <details
+          className="group border-b border-border"
+          open={openRefSection === "distribute"}
+          onToggle={(e) =>
+            handleRefSectionToggle("distribute", (e.currentTarget as HTMLDetailsElement).open)
+          }
+        >
+          <summary className="flex items-center justify-between px-4 py-2.5 cursor-pointer list-none hover:bg-muted/40 transition-colors select-none">
+            <div className="flex items-center gap-2 flex-wrap">
+              {/* share / export icon */}
+              <svg
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                className="w-3.5 h-3.5 text-muted-foreground shrink-0"
+              >
+                <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
+              </svg>
+              <span className="text-xs font-medium text-foreground">Use in…</span>
+              <span className="text-[10px] text-muted-foreground">
+                {RENDERER_PROFILES.length} destinations · copy formatted export code
+              </span>
+              {rendererTarget && openRefSection !== "distribute" && (
+                <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+                  {RENDERER_PROFILES.find((r) => r.id === rendererTarget)?.shortName ??
+                    rendererTarget}
+                </span>
+              )}
+            </div>
+            <ChevronIcon />
+          </summary>
+
+          <div className="border-t border-border">
+            {/* ── Profile share link shortcut ─────────────────────────────── */}
+            <div className="px-4 py-3 flex items-start justify-between gap-3 border-b border-border bg-muted/20">
+              <div className="min-w-0">
+                <p className="text-xs font-medium text-foreground">Share this profile</p>
+                <p className="text-[10px] text-muted-foreground leading-relaxed mt-0.5">
+                  Encode the full theme (palette, renderer, format) in a URL.
+                  <br />
+                  Anyone with the link can import it in one click.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={handleClickShareLink}
+                disabled={!onCopyShareLink}
+                aria-label="Copy profile share link to clipboard"
+                className={`shrink-0 flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1.5 rounded border transition-colors ${
+                  shareLinked
+                    ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30"
+                    : onCopyShareLink
+                      ? "bg-primary/10 text-primary border-primary/20 hover:bg-primary/20"
+                      : "bg-muted text-muted-foreground border-border cursor-not-allowed opacity-50"
+                }`}
+              >
+                {shareLinked ? (
+                  <>
+                    <CheckIcon className="w-3 h-3" />
+                    Copied!
+                  </>
+                ) : (
+                  <>
+                    <svg viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3">
+                      <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
+                    </svg>
+                    Copy link
+                  </>
+                )}
+              </button>
+            </div>
+
+            {/* ── Destination cards ───────────────────────────────────────── */}
+            <div className="divide-y divide-border/50">
+              {RENDERER_PROFILES.map((renderer) => {
+                const isSelected = renderer.id === rendererTarget;
+                const isCopied = copiedForRenderer === renderer.id;
+                // Partial-support renderers: always use init-directive (safer).
+                // Full-support renderers: respect the user's current setting.
+                const recFormat: "init-directive" | "frontmatter" =
+                  renderer.initDirectiveSupport === "partial" ? "init-directive" : outputFormat;
+                const recFormatLabel =
+                  recFormat === "frontmatter" ? "YAML frontmatter" : "%%{init}%%";
+                const isPartial = renderer.initDirectiveSupport === "partial";
+
+                return (
+                  <div
+                    key={renderer.id}
+                    className={`px-4 py-2.5 flex items-center gap-3 transition-colors ${
+                      isSelected ? "bg-primary/5" : "hover:bg-muted/20"
+                    }`}
+                  >
+                    {/* Selected-renderer indicator dot */}
+                    <div className="w-2 shrink-0 flex justify-center">
+                      {isSelected && (
+                        <span
+                          className="block w-1.5 h-1.5 rounded-full bg-primary"
+                          aria-label="Currently selected renderer"
+                        />
+                      )}
+                    </div>
+
+                    {/* Destination info */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5 flex-wrap mb-0.5">
+                        <a
+                          href={renderer.url}
+                          target="_blank"
+                          rel="noreferrer noopener"
+                          className={`text-xs font-medium transition-colors hover:text-primary ${
+                            isSelected ? "text-primary" : "text-foreground"
+                          }`}
+                        >
+                          {renderer.shortName}
+                        </a>
+                        <SupportBadge support={renderer.initDirectiveSupport} />
+                        <span className="text-[10px] font-mono text-muted-foreground/60">
+                          {recFormatLabel}
+                        </span>
+                      </div>
+                      {isPartial && (
+                        <p className="text-[10px] text-amber-600 dark:text-amber-400 leading-snug">
+                          %%{"{init}"}%% preferred — partial theme variable support
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      {onCopyForRenderer && (
+                        <button
+                          type="button"
+                          onClick={() => handleDistributeCopy(renderer.id)}
+                          aria-label={`Copy ${recFormatLabel} code for ${renderer.shortName}`}
+                          title={`Copy themed diagram code formatted for ${renderer.displayName}`}
+                          className={`flex items-center gap-1 text-[10px] font-medium px-2 py-1 rounded border transition-colors ${
+                            isCopied
+                              ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30"
+                              : "bg-muted hover:bg-muted/70 text-muted-foreground hover:text-foreground border-border/50"
+                          }`}
+                        >
+                          {isCopied ? (
+                            <>
+                              <CheckIcon />
+                              Copied
+                            </>
+                          ) : (
+                            <>
+                              <CopyIcon />
+                              Copy
+                            </>
+                          )}
+                        </button>
+                      )}
+                      <a
+                        href={renderer.sourceUrl}
+                        target="_blank"
+                        rel="noreferrer noopener"
+                        aria-label={`${renderer.shortName} Mermaid documentation`}
+                        title={`Mermaid documentation for ${renderer.displayName}`}
+                        className="text-muted-foreground/40 hover:text-primary transition-colors"
+                      >
+                        <ExternalLinkIcon className="w-3.5 h-3.5" />
+                      </a>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Footer note */}
+            <p className="px-4 py-2 text-[9px] text-muted-foreground/40 border-t border-border/50">
+              Copy buttons produce the themed export code (%%{"{init}"}%% directive or YAML
+              frontmatter + diagram source) ready to paste into the target platform. Format
+              selection follows your current Output Format setting, except for renderers with
+              partial support where %%{"{init}"}%% is always used.
+            </p>
+          </div>
+        </details>
+
         <div className="border-b border-border">
           <DiagramInventory
             embedded
@@ -396,17 +649,7 @@ export function ReferenceTab({
                 {PUBLIC_MERMAID_SKILLS.length} skills · publicly installable
               </span>
             </div>
-            <svg
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              className="w-4 h-4 text-muted-foreground group-open:rotate-180 transition-transform"
-            >
-              <path
-                fillRule="evenodd"
-                d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                clipRule="evenodd"
-              />
-            </svg>
+            <ChevronIcon />
           </summary>
 
           <div className="border-t border-border divide-y divide-border/50">
@@ -456,10 +699,7 @@ export function ReferenceTab({
                     className="shrink-0 mt-0.5 text-muted-foreground/50 hover:text-primary transition-colors"
                     title="View SKILL.md on GitHub"
                   >
-                    <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5">
-                      <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
-                      <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
-                    </svg>
+                    <ExternalLinkIcon className="w-3.5 h-3.5" />
                   </a>
                 </div>
               );
@@ -476,10 +716,7 @@ export function ReferenceTab({
           rel="noreferrer noopener"
           className="text-xs text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1"
         >
-          <svg viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3">
-            <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
-            <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
-          </svg>
+          <ExternalLinkIcon className="w-3 h-3" />
           Visual Language Diagram Taxonomy
         </a>
         <a

@@ -41,7 +41,14 @@ import {
   decodeShareableTheme,
   type ShareablePayload,
 } from "@/lib/persistence";
-import { type MermaidLook, CLASSDEF_CAPABLE_FAMILIES, getClassDefs } from "@/lib/theme-engine";
+import {
+  type MermaidLook,
+  type AdvancedMermaidConfig,
+  CLASSDEF_CAPABLE_FAMILIES,
+  getClassDefs,
+  generateThemedCode,
+} from "@/lib/theme-engine";
+import { getRendererById } from "@/data/renderer-parity";
 import {
   type MyThemeSlot,
   type MyThemeSlotId,
@@ -1113,6 +1120,58 @@ export function AppShell() {
     [myThemeSlots, rendererTarget, outputFormat, strokeWidth, advancedMermaidConfig]
   );
 
+  /** Copy the active slot's share link (no-arg wrapper used by ReferenceTab). */
+  const handleReferenceShareLink = useCallback(async () => {
+    if (activeMyThemeSlotId) {
+      await handleCopyProfileShareLink(activeMyThemeSlotId);
+    }
+  }, [activeMyThemeSlotId, handleCopyProfileShareLink]);
+
+  /**
+   * Generate themed export code formatted for a specific renderer and copy it
+   * to the clipboard.  Renderers with partial %%{init}%% support always receive
+   * the init-directive format regardless of the user's current outputFormat
+   * setting; fully-supported renderers respect the user's preference.
+   */
+  const handleCopyForRenderer = useCallback(
+    async (rendererId: string) => {
+      const renderer = getRendererById(rendererId);
+      if (!renderer) return;
+      // Renderers with partial init-directive support: force init-directive.
+      // Full-support renderers: respect the user's chosen output format.
+      const format: "init-directive" | "frontmatter" =
+        renderer.initDirectiveSupport === "partial" ? "init-directive" : outputFormat;
+      const code = generateThemedCode(inputCode, {
+        palette: selectedPalette,
+        diagramFamily: detectDiagram(inputCode).family,
+        outputFormat: format,
+        look: effectiveLook,
+        fontSize: effectiveFontSize,
+        typography: effectiveTypography,
+        advancedMermaidConfig: advancedMermaidConfig as AdvancedMermaidConfig,
+        includeMetaComments,
+        includeBadge,
+        customThemeName: effectiveCustomThemeName,
+        strokeWidth,
+      });
+      await writeToClipboard(code);
+      showToast(`Copied for ${renderer.shortName}`);
+    },
+    [
+      inputCode,
+      selectedPalette,
+      effectiveLook,
+      effectiveFontSize,
+      effectiveTypography,
+      advancedMermaidConfig,
+      includeMetaComments,
+      includeBadge,
+      effectiveCustomThemeName,
+      outputFormat,
+      strokeWidth,
+    ]
+  );
+
   const handleRenameSlotById = useCallback((id: string, newName: string) => {
     const trimmed = newName.trim();
     if (!trimmed) return;
@@ -1922,6 +1981,10 @@ export function AppShell() {
                   onImportAsNewSlot={handleImportAsNewSlot}
                   onShowToast={showToast}
                   onShowProfileDetails={handleShowProfileDetails}
+                  rendererTarget={rendererTarget}
+                  outputFormat={outputFormat}
+                  onCopyForRenderer={handleCopyForRenderer}
+                  onCopyShareLink={activeMyThemeSlotId ? handleReferenceShareLink : undefined}
                 />
               )}
               {activeTab === "extract" && (
