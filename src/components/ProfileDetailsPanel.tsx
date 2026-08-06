@@ -52,6 +52,8 @@ export interface ProfileDetailsPanelProps {
   onDuplicate: (id: string) => void;
   onDelete: (id: string) => void;
   onShowToast: (msg: ReactNode) => void;
+  /** Copy a shareable URL for this profile to the clipboard. */
+  onCopyShareLink?: (id: string) => void;
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -103,16 +105,19 @@ export function ProfileDetailsPanel({
   onDuplicate,
   onDelete,
   onShowToast,
+  onCopyShareLink,
 }: ProfileDetailsPanelProps) {
   const [draftName, setDraftName] = useState("");
   const [isEditingName, setIsEditingName] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+  const [copiedShareLink, setCopiedShareLink] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const nameInputRef = useRef<HTMLInputElement>(null);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
+  const copyShareTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   /**
    * The element that had focus immediately before the panel opened.
    * Used to restore focus on close.
@@ -426,6 +431,62 @@ export function ProfileDetailsPanel({
         {/* ── Actions / Delete confirmation ────────────────────────────────── */}
         {!confirmingDelete ? (
           <div className="px-4 pb-4 pt-2 border-t border-border/60">
+            {/* Copy Share Link — full-width, primary action */}
+            {onCopyShareLink && (
+              <button
+                type="button"
+                onClick={() => {
+                  if (copyShareTimerRef.current) clearTimeout(copyShareTimerRef.current);
+                  onCopyShareLink(slot.id);
+                  setCopiedShareLink(true);
+                  copyShareTimerRef.current = setTimeout(() => setCopiedShareLink(false), 2000);
+                }}
+                className={`w-full flex items-center justify-center gap-1.5 text-xs px-3 py-2 rounded-md border font-medium transition-all mt-3 ${
+                  copiedShareLink
+                    ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                    : "border-primary/30 bg-primary/5 hover:bg-primary/15 hover:border-primary/50 text-primary"
+                }`}
+                aria-label="Copy share link for this profile"
+              >
+                {copiedShareLink ? (
+                  <>
+                    <svg
+                      viewBox="0 0 16 16"
+                      fill="none"
+                      className="w-3.5 h-3.5 shrink-0"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M3 8l4 4 6-6"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                    Link Copied!
+                  </>
+                ) : (
+                  <>
+                    <svg
+                      viewBox="0 0 16 16"
+                      fill="none"
+                      className="w-3.5 h-3.5 shrink-0"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M10 3H6a1 1 0 00-1 1v8a1 1 0 001 1h4M10 3l3 3-3 3M10 3v3h3M13 6v6a1 1 0 01-1 1h-2"
+                        stroke="currentColor"
+                        strokeWidth="1.2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                    Copy Share Link
+                  </>
+                )}
+              </button>
+            )}
             <div className="grid grid-cols-2 gap-2 pt-3">
               {/* Export */}
               <button

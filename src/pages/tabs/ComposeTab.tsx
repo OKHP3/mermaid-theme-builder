@@ -189,6 +189,7 @@ interface ComposeTabProps {
   onMoveMyThemeSlotUp?: (id: string) => void;
   onMoveMyThemeSlotDown?: (id: string) => void;
   onShowProfileDetails?: (id: string) => void;
+  onCopyProfileShareLink?: (id: string) => void;
   customThemeNamePlaceholder?: string;
   advancedMermaidConfig?: import("@/lib/theme-engine").AdvancedMermaidConfig;
   onAdvancedMermaidConfigChange?: (v: import("@/lib/theme-engine").AdvancedMermaidConfig) => void;
@@ -256,6 +257,7 @@ export function ComposeTab({
   onMoveMyThemeSlotUp,
   onMoveMyThemeSlotDown,
   onShowProfileDetails,
+  onCopyProfileShareLink,
   customThemeNamePlaceholder,
   advancedMermaidConfig = {},
   onAdvancedMermaidConfigChange,
@@ -1386,6 +1388,14 @@ export function ComposeTab({
                   >
                     Export to JSON
                   </button>
+                  {activeMyThemeSlotId && onCopyProfileShareLink && (
+                    <button
+                      onClick={() => onCopyProfileShareLink(activeMyThemeSlotId)}
+                      className="col-span-2 text-xs px-2 py-1.5 rounded-md border border-primary/30 bg-primary/5 hover:bg-primary/10 hover:border-primary/50 text-primary font-medium transition-all"
+                    >
+                      Copy Profile Share Link
+                    </button>
+                  )}
                 </div>
                 {userPalettes.length > 0 && (
                   <div className="mt-2 flex flex-col gap-0.5">

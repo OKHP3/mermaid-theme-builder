@@ -60,6 +60,13 @@ import {
   type GovernanceProfile,
 } from "@/lib/governance-profile";
 import { ProfileDetailsPanel } from "@/components/ProfileDetailsPanel";
+import {
+  buildProfileShareUrl,
+  clearProfileShareToken,
+  decodeProfileToken,
+  readProfileShareToken,
+  writeToClipboard,
+} from "@/lib/profile-share";
 import { detectDiagram } from "@/lib/detector";
 import { type TypographySettings, DEFAULT_TYPOGRAPHY } from "@/lib/typography";
 import {
@@ -359,6 +366,7 @@ export function AppShell() {
     import("@/lib/theme-engine").AdvancedMermaidConfig
   >({});
   const [profileDetailSlotId, setProfileDetailSlotId] = useState<string | null>(null);
+  const [profileShareError, setProfileShareError] = useState<string | null>(null);
 
   const handleNavigateToParityMatrix = useCallback(() => {
     setActiveTab("reference");
@@ -555,6 +563,67 @@ export function AppShell() {
         setAdvancedMermaidConfig(clean);
       }
     }
+    // ── Profile share token (applied after persisted state) ────────────────
+    // Uses ?profile=<base64url> — distinct from the legacy ?theme= palette param.
+    const profileToken = readProfileShareToken();
+    if (profileToken) {
+      clearProfileShareToken();
+      const profileResult = decodeProfileToken(profileToken);
+      if (!profileResult.ok) {
+        setProfileShareError(profileResult.error);
+      } else {
+        const { profile, warnings } = profileResult;
+        // Build a slot from the profile; assign to the first available slot number,
+        // or replace slot 1 when all three are taken.
+        const existingSlots = Array.isArray(persisted?.myThemeSlots)
+          ? (persisted!.myThemeSlots as unknown[]).filter(
+              (s): s is MyThemeSlot =>
+                typeof s === "object" &&
+                s !== null &&
+                isMyThemeSlotId((s as MyThemeSlot).id) &&
+                Array.isArray((s as MyThemeSlot).colors)
+            )
+          : [createDefaultMyThemeSlot(1, BRAND_PALETTES[0].colors)];
+        const usedNums = new Set(
+          existingSlots.map((s) => Number((s as MyThemeSlot).id.replace("my-theme-", "")))
+        );
+        const slotNum = ([1, 2, 3] as const).find((n) => !usedNums.has(n)) ?? 1;
+        const targetId = `my-theme-${slotNum}` as MyThemeSlotId;
+        const profileSlot = profileToSlot(profile);
+        const newSlot: MyThemeSlot = { ...profileSlot, id: targetId };
+        const updatedSlots = [
+          ...existingSlots.filter((s) => (s as MyThemeSlot).id !== targetId),
+          newSlot,
+        ];
+        setMyThemeSlots(updatedSlots);
+        setActiveMyThemeSlotId(targetId);
+        setRendererTarget(profile.rendererTarget);
+        if (profile.outputFormat) setOutputFormat(profile.outputFormat);
+        // Apply app-level render settings unconditionally so a recipient's
+        // previously-persisted values cannot contaminate the imported profile.
+        // When a field is absent in the profile, we reset to the default
+        // (undefined / empty object) rather than keeping whatever the
+        // recipient had before.
+        setStrokeWidth(profile.strokeWidth); // undefined → reset to default
+        {
+          // Mirror applyAdvancedConfigFromProfile: only accept known typed
+          // fields; an absent advancedMermaidConfig explicitly resets to {}.
+          const amc = profile.advancedMermaidConfig;
+          const cleanAmc: import("@/lib/theme-engine").AdvancedMermaidConfig = {};
+          if (amc && typeof amc === "object") {
+            if (typeof amc.htmlLabels === "boolean") cleanAmc.htmlLabels = amc.htmlLabels;
+            if (typeof amc.deterministicIds === "boolean")
+              cleanAmc.deterministicIds = amc.deterministicIds;
+            if (typeof amc.deterministicIDSeed === "string")
+              cleanAmc.deterministicIDSeed = amc.deterministicIDSeed;
+          }
+          setAdvancedMermaidConfig(cleanAmc);
+        }
+        const warnNote = warnings.length > 0 ? ` (${warnings.length} advisory)` : "";
+        setToast(`Loaded shared profile: "${profile.name}"${warnNote}`);
+      }
+    }
+
     setHydrated(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -968,6 +1037,23 @@ export function AppShell() {
   const handleShowProfileDetails = useCallback((id: string) => {
     setProfileDetailSlotId(id);
   }, []);
+
+  const handleCopyProfileShareLink = useCallback(
+    async (slotId: string) => {
+      const slot = myThemeSlots.find((s) => s.id === slotId);
+      if (!slot) return;
+      const profile = migrateSlotToProfile(slot, {
+        rendererTarget,
+        outputFormat,
+        strokeWidth,
+        advancedMermaidConfig: advancedMermaidConfig as Record<string, unknown>,
+      });
+      const url = buildProfileShareUrl(profile);
+      await writeToClipboard(url);
+      setToast("Profile share link copied to clipboard!");
+    },
+    [myThemeSlots, rendererTarget, outputFormat, strokeWidth, advancedMermaidConfig]
+  );
 
   const handleRenameSlotById = useCallback((id: string, newName: string) => {
     const trimmed = newName.trim();
@@ -1717,6 +1803,7 @@ export function AppShell() {
               onMoveMyThemeSlotUp={handleMoveMyThemeSlotUp}
               onMoveMyThemeSlotDown={handleMoveMyThemeSlotDown}
               onShowProfileDetails={handleShowProfileDetails}
+              onCopyProfileShareLink={handleCopyProfileShareLink}
               customThemeNamePlaceholder={
                 activeMyThemeSlotId ? slotDisplayName(activeMyThemeSlotId) : undefined
               }
@@ -1904,7 +1991,60 @@ export function AppShell() {
         onDuplicate={handleDuplicateMyThemeSlot}
         onDelete={handleDeleteMyThemeSlot}
         onShowToast={showToast}
+        onCopyShareLink={handleCopyProfileShareLink}
       />
+
+      {/* Profile share-link error banner — shown when ?profile= token is invalid */}
+      {profileShareError && (
+        <div
+          role="alert"
+          className="fixed top-0 left-0 right-0 z-50 flex items-start justify-between gap-3 px-4 py-3 bg-destructive/10 border-b border-destructive/30"
+        >
+          <div className="flex items-center gap-2 min-w-0">
+            <svg
+              viewBox="0 0 16 16"
+              fill="none"
+              className="w-4 h-4 shrink-0 text-destructive"
+              aria-hidden="true"
+            >
+              <path
+                d="M8 2L1.5 13h13L8 2z"
+                stroke="currentColor"
+                strokeWidth="1.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M8 7v3M8 11.5v.5"
+                stroke="currentColor"
+                strokeWidth="1.2"
+                strokeLinecap="round"
+              />
+            </svg>
+            <div className="min-w-0">
+              <p className="text-xs font-semibold text-destructive">
+                Could not load shared profile
+              </p>
+              <p className="text-[10px] text-destructive/70 truncate">{profileShareError}</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => setProfileShareError(null)}
+            className="shrink-0 p-1 rounded text-destructive/50 hover:text-destructive transition-colors"
+            aria-label="Dismiss error"
+          >
+            <svg viewBox="0 0 16 16" fill="none" className="w-3.5 h-3.5" aria-hidden="true">
+              <path
+                d="M4 4l8 8M12 4l-8 8"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+              />
+            </svg>
+          </button>
+        </div>
+      )}
 
       {toast && (
         <div
