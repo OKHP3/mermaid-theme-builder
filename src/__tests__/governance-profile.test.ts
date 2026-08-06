@@ -15,6 +15,7 @@ import {
   duplicateGovernanceProfile,
   migrateSlotToProfile,
   parseGovernanceProfile,
+  validateGovernanceProfile,
   profileToPortableJson,
   profileToSlot,
   buildProfileHeaderComment,
@@ -335,6 +336,137 @@ describe("profileToPortableJson + parseGovernanceProfile round-trip", () => {
     expect(result.ok).toBe(true);
     if (!result.ok) return;
     expect(result.profile.outputFormat).toBe("frontmatter");
+  });
+});
+
+// ─── parseGovernanceProfile — schema version handling ────────────────────────
+
+describe("parseGovernanceProfile — schema version handling", () => {
+  function makePortableJson(overrides: Record<string, unknown> = {}): string {
+    const profile = createGovernanceProfile(
+      { name: "Version Test", colors: TEST_COLORS },
+      FIXED_NOW
+    );
+    const parsed = JSON.parse(profileToPortableJson(profile)) as Record<string, unknown>;
+    return JSON.stringify({ ...parsed, ...overrides });
+  }
+
+  it("emits no version warning for the current schemaVersion", () => {
+    const json = makePortableJson({ schemaVersion: GOVERNANCE_PROFILE_SCHEMA_VERSION });
+    const result = parseGovernanceProfile(json);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    const hasVersionWarning = result.warnings.some(
+      (w) => w.toLowerCase().includes("schema") || w.toLowerCase().includes("version")
+    );
+    expect(hasVersionWarning).toBe(false);
+  });
+
+  it("warns (but succeeds) when schemaVersion is newer than current", () => {
+    const json = makePortableJson({ schemaVersion: GOVERNANCE_PROFILE_SCHEMA_VERSION + 1 });
+    const result = parseGovernanceProfile(json);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.warnings.some((w) => w.includes("newer schema"))).toBe(true);
+    // Profile should still be applied — all known fields present
+    expect(result.profile.name).toBe("Version Test");
+    expect(result.profile.schemaVersion).toBe(GOVERNANCE_PROFILE_SCHEMA_VERSION);
+  });
+
+  it("warns (but succeeds) when schemaVersion is older than current", () => {
+    const json = makePortableJson({ schemaVersion: GOVERNANCE_PROFILE_SCHEMA_VERSION - 1 });
+    const result = parseGovernanceProfile(json);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.warnings.some((w) => w.includes("migrated"))).toBe(true);
+    expect(result.profile.schemaVersion).toBe(GOVERNANCE_PROFILE_SCHEMA_VERSION);
+  });
+
+  it("warns (but succeeds) when schemaVersion is absent", () => {
+    const json = makePortableJson({ schemaVersion: undefined });
+    // JSON.stringify drops undefined values — the field will be absent
+    const result = parseGovernanceProfile(json);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.warnings.some((w) => w.includes("no recognized schema version"))).toBe(true);
+  });
+
+  it("warns (but succeeds) for schemaVersion:1 — the pre-named-profile era", () => {
+    const json = makePortableJson({ schemaVersion: 1 });
+    const result = parseGovernanceProfile(json);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.warnings.some((w) => w.includes("migrated"))).toBe(true);
+  });
+
+  it("round-trip through export preserves schemaVersion at current value", () => {
+    const profile = createGovernanceProfile({ name: "RoundTrip", colors: TEST_COLORS }, FIXED_NOW);
+    const json = profileToPortableJson(profile);
+    const result = parseGovernanceProfile(json);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.profile.schemaVersion).toBe(GOVERNANCE_PROFILE_SCHEMA_VERSION);
+  });
+});
+
+// ─── validateGovernanceProfile ───────────────────────────────────────────────
+
+describe("validateGovernanceProfile", () => {
+  function makePortableJson(overrides: Record<string, unknown> = {}): string {
+    const profile = createGovernanceProfile(
+      { name: "Validate Test", colors: TEST_COLORS },
+      FIXED_NOW
+    );
+    const parsed = JSON.parse(profileToPortableJson(profile)) as Record<string, unknown>;
+    return JSON.stringify({ ...parsed, ...overrides });
+  }
+
+  it("returns valid:true for a well-formed current-version profile", () => {
+    const json = makePortableJson();
+    const result = validateGovernanceProfile(json);
+    expect(result.valid).toBe(true);
+    if (!result.valid) return;
+    expect(result.warnings).toHaveLength(0);
+  });
+
+  it("returns valid:true with warnings for a newer schemaVersion", () => {
+    const json = makePortableJson({ schemaVersion: GOVERNANCE_PROFILE_SCHEMA_VERSION + 5 });
+    const result = validateGovernanceProfile(json);
+    expect(result.valid).toBe(true);
+    if (!result.valid) return;
+    expect(result.warnings.length).toBeGreaterThan(0);
+  });
+
+  it("returns valid:false with errors for invalid JSON", () => {
+    const result = validateGovernanceProfile("{ broken json [");
+    expect(result.valid).toBe(false);
+    if (result.valid) return;
+    expect(result.errors.length).toBeGreaterThan(0);
+  });
+
+  it("returns valid:false with errors when 'type' field is wrong", () => {
+    const json = makePortableJson({ type: "wrong-type" });
+    const result = validateGovernanceProfile(json);
+    expect(result.valid).toBe(false);
+    if (result.valid) return;
+    expect(result.errors[0]).toContain("type");
+  });
+
+  it("returns valid:false with errors when 'colors' array is empty", () => {
+    const json = makePortableJson({ colors: [] });
+    const result = validateGovernanceProfile(json);
+    expect(result.valid).toBe(false);
+    if (result.valid) return;
+    expect(result.errors[0]).toContain("colors");
+  });
+
+  it("returns valid:true with a migration warning for missing schemaVersion", () => {
+    const base = JSON.parse(makePortableJson()) as Record<string, unknown>;
+    delete base.schemaVersion;
+    const result = validateGovernanceProfile(JSON.stringify(base));
+    expect(result.valid).toBe(true);
+    if (!result.valid) return;
+    expect(result.warnings.some((w) => w.includes("no recognized schema version"))).toBe(true);
   });
 });
 

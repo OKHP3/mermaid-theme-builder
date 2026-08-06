@@ -275,11 +275,35 @@ export function parseGovernanceProfile(
         error: `Missing or wrong 'type' field — expected '${GOVERNANCE_PROFILE_TYPE}'.`,
       };
     }
+    const warnings: string[] = [];
+
+    // ── Schema version check ────────────────────────────────────────────────
+    // Non-fatal: newer / unknown versions are accepted with a warning so
+    // users can still recover as much data as possible.
+    if (typeof data.schemaVersion === "number") {
+      if (data.schemaVersion > GOVERNANCE_PROFILE_SCHEMA_VERSION) {
+        warnings.push(
+          `Profile was created with a newer schema (v${data.schemaVersion}). ` +
+            `This app understands up to v${GOVERNANCE_PROFILE_SCHEMA_VERSION} — ` +
+            `some fields may not be applied correctly.`
+        );
+      } else if (data.schemaVersion < GOVERNANCE_PROFILE_SCHEMA_VERSION) {
+        warnings.push(
+          `Profile schema migrated from v${data.schemaVersion} to ` +
+            `v${GOVERNANCE_PROFILE_SCHEMA_VERSION} — all known fields preserved.`
+        );
+      }
+      // schemaVersion === GOVERNANCE_PROFILE_SCHEMA_VERSION: no warning needed.
+    } else {
+      // Missing schemaVersion — pre-schema or third-party export; warn and continue.
+      warnings.push(
+        "Profile has no recognized schema version — attempting import with field defaults."
+      );
+    }
+
     if (!Array.isArray(data.colors) || data.colors.length === 0) {
       return { ok: false, error: "Missing or empty 'colors' array." };
     }
-
-    const warnings: string[] = [];
 
     // Validate colors
     const colors: ThemeColor[] = data.colors.map((c: unknown) => {
@@ -350,6 +374,27 @@ export function parseGovernanceProfile(
   } catch (err) {
     return { ok: false, error: err instanceof Error ? err.message : String(err) };
   }
+}
+
+/**
+ * Validate a raw JSON string as a GovernanceProfile without applying it to
+ * app state. Useful for pre-flight checks and UI feedback before import.
+ *
+ * Returns `{ valid: true, warnings }` when the JSON is a parseable profile
+ * (including cases where version migration was applied or fields were defaulted),
+ * or `{ valid: false, errors }` when the JSON is structurally unrecoverable.
+ *
+ * This is a thin wrapper around `parseGovernanceProfile` with a simpler result
+ * shape for callers that only need a validity signal.
+ */
+export function validateGovernanceProfile(
+  json: string
+): { valid: true; warnings: string[] } | { valid: false; errors: string[] } {
+  const result = parseGovernanceProfile(json);
+  if (result.ok) {
+    return { valid: true, warnings: result.warnings };
+  }
+  return { valid: false, errors: [result.error] };
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────

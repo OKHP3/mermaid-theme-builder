@@ -8,7 +8,7 @@ export default defineConfig({
     environment: "node",
     setupFiles: ["src/__tests__/setup/storage-isolation.ts"],
     clearMocks: true,
-    restoreMocks: true,
+    testTimeout: 10000,
     environmentMatchGlobs: [
       ["src/__tests__/applyTab.test.ts", "happy-dom"],
       ["src/__tests__/exporters-browser.test.ts", "happy-dom"],
