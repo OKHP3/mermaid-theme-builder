@@ -107,7 +107,9 @@ async function openExamplesTab(page: Page): Promise<void> {
 
 async function expectVisibleInExamplesSidebar(page: Page, exampleId: string): Promise<void> {
   const isVisibleWithinSidebar = await page.evaluate((id: string) => {
-    const sidebar = document.querySelector<HTMLDivElement>("div.overflow-y-auto:has([data-example-id])");
+    const sidebar = document.querySelector<HTMLDivElement>(
+      "div.overflow-y-auto:has([data-example-id])"
+    );
     const button = document.querySelector<HTMLElement>(`[data-example-id="${CSS.escape(id)}"]`);
     if (!sidebar || !button) return false;
 
@@ -122,9 +124,10 @@ async function expectVisibleInExamplesSidebar(page: Page, exampleId: string): Pr
     );
   }, exampleId);
 
-  expect(isVisibleWithinSidebar, `Expected ${exampleId} to be visible within the Examples sidebar.`).toBe(
-    true
-  );
+  expect(
+    isVisibleWithinSidebar,
+    `Expected ${exampleId} to be visible within the Examples sidebar.`
+  ).toBe(true);
 }
 
 // ---------------------------------------------------------------------------

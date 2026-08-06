@@ -177,7 +177,10 @@ test.describe("ClassBrowser preview panel - color-mix opacity rendering", () => 
       return window.getComputedStyle(btn).color;
     });
 
-    expect(colorStr, "Could not find the copy classDefs button inside the preview panel.").toBeTruthy();
+    expect(
+      colorStr,
+      "Could not find the copy classDefs button inside the preview panel."
+    ).toBeTruthy();
 
     const alpha = parseAlpha(colorStr!);
     expect(alpha, `Could not parse alpha from "${colorStr}"`).not.toBeNull();
@@ -291,7 +294,10 @@ test.describe("ClassBrowser toggle buttons - All/Used mode opacity", () => {
       return window.getComputedStyle(btn).color;
     });
 
-    expect(colorStr, "Could not find the Used toggle button after switching to All mode.").toBeTruthy();
+    expect(
+      colorStr,
+      "Could not find the Used toggle button after switching to All mode."
+    ).toBeTruthy();
 
     const alpha = parseAlpha(colorStr!);
     expect(alpha, `Could not parse alpha from computed color "${colorStr}".`).not.toBeNull();

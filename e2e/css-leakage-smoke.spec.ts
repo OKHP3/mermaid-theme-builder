@@ -101,7 +101,11 @@ async function openExamplesTab(page: Page): Promise<void> {
  * We check visibility first so we don't accidentally re-collapse an already-
  * expanded section (the toggle is a simple open/close).
  */
-async function expandSectionIfNeeded(page: Page, itemId: string, sectionLabel: string): Promise<void> {
+async function expandSectionIfNeeded(
+  page: Page,
+  itemId: string,
+  sectionLabel: string
+): Promise<void> {
   const item = page.locator(`[data-example-id="${itemId}"]`);
   const visible = await item.isVisible();
   if (!visible) {
@@ -191,9 +195,7 @@ async function selectGanttAndWait(page: Page): Promise<void> {
   // Phase 1 — wait for the React label to update to confirm the click registered.
   await page.waitForFunction(
     () =>
-      Array.from(document.querySelectorAll("span")).some((el) =>
-        el.textContent?.includes("Gantt")
-      ),
+      Array.from(document.querySelectorAll("span")).some((el) => el.textContent?.includes("Gantt")),
     undefined,
     { timeout: 5_000 }
   );
@@ -237,9 +239,7 @@ async function selectVennAndWait(page: Page): Promise<void> {
   // Phase 1 — wait for the React label to update to confirm the click registered.
   await page.waitForFunction(
     () =>
-      Array.from(document.querySelectorAll("span")).some((el) =>
-        el.textContent?.includes("Venn")
-      ),
+      Array.from(document.querySelectorAll("span")).some((el) => el.textContent?.includes("Venn")),
     undefined,
     { timeout: 5_000 }
   );
