@@ -56,6 +56,7 @@ const FUNC_COLOR_JSON = JSON.stringify({
 async function openComposeAndImport(page: Page, json: string): Promise<void> {
   await page.addInitScript(() => {
     window.localStorage.clear();
+      localStorage.setItem("mtb.firstVisit", "true");
     window.sessionStorage.clear();
   });
   await page.goto("/");

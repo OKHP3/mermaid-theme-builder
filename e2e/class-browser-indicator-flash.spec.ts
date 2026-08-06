@@ -30,6 +30,7 @@ const DIAGRAM_WITH_ONE_USED_CLASS = `flowchart TD
 async function loadWithDiagram(page: Page, inputCode: string): Promise<void> {
   await page.addInitScript((code) => {
     window.localStorage.clear();
+      localStorage.setItem("mtb.firstVisit", "true");
     window.sessionStorage.clear();
     window.localStorage.setItem(
       "mtb.state.v1",

@@ -55,6 +55,7 @@ test("'See support details →' switches to Reference tab and reveals Renderer P
   await page.addInitScript(
     ({ key, value }: { key: string; value: string }) => {
       window.localStorage.clear();
+      localStorage.setItem("mtb.firstVisit", "true");
       window.sessionStorage.clear();
       window.localStorage.setItem(key, value);
     },
@@ -96,6 +97,7 @@ test("beta hint bar disappears when the preview picker switches to a non-beta di
   await page.addInitScript(
     ({ key, value }: { key: string; value: string }) => {
       window.localStorage.clear();
+      localStorage.setItem("mtb.firstVisit", "true");
       window.sessionStorage.clear();
       window.localStorage.setItem(key, value);
     },

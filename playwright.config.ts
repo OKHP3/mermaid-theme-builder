@@ -62,9 +62,20 @@ export default defineConfig({
     baseURL: process.env.PLAYWRIGHT_BASE_URL ?? PREVIEW_URL,
     actionTimeout: 15_000,
     trace: "on-first-retry",
-    // Start every test with empty localStorage so tab-persistence state from
-    // a previous run does not bleed into the next test.
-    storageState: { cookies: [], origins: [] },
+    // Start every test with the first-visit key pre-seeded so the route selector
+    // never blocks specs that do not explicitly test it.  Specs that call
+    // localStorage.clear() in their addInitScript MUST also re-set this key
+    // after the clear (or the selector will re-appear).  The route-selector.spec
+    // tests manage the key themselves via their seedState helper.
+    storageState: {
+      cookies: [],
+      origins: [
+        {
+          origin: "http://localhost:4173",
+          localStorage: [{ name: "mtb.firstVisit", value: "true" }],
+        },
+      ],
+    },
   },
   projects: [
     {

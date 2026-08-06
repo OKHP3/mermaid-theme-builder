@@ -18,6 +18,7 @@ test.describe("Settings menu keyboard navigation", () => {
   test.beforeEach(async ({ page }) => {
     await page.addInitScript(() => {
       window.localStorage.clear();
+      localStorage.setItem("mtb.firstVisit", "true");
       window.sessionStorage.clear();
     });
     await page.goto("/");

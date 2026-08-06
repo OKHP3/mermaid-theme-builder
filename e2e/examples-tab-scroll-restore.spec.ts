@@ -81,6 +81,7 @@ async function injectPersistedIdAndReload(page: Page, exampleId: string): Promis
   await page.addInitScript(
     ([key, value]: [string, string]) => {
       localStorage.clear();
+      localStorage.setItem("mtb.firstVisit", "true");
       sessionStorage.clear();
       localStorage.setItem(key, value);
     },
@@ -178,6 +179,7 @@ test("user click after fresh start does not auto-scroll the sidebar", async ({ p
   // restore will be queued (pendingScrollIdRef stays null throughout).
   await page.addInitScript(() => {
     localStorage.clear();
+      localStorage.setItem("mtb.firstVisit", "true");
     sessionStorage.clear();
   });
   await page.goto("/");
@@ -267,6 +269,7 @@ test("deep-link to #examples restores scroll when ExamplesTab mounts on first re
   await page.addInitScript(
     ([key, value]: [string, string]) => {
       localStorage.clear();
+      localStorage.setItem("mtb.firstVisit", "true");
       sessionStorage.clear();
       localStorage.setItem(key, value);
     },

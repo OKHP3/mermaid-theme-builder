@@ -29,6 +29,7 @@ test("browser Back restores Examples tab after Apply -> Examples -> Apply naviga
 }) => {
   await page.addInitScript(() => {
     window.localStorage.clear();
+      localStorage.setItem("mtb.firstVisit", "true");
     window.sessionStorage.clear();
   });
 
@@ -65,6 +66,7 @@ test("browser Back restores Examples tab after Apply -> Examples -> Apply naviga
 test("browser Forward restores Apply tab after Back -> Forward cycle", async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.clear();
+      localStorage.setItem("mtb.firstVisit", "true");
     window.sessionStorage.clear();
   });
 

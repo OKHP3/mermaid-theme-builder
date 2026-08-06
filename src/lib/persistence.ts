@@ -5,6 +5,44 @@ import type { MyThemeSlot } from "./my-theme-slots";
 export const PERSISTENCE_SCHEMA_VERSION = 1;
 const STORAGE_KEY = "mtb.state.v1";
 
+/**
+ * Dedicated key that is written *immediately* (outside the save-effect cycle)
+ * when the user completes or skips the first-use route selector.  Using a
+ * separate key avoids a timing race where the save effect might write the main
+ * state blob with `firstVisitComplete: true` before the hydration effect has
+ * had a chance to flip the React state to `false`.
+ */
+const FIRST_VISIT_KEY = "mtb.firstVisit";
+
+/**
+ * Returns `true` when the user has already completed (or skipped) the
+ * first-use route selector.  Treats storage errors as "returning user" so a
+ * broken storage never traps a user on the splash screen forever.
+ */
+export function hasCompletedFirstVisit(): boolean {
+  try {
+    if (typeof window === "undefined") return true;
+    return window.localStorage.getItem(FIRST_VISIT_KEY) === "true";
+  } catch {
+    return true;
+  }
+}
+
+/**
+ * Writes the first-visit completion flag synchronously so it is available on
+ * the *next* page load without waiting for the auto-save effect to flush the
+ * full state blob.
+ */
+export function markFirstVisitComplete(): void {
+  try {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(FIRST_VISIT_KEY, "true");
+    }
+  } catch {
+    // Storage unavailable — ignore; the selector will simply re-appear.
+  }
+}
+
 export interface PersistedState {
   schemaVersion: number;
   selectedPaletteId: string;
@@ -34,6 +72,14 @@ export interface PersistedState {
     deterministicIds?: boolean;
     deterministicIDSeed?: string;
   };
+  /**
+   * True once the user has dismissed the first-use route selector.
+   * Absent → treat as a new user (show the selector).
+   * Written as `true` on first route selection; never written as `false`.
+   */
+  firstVisitComplete?: boolean;
+  /** The last active tab; restored on returning visits. */
+  activeTab?: string;
 }
 
 export const DEFAULT_PERSISTED_STATE: Omit<PersistedState, "selectedPaletteId" | "inputCode"> = {
@@ -97,6 +143,9 @@ export function clearPersistedState(): void {
   try {
     storage.removeItem(STORAGE_KEY);
     storage.removeItem(PREVIEW_MODE_KEY);
+    // Also clear the first-visit flag so the route selector re-appears on the
+    // next page load — "clear all settings" means a full factory reset.
+    storage.removeItem(FIRST_VISIT_KEY);
   } catch (err) {
     console.warn("[mtb] failed to clear persisted state", err);
   }

@@ -68,6 +68,7 @@ async function fetchCompiledCss(page: Page): Promise<string> {
 async function loadApp(page: Page, options?: { inputCode?: string }): Promise<void> {
   await page.addInitScript((inputCode) => {
     window.localStorage.clear();
+      localStorage.setItem("mtb.firstVisit", "true");
     window.sessionStorage.clear();
     if (inputCode) {
       window.localStorage.setItem(

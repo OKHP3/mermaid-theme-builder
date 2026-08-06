@@ -116,6 +116,7 @@ async function openOnApplyTab(page: Page, state?: Record<string, unknown>): Prom
   await page.addInitScript(
     ({ key, value }: { key: string; value: string | null }) => {
       localStorage.clear();
+      localStorage.setItem("mtb.firstVisit", "true");
       sessionStorage.clear();
       if (value) localStorage.setItem(key, value);
     },

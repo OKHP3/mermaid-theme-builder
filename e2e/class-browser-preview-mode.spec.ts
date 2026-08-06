@@ -79,6 +79,7 @@ async function gotoReferenceWithSeededState(
       if (!sessionStorage.getItem("__mtb_seeded")) {
         sessionStorage.setItem("__mtb_seeded", "1");
         window.localStorage.clear();
+      localStorage.setItem("mtb.firstVisit", "true");
         window.localStorage.setItem(stateKey, stateVal);
         if (modeVal) window.localStorage.setItem(modeKey, modeVal);
       }

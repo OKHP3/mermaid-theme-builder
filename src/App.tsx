@@ -36,6 +36,8 @@ import {
   loadPersistedState,
   savePersistedState,
   clearPersistedState,
+  hasCompletedFirstVisit,
+  markFirstVisitComplete,
   decodeShareableTheme,
   type ShareablePayload,
 } from "@/lib/persistence";
@@ -67,6 +69,7 @@ import {
   readProfileShareToken,
   writeToClipboard,
 } from "@/lib/profile-share";
+import { RouteSelector } from "@/components/RouteSelector";
 import { detectDiagram } from "@/lib/detector";
 import { type TypographySettings, DEFAULT_TYPOGRAPHY } from "@/lib/typography";
 import {
@@ -318,12 +321,23 @@ function ThemeModeToggle({
 }
 
 export function AppShell() {
+  // Capture the URL hash at component-initialization time (render phase), before
+  // any useEffect can mutate window.location.hash (e.g. the hash-sync effect that
+  // writes activeTab back to the URL).  Used by the hydration effect to determine
+  // whether an inbound URL hash should bypass the first-use route selector.
+  const initialHashRef = useRef(window.location.hash.slice(1));
+
   const [activeTab, setActiveTab] = useState<AppTab>(() => {
     const h = window.location.hash.slice(1);
     const TABS: AppTab[] = ["apply", "compose", "examples", "reference", "extract"];
-    return TABS.includes(h as AppTab) ? (h as AppTab) : "compose";
+    return TABS.includes(h as AppTab) ? (h as AppTab) : "apply";
   });
   const [hydrated, setHydrated] = useState(false);
+  // True once the user has completed (or skipped) the first-use route selector.
+  // Initialised to `true` to avoid a flash on returning visits; set to `false`
+  // after hydration confirms the user is brand new (no persisted state, no
+  // share token, no URL-hash tab).
+  const [firstVisitComplete, setFirstVisitComplete] = useState(true);
   const [toast, setToast] = useState<ReactNode | null>(null);
   const [userPalettes, setUserPalettes] = useState<Palette[]>([]);
   const [selectedPaletteId, setSelectedPaletteId] = useState(BRAND_PALETTES[0].id);
@@ -368,6 +382,15 @@ export function AppShell() {
   const [profileDetailSlotId, setProfileDetailSlotId] = useState<string | null>(null);
   const [profileShareError, setProfileShareError] = useState<string | null>(null);
 
+  /** Called when the user picks a route on the first-use selector. */
+  const handleRouteSelect = useCallback((tab: AppTab) => {
+    setActiveTab(tab);
+    // Write the completion flag immediately so it persists even if the user
+    // closes before the auto-save effect has a chance to flush the full blob.
+    markFirstVisitComplete();
+    setFirstVisitComplete(true);
+  }, []);
+
   const handleNavigateToParityMatrix = useCallback(() => {
     setActiveTab("reference");
     setOpenParityMatrix(true);
@@ -402,6 +425,12 @@ export function AppShell() {
 
   // Hydrate from URL share token (highest priority) or localStorage on mount.
   useEffect(() => {
+    const TABS: AppTab[] = ["apply", "compose", "examples", "reference", "extract"];
+    // Use the hash captured at render time so the hash-sync effect (which runs
+    // before this effect and writes activeTab back to window.location.hash) does
+    // not falsely make every fresh load look like a URL-hash navigation.
+    const hasUrlTab = TABS.includes(initialHashRef.current as AppTab);
+
     let didApplyShare = false;
     const share = readShareToken();
     if (share) {
@@ -562,6 +591,15 @@ export function AppShell() {
           clean.deterministicIDSeed = amc.deterministicIDSeed;
         setAdvancedMermaidConfig(clean);
       }
+      // Restore the last-visited tab for returning users — only when no URL
+      // hash tab is already directing the destination.
+      if (
+        !hasUrlTab &&
+        typeof persisted.activeTab === "string" &&
+        TABS.includes(persisted.activeTab as AppTab)
+      ) {
+        setActiveTab(persisted.activeTab as AppTab);
+      }
     }
     // ── Profile share token (applied after persisted state) ────────────────
     // Uses ?profile=<base64url> — distinct from the legacy ?theme= palette param.
@@ -624,13 +662,29 @@ export function AppShell() {
       }
     }
 
+    // ── New-user / returning-user detection ──────────────────────────────
+    // Show the route selector when the dedicated `mtb.firstVisit` key is
+    // absent (written immediately by handleRouteSelect/Skip — see below).
+    // This covers genuine new users, legacy users whose state pre-dates the
+    // selector, and users who closed before completing it on a prior visit.
+    // The selector is bypassed when an inbound URL hash, theme share token,
+    // or profile share token already implies a destination.
+    // `profileToken` was captured before clearProfileShareToken() was called,
+    // so `hadProfileToken` correctly reflects arrival state.
+    const hadProfileToken = !!profileToken;
+    if (!hasCompletedFirstVisit() && !hasUrlTab && !didApplyShare && !hadProfileToken) {
+      setFirstVisitComplete(false);
+    }
+
     setHydrated(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Auto-save to localStorage after hydration.
+  // Guard on `firstVisitComplete` so a new user who closes before picking a
+  // route doesn't get silently marked as a returning user on next visit.
   useEffect(() => {
-    if (!hydrated) return;
+    if (!hydrated || !firstVisitComplete) return;
     savePersistedState({
       schemaVersion: 1,
       selectedPaletteId,
@@ -653,9 +707,13 @@ export function AppShell() {
       outputFormat,
       strokeWidth,
       advancedMermaidConfig,
+      firstVisitComplete,
+      activeTab,
     });
   }, [
     hydrated,
+    firstVisitComplete,
+    activeTab,
     selectedPaletteId,
     customColors,
     includeMetaComments,
@@ -1634,6 +1692,7 @@ export function AppShell() {
         className="hidden md:flex border-b border-border bg-card/60 px-4 shrink-0 print-hide"
         role="tablist"
         aria-label="Mermaid Theme Builder sections"
+        hidden={hydrated && !firstVisitComplete}
         onKeyDown={(e) => {
           if (
             e.key !== "ArrowLeft" &&
@@ -1685,195 +1744,202 @@ export function AppShell() {
         tabIndex={-1}
         className="flex-1 md:overflow-hidden pb-20 md:pb-0 md:min-h-0 outline-none"
       >
-        {/* ApplyTab is always mounted so its local state (activeDiagramIdx,
+        {hydrated && !firstVisitComplete ? (
+          <RouteSelector onSelect={handleRouteSelect} />
+        ) : (
+          <>
+            {/* ApplyTab is always mounted so its local state (activeDiagramIdx,
             showColorEditor, textareaExpanded, familyOverride, etc.) survives
             tab switches. It is visually hidden via the HTML `hidden` attribute
             when another tab is active. */}
-        <div
-          role="tabpanel"
-          id="tabpanel-apply"
-          aria-label="Apply"
-          tabIndex={-1}
-          className="md:h-full"
-          hidden={activeTab !== "apply"}
-        >
-          <ApplyTab
-            selectedPalette={selectedPalette}
-            selectedPaletteId={selectedPaletteId}
-            onSelectPalette={handleSelectPalette}
-            customColors={customColors}
-            onColorChange={handleColorChange}
-            onResetPalette={handleResetPalette}
-            onResetColor={handleResetColor}
-            hasCustomizations={hasCustomizations}
-            inputCode={inputCode}
-            onInputChange={setInputCode}
-            includeMetaComments={includeMetaComments}
-            includeBadge={includeBadge}
-            effectiveThemeName={effectiveThemeName}
-            onSwitchTab={setActiveTab}
-            onExtractTheme={handleExtractFromCode}
-            userPalettes={userPalettes}
-            onShowToast={showToast}
-            recentPaletteIds={recentPaletteIds}
-            look={effectiveLook}
-            onLookChange={handleLookChange}
-            fontSize={effectiveFontSize}
-            onFontSizeChange={handleFontSizeChange}
-            typography={effectiveTypography}
-            rendererTarget={rendererTarget}
-            onRendererTargetChange={setRendererTarget}
-            outputFormat={outputFormat}
-            onOutputFormatChange={setOutputFormat}
-            strokeWidth={strokeWidth}
-            lastExampleType={lastExampleType}
-            onRecordExampleType={handleRecordExampleType}
-            previewMode={previewMode}
-            onPreviewModeChange={setPreviewMode}
-            hintResetToken={hintResetToken}
-            onResetSyntaxHints={handleResetSyntaxHints}
-            myThemeSlots={myThemeSlots}
-            activeMyThemeSlotId={activeMyThemeSlotId}
-            onSelectMyThemeSlot={handleSelectMyThemeSlot}
-            onAddMyThemeSlot={handleAddMyThemeSlot}
-            onDeleteMyThemeSlot={handleDeleteMyThemeSlot}
-            onExportMyThemeSlot={handleExportMyThemeSlot}
-            onDuplicateMyThemeSlot={handleDuplicateMyThemeSlot}
-            onMoveMyThemeSlotUp={handleMoveMyThemeSlotUp}
-            onMoveMyThemeSlotDown={handleMoveMyThemeSlotDown}
-            onImportAsNewSlot={handleImportAsNewSlot}
-            onShowProfileDetails={handleShowProfileDetails}
-            advancedMermaidConfig={advancedMermaidConfig}
-          />
-        </div>
-        <div
-          role="tabpanel"
-          id={`tabpanel-${activeTab}`}
-          aria-label={TAB_CONFIG.find((t) => t.id === activeTab)?.label ?? activeTab}
-          tabIndex={-1}
-          className="md:h-full"
-          hidden={activeTab === "apply"}
-        >
-          {activeTab === "compose" && (
-            <ComposeTab
-              selectedPalette={selectedPalette}
-              selectedPaletteId={selectedPaletteId}
-              onSelectPalette={handleSelectPalette}
-              customColors={customColors}
-              onColorChange={handleColorChange}
-              onResetPalette={handleResetPalette}
-              hasCustomizations={hasCustomizations}
-              includeMetaComments={includeMetaComments}
-              onIncludeMetaCommentsChange={setIncludeMetaComments}
-              includeBadge={includeBadge}
-              onIncludeBadgeChange={setIncludeBadge}
-              customThemeName={effectiveCustomThemeName}
-              onCustomThemeNameChange={handleCustomThemeNameChange}
-              effectiveThemeName={effectiveThemeName}
-              userPalettes={userPalettes}
-              onSavePalette={handleSavePalette}
-              onImportPalette={handleImportPalette}
-              onDeleteUserPalette={handleDeleteUserPalette}
-              onShowToast={showToast}
-              look={effectiveLook}
-              onLookChange={handleLookChange}
-              fontSize={effectiveFontSize}
-              onFontSizeChange={handleFontSizeChange}
-              typography={effectiveTypography}
-              onTypographyChange={handleTypographyChange}
-              rendererTarget={rendererTarget}
-              onRendererTargetChange={setRendererTarget}
-              strokeWidth={strokeWidth}
-              onStrokeWidthChange={setStrokeWidth}
-              onUseExtractedTheme={handleUseExtractedTheme}
-              onSwitchTab={setActiveTab}
-              onNavigateToParityMatrix={handleNavigateToParityMatrix}
-              importDiagnostics={importDiagnostics}
-              onImportDiagnosticsChange={setImportDiagnostics}
-              myThemeSlots={myThemeSlots}
-              activeMyThemeSlotId={activeMyThemeSlotId}
-              onSelectMyThemeSlot={handleSelectMyThemeSlot}
-              onAddMyThemeSlot={handleAddMyThemeSlot}
-              onDeleteMyThemeSlot={handleDeleteMyThemeSlot}
-              onExportMyThemeSlot={handleExportMyThemeSlot}
-              onImportAsNewSlot={handleImportAsNewSlot}
-              onImportMyThemeSlot={handleImportMyThemeSlot}
-              onImportGovernanceProfile={handleImportGovernanceProfile}
-              onDuplicateMyThemeSlot={handleDuplicateMyThemeSlot}
-              onMoveMyThemeSlotUp={handleMoveMyThemeSlotUp}
-              onMoveMyThemeSlotDown={handleMoveMyThemeSlotDown}
-              onShowProfileDetails={handleShowProfileDetails}
-              onCopyProfileShareLink={handleCopyProfileShareLink}
-              customThemeNamePlaceholder={
-                activeMyThemeSlotId ? slotDisplayName(activeMyThemeSlotId) : undefined
-              }
-              advancedMermaidConfig={advancedMermaidConfig}
-              onAdvancedMermaidConfigChange={setAdvancedMermaidConfig}
-            />
-          )}
-          {activeTab === "examples" && (
-            <ExamplesTab
-              selectedPalette={selectedPalette}
-              selectedPaletteId={selectedPaletteId}
-              allPalettes={allPalettes}
-              customColors={customColors}
-              onSelectPalette={handleSelectPalette}
-              onLoadExample={handleLoadExample}
-              initialSelectedId={lastSelectedExampleId}
-              onExampleSelect={setLastSelectedExampleId}
-              myThemeSlots={myThemeSlots}
-              activeMyThemeSlotId={activeMyThemeSlotId}
-              onSelectMyThemeSlot={handleSelectMyThemeSlot}
-              onAddMyThemeSlot={handleAddMyThemeSlot}
-              onDeleteMyThemeSlot={handleDeleteMyThemeSlot}
-              onExportMyThemeSlot={handleExportMyThemeSlot}
-              onDuplicateMyThemeSlot={handleDuplicateMyThemeSlot}
-              onMoveMyThemeSlotUp={handleMoveMyThemeSlotUp}
-              onMoveMyThemeSlotDown={handleMoveMyThemeSlotDown}
-              onImportAsNewSlot={handleImportAsNewSlot}
-              onShowToast={showToast}
-              onShowProfileDetails={handleShowProfileDetails}
-            />
-          )}
-          {activeTab === "reference" && (
-            <ReferenceTab
-              selectedPalette={selectedPalette}
-              selectedPaletteId={selectedPaletteId}
-              allPalettes={allPalettes}
-              customColors={customColors}
-              onSelectPalette={handleSelectPalette}
-              supportsClassDef={supportsClassDef}
-              inputCode={inputCode}
-              onInputChange={setInputCode}
-              openParityMatrix={openParityMatrix}
-              onParityMatrixOpened={() => setOpenParityMatrix(false)}
-              myThemeSlots={myThemeSlots}
-              activeMyThemeSlotId={activeMyThemeSlotId}
-              onSelectMyThemeSlot={handleSelectMyThemeSlot}
-              onAddMyThemeSlot={handleAddMyThemeSlot}
-              onDeleteMyThemeSlot={handleDeleteMyThemeSlot}
-              onExportMyThemeSlot={handleExportMyThemeSlot}
-              onDuplicateMyThemeSlot={handleDuplicateMyThemeSlot}
-              onMoveMyThemeSlotUp={handleMoveMyThemeSlotUp}
-              onMoveMyThemeSlotDown={handleMoveMyThemeSlotDown}
-              onImportAsNewSlot={handleImportAsNewSlot}
-              onShowToast={showToast}
-              onShowProfileDetails={handleShowProfileDetails}
-            />
-          )}
-          {activeTab === "extract" && (
-            <ExtractTab
-              onUseExtractedTheme={handleUseExtractedTheme}
-              onSwitchTab={setActiveTab}
-              onShowToast={showToast}
-            />
-          )}
-        </div>
+            <div
+              role="tabpanel"
+              id="tabpanel-apply"
+              aria-label="Apply"
+              tabIndex={-1}
+              className="md:h-full"
+              hidden={activeTab !== "apply"}
+            >
+              <ApplyTab
+                selectedPalette={selectedPalette}
+                selectedPaletteId={selectedPaletteId}
+                onSelectPalette={handleSelectPalette}
+                customColors={customColors}
+                onColorChange={handleColorChange}
+                onResetPalette={handleResetPalette}
+                onResetColor={handleResetColor}
+                hasCustomizations={hasCustomizations}
+                inputCode={inputCode}
+                onInputChange={setInputCode}
+                includeMetaComments={includeMetaComments}
+                includeBadge={includeBadge}
+                effectiveThemeName={effectiveThemeName}
+                onSwitchTab={setActiveTab}
+                onExtractTheme={handleExtractFromCode}
+                userPalettes={userPalettes}
+                onShowToast={showToast}
+                recentPaletteIds={recentPaletteIds}
+                look={effectiveLook}
+                onLookChange={handleLookChange}
+                fontSize={effectiveFontSize}
+                onFontSizeChange={handleFontSizeChange}
+                typography={effectiveTypography}
+                rendererTarget={rendererTarget}
+                onRendererTargetChange={setRendererTarget}
+                outputFormat={outputFormat}
+                onOutputFormatChange={setOutputFormat}
+                strokeWidth={strokeWidth}
+                lastExampleType={lastExampleType}
+                onRecordExampleType={handleRecordExampleType}
+                previewMode={previewMode}
+                onPreviewModeChange={setPreviewMode}
+                hintResetToken={hintResetToken}
+                onResetSyntaxHints={handleResetSyntaxHints}
+                myThemeSlots={myThemeSlots}
+                activeMyThemeSlotId={activeMyThemeSlotId}
+                onSelectMyThemeSlot={handleSelectMyThemeSlot}
+                onAddMyThemeSlot={handleAddMyThemeSlot}
+                onDeleteMyThemeSlot={handleDeleteMyThemeSlot}
+                onExportMyThemeSlot={handleExportMyThemeSlot}
+                onDuplicateMyThemeSlot={handleDuplicateMyThemeSlot}
+                onMoveMyThemeSlotUp={handleMoveMyThemeSlotUp}
+                onMoveMyThemeSlotDown={handleMoveMyThemeSlotDown}
+                onImportAsNewSlot={handleImportAsNewSlot}
+                onShowProfileDetails={handleShowProfileDetails}
+                advancedMermaidConfig={advancedMermaidConfig}
+              />
+            </div>
+            <div
+              role="tabpanel"
+              id={`tabpanel-${activeTab}`}
+              aria-label={TAB_CONFIG.find((t) => t.id === activeTab)?.label ?? activeTab}
+              tabIndex={-1}
+              className="md:h-full"
+              hidden={activeTab === "apply"}
+            >
+              {activeTab === "compose" && (
+                <ComposeTab
+                  selectedPalette={selectedPalette}
+                  selectedPaletteId={selectedPaletteId}
+                  onSelectPalette={handleSelectPalette}
+                  customColors={customColors}
+                  onColorChange={handleColorChange}
+                  onResetPalette={handleResetPalette}
+                  hasCustomizations={hasCustomizations}
+                  includeMetaComments={includeMetaComments}
+                  onIncludeMetaCommentsChange={setIncludeMetaComments}
+                  includeBadge={includeBadge}
+                  onIncludeBadgeChange={setIncludeBadge}
+                  customThemeName={effectiveCustomThemeName}
+                  onCustomThemeNameChange={handleCustomThemeNameChange}
+                  effectiveThemeName={effectiveThemeName}
+                  userPalettes={userPalettes}
+                  onSavePalette={handleSavePalette}
+                  onImportPalette={handleImportPalette}
+                  onDeleteUserPalette={handleDeleteUserPalette}
+                  onShowToast={showToast}
+                  look={effectiveLook}
+                  onLookChange={handleLookChange}
+                  fontSize={effectiveFontSize}
+                  onFontSizeChange={handleFontSizeChange}
+                  typography={effectiveTypography}
+                  onTypographyChange={handleTypographyChange}
+                  rendererTarget={rendererTarget}
+                  onRendererTargetChange={setRendererTarget}
+                  strokeWidth={strokeWidth}
+                  onStrokeWidthChange={setStrokeWidth}
+                  onUseExtractedTheme={handleUseExtractedTheme}
+                  onSwitchTab={setActiveTab}
+                  onNavigateToParityMatrix={handleNavigateToParityMatrix}
+                  importDiagnostics={importDiagnostics}
+                  onImportDiagnosticsChange={setImportDiagnostics}
+                  myThemeSlots={myThemeSlots}
+                  activeMyThemeSlotId={activeMyThemeSlotId}
+                  onSelectMyThemeSlot={handleSelectMyThemeSlot}
+                  onAddMyThemeSlot={handleAddMyThemeSlot}
+                  onDeleteMyThemeSlot={handleDeleteMyThemeSlot}
+                  onExportMyThemeSlot={handleExportMyThemeSlot}
+                  onImportAsNewSlot={handleImportAsNewSlot}
+                  onImportMyThemeSlot={handleImportMyThemeSlot}
+                  onImportGovernanceProfile={handleImportGovernanceProfile}
+                  onDuplicateMyThemeSlot={handleDuplicateMyThemeSlot}
+                  onMoveMyThemeSlotUp={handleMoveMyThemeSlotUp}
+                  onMoveMyThemeSlotDown={handleMoveMyThemeSlotDown}
+                  onShowProfileDetails={handleShowProfileDetails}
+                  onCopyProfileShareLink={handleCopyProfileShareLink}
+                  customThemeNamePlaceholder={
+                    activeMyThemeSlotId ? slotDisplayName(activeMyThemeSlotId) : undefined
+                  }
+                  advancedMermaidConfig={advancedMermaidConfig}
+                  onAdvancedMermaidConfigChange={setAdvancedMermaidConfig}
+                />
+              )}
+              {activeTab === "examples" && (
+                <ExamplesTab
+                  selectedPalette={selectedPalette}
+                  selectedPaletteId={selectedPaletteId}
+                  allPalettes={allPalettes}
+                  customColors={customColors}
+                  onSelectPalette={handleSelectPalette}
+                  onLoadExample={handleLoadExample}
+                  initialSelectedId={lastSelectedExampleId}
+                  onExampleSelect={setLastSelectedExampleId}
+                  myThemeSlots={myThemeSlots}
+                  activeMyThemeSlotId={activeMyThemeSlotId}
+                  onSelectMyThemeSlot={handleSelectMyThemeSlot}
+                  onAddMyThemeSlot={handleAddMyThemeSlot}
+                  onDeleteMyThemeSlot={handleDeleteMyThemeSlot}
+                  onExportMyThemeSlot={handleExportMyThemeSlot}
+                  onDuplicateMyThemeSlot={handleDuplicateMyThemeSlot}
+                  onMoveMyThemeSlotUp={handleMoveMyThemeSlotUp}
+                  onMoveMyThemeSlotDown={handleMoveMyThemeSlotDown}
+                  onImportAsNewSlot={handleImportAsNewSlot}
+                  onShowToast={showToast}
+                  onShowProfileDetails={handleShowProfileDetails}
+                />
+              )}
+              {activeTab === "reference" && (
+                <ReferenceTab
+                  selectedPalette={selectedPalette}
+                  selectedPaletteId={selectedPaletteId}
+                  allPalettes={allPalettes}
+                  customColors={customColors}
+                  onSelectPalette={handleSelectPalette}
+                  supportsClassDef={supportsClassDef}
+                  inputCode={inputCode}
+                  onInputChange={setInputCode}
+                  openParityMatrix={openParityMatrix}
+                  onParityMatrixOpened={() => setOpenParityMatrix(false)}
+                  myThemeSlots={myThemeSlots}
+                  activeMyThemeSlotId={activeMyThemeSlotId}
+                  onSelectMyThemeSlot={handleSelectMyThemeSlot}
+                  onAddMyThemeSlot={handleAddMyThemeSlot}
+                  onDeleteMyThemeSlot={handleDeleteMyThemeSlot}
+                  onExportMyThemeSlot={handleExportMyThemeSlot}
+                  onDuplicateMyThemeSlot={handleDuplicateMyThemeSlot}
+                  onMoveMyThemeSlotUp={handleMoveMyThemeSlotUp}
+                  onMoveMyThemeSlotDown={handleMoveMyThemeSlotDown}
+                  onImportAsNewSlot={handleImportAsNewSlot}
+                  onShowToast={showToast}
+                  onShowProfileDetails={handleShowProfileDetails}
+                />
+              )}
+              {activeTab === "extract" && (
+                <ExtractTab
+                  onUseExtractedTheme={handleUseExtractedTheme}
+                  onSwitchTab={setActiveTab}
+                  onShowToast={showToast}
+                />
+              )}
+            </div>
+          </>
+        )}
       </main>
 
       <div
         className="md:hidden fixed bottom-14 left-0 right-0 z-20 flex items-center justify-center px-4 py-1 print-hide"
         style={{ background: "#0f1a17", borderTop: "1px solid rgba(212,201,181,0.08)" }}
+        hidden={hydrated && !firstVisitComplete}
       >
         <p
           className="text-[9px] text-center"
@@ -1887,6 +1953,7 @@ export function AppShell() {
         className="forge-mobile-nav fixed bottom-0 left-0 right-0 flex md:hidden z-30 shrink-0 print-hide"
         role="tablist"
         aria-label="Mermaid Theme Builder sections (mobile)"
+        hidden={hydrated && !firstVisitComplete}
         onKeyDown={(e) => {
           if (
             e.key !== "ArrowLeft" &&

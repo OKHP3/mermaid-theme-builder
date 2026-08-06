@@ -17,6 +17,7 @@ import { test, expect, type Page } from "@playwright/test";
 async function openExamplesTab(page: Page): Promise<void> {
   await page.addInitScript(() => {
     window.localStorage.clear();
+      localStorage.setItem("mtb.firstVisit", "true");
     window.sessionStorage.clear();
   });
   await page.goto("/");

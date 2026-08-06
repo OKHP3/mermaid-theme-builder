@@ -40,6 +40,7 @@ const SEQUENCE = "sequenceDiagram\n  Alice->>Bob: Hello";
 async function gotoApply(page: Page) {
   await page.addInitScript(() => {
     window.localStorage.clear();
+      localStorage.setItem("mtb.firstVisit", "true");
     window.sessionStorage.clear();
   });
   await page.goto("/");

@@ -20,6 +20,7 @@ test.describe("Settings menu — Reset all palette customizations confirmation f
   test.beforeEach(async ({ page }) => {
     await page.addInitScript(() => {
       window.localStorage.clear();
+      localStorage.setItem("mtb.firstVisit", "true");
       window.sessionStorage.clear();
     });
     await page.goto("/");

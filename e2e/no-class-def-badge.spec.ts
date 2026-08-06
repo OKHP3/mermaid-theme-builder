@@ -54,6 +54,7 @@ const FLOWCHART = "flowchart TD\n  A[Start] --> B[End]";
 async function gotoApply(page: Page) {
   await page.addInitScript(() => {
     window.localStorage.clear();
+      localStorage.setItem("mtb.firstVisit", "true");
     window.sessionStorage.clear();
   });
   await page.goto("/");

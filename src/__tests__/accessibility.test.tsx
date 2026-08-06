@@ -19,7 +19,7 @@
  */
 
 // vi.mock is hoisted by vitest — must appear before any imports.
-import { vi, describe, it, expect, afterEach, beforeAll } from "vitest";
+import { vi, describe, it, expect, afterEach, beforeAll, beforeEach } from "vitest";
 
 vi.mock("mermaid", () => ({
   default: {
@@ -56,6 +56,14 @@ beforeAll(() => {
     // Let other errors through so real issues are visible.
     console.warn("[test error]", ...args);
   });
+});
+
+// storage-isolation.ts (a setupFile) clears localStorage in its own beforeEach,
+// which runs before this hook.  We therefore set the key here — not in beforeAll
+// — so it is restored after each wipe and the first-visit route selector never
+// renders during accessibility scans (the selector is tested in routeSelector.test).
+beforeEach(() => {
+  localStorage.setItem("mtb.firstVisit", "true");
 });
 
 afterEach(() => {

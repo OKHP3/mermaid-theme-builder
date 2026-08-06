@@ -55,20 +55,33 @@ const SLOT_TILE_SEL = `[role="radio"][id^="${PREFIX}-my-theme-"]`;
  * before the hydration effect fires and the extra tiles are added.
  */
 async function openWithState(page: Page, state?: Record<string, unknown>): Promise<void> {
+  // Seed the first-visit key and the caller's state.  activeTab:"compose" is
+  // kept in the blob for completeness but we also click the tab explicitly
+  // below — state-blob tab restoration is unreliable when the hash-sync effect
+  // has already set a conflicting hash before the hydration effect runs.
+  const seeded: Record<string, unknown> = {
+    schemaVersion: 1,
+    firstVisitComplete: true,
+    activeTab: "compose",
+    ...(state ?? {}),
+  };
   await page.addInitScript(
-    ({ key, value }: { key: string; value: string | null }) => {
+    ({ key, value }: { key: string; value: string }) => {
       localStorage.clear();
       sessionStorage.clear();
-      if (value) {
-        localStorage.setItem(key, value);
-      }
+      // Set the first-visit flag so the route selector is bypassed.
+      localStorage.setItem("mtb.firstVisit", "true");
+      localStorage.setItem(key, value);
     },
-    { key: LS_KEY, value: state ? JSON.stringify(state) : null }
+    { key: LS_KEY, value: JSON.stringify(seeded) }
   );
   await page.goto("/");
   await page.waitForLoadState("load");
-  // Wait for the Compose tab's My Theme 1 tile — the compose tab is the
-  // default and "compose-palette-tile-my-theme-1" is unique in the DOM.
+  // Navigate to the Compose tab explicitly — this is more reliable than
+  // relying on state-blob activeTab restoration which can race with the
+  // hash-sync effect that writes window.location.hash before hydration.
+  await page.getByRole("tab", { name: /Compose/i }).click();
+  // Wait for the Compose tab's My Theme 1 tile to confirm the tab is active.
   await page.locator(`#${PREFIX}-my-theme-1`).waitFor({ timeout: 8_000 });
 }
 

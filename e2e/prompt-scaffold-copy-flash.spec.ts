@@ -46,6 +46,7 @@ async function grantClipboard(context: BrowserContext): Promise<void> {
 async function openScaffoldModal(page: Page): Promise<void> {
   await page.addInitScript(() => {
     window.localStorage.clear();
+      localStorage.setItem("mtb.firstVisit", "true");
     window.sessionStorage.clear();
   });
   await page.goto("/");
@@ -258,6 +259,7 @@ test.describe("PromptScaffoldModal — Path C: dismiss without copying preserves
   async function openScaffoldModalWithPreference(page: Page, format: string): Promise<void> {
     await page.addInitScript((fmt) => {
       window.localStorage.clear();
+      localStorage.setItem("mtb.firstVisit", "true");
       window.sessionStorage.clear();
       window.localStorage.setItem("mtb-scaffold-format", fmt);
     }, format);

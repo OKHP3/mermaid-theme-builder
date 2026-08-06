@@ -172,11 +172,15 @@ function AppWrapper({
 
 beforeEach(() => {
   localStorage.removeItem(PREVIEW_SAMPLE_KEY);
+  // Mark first-visit selector as complete so the route selector never renders
+  // and tab elements are immediately accessible in unit-test DOM.
+  localStorage.setItem("mtb.firstVisit", "true");
 });
 
 afterEach(() => {
   cleanup();
   localStorage.removeItem(PREVIEW_SAMPLE_KEY);
+  localStorage.removeItem("mtb.firstVisit");
 });
 
 // ---------------------------------------------------------------------------

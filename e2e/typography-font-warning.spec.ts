@@ -44,8 +44,19 @@ const NODE_LABEL_INPUT = "Node Label font family override";
  * Compose is the default active tab so no extra tab click is needed.
  */
 async function openTypographySection(page: Page): Promise<void> {
+  // Seed the first-visit key so the route selector is bypassed (the selector
+  // would otherwise overlay the full UI and block all tab interactions).
+  // No state blob needed — we navigate to the Compose tab explicitly below.
+  await page.addInitScript(() => {
+    localStorage.clear();
+    sessionStorage.clear();
+    localStorage.setItem("mtb.firstVisit", "true");
+  });
   await page.goto("/");
   await page.waitForLoadState("load");
+
+  // Navigate to the Compose tab where the Typography accordion lives.
+  await page.getByRole("tab", { name: /Compose/i }).click();
 
   const typographyButton = page.getByRole("button", { name: "Typography" });
   await typographyButton.waitFor({ timeout: 8_000 });
