@@ -59,6 +59,7 @@ import {
   parseGovernanceProfile,
   type GovernanceProfile,
 } from "@/lib/governance-profile";
+import { ProfileDetailsPanel } from "@/components/ProfileDetailsPanel";
 import { detectDiagram } from "@/lib/detector";
 import { type TypographySettings, DEFAULT_TYPOGRAPHY } from "@/lib/typography";
 import {
@@ -357,6 +358,7 @@ export function AppShell() {
   const [advancedMermaidConfig, setAdvancedMermaidConfig] = useState<
     import("@/lib/theme-engine").AdvancedMermaidConfig
   >({});
+  const [profileDetailSlotId, setProfileDetailSlotId] = useState<string | null>(null);
 
   const handleNavigateToParityMatrix = useCallback(() => {
     setActiveTab("reference");
@@ -692,7 +694,11 @@ export function AppShell() {
         setMyThemeSlots((prev) =>
           prev.map((s) =>
             s.id === activeMyThemeSlotId
-              ? { ...s, colors: s.colors.map((c) => (c.key === key ? { ...c, value } : c)) }
+              ? {
+                  ...s,
+                  colors: s.colors.map((c) => (c.key === key ? { ...c, value } : c)),
+                  updatedAt: new Date().toISOString(),
+                }
               : s
           )
         );
@@ -713,7 +719,11 @@ export function AppShell() {
     (newLook: MermaidLook) => {
       if (activeMyThemeSlotId) {
         setMyThemeSlots((prev) =>
-          prev.map((s) => (s.id === activeMyThemeSlotId ? { ...s, look: newLook } : s))
+          prev.map((s) =>
+            s.id === activeMyThemeSlotId
+              ? { ...s, look: newLook, updatedAt: new Date().toISOString() }
+              : s
+          )
         );
       } else {
         setLook(newLook);
@@ -726,7 +736,11 @@ export function AppShell() {
     (newSize: string) => {
       if (activeMyThemeSlotId) {
         setMyThemeSlots((prev) =>
-          prev.map((s) => (s.id === activeMyThemeSlotId ? { ...s, fontSize: newSize } : s))
+          prev.map((s) =>
+            s.id === activeMyThemeSlotId
+              ? { ...s, fontSize: newSize, updatedAt: new Date().toISOString() }
+              : s
+          )
         );
       } else {
         setFontSize(newSize);
@@ -739,7 +753,11 @@ export function AppShell() {
     (newTypo: import("@/lib/typography").TypographySettings) => {
       if (activeMyThemeSlotId) {
         setMyThemeSlots((prev) =>
-          prev.map((s) => (s.id === activeMyThemeSlotId ? { ...s, typography: newTypo } : s))
+          prev.map((s) =>
+            s.id === activeMyThemeSlotId
+              ? { ...s, typography: newTypo, updatedAt: new Date().toISOString() }
+              : s
+          )
         );
       } else {
         setTypography(newTypo);
@@ -752,7 +770,11 @@ export function AppShell() {
     (newName: string) => {
       if (activeMyThemeSlotId) {
         setMyThemeSlots((prev) =>
-          prev.map((s) => (s.id === activeMyThemeSlotId ? { ...s, name: newName } : s))
+          prev.map((s) =>
+            s.id === activeMyThemeSlotId
+              ? { ...s, name: newName, updatedAt: new Date().toISOString() }
+              : s
+          )
         );
       } else {
         setCustomThemeName(newName);
@@ -828,7 +850,11 @@ export function AppShell() {
         const activeSlotName =
           myThemeSlots.find((s) => s.id === activeMyThemeSlotId)?.name ?? "My Theme";
         setMyThemeSlots((prev) =>
-          prev.map((s) => (s.id === activeMyThemeSlotId ? { ...s, colors: palette.colors } : s))
+          prev.map((s) =>
+            s.id === activeMyThemeSlotId
+              ? { ...s, colors: palette.colors, updatedAt: new Date().toISOString() }
+              : s
+          )
         );
         if (warnings.invalidValues.length > 0 || warnings.warnValues.length > 0) {
           const problemKeys = [
@@ -902,6 +928,8 @@ export function AppShell() {
                   look: slot.look,
                   fontSize: slot.fontSize,
                   typography: slot.typography,
+                  createdAt: s.createdAt ?? profile.createdAt,
+                  updatedAt: new Date().toISOString(),
                 }
               : s
           )
@@ -935,6 +963,53 @@ export function AppShell() {
       }
     },
     [activeMyThemeSlotId, myThemeSlots] // eslint-disable-line react-hooks/exhaustive-deps
+  );
+
+  const handleShowProfileDetails = useCallback((id: string) => {
+    setProfileDetailSlotId(id);
+  }, []);
+
+  const handleRenameSlotById = useCallback((id: string, newName: string) => {
+    const trimmed = newName.trim();
+    if (!trimmed) return;
+    setMyThemeSlots((prev) =>
+      prev.map((s) =>
+        s.id === id ? { ...s, name: trimmed, updatedAt: new Date().toISOString() } : s
+      )
+    );
+  }, []);
+
+  const handleImportIntoProfileDetailSlot = useCallback(
+    (profile: GovernanceProfile, importWarnings: string[]) => {
+      if (!profileDetailSlotId) return;
+      const slot = profileToSlot(profile);
+      const targetSlotName =
+        myThemeSlots.find((s) => s.id === profileDetailSlotId)?.name ?? "My Theme";
+      setMyThemeSlots((prev) =>
+        prev.map((s) =>
+          s.id === profileDetailSlotId
+            ? {
+                ...s,
+                name: slot.name,
+                colors: slot.colors,
+                look: slot.look,
+                fontSize: slot.fontSize,
+                typography: slot.typography,
+                createdAt: s.createdAt ?? profile.createdAt,
+                updatedAt: new Date().toISOString(),
+              }
+            : s
+        )
+      );
+      // Apply app-level settings from the imported profile
+      setRendererTarget(profile.rendererTarget);
+      if (profile.outputFormat) setOutputFormat(profile.outputFormat);
+      applyAdvancedConfigFromProfile(profile.advancedMermaidConfig);
+      const warnNote = importWarnings.length > 0 ? ` (${importWarnings.length} advisory)` : "";
+      setToast(`Imported profile "${profile.name}" into "${targetSlotName}"${warnNote}.`);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [profileDetailSlotId, myThemeSlots, applyAdvancedConfigFromProfile]
   );
 
   const handleImportAsNewSlot = useCallback(
@@ -1002,7 +1077,13 @@ export function AppShell() {
     if (activeMyThemeSlotId) {
       setMyThemeSlots((prev) =>
         prev.map((s) =>
-          s.id === activeMyThemeSlotId ? { ...s, colors: slotBaseColors.map((c) => ({ ...c })) } : s
+          s.id === activeMyThemeSlotId
+            ? {
+                ...s,
+                colors: slotBaseColors.map((c) => ({ ...c })),
+                updatedAt: new Date().toISOString(),
+              }
+            : s
         )
       );
       return;
@@ -1575,6 +1656,7 @@ export function AppShell() {
             onMoveMyThemeSlotUp={handleMoveMyThemeSlotUp}
             onMoveMyThemeSlotDown={handleMoveMyThemeSlotDown}
             onImportAsNewSlot={handleImportAsNewSlot}
+            onShowProfileDetails={handleShowProfileDetails}
             advancedMermaidConfig={advancedMermaidConfig}
           />
         </div>
@@ -1634,6 +1716,7 @@ export function AppShell() {
               onDuplicateMyThemeSlot={handleDuplicateMyThemeSlot}
               onMoveMyThemeSlotUp={handleMoveMyThemeSlotUp}
               onMoveMyThemeSlotDown={handleMoveMyThemeSlotDown}
+              onShowProfileDetails={handleShowProfileDetails}
               customThemeNamePlaceholder={
                 activeMyThemeSlotId ? slotDisplayName(activeMyThemeSlotId) : undefined
               }
@@ -1662,6 +1745,7 @@ export function AppShell() {
               onMoveMyThemeSlotDown={handleMoveMyThemeSlotDown}
               onImportAsNewSlot={handleImportAsNewSlot}
               onShowToast={showToast}
+              onShowProfileDetails={handleShowProfileDetails}
             />
           )}
           {activeTab === "reference" && (
@@ -1687,6 +1771,7 @@ export function AppShell() {
               onMoveMyThemeSlotDown={handleMoveMyThemeSlotDown}
               onImportAsNewSlot={handleImportAsNewSlot}
               onShowToast={showToast}
+              onShowProfileDetails={handleShowProfileDetails}
             />
           )}
           {activeTab === "extract" && (
@@ -1805,6 +1890,21 @@ export function AppShell() {
           </a>
         </div>
       </footer>
+
+      <ProfileDetailsPanel
+        open={profileDetailSlotId !== null}
+        onClose={() => setProfileDetailSlotId(null)}
+        slot={myThemeSlots.find((s) => s.id === profileDetailSlotId) ?? null}
+        rendererTarget={rendererTarget}
+        outputFormat={outputFormat}
+        slotsFull={myThemeSlots.length >= 3}
+        onRename={handleRenameSlotById}
+        onExport={handleExportMyThemeSlot}
+        onImport={handleImportIntoProfileDetailSlot}
+        onDuplicate={handleDuplicateMyThemeSlot}
+        onDelete={handleDeleteMyThemeSlot}
+        onShowToast={showToast}
+      />
 
       {toast && (
         <div

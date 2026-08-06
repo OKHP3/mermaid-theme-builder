@@ -13,6 +13,10 @@ export interface MyThemeSlot {
   look: MermaidLook;
   fontSize: string;
   typography: TypographySettings;
+  /** ISO-8601 timestamp set when the slot is first created. */
+  createdAt?: string;
+  /** ISO-8601 timestamp updated whenever the slot data changes. */
+  updatedAt?: string;
 }
 
 export function defaultSlotName(n: 1 | 2 | 3): string {
@@ -26,6 +30,7 @@ export function slotDisplayName(id: string): string {
 
 export function createDefaultMyThemeSlot(n: 1 | 2 | 3, sourceColors?: ThemeColor[]): MyThemeSlot {
   const base = sourceColors ?? BRAND_PALETTES[0].colors;
+  const now = new Date().toISOString();
   return {
     id: `my-theme-${n}` as MyThemeSlotId,
     name: defaultSlotName(n),
@@ -39,6 +44,8 @@ export function createDefaultMyThemeSlot(n: 1 | 2 | 3, sourceColors?: ThemeColor
       nodeLabel: { ...DEFAULT_TYPOGRAPHY.nodeLabel },
       edgeLabel: { ...DEFAULT_TYPOGRAPHY.edgeLabel },
     },
+    createdAt: now,
+    updatedAt: now,
   };
 }
 
@@ -71,6 +78,7 @@ export function duplicateSlot(
   const num = nextSlotNumber(slots);
   if (num === null) return null;
   const newId = `my-theme-${num}` as MyThemeSlotId;
+  const now = new Date().toISOString();
   const copy: MyThemeSlot = {
     id: newId,
     name: `${source.name} (copy)`,
@@ -84,6 +92,8 @@ export function duplicateSlot(
       nodeLabel: { ...source.typography.nodeLabel },
       edgeLabel: { ...source.typography.edgeLabel },
     },
+    createdAt: now,
+    updatedAt: now,
   };
   return { slots: [...slots, copy], newSlotId: newId };
 }

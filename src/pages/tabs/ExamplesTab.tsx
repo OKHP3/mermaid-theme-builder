@@ -72,6 +72,7 @@ interface ExamplesTabProps {
   onDuplicateMyThemeSlot?: (id: string) => void;
   onMoveMyThemeSlotUp?: (id: string) => void;
   onMoveMyThemeSlotDown?: (id: string) => void;
+  onShowProfileDetails?: (id: string) => void;
   onImportAsNewSlot?: (
     palette: import("@/lib/palettes").Palette,
     warnings: {
@@ -100,6 +101,7 @@ export function ExamplesTab({
   onDuplicateMyThemeSlot,
   onMoveMyThemeSlotUp,
   onMoveMyThemeSlotDown,
+  onShowProfileDetails,
   onImportAsNewSlot,
   onShowToast = () => {},
 }: ExamplesTabProps) {
@@ -251,6 +253,7 @@ export function ExamplesTab({
         onMoveMyThemeSlotDown={onMoveMyThemeSlotDown}
         onImportAsNewSlot={onImportAsNewSlot}
         onShowToast={onShowToast}
+        onShowProfileDetails={onShowProfileDetails}
       />
       <div className="flex-1 overflow-hidden flex flex-col md:flex-row min-h-0">
         <div

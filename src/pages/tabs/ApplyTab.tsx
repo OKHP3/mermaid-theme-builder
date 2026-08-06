@@ -74,6 +74,7 @@ interface ApplyTabProps {
   onDuplicateMyThemeSlot?: (id: string) => void;
   onMoveMyThemeSlotUp?: (id: string) => void;
   onMoveMyThemeSlotDown?: (id: string) => void;
+  onShowProfileDetails?: (id: string) => void;
   onImportAsNewSlot?: (
     palette: import("@/lib/palettes").Palette,
     warnings: {
@@ -128,6 +129,7 @@ export function ApplyTab({
   onDuplicateMyThemeSlot,
   onMoveMyThemeSlotUp,
   onMoveMyThemeSlotDown,
+  onShowProfileDetails,
   onImportAsNewSlot,
   advancedMermaidConfig = {},
 }: ApplyTabProps) {
@@ -397,6 +399,7 @@ export function ApplyTab({
         onMoveMyThemeSlotDown={onMoveMyThemeSlotDown}
         onImportAsNewSlot={onImportAsNewSlot}
         onShowToast={onShowToast}
+        onShowProfileDetails={onShowProfileDetails}
       />
 
       <DiagramDetectHeader

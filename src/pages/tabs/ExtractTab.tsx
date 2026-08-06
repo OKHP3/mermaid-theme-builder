@@ -107,6 +107,12 @@ interface ExtractTabProps {
   onSwitchTab: (tab: AppTab) => void;
   onShowToast: (msg: ReactNode) => void;
   embedded?: boolean;
+  /**
+   * ExtractTab has no slot tile surface (no PaletteSelectorBar), so this prop
+   * is accepted for interface consistency but is not wired to any UI element.
+   * Wire it here if a PaletteSelectorBar is ever added to this tab.
+   */
+  onShowProfileDetails?: (id: string) => void;
 }
 
 type ExtractStatus = "idle" | "found" | "empty" | "no-vars";

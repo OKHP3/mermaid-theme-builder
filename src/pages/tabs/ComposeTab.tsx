@@ -188,6 +188,7 @@ interface ComposeTabProps {
   onDuplicateMyThemeSlot?: (id: string) => void;
   onMoveMyThemeSlotUp?: (id: string) => void;
   onMoveMyThemeSlotDown?: (id: string) => void;
+  onShowProfileDetails?: (id: string) => void;
   customThemeNamePlaceholder?: string;
   advancedMermaidConfig?: import("@/lib/theme-engine").AdvancedMermaidConfig;
   onAdvancedMermaidConfigChange?: (v: import("@/lib/theme-engine").AdvancedMermaidConfig) => void;
@@ -254,6 +255,7 @@ export function ComposeTab({
   onDuplicateMyThemeSlot,
   onMoveMyThemeSlotUp,
   onMoveMyThemeSlotDown,
+  onShowProfileDetails,
   customThemeNamePlaceholder,
   advancedMermaidConfig = {},
   onAdvancedMermaidConfigChange,
@@ -614,6 +616,7 @@ export function ComposeTab({
         onDuplicateMyThemeSlot={onDuplicateMyThemeSlot}
         onMoveMyThemeSlotUp={onMoveMyThemeSlotUp}
         onMoveMyThemeSlotDown={onMoveMyThemeSlotDown}
+        onShowProfileDetails={onShowProfileDetails}
       />
 
       <div className="flex flex-col md:flex-row flex-1 overflow-hidden min-h-0">

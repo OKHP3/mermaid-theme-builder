@@ -164,8 +164,10 @@ export function migrateSlotToProfile(
     outputFormat: appState?.outputFormat ?? "init-directive",
     strokeWidth: appState?.strokeWidth,
     advancedMermaidConfig: appState?.advancedMermaidConfig,
-    createdAt: ts,
-    updatedAt: ts,
+    // Preserve the slot's own timestamps; fall back to now only for legacy
+    // slots that pre-date timestamp tracking.
+    createdAt: slot.createdAt ?? ts,
+    updatedAt: slot.updatedAt ?? ts,
     mermaidVersionVerified: MERMAID_VERSION_VERIFIED,
   };
 }
@@ -184,6 +186,8 @@ export function profileToSlot(profile: GovernanceProfile): MyThemeSlot {
     look: profile.look,
     fontSize: profile.fontSize,
     typography: cloneTypography(profile.typography),
+    createdAt: profile.createdAt,
+    updatedAt: profile.updatedAt,
   };
 }
 

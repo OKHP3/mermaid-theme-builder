@@ -29,6 +29,8 @@ interface PaletteSelectorBarProps {
   onDuplicateMyThemeSlot?: (id: string) => void;
   onMoveMyThemeSlotUp?: (id: string) => void;
   onMoveMyThemeSlotDown?: (id: string) => void;
+  /** Open the Profile Details panel for the given slot id. */
+  onShowProfileDetails?: (id: string) => void;
 }
 
 export function PaletteSelectorBar({
@@ -48,6 +50,7 @@ export function PaletteSelectorBar({
   onDuplicateMyThemeSlot,
   onMoveMyThemeSlotUp,
   onMoveMyThemeSlotDown,
+  onShowProfileDetails,
 }: PaletteSelectorBarProps) {
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -259,6 +262,29 @@ export function PaletteSelectorBar({
                       />
                     </svg>
                   </button>
+                  {/* Profile details */}
+                  {onShowProfileDetails && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onShowProfileDetails(slot.id);
+                      }}
+                      aria-label={`Profile details for ${slot.name}`}
+                      title={`Profile details for ${slot.name}`}
+                      className="p-0.5 rounded text-muted-foreground hover:text-primary hover:bg-primary/10 focus-visible:outline focus-visible:outline-1 focus-visible:outline-primary transition-colors"
+                    >
+                      <svg viewBox="0 0 16 16" fill="none" className="w-3 h-3" aria-hidden="true">
+                        <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.2" />
+                        <path
+                          d="M8 7.5v4M8 5.5v.5"
+                          stroke="currentColor"
+                          strokeWidth="1.4"
+                          strokeLinecap="round"
+                        />
+                      </svg>
+                    </button>
+                  )}
                 </div>
               </div>
             );

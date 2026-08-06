@@ -31,6 +31,7 @@ interface ReferenceTabProps {
   onDuplicateMyThemeSlot?: (id: string) => void;
   onMoveMyThemeSlotUp?: (id: string) => void;
   onMoveMyThemeSlotDown?: (id: string) => void;
+  onShowProfileDetails?: (id: string) => void;
   onImportAsNewSlot?: (
     palette: import("@/lib/palettes").Palette,
     warnings: {
@@ -99,6 +100,7 @@ export function ReferenceTab({
   onDuplicateMyThemeSlot,
   onMoveMyThemeSlotUp,
   onMoveMyThemeSlotDown,
+  onShowProfileDetails,
   onImportAsNewSlot,
   onShowToast = () => {},
 }: ReferenceTabProps) {
@@ -171,6 +173,7 @@ export function ReferenceTab({
         onMoveMyThemeSlotDown={onMoveMyThemeSlotDown}
         onImportAsNewSlot={onImportAsNewSlot}
         onShowToast={onShowToast}
+        onShowProfileDetails={onShowProfileDetails}
       />
       <div className="flex-1 overflow-y-auto">
         <details
