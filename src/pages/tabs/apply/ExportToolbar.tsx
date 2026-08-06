@@ -1,13 +1,16 @@
-import { useState, useCallback, useEffect, type ReactNode } from "react";
+import { useState, useCallback, useEffect, useMemo, type ReactNode } from "react";
 import type { Palette } from "@/lib/palettes";
 import { WarningBanner } from "@/components/WarningBanner";
 import { CapabilityNote } from "@/components/CapabilityNote";
 import {
   generateMarkdownExport,
   generatePromptScaffoldWithFormat,
+  computeInitDirectiveLength,
   type ExportOptions,
   type ScaffoldFormat,
 } from "@/lib/theme-engine";
+import { checkInitDirectiveLength } from "@/lib/init-directive-length";
+import { loadExportPreviewOpen, saveExportPreviewOpen } from "@/lib/persistence";
 import { readScaffoldFormat } from "@/lib/scaffold-prefs";
 import {
   downloadTextFile,
@@ -104,7 +107,38 @@ export function ExportToolbar({
   const [copiedType, setCopiedType] = useState<ExportType | null>(_testInitialCopiedType);
   const [downloadingType, setDownloadingType] = useState<DownloadType | null>(null);
   const [showDownloadMenu, setShowDownloadMenu] = useState(false);
-  const [showExportPreview, setShowExportPreview] = useState(false);
+  const [showExportPreview, setShowExportPreview] = useState(() => loadExportPreviewOpen());
+  const [previewCopied, setPreviewCopied] = useState(false);
+
+  const handleTogglePreview = useCallback((next: boolean) => {
+    setShowExportPreview(next);
+    saveExportPreviewOpen(next);
+  }, []);
+
+  // Directive-length advisory — computed only when the preview is open, the
+  // format is init-directive, and a renderer with a numeric ceiling is selected.
+  const directiveLengthAdvisory = useMemo((): string | null => {
+    if (!showExportPreview) return null;
+    if (!rendererProfile) return null;
+    if (exportOptions.outputFormat === "frontmatter") return null;
+    const len = computeInitDirectiveLength(
+      exportOptions.palette,
+      exportOptions.diagramFamily,
+      exportOptions.look,
+      exportOptions.fontSize,
+      exportOptions.typography,
+      exportOptions.advancedMermaidConfig
+    );
+    const check = checkInitDirectiveLength(len, rendererProfile);
+    if (check.status !== "caution") return null;
+    return `%%{init}%% directive is ${check.directiveLength} chars — exceeds ${rendererProfile.shortName}'s ~${check.ceiling}-char limit. Validate before publishing, or switch to YAML frontmatter.`;
+  }, [showExportPreview, rendererProfile, exportOptions]);
+
+  const handlePreviewCopy = useCallback(async () => {
+    await writeToClipboard(effectiveExportCode);
+    setPreviewCopied(true);
+    setTimeout(() => setPreviewCopied(false), 1800);
+  }, [effectiveExportCode]);
 
   useEffect(() => {
     if (!showDownloadMenu) return;
@@ -241,9 +275,9 @@ export function ExportToolbar({
           <CapabilityNote capability={capability} />
         </div>
       )}
-      {/* Export preview pane — read-only, shows the currently-selected export code */}
+      {/* Export preview pane — read-only, shows the exact text that will be copied/downloaded */}
       {showExportPreview && inputCode.trim() && (
-        <div className="border-b border-border bg-muted/30">
+        <div className="border-b border-border bg-muted/30" data-testid="export-preview-pane">
           <div className="flex items-center justify-between px-3 py-1.5 border-b border-border/50">
             <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">
               Export Preview
@@ -251,21 +285,71 @@ export function ExportToolbar({
                 {outputFormat === "frontmatter" ? "YAML frontmatter" : "%%{init}%% directive"}
               </span>
             </span>
-            <button
-              type="button"
-              onClick={() => setShowExportPreview(false)}
-              aria-label="Close export preview"
-              className="text-muted-foreground/60 hover:text-muted-foreground transition-colors"
-            >
-              <svg viewBox="0 0 16 16" fill="currentColor" className="w-3 h-3">
-                <path d="M3.72 3.72a.75.75 0 011.06 0L8 6.94l3.22-3.22a.75.75 0 111.06 1.06L9.06 8l3.22 3.22a.75.75 0 11-1.06 1.06L8 9.06l-3.22 3.22a.75.75 0 01-1.06-1.06L6.94 8 3.72 4.78a.75.75 0 010-1.06z" />
-              </svg>
-            </button>
+            <div className="flex items-center gap-2">
+              {/* Copy from preview */}
+              <button
+                type="button"
+                onClick={handlePreviewCopy}
+                aria-label={previewCopied ? "Copied!" : "Copy export code from preview"}
+                title={previewCopied ? "Copied!" : "Copy this export code"}
+                className={`flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded border font-medium transition-colors ${
+                  previewCopied
+                    ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                    : "border-border/60 text-muted-foreground hover:bg-muted hover:text-foreground"
+                }`}
+              >
+                {previewCopied ? (
+                  <svg viewBox="0 0 16 16" fill="currentColor" className="w-3 h-3">
+                    <path
+                      fillRule="evenodd"
+                      d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"
+                    />
+                  </svg>
+                ) : (
+                  <svg viewBox="0 0 16 16" fill="currentColor" className="w-3 h-3">
+                    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z" />
+                    <path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z" />
+                  </svg>
+                )}
+                {previewCopied ? "Copied!" : "Copy"}
+              </button>
+              {/* Close preview */}
+              <button
+                type="button"
+                onClick={() => handleTogglePreview(false)}
+                aria-label="Close export preview"
+                className="text-muted-foreground/60 hover:text-muted-foreground transition-colors"
+              >
+                <svg viewBox="0 0 16 16" fill="currentColor" className="w-3 h-3">
+                  <path d="M3.72 3.72a.75.75 0 011.06 0L8 6.94l3.22-3.22a.75.75 0 111.06 1.06L9.06 8l3.22 3.22a.75.75 0 11-1.06 1.06L8 9.06l-3.22 3.22a.75.75 0 01-1.06-1.06L6.94 8 3.72 4.78a.75.75 0 010-1.06z" />
+                </svg>
+              </button>
+            </div>
           </div>
+
+          {/* Directive-length advisory — shown inline when the output would exceed the renderer ceiling */}
+          {directiveLengthAdvisory && (
+            <div
+              role="alert"
+              aria-label="Directive length advisory"
+              className="flex items-start gap-2 px-3 py-2 border-b border-amber-500/20 bg-amber-500/8 text-amber-700 dark:text-amber-400"
+            >
+              <svg
+                viewBox="0 0 16 16"
+                fill="currentColor"
+                className="w-3.5 h-3.5 shrink-0 mt-px"
+                aria-hidden="true"
+              >
+                <path d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0114.082 15H1.918a1.75 1.75 0 01-1.543-2.575zm1.763.707a.25.25 0 00-.44 0L1.698 13.132a.25.25 0 00.22.368h12.164a.25.25 0 00.22-.368L8.22 1.754zM9 11a1 1 0 11-2 0 1 1 0 012 0zM8.25 7a.75.75 0 01.75.75v2.5a.75.75 0 01-1.5 0v-2.5A.75.75 0 018.25 7z" />
+              </svg>
+              <p className="text-[10px] leading-snug">{directiveLengthAdvisory}</p>
+            </div>
+          )}
+
           <pre
             aria-label="Export code preview"
             aria-readonly="true"
-            className="overflow-auto max-h-40 px-3 py-2 text-[10px] font-mono text-foreground/80 whitespace-pre leading-relaxed select-all"
+            className="overflow-auto max-h-52 px-3 py-2 text-[10px] font-mono text-foreground/80 whitespace-pre leading-relaxed select-all"
           >
             {effectiveExportCode}
           </pre>
@@ -278,7 +362,7 @@ export function ExportToolbar({
         {inputCode.trim() && (
           <button
             type="button"
-            onClick={() => setShowExportPreview((v) => !v)}
+            onClick={() => handleTogglePreview(!showExportPreview)}
             title={
               showExportPreview ? "Hide export preview" : "Preview the export output before copying"
             }

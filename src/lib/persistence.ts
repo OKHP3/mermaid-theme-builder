@@ -143,6 +143,7 @@ export function clearPersistedState(): void {
   try {
     storage.removeItem(STORAGE_KEY);
     storage.removeItem(PREVIEW_MODE_KEY);
+    storage.removeItem(EXPORT_PREVIEW_OPEN_KEY);
     // Also clear the first-visit flag so the route selector re-appears on the
     // next page load — "clear all settings" means a full factory reset.
     storage.removeItem(FIRST_VISIT_KEY);
@@ -243,6 +244,43 @@ export function paletteToShareablePayload(
 // ---------------------------------------------------------------------------
 
 export const PREVIEW_MODE_KEY = "mtb.classBrowser.previewMode";
+
+// ---------------------------------------------------------------------------
+// Export-preview panel open/closed persistence
+// ---------------------------------------------------------------------------
+
+/** localStorage key for the export preview panel's collapsed state. */
+export const EXPORT_PREVIEW_OPEN_KEY = "mtb.exportPreview.open";
+
+/**
+ * Returns `true` when the user last left the export preview panel open.
+ * Defaults to `false` so new users don't see it until they toggle it.
+ */
+export function loadExportPreviewOpen(): boolean {
+  try {
+    if (typeof window === "undefined") return false;
+    return window.localStorage.getItem(EXPORT_PREVIEW_OPEN_KEY) === "true";
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Persists whether the export preview panel is open.
+ * Writes `"true"` when open; removes the key when closed (keeps storage clean).
+ */
+export function saveExportPreviewOpen(open: boolean): void {
+  try {
+    if (typeof window === "undefined") return;
+    if (open) {
+      window.localStorage.setItem(EXPORT_PREVIEW_OPEN_KEY, "true");
+    } else {
+      window.localStorage.removeItem(EXPORT_PREVIEW_OPEN_KEY);
+    }
+  } catch {
+    // Storage unavailable — ignore.
+  }
+}
 
 export function loadStoredPreviewMode(): "all" | "used" | null {
   try {
