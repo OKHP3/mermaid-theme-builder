@@ -70,3 +70,5 @@ build/
 .next/
 .vite/
 *.log
+__pycache__/
+*.pyc

@@ -15,7 +15,7 @@
  *   2. In-preview copy button gains emerald styling while the flash is active.
  *   3. onClose() is called after the 1200 ms flash + 150 ms animation (fake timers).
  *
- * The companion Playwright e2e test (e2e/promptScaffoldCopyFlash.spec.ts) covers
+ * The companion Playwright e2e test (e2e/prompt-scaffold-copy-flash.spec.ts) covers
  * the same behaviors against the running app.
  */
 

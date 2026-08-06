@@ -16,7 +16,7 @@ import { test, expect } from "@playwright/test";
  *  3. "Clear recent palette history"   → toast "Recent palette history cleared.", menu closes
  *
  * Note: The two-step confirm/cancel flow for action 2 is also covered in detail
- * by e2e/settingsMenuReset.spec.ts (Task #436). The tests here provide a
+ * by e2e/settings-menu-reset.spec.ts (Task #436). The tests here provide a
  * complementary smoke-level check within the full-actions context.
  */
 

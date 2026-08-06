@@ -8,9 +8,7 @@
   },
   "authorization_for_this_verification": "User requested an additional recursive Foundry pass and authorized up to five equilibrium-role agents in this Codex task on 2026-07-28.",
   "historical_limit": "This record verifies current post-change equality only. It does not reconstruct unrecorded prior authorization, canonical selection, pre-sync Git status, or recovery information.",
-  "self_hash_exclusions": [
-    "benchmarks/sync-verification-2026-07-28.json"
-  ],
+  "self_hash_exclusions": ["benchmarks/sync-verification-2026-07-28.json"],
   "core_file_hashes": {
     "SKILL.md": "0E549FFF561ACCC7BD167439012B3731F0F16CBB02FF9137237257D06DB6EB57",
     "agents/openai.yaml": "6127B6365675DC366434B390D70722D518759DBF9476AFDA2A616BA5CF368429",
@@ -28,7 +26,7 @@
     "references/eval-patterns.md": "AD5AE7A0E53EA09184D64090C5881B1C284575A960593FACF14D29D58F39F6F3",
     "references/grading-schema.md": "A1FD60950D0EE824C83A0FC395A7E4CCA18B64E5276A8516A577678A6911CEFE",
     "scripts/validate-skill-suite.cjs": "4A1319182012112C6BC91A9688AEEF7F75A5A946E096CF19E5DDE7BE684694AB",
-    "tests/validate-foundry-evidence.test.cjs": "5595A363A7F733D3AE5A64F0685928D5C9B270AD02C1757220F92A206C07AA8F"
+    "tests/validate-foundry-evidence.test.cjs": "09E7B8B0A6BAFABC9593ECDE9BBDDF3D7AD1A4A22B8DCF9799F7E66780959332"
   },
   "mirrors": [
     {

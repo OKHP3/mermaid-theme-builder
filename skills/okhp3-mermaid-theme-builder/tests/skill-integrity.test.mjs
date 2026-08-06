@@ -59,7 +59,7 @@ test("frontmatter contains license field", () => {
 
 test("frontmatter contains portable metadata block", () => {
   assert.ok(
-    frontmatter.includes("metadata:") && frontmatter.includes("version: \"0.5.1\""),
+    frontmatter.includes("metadata:") && frontmatter.includes("version: \"0.6.1\""),
     "Frontmatter must contain portable metadata with the current version"
   );
 });
@@ -81,10 +81,10 @@ test("skill version is not stale 0.3.0", () => {
   );
 });
 
-test("skill version is 0.5.1", () => {
+test("skill version is 0.6.1", () => {
   assert.ok(
-    skillContent.includes('"0.5.1"') || skillContent.includes("version: 0.5.1"),
-    "Expected version '0.5.1' in SKILL.md frontmatter"
+    skillContent.includes('"0.6.1"') || skillContent.includes("version: 0.6.1"),
+    "Expected version '0.6.1' in SKILL.md frontmatter"
   );
 });
 
@@ -100,28 +100,28 @@ test("SKILL.md contains 'When NOT to use' section", () => {
 
 test("SKILL.md contains workflow section", () => {
   assert.ok(
-    skillContent.includes("## 7-Step Workflow") || skillContent.includes("## 6-Step Workflow"),
+    skillContent.includes("## 7-step workflow") || skillContent.includes("## 6-step workflow"),
     "Missing workflow section"
   );
 });
 
 test("SKILL.md contains Output Modes section", () => {
-  assert.ok(skillContent.includes("## Output Modes"), "Missing '## Output Modes' section");
+  assert.ok(skillContent.includes("## Output modes"), "Missing '## Output modes' section");
 });
 
 test("SKILL.md contains Support Taxonomy section", () => {
-  assert.ok(skillContent.includes("## Support Taxonomy"), "Missing '## Support Taxonomy' section");
+  assert.ok(skillContent.includes("## Support taxonomy"), "Missing '## Support taxonomy' section");
 });
 
 test("SKILL.md contains Security and Privacy section", () => {
   assert.ok(
-    skillContent.includes("## Security and Privacy"),
-    "Missing '## Security and Privacy' section"
+    skillContent.includes("## Security and privacy"),
+    "Missing '## Security and privacy' section"
   );
 });
 
 test("SKILL.md contains Worked Examples section", () => {
-  assert.ok(skillContent.includes("## Worked Examples"), "Missing '## Worked Examples' section");
+  assert.ok(skillContent.includes("## Worked examples"), "Missing '## Worked examples' section");
 });
 
 test("SKILL.md documents Format A output mode", () => {
