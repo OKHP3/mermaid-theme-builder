@@ -247,8 +247,12 @@ Capture screenshots in this order. Each should be at 1280×800 or 1440×900.
 | 4 | Extract tab | Existing Mermaid code pasted, palette variables extracted | "Extract: reverse-engineer any Mermaid theme from code you didn't write" |
 | 5 | Reference tab | Capability matrix showing renderer × family × variable support | "31 diagram families × 5 renderers: see exactly which variables have effect where" |
 
-**Video / GIF (optional but recommended)**
-A 30-second screen recording showing: paste code → auto-detect family → pick renderer → toggle export format → copy. Captures the core loop and makes the value proposition immediately clear.
+**Video / GIF**
+File: `docs/demo-apply-tab-loop.mp4` (1280×720, H.264, ~21 s, ~671 KB)
+
+A screen recording showing: paste diagram code → Flowchart family auto-detected → GitHub renderer selected → format toggled %%{init}%% ↔ YAML → export preview opened → Copy clicked with "Copied!" flash.
+Captured programmatically via Playwright + ffmpeg (`scripts/record-demo.mjs`).
+Recapture after bumping to v1.0.0 so the version badge in the UI is correct (see Task #655).
 
 ---
 
