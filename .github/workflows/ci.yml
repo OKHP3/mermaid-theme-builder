@@ -19,6 +19,9 @@ jobs:
     name: Typecheck & Build
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    env:
+      PORT: "18624"
+      BASE_PATH: /mermaid-theme-builder/
 
     steps:
       - name: Checkout
