@@ -16,9 +16,12 @@ concurrency:
 
 jobs:
   ci:
-    name: Unit tests, typecheck, and formatting
+    name: Typecheck & Build
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    env:
+      PORT: "18624"
+      BASE_PATH: /mermaid-theme-builder/
 
     steps:
       - name: Checkout
@@ -32,6 +35,9 @@ jobs:
 
       - name: Type check
         run: pnpm run typecheck
+
+      - name: Build
+        run: pnpm run build
 
       - name: Format check (Prettier)
         run: pnpm run format
