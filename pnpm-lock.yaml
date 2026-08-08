@@ -7,8 +7,8 @@ settings:
 catalogs:
   default:
     '@replit/vite-plugin-cartographer':
-      specifier: ^0.6.0
-      version: 0.6.0
+      specifier: ^0.6.1
+      version: 0.6.1
     '@replit/vite-plugin-dev-banner':
       specifier: ^0.1.2
       version: 0.1.2
@@ -148,7 +148,7 @@ importers:
         version: 1.61.1
       '@replit/vite-plugin-cartographer':
         specifier: 'catalog:'
-        version: 0.6.0
+        version: 0.6.1
       '@replit/vite-plugin-dev-banner':
         specifier: 'catalog:'
         version: 0.1.2
@@ -561,8 +561,8 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
 
-  '@replit/vite-plugin-cartographer@0.6.0':
-    resolution: {integrity: sha512-RTafAJ5ZrKsA9m6SDgjSufFJM6XUWm6WRM46/2ozEygjJhmC6xew+DcEQHg+B3WCIncH07qUPgI0EEurZyg+Ag==}
+  '@replit/vite-plugin-cartographer@0.6.1':
+    resolution: {integrity: sha512-t1TBE22lctrkKBB60b8K6D0BA4teO/mw9++VMEyRw2ASNZZ0Nbgmjw+ftybrl1H66mg3tSNsx204QbbeAjMsfA==}
 
   '@replit/vite-plugin-dev-banner@0.1.2':
     resolution: {integrity: sha512-YfW3U1xKnLrqvSiTzXeEX8AG+Vpz7XwBsJHNvGbp841AE1mLvishMQi2Zw7ApyHp+9EMGthXuCjP+mLbl3IuGA==}
@@ -2524,7 +2524,7 @@ snapshots:
     dependencies:
       react: 19.2.7
 
-  '@replit/vite-plugin-cartographer@0.6.0':
+  '@replit/vite-plugin-cartographer@0.6.1':
     dependencies:
       '@babel/parser': 7.29.0
       '@babel/traverse': 7.29.0
