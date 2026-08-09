@@ -39,15 +39,15 @@ packages:
   - "artifacts/*"
 
 catalog:
-  "@replit/vite-plugin-cartographer": ^0.6.0
+  "@replit/vite-plugin-cartographer": ^0.6.1
   "@replit/vite-plugin-dev-banner": ^0.1.2
   "@replit/vite-plugin-runtime-error-modal": ^0.0.6
   "@tailwindcss/vite": ^4.3.2
   "@tanstack/react-query": ^5.90.21
-  "@types/node": ^26.1.1
+  "@types/node": ^26.1.2
   "@types/react": ^19.2.17
   "@types/react-dom": ^19.2.3
-  "@vitejs/plugin-react": ^6.0.3
+  "@vitejs/plugin-react": ^6.0.5
   class-variance-authority: ^0.7.1
   clsx: ^2.1.1
   drizzle-orm: ^0.45.2
