@@ -109,6 +109,7 @@ After executing: re-run the audit script, run `git status --short`, and confirm 
 ## Resources
 
 - `scripts/audit-repo.py` — read-only branch + naming + detritus audit for a single local checkout. Safe to run anytime; makes no changes.
+- `scripts/git-decrapify.sh` — interactive bash function that deletes local `subrepl-*` / `agent/*` branches and merged branches in one pass. Source it or paste the function body into `~/.zshrc` / `~/.bashrc`, then run `git-decrapify [base-branch]` from any Replit repo. Prompts before every deletion; never touches remote refs or the checked-out branch.
 - `references/naming-conventions.md` — the kebab-case default and its structural exceptions, condensed for reuse across any Repl (not tied to a specific brand's folder taxonomy).
 
 ## About
