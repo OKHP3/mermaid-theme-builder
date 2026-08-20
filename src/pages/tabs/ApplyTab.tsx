@@ -140,6 +140,7 @@ export function ApplyTab({
   const [textareaExpanded, setTextareaExpanded] = useState(false);
   const [activeDiagramIdx, setActiveDiagramIdx] = useState(0);
   const [familyOverride, setFamilyOverride] = useState<DiagramFamily | null>(null);
+  const [inspectorSection, setInspectorSection] = useState<"colors" | "type">("colors");
 
   const rendererProfile = useMemo(() => getRendererById(rendererTarget), [rendererTarget]);
   const rendererLookWarning = useMemo((): string | null => {
@@ -381,140 +382,343 @@ export function ApplyTab({
   );
 
   return (
-    <div className="flex flex-col md:h-full md:overflow-hidden">
-      <PaletteSelectorBar
-        allPalettes={allPalettes}
-        selectedPaletteId={selectedPaletteId}
-        customColors={customColors}
-        onSelectPalette={onSelectPalette}
-        tileIdPrefix="apply-palette-tile"
-        myThemeSlots={myThemeSlots}
-        activeMyThemeSlotId={activeMyThemeSlotId}
-        onSelectMyThemeSlot={onSelectMyThemeSlot}
-        onAddMyThemeSlot={onAddMyThemeSlot}
-        onDeleteMyThemeSlot={onDeleteMyThemeSlot}
-        onExportMyThemeSlot={onExportMyThemeSlot}
-        onDuplicateMyThemeSlot={onDuplicateMyThemeSlot}
-        onMoveMyThemeSlotUp={onMoveMyThemeSlotUp}
-        onMoveMyThemeSlotDown={onMoveMyThemeSlotDown}
-        onImportAsNewSlot={onImportAsNewSlot}
-        onShowToast={onShowToast}
-        onShowProfileDetails={onShowProfileDetails}
-      />
+    <div className="theme-workbench flex flex-col md:h-full md:overflow-hidden">
+      <div className="theme-workbench-layout">
+        <aside className="theme-workbench-rail print-hide" aria-label="Apply workspace sections">
+          <button
+            type="button"
+            className="theme-workbench-rail-button theme-workbench-rail-active"
+            aria-label="Theme workspace"
+            title="Theme workspace"
+          >
+            <span aria-hidden="true">✦</span>
+          </button>
+          <button
+            type="button"
+            className="theme-workbench-rail-button"
+            aria-label="Preview workspace"
+            title="Preview workspace"
+            onClick={() => onPreviewModeChange("themed")}
+          >
+            <span aria-hidden="true">◉</span>
+          </button>
+          <button
+            type="button"
+            className="theme-workbench-rail-button"
+            aria-label="Palette inspector"
+            title="Palette inspector"
+            onClick={() => {
+              setInspectorSection("colors");
+              setShowColorEditor(true);
+            }}
+          >
+            <span aria-hidden="true">≡</span>
+          </button>
+          <span className="theme-workbench-rail-spacer" />
+          <button
+            type="button"
+            className="theme-workbench-rail-button"
+            aria-label="Switch to Compose"
+            title="Switch to Compose"
+            onClick={() => onSwitchTab("compose")}
+          >
+            <span aria-hidden="true">?</span>
+          </button>
+        </aside>
 
-      <DiagramDetectHeader
-        detection={detection}
-        effectiveDetection={effectiveDetection}
-        familyOverride={familyOverride}
-        onFamilyOverrideChange={setFamilyOverride}
-        look={look}
-        onLookChange={onLookChange}
-        rendererTarget={rendererTarget}
-        onRendererTargetChange={onRendererTargetChange}
-        rendererProfile={rendererProfile}
-        rendererLookWarning={rendererLookWarning}
-        showSyntaxTipButton={
-          familyHintDismissed && !!getFamilySyntaxHint(effectiveDetection.family)
-        }
-        onResetSyntaxHints={onResetSyntaxHints}
-      />
-
-      <PreflightPanel
-        exportAdvisories={exportAdvisories}
-        advisoryDismissed={advisoryDismissed}
-        onDismissAdvisory={() => setAdvisoryDismissed(true)}
-        capability={effectiveDetection.capability}
-        family={effectiveDetection.family}
-        hintResetToken={hintResetToken}
-        onFamilyHintDismiss={() => setFamilyHintDismissed(true)}
-        rendererProfile={rendererProfile}
-        rendererLookWarning={rendererLookWarning}
-        look={look}
-        selectedPalette={selectedPalette}
-        outputFormat={outputFormat}
-        onOutputFormatChange={onOutputFormatChange}
-        inputCode={inputCode}
-      />
-
-      <div className="md:flex-1 md:overflow-hidden flex flex-col md:flex-row md:min-h-0">
-        <div className="flex flex-col md:flex-none md:w-[35%] border-b md:border-b-0 md:border-r border-border md:min-h-0 print-hide">
-          {isExtracted && /^\s*classDef\s+/m.test(inputCode) && (
-            <div className="px-3 py-1.5 flex items-start gap-1.5 bg-primary/5 border-b border-primary/20">
-              <svg
-                viewBox="0 0 16 16"
-                fill="currentColor"
-                className="w-3 h-3 text-primary shrink-0 mt-0.5"
-                aria-hidden="true"
-              >
-                <path d="M8 1a7 7 0 100 14A7 7 0 008 1zm.75 10.5h-1.5v-5h1.5v5zm0-6.5h-1.5V3.5h1.5V5z" />
-              </svg>
-              <p className="text-[10px] text-primary/80 leading-snug">
-                classDef overrides from Extract are in this code — edit them here or re-extract to
-                tweak further.
-              </p>
+        <section className="theme-workbench-main">
+          <div className="theme-workbench-command">
+            <div className="theme-workbench-command-copy">
+              <span className="theme-workbench-eyebrow">Apply / theme 01</span>
+              <strong>{effectiveThemeName || selectedPalette.name}</strong>
             </div>
-          )}
-          <div className="flex items-center justify-between px-3 py-1.5 border-b border-border bg-card/20 flex-none gap-2">
-            <span className="text-xs font-medium text-muted-foreground">Diagram Code</span>
-            <button
-              type="button"
-              onClick={() => setTextareaExpanded((v) => !v)}
-              className="md:hidden text-[10px] font-medium text-muted-foreground hover:text-foreground px-1.5 py-0.5 rounded border border-border/60 hover:border-border transition-colors inline-flex items-center gap-1"
-              aria-label={textareaExpanded ? "Collapse code editor" : "Expand code editor"}
-            >
-              {textareaExpanded ? "Collapse" : "Expand"}
-            </button>
+            <div className="theme-workbench-palette">
+              <PaletteSelectorBar
+                allPalettes={allPalettes}
+                selectedPaletteId={selectedPaletteId}
+                customColors={customColors}
+                onSelectPalette={onSelectPalette}
+                tileIdPrefix="apply-palette-tile"
+                myThemeSlots={myThemeSlots}
+                activeMyThemeSlotId={activeMyThemeSlotId}
+                onSelectMyThemeSlot={onSelectMyThemeSlot}
+                onAddMyThemeSlot={onAddMyThemeSlot}
+                onDeleteMyThemeSlot={onDeleteMyThemeSlot}
+                onExportMyThemeSlot={onExportMyThemeSlot}
+                onDuplicateMyThemeSlot={onDuplicateMyThemeSlot}
+                onMoveMyThemeSlotUp={onMoveMyThemeSlotUp}
+                onMoveMyThemeSlotDown={onMoveMyThemeSlotDown}
+                onImportAsNewSlot={onImportAsNewSlot}
+                onShowToast={onShowToast}
+                onShowProfileDetails={onShowProfileDetails}
+              />
+            </div>
           </div>
-          <textarea
-            value={inputCode}
-            onChange={(e) => onInputChange(e.target.value)}
-            placeholder="Paste your Mermaid diagram here…"
-            aria-label="Mermaid diagram code input"
-            className={`forge-code-panel flex-1 w-full p-3 text-xs font-mono resize-none md:min-h-0 transition-all ${
-              textareaExpanded ? "min-h-[60vh]" : "min-h-[160px]"
-            }`}
-            spellCheck={false}
-          />
-        </div>
 
-        <div className="flex flex-col md:flex-none md:w-[65%] md:min-h-0 md:overflow-hidden">
-          <DiagramPreviewPanel
-            previewMode={previewMode}
-            onPreviewModeChange={setPreviewMode}
-            codeEditorOverride={codeEditorOverride}
-            onCodeEditorOverrideChange={setCodeEditorOverride}
-            effectiveExportCode={effectiveExportCode}
-            activeDiagramCode={activeDiagramCode}
-            themedCode={themedCode}
-            typography={typography}
-            isMultiDiagram={isMultiDiagram}
-            diagrams={diagrams}
-            safeDiagramIdx={safeDiagramIdx}
-            onActiveDiagramIdxChange={setActiveDiagramIdx}
-          />
-          <ExportToolbar
-            warnings={warnings}
-            showCapabilityNote={!!showCapabilityNote}
-            capability={effectiveDetection.capability}
-            hasCustomizations={hasCustomizations}
-            onOpenColorEditor={() => setShowColorEditor(true)}
-            inputCode={inputCode}
-            exportCode={exportCode}
-            effectiveExportCode={effectiveExportCode}
-            selectedPalette={selectedPalette}
-            exportOptions={exportOptions}
-            effectiveThemeName={effectiveThemeName}
-            themedCode={themedCode}
-            typography={typography}
-            allPalettes={allPalettes}
-            rendererProfile={rendererProfile}
-            promptIsThemeOnly={promptIsThemeOnly}
-            onShowScaffoldModal={() => setShowScaffoldModal(true)}
-            onShowToast={onShowToast}
-            outputFormat={outputFormat}
-            onOutputFormatChange={onOutputFormatChange}
-          />
-        </div>
+          <div className="theme-workbench-stage-head">
+            <div>
+              <span className="theme-workbench-stage-title">Theme preview</span>
+              <span className="theme-workbench-stage-subtitle">
+                / {effectiveDetection.label}
+              </span>
+            </div>
+            <div className="theme-workbench-stage-tools">
+              <button
+                type="button"
+                className="theme-workbench-ghost-button"
+                onClick={() => setPreviewMode("themed")}
+              >
+                ◉ Preview
+              </button>
+              <button
+                type="button"
+                className="theme-workbench-ghost-button"
+                onClick={() => setShowColorEditor(true)}
+              >
+                ≡ Edit colors
+              </button>
+            </div>
+          </div>
+
+          <div className="theme-workbench-content">
+            <aside className="theme-workbench-settings">
+              <div className="theme-workbench-panel-heading">
+                <span>Theme controls</span>
+                <span className="theme-workbench-count">04</span>
+              </div>
+              <div className="theme-workbench-setting">
+                <span className="theme-workbench-setting-label">Diagram code</span>
+                <button
+                  type="button"
+                  className="theme-workbench-select"
+                  onClick={() => document.querySelector<HTMLTextAreaElement>(
+                    '[aria-label="Mermaid diagram code input"]'
+                  )?.focus()}
+                >
+                  {effectiveDetection.label}
+                  <span>⌄</span>
+                </button>
+              </div>
+              <div className="theme-workbench-setting">
+                <span className="theme-workbench-setting-label">Rendering mode</span>
+                <div className="theme-workbench-chips">
+                  <button type="button" className="theme-workbench-chip theme-workbench-chip-selected">
+                    SVG
+                  </button>
+                  <button
+                    type="button"
+                    className="theme-workbench-chip"
+                    onClick={() => setPreviewMode("original")}
+                  >
+                    Canvas
+                  </button>
+                </div>
+              </div>
+              <div className="theme-workbench-setting">
+                <span className="theme-workbench-setting-label">Look</span>
+                <div className="theme-workbench-chips">
+                  {(["classic", "neo", "handDrawn"] as const).map((option) => (
+                    <button
+                      key={option}
+                      type="button"
+                      className={`theme-workbench-chip ${look === option ? "theme-workbench-chip-selected" : ""}`}
+                      onClick={() => onLookChange(option)}
+                    >
+                      {option === "handDrawn" ? "Hand" : option}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="theme-workbench-setting">
+                <span className="theme-workbench-setting-label">Font family</span>
+                <div className="theme-workbench-select theme-workbench-select-static">
+                  {selectedPalette.colors.find((color) => color.key === "fontFamily")?.value ||
+                    "System sans"}
+                  <span>⌄</span>
+                </div>
+              </div>
+            </aside>
+
+            <section className="theme-workbench-canvas" aria-label="Diagram preview">
+              <DiagramDetectHeader
+                detection={detection}
+                effectiveDetection={effectiveDetection}
+                familyOverride={familyOverride}
+                onFamilyOverrideChange={setFamilyOverride}
+                look={look}
+                onLookChange={onLookChange}
+                rendererTarget={rendererTarget}
+                onRendererTargetChange={onRendererTargetChange}
+                rendererProfile={rendererProfile}
+                rendererLookWarning={rendererLookWarning}
+                showSyntaxTipButton={
+                  familyHintDismissed && !!getFamilySyntaxHint(effectiveDetection.family)
+                }
+                onResetSyntaxHints={onResetSyntaxHints}
+              />
+              <PreflightPanel
+                exportAdvisories={exportAdvisories}
+                advisoryDismissed={advisoryDismissed}
+                onDismissAdvisory={() => setAdvisoryDismissed(true)}
+                capability={effectiveDetection.capability}
+                family={effectiveDetection.family}
+                hintResetToken={hintResetToken}
+                onFamilyHintDismiss={() => setFamilyHintDismissed(true)}
+                rendererProfile={rendererProfile}
+                rendererLookWarning={rendererLookWarning}
+                look={look}
+                selectedPalette={selectedPalette}
+                outputFormat={outputFormat}
+                onOutputFormatChange={onOutputFormatChange}
+                inputCode={inputCode}
+              />
+              <div className="theme-workbench-code-row">
+                {isExtracted && /^\s*classDef\s+/m.test(inputCode) && (
+                  <div className="px-3 py-1.5 flex items-start gap-1.5 bg-primary/5 border-b border-primary/20">
+                    <p className="text-[10px] text-primary/80 leading-snug">
+                      classDef overrides from Extract are in this code — edit them here or re-extract to
+                      tweak further.
+                    </p>
+                  </div>
+                )}
+                <div className="theme-workbench-code-heading">
+                  <span>Diagram Code</span>
+                  <button
+                    type="button"
+                    onClick={() => setTextareaExpanded((v) => !v)}
+                    className="md:hidden text-[10px] font-medium text-muted-foreground hover:text-foreground px-1.5 py-0.5 rounded border border-border/60 hover:border-border transition-colors inline-flex items-center gap-1"
+                    aria-label={textareaExpanded ? "Collapse code editor" : "Expand code editor"}
+                  >
+                    {textareaExpanded ? "Collapse" : "Expand"}
+                  </button>
+                </div>
+                <textarea
+                  value={inputCode}
+                  onChange={(e) => onInputChange(e.target.value)}
+                  placeholder="Paste your Mermaid diagram here…"
+                  aria-label="Mermaid diagram code input"
+                  className={`forge-code-panel theme-workbench-textarea w-full p-3 text-xs font-mono resize-none ${
+                    textareaExpanded ? "min-h-[60vh]" : "min-h-[160px]"
+                  }`}
+                  spellCheck={false}
+                />
+              </div>
+              <div className="theme-workbench-preview">
+                <DiagramPreviewPanel
+                  previewMode={previewMode}
+                  onPreviewModeChange={setPreviewMode}
+                  codeEditorOverride={codeEditorOverride}
+                  onCodeEditorOverrideChange={setCodeEditorOverride}
+                  effectiveExportCode={effectiveExportCode}
+                  activeDiagramCode={activeDiagramCode}
+                  themedCode={themedCode}
+                  typography={typography}
+                  isMultiDiagram={isMultiDiagram}
+                  diagrams={diagrams}
+                  safeDiagramIdx={safeDiagramIdx}
+                  onActiveDiagramIdxChange={setActiveDiagramIdx}
+                />
+              </div>
+            </section>
+
+            <aside className="theme-workbench-inspector">
+              <div className="theme-workbench-inspector-tabs">
+                <button
+                  type="button"
+                  className={inspectorSection === "colors" ? "active" : ""}
+                  onClick={() => setInspectorSection("colors")}
+                >
+                  Colors
+                </button>
+                <button
+                  type="button"
+                  className={inspectorSection === "type" ? "active" : ""}
+                  onClick={() => setInspectorSection("type")}
+                >
+                  Type
+                </button>
+              </div>
+              <div className="theme-workbench-inspector-body">
+                {inspectorSection === "colors" ? (
+                  <>
+                    <p className="theme-workbench-inspector-note">
+                      The active palette governs every diagram family. Changes stay compatible with
+                      the renderer.
+                    </p>
+                    {selectedPalette.colors.slice(0, 4).map((color) => (
+                      <button
+                        type="button"
+                        className="theme-workbench-swatch-row"
+                        key={color.key}
+                        onClick={() => setShowColorEditor(true)}
+                      >
+                        <span className="theme-workbench-swatch" style={{ background: color.value }} />
+                        <span>
+                          <strong>{color.label}</strong>
+                          <small>{color.value}</small>
+                        </span>
+                      </button>
+                    ))}
+                  </>
+                ) : (
+                  <>
+                    <p className="theme-workbench-inspector-note">
+                      A restrained type scale keeps labels readable when diagrams get dense.
+                    </p>
+                    <div className="theme-workbench-type-sample">
+                      <strong>{typography.diagramTitle.fontFamily || "System sans"}</strong>
+                      <small>Diagram title · {typography.diagramTitle.fontSize || "16"} px</small>
+                    </div>
+                    {[
+                      ["Node label", typography.nodeLabel],
+                      ["Edge label", typography.edgeLabel],
+                      ["Subgraph", typography.subgraphTitle],
+                    ].map(([label, tier]) => (
+                      <div className="theme-workbench-type-row" key={label as string}>
+                        <span>{label as string}</span>
+                        <span>{(tier as TypographySettings["nodeLabel"]).fontSize || "inherit"} px</span>
+                      </div>
+                    ))}
+                  </>
+                )}
+              </div>
+            </aside>
+          </div>
+
+          <div className="theme-workbench-export">
+            <div className="theme-workbench-export-copy">
+              <span className="theme-workbench-export-mark">✦</span>
+              <div>
+                <strong>Ready for the renderer</strong>
+                <small>
+                  {selectedPalette.colors.length} colors · 5 type tiers · {warnings.length} warnings
+                </small>
+              </div>
+            </div>
+            <ExportToolbar
+              warnings={warnings}
+              showCapabilityNote={!!showCapabilityNote}
+              capability={effectiveDetection.capability}
+              hasCustomizations={hasCustomizations}
+              onOpenColorEditor={() => setShowColorEditor(true)}
+              inputCode={inputCode}
+              exportCode={exportCode}
+              effectiveExportCode={effectiveExportCode}
+              selectedPalette={selectedPalette}
+              exportOptions={exportOptions}
+              effectiveThemeName={effectiveThemeName}
+              themedCode={themedCode}
+              typography={typography}
+              allPalettes={allPalettes}
+              rendererProfile={rendererProfile}
+              promptIsThemeOnly={promptIsThemeOnly}
+              onShowScaffoldModal={() => setShowScaffoldModal(true)}
+              onShowToast={onShowToast}
+              outputFormat={outputFormat}
+              onOutputFormatChange={onOutputFormatChange}
+            />
+          </div>
+        </section>
       </div>
 
       {showColorEditor && (
