@@ -821,6 +821,54 @@ describe("generateTypographyCss — snapshots", () => {
     `);
   });
 
+  it("font-family-only diagramTitle change: emits its title selector with one declaration", () => {
+    const settings: TypographySettings = {
+      ...DEFAULT_TYPOGRAPHY,
+      diagramTitle: { fontSize: 20, fontFamily: "Alfa Slab One" },
+    };
+    expect(generateTypographyCss(settings)).toMatchInlineSnapshot(`
+      "/* Mermaid typography hierarchy — flowchart/subgraph targets */
+      /* Diagram Title */
+      .label { font-family: Alfa Slab One; }"
+    `);
+  });
+
+  it("font-family-only subgraphTitle change: emits its cluster selector with one declaration", () => {
+    const settings: TypographySettings = {
+      ...DEFAULT_TYPOGRAPHY,
+      subgraphTitle: { fontSize: 16, fontFamily: "Space Grotesk" },
+    };
+    expect(generateTypographyCss(settings)).toMatchInlineSnapshot(`
+      "/* Mermaid typography hierarchy — flowchart/subgraph targets */
+      /* Subgraph Title */
+      .cluster-label { font-family: Space Grotesk; }"
+    `);
+  });
+
+  it("font-family-only nestedSubgraphTitle change: emits its nested selector with one declaration", () => {
+    const settings: TypographySettings = {
+      ...DEFAULT_TYPOGRAPHY,
+      nestedSubgraphTitle: { fontSize: 14, fontFamily: "Source Serif" },
+    };
+    expect(generateTypographyCss(settings)).toMatchInlineSnapshot(`
+      "/* Mermaid typography hierarchy — flowchart/subgraph targets */
+      /* Nested Subgraph */
+      .cluster-label .nodeLabel { font-family: Source Serif; }"
+    `);
+  });
+
+  it("font-family-only edgeLabel change: emits its edge selector with one declaration", () => {
+    const settings: TypographySettings = {
+      ...DEFAULT_TYPOGRAPHY,
+      edgeLabel: { fontSize: 12, fontFamily: "JetBrains Mono" },
+    };
+    expect(generateTypographyCss(settings)).toMatchInlineSnapshot(`
+      "/* Mermaid typography hierarchy — flowchart/subgraph targets */
+      /* Edge Label */
+      .edgeLabel { font-family: JetBrains Mono; }"
+    `);
+  });
+
   it("fully-modified settings with fallback stacks: all five tiers in order", () => {
     const settings: TypographySettings = {
       diagramTitle: { fontSize: 24, fontFamily: "Alfa Slab One" },
