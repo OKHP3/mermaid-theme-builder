@@ -1270,6 +1270,87 @@ describe("ComposeTab — FontFamilySelect in typography tier rows", () => {
     expect(preview!.textContent?.trim()).toBe("Aa");
   });
 
+  it("keeps the other four tier font families empty when Diagram Title picks a preset", () => {
+    const onChange = vi.fn();
+    const { container } = render(
+      createElement(ComposeTab, makeProps(DEFAULT_TYPOGRAPHY, onChange))
+    );
+
+    const select = container.querySelector(
+      '[aria-label="Diagram Title font family preset"]'
+    ) as HTMLSelectElement | null;
+    expect(select).not.toBeNull();
+
+    fireEvent.change(select!, { target: { value: "Alfa Slab One, Georgia, serif" } });
+
+    const updated = onChange.mock.calls.at(-1)?.[0] as TypographySettings;
+    expect(updated.diagramTitle.fontFamily).toBe("Alfa Slab One, Georgia, serif");
+    for (const key of ["subgraphTitle", "nestedSubgraphTitle", "nodeLabel", "edgeLabel"] as const) {
+      expect(updated[key].fontFamily).toBe("");
+    }
+  });
+
+  it("keeps all five preset previews independent after sequential selections", () => {
+    const selections = [
+      {
+        key: "diagramTitle",
+        tierLabel: "Diagram Title",
+        fontFamily: "Alfa Slab One, Georgia, serif",
+      },
+      {
+        key: "subgraphTitle",
+        tierLabel: "Subgraph Title",
+        fontFamily: "DM Sans, system-ui, sans-serif",
+      },
+      {
+        key: "nestedSubgraphTitle",
+        tierLabel: "Nested Subgraph",
+        fontFamily: "JetBrains Mono, Courier New, monospace",
+      },
+      {
+        key: "nodeLabel",
+        tierLabel: "Node Label",
+        fontFamily: "Inter, system-ui, sans-serif",
+      },
+      {
+        key: "edgeLabel",
+        tierLabel: "Edge Label",
+        fontFamily: "Georgia, Cambria, serif",
+      },
+    ] as const;
+    const onChange = vi.fn();
+    let typography = DEFAULT_TYPOGRAPHY;
+    const { container, rerender } = render(
+      createElement(ComposeTab, makeProps(typography, onChange))
+    );
+
+    for (const { tierLabel, fontFamily } of selections) {
+      const select = container.querySelector(
+        `[aria-label="${tierLabel} font family preset"]`
+      ) as HTMLSelectElement | null;
+      expect(select).not.toBeNull();
+
+      fireEvent.change(select!, { target: { value: fontFamily } });
+      typography = onChange.mock.calls.at(-1)?.[0] as TypographySettings;
+      rerender(createElement(ComposeTab, makeProps(typography, onChange)));
+    }
+
+    const previewStyles = selections.map(({ key, tierLabel, fontFamily }) => {
+      expect(typography[key].fontFamily).toBe(fontFamily);
+      const preview = container.querySelector(
+        `[aria-label="${tierLabel} font family preview"]`
+      ) as HTMLElement | null;
+      expect(preview).not.toBeNull();
+      // happy-dom serializes multi-word names inside a stack as `"DM Sans"`;
+      // normalize those display-only quotes before comparing to the input value.
+      const style = preview!.style.fontFamily.replace(/(["'])(.*?)\1/g, "$2");
+      expect(style).toBe(fontFamily);
+      return style;
+    });
+
+    expect(new Set(previewStyles).size).toBe(5);
+  });
+
   it("typing a custom font name in the text input calls onTypographyChange with that value", () => {
     const onChange = vi.fn();
     const { container } = render(
