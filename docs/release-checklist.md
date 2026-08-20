@@ -137,12 +137,14 @@ pnpm run check:version-strings
 
 ## Pre-release: screenshot
 
-Retake the README screenshot so `docs/screenshot-v0.5.0.jpg` stays current:
+Retake the README screenshot for the release version and update the stable
+`docs/screenshot-latest.jpg` README alias:
 
 ```bash
 pnpm build && pnpm serve &
 pnpm run capture-screenshot
-# then: git add docs/screenshot-v0.5.0.jpg && git commit -m "chore: refresh README screenshot for vX.Y.Z"
+# then: git add docs/screenshot-vX.Y.Z.jpg docs/screenshot-latest.jpg
+#       git commit -m "chore: refresh README screenshot for vX.Y.Z"
 ```
 
 Alternatively, the `capture-screenshot` job in `release-gate.yml` runs automatically
@@ -156,8 +158,8 @@ non-blocking and the PR remains available for a maintainer to review and merge
 manually. Enable GitHub's **Allow auto-merge** repository setting to let these
 updates merge automatically after required checks and approvals pass.
 
-- [ ] `docs/screenshot-v0.5.0.jpg` visually reflects the current UI
-- [ ] README.md `![screenshot]` link still resolves (filename unchanged for v0.5.x)
+- [ ] `docs/screenshot-vX.Y.Z.jpg` visually reflects the release UI and preserves prior release screenshots
+- [ ] README.md `![screenshot]` link resolves through `docs/screenshot-latest.jpg`
 
 ---
 

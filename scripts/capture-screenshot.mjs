@@ -3,7 +3,7 @@
  * capture-screenshot.mjs
  *
  * Takes a fresh JPEG screenshot of the Mermaid Theme Builder and writes it to
- * docs/screenshot-v0.5.0.jpg, overwriting the previous image.
+ * a versioned file in docs/ plus docs/screenshot-latest.jpg for the README.
  *
  * Usage:
  *   pnpm run capture-screenshot                 # uses default preview URL
@@ -17,7 +17,7 @@
  * invoking this script, so no extra flags are needed there.
  */
 
-import { existsSync, mkdirSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync } from "node:fs";
 import { dirname, resolve, delimiter, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium } from "@playwright/test";
@@ -30,7 +30,18 @@ const root = resolve(__dirname, "..");
 // ---------------------------------------------------------------------------
 
 const DEFAULT_URL = "http://localhost:4173/mermaid-theme-builder/";
-const OUTPUT_PATH = resolve(root, "docs/screenshot-v0.5.0.jpg");
+const packageVersion = JSON.parse(readFileSync(resolve(root, "package.json"), "utf8")).version;
+const releaseTag = process.env.RELEASE_TAG?.trim();
+const version = (releaseTag || packageVersion).replace(/^v/, "");
+
+if (!/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$/.test(version)) {
+  throw new Error(
+    `Expected RELEASE_TAG or package version to be a semantic version; received "${releaseTag || packageVersion}".`
+  );
+}
+
+const OUTPUT_PATH = resolve(root, `docs/screenshot-v${version}.jpg`);
+const LATEST_OUTPUT_PATH = resolve(root, "docs/screenshot-latest.jpg");
 const VIEWPORT = { width: 1280, height: 800 };
 
 // Parse --url flag.
@@ -71,6 +82,7 @@ if (!process.env.CI) {
 
 console.log(`Capturing screenshot of ${targetUrl}`);
 console.log(`Output: ${OUTPUT_PATH}`);
+console.log(`README alias: ${LATEST_OUTPUT_PATH}`);
 
 // Ensure docs/ exists (it should, but be safe).
 mkdirSync(dirname(OUTPUT_PATH), { recursive: true });
@@ -92,8 +104,9 @@ try {
 
   // Save as JPEG at quality 90 — matches the existing docs screenshot format.
   await page.screenshot({ path: OUTPUT_PATH, type: "jpeg", quality: 90 });
+  copyFileSync(OUTPUT_PATH, LATEST_OUTPUT_PATH);
 
-  console.log("Screenshot saved.");
+  console.log("Screenshot and README alias saved.");
 } finally {
   await browser.close();
 }
