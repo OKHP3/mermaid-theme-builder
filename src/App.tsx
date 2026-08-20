@@ -1223,37 +1223,37 @@ export function AppShell() {
         warnValues: Array<{ key: string; value: string }>;
       }
     ) => {
-      setMyThemeSlots((prev) => {
-        if (prev.length >= 3) {
-          setToast("All 3 My Theme slots are in use — delete one before importing.");
-          return prev;
-        }
-        const num = nextSlotNumber(prev);
-        if (num === null) return prev;
-        const newSlot = createDefaultMyThemeSlot(num, palette.colors);
-        newSlot.name = palette.name;
-        setActiveMyThemeSlotId(newSlot.id);
-        if (warnings.invalidValues.length > 0 || warnings.warnValues.length > 0) {
-          const problemKeys = [
-            ...warnings.invalidValues.map((e) => e.key),
-            ...warnings.warnValues.map((e) => e.key),
-          ];
-          setImportDiagnostics({
-            missingKeys: [],
-            unknownKeys: [],
-            invalidValues: warnings.invalidValues,
-            warnValues: warnings.warnValues,
-          });
-          setToast(
-            `Imported "${palette.name}" into a new My Theme slot. CSS values may not render in Mermaid: ${problemKeys.join(", ")}.`
-          );
-        } else {
-          setToast(`Imported "${palette.name}" into a new My Theme slot.`);
-        }
-        return [...prev, newSlot];
-      });
+      if (myThemeSlots.length >= 3) {
+        setToast("All 3 My Theme slots are in use — delete one before importing.");
+        return;
+      }
+      const num = nextSlotNumber(myThemeSlots);
+      if (num === null) return;
+
+      const newSlot = createDefaultMyThemeSlot(num, palette.colors);
+      newSlot.name = palette.name;
+      setMyThemeSlots((prev) => [...prev, newSlot]);
+      setActiveMyThemeSlotId(newSlot.id);
+
+      if (warnings.invalidValues.length > 0 || warnings.warnValues.length > 0) {
+        const problemKeys = [
+          ...warnings.invalidValues.map((e) => e.key),
+          ...warnings.warnValues.map((e) => e.key),
+        ];
+        setImportDiagnostics({
+          missingKeys: [],
+          unknownKeys: [],
+          invalidValues: warnings.invalidValues,
+          warnValues: warnings.warnValues,
+        });
+        setToast(
+          `Imported "${palette.name}" into a new My Theme slot. CSS values may not render in Mermaid: ${problemKeys.join(", ")}.`
+        );
+      } else {
+        setToast(`Imported "${palette.name}" into a new My Theme slot.`);
+      }
     },
-    []
+    [myThemeSlots]
   );
 
   const handleDuplicateMyThemeSlot = useCallback(
