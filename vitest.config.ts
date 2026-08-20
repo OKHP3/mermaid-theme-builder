@@ -9,20 +9,8 @@ export default defineConfig({
     setupFiles: ["src/__tests__/setup/storage-isolation.ts"],
     clearMocks: true,
     testTimeout: 10000,
-    environmentMatchGlobs: [
-      ["src/__tests__/applyTab.test.ts", "happy-dom"],
-      ["src/__tests__/exporters-browser.test.ts", "happy-dom"],
-      ["src/__tests__/classBrowserLiveRegion.test.tsx", "happy-dom"],
-      ["src/__tests__/classBrowserClipboard.test.tsx", "happy-dom"],
-      ["src/__tests__/accessibility.test.tsx", "happy-dom"],
-      ["src/__tests__/examplesTabPersistence.test.tsx", "happy-dom"],
-      ["src/__tests__/familySyntaxHint.test.tsx", "happy-dom"],
-      ["src/__tests__/previewPicker.test.ts", "happy-dom"],
-      ["src/__tests__/promptScaffoldCopyFlash.test.tsx", "happy-dom"],
-      ["src/__tests__/classBrowserPreviewToggle.test.tsx", "happy-dom"],
-      ["src/__tests__/diagramSelector.test.tsx", "happy-dom"],
-      ["src/__tests__/styleCleanup.test.ts", "happy-dom"],
-    ],
+    // Browser-facing tests declare their environment with a
+    // `// @vitest-environment happy-dom` docblock in the test file.
     include: ["src/__tests__/**/*.test.ts", "src/__tests__/**/*.test.tsx"],
     globals: false,
   },
