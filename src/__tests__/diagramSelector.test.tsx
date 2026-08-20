@@ -549,4 +549,53 @@ describe("ApplyTab — code-editor override: auto-clear is scoped to the active 
       container.querySelector("textarea[aria-label='Styled code output — edit before copying']")
     ).toBeNull();
   });
+
+  it("font-size change immediately clears only the active diagram's override; other overrides are invalidated lazily on next visit", async () => {
+    // fontSize contributes to exportCode for every diagram. Changing it while
+    // diagram 1 is active must clear that stale edit now, then clear diagram 0
+    // only when the hook next compares diagram 0's computed output.
+    const { container, rerender } = render(createElement(ApplyTab, makeProps(MULTI_INPUT)));
+
+    // 1. Create override[0].
+    await act(async () => {
+      fireEvent.click(screen.getByTitle("Edit the styled code before copying"));
+    });
+    expect(
+      container.querySelector("textarea[aria-label='Styled code output — edit before copying']")
+    ).not.toBeNull();
+
+    // 2. Visit diagram 1 and create override[1].
+    await act(async () => {
+      fireEvent.click(screen.getByLabelText("Next diagram"));
+    });
+    await act(async () => {
+      fireEvent.click(screen.getByTitle("Edit the styled code before copying"));
+    });
+    expect(
+      container.querySelector("textarea[aria-label='Styled code output — edit before copying']")
+    ).not.toBeNull();
+
+    // 3. Changing fontSize updates exportCode for every diagram. The active
+    // diagram's override is cleared immediately.
+    act(() => {
+      rerender(
+        createElement(ApplyTab, {
+          ...makeProps(MULTI_INPUT),
+          fontSize: "18",
+        })
+      );
+    });
+    expect(
+      container.querySelector("textarea[aria-label='Styled code output — edit before copying']")
+    ).toBeNull();
+
+    // 4. Diagram 0 is cleared lazily when it becomes active and its new
+    // exportCode is compared with the value recorded before the size change.
+    await act(async () => {
+      fireEvent.click(screen.getByLabelText("Previous diagram"));
+    });
+    expect(
+      container.querySelector("textarea[aria-label='Styled code output — edit before copying']")
+    ).toBeNull();
+  });
 });
