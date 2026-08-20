@@ -129,6 +129,11 @@ export function ProfileDetailsPanel({
     if (slot) setDraftName(slot.name);
     setIsEditingName(false);
     setConfirmingDelete(false);
+    if (copyShareTimerRef.current) {
+      clearTimeout(copyShareTimerRef.current);
+      copyShareTimerRef.current = null;
+    }
+    setCopiedShareLink(false);
   }, [slot?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Reset animation state and capture previous focus on (re-)open ─────────

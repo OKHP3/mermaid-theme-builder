@@ -289,4 +289,37 @@ describe("ProfileDetailsPanel — slot changes while open", () => {
     );
     closeAfterAnimation(props.onClose);
   });
+
+  it("resets copied-link feedback and copies the replacement slot's link", () => {
+    vi.useFakeTimers();
+    const props = makeProps({ onCopyShareLink: vi.fn() });
+    const replacementSlot = createDefaultMyThemeSlot(2);
+    const { rerender } = render(<ProfileDetailsPanel {...props} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Copy share link for this profile" }));
+    expect(props.onCopyShareLink).toHaveBeenCalledWith(SLOT_ID);
+    expect(screen.getByText("Link Copied!")).toBeDefined();
+
+    act(() => {
+      vi.advanceTimersByTime(1000);
+    });
+    rerender(<ProfileDetailsPanel {...props} slot={replacementSlot} />);
+
+    expect(screen.queryByText("Link Copied!")).toBeNull();
+    expect(screen.getByText("Copy Share Link")).toBeDefined();
+
+    fireEvent.click(screen.getByRole("button", { name: "Copy share link for this profile" }));
+    expect(props.onCopyShareLink).toHaveBeenLastCalledWith("my-theme-2");
+    expect(screen.getByText("Link Copied!")).toBeDefined();
+
+    act(() => {
+      vi.advanceTimersByTime(1001);
+    });
+    expect(screen.getByText("Link Copied!")).toBeDefined();
+
+    act(() => {
+      vi.advanceTimersByTime(999);
+    });
+    expect(screen.queryByText("Link Copied!")).toBeNull();
+  });
 });
