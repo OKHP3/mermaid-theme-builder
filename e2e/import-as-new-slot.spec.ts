@@ -195,6 +195,23 @@ test.describe("Import as new slot — happy path", () => {
 // ---------------------------------------------------------------------------
 
 test.describe("Import as new slot — disabled at 3 slots", () => {
+  test("New button is absent after import creates the third slot", async ({ page }) => {
+    await openOnApplyTab(
+      page,
+      baseState({
+        myThemeSlots: [makeSlot(1), makeSlot(2)],
+        activeMyThemeSlotId: "my-theme-1",
+      })
+    );
+
+    await importViaFileInput(page, CLEAN_PALETTE_JSON);
+
+    await page.locator(`#${APPLY_PREFIX}-my-theme-3`).waitFor({ timeout: 8_000 });
+    await expect(
+      page.getByRole("button", { name: "Add My Theme workspace", exact: true })
+    ).toHaveCount(0);
+  });
+
   test("Import button is absent when 3 slots already exist", async ({ page }) => {
     await openOnApplyTab(
       page,
