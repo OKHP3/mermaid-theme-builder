@@ -1,17 +1,23 @@
 /**
- * Snapshot tests: exact themed output for gantt, pie, and stateDiagram families
- * across all BRAND_PALETTES.
+ * Snapshot tests: exact themed output for family-specific overlays across all
+ * BRAND_PALETTES.
  *
  * Purpose
  * -------
  * src/lib/family-theming.ts contains distinct overlay key mappings for each
  * diagram family. The existing paletteOutputSnapshot tests cover flowchart,
  * sequenceDiagram, and erDiagram; c4OutputSnapshot.test.ts covers c4Diagram.
- * This file closes the gap for the three remaining non-trivial families:
+ * This file covers the non-trivial families not covered by paletteOutputSnapshot
+ * or c4OutputSnapshot:
  *
  *   gantt      — sectionBkgColor, taskBkgColor, activeTaskBkgColor, gridColor, …
  *   pie        — pie1–pie5, pieTitleTextColor, pieSectionTextColor, …
  *   stateDiagram — stateBkg, stateLabelColor, transitionColor, compositeBackground, …
+ *   gitGraph   — git0–git3, gitBranchLabel0–gitBranchLabel1, commit label colors
+ *   classDiagram — classText, classBorder, relation colors
+ *   journey    — section, task, and label colors
+ *   quadrantChart — quadrant fills, title, and point colors
+ *   timeline   — cScale0–cScale11 palette cycling
  *
  * Sections
  * --------
@@ -39,6 +45,15 @@ const FAMILY_FIXTURES = [
   { id: "gantt-basic", family: "gantt" as const, keyword: "gantt" },
   { id: "pie-effort-allocation", family: "pie" as const, keyword: "pie" },
   { id: "state-theme-lifecycle", family: "stateDiagram" as const, keyword: "stateDiagram-v2" },
+  { id: "gitgraph-repo-evolution", family: "gitGraph" as const, keyword: "gitGraph" },
+  { id: "class-domain-model", family: "classDiagram" as const, keyword: "classDiagram" },
+  { id: "journey-idea-to-shipped-tool", family: "journey" as const, keyword: "journey" },
+  { id: "quadrant-opportunity", family: "quadrantChart" as const, keyword: "quadrantChart" },
+  {
+    id: "timeline-overkill-theme-builder-history",
+    family: "timeline" as const,
+    keyword: "timeline",
+  },
 ] as const;
 
 // ---------------------------------------------------------------------------
@@ -237,7 +252,97 @@ describe("stateDiagram overlay invariants", () => {
 });
 
 // ---------------------------------------------------------------------------
-// 4. Diagram body integrity — diagram keywords survive in the output unchanged
+// 4. Remaining family overlay invariants — every family-specific key maps to
+//    its intended palette token. This complements the snapshots with direct,
+//    actionable failures when a mapping changes.
+// ---------------------------------------------------------------------------
+
+const REMAINING_FAMILY_OVERLAY_MAPPINGS = [
+  {
+    id: "gitgraph-repo-evolution",
+    family: "gitGraph" as const,
+    mappings: {
+      git0: "primaryColor",
+      git1: "secondaryColor",
+      git2: "lineColor",
+      git3: "nodeBorder",
+      gitBranchLabel0: "primaryTextColor",
+      gitBranchLabel1: "primaryTextColor",
+      commitLabelColor: "titleColor",
+      commitLabelBackground: "background",
+    },
+  },
+  {
+    id: "class-domain-model",
+    family: "classDiagram" as const,
+    mappings: {
+      classText: "primaryTextColor",
+      classBorder: "primaryBorderColor",
+      relationColor: "lineColor",
+      relationLabelColor: "titleColor",
+    },
+  },
+  {
+    id: "journey-idea-to-shipped-tool",
+    family: "journey" as const,
+    mappings: {
+      sectionBkgColor: "mainBkg",
+      altSectionBkgColor: "tertiaryColor",
+      taskBkgColor: "primaryColor",
+      taskTextColor: "primaryTextColor",
+      labelColor: "titleColor",
+    },
+  },
+  {
+    id: "quadrant-opportunity",
+    family: "quadrantChart" as const,
+    mappings: {
+      quadrant1Fill: "primaryColor",
+      quadrant2Fill: "secondaryColor",
+      quadrant3Fill: "tertiaryColor",
+      quadrant4Fill: "mainBkg",
+      quadrantTitleFill: "titleColor",
+      quadrantPointFill: "lineColor",
+      quadrantPointTextFill: "primaryTextColor",
+    },
+  },
+  {
+    id: "timeline-overkill-theme-builder-history",
+    family: "timeline" as const,
+    mappings: {
+      cScale0: "primaryColor",
+      cScale1: "secondaryColor",
+      cScale2: "tertiaryColor",
+      cScale3: "lineColor",
+      cScale4: "nodeBorder",
+      cScale5: "clusterBkg",
+      cScale6: "mainBkg",
+      cScale7: "primaryColor",
+      cScale8: "secondaryColor",
+      cScale9: "tertiaryColor",
+      cScale10: "lineColor",
+      cScale11: "nodeBorder",
+    },
+  },
+] as const;
+
+for (const overlay of REMAINING_FAMILY_OVERLAY_MAPPINGS) {
+  describe(`${overlay.family} overlay invariants`, () => {
+    const content = getCatalogContent(overlay.id);
+
+    for (const palette of BRAND_PALETTES) {
+      for (const [overlayKey, paletteKey] of Object.entries(overlay.mappings)) {
+        it(`"${palette.name}": ${overlayKey} = ${paletteKey}`, () => {
+          const output = generateThemedCode(content, familyOptions(palette, overlay.family));
+          expect(output).toContain(`"${overlayKey}": "${paletteColor(palette, paletteKey)}"`);
+        });
+      }
+    }
+  });
+}
+
+// ---------------------------------------------------------------------------
+// 5. Diagram body integrity — diagram keywords survive in the output unchanged
 // ---------------------------------------------------------------------------
 
 describe("family overlay — diagram body preserved", () => {
