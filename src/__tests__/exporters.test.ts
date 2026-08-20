@@ -242,18 +242,20 @@ describe("parsePortablePalette", () => {
   });
 
   describe("user-facing error messages", () => {
-    function expectImportError(json: string, expectedError: string) {
+    function expectExactImportError(json: string, expectedError: string) {
       const result = parsePortablePalette(json);
       expect(result.ok).toBe(false);
-      if (!result.ok) expect(result.error).toContain(expectedError);
+      if (!result.ok) expect(result.error).toBe(expectedError);
     }
 
-    it("keeps the JSON syntax reason readable", () => {
-      expectImportError("{ not valid json }", "Expected property name");
+    it("keeps the JavaScript-provided JSON syntax reason readable", () => {
+      const result = parsePortablePalette("{ not valid json }");
+      expect(result.ok).toBe(false);
+      if (!result.ok) expect(result.error).toContain("Expected property name");
     });
 
-    it("keeps the wrong-type reason readable", () => {
-      expectImportError(
+    it("locks the wrong-type reason", () => {
+      expectExactImportError(
         JSON.stringify({
           type: "mtb-palette-bundle",
           schemaVersion: 1,
@@ -263,8 +265,8 @@ describe("parsePortablePalette", () => {
       );
     });
 
-    it("keeps the unsupported-schema reason readable", () => {
-      expectImportError(
+    it("locks the unsupported-schema reason", () => {
+      expectExactImportError(
         JSON.stringify({
           type: "mtb-palette",
           schemaVersion: 2,
@@ -274,8 +276,8 @@ describe("parsePortablePalette", () => {
       );
     });
 
-    it("keeps the missing-colors reason readable", () => {
-      expectImportError(
+    it("locks the missing-colors reason", () => {
+      expectExactImportError(
         JSON.stringify({ type: "mtb-palette", schemaVersion: 1, colors: [] }),
         "Missing or empty `colors` array."
       );
