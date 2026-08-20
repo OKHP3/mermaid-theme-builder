@@ -785,6 +785,51 @@ describe("generateThemedCode — classDiagram body is preserved", () => {
   }
 });
 
+// ---------------------------------------------------------------------------
+// 26. customThemeName badge snapshots — remaining badge-safe families
+//
+// The flowchart coverage above pins custom badge output for one badge-safe
+// family. Sequence, state, and class diagrams accept the same badge syntax,
+// but need their own snapshots in case their inclusion in BADGE_SAFE_FAMILIES
+// regresses.
+// ---------------------------------------------------------------------------
+
+const CUSTOM_BADGE_FAMILY_FIXTURES = [
+  { family: "sequenceDiagram" as const, diagram: SEQUENCE_DIAGRAM },
+  { family: "stateDiagram" as const, diagram: STATE_DIAGRAM },
+  { family: "classDiagram" as const, diagram: CLASS_DIAGRAM },
+] as const;
+
+for (const fixture of CUSTOM_BADGE_FAMILY_FIXTURES) {
+  describe(`generateThemedCode snapshots — customThemeName "${CUSTOM_THEME_NAME}" × ${fixture.family} (badge enabled)`, () => {
+    for (const palette of BRAND_PALETTES) {
+      it(`palette "${palette.name}" (id: ${palette.id}) matches snapshot`, () => {
+        const output = generateThemedCode(fixture.diagram, {
+          ...baseOptions(palette, fixture.family),
+          includeBadge: true,
+          customThemeName: CUSTOM_THEME_NAME,
+        });
+        expect(output).toMatchSnapshot();
+      });
+    }
+  });
+
+  describe(`generateThemedCode — customThemeName "${CUSTOM_THEME_NAME}" appears in ${fixture.family} badges`, () => {
+    for (const palette of BRAND_PALETTES) {
+      it(`palette "${palette.name}" badge contains the custom name`, () => {
+        const output = generateThemedCode(fixture.diagram, {
+          ...baseOptions(palette, fixture.family),
+          includeBadge: true,
+          customThemeName: CUSTOM_THEME_NAME,
+        });
+        expect(output).toContain(
+          `MTB_ATTR(["Styled with ${CUSTOM_THEME_NAME} via Mermaid Theme Builder"])`
+        );
+      });
+    }
+  });
+}
+
 // ===========================================================================
 // GITGRAPH FAMILY
 // ===========================================================================
