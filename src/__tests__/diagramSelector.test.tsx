@@ -331,6 +331,24 @@ describe("ApplyTab — diagram selector sync: selector hidden after content shri
     expect(codePanel?.textContent).toContain("flowchart");
     expect(codePanel?.textContent).not.toContain("sequenceDiagram");
   });
+
+  it("'code' preview updates to the manually selected diagram", async () => {
+    const { container } = render(
+      createElement(ApplyTab, { ...makeProps(MULTI_INPUT), previewMode: "code" as const })
+    );
+
+    // Manually select diagram 2 through the production selector rather than
+    // using the Previous/Next convenience controls or changing input content.
+    const select = screen.getByLabelText("Select diagram") as HTMLSelectElement;
+    await act(async () => {
+      fireEvent.change(select, { target: { value: "1" } });
+    });
+
+    expect(select.value).toBe("1");
+    const codePanel = container.querySelector('[aria-label="Styled code output"]');
+    expect(codePanel).not.toBeNull();
+    expect(codePanel?.textContent).toContain("sequenceDiagram");
+  });
 });
 
 // ---------------------------------------------------------------------------
