@@ -1,32 +1,15 @@
 import { defineConfig, devices } from "@playwright/test";
-import { existsSync } from "fs";
-import { delimiter, sep } from "path";
+import { findChromiumExecutablePath } from "./scripts/find-chromium.mjs";
 
 let chromiumExecutablePath: string | undefined;
 if (!process.env.CI) {
-  // Build a prioritised list of candidate paths and take the first that exists.
-  //
-  // Using direct PATH scanning avoids spawning a shell (`which`) that may not
-  // be available on all platforms (Windows cmd.exe / PowerShell do not have
-  // `which`). On Windows executables carry a .exe suffix; on POSIX they do not.
-  //
-  // `delimiter` is ":" on POSIX, ";" on Windows.
-  // `sep` is "/" on POSIX, "\" on Windows.
-  const exeSuffix = process.platform === "win32" ? ".exe" : "";
-  const binaryNames = [
-    `chromium${exeSuffix}`,
-    `chromium-browser${exeSuffix}`,
-    `chrome${exeSuffix}`,
-  ];
-  const pathDirs = (process.env.PATH ?? "").split(delimiter);
-
-  const candidates: (string | undefined)[] = [
-    process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH,
-    // Check every directory on PATH for known Chromium binary names.
-    ...pathDirs.flatMap((d) => binaryNames.map((b) => `${d}${sep}${b}`)),
-  ];
-
-  chromiumExecutablePath = candidates.find((p): p is string => !!p && existsSync(p));
+  chromiumExecutablePath = findChromiumExecutablePath();
+  if (!chromiumExecutablePath) {
+    console.warn(
+      "[Playwright] No system Chromium found; using the bundled browser. " +
+        "Run `pnpm check:playwright-chromium` to verify discovery."
+    );
+  }
 }
 
 // Production-build preview server port — matches the CI workflow env.
@@ -84,9 +67,11 @@ export default defineConfig({
         ...devices["Desktop Chrome"],
         ...(chromiumExecutablePath
           ? {
-              // In Playwright 1.44+ the default Chromium browser is the
-              // headless shell; executablePath must be inside launchOptions
-              // to override the resolved binary path.
+              // Playwright 1.44 changed Chromium's default executable to the
+              // headless shell. Keep executablePath inside launchOptions:
+              // Playwright Test passes use.launchOptions to browserType.launch;
+              // a top-level use.executablePath is ignored. Verify discovery
+              // with: pnpm check:playwright-chromium
               launchOptions: { executablePath: chromiumExecutablePath },
             }
           : {}),
