@@ -9,6 +9,7 @@ import { test, expect, type Page } from "@playwright/test";
  */
 
 const PREVIEW_MODE_KEY = "mtb.classBrowser.previewMode";
+const WELCOME_HEADING = /What would you like to do/i;
 const DIAGRAM_WITH_USED_CLASS = 'flowchart TD\n  A["Start"]:::primary --> B["End"]';
 
 async function openClassPreview(page: Page): Promise<void> {
@@ -58,6 +59,13 @@ test("Clear all settings removes the saved preview mode and a reload starts from
   await expect
     .poll(() => page.evaluate((key) => localStorage.getItem(key), PREVIEW_MODE_KEY))
     .toBeNull();
+
+  // A full factory reset can return this browser to the first-visit route
+  // selector. When it is shown, dismiss it before continuing to the actual
+  // preview-mode check; otherwise the reset has already landed on Apply.
+  if (await page.getByRole("heading", { name: WELCOME_HEADING }).isVisible()) {
+    await page.getByRole("button", { name: /Skip the welcome screen/i }).click();
+  }
 
   // Add a diagram with a used class. Without a stored preference, the Class
   // Library's smart default is "Used"; a stale "all" key would activate "All".
