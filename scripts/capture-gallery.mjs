@@ -9,17 +9,70 @@
  */
 
 import { chromium } from "@playwright/test";
-import { mkdirSync } from "node:fs";
-import { resolve, dirname } from "node:path";
+import { accessSync, constants, mkdirSync } from "node:fs";
+import { delimiter, dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, "..");
 const GALLERY_DIR = resolve(ROOT, "docs/gallery");
 const BASE = "http://localhost:80/mermaid-theme-builder/";
-const CHROMIUM = "/nix/store/qa9cnw4v5xkxyip6mb9kxqfq1z4x2dx1-chromium-138.0.7204.100/bin/chromium";
-
 const VIEWPORT = { width: 1280, height: 800 };
+
+function isExecutable(filePath) {
+  try {
+    accessSync(filePath, constants.X_OK);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function findChromiumOnPath() {
+  const executableNames = process.platform === "win32" ? ["chromium.exe", "chromium"] : ["chromium"];
+  const pathDirectories = (process.env.PATH || "").split(delimiter).filter(Boolean);
+
+  for (const directory of pathDirectories) {
+    for (const executableName of executableNames) {
+      const candidate = join(directory, executableName);
+      if (isExecutable(candidate)) return candidate;
+    }
+  }
+
+  return undefined;
+}
+
+function resolveChromiumExecutable() {
+  const checkedPaths = [];
+  const configuredPath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH;
+
+  if (configuredPath) {
+    checkedPaths.push(`PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH (${configuredPath})`);
+    if (isExecutable(configuredPath)) return configuredPath;
+  }
+
+  const pathChromium = findChromiumOnPath();
+  checkedPaths.push("chromium from PATH");
+  if (pathChromium) return pathChromium;
+
+  let bundledPath;
+  try {
+    bundledPath = chromium.executablePath();
+  } catch {
+    bundledPath = undefined;
+  }
+
+  checkedPaths.push(`Playwright bundled Chromium${bundledPath ? ` (${bundledPath})` : ""}`);
+  if (bundledPath && isExecutable(bundledPath)) return bundledPath;
+
+  throw new Error(
+    [
+      "Unable to find a usable Chromium executable for the gallery capture.",
+      "Install Chromium so it is available as `chromium` on PATH, or set PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH to an executable file.",
+      `Checked: ${checkedPaths.join("; ")}.`,
+    ].join(" ")
+  );
+}
 
 async function wait(ms) {
   return new Promise((r) => setTimeout(r, ms));
@@ -272,10 +325,12 @@ async function shot5(browser) {
 async function main() {
   mkdirSync(GALLERY_DIR, { recursive: true });
   console.log(`Saving screenshots to ${GALLERY_DIR}`);
+  const executablePath = resolveChromiumExecutable();
+  console.log(`Using Chromium executable: ${executablePath}`);
 
   const browser = await chromium.launch({
     headless: true,
-    executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || CHROMIUM,
+    executablePath,
   });
 
   try {
