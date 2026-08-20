@@ -95,3 +95,37 @@ describe("forge-tokens.css — typography font variables (check 7)", () => {
     ).toBe(true);
   });
 });
+
+// ─── Check 8: Tailwind theme bridge references ───────────────────────────────
+
+describe("forge-tokens.css — Tailwind theme bridge references (check 8)", () => {
+  it("references only variables defined in an earlier :root block", () => {
+    const themeMatch = /@theme\s+inline\s*\{([\s\S]*?)\}/.exec(css);
+    expect(themeMatch, "Expected an @theme inline block in forge-tokens.css").not.toBeNull();
+
+    if (!themeMatch) return;
+
+    const rootDefinitions = new Set<string>();
+    const rootBlockPattern = /:root\s*\{([\s\S]*?)\}/g;
+
+    for (const rootMatch of css.matchAll(rootBlockPattern)) {
+      if (rootMatch.index >= themeMatch.index) continue;
+
+      for (const definitionMatch of rootMatch[1].matchAll(/^\s*(--[\w-]+)\s*:/gm)) {
+        rootDefinitions.add(definitionMatch[1]);
+      }
+    }
+
+    const referencedVariables = [...themeMatch[1].matchAll(/var\(\s*(--[\w-]+)\s*\)/g)].map(
+      (match) => match[1]
+    );
+    const missingVariables = [...new Set(referencedVariables)].filter(
+      (variable) => !rootDefinitions.has(variable)
+    );
+
+    expect(
+      missingVariables,
+      "Every var(--token) in @theme inline must be defined in an earlier :root block"
+    ).toEqual([]);
+  });
+});
