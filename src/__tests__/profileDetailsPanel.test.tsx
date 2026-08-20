@@ -221,3 +221,72 @@ describe("ProfileDetailsPanel — Escape state transitions", () => {
     closeAfterAnimation(props.onClose);
   });
 });
+
+describe("ProfileDetailsPanel — slot changes while open", () => {
+  it("resets a stale name edit and routes rename, export, and duplicate to the replacement slot", () => {
+    vi.useFakeTimers();
+    const props = makeProps();
+    const replacementSlot = createDefaultMyThemeSlot(2);
+    const { rerender } = render(<ProfileDetailsPanel {...props} />);
+
+    const input = startNameEdit();
+    fireEvent.change(input, { target: { value: "Stale Slot 1 Draft" } });
+
+    rerender(<ProfileDetailsPanel {...props} slot={replacementSlot} />);
+
+    expect(screen.queryByRole("textbox", { name: "Edit profile name" })).toBeNull();
+    expect(screen.getByRole("button", { name: "Edit profile name: My Theme 2" })).toBeDefined();
+    expect(props.onRename).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole("button", { name: "Edit profile name: My Theme 2" }));
+    const replacementInput = screen.getByRole("textbox", { name: "Edit profile name" });
+    fireEvent.change(replacementInput, { target: { value: "Replacement Contract" } });
+    fireEvent.keyDown(replacementInput, { key: "Enter" });
+    expect(props.onRename).toHaveBeenCalledWith("my-theme-2", "Replacement Contract");
+
+    fireEvent.click(screen.getByRole("button", { name: "Export profile as JSON" }));
+    expect(props.onExport).toHaveBeenCalledWith("my-theme-2");
+
+    fireEvent.click(screen.getByRole("button", { name: 'Duplicate profile "My Theme 2"' }));
+    expect(props.onDuplicate).toHaveBeenCalledWith("my-theme-2");
+    closeAfterAnimation(props.onClose);
+  });
+
+  it("clears stale delete confirmation and deletes the replacement slot", () => {
+    vi.useFakeTimers();
+    const props = makeProps();
+    const replacementSlot = createDefaultMyThemeSlot(2);
+    const { rerender } = render(<ProfileDetailsPanel {...props} />);
+
+    openDeleteConfirmation();
+    rerender(<ProfileDetailsPanel {...props} slot={replacementSlot} />);
+
+    expect(screen.queryByRole("button", { name: "Delete permanently" })).toBeNull();
+    expect(screen.getByRole("button", { name: 'Delete profile "My Theme 2"' })).toBeDefined();
+    expect(props.onDelete).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole("button", { name: 'Delete profile "My Theme 2"' }));
+    fireEvent.click(screen.getByRole("button", { name: "Delete permanently" }));
+
+    expect(props.onDelete).toHaveBeenCalledWith("my-theme-2");
+    closeAfterAnimation(props.onClose);
+  });
+
+  it("imports a valid profile after switching slots and closes the replacement panel", async () => {
+    vi.useFakeTimers();
+    const props = makeProps();
+    const replacementSlot = createDefaultMyThemeSlot(2);
+    const { rerender } = render(<ProfileDetailsPanel {...props} />);
+
+    rerender(<ProfileDetailsPanel {...props} slot={replacementSlot} />);
+    const profile = migrateSlotToProfile(replacementSlot);
+
+    await importFile(profileToPortableJson(profile));
+
+    expect(props.onImport).toHaveBeenCalledWith(
+      expect.objectContaining({ id: "my-theme-2", name: "My Theme 2" }),
+      []
+    );
+    closeAfterAnimation(props.onClose);
+  });
+});
