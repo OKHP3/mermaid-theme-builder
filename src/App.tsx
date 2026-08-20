@@ -378,6 +378,15 @@ export function AppShell() {
   const [myThemeSlots, setMyThemeSlots] = useState<MyThemeSlot[]>(() => [
     createDefaultMyThemeSlot(1, BRAND_PALETTES[0].colors),
   ]);
+  const myThemeSlotsRef = useRef(myThemeSlots);
+  const updateMyThemeSlots = useCallback(
+    (update: MyThemeSlot[] | ((previous: MyThemeSlot[]) => MyThemeSlot[])) => {
+      const next = typeof update === "function" ? update(myThemeSlotsRef.current) : update;
+      myThemeSlotsRef.current = next;
+      setMyThemeSlots(next);
+    },
+    []
+  );
   const [activeMyThemeSlotId, setActiveMyThemeSlotId] = useState<string | null>("my-theme-1");
   const [outputFormat, setOutputFormat] = useState<"init-directive" | "frontmatter">(
     "init-directive"
@@ -558,7 +567,7 @@ export function AppShell() {
         );
         // Apply even when empty — an empty array means the user intentionally
         // deleted all slots; only the absence of the field means "use default".
-        setMyThemeSlots(validSlots);
+        updateMyThemeSlots(validSlots);
         // Validate active slot ID against the hydrated slots so a stale or
         // dangling ID (e.g. slot was deleted in another tab) doesn't persist.
         const validSlotIds = new Set(validSlots.map((s) => s.id));
@@ -640,7 +649,7 @@ export function AppShell() {
           ...existingSlots.filter((s) => (s as MyThemeSlot).id !== targetId),
           newSlot,
         ];
-        setMyThemeSlots(updatedSlots);
+        updateMyThemeSlots(updatedSlots);
         setActiveMyThemeSlotId(targetId);
         setRendererTarget(profile.rendererTarget);
         if (profile.outputFormat) setOutputFormat(profile.outputFormat);
@@ -825,7 +834,7 @@ export function AppShell() {
   const handleColorChange = useCallback(
     (key: string, value: string) => {
       if (activeMyThemeSlotId) {
-        setMyThemeSlots((prev) =>
+        updateMyThemeSlots((prev) =>
           prev.map((s) =>
             s.id === activeMyThemeSlotId
               ? {
@@ -852,7 +861,7 @@ export function AppShell() {
   const handleLookChange = useCallback(
     (newLook: MermaidLook) => {
       if (activeMyThemeSlotId) {
-        setMyThemeSlots((prev) =>
+        updateMyThemeSlots((prev) =>
           prev.map((s) =>
             s.id === activeMyThemeSlotId
               ? { ...s, look: newLook, updatedAt: new Date().toISOString() }
@@ -869,7 +878,7 @@ export function AppShell() {
   const handleFontSizeChange = useCallback(
     (newSize: string) => {
       if (activeMyThemeSlotId) {
-        setMyThemeSlots((prev) =>
+        updateMyThemeSlots((prev) =>
           prev.map((s) =>
             s.id === activeMyThemeSlotId
               ? { ...s, fontSize: newSize, updatedAt: new Date().toISOString() }
@@ -886,7 +895,7 @@ export function AppShell() {
   const handleTypographyChange = useCallback(
     (newTypo: import("@/lib/typography").TypographySettings) => {
       if (activeMyThemeSlotId) {
-        setMyThemeSlots((prev) =>
+        updateMyThemeSlots((prev) =>
           prev.map((s) =>
             s.id === activeMyThemeSlotId
               ? { ...s, typography: newTypo, updatedAt: new Date().toISOString() }
@@ -903,7 +912,7 @@ export function AppShell() {
   const handleCustomThemeNameChange = useCallback(
     (newName: string) => {
       if (activeMyThemeSlotId) {
-        setMyThemeSlots((prev) =>
+        updateMyThemeSlots((prev) =>
           prev.map((s) =>
             s.id === activeMyThemeSlotId
               ? { ...s, name: newName, updatedAt: new Date().toISOString() }
@@ -922,7 +931,7 @@ export function AppShell() {
   }, []);
 
   const handleAddMyThemeSlot = useCallback(() => {
-    setMyThemeSlots((prev) => {
+    updateMyThemeSlots((prev) => {
       if (prev.length >= 3) return prev;
       const num = nextSlotNumber(prev);
       if (num === null) return prev;
@@ -934,7 +943,7 @@ export function AppShell() {
 
   const handleDeleteMyThemeSlot = useCallback(
     (id: string) => {
-      setMyThemeSlots((prev) => {
+      updateMyThemeSlots((prev) => {
         const idx = prev.findIndex((s) => s.id === id);
         const next = prev.filter((s) => s.id !== id);
         if (activeMyThemeSlotId === id) {
@@ -983,7 +992,7 @@ export function AppShell() {
       if (activeMyThemeSlotId) {
         const activeSlotName =
           myThemeSlots.find((s) => s.id === activeMyThemeSlotId)?.name ?? "My Theme";
-        setMyThemeSlots((prev) =>
+        updateMyThemeSlots((prev) =>
           prev.map((s) =>
             s.id === activeMyThemeSlotId
               ? { ...s, colors: palette.colors, updatedAt: new Date().toISOString() }
@@ -1009,7 +1018,7 @@ export function AppShell() {
           setToast(`Imported "${palette.name}" into "${activeSlotName}".`);
         }
       } else {
-        setMyThemeSlots((prev) => {
+        updateMyThemeSlots((prev) => {
           if (prev.length >= 3) return prev;
           const num = nextSlotNumber(prev);
           if (num === null) return prev;
@@ -1052,7 +1061,7 @@ export function AppShell() {
       if (activeMyThemeSlotId) {
         const activeSlotName =
           myThemeSlots.find((s) => s.id === activeMyThemeSlotId)?.name ?? "My Theme";
-        setMyThemeSlots((prev) =>
+        updateMyThemeSlots((prev) =>
           prev.map((s) =>
             s.id === activeMyThemeSlotId
               ? {
@@ -1078,7 +1087,7 @@ export function AppShell() {
         const warnNote = importWarnings.length > 0 ? ` (${importWarnings.length} advisory)` : "";
         setToast(`Imported profile "${profile.name}" into "${activeSlotName}"${warnNote}.`);
       } else {
-        setMyThemeSlots((prev) => {
+        updateMyThemeSlots((prev) => {
           if (prev.length >= 3) {
             setToast("All 3 My Theme slots are in use — delete one before importing.");
             return prev;
@@ -1175,7 +1184,7 @@ export function AppShell() {
   const handleRenameSlotById = useCallback((id: string, newName: string) => {
     const trimmed = newName.trim();
     if (!trimmed) return;
-    setMyThemeSlots((prev) =>
+    updateMyThemeSlots((prev) =>
       prev.map((s) =>
         s.id === id ? { ...s, name: trimmed, updatedAt: new Date().toISOString() } : s
       )
@@ -1188,7 +1197,7 @@ export function AppShell() {
       const slot = profileToSlot(profile);
       const targetSlotName =
         myThemeSlots.find((s) => s.id === profileDetailSlotId)?.name ?? "My Theme";
-      setMyThemeSlots((prev) =>
+      updateMyThemeSlots((prev) =>
         prev.map((s) =>
           s.id === profileDetailSlotId
             ? {
@@ -1223,16 +1232,17 @@ export function AppShell() {
         warnValues: Array<{ key: string; value: string }>;
       }
     ) => {
-      if (myThemeSlots.length >= 3) {
+      const currentSlots = myThemeSlotsRef.current;
+      if (currentSlots.length >= 3) {
         setToast("All 3 My Theme slots are in use — delete one before importing.");
         return;
       }
-      const num = nextSlotNumber(myThemeSlots);
+      const num = nextSlotNumber(currentSlots);
       if (num === null) return;
 
       const newSlot = createDefaultMyThemeSlot(num, palette.colors);
       newSlot.name = palette.name;
-      setMyThemeSlots((prev) => [...prev, newSlot]);
+      updateMyThemeSlots([...currentSlots, newSlot]);
       setActiveMyThemeSlotId(newSlot.id);
 
       if (warnings.invalidValues.length > 0 || warnings.warnValues.length > 0) {
@@ -1253,7 +1263,7 @@ export function AppShell() {
         setToast(`Imported "${palette.name}" into a new My Theme slot.`);
       }
     },
-    [myThemeSlots]
+    [updateMyThemeSlots]
   );
 
   const handleDuplicateMyThemeSlot = useCallback(
@@ -1263,23 +1273,23 @@ export function AppShell() {
         setToast("All 3 My Theme slots are in use — delete one before duplicating.");
         return;
       }
-      setMyThemeSlots(result.slots);
+      updateMyThemeSlots(result.slots);
       setActiveMyThemeSlotId(result.newSlotId);
     },
     [myThemeSlots]
   );
 
   const handleMoveMyThemeSlotUp = useCallback((id: string) => {
-    setMyThemeSlots((prev) => moveSlotUp(prev, id));
+    updateMyThemeSlots((prev) => moveSlotUp(prev, id));
   }, []);
 
   const handleMoveMyThemeSlotDown = useCallback((id: string) => {
-    setMyThemeSlots((prev) => moveSlotDown(prev, id));
+    updateMyThemeSlots((prev) => moveSlotDown(prev, id));
   }, []);
 
   const handleResetPalette = useCallback(() => {
     if (activeMyThemeSlotId) {
-      setMyThemeSlots((prev) =>
+      updateMyThemeSlots((prev) =>
         prev.map((s) =>
           s.id === activeMyThemeSlotId
             ? {
@@ -1717,7 +1727,7 @@ export function AppShell() {
                     setPreviewMode("themed");
                     setLastExampleType({});
                     setLastSelectedExampleId("");
-                    setMyThemeSlots([createDefaultMyThemeSlot(1, BRAND_PALETTES[0].colors)]);
+                    updateMyThemeSlots([createDefaultMyThemeSlot(1, BRAND_PALETTES[0].colors)]);
                     setActiveMyThemeSlotId("my-theme-1");
                     // Clear hint dismissals so all syntax tips reappear.
                     clearAllDismissals();
