@@ -146,8 +146,15 @@ pnpm run capture-screenshot
 ```
 
 Alternatively, the `capture-screenshot` job in `release-gate.yml` runs automatically
-on every version tag and uploads the refreshed image as a GitHub Actions artifact
-(retained 30 days) — download and commit if needed.
+on every version tag, uploads the refreshed image as a GitHub Actions artifact
+(retained 30 days), and opens a pull request when the image changed. It attempts
+to queue that PR for automatic squash merge, so protected `main` rules remain in
+effect and the release job never pushes to `main`.
+
+If the repository does not allow automatic merges, the queue attempt is
+non-blocking and the PR remains available for a maintainer to review and merge
+manually. Enable GitHub's **Allow auto-merge** repository setting to let these
+updates merge automatically after required checks and approvals pass.
 
 - [ ] `docs/screenshot-v0.5.0.jpg` visually reflects the current UI
 - [ ] README.md `![screenshot]` link still resolves (filename unchanged for v0.5.x)
