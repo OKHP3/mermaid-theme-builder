@@ -1256,17 +1256,18 @@ export function AppShell() {
     []
   );
 
-  const handleDuplicateMyThemeSlot = useCallback((id: string) => {
-    setMyThemeSlots((prev) => {
-      const result = duplicateSlot(prev, id);
+  const handleDuplicateMyThemeSlot = useCallback(
+    (id: string) => {
+      const result = duplicateSlot(myThemeSlots, id);
       if (!result) {
         setToast("All 3 My Theme slots are in use — delete one before duplicating.");
-        return prev;
+        return;
       }
+      setMyThemeSlots(result.slots);
       setActiveMyThemeSlotId(result.newSlotId);
-      return result.slots;
-    });
-  }, []);
+    },
+    [myThemeSlots]
+  );
 
   const handleMoveMyThemeSlotUp = useCallback((id: string) => {
     setMyThemeSlots((prev) => moveSlotUp(prev, id));
