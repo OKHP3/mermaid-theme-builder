@@ -31,6 +31,7 @@ import {
   generateTypographyCss,
   typographyToScaffoldSection,
   hasFontFamilyInjectionChars,
+  loadGoogleFont,
   sanitizeFontFamily,
   DEFAULT_TYPOGRAPHY,
   TIER_ORDER,
@@ -41,6 +42,7 @@ import { BRAND_PALETTES } from "@/lib/palettes";
 
 afterEach(() => {
   cleanup();
+  document.head.querySelectorAll("[data-mtb-google-font]").forEach((link) => link.remove());
 });
 
 // ---------------------------------------------------------------------------
@@ -319,10 +321,44 @@ describe("ComposeTab — scale bar widths", () => {
     const widths = getScaleBarWidths(container);
     expect(widths.every((w) => w === "100%")).toBe(true);
   });
+
+  it("loads the selected Google Font when a preset is picked", () => {
+    const { getByLabelText } = render(createElement(ComposeTab, makeProps(DEFAULT_TYPOGRAPHY)));
+
+    fireEvent.change(getByLabelText("Node Label font family preset"), {
+      target: { value: "JetBrains Mono, Courier New, monospace" },
+    });
+
+    const link = document.head.querySelector<HTMLLinkElement>(
+      'link[data-mtb-google-font="jetbrains-mono"]'
+    );
+    expect(link?.rel).toBe("stylesheet");
+    expect(link?.href).toContain("family=JetBrains+Mono");
+  });
 });
 
 // ---------------------------------------------------------------------------
-// 5. generateTypographyCss
+// 5. Lazy Google Font loading
+// ---------------------------------------------------------------------------
+
+describe("loadGoogleFont", () => {
+  it("does not request a system or custom font stack", () => {
+    loadGoogleFont("Georgia, Cambria, serif");
+    loadGoogleFont("My Local Font, serif");
+
+    expect(document.head.querySelector("[data-mtb-google-font]")).toBeNull();
+  });
+
+  it("adds each supported Google preset only once", () => {
+    loadGoogleFont("'DM Sans', system-ui, sans-serif");
+    loadGoogleFont("DM Sans, system-ui, sans-serif");
+
+    expect(document.head.querySelectorAll('[data-mtb-google-font="dm-sans"]')).toHaveLength(1);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 6. generateTypographyCss
 // ---------------------------------------------------------------------------
 
 describe("generateTypographyCss — header comment", () => {

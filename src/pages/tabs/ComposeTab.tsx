@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useRef, type ReactNode } from "react";
+import { useState, useCallback, useMemo, useRef, useEffect, type ReactNode } from "react";
 import type { Palette, ThemeColor } from "@/lib/palettes";
 import { BRAND_PALETTES, UTILITY_PALETTES } from "@/lib/palettes";
 import { PaletteSelectorBar } from "@/components/PaletteSelectorBar";
@@ -39,6 +39,7 @@ import {
   enforceHierarchy,
   isDefaultTypography,
   hasFontFamilyInjectionChars,
+  loadGoogleFont,
   sanitizeFontFamily,
 } from "@/lib/typography";
 import type { MyThemeSlot } from "@/lib/my-theme-slots";
@@ -70,6 +71,13 @@ function FontFamilySelect({
   const selectValue = isPreset ? value : "__custom__";
   const presetLabel = tierLabel ? `${tierLabel} font family preset` : "Font family preset";
   const customLabel = tierLabel ? `${tierLabel} font family override` : "Custom font family value";
+
+  // Restored typography settings should load their selected font just as a
+  // newly chosen preset does, without requesting unused fonts on page load.
+  useEffect(() => {
+    loadGoogleFont(value);
+  }, [value]);
+
   return (
     <div className="space-y-1">
       <select
@@ -77,6 +85,7 @@ function FontFamilySelect({
         onChange={(e) => {
           const v = e.target.value;
           if (v === "__custom__") return; // keep current custom value
+          loadGoogleFont(v);
           onChange(v);
         }}
         className="w-full text-xs bg-background border border-border rounded-md px-2.5 py-1.5 text-foreground focus:outline-none focus:ring-1 focus:ring-primary/50"
