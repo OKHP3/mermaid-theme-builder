@@ -215,6 +215,26 @@ describe("parsePortablePalette", () => {
     expect(result.palette.colors).toHaveLength(3);
   });
 
+  it("preserves a fontFamily stack through the portable file export/import cycle", () => {
+    // Palette files carry Mermaid's palette-level fontFamily ThemeColor. The
+    // separate five-tier TypographySettings object is app state, not a field in
+    // the portable Palette schema, so this exercises the actual file boundary.
+    const fontFamily = "'DM Sans', Arial, sans-serif";
+    const paletteWithFontFamily: Palette = {
+      ...MINIMAL_PALETTE,
+      colors: [
+        ...MINIMAL_PALETTE.colors,
+        { key: "fontFamily", label: "Font family", value: fontFamily },
+      ],
+    };
+
+    const result = parsePortablePalette(paletteToPortableJson(paletteWithFontFamily));
+    if (!result.ok) throw new Error(`Expected imported palette, received: ${result.error}`);
+
+    const importedFontFamily = result.palette.colors.find((color) => color.key === "fontFamily");
+    expect(importedFontFamily?.value).toBe(fontFamily);
+  });
+
   it("returns ok:false for invalid JSON", () => {
     const result = parsePortablePalette("not json at all");
     expect(result.ok).toBe(false);
