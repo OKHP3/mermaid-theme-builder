@@ -241,6 +241,47 @@ describe("parsePortablePalette", () => {
     expect(result.ok).toBe(false);
   });
 
+  describe("user-facing error messages", () => {
+    function expectImportError(json: string, expectedError: string) {
+      const result = parsePortablePalette(json);
+      expect(result.ok).toBe(false);
+      if (!result.ok) expect(result.error).toContain(expectedError);
+    }
+
+    it("keeps the JSON syntax reason readable", () => {
+      expectImportError("{ not valid json }", "Expected property name");
+    });
+
+    it("keeps the wrong-type reason readable", () => {
+      expectImportError(
+        JSON.stringify({
+          type: "mtb-palette-bundle",
+          schemaVersion: 1,
+          colors: [{ key: "primaryColor", label: "Primary", value: "#111827" }],
+        }),
+        "Missing or wrong `type` field — expected `mtb-palette`."
+      );
+    });
+
+    it("keeps the unsupported-schema reason readable", () => {
+      expectImportError(
+        JSON.stringify({
+          type: "mtb-palette",
+          schemaVersion: 2,
+          colors: [{ key: "primaryColor", label: "Primary", value: "#111827" }],
+        }),
+        "Unsupported schemaVersion — expected 1."
+      );
+    });
+
+    it("keeps the missing-colors reason readable", () => {
+      expectImportError(
+        JSON.stringify({ type: "mtb-palette", schemaVersion: 1, colors: [] }),
+        "Missing or empty `colors` array."
+      );
+    });
+  });
+
   it("round-trips all BUILTIN_PALETTES without error", () => {
     for (const palette of BUILTIN_PALETTES) {
       const json = paletteToPortableJson(palette);

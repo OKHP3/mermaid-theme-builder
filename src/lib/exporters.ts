@@ -337,6 +337,11 @@ export function parsePortablePalette(json: string): PortablePaletteImport | Port
     if (data.type !== "mtb-palette") {
       return { ok: false, error: "Missing or wrong `type` field — expected `mtb-palette`." };
     }
+    // Legacy exports without this field are accepted, but an explicitly
+    // supplied version must match the portable palette format we understand.
+    if (data.schemaVersion !== undefined && data.schemaVersion !== 1) {
+      return { ok: false, error: "Unsupported schemaVersion — expected 1." };
+    }
     if (!Array.isArray(data.colors) || data.colors.length === 0) {
       return { ok: false, error: "Missing or empty `colors` array." };
     }
