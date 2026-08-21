@@ -430,3 +430,47 @@ test("Download button is disabled before code is pasted and enabled after", asyn
   await pasteDiagram(page, FLOWCHART);
   await expect(downloadBtn).toBeEnabled();
 });
+
+// ---------------------------------------------------------------------------
+// Test 13 — Live Editor URL encodes themed code after a palette switch
+// ---------------------------------------------------------------------------
+
+test("Live Editor URL payload encodes themed code after a palette switch", async ({ page }) => {
+  await gotoApply(page);
+  await pasteDiagram(page, FLOWCHART);
+
+  // Switch to the second brand palette tile so we exercise a non-default
+  // palette — same selection technique as the clipboard palette-switch test.
+  const paletteTiles = page.locator('[role="radio"][id^="apply-palette-tile-"]');
+  await expect(paletteTiles.nth(1)).toBeVisible();
+  await paletteTiles.nth(1).click();
+
+  const liveEditorBtn = page.getByRole("button", { name: "Live Editor" });
+  await expect(liveEditorBtn).toBeEnabled();
+
+  const popupPromise = page.waitForEvent("popup");
+  await liveEditorBtn.click();
+  const popup = await popupPromise;
+  await popup.waitForLoadState("domcontentloaded");
+
+  const url = popup.url();
+  expect(url).toMatch(/^https:\/\/mermaid\.live/);
+
+  // Decode the URL-safe base64 payload.
+  // Format: https://mermaid.live/edit#base64:<urlSafeBase64(utf8(JSON(state)))>
+  // URL-safe encoding swaps +→- and /→_ and strips trailing = padding.
+  const fragment = url.split("#base64:")[1];
+  expect(fragment).toBeTruthy();
+
+  const standard = fragment.replace(/-/g, "+").replace(/_/g, "/");
+  const padded = standard + "=".repeat((4 - (standard.length % 4)) % 4);
+  const decoded = Buffer.from(padded, "base64").toString("utf8");
+  const state = JSON.parse(decoded) as { code: string };
+
+  // The %%{init}%% directive proves the palette theme was injected —
+  // a regression that sends bare un-themed code would fail this check.
+  expect(state.code).toContain("%%{init:");
+
+  // The original diagram source must also be present.
+  expect(state.code).toContain("flowchart TD");
+});
