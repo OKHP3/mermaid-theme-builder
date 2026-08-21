@@ -210,7 +210,7 @@ function uniquePaletteId(prefix: string, taken: Set<string>): string {
   return id;
 }
 
-function buildPaletteFromShare(payload: ShareablePayload): Palette {
+export function buildPaletteFromShare(payload: ShareablePayload): Palette {
   const name = payload.paletteName || "Shared theme";
   const colors: ThemeColor[] = Object.entries(payload.themeVariables).map(([key, value]) => ({
     key,

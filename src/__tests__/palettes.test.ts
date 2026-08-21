@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { BUILTIN_PALETTES, REQUIRED_COLOR_KEYS } from "@/lib/palettes";
+import { BUILTIN_PALETTES, PALETTE_TOOL_VERSION, REQUIRED_COLOR_KEYS } from "@/lib/palettes";
 
 const HEX_COLOR_RE = /^#[0-9a-fA-F]{3}$|^#[0-9a-fA-F]{4}$|^#[0-9a-fA-F]{6}$|^#[0-9a-fA-F]{8}$/;
 const FONT_FAMILY_KEY = "fontFamily";
@@ -8,6 +8,10 @@ const CSS_KEYWORD_RE = /^transparent$|^inherit$|^currentColor$/i;
 const SEMVER_RE = /^\d+\.\d+\.\d+$/;
 
 describe("BUILTIN_PALETTES — schema validation", () => {
+  it("uses the shared palette tool version in attribution", () => {
+    expect(BUILTIN_PALETTES[0].attribution.toolVersion).toBe(PALETTE_TOOL_VERSION);
+  });
+
   it("has no duplicate palette ids", () => {
     const ids = BUILTIN_PALETTES.map((p) => p.id);
     const duplicates = ids.filter((id, i) => ids.indexOf(id) !== i);
