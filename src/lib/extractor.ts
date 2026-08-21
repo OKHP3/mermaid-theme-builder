@@ -1,4 +1,5 @@
 import type { ThemeColor, Palette } from "./palettes";
+import { PALETTE_TOOL_VERSION } from "./palettes";
 
 export interface ExtractedClassDef {
   name: string;
@@ -314,7 +315,7 @@ export function paletteFromExtracted(
       url: "https://overkillhill.com/projects/mermaid-theme-builder/",
       themeName: label,
       toolName: "Mermaid Theme Builder",
-      toolVersion: "0.3.0",
+      toolVersion: PALETTE_TOOL_VERSION,
     },
   };
 }

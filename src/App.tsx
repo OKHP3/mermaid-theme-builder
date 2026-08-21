@@ -11,6 +11,7 @@ import { useThemeMode, type ThemeMode } from "@/hooks/useThemeMode";
 import {
   BUILTIN_PALETTES,
   BRAND_PALETTES,
+  PALETTE_TOOL_VERSION,
   UTILITY_PALETTES,
   REQUIRED_COLOR_KEYS,
   KNOWN_COLOR_KEYS,
@@ -241,7 +242,7 @@ function buildPaletteFromShare(payload: ShareablePayload): Palette {
       url: "https://overkillhill.com/projects/mermaid-theme-builder/",
       themeName: name,
       toolName: "Mermaid Theme Builder",
-      toolVersion: "0.3.0",
+      toolVersion: PALETTE_TOOL_VERSION,
     },
   };
 }

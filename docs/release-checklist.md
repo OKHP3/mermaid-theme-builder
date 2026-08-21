@@ -131,7 +131,7 @@ pnpm run check:version-strings
 - [ ] `pnpm run check:version-strings` exits 0 (CI also runs this on every PR)
 - [ ] `TOOL_VERSION` in `src/lib/theme-engine.ts` matches the new `package.json` version
 - [ ] `docs/attribution.md` sample attribution line (`%% Created with: Mermaid Theme Builder vX.Y.Z`) updated to new version
-- [ ] Palette `toolVersion` fields in `src/lib/exporters.ts`, `src/lib/extractor.ts`, `src/lib/palettes.ts`, and `src/App.tsx` updated if the palette schema version changed (note: palette schema version is independent of the app version — only bump if palette output format changed)
+- [ ] `PALETTE_TOOL_VERSION` in `src/lib/palettes.ts` updated if the palette schema version changed — all other production files (`src/lib/exporters.ts`, `src/lib/extractor.ts`, `src/App.tsx`) import this single constant, so a schema bump is a one-line change (note: palette schema version is independent of the app version — only bump if palette output format changed)
 
 ---
 

@@ -1,8 +1,11 @@
 ## [Unreleased]
 
+### Changed
+- **Palette schema version is now a single constant** (`PALETTE_TOOL_VERSION` in `src/lib/palettes.ts`). All production files that embed a palette `toolVersion` field now import this constant instead of repeating the string literal, so a palette schema bump is a one-line change. The `check:version-strings` consistency guard continues to catch any drift automatically.
+
 ---
 
-## [0.6.1] - 2026-08-05
+ - 2026-08-05
 
 Privacy integrity fix, process governance scaffolding, renderer-aware init-directive length warning, and skills catalog truth sync.
 

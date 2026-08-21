@@ -59,9 +59,16 @@ export const KNOWN_COLOR_KEYS = new Set<string>([
   "textColor",
 ]);
 
+/**
+ * Palette output schema version — independent of the app version in package.json.
+ * Bump this (and only this) when the palette output format changes.
+ * All other production files import this constant so a schema bump is a one-line change.
+ */
+export const PALETTE_TOOL_VERSION = "0.3.0";
+
 const TOOL_ATTRIBUTION_BASE: Pick<PaletteAttribution, "toolName" | "toolVersion" | "url"> = {
   toolName: "Mermaid Theme Builder",
-  toolVersion: "0.3.0",
+  toolVersion: PALETTE_TOOL_VERSION,
   url: "https://overkillhill.com/projects/mermaid-theme-builder/",
 };
 
