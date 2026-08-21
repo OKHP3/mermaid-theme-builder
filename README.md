@@ -4,6 +4,7 @@
 [![E2E](https://github.com/OKHP3/mermaid-theme-builder/actions/workflows/e2e.yml/badge.svg?branch=main)](https://github.com/OKHP3/mermaid-theme-builder/actions/workflows/e2e.yml)
 [![Skill Tests](https://github.com/OKHP3/mermaid-theme-builder/actions/workflows/skill-tests.yml/badge.svg?branch=main)](https://github.com/OKHP3/mermaid-theme-builder/actions/workflows/skill-tests.yml)
 [![Deploy](https://github.com/OKHP3/mermaid-theme-builder/actions/workflows/deploy-pages.yml/badge.svg?branch=main)](https://github.com/OKHP3/mermaid-theme-builder/actions/workflows/deploy-pages.yml)
+[![Release Gate](https://github.com/OKHP3/mermaid-theme-builder/actions/workflows/release-gate.yml/badge.svg)](https://github.com/OKHP3/mermaid-theme-builder/actions/workflows/release-gate.yml)
 
 Visual governance for AI-generated Mermaid diagrams — paste, theme, preview, and export with renderer-aware scaffolding. Reduces follow-on AI prompts with pre-prompt scaffold exports tuned for your target renderer.
 
