@@ -346,11 +346,14 @@ test("Download → .md heading carries the custom theme name and shows 'Custom �
       stateValue: JSON.stringify({
         schemaVersion: 1,
         firstVisitComplete: true,
+        // Pin to the first built-in brand palette so Theme ID and Version
+        // assertions are deterministic across runs.
+        selectedPaletteId: "overkill-hill",
         // myThemeSlots must be present (even as an empty array) for the
         // hydration effect to enter the slot-ID branch. Without it the entire
         // block is skipped and activeMyThemeSlotId stays at its useState
         // default of "my-theme-1", making effectiveCustomThemeName come from
-        // the slot name rather than from `n`.
+        // the slot name rather than from customThemeName.
         myThemeSlots: [],
         activeMyThemeSlotId: null,
         customThemeName: CUSTOM_NAME,
@@ -390,10 +393,15 @@ test("Download → .md heading carries the custom theme name and shows 'Custom �
   //    confirming the isCustom branch of generateMarkdownExport was taken.
   expect(content).toContain("Custom — based on");
 
-  // 3. The %%{init}%% directive must still be present — palette metadata must
-  //    not be dropped when the custom-name branch is active.
+  // 3. The full palette metadata must survive the custom-name branch — a
+  //    regression that drops Theme ID or Version would otherwise pass silently.
+  //    "overkill-hill" version comes from BUILTIN_PALETTES in src/lib/palettes.ts.
+  expect(content).toContain("**Theme ID:** `overkill-hill`");
+  expect(content).toContain("**Version:** 0.2.0");
+
+  // 4. The %%{init}%% directive must still be present.
   expect(content).toContain("%%{init:");
 
-  // 4. The fenced Mermaid code block must be present.
+  // 5. The fenced Mermaid code block must be present.
   expect(content).toContain("```mermaid");
 });
