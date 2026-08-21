@@ -407,6 +407,70 @@ test("Download → .md heading carries the custom theme name and shows 'Custom �
 });
 
 // ---------------------------------------------------------------------------
+// Test 14 — Markdown clipboard copy with a custom theme name: heading and
+//            attribution use the custom name, not the default palette name
+// ---------------------------------------------------------------------------
+
+test("'Markdown' copy carries the custom theme name and shows 'Custom — based on'", async ({
+  page,
+  context,
+}) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+
+  const CUSTOM_NAME = "My Custom Theme";
+
+  // Seed the persisted state before React initialises.  `myThemeSlots` must
+  // be present, even as an empty array, so hydration applies the null active
+  // slot and preserves customThemeName instead of using the default slot name.
+  await page.addInitScript(
+    ({
+      stateKey,
+      stateValue,
+      firstVisitKey,
+    }: {
+      stateKey: string;
+      stateValue: string;
+      firstVisitKey: string;
+    }) => {
+      localStorage.clear();
+      sessionStorage.clear();
+      localStorage.setItem(firstVisitKey, "true");
+      localStorage.setItem(stateKey, stateValue);
+    },
+    {
+      stateKey: "mtb.state.v1",
+      stateValue: JSON.stringify({
+        schemaVersion: 1,
+        firstVisitComplete: true,
+        selectedPaletteId: "overkill-hill",
+        myThemeSlots: [],
+        activeMyThemeSlotId: null,
+        customThemeName: CUSTOM_NAME,
+      }),
+      firstVisitKey: "mtb.firstVisit",
+    }
+  );
+
+  await page.goto("/");
+  await page.waitForLoadState("load");
+  await page.getByRole("tab", { name: "Apply" }).first().click();
+  await page.getByLabel("Mermaid diagram code input").waitFor({ state: "visible" });
+  await page.getByLabel("Mermaid diagram code input").fill(FLOWCHART);
+
+  const markdownBtn = page.getByRole("button", { name: "Markdown" });
+  await expect(markdownBtn).toBeEnabled();
+  await markdownBtn.click();
+  await expect(page.getByRole("button", { name: /Copied!/ })).toBeVisible({ timeout: 3000 });
+
+  const content = await page.evaluate(() => navigator.clipboard.readText());
+
+  expect(content).toContain(`# Mermaid Diagram — ${CUSTOM_NAME} Theme`);
+  expect(content).toContain("Custom — based on");
+  expect(content).toContain("```mermaid");
+  expect(content).toContain("%%{init:");
+});
+
+// ---------------------------------------------------------------------------
 // Test 12 — Download button is disabled before diagram code is pasted,
 //            enabled after
 // ---------------------------------------------------------------------------

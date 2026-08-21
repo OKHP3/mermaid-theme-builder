@@ -117,7 +117,7 @@ export function ApplyTab({
   lastExampleType: _lastExampleType,
   onRecordExampleType: _onRecordExampleType,
   previewMode,
-  onPreviewModeChange: setPreviewMode,
+  onPreviewModeChange,
   hintResetToken,
   onResetSyntaxHints,
   myThemeSlots = [],
@@ -464,7 +464,7 @@ export function ApplyTab({
               <button
                 type="button"
                 className="theme-workbench-ghost-button"
-                onClick={() => setPreviewMode("themed")}
+                onClick={() => onPreviewModeChange("themed")}
               >
                 ◉ Preview
               </button>
@@ -513,7 +513,7 @@ export function ApplyTab({
                   <button
                     type="button"
                     className="theme-workbench-chip"
-                    onClick={() => setPreviewMode("original")}
+                    onClick={() => onPreviewModeChange("original")}
                   >
                     Canvas
                   </button>
@@ -611,7 +611,7 @@ export function ApplyTab({
               <div className="theme-workbench-preview">
                 <DiagramPreviewPanel
                   previewMode={previewMode}
-                  onPreviewModeChange={setPreviewMode}
+                  onPreviewModeChange={onPreviewModeChange}
                   codeEditorOverride={codeEditorOverride}
                   onCodeEditorOverrideChange={setCodeEditorOverride}
                   effectiveExportCode={effectiveExportCode}
