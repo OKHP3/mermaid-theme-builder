@@ -40,7 +40,7 @@ const SEQUENCE = "sequenceDiagram\n  Alice->>Bob: Hello";
 async function gotoApply(page: Page) {
   await page.addInitScript(() => {
     window.localStorage.clear();
-      localStorage.setItem("mtb.firstVisit", "true");
+    localStorage.setItem("mtb.firstVisit", "true");
     window.sessionStorage.clear();
   });
   await page.goto("/");
@@ -311,4 +311,89 @@ test("Live Editor button opens mermaid.live in a new tab", async ({ page }) => {
   // so the popup already has the full mermaid.live URL on navigation start.
   await popup.waitForLoadState("domcontentloaded");
   expect(popup.url()).toMatch(/^https:\/\/mermaid\.live/);
+});
+
+// ---------------------------------------------------------------------------
+// Test 11 — Download .md with a custom theme name: heading and attribution use
+//            the custom name, not the default palette name
+// ---------------------------------------------------------------------------
+
+test("Download → .md heading carries the custom theme name and shows 'Custom — based on'", async ({
+  page,
+}) => {
+  // The user-entered theme name is stored as `n` in the persisted state blob
+  // (key: "mtb.state.v1").  Seed it via addInitScript so it is present before
+  // React initialises — the same pattern used in my-theme-slots.spec.ts.
+  const CUSTOM_NAME = "My Custom Theme";
+
+  await page.addInitScript(
+    ({
+      stateKey,
+      stateValue,
+      firstVisitKey,
+    }: {
+      stateKey: string;
+      stateValue: string;
+      firstVisitKey: string;
+    }) => {
+      localStorage.clear();
+      sessionStorage.clear();
+      localStorage.setItem(firstVisitKey, "true");
+      localStorage.setItem(stateKey, stateValue);
+    },
+    {
+      stateKey: "mtb.state.v1",
+      stateValue: JSON.stringify({
+        schemaVersion: 1,
+        firstVisitComplete: true,
+        // myThemeSlots must be present (even as an empty array) for the
+        // hydration effect to enter the slot-ID branch. Without it the entire
+        // block is skipped and activeMyThemeSlotId stays at its useState
+        // default of "my-theme-1", making effectiveCustomThemeName come from
+        // the slot name rather than from `n`.
+        myThemeSlots: [],
+        activeMyThemeSlotId: null,
+        customThemeName: CUSTOM_NAME,
+      }),
+      firstVisitKey: "mtb.firstVisit",
+    }
+  );
+
+  await page.goto("/");
+  await page.waitForLoadState("load");
+  await page.getByRole("tab", { name: "Apply" }).first().click();
+  await page.getByLabel("Mermaid diagram code input").waitFor({ state: "visible" });
+
+  // Paste a flowchart so the export controls become active.
+  await page.getByLabel("Mermaid diagram code input").fill(FLOWCHART);
+
+  // Open the download menu and download the .md file.
+  const downloadBtn = page.getByRole("button", { name: "Download" });
+  await expect(downloadBtn).toBeEnabled();
+  await downloadBtn.click();
+
+  const downloadPromise = page.waitForEvent("download");
+  await page.getByRole("button", { name: ".md" }).click();
+  const download = await downloadPromise;
+
+  expect(download.suggestedFilename()).toMatch(/\.md$/);
+
+  const filePath = await download.path();
+  expect(filePath).toBeTruthy();
+  const content = readFileSync(filePath!, "utf8");
+
+  // 1. The H1 heading must embed the custom name, not the default palette name.
+  //    generateMarkdownExport writes: `# Mermaid Diagram — {themeName} Theme`
+  expect(content).toContain(`# Mermaid Diagram — ${CUSTOM_NAME} Theme`);
+
+  // 2. The Theme attribution line must show the "Custom — based on" prefix,
+  //    confirming the isCustom branch of generateMarkdownExport was taken.
+  expect(content).toContain("Custom — based on");
+
+  // 3. The %%{init}%% directive must still be present — palette metadata must
+  //    not be dropped when the custom-name branch is active.
+  expect(content).toContain("%%{init:");
+
+  // 4. The fenced Mermaid code block must be present.
+  expect(content).toContain("```mermaid");
 });
