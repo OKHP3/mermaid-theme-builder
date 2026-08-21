@@ -405,3 +405,28 @@ test("Download → .md heading carries the custom theme name and shows 'Custom �
   // 5. The fenced Mermaid code block must be present.
   expect(content).toContain("```mermaid");
 });
+
+// ---------------------------------------------------------------------------
+// Test 12 — Download button is disabled before diagram code is pasted,
+//            enabled after
+// ---------------------------------------------------------------------------
+
+test("Download button is disabled before code is pasted and enabled after", async ({ page }) => {
+  await gotoApply(page);
+
+  const textarea = page.getByLabel("Mermaid diagram code input");
+  const downloadBtn = page.getByRole("button", { name: "Download" });
+  await expect(downloadBtn).toBeVisible();
+
+  // The Apply tab pre-populates a default diagram. Clear it to reach the
+  // "no code yet" state that the disabled guard targets.
+  await textarea.fill("");
+
+  // With an empty textarea the guard `disabled={!inputCode.trim()}` must
+  // keep the button disabled so an empty export cannot be triggered.
+  await expect(downloadBtn).toBeDisabled();
+
+  // Pasting a flowchart must lift the disabled state.
+  await pasteDiagram(page, FLOWCHART);
+  await expect(downloadBtn).toBeEnabled();
+});
