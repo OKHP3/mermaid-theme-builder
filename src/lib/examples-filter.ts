@@ -21,6 +21,28 @@ export interface ExampleItem {
   tags?: string[];
 }
 
+/**
+ * Throw an Error if any id appears more than once in items.
+ *
+ * Called by buildExampleList() so a duplicate introduced at any assembly site
+ * surfaces immediately at module load time rather than silently passing through
+ * to the UI. Exported so unit tests can exercise the guard directly.
+ */
+export function assertNoDuplicateIds(items: ExampleItem[]): void {
+  const seen = new Set<string>();
+  const duplicates: string[] = [];
+  for (const item of items) {
+    if (seen.has(item.id)) duplicates.push(item.id);
+    seen.add(item.id);
+  }
+  if (duplicates.length > 0) {
+    throw new Error(
+      `buildExampleList: duplicate id(s) found — ${duplicates.join(", ")}. ` +
+        `Every ExampleItem must have a unique id.`
+    );
+  }
+}
+
 /** Build the full assembled list: brand palette previews, showcase, and catalog entries. */
 export function buildExampleList(): ExampleItem[] {
   const items: ExampleItem[] = [];
@@ -71,6 +93,7 @@ export function buildExampleList(): ExampleItem[] {
     });
   });
 
+  assertNoDuplicateIds(items);
   return items;
 }
 
