@@ -47,3 +47,6 @@ jobs:
 
       - name: Documentation truth check
         run: pnpm run check:doc-truth
+
+      - name: Source reference check
+        run: pnpm run check:source-refs
