@@ -482,6 +482,18 @@ describe("generateMarkdownExport structural invariants — customThemeName", () 
 
 describe("generatePromptScaffoldWithFormat structural invariants — customThemeName", () => {
   for (const palette of BRAND_PALETTES) {
+    it(`palette "${palette.name}" format "formatA" scaffold contains "Custom — based on"`, () => {
+      const opts = customNameOptions(palette);
+      const output = generatePromptScaffoldWithFormat(palette, opts, "formatA");
+      expect(output).toContain("Custom — based on");
+    });
+
+    it(`palette "${palette.name}" format "formatB" scaffold contains "Custom — based on"`, () => {
+      const opts = customNameOptions(palette);
+      const output = generatePromptScaffoldWithFormat(palette, opts, "formatB");
+      expect(output).toContain("Custom — based on");
+    });
+
     it(`palette "${palette.name}" format "both" scaffold contains "Custom — based on"`, () => {
       const opts = customNameOptions(palette);
       const output = generatePromptScaffoldWithFormat(palette, opts, "both");
