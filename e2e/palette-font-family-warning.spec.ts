@@ -29,7 +29,7 @@ async function openMyThemeColorEditor(page: Page): Promise<void> {
   await expect(myThemeSlot).toHaveAttribute("aria-checked", "true");
 
   await page.getByRole("tab", { name: /Apply/i }).click();
-  await page.getByRole("button", { name: "Edit Colors" }).click();
+  await page.getByRole("button", { name: "Edit Colors" }).first().click();
 
   const editor = page.getByRole("dialog", { name: /Edit colors for My Theme 1/i });
   await expect(editor).toBeVisible();

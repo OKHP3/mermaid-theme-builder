@@ -77,7 +77,7 @@ test.describe("Landmark Tab-order guard", () => {
     // Start from a neutral position: focus the document body so Tab 1
     // lands on the first focusable child (the skip link).
     await page.evaluate(() => document.body.focus());
-    stops = await collectTabStops(page, 35);
+    stops = await collectTabStops(page, 80);
   });
 
   test("skip link is the first Tab stop", async () => {

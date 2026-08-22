@@ -398,7 +398,7 @@ export function ApplyTab({
             className="theme-workbench-rail-button"
             aria-label="Preview workspace"
             title="Preview workspace"
-            onClick={() => onPreviewModeChange("themed")}
+            onClick={() => setPreviewMode("themed")}
           >
             <span aria-hidden="true">◉</span>
           </button>
@@ -458,9 +458,7 @@ export function ApplyTab({
           <div className="theme-workbench-stage-head">
             <div>
               <span className="theme-workbench-stage-title">Theme preview</span>
-              <span className="theme-workbench-stage-subtitle">
-                / {effectiveDetection.label}
-              </span>
+              <span className="theme-workbench-stage-subtitle">/ {effectiveDetection.label}</span>
             </div>
             <div className="theme-workbench-stage-tools">
               <button
@@ -491,9 +489,13 @@ export function ApplyTab({
                 <button
                   type="button"
                   className="theme-workbench-select"
-                  onClick={() => document.querySelector<HTMLTextAreaElement>(
-                    '[aria-label="Mermaid diagram code input"]'
-                  )?.focus()}
+                  onClick={() =>
+                    document
+                      .querySelector<HTMLTextAreaElement>(
+                        '[aria-label="Mermaid diagram code input"]'
+                      )
+                      ?.focus()
+                  }
                 >
                   {effectiveDetection.label}
                   <span>⌄</span>
@@ -502,7 +504,10 @@ export function ApplyTab({
               <div className="theme-workbench-setting">
                 <span className="theme-workbench-setting-label">Rendering mode</span>
                 <div className="theme-workbench-chips">
-                  <button type="button" className="theme-workbench-chip theme-workbench-chip-selected">
+                  <button
+                    type="button"
+                    className="theme-workbench-chip theme-workbench-chip-selected"
+                  >
                     SVG
                   </button>
                   <button
@@ -576,8 +581,8 @@ export function ApplyTab({
                 {isExtracted && /^\s*classDef\s+/m.test(inputCode) && (
                   <div className="px-3 py-1.5 flex items-start gap-1.5 bg-primary/5 border-b border-primary/20">
                     <p className="text-[10px] text-primary/80 leading-snug">
-                      classDef overrides from Extract are in this code — edit them here or re-extract to
-                      tweak further.
+                      classDef overrides from Extract are in this code — edit them here or
+                      re-extract to tweak further.
                     </p>
                   </div>
                 )}
@@ -652,7 +657,10 @@ export function ApplyTab({
                         key={color.key}
                         onClick={() => setShowColorEditor(true)}
                       >
-                        <span className="theme-workbench-swatch" style={{ background: color.value }} />
+                        <span
+                          className="theme-workbench-swatch"
+                          style={{ background: color.value }}
+                        />
                         <span>
                           <strong>{color.label}</strong>
                           <small>{color.value}</small>
@@ -676,7 +684,9 @@ export function ApplyTab({
                     ].map(([label, tier]) => (
                       <div className="theme-workbench-type-row" key={label as string}>
                         <span>{label as string}</span>
-                        <span>{(tier as TypographySettings["nodeLabel"]).fontSize || "inherit"} px</span>
+                        <span>
+                          {(tier as TypographySettings["nodeLabel"]).fontSize || "inherit"} px
+                        </span>
                       </div>
                     ))}
                   </>
