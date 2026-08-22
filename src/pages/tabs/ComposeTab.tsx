@@ -341,7 +341,7 @@ export function ComposeTab({
       diagramFamily: "flowchart",
       includeMetaComments,
       includeBadge: false,
-      customThemeName: effectiveThemeName !== selectedPalette.name ? effectiveThemeName : undefined,
+      customThemeName: customThemeName.trim() ? effectiveThemeName : undefined,
       look,
       fontSize: fontSize || undefined,
       typography,
@@ -353,6 +353,7 @@ export function ComposeTab({
     [
       selectedPalette,
       includeMetaComments,
+      customThemeName,
       effectiveThemeName,
       look,
       fontSize,
