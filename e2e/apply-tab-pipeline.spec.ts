@@ -471,28 +471,38 @@ test("'Markdown' copy carries the custom theme name and shows 'Custom — based 
 });
 
 // ---------------------------------------------------------------------------
-// Test 12 — Download button is disabled before diagram code is pasted,
-//            enabled after
+// Test 12 — Download and copy buttons are disabled before diagram code is
+//            pasted, enabled after
 // ---------------------------------------------------------------------------
 
-test("Download button is disabled before code is pasted and enabled after", async ({ page }) => {
+test("Download and copy buttons are disabled before code is pasted and enabled after", async ({
+  page,
+}) => {
   await gotoApply(page);
 
   const textarea = page.getByLabel("Mermaid diagram code input");
   const downloadBtn = page.getByRole("button", { name: "Download" });
+  const styledCodeBtn = page.getByRole("button", { name: "Styled Code" });
+  const markdownBtn = page.getByRole("button", { name: "Markdown" });
   await expect(downloadBtn).toBeVisible();
+  await expect(styledCodeBtn).toBeVisible();
+  await expect(markdownBtn).toBeVisible();
 
   // The Apply tab pre-populates a default diagram. Clear it to reach the
   // "no code yet" state that the disabled guard targets.
   await textarea.fill("");
 
-  // With an empty textarea the guard `disabled={!inputCode.trim()}` must
-  // keep the button disabled so an empty export cannot be triggered.
+  // With an empty textarea the guard `disabled={!inputCode.trim()}` must keep
+  // all diagram-dependent export buttons disabled.
   await expect(downloadBtn).toBeDisabled();
+  await expect(styledCodeBtn).toBeDisabled();
+  await expect(markdownBtn).toBeDisabled();
 
-  // Pasting a flowchart must lift the disabled state.
+  // Pasting a flowchart must lift the disabled state for all three controls.
   await pasteDiagram(page, FLOWCHART);
   await expect(downloadBtn).toBeEnabled();
+  await expect(styledCodeBtn).toBeEnabled();
+  await expect(markdownBtn).toBeEnabled();
 });
 
 // ---------------------------------------------------------------------------
