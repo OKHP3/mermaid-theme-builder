@@ -398,7 +398,7 @@ export function ApplyTab({
             className="theme-workbench-rail-button"
             aria-label="Preview workspace"
             title="Preview workspace"
-            onClick={() => onPreviewModeChange("themed")}
+            onClick={() => setPreviewMode("themed")}
           >
             <span aria-hidden="true">◉</span>
           </button>
