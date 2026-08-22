@@ -44,6 +44,17 @@ const FUNC_COLOR_JSON = JSON.stringify({
   colors: [{ key: "lineColor", label: "Line", value: "rgb(255,0,0)" }],
 });
 
+/** Clean palette — exercises the successful single-palette import toast. */
+const CLEAN_PALETTE_JSON = JSON.stringify({
+  type: "mtb-palette",
+  schemaVersion: 1,
+  id: "test-clean-import",
+  name: "Clean Import Test",
+  description: "test",
+  version: "1.0.0",
+  colors: [{ key: "primaryColor", label: "Primary", value: "#123456" }],
+});
+
 // ---------------------------------------------------------------------------
 // Helper
 // ---------------------------------------------------------------------------
@@ -56,7 +67,7 @@ const FUNC_COLOR_JSON = JSON.stringify({
 async function openComposeAndImport(page: Page, json: string): Promise<void> {
   await page.addInitScript(() => {
     window.localStorage.clear();
-      localStorage.setItem("mtb.firstVisit", "true");
+    localStorage.setItem("mtb.firstVisit", "true");
     window.sessionStorage.clear();
   });
   await page.goto("/");
@@ -82,6 +93,28 @@ async function openComposeAndImport(page: Page, json: string): Promise<void> {
     buffer: Buffer.from(json),
   });
 }
+
+// ---------------------------------------------------------------------------
+// C — successful bundle import toast auto-dismiss
+// ---------------------------------------------------------------------------
+
+test.describe("Import success toast", () => {
+  test("palette import success toast disappears automatically after ~2.5 seconds", async ({
+    page,
+  }) => {
+    await openComposeAndImport(page, CLEAN_PALETTE_JSON);
+
+    const toast = page.locator('[role="status"]');
+    await expect(toast).toBeVisible({ timeout: 4_000 });
+    await expect(toast).toContainText('Imported "Clean Import Test" into "My Theme 1".');
+
+    // AppShell clears every toast after 2.5 s. Keep a 1 s buffer to avoid
+    // making the assertion depend on timer scheduling at the threshold.
+    await page.waitForTimeout(3500);
+
+    await expect(toast).not.toBeVisible();
+  });
+});
 
 // ---------------------------------------------------------------------------
 // A — named CSS color ("red")
