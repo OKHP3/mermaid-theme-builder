@@ -1321,3 +1321,38 @@ describe("paletteToPortableJson → parsePortablePalette sourceUrls round-trip",
     expect(output).not.toContain("**Brand sources:**");
   });
 });
+
+describe("palettesToBundleJson → parsePaletteBundle sourceUrls round-trip", () => {
+  const palettesWithUrls = BRAND_PALETTES.filter((p) => p.sourceUrls && p.sourceUrls.length > 0);
+
+  it("preserves sourceUrls for every branded palette in a bundle", () => {
+    const result = parsePaletteBundle(palettesToBundleJson(palettesWithUrls));
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+
+    expect(result.palettes).toHaveLength(palettesWithUrls.length);
+    for (const [index, palette] of palettesWithUrls.entries()) {
+      expect(result.palettes[index].palette.sourceUrls).toEqual(palette.sourceUrls);
+    }
+  });
+
+  it("keeps every branded palette's source URLs in Markdown after bundle round-trip", () => {
+    const result = parsePaletteBundle(palettesToBundleJson(palettesWithUrls));
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+
+    for (const importedResult of result.palettes) {
+      const imported = importedResult.palette;
+      const opts = roundTripBaseOptions(imported);
+      const themedCode = generateThemedCode(ROUNDTRIP_DIAGRAM, opts);
+      const output = generateMarkdownExport(themedCode, imported, opts);
+
+      expect(output).toContain("**Brand sources:**");
+      for (const url of imported.sourceUrls ?? []) {
+        expect(output).toContain(url);
+      }
+    }
+  });
+});
