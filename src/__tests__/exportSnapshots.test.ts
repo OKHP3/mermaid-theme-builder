@@ -416,6 +416,30 @@ describe("generatePromptScaffoldWithFormat snapshots — customThemeName path", 
 });
 
 // ---------------------------------------------------------------------------
+// 7b. Cross-palette uniqueness — customThemeName must not erase palette data
+// ---------------------------------------------------------------------------
+
+describe("customThemeName cross-palette uniqueness", () => {
+  it("each palette produces a distinct markdown export with customThemeName", () => {
+    const outputs = BRAND_PALETTES.map((palette) => {
+      const opts = customNameOptions(palette);
+      const themedCode = generateThemedCode(SIMPLE_DIAGRAM, opts);
+      return generateMarkdownExport(themedCode, palette, opts);
+    });
+    const unique = new Set(outputs);
+    expect(unique.size).toBe(BRAND_PALETTES.length);
+  });
+
+  it('each palette produces a distinct scaffold for format "both" with customThemeName', () => {
+    const outputs = BRAND_PALETTES.map((palette) =>
+      generatePromptScaffoldWithFormat(palette, customNameOptions(palette), "both")
+    );
+    const unique = new Set(outputs);
+    expect(unique.size).toBe(BRAND_PALETTES.length);
+  });
+});
+
+// ---------------------------------------------------------------------------
 // 8. customThemeName structural invariants — "Custom — based on" must appear
 // ---------------------------------------------------------------------------
 
