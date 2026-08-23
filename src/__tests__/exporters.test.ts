@@ -1355,4 +1355,27 @@ describe("palettesToBundleJson → parsePaletteBundle sourceUrls round-trip", ()
       }
     }
   });
+
+  it("omits malformed sourceUrls from Markdown after bundle import", () => {
+    const bundle = JSON.parse(palettesToBundleJson([BRAND_PALETTES[0]])) as {
+      palettes: Array<{ sourceUrls?: string[] }>;
+    };
+    bundle.palettes[0].sourceUrls = ["not a url", "ftp://x"];
+
+    const result = parsePaletteBundle(JSON.stringify(bundle));
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+
+    const imported = result.palettes[0].palette;
+    const opts = roundTripBaseOptions(imported);
+    const themedCode = generateThemedCode(ROUNDTRIP_DIAGRAM, opts);
+    const output = generateMarkdownExport(themedCode, imported, opts);
+
+    expect(output).toContain(`# Mermaid Diagram — ${imported.name} Theme`);
+    expect(output).toContain("## Usage");
+    expect(output).toContain("## Attribution");
+    expect(output).not.toContain("**Brand sources:**");
+    expect(output).not.toContain("<");
+  });
 });
