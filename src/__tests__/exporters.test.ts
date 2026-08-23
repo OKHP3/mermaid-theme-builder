@@ -1378,4 +1378,28 @@ describe("palettesToBundleJson → parsePaletteBundle sourceUrls round-trip", ()
     expect(output).not.toContain("**Brand sources:**");
     expect(output).not.toContain("<");
   });
+
+  it("keeps valid sourceUrls while omitting malformed URLs from Markdown after bundle import", () => {
+    const validUrl = "https://example.com/brand";
+    const bundle = JSON.parse(palettesToBundleJson([BRAND_PALETTES[0]])) as {
+      palettes: Array<{ sourceUrls?: string[] }>;
+    };
+    bundle.palettes[0].sourceUrls = [validUrl, "not a url", "ftp://x"];
+
+    const result = parsePaletteBundle(JSON.stringify(bundle));
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+
+    const imported = result.palettes[0].palette;
+    const opts = roundTripBaseOptions(imported);
+    const themedCode = generateThemedCode(ROUNDTRIP_DIAGRAM, opts);
+    const output = generateMarkdownExport(themedCode, imported, opts);
+
+    expect(output).toContain("**Brand sources:**");
+    expect(output).toContain(validUrl);
+    expect(output).not.toContain("not a url");
+    expect(output).not.toContain("ftp://x");
+    expect(output).not.toContain("<ftp://x>");
+  });
 });
