@@ -30,6 +30,10 @@ const DIAGRAM_WITH_TYPO = `flowchart TD
   A[Start]:::prmary --> B[Finish]:::prmary
 `;
 
+const DIAGRAM_WITH_TWO_TYPOS = `flowchart TD
+  A[Start]:::prmary --> B[Middle]:::secndary
+`;
+
 // ---------------------------------------------------------------------------
 // Helper
 // ---------------------------------------------------------------------------
@@ -37,7 +41,7 @@ const DIAGRAM_WITH_TYPO = `flowchart TD
 async function loadWithDiagram(page: Page, inputCode: string): Promise<void> {
   await page.addInitScript((code) => {
     window.localStorage.clear();
-      localStorage.setItem("mtb.firstVisit", "true");
+    localStorage.setItem("mtb.firstVisit", "true");
     window.sessionStorage.clear();
     window.localStorage.setItem(
       "mtb.state.v1",
@@ -134,4 +138,37 @@ test("Fix button disappears after the typo has been corrected", async ({ page })
 
   // Once the typo is gone, the Fix button should no longer be visible.
   await expect(fixButton).not.toBeVisible({ timeout: 3000 });
+});
+
+// ---------------------------------------------------------------------------
+// Test 5 — Fixing one typo leaves a different typo unchanged
+// ---------------------------------------------------------------------------
+
+test("Fix button only corrects the selected typo when multiple typos are present", async ({
+  page,
+}) => {
+  await loadWithDiagram(page, DIAGRAM_WITH_TWO_TYPOS);
+  await openApplyTab(page);
+
+  const input = page.getByLabel("Mermaid diagram code input");
+  await expect(input).toHaveValue(/:::prmary/);
+  await expect(input).toHaveValue(/:::secndary/);
+
+  await openClassLibrary(page);
+
+  const primaryFixButton = page.getByRole("button", {
+    name: "Fix :::prmary → :::primary",
+  });
+  const secondaryFixButton = page.getByRole("button", {
+    name: "Fix :::secndary → :::secondary",
+  });
+  await expect(primaryFixButton).toBeVisible({ timeout: 5000 });
+  await expect(secondaryFixButton).toBeVisible({ timeout: 5000 });
+
+  await primaryFixButton.click();
+
+  await expect(input).toHaveValue(/:::primary/);
+  await expect(input).not.toHaveValue(/:::prmary/);
+  await expect(input).toHaveValue(/:::secndary/);
+  await expect(secondaryFixButton).toBeVisible();
 });
