@@ -151,6 +151,7 @@ export function ExportToolbar({
 
   const handleCopy = useCallback(
     async (type: ExportType) => {
+      if (type !== "prompt" && !inputCode.trim()) return;
       if (type === "prompt") {
         onShowScaffoldModal();
         return;
@@ -163,7 +164,7 @@ export function ExportToolbar({
       setCopiedType(type);
       setTimeout(() => setCopiedType(null), 2000);
     },
-    [effectiveExportCode, selectedPalette, exportOptions, onShowScaffoldModal]
+    [effectiveExportCode, selectedPalette, exportOptions, inputCode, onShowScaffoldModal]
   );
 
   useEffect(() => {

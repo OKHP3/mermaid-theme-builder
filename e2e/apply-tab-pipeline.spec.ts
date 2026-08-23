@@ -506,6 +506,55 @@ test("Download and copy buttons are disabled before code is pasted and enabled a
 });
 
 // ---------------------------------------------------------------------------
+// Test 15 — keyboard copy shortcut refuses empty input and copies styled code
+//            for a valid diagram
+// ---------------------------------------------------------------------------
+
+test("Ctrl+Shift+C does not copy empty input and copies styled code for a flowchart", async ({
+  page,
+  context,
+}) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await gotoApply(page);
+
+  const textarea = page.getByLabel("Mermaid diagram code input");
+  const applyTab = page.getByRole("tab", { name: "Apply" }).first();
+  const sentinel = "clipboard must remain unchanged";
+
+  // Seed the clipboard so a no-op is observable, then clear the default
+  // diagram. Focus the Apply tab before pressing the shortcut so the
+  // textarea's typing guard does not intentionally swallow the event.
+  await page.evaluate((value) => navigator.clipboard.writeText(value), sentinel);
+  await textarea.fill("");
+  await expect(textarea).toHaveValue("");
+  for (const shortcut of ["Control+Shift+C", "Meta+Shift+C"]) {
+    await applyTab.press(shortcut);
+    await expect
+      .poll(() => page.evaluate(() => navigator.clipboard.readText()))
+      .toBe(sentinel);
+  }
+  await expect(page.getByRole("button", { name: "Styled Code" })).not.toHaveAttribute(
+    "aria-label",
+    "Copied!"
+  );
+
+  // A valid diagram must still travel through the same shortcut path and
+  // copy the themed export rather than the raw source.
+  await pasteDiagram(page, FLOWCHART);
+  await applyTab.press("Control+Shift+C");
+  await expect(page.getByRole("button", { name: /Copied!/ })).toBeVisible({ timeout: 3000 });
+
+  const copied = await page.evaluate(() => navigator.clipboard.readText());
+  expect(copied).toContain("%%{init:");
+  expect(copied).toContain("flowchart TD");
+  expect(copied).toContain("themeVariables");
+
+  await applyTab.press("Meta+Shift+C");
+  await expect(page.getByRole("button", { name: /Copied!/ })).toBeVisible({ timeout: 3000 });
+  await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(copied);
+});
+
+// ---------------------------------------------------------------------------
 // Test 13 — Live Editor URL encodes themed code after a palette switch
 // ---------------------------------------------------------------------------
 
