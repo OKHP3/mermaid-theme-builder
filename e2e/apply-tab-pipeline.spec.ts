@@ -529,9 +529,7 @@ test("Ctrl+Shift+C does not copy empty input and copies styled code for a flowch
   await expect(textarea).toHaveValue("");
   for (const shortcut of ["Control+Shift+C", "Meta+Shift+C"]) {
     await applyTab.press(shortcut);
-    await expect
-      .poll(() => page.evaluate(() => navigator.clipboard.readText()))
-      .toBe(sentinel);
+    await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(sentinel);
   }
   await expect(page.getByRole("button", { name: "Styled Code" })).not.toHaveAttribute(
     "aria-label",
@@ -552,6 +550,45 @@ test("Ctrl+Shift+C does not copy empty input and copies styled code for a flowch
   await applyTab.press("Meta+Shift+C");
   await expect(page.getByRole("button", { name: /Copied!/ })).toBeVisible({ timeout: 3000 });
   await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(copied);
+});
+
+// ---------------------------------------------------------------------------
+// Test 16 — keyboard copy shortcut leaves editable fields untouched
+// ---------------------------------------------------------------------------
+
+test("Ctrl+Shift+C does not interrupt the Apply or preview code editors", async ({
+  page,
+  context,
+}) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await gotoApply(page);
+  await pasteDiagram(page, FLOWCHART);
+
+  const sentinel = "clipboard must remain unchanged while editing";
+  const styledCodeBtn = page.getByRole("button", { name: "Styled Code" });
+  await page.evaluate((value) => navigator.clipboard.writeText(value), sentinel);
+
+  // The source editor is a textarea. The global shortcut must not copy the
+  // themed export or change the toolbar's copied state while users edit it.
+  const diagramEditor = page.getByLabel("Mermaid diagram code input");
+  await diagramEditor.focus();
+  for (const shortcut of ["Control+Shift+C", "Meta+Shift+C"]) {
+    await diagramEditor.press(shortcut);
+    await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(sentinel);
+  }
+  await expect(styledCodeBtn).toHaveText("Styled Code");
+
+  // The Code preview has a second, editable textarea. Verify the same guard
+  // protects edits made to the styled export before copying.
+  await page.locator('[data-preview-mode="code"]').click();
+  await page.getByTitle("Edit the styled code before copying").click();
+  const previewEditor = page.getByLabel("Styled code output — edit before copying");
+  await expect(previewEditor).toBeFocused();
+  for (const shortcut of ["Control+Shift+C", "Meta+Shift+C"]) {
+    await previewEditor.press(shortcut);
+    await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(sentinel);
+  }
+  await expect(styledCodeBtn).toHaveText("Styled Code");
 });
 
 // ---------------------------------------------------------------------------
