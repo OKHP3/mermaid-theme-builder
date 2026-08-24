@@ -54,7 +54,7 @@ const FLOWCHART = "flowchart TD\n  A[Start] --> B[End]";
 async function gotoApply(page: Page) {
   await page.addInitScript(() => {
     window.localStorage.clear();
-      localStorage.setItem("mtb.firstVisit", "true");
+    localStorage.setItem("mtb.firstVisit", "true");
     window.sessionStorage.clear();
   });
   await page.goto("/");
@@ -199,4 +199,37 @@ test("'No classDef' badge disappears after switching from sankey to flowchart wi
   const { mdRow: fcMdRow, txtRow: fcTxtRow } = getDownloadRows(page);
   await expect(fcMdRow.getByText("No classDef", { exact: true })).toBeHidden();
   await expect(fcTxtRow.getByText("No classDef", { exact: true })).toBeHidden();
+});
+
+test("'No classDef' badge on Prompt Scaffold disappears after switching to flowchart", async ({
+  page,
+}) => {
+  await gotoApply(page);
+
+  // Step 1 — paste sankey and wait for the non-classDef state.
+  await pasteDiagram(page, SANKEY);
+  await expect(
+    page
+      .locator("button")
+      .filter({ hasText: /Sankey/i })
+      .first()
+  ).toBeVisible({ timeout: 8_000 });
+
+  // The inline Prompt Scaffold copy button should carry the badge.
+  const promptScaffoldButton = page.getByRole("button", { name: /Prompt Scaffold/ });
+  await expect(promptScaffoldButton).toBeVisible();
+  const noClassDefBadge = promptScaffoldButton.getByText("No classDef", { exact: true });
+  await expect(noClassDefBadge).toBeVisible({ timeout: 5_000 });
+
+  // Step 2 — replace the diagram with a classDef-capable flowchart.
+  await pasteDiagram(page, FLOWCHART);
+  await expect(
+    page
+      .locator("button")
+      .filter({ hasText: /^Flowchart$/ })
+      .first()
+  ).toBeVisible({ timeout: 8_000 });
+
+  // The same inline button must no longer show a stale No classDef badge.
+  await expect(noClassDefBadge).not.toBeAttached({ timeout: 5_000 });
 });
