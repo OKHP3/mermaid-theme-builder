@@ -112,7 +112,20 @@ See [Mermaid's LICENSE](https://github.com/mermaid-js/mermaid/blob/develop/LICEN
 
 ---
 
-## 7. Summary
+## 7. Privacy-respecting pageview measurement
+
+Mermaid Theme Builder uses Plausible Analytics for aggregate pageview measurement. The integration is configured to:
+
+- send one initial pageview only;
+- send the site origin and pathname, with query strings and hash fragments removed;
+- send no Mermaid code, palette data, localStorage values, form input, or custom properties;
+- use no cookies or advertising identifiers.
+
+The app's hash fragments can contain shared palette payloads, so they are intentionally excluded from the analytics URL. The Plausible script is the only analytics transport; the tool remains browser-only with no application backend.
+
+---
+
+## 8. Summary
 
 | Question | Answer |
 |----------|--------|

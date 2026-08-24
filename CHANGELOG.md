@@ -2,6 +2,10 @@
 
 ### Changed
 - **Palette schema version is now a single constant** (`PALETTE_TOOL_VERSION` in `src/lib/palettes.ts`). All production files that embed a palette `toolVersion` field now import this constant instead of repeating the string literal, so a palette schema bump is a one-line change. The `check:version-strings` consistency guard continues to catch any drift automatically.
+- **Privacy-respecting analytics**: Plausible records one aggregate pageview with only the origin and pathname. Query strings, hash fragments, Mermaid code, palette data, localStorage values, and custom properties are excluded.
+
+### Added
+- **Plausible pageview script**: automatic capture is disabled so the browser sends only the sanitized pageview created by `src/lib/privacy-analytics.ts`.
 
 ---
 
@@ -49,7 +53,7 @@ Phase 2 P0 capability fixes, plus documentation truth sync across all public sur
 | Renderer-aware format generation | Pass | `getRendererDefaultOutputFormat` in `renderer-parity.ts`; `outputFormat` wired through App to ExportToolbar |
 | Stroke/border width control | Pass | Button group in Compose Look section; `buildClassDefLibrary` accepts `strokeWidth` |
 | All tests pass | Pass | 2585 unit tests; typecheck clean |
-| Privacy-respecting analytics | Fail | Not yet implemented. v1.0.0 gate per roadmap |
+| Privacy-respecting analytics | Pass | Plausible pageview script with sanitized URL; `src/lib/privacy-analytics.ts` tests exclude query strings and hash fragments |
 | WCAG 2.1 AA accessibility audit | Pass | `docs/accessibility-audit.md`; axe-core 4.12.1 Playwright audit passes across Apply, Compose, Examples, Reference, and Extract |
 | GitHub release cadence established | Pass | This release. Version policy added to `AGENTS.md` |
 

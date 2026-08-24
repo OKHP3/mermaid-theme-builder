@@ -27,7 +27,7 @@ Visual governance for AI-generated Mermaid diagrams — paste, theme, preview, a
 - **Renderer-aware warnings** — contextual alerts when selected look is unsupported by target renderer
 - **Stroke/border width control** — per-diagram node border width stepper in Compose (Default, 1–4 px)
 - **Extract mode** — dedicated Extract tab to pull a theme from existing themed Mermaid code
-- **100% client-side** — your Mermaid code, palette data, and exports stay in your browser. No backend, no login, no analytics. UI fonts load from Google Fonts (fonts.googleapis.com) on first visit; no diagram data or palette data leaves the browser.
+- **100% client-side** — your Mermaid code, palette data, and exports stay in your browser. No backend or login. Privacy-respecting Plausible analytics records one aggregate pageview only, with no cookies and no diagram or palette data. UI fonts load from Google Fonts (fonts.googleapis.com) on first visit; no diagram data or palette data leaves the browser.
 - **Installable as a PWA** — service worker and web app manifest included; add to home screen or desktop for offline-capable access (app shell is cached; Google Fonts require a network connection)
 
 ---

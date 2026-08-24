@@ -157,7 +157,7 @@ The WCAG 2.1 AA automated audit gate is complete. v1.0.0 is not yet earned until
 
 **Goals:** Polish, publish, and make the site properly discoverable.
 
-- [ ] **Privacy-respecting analytics** — Plausible or Fathom (no cookies, no diagram content captured)
+- [x] **Privacy-respecting analytics** — Plausible pageviews use a sanitized origin and pathname only; no cookies, query strings, hash fragments, diagram content, or palette data (2026-08-24)
 - [ ] **GitHub release cadence** — tagged releases with CHANGELOG notes for each version
 - [x] **Accessibility** — WCAG 2.1 AA automated release-blocker audit verified; see `docs/accessibility-audit.md` (2026-08-24)
 - [ ] Keyboard-navigable palette picker (already partial)

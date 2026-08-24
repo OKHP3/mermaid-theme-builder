@@ -2,6 +2,7 @@ import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
 import { applyMode } from "./hooks/useThemeMode";
+import { trackBrowserPageview } from "./lib/privacy-analytics";
 
 (() => {
   try {
@@ -14,6 +15,7 @@ import { applyMode } from "./hooks/useThemeMode";
 })();
 
 createRoot(document.getElementById("root")!).render(<App />);
+trackBrowserPageview();
 
 if ("serviceWorker" in navigator && import.meta.env.PROD) {
   window.addEventListener("load", () => {
