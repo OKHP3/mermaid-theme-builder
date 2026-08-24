@@ -24,7 +24,7 @@ const BASE_OPTIONS: ExportOptions = {
 
 const SIMPLE_FLOWCHART = "flowchart TD\n  A --> B";
 
-const FRONTMATTER_TEST_PALETTES = [BUILTIN_PALETTES[0], BUILTIN_PALETTES[1], BRAND_PALETTES[0]];
+const FRONTMATTER_TEST_PALETTES = BUILTIN_PALETTES;
 
 function primaryColorOf(testPalette: (typeof BUILTIN_PALETTES)[number]): string {
   return testPalette.colors.find((color) => color.key === "primaryColor")!.value;
@@ -126,20 +126,23 @@ describe("generateThemedCode", () => {
 
   it("includes C4 family overlay keys in frontmatter", () => {
     const testPalette = BRAND_PALETTES[0];
-    const result = generateThemedCode('C4Context\n  Person(user, "User")', {
+    const c4Diagram = 'C4Context\n  Person(user, "User")';
+    const options = {
       ...BASE_OPTIONS,
       palette: testPalette,
       diagramFamily: "c4Diagram",
-      outputFormat: "frontmatter",
-    });
-    const extracted = extractTheme(result);
+    } as const;
+    const result = generateThemedCode(c4Diagram, { ...options, outputFormat: "frontmatter" });
+    const init = extractTheme(generateThemedCode(c4Diagram, options));
+    const frontmatter = extractTheme(result);
 
     expect(result).toContain("personBkg:");
     expect(result).toContain("personBorder:");
-    expect(extracted.themeVariables.personBkg).toBe(primaryColorOf(testPalette));
-    expect(extracted.themeVariables.personBorder).toBe(
+    expect(frontmatter.themeVariables.personBkg).toBe(primaryColorOf(testPalette));
+    expect(frontmatter.themeVariables.personBorder).toBe(
       testPalette.colors.find((color) => color.key === "primaryBorderColor")!.value
     );
+    expect(frontmatter.themeVariables).toEqual(init.themeVariables);
   });
 });
 
