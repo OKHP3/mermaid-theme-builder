@@ -125,6 +125,36 @@ export function expectNoCommentColor(html: string): void {
   expect(html).not.toContain(`color:${COMMENT_HL.text}`);
 }
 
+// ── Positional span color assertions ────────────────────────────────────────
+
+/** Extracts inline color values in their document order. */
+function extractSpanColors(html: string): string[] {
+  return [...html.matchAll(/color:([^;"]+)/g)].map((match) => match[1]);
+}
+
+/**
+ * Asserts the color of the `nthSpan` inline color span.
+ *
+ * The optional token label makes failures identify the semantic token rather
+ * than exposing only a raw index. Pass `"differs"` to assert an identity-aware
+ * negative color comparison.
+ */
+export function expectSpanColor(
+  html: string,
+  nthSpan: number,
+  expectedColor: string,
+  tokenLabel?: string,
+  relation: "matches" | "differs" = "matches"
+): void {
+  const colors = extractSpanColors(html);
+  const message = tokenLabel ? `span[${nthSpan}] (${tokenLabel})` : `span[${nthSpan}]`;
+  if (relation === "matches") {
+    expect(colors[nthSpan], message).toBe(expectedColor);
+  } else {
+    expect(colors[nthSpan], message).not.toBe(expectedColor);
+  }
+}
+
 // ── Count helpers — for occurrence-counting assertions ────────────────────
 // Use these instead of raw `html.match(new RegExp(`color:${HL.*}`, "g"))` in
 // test files so the pattern lives in one place and tests read as plain English.

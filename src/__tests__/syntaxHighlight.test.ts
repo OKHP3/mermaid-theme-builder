@@ -33,7 +33,11 @@ import {
   highlightMermaidCodeLine,
   highlightMermaidCodeBlock,
 } from "@/lib/syntax-highlight";
-import { countKeywordColorOccurrences, countInitBracketColorOccurrences } from "./helpers/hlAssert";
+import {
+  countKeywordColorOccurrences,
+  countInitBracketColorOccurrences,
+  expectSpanColor,
+} from "./helpers/hlAssert";
 
 /** Render a ReactNode to an HTML string for assertion. */
 function hl(node: import("react").ReactNode): string {
@@ -484,34 +488,6 @@ describe("highlightMermaidCodeBlock — edge cases", () => {
 /** Extract all inline color values from an HTML string in document order. */
 function extractColors(html: string): string[] {
   return [...html.matchAll(/color:([^;"]+)/g)].map((m) => m[1]);
-}
-
-/**
- * Assert that the color span at `index` in `html` equals `expectedColor`.
- *
- * The `tokenLabel` is embedded in the failure message so a failing test
- * immediately says *which token* was wrong rather than just showing a raw
- * hex code and an index. Pass `"differs"` to assert an identity-aware
- * negative color comparison.
- *
- * @example
- * expectSpanColor(html, 0, INIT_HL.bracket, "%%{ opener");
- * // On failure: "span[0] (%%{ opener): expected '#c8a870' toEqual '#8da89a'"
- */
-function expectSpanColor(
-  html: string,
-  index: number,
-  expectedColor: string,
-  tokenLabel: string,
-  relation: "matches" | "differs" = "matches"
-): void {
-  const colors = extractColors(html);
-  const message = `span[${index}] (${tokenLabel})`;
-  if (relation === "matches") {
-    expect(colors[index], message).toBe(expectedColor);
-  } else {
-    expect(colors[index], message).not.toBe(expectedColor);
-  }
 }
 
 describe("highlightInitDirectiveLine — bracket vs content assignment", () => {
