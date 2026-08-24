@@ -49,7 +49,7 @@ import {
   getClassDefs,
   generateThemedCode,
 } from "@/lib/theme-engine";
-import { getRendererById } from "@/data/renderer-parity";
+import { getRendererById, getRendererDefaultOutputFormat } from "@/data/renderer-parity";
 import {
   type MyThemeSlot,
   type MyThemeSlotId,
@@ -88,6 +88,7 @@ import {
 } from "@/lib/extractor";
 
 export type AppTab = "apply" | "compose" | "examples" | "reference" | "extract";
+type OutputFormat = "init-directive" | "frontmatter";
 
 class ErrorBoundary extends Component<{ children: ReactNode }, { error: Error | null }> {
   state: { error: Error | null } = { error: null };
@@ -389,15 +390,51 @@ export function AppShell() {
     []
   );
   const [activeMyThemeSlotId, setActiveMyThemeSlotId] = useState<string | null>("my-theme-1");
-  const [outputFormat, setOutputFormat] = useState<"init-directive" | "frontmatter">(
-    "init-directive"
-  );
+  const [outputFormat, setOutputFormat] = useState<OutputFormat>("init-directive");
+  const [outputFormatOverridden, setOutputFormatOverridden] = useState(false);
   const [strokeWidth, setStrokeWidth] = useState<number | undefined>(undefined);
   const [advancedMermaidConfig, setAdvancedMermaidConfig] = useState<
     import("@/lib/theme-engine").AdvancedMermaidConfig
   >({});
   const [profileDetailSlotId, setProfileDetailSlotId] = useState<string | null>(null);
   const [profileShareError, setProfileShareError] = useState<string | null>(null);
+
+  // Keep the format aligned with the selected renderer until the user makes an
+  // explicit format choice. This also handles renderer changes restored from
+  // persistence or imported profiles, not only changes from the Target select.
+  useEffect(() => {
+    if (outputFormatOverridden || !rendererTarget) return;
+    const recommended = getRendererDefaultOutputFormat(rendererTarget);
+    setOutputFormat((current) => (current === recommended ? current : recommended));
+  }, [rendererTarget, outputFormatOverridden]);
+
+  const handleRendererTargetChange = useCallback(
+    (nextRendererTarget: string) => {
+      setRendererTarget(nextRendererTarget);
+      if (!outputFormatOverridden) {
+        setOutputFormat(getRendererDefaultOutputFormat(nextRendererTarget));
+      }
+    },
+    [outputFormatOverridden]
+  );
+
+  const handleOutputFormatChange = useCallback(
+    (nextOutputFormat: OutputFormat) => {
+      // Clicking the already-active recommended format does not create a
+      // meaningless override indicator.
+      if (nextOutputFormat !== outputFormat) {
+        setOutputFormatOverridden(true);
+      }
+      setOutputFormat(nextOutputFormat);
+    },
+    [outputFormat]
+  );
+
+  const handleResetOutputFormat = useCallback(() => {
+    const recommended = getRendererDefaultOutputFormat(rendererTarget);
+    setOutputFormat(recommended);
+    setOutputFormatOverridden(false);
+  }, [rendererTarget]);
 
   /** Called when the user picks a route on the first-use selector. */
   const handleRouteSelect = useCallback((tab: AppTab) => {
@@ -591,6 +628,9 @@ export function AppShell() {
       ) {
         setOutputFormat(persisted.outputFormat);
       }
+      if (typeof persisted.outputFormatOverridden === "boolean") {
+        setOutputFormatOverridden(persisted.outputFormatOverridden);
+      }
       if (
         typeof persisted.strokeWidth === "number" &&
         persisted.strokeWidth >= 1 &&
@@ -653,7 +693,12 @@ export function AppShell() {
         updateMyThemeSlots(updatedSlots);
         setActiveMyThemeSlotId(targetId);
         setRendererTarget(profile.rendererTarget);
-        if (profile.outputFormat) setOutputFormat(profile.outputFormat);
+        if (profile.outputFormat) {
+          setOutputFormat(profile.outputFormat);
+          setOutputFormatOverridden(
+            profile.outputFormat !== getRendererDefaultOutputFormat(profile.rendererTarget)
+          );
+        }
         // Apply app-level render settings unconditionally so a recipient's
         // previously-persisted values cannot contaminate the imported profile.
         // When a field is absent in the profile, we reset to the default
@@ -722,6 +767,7 @@ export function AppShell() {
       myThemeSlots,
       activeMyThemeSlotId,
       outputFormat,
+      outputFormatOverridden,
       strokeWidth,
       advancedMermaidConfig,
       firstVisitComplete,
@@ -743,6 +789,7 @@ export function AppShell() {
     fontSize,
     typography,
     rendererTarget,
+    outputFormatOverridden,
     previewMode,
     lastExampleType,
     lastSelectedExampleId,
@@ -1082,7 +1129,12 @@ export function AppShell() {
         // Always apply — an empty rendererTarget intentionally clears any
         // previously-set renderer; truthy-gating would silently skip that.
         setRendererTarget(profile.rendererTarget);
-        if (profile.outputFormat) setOutputFormat(profile.outputFormat);
+        if (profile.outputFormat) {
+          setOutputFormat(profile.outputFormat);
+          setOutputFormatOverridden(
+            profile.outputFormat !== getRendererDefaultOutputFormat(profile.rendererTarget)
+          );
+        }
         applyAdvancedConfigFromProfile(profile.advancedMermaidConfig);
 
         const warnNote = importWarnings.length > 0 ? ` (${importWarnings.length} advisory)` : "";
@@ -1098,7 +1150,12 @@ export function AppShell() {
           const newSlot = { ...slot, id: `my-theme-${num}` as MyThemeSlotId };
           setActiveMyThemeSlotId(newSlot.id);
           setRendererTarget(profile.rendererTarget);
-          if (profile.outputFormat) setOutputFormat(profile.outputFormat);
+          if (profile.outputFormat) {
+            setOutputFormat(profile.outputFormat);
+            setOutputFormatOverridden(
+              profile.outputFormat !== getRendererDefaultOutputFormat(profile.rendererTarget)
+            );
+          }
           applyAdvancedConfigFromProfile(profile.advancedMermaidConfig);
           const warnNote = importWarnings.length > 0 ? ` (${importWarnings.length} advisory)` : "";
           setToast(`Imported profile "${profile.name}" into a new My Theme slot${warnNote}.`);
@@ -1216,7 +1273,12 @@ export function AppShell() {
       );
       // Apply app-level settings from the imported profile
       setRendererTarget(profile.rendererTarget);
-      if (profile.outputFormat) setOutputFormat(profile.outputFormat);
+      if (profile.outputFormat) {
+        setOutputFormat(profile.outputFormat);
+        setOutputFormatOverridden(
+          profile.outputFormat !== getRendererDefaultOutputFormat(profile.rendererTarget)
+        );
+      }
       applyAdvancedConfigFromProfile(profile.advancedMermaidConfig);
       const warnNote = importWarnings.length > 0 ? ` (${importWarnings.length} advisory)` : "";
       setToast(`Imported profile "${profile.name}" into "${targetSlotName}"${warnNote}.`);
@@ -1725,6 +1787,8 @@ export function AppShell() {
                     setFontSize("");
                     setTypography(DEFAULT_TYPOGRAPHY);
                     setRendererTarget("");
+                    setOutputFormat("init-directive");
+                    setOutputFormatOverridden(false);
                     setPreviewMode("themed");
                     setLastExampleType({});
                     setLastSelectedExampleId("");
@@ -1856,9 +1920,11 @@ export function AppShell() {
                 onFontSizeChange={handleFontSizeChange}
                 typography={effectiveTypography}
                 rendererTarget={rendererTarget}
-                onRendererTargetChange={setRendererTarget}
+                onRendererTargetChange={handleRendererTargetChange}
                 outputFormat={outputFormat}
-                onOutputFormatChange={setOutputFormat}
+                onOutputFormatChange={handleOutputFormatChange}
+                outputFormatOverridden={outputFormatOverridden}
+                onResetOutputFormat={handleResetOutputFormat}
                 strokeWidth={strokeWidth}
                 lastExampleType={lastExampleType}
                 onRecordExampleType={handleRecordExampleType}
@@ -1916,7 +1982,7 @@ export function AppShell() {
                   typography={effectiveTypography}
                   onTypographyChange={handleTypographyChange}
                   rendererTarget={rendererTarget}
-                  onRendererTargetChange={setRendererTarget}
+                  onRendererTargetChange={handleRendererTargetChange}
                   strokeWidth={strokeWidth}
                   onStrokeWidthChange={setStrokeWidth}
                   onUseExtractedTheme={handleUseExtractedTheme}

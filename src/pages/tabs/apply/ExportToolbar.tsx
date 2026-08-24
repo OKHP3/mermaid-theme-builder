@@ -73,6 +73,10 @@ interface ExportToolbarProps {
   onShowToast: (msg: ReactNode) => void;
   outputFormat?: "init-directive" | "frontmatter";
   onOutputFormatChange?: (format: "init-directive" | "frontmatter") => void;
+  /** Whether the active format is an explicit choice instead of the renderer recommendation. */
+  outputFormatOverridden?: boolean;
+  /** Restores the format recommended by the active renderer. */
+  onResetOutputFormat?: () => void;
   /**
    * Test seam only — seeds the initial copiedType state so unit tests can
    * assert badge visibility during the "Copied!" flash without needing to
@@ -102,6 +106,8 @@ export function ExportToolbar({
   onShowToast,
   outputFormat = "init-directive",
   onOutputFormatChange,
+  outputFormatOverridden = false,
+  onResetOutputFormat,
   _testInitialCopiedType = null,
 }: ExportToolbarProps) {
   const [copiedType, setCopiedType] = useState<ExportType | null>(_testInitialCopiedType);
@@ -433,6 +439,16 @@ export function ExportToolbar({
             );
           })}
         </div>
+        {rendererProfile && outputFormatOverridden && onResetOutputFormat && (
+          <button
+            type="button"
+            onClick={onResetOutputFormat}
+            className="text-[10px] px-2 py-1 rounded border border-primary/30 text-primary hover:bg-primary/8 transition-colors"
+            title={`Use ${rendererProfile.shortName}'s recommended format`}
+          >
+            Reset to recommended
+          </button>
+        )}
 
         <button
           onClick={onOpenColorEditor}

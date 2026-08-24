@@ -58,6 +58,8 @@ interface ApplyTabProps {
   onRendererTargetChange: (v: string) => void;
   outputFormat?: "init-directive" | "frontmatter";
   onOutputFormatChange?: (format: "init-directive" | "frontmatter") => void;
+  outputFormatOverridden?: boolean;
+  onResetOutputFormat?: () => void;
   strokeWidth?: number;
   lastExampleType: Record<string, "flowchart" | "sequence">;
   onRecordExampleType: (id: string, type: "flowchart" | "sequence") => void;
@@ -113,6 +115,8 @@ export function ApplyTab({
   onRendererTargetChange,
   outputFormat = "init-directive",
   onOutputFormatChange,
+  outputFormatOverridden = false,
+  onResetOutputFormat,
   strokeWidth,
   lastExampleType: _lastExampleType,
   onRecordExampleType: _onRecordExampleType,
@@ -726,6 +730,8 @@ export function ApplyTab({
               onShowToast={onShowToast}
               outputFormat={outputFormat}
               onOutputFormatChange={onOutputFormatChange}
+              outputFormatOverridden={outputFormatOverridden}
+              onResetOutputFormat={onResetOutputFormat}
             />
           </div>
         </section>
