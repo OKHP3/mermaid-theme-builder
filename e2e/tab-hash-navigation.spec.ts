@@ -140,4 +140,13 @@ test("browser Back restores Apply after #apply -> #extract navigation", async ({
     "aria-selected",
     "true"
   );
+
+  await Promise.all([page.waitForURL((url) => url.hash === "#extract"), page.goForward()]);
+  await expect(page.getByRole("tab", { name: "Extract" }).first()).toHaveAttribute(
+    "aria-selected",
+    "true"
+  );
+  await expect(
+    page.getByRole("textbox", { name: "Paste themed Mermaid diagram here" })
+  ).toBeVisible();
 });
