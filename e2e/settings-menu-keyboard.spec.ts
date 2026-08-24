@@ -9,6 +9,7 @@ import { test, expect } from "@playwright/test";
  *  2. Pressing ArrowDown (from the open menu or from the trigger) moves
  *     focus to the first role=menuitem.
  *  3. Pressing Escape closes the menu and returns focus to the trigger button.
+ *  4. Pressing ArrowDown / ArrowUp at the menu boundaries wraps focus.
  *
  * A regression in any of these paths would leave keyboard-only users unable
  * to reach settings (e.g. reset syntax tips or clear palette history).
@@ -102,6 +103,48 @@ test.describe("Settings menu keyboard navigation", () => {
       return items.length > 0 && items[items.length - 1] === document.activeElement;
     });
     expect(isLastItem, "Expected focus to land on the last role=menuitem after ArrowUp").toBe(true);
+  });
+
+  test("ArrowDown from the last menuitem wraps focus to the first menuitem", async ({ page }) => {
+    const settingsBtn = page.getByRole("button", { name: "Settings", exact: true });
+    await settingsBtn.focus();
+    await page.keyboard.press("Enter");
+
+    const menu = page.getByRole("menu", { name: "Settings" });
+    await expect(menu).toBeVisible();
+    const menuItems = page.getByRole("menuitem");
+    const itemCount = await menuItems.count();
+    expect(itemCount).toBeGreaterThan(1);
+
+    // Open-menu ArrowDown focuses the first item; continue until the last.
+    await page.keyboard.press("ArrowDown");
+    await expect(menuItems.first()).toBeFocused();
+    for (let i = 1; i < itemCount; i += 1) {
+      await page.keyboard.press("ArrowDown");
+    }
+    await expect(menuItems.last()).toBeFocused();
+
+    // ArrowDown at the end must wrap back to the first item.
+    await page.keyboard.press("ArrowDown");
+    await expect(menuItems.first()).toBeFocused();
+  });
+
+  test("ArrowUp from the first menuitem wraps focus to the last menuitem", async ({ page }) => {
+    const settingsBtn = page.getByRole("button", { name: "Settings", exact: true });
+    await settingsBtn.focus();
+    await page.keyboard.press("Enter");
+
+    const menu = page.getByRole("menu", { name: "Settings" });
+    await expect(menu).toBeVisible();
+    const menuItems = page.getByRole("menuitem");
+
+    // Open-menu ArrowDown focuses the first item.
+    await page.keyboard.press("ArrowDown");
+    await expect(menuItems.first()).toBeFocused();
+
+    // ArrowUp at the beginning must wrap to the last item.
+    await page.keyboard.press("ArrowUp");
+    await expect(menuItems.last()).toBeFocused();
   });
 
   test("Escape closes the menu and returns focus to the settings button", async ({ page }) => {
