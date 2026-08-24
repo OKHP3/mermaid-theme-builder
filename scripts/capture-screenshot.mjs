@@ -42,7 +42,9 @@ if (!/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$/.test(version)) {
 
 const OUTPUT_PATH = resolve(root, `docs/screenshot-v${version}.jpg`);
 const LATEST_OUTPUT_PATH = resolve(root, "docs/screenshot-latest.jpg");
-const VIEWPORT = { width: 1280, height: 800 };
+// The Apply workspace keeps its export toolbar beneath the preview panel.
+// This height keeps it and the top tab navigation together in release captures.
+const VIEWPORT = { width: 1280, height: 1700 };
 
 // Parse --url flag.
 const urlFlagIdx = process.argv.indexOf("--url");
@@ -94,6 +96,11 @@ const browser = await chromium.launch({
 
 const page = await browser.newPage();
 await page.setViewportSize(VIEWPORT);
+await page.addInitScript(() => {
+  // Release screenshots should show the working Apply workspace, not the
+  // first-visit route selector.
+  window.localStorage.setItem("mtb.firstVisit", "true");
+});
 
 try {
   // Navigate and wait for network idle so Mermaid's async rendering finishes.

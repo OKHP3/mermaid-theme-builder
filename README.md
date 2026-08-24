@@ -10,7 +10,7 @@ Visual governance for AI-generated Mermaid diagrams — paste, theme, preview, a
 
 **[Live Tool](https://okhp3.github.io/mermaid-theme-builder/)** · **[Project Page](https://overkillhill.com/projects/mermaid-theme-builder/)** · **[Article](https://overkillhill.com/writings/first-diagram-is-a-liar/)**
 
-![Mermaid Theme Builder — Apply tab showing palette picker, look selector, format toggle, code panel, and live themed preview](docs/screenshot-latest.jpg)
+![Mermaid Theme Builder — Apply tab showing the Extract navigation tab, palette picker, %%{init}%% and YAML format toggle, code panel, and live themed preview](docs/screenshot-v0.6.0.jpg)
 
 ---
 
