@@ -734,7 +734,7 @@ export function ReferenceTab({
           </svg>
           GitHub repository
         </a>
-        <span className="ml-auto text-[10px] text-muted-foreground/50 font-mono">
+        <span className="ml-auto text-[10px] text-muted-foreground font-mono">
           v{__APP_VERSION__}
         </span>
       </div>

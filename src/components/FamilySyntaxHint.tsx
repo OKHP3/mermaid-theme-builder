@@ -20,7 +20,7 @@ const CLASSDEF_LABEL: Record<ClassDefStatus, string> = {
 };
 
 const CLASSDEF_CLASSES: Record<ClassDefStatus, string> = {
-  yes: "bg-emerald-500/12 text-emerald-700 dark:text-emerald-400 border-emerald-500/30",
+  yes: "bg-emerald-500/12 text-emerald-800 dark:text-emerald-300 border-emerald-500/30",
   no: "bg-muted/60 text-muted-foreground border-border",
   limited: "bg-amber-500/12 text-amber-700 dark:text-amber-400 border-amber-500/30",
 };

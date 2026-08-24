@@ -388,7 +388,7 @@ export function ExamplesTab({
                             }}
                             className={`w-full text-left px-2.5 py-2 rounded-md text-xs transition-all flex items-start gap-2 ${
                               selectedId === entry.id
-                                ? "bg-primary/10 text-primary font-medium"
+                                ? "bg-primary/10 text-accent-foreground font-medium"
                                 : "text-foreground hover:bg-muted"
                             }`}
                           >
@@ -431,11 +431,11 @@ export function ExamplesTab({
               </span>
               <BadgeChip badge={selectedExample?.badge} />
             </div>
-            <span className="text-xs text-muted-foreground/60 shrink-0 ml-2">Themed preview</span>
+            <span className="text-xs text-muted-foreground shrink-0 ml-2">Themed preview</span>
           </div>
           {selectedExample && detection.capability && (
             <div className="flex-none border-b border-border bg-card/20 px-4 py-2 flex flex-wrap items-center gap-1.5">
-              <span className="text-[10px] text-muted-foreground/70 uppercase tracking-wider font-semibold mr-1">
+              <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mr-1">
                 {detection.label}
               </span>
               <span
@@ -448,7 +448,7 @@ export function ExamplesTab({
               >
                 Theme: {THEME_CONFIDENCE_LABELS[detection.capability.themeConfidence]}
               </span>
-              <span className="text-[10px] text-muted-foreground/80 px-1.5 py-0.5 rounded bg-muted/50 border border-border/50">
+              <span className="text-[10px] text-muted-foreground px-1.5 py-0.5 rounded bg-muted/50 border border-border/50">
                 {NOTATION_COMPLIANCE_LABELS[detection.capability.notationCompliance]}
               </span>
             </div>

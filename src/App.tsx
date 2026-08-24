@@ -2157,10 +2157,7 @@ export function AppShell() {
             </a>
           </div>
         </div>
-        <div
-          className="flex items-center gap-2 forge-footer-meta"
-          style={{ opacity: 0.7, fontSize: "9px" }}
-        >
+        <div className="flex items-center gap-2 forge-footer-meta" style={{ fontSize: "9px" }}>
           Not affiliated with Mermaid, Mermaid Chart, or Mermaid.ai
         </div>
         <div className="flex items-center gap-2">

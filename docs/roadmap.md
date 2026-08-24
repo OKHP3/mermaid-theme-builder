@@ -74,6 +74,7 @@
 **Status:** Shipped. Tag: `v0.6.0`.
 
 ### Shipped
+
 - **Extract tab restored** — dedicated Extract nav tab re-registered; `#extract` URL resolves
 - **Renderer-aware output format toggle** — `%%{init}%%` / YAML frontmatter pill in Apply ExportToolbar; defaults per renderer; persisted
 - **Stroke/border width control** — "Node border width" button group in Compose Look section (Default / 1–4 px)
@@ -84,21 +85,25 @@
 - **Neutral Enterprise retired** — removed from planning documents (was never in code)
 
 ### Governance Profile
+
 - [ ] **Named governance profile export** - bundle palette + look + typography + renderer target + classDef overlay as a single named, shareable artifact (`.theme.json` already exists; formalize the bundle concept)
 - [x] **Governance profile concept documentation** - shipped (`docs/governance-profiles.md`). File existence confirmed 2026-08-04.
 - [x] **Diagram output contract documentation** - shipped (`docs/diagram-output-contract.md`). File existence confirmed 2026-08-04.
 - [x] **OKHP3 Visual Language Stack reference** - shipped (`docs/okhp3-visual-language-stack.md`). File existence confirmed 2026-08-04.
 
 ### Palette
+
 - [ ] **User palette CRUD** - save, rename, delete, reorder user-created palettes (persist in localStorage)
 - [ ] **"Copy share link" button** - surface URL-encoded palette sharing prominently in palette editor UI (encoding already exists in persistence.ts)
 - [ ] 3 to 5 additional community palettes (not brand-locked)
 
 ### Export
+
 - [ ] **Export preview pane** - read-only code pane showing all three export formats before copy/download
 - [ ] **Family-specific Prompt Scaffold templates** - per-family scaffold sections (flowchart, sequence, class, ER)
 
 ### Mermaid 11.14-11.15 Coverage
+
 - [ ] **Event Modeling example** - add example `.mmd` for the new 11.15 diagram type; update capability registry `examplePending` to false
 - [ ] **Look mode per-family warnings** - show a warning in Apply tab when `look: handDrawn` or `look: neo` is unsupported for the detected diagram family
 - [ ] **Renderer compatibility warnings** - surface "CSS injection blocked on GitHub" and "classDef unsupported for sequence/Gantt" as contextual warnings in the export bar
@@ -110,7 +115,7 @@
 - [x] **Playwright smoke tests** - confirmed shipped and actively growing: `e2e/` has 25+ spec files and a wired `test:e2e` script as of 2026-08-04, well beyond the original "core pipeline" smoke-test scope
 
 ### v1.0.0 evaluation
-Privacy-respecting analytics and a completed WCAG 2.1 AA audit remain open. v1.0.0 is not yet earned.
+The WCAG 2.1 AA automated audit gate is complete. v1.0.0 is not yet earned until the remaining roadmap gates are explicitly checked and pass.
 
 ---
 
@@ -141,7 +146,7 @@ Privacy-respecting analytics and a completed WCAG 2.1 AA audit remain open. v1.0
 - [ ] **Layout tier tokens** — `:::zone.primary`, `:::zone.system`, `:::lane.human`, `:::lane.automated` as semantic classDef additions; encodes structural role, not just color tier (see `docs/governance-profiles.md`)
 - [ ] **Syntax-highlighted code editor** — CodeMirror or Monaco micro-bundle for the paste area
 - [ ] **Auto-load brand example on palette switch** — pre-fill Apply tab with matching example when no code is present
-- [ ] **WCAG 2.1 AA audit** — axe-core review + remediation of critical/serious violations
+- [x] **WCAG 2.1 AA audit** — axe-core review + remediation of critical/serious violations; see `docs/accessibility-audit.md` (2026-08-24)
 - [ ] Configurable Prompt Scaffold sections — select which sections to include
 
 ---
@@ -154,7 +159,7 @@ Privacy-respecting analytics and a completed WCAG 2.1 AA audit remain open. v1.0
 
 - [ ] **Privacy-respecting analytics** — Plausible or Fathom (no cookies, no diagram content captured)
 - [ ] **GitHub release cadence** — tagged releases with CHANGELOG notes for each version
-- [ ] **Accessibility** — WCAG 2.1 AA verified
+- [x] **Accessibility** — WCAG 2.1 AA automated release-blocker audit verified; see `docs/accessibility-audit.md` (2026-08-24)
 - [ ] Keyboard-navigable palette picker (already partial)
 - [ ] `robots.txt` and `sitemap.xml`
 

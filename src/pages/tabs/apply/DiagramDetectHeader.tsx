@@ -76,7 +76,7 @@ export function DiagramDetectHeader({
                 ? "bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/40 hover:bg-amber-500/25"
                 : effectiveDetection.family === "unknown"
                   ? "bg-muted text-muted-foreground border border-border hover:bg-muted/70"
-                  : "bg-primary/10 text-primary hover:bg-primary/20"
+                  : "bg-primary/10 text-accent-foreground hover:bg-primary/20"
             }`}
           >
             <span>
@@ -204,7 +204,7 @@ export function DiagramDetectHeader({
               onClick={() => onLookChange(opt.value)}
               className={`text-[10px] px-2 py-0.5 rounded-full border font-medium transition-all ${
                 look === opt.value
-                  ? "border-primary/50 bg-primary/10 text-primary"
+                  ? "border-primary/50 bg-primary/10 text-accent-foreground"
                   : "border-border bg-background hover:border-primary/40 hover:bg-muted text-muted-foreground"
               }`}
             >

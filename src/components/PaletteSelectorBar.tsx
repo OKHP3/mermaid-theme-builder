@@ -154,12 +154,12 @@ export function PaletteSelectorBar({
                   </div>
                   <span
                     className={`text-[10px] leading-none whitespace-nowrap font-medium ${
-                      isActive ? "text-primary" : "text-muted-foreground"
+                      isActive ? "text-accent-foreground" : "text-muted-foreground"
                     }`}
                   >
                     {displayName}
                   </span>
-                  <span className="text-[8px] leading-none px-1 py-0.5 rounded bg-primary/10 text-primary font-semibold uppercase tracking-wide">
+                  <span className="text-[8px] leading-none px-1 py-0.5 rounded bg-primary/10 text-accent-foreground font-semibold uppercase tracking-wide">
                     Mine
                   </span>
                 </button>

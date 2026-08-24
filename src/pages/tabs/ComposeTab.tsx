@@ -1622,7 +1622,7 @@ export function ComposeTab({
             <select
               value={selectedSampleId}
               onChange={(e) => handleSampleIdChange(e.target.value)}
-              className="text-xs text-muted-foreground/70 bg-transparent border-0 outline-none cursor-pointer min-w-0 truncate flex-1"
+              className="text-xs text-muted-foreground bg-transparent border-0 outline-none cursor-pointer min-w-0 truncate flex-1"
               aria-label="Preview diagram"
             >
               {EXAMPLE_GROUPS.map((group) => (
@@ -1683,7 +1683,7 @@ export function ComposeTab({
                 <span className="font-semibold">{sampleCapability.displayName}:</span>{" "}
                 {sampleCapability.description}
                 {sampleCapability.bestUsedFor && (
-                  <span className="block mt-0.5 text-amber-600/80 dark:text-amber-500/70">
+                  <span className="block mt-0.5 text-amber-800 dark:text-amber-300">
                     <span className="font-medium">Use for:</span> {sampleCapability.bestUsedFor}
                   </span>
                 )}

@@ -38,7 +38,7 @@ describe("forge-tokens.css — light-mode semantic tokens (check 4)", () => {
     "--foreground": "222 47% 11%",
     "--card": "34 35% 95%",
     "--primary": "25 63% 47%",
-    "--primary-foreground": "0 0% 100%",
+    "--primary-foreground": "222 47% 11%",
     "--muted-foreground": "220 9% 35%",
     "--ring": "25 63% 47%",
     "--radius": "0.75rem",
