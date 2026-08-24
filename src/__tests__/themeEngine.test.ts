@@ -11,6 +11,7 @@ import {
 import { BRAND_PALETTES, BUILTIN_PALETTES } from "@/lib/palettes";
 import { DEFAULT_TYPOGRAPHY } from "@/lib/typography";
 import { DIAGRAM_CAPABILITIES } from "@/data/mermaid-capabilities";
+import { extractTheme } from "@/lib/extractor";
 
 const palette = BRAND_PALETTES[0];
 
@@ -22,6 +23,12 @@ const BASE_OPTIONS: ExportOptions = {
 };
 
 const SIMPLE_FLOWCHART = "flowchart TD\n  A --> B";
+
+const FRONTMATTER_TEST_PALETTES = [BUILTIN_PALETTES[0], BUILTIN_PALETTES[1], BRAND_PALETTES[0]];
+
+function primaryColorOf(testPalette: (typeof BUILTIN_PALETTES)[number]): string {
+  return testPalette.colors.find((color) => color.key === "primaryColor")!.value;
+}
 
 describe("generateThemedCode", () => {
   it("returns a string", () => {
@@ -69,6 +76,70 @@ describe("generateThemedCode", () => {
     const result = generateThemedCode(withInit, BASE_OPTIONS);
     const initCount = (result.match(/%%{init/g) ?? []).length;
     expect(initCount).toBe(1);
+  });
+
+  for (const testPalette of FRONTMATTER_TEST_PALETTES) {
+    it(`emits frontmatter with the primary color for ${testPalette.id}`, () => {
+      const result = generateThemedCode(SIMPLE_FLOWCHART, {
+        ...BASE_OPTIONS,
+        palette: testPalette,
+        outputFormat: "frontmatter",
+      });
+
+      expect(result.startsWith("---")).toBe(true);
+      expect(result).toContain("theme: base");
+      expect(result).toContain(`primaryColor: "${primaryColorOf(testPalette)}"`);
+    });
+  }
+
+  it("emits look and fontSize in frontmatter when provided", () => {
+    const result = generateThemedCode(SIMPLE_FLOWCHART, {
+      ...BASE_OPTIONS,
+      outputFormat: "frontmatter",
+      look: "handDrawn",
+      fontSize: "18px",
+    });
+
+    expect(result).toContain("  look: handDrawn");
+    expect(result).toContain('fontSize: "18px"');
+  });
+
+  for (const testPalette of FRONTMATTER_TEST_PALETTES) {
+    it(`keeps init and frontmatter theme variables aligned for ${testPalette.id}`, () => {
+      const options = {
+        ...BASE_OPTIONS,
+        palette: testPalette,
+        diagramFamily: "flowchart" as const,
+        look: "neo" as const,
+        fontSize: "18px",
+      };
+      const init = extractTheme(generateThemedCode(SIMPLE_FLOWCHART, options));
+      const frontmatter = extractTheme(
+        generateThemedCode(SIMPLE_FLOWCHART, { ...options, outputFormat: "frontmatter" })
+      );
+
+      expect(init.sourceFormat).toBe("init-directive");
+      expect(frontmatter.sourceFormat).toBe("frontmatter");
+      expect(frontmatter.themeVariables).toEqual(init.themeVariables);
+    });
+  }
+
+  it("includes C4 family overlay keys in frontmatter", () => {
+    const testPalette = BRAND_PALETTES[0];
+    const result = generateThemedCode('C4Context\n  Person(user, "User")', {
+      ...BASE_OPTIONS,
+      palette: testPalette,
+      diagramFamily: "c4Diagram",
+      outputFormat: "frontmatter",
+    });
+    const extracted = extractTheme(result);
+
+    expect(result).toContain("personBkg:");
+    expect(result).toContain("personBorder:");
+    expect(extracted.themeVariables.personBkg).toBe(primaryColorOf(testPalette));
+    expect(extracted.themeVariables.personBorder).toBe(
+      testPalette.colors.find((color) => color.key === "primaryBorderColor")!.value
+    );
   });
 });
 
