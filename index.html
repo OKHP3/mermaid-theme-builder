@@ -36,7 +36,7 @@
         }
       })();
     </script>
-    <!-- Plausible's manual tracker receives one aggregate pageview with the hash and query removed. -->
+    <!-- The first-party Plausible transport receives one aggregate pageview with no referrer, hash, or query. -->
     <script>
       window.plausible =
         window.plausible ||
@@ -44,7 +44,12 @@
           (window.plausible.q = window.plausible.q || []).push(arguments);
         };
     </script>
-    <script defer data-domain="okhp3.github.io" src="https://plausible.io/js/script.manual.js"></script>
+    <script
+      defer
+      data-api="https://plausible.io/api/event"
+      data-domain="okhp3.github.io"
+      src="./plausible-privacy.js"
+    ></script>
   </head>
   <body>
     <div id="root"></div>

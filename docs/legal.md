@@ -118,10 +118,10 @@ Mermaid Theme Builder uses Plausible Analytics for aggregate pageview measuremen
 
 - send one initial pageview only;
 - send the site origin and pathname, with query strings and hash fragments removed;
-- send no Mermaid code, palette data, localStorage values, form input, or custom properties;
+- send no Mermaid code, palette data, localStorage values, form input, custom properties, or referrer;
 - use no cookies or advertising identifiers.
 
-The app's hash fragments can contain shared palette payloads, so they are intentionally excluded from the analytics URL. The Plausible script is the only analytics transport; the tool remains browser-only with no application backend.
+The app's hash fragments can contain shared palette payloads, so they are intentionally excluded from the analytics URL. A first-party Plausible transport sends a null referrer with a `no-referrer` request policy. The tool remains browser-only with no application backend.
 
 ---
 

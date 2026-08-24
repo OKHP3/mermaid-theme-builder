@@ -5,7 +5,7 @@
 - **Privacy-respecting analytics**: Plausible records one aggregate pageview with only the origin and pathname. Query strings, hash fragments, Mermaid code, palette data, localStorage values, and custom properties are excluded.
 
 ### Added
-- **Plausible pageview script**: the manual tracker receives only the sanitized pageview created by `src/lib/privacy-analytics.ts`.
+- **Plausible pageview script**: the first-party transport sends only the sanitized pageview created by `src/lib/privacy-analytics.ts`, with a null referrer and `no-referrer` request policy.
 
 ---
 
