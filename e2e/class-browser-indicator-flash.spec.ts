@@ -30,7 +30,7 @@ const DIAGRAM_WITH_ONE_USED_CLASS = `flowchart TD
 async function loadWithDiagram(page: Page, inputCode: string): Promise<void> {
   await page.addInitScript((code) => {
     window.localStorage.clear();
-      localStorage.setItem("mtb.firstVisit", "true");
+    localStorage.setItem("mtb.firstVisit", "true");
     window.sessionStorage.clear();
     window.localStorage.setItem(
       "mtb.state.v1",
@@ -136,4 +136,25 @@ test("only the clicked indicator button shows the checkmark — siblings are una
 
   // Tertiary button must NOT have an SVG.
   await expect(tertiaryBtn.locator("svg")).not.toBeAttached();
+});
+
+// ---------------------------------------------------------------------------
+// Test 5 — Copy button writes the usage annotation to the clipboard
+// ---------------------------------------------------------------------------
+
+test("clicking Copy :::secondary writes the exact usage annotation to the clipboard", async ({
+  page,
+  context,
+}) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await loadWithDiagram(page, DIAGRAM_WITH_ONE_USED_CLASS);
+  await openClassLibrary(page);
+
+  const copyBtn = page.getByRole("button", { name: "Copy :::secondary" });
+  await expect(copyBtn).toBeVisible({ timeout: 5000 });
+  await copyBtn.click();
+  await expect(copyBtn.locator("svg")).toBeVisible({ timeout: 2000 });
+
+  const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
+  expect(clipboardText).toBe(":::secondary");
 });
