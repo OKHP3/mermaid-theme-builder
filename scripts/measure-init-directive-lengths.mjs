@@ -87,6 +87,71 @@ function buildFixture(numKeys) {
   };
 }
 
+const GITHUB_FIXTURE_LENGTHS = [100, 200, 300, 400, 500, 600];
+
+/**
+ * Builds a visually testable, exact-length directive for a hosted-renderer
+ * measurement. `_pad` is deliberately not a Mermaid theme variable: it leaves
+ * the conspicuous primaryColor test intact while changing only raw length.
+ */
+function buildExactLengthFixture(length) {
+  const prefix =
+    '%%{init: {"theme":"base","themeVariables":{"primaryColor":"#ff0054","_pad":"';
+  const suffix = '"}}}%%';
+  const paddingLength = length - prefix.length - suffix.length;
+
+  if (paddingLength < 0) {
+    throw new Error(`Cannot create a ${length}-character directive with the test fixture.`);
+  }
+
+  const directive = `${prefix}${"x".repeat(paddingLength)}${suffix}`;
+  if (directive.length !== length) {
+    throw new Error(`Expected a ${length}-character directive; received ${directive.length}.`);
+  }
+
+  return {
+    directive,
+    length,
+    content: `${directive}\nflowchart LR\n  A[Magenta theme test] --> B[GitHub ${length}]`,
+  };
+}
+
+if (process.argv.includes("--github-fixtures")) {
+  const fixtureSections = GITHUB_FIXTURE_LENGTHS.flatMap((length) => {
+    const fixture = buildExactLengthFixture(length);
+    return [
+      `## ${fixture.length}-character directive`,
+      "",
+      `Directive length: **${fixture.length} characters** (from the first percent sign through the last percent sign).`,
+      "",
+      "```mermaid",
+      fixture.content,
+      "```",
+      "",
+    ];
+  });
+
+  console.log(
+    [
+      "# Temporary GitHub Mermaid init-directive length test",
+      "",
+      "This temporary public file measures whether GitHub's Mermaid renderer stops applying a valid theme at a particular directive character count.",
+      "",
+      "For each diagram, confirm whether its nodes render with a visibly magenta/pink fill or border. Record each result as **applies** or **does not apply**. A diagram parse/render failure counts as **does not apply**.",
+      "",
+      "The only difference between fixtures is the first-line directive length. The `_pad` value is intentionally ignored by Mermaid and only makes that directive an exact length.",
+      "",
+      ...fixtureSections,
+      "---",
+      "",
+      "**Expected indicator:** a valid directive applies the base theme with `primaryColor: #ff0054`.",
+      "",
+      "**Measurement scope:** GitHub's hosted Mermaid renderer only. This does not measure GitLab or local Mermaid parser behavior.",
+    ].join("\n")
+  );
+  process.exit(0);
+}
+
 // Build all fixtures: 1 key through all keys
 const fixtures = Array.from({ length: THEME_VARS.length }, (_, i) => buildFixture(i + 1));
 
