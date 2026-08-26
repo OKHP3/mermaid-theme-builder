@@ -12,7 +12,7 @@
  *   6. Removing the dismissal key makes the hint visible again on remount.
  */
 
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { render, screen, cleanup, fireEvent } from "@testing-library/react";
 import { createElement } from "react";
 import { DiffTabHint } from "@/components/DiffTabHint";
@@ -41,6 +41,30 @@ describe("DiffTabHint — dismiss interaction", () => {
     render(createElement(DiffTabHint));
     fireEvent.click(screen.getByRole("button", { name: "Dismiss Diff tab hint" }));
     expect(screen.queryByRole("note", { name: "How to use the Diff tab" })).toBeNull();
+  });
+
+  it("remains dismissible when localStorage read and write both throw", () => {
+    const getItemSpy = vi.spyOn(window.localStorage, "getItem").mockImplementation(() => {
+      throw new Error("localStorage unavailable");
+    });
+    const setItemSpy = vi.spyOn(window.localStorage, "setItem").mockImplementation(() => {
+      throw new Error("localStorage unavailable");
+    });
+
+    try {
+      render(createElement(DiffTabHint));
+      expect(screen.getByRole("note", { name: "How to use the Diff tab" })).toBeTruthy();
+      expect(getItemSpy).toHaveBeenCalledWith(STORAGE_KEY);
+
+      expect(() => {
+        fireEvent.click(screen.getByRole("button", { name: "Dismiss Diff tab hint" }));
+      }).not.toThrow();
+      expect(screen.queryByRole("note", { name: "How to use the Diff tab" })).toBeNull();
+      expect(setItemSpy).toHaveBeenCalledWith(STORAGE_KEY, "1");
+    } finally {
+      getItemSpy.mockRestore();
+      setItemSpy.mockRestore();
+    }
   });
 
   it("clicking dismiss sets localStorage key to '1'", () => {
