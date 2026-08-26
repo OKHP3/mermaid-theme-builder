@@ -424,6 +424,36 @@ test.describe("My Theme slot — lifecycle buttons on Apply tab", () => {
     expect(slots[0].id).toBe("my-theme-2");
     expect(slots[1].id).toBe("my-theme-1");
   });
+
+  test("Move Up from Apply tab reorders slots and persists to localStorage", async ({ page }) => {
+    await openWithState(
+      page,
+      baseState({
+        myThemeSlots: [makeSlot(1), makeSlot(2)],
+        activeMyThemeSlotId: "my-theme-1",
+      })
+    );
+    await openApplyTab(page);
+
+    const slotTiles = page.locator(`[role="radio"][id^="${APPLY_PREFIX}-my-theme-"]`);
+    await expect(slotTiles).toHaveCount(2);
+
+    const applySlot2 = page.locator(`#${APPLY_PREFIX}-my-theme-2`);
+    await applySlot2.hover();
+    await page.getByRole("button", { name: "Move My Theme 2 up" }).click({ force: true });
+
+    await expect(slotTiles.nth(0)).toHaveAttribute("id", `${APPLY_PREFIX}-my-theme-2`);
+    await expect(slotTiles.nth(1)).toHaveAttribute("id", `${APPLY_PREFIX}-my-theme-1`);
+
+    await expect
+      .poll(async () => {
+        const raw = await page.evaluate((key: string) => localStorage.getItem(key), LS_KEY);
+        if (!raw) return null;
+        const state = JSON.parse(raw) as { myThemeSlots?: Array<{ id: string }> };
+        return state.myThemeSlots?.map((slot) => slot.id) ?? null;
+      })
+      .toEqual(["my-theme-2", "my-theme-1"]);
+  });
 });
 
 // ---------------------------------------------------------------------------
