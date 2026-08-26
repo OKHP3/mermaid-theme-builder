@@ -25,7 +25,7 @@ async function openScaffoldModal(page: Page): Promise<void> {
   await okhp3Tile.click();
   await expect(okhp3Tile).toHaveAttribute("aria-checked", "true");
 
-  const trigger = page.getByRole("button", { name: "Generate Prompt Pattern", exact: true });
+  const trigger = page.getByRole("button", { name: /Prompt Scaffold/ });
   await expect(trigger).toBeVisible();
   await trigger.click();
   await expect(page.getByRole("dialog", { name: "Generate Prompt Pattern" })).toBeVisible();
