@@ -73,7 +73,8 @@ interface ApplyTabProps {
   onAddMyThemeSlot?: () => void;
   onDeleteMyThemeSlot?: (id: string) => void;
   onExportMyThemeSlot?: (id: string) => void;
-  onDuplicateMyThemeSlot?: (id: string) => void;
+  onDuplicateMyThemeSlot?: (id: string) => string | null | void;
+  onRenameMyThemeSlot?: (id: string, newName: string) => void;
   onMoveMyThemeSlotUp?: (id: string) => void;
   onMoveMyThemeSlotDown?: (id: string) => void;
   onShowProfileDetails?: (id: string) => void;
@@ -131,6 +132,7 @@ export function ApplyTab({
   onDeleteMyThemeSlot = () => {},
   onExportMyThemeSlot = () => {},
   onDuplicateMyThemeSlot,
+  onRenameMyThemeSlot,
   onMoveMyThemeSlotUp,
   onMoveMyThemeSlotDown,
   onShowProfileDetails,
@@ -464,6 +466,7 @@ export function ApplyTab({
                 onDeleteMyThemeSlot={onDeleteMyThemeSlot}
                 onExportMyThemeSlot={onExportMyThemeSlot}
                 onDuplicateMyThemeSlot={onDuplicateMyThemeSlot}
+                onRenameMyThemeSlot={onRenameMyThemeSlot}
                 onMoveMyThemeSlotUp={onMoveMyThemeSlotUp}
                 onMoveMyThemeSlotDown={onMoveMyThemeSlotDown}
                 onImportAsNewSlot={onImportAsNewSlot}

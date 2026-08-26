@@ -194,7 +194,8 @@ interface ComposeTabProps {
     profile: import("@/lib/governance-profile").GovernanceProfile,
     warnings: string[]
   ) => void;
-  onDuplicateMyThemeSlot?: (id: string) => void;
+  onDuplicateMyThemeSlot?: (id: string) => string | null | void;
+  onRenameMyThemeSlot?: (id: string, newName: string) => void;
   onMoveMyThemeSlotUp?: (id: string) => void;
   onMoveMyThemeSlotDown?: (id: string) => void;
   onShowProfileDetails?: (id: string) => void;
@@ -263,6 +264,7 @@ export function ComposeTab({
   onImportMyThemeSlot,
   onImportGovernanceProfile,
   onDuplicateMyThemeSlot,
+  onRenameMyThemeSlot,
   onMoveMyThemeSlotUp,
   onMoveMyThemeSlotDown,
   onShowProfileDetails,
@@ -626,6 +628,7 @@ export function ComposeTab({
         onImportAsNewSlot={onImportAsNewSlot}
         onShowToast={onShowToast}
         onDuplicateMyThemeSlot={onDuplicateMyThemeSlot}
+        onRenameMyThemeSlot={onRenameMyThemeSlot}
         onMoveMyThemeSlotUp={onMoveMyThemeSlotUp}
         onMoveMyThemeSlotDown={onMoveMyThemeSlotDown}
         onShowProfileDetails={onShowProfileDetails}

@@ -99,6 +99,17 @@ export function duplicateSlot(
 }
 
 /**
+ * Rename a slot without mutating the input array or slot objects.
+ * Blank names and unknown slot ids are ignored.
+ */
+export function renameSlot(slots: MyThemeSlot[], id: string, newName: string): MyThemeSlot[] {
+  const trimmed = newName.trim();
+  const slot = slots.find((s) => s.id === id);
+  if (!slot || !trimmed || trimmed === slot.name) return slots;
+  return slots.map((s) => (s.id === id ? { ...s, name: trimmed } : s));
+}
+
+/**
  * Move a slot one position toward the start of the array.
  * No-op (returns same reference) if already first or id not found.
  */

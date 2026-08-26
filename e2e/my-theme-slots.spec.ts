@@ -431,6 +431,50 @@ test.describe("My Theme slot — lifecycle buttons on Apply tab", () => {
 // ---------------------------------------------------------------------------
 
 test.describe("My Theme slot — duplicate", () => {
+  test("Duplicate selects the copy name for immediate rename and persists it", async ({ page }) => {
+    await openWithState(page);
+
+    const slot1 = page.locator(`#${PREFIX}-my-theme-1`);
+    await slot1.hover();
+    await page.getByRole("button", { name: "Duplicate My Theme 1" }).click({ force: true });
+
+    const renameInput = page.getByRole("textbox", { name: "Rename My Theme 1 (copy)" });
+    await expect(renameInput).toBeFocused();
+    await expect(renameInput).toHaveJSProperty("selectionStart", 0);
+    await expect(renameInput).toHaveJSProperty("selectionEnd", "My Theme 1 (copy)".length);
+
+    await renameInput.fill("Client Brand");
+    await renameInput.press("Enter");
+
+    const slot2 = page.locator(`#${PREFIX}-my-theme-2`);
+    await expect(slot2).toHaveAttribute("title", "Client Brand");
+
+    await slot2.getByText("Client Brand").dblclick();
+    const tabRenameInput = page.getByRole("textbox", { name: "Rename Client Brand" });
+    await tabRenameInput.fill("Client Brand Tabbed");
+    await tabRenameInput.press("Home");
+    await expect(tabRenameInput).toBeFocused();
+    await expect(tabRenameInput).toHaveJSProperty("selectionStart", 0);
+    await tabRenameInput.press("End");
+    await expect(tabRenameInput).toHaveJSProperty("selectionStart", "Client Brand Tabbed".length);
+    await expect(slot2).toHaveAttribute("title", "Client Brand");
+    await tabRenameInput.press("Tab");
+    await expect(slot2).toHaveAttribute("title", "Client Brand Tabbed");
+    await expect(page.getByRole("button", { name: "Delete Client Brand Tabbed" })).toBeFocused();
+
+    await page.waitForFunction(
+      ([key, id, name]) => {
+        const raw = localStorage.getItem(key);
+        if (!raw) return false;
+        const state = JSON.parse(raw) as {
+          myThemeSlots?: Array<{ id: string; name: string }>;
+        };
+        return state.myThemeSlots?.some((slot) => slot.id === id && slot.name === name) ?? false;
+      },
+      [LS_KEY, "my-theme-2", "Client Brand Tabbed"]
+    );
+  });
+
   test("Duplicate button creates a second slot and auto-activates it", async ({ page }) => {
     await openWithState(page);
 

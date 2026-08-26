@@ -58,6 +58,7 @@ import {
   isMyThemeSlotId,
   slotDisplayName,
   duplicateSlot,
+  renameSlot,
   moveSlotUp,
   moveSlotDown,
 } from "@/lib/my-theme-slots";
@@ -1239,14 +1240,12 @@ export function AppShell() {
     ]
   );
 
-  const handleRenameSlotById = useCallback((id: string, newName: string) => {
-    const trimmed = newName.trim();
-    if (!trimmed) return;
-    updateMyThemeSlots((prev) =>
-      prev.map((s) =>
-        s.id === id ? { ...s, name: trimmed, updatedAt: new Date().toISOString() } : s
-      )
-    );
+  const handleRenameMyThemeSlot = useCallback((id: string, newName: string) => {
+    updateMyThemeSlots((prev) => {
+      const renamed = renameSlot(prev, id, newName);
+      if (renamed === prev) return prev;
+      return renamed.map((s) => (s.id === id ? { ...s, updatedAt: new Date().toISOString() } : s));
+    });
   }, []);
 
   const handleImportIntoProfileDetailSlot = useCallback(
@@ -1330,14 +1329,15 @@ export function AppShell() {
   );
 
   const handleDuplicateMyThemeSlot = useCallback(
-    (id: string) => {
+    (id: string): MyThemeSlotId | null => {
       const result = duplicateSlot(myThemeSlots, id);
       if (!result) {
         setToast("All 3 My Theme slots are in use — delete one before duplicating.");
-        return;
+        return null;
       }
       updateMyThemeSlots(result.slots);
       setActiveMyThemeSlotId(result.newSlotId);
+      return result.newSlotId;
     },
     [myThemeSlots]
   );
@@ -1939,6 +1939,7 @@ export function AppShell() {
                 onDeleteMyThemeSlot={handleDeleteMyThemeSlot}
                 onExportMyThemeSlot={handleExportMyThemeSlot}
                 onDuplicateMyThemeSlot={handleDuplicateMyThemeSlot}
+                onRenameMyThemeSlot={handleRenameMyThemeSlot}
                 onMoveMyThemeSlotUp={handleMoveMyThemeSlotUp}
                 onMoveMyThemeSlotDown={handleMoveMyThemeSlotDown}
                 onImportAsNewSlot={handleImportAsNewSlot}
@@ -2000,6 +2001,7 @@ export function AppShell() {
                   onImportMyThemeSlot={handleImportMyThemeSlot}
                   onImportGovernanceProfile={handleImportGovernanceProfile}
                   onDuplicateMyThemeSlot={handleDuplicateMyThemeSlot}
+                  onRenameMyThemeSlot={handleRenameMyThemeSlot}
                   onMoveMyThemeSlotUp={handleMoveMyThemeSlotUp}
                   onMoveMyThemeSlotDown={handleMoveMyThemeSlotDown}
                   onShowProfileDetails={handleShowProfileDetails}
@@ -2028,6 +2030,7 @@ export function AppShell() {
                   onDeleteMyThemeSlot={handleDeleteMyThemeSlot}
                   onExportMyThemeSlot={handleExportMyThemeSlot}
                   onDuplicateMyThemeSlot={handleDuplicateMyThemeSlot}
+                  onRenameMyThemeSlot={handleRenameMyThemeSlot}
                   onMoveMyThemeSlotUp={handleMoveMyThemeSlotUp}
                   onMoveMyThemeSlotDown={handleMoveMyThemeSlotDown}
                   onImportAsNewSlot={handleImportAsNewSlot}
@@ -2054,6 +2057,7 @@ export function AppShell() {
                   onDeleteMyThemeSlot={handleDeleteMyThemeSlot}
                   onExportMyThemeSlot={handleExportMyThemeSlot}
                   onDuplicateMyThemeSlot={handleDuplicateMyThemeSlot}
+                  onRenameMyThemeSlot={handleRenameMyThemeSlot}
                   onMoveMyThemeSlotUp={handleMoveMyThemeSlotUp}
                   onMoveMyThemeSlotDown={handleMoveMyThemeSlotDown}
                   onImportAsNewSlot={handleImportAsNewSlot}
@@ -2190,7 +2194,7 @@ export function AppShell() {
         rendererTarget={rendererTarget}
         outputFormat={outputFormat}
         slotsFull={myThemeSlots.length >= 3}
-        onRename={handleRenameSlotById}
+        onRename={handleRenameMyThemeSlot}
         onExport={handleExportMyThemeSlot}
         onImport={handleImportIntoProfileDetailSlot}
         onDuplicate={handleDuplicateMyThemeSlot}

@@ -5,3 +5,4 @@
 - [ComposeTab JSX balance debugging](composetab-jsx-balance.md) — use TypeScript-aware trace script (skip self-closing L896, L1328) not raw div counts; JSX comments look like section headers but are not divs — check the NEXT line for the actual opener.
 - [Dependabot branch refresh](dependabot-branch-refresh.md) — fetching origin can recreate new Dependabot refs after cleanup; treat them as current proposals, not necessarily dead branches.
 - [Plausible privacy transport](plausible-privacy.md) — manual analytics trackers can add referrer data; protect the complete request with E2E interception.
+- [Inline editing in composite widgets](inline-editing-composite-widgets.md) — isolate editor keys from parent navigation; let native Tab movement commit through blur.

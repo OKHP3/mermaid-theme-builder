@@ -11,6 +11,7 @@ import { describe, it, expect } from "vitest";
 import {
   createDefaultMyThemeSlot,
   duplicateSlot,
+  renameSlot,
   moveSlotUp,
   moveSlotDown,
   type MyThemeSlot,
@@ -129,6 +130,34 @@ describe("duplicateSlot", () => {
     const slots = [makeSlot(1)];
     const result = duplicateSlot(slots, "my-theme-1")!;
     expect(result.slots.some((s) => s.id === "my-theme-1")).toBe(true);
+  });
+});
+
+// ── renameSlot ────────────────────────────────────────────────────────────────
+
+describe("renameSlot", () => {
+  it("renames the requested slot with trimmed whitespace", () => {
+    const slots = [makeSlot(1), makeSlot(2)];
+    const renamed = renameSlot(slots, "my-theme-2", "  Brand Dark  ");
+
+    expect(renamed.find((s) => s.id === "my-theme-2")?.name).toBe("Brand Dark");
+    expect(renamed.find((s) => s.id === "my-theme-1")?.name).toBe("My Theme 1");
+  });
+
+  it("does not mutate the input array or slot", () => {
+    const slots = [makeSlot(1)];
+    const renamed = renameSlot(slots, "my-theme-1", "Brand Dark");
+
+    expect(renamed).not.toBe(slots);
+    expect(slots[0].name).toBe("My Theme 1");
+  });
+
+  it("ignores blank names, unchanged names, and unknown ids", () => {
+    const slots = [makeSlot(1)];
+
+    expect(renameSlot(slots, "my-theme-1", "   ")).toBe(slots);
+    expect(renameSlot(slots, "my-theme-1", "My Theme 1")).toBe(slots);
+    expect(renameSlot(slots, "my-theme-99", "Brand Dark")).toBe(slots);
   });
 });
 
