@@ -9,11 +9,9 @@
  *      customColors for the selected built-in palette.
  *
  * Strategy:
- *   - All tests run on the Compose tab (the default on fresh load). Each tab has
- *     its own tileIdPrefix; the Compose tab uses "compose-palette-tile-*".
- *   - The ApplyTab is always mounted in the DOM (hidden when inactive), so its
- *     palette bar tiles (apply-palette-tile-*) exist but are hidden. We scope
- *     selectors to the compose-palette-tile-* IDs to target the visible bar.
+ *   - Most tests run on the Compose tab (the default on fresh load). Each tab
+ *     has its own tileIdPrefix; tests that switch tabs scope selectors to the
+ *     active tab's prefix so hidden bars cannot satisfy a locator.
  *   - Tests that need a specific slot configuration seed localStorage before the
  *     first page.goto() call so the app hydrates that state on initial load.
  *   - The trash button is opacity-0 until its parent is hovered. We hover first,
@@ -457,7 +455,89 @@ test.describe("My Theme slot — lifecycle buttons on Apply tab", () => {
 });
 
 // ---------------------------------------------------------------------------
-// 7. Duplicate action creates a copy, activates it, and gives it "(copy)" name
+// 7. Lifecycle buttons on Examples and Reference tabs
+// ---------------------------------------------------------------------------
+
+test.describe("My Theme slot — lifecycle buttons on Examples and Reference tabs", () => {
+  const TAB_CASES = [
+    { label: "Examples", prefix: "examples-palette-tile" },
+    { label: "Reference", prefix: "reference-palette-tile" },
+  ] as const;
+
+  async function openTabWithSlots(page: Page, label: string, prefix: string) {
+    await page.getByRole("tab", { name: label, exact: true }).click();
+    await page.locator(`#${prefix}-my-theme-1`).waitFor({ state: "visible", timeout: 8_000 });
+  }
+
+  async function expectPersistedOrder(page: Page, expected: string[]) {
+    await expect
+      .poll(async () => {
+        const raw = await page.evaluate((key: string) => localStorage.getItem(key), LS_KEY);
+        if (!raw) return null;
+        const state = JSON.parse(raw) as { myThemeSlots?: Array<{ id: string }> };
+        return state.myThemeSlots?.map((slot) => slot.id) ?? null;
+      })
+      .toEqual(expected);
+  }
+
+  for (const { label, prefix } of TAB_CASES) {
+    test(`Duplicate works from ${label}`, async ({ page }) => {
+      await openWithState(page);
+      await openTabWithSlots(page, label, prefix);
+
+      const slot1 = page.locator(`#${prefix}-my-theme-1`);
+      await slot1.hover();
+      await page.getByRole("button", { name: "Duplicate My Theme 1" }).click({ force: true });
+
+      const copy = page.locator(`#${prefix}-my-theme-2`);
+      await expect(copy).toHaveAttribute("title", "My Theme 1 (copy)");
+      await expectPersistedOrder(page, ["my-theme-1", "my-theme-2"]);
+    });
+
+    test(`Move Up works from ${label}`, async ({ page }) => {
+      await openWithState(
+        page,
+        baseState({
+          myThemeSlots: [makeSlot(1), makeSlot(2)],
+          activeMyThemeSlotId: "my-theme-1",
+        })
+      );
+      await openTabWithSlots(page, label, prefix);
+
+      const slotTiles = page.locator(`[role="radio"][id^="${prefix}-my-theme-"]`);
+      const slot2 = page.locator(`#${prefix}-my-theme-2`);
+      await slot2.hover();
+      await page.getByRole("button", { name: "Move My Theme 2 up" }).click({ force: true });
+
+      await expect(slotTiles.nth(0)).toHaveAttribute("id", `${prefix}-my-theme-2`);
+      await expect(slotTiles.nth(1)).toHaveAttribute("id", `${prefix}-my-theme-1`);
+      await expectPersistedOrder(page, ["my-theme-2", "my-theme-1"]);
+    });
+
+    test(`Move Down works from ${label}`, async ({ page }) => {
+      await openWithState(
+        page,
+        baseState({
+          myThemeSlots: [makeSlot(1), makeSlot(2)],
+          activeMyThemeSlotId: "my-theme-1",
+        })
+      );
+      await openTabWithSlots(page, label, prefix);
+
+      const slotTiles = page.locator(`[role="radio"][id^="${prefix}-my-theme-"]`);
+      const slot1 = page.locator(`#${prefix}-my-theme-1`);
+      await slot1.hover();
+      await page.getByRole("button", { name: "Move My Theme 1 down" }).click({ force: true });
+
+      await expect(slotTiles.nth(0)).toHaveAttribute("id", `${prefix}-my-theme-2`);
+      await expect(slotTiles.nth(1)).toHaveAttribute("id", `${prefix}-my-theme-1`);
+      await expectPersistedOrder(page, ["my-theme-2", "my-theme-1"]);
+    });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// 8. Duplicate action creates a copy, activates it, and gives it "(copy)" name
 // ---------------------------------------------------------------------------
 
 test.describe("My Theme slot — duplicate", () => {
