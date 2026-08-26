@@ -22,6 +22,8 @@
     "check:version-strings": "node scripts/check-version-strings.mjs",
     "check:technology-versions": "node scripts/check-technology-versions.mjs",
     "check:doc-truth": "node scripts/check-doc-truth.mjs",
+    "check:skills-catalog": "node --test scripts/sync-skills-catalog.test.mjs && node scripts/sync-skills-catalog.mjs --check",
+    "sync:skills-catalog": "node scripts/sync-skills-catalog.mjs",
     "format": "prettier --check \"src/**/*.{ts,tsx,css}\" \"*.ts\" \"*.json\"",
     "format:write": "prettier --write \"src/**/*.{ts,tsx,css}\" \"*.ts\" \"*.json\"",
     "lint": "tsc --noEmit"

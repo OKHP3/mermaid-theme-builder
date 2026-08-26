@@ -18,6 +18,9 @@ metadata:
   author: Jamie Hill (OverKill Hill P³)
   version: "0.3.0"
   category: diagramming
+  catalog_display_name: "Mermaid Core"
+  catalog_role: "foundation"
+  catalog_description: "Foundation skill for all Mermaid diagram work — load this first. Handles diagram type selection, the OKHP3 design system, file naming, and the three-gate validation framework."
   origin: okhp3/mermaid-theme-builder
   homepage: https://overkillhill.com
   author-github: https://github.com/OKHP3

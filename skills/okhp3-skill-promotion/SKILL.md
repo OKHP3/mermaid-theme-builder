@@ -15,6 +15,9 @@ metadata:
   author: Jamie Hill (OverKill Hill P³)
   version: "0.1.0"
   category: universal
+  catalog_display_name: "Skill Promotion"
+  catalog_role: "tooling"
+  catalog_description: "Promote and synchronize a project-local Agent Skill into a portable, reviewable distribution package — provenance record, canonical family assignment, and safe handoff into OKHP3/skillz."
   origin: okhp3/skillz
   homepage: https://overkillhill.com
   author-github: https://github.com/OKHP3

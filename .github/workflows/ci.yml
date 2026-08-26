@@ -48,5 +48,8 @@ jobs:
       - name: Documentation truth check
         run: pnpm run check:doc-truth
 
+      - name: Skill catalog drift check
+        run: pnpm run check:skills-catalog
+
       - name: Source reference check
         run: pnpm run check:source-refs

@@ -21,6 +21,9 @@ metadata:
   author: Jamie Hill (OverKill Hill P³)
   version: "0.6.1"
   category: diagram-governance
+  catalog_display_name: "Theme Builder"
+  catalog_role: "tooling"
+  catalog_description: "Apply reusable color palettes and visual governance to Mermaid diagrams — themeVariables blocks, %%{init}%% configuration, and renderer-safe styled output."
   origin: okhp3/mermaid-theme-builder
   homepage: https://overkillhill.com
   author-github: https://github.com/OKHP3

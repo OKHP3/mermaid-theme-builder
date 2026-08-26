@@ -11,6 +11,9 @@ metadata:
   author: Jamie Hill (OverKill Hill P³)
   version: "0.3.0"
   category: diagramming
+  catalog_display_name: "Data Models"
+  catalog_role: "domain"
+  catalog_description: "Entity-relationship diagrams, class diagrams, and schema documentation — data models and object structures with cardinality and relationship annotations."
   origin: okhp3/mermaid-theme-builder
   homepage: https://overkillhill.com
   author-github: https://github.com/OKHP3

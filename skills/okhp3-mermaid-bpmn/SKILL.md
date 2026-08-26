@@ -15,6 +15,9 @@ metadata:
   author: Jamie Hill (OverKill Hill P³)
   version: "0.3.0"
   category: diagramming
+  catalog_display_name: "BPMN / Business Process"
+  catalog_role: "domain"
+  catalog_description: "BPMN-informed business process modeling — workflows, approval chains, swim lanes, cross-department handoffs, and decision gateways in Mermaid syntax."
   origin: okhp3/mermaid-theme-builder
   homepage: https://overkillhill.com
   author-github: https://github.com/OKHP3

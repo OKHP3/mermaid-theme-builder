@@ -13,6 +13,9 @@ metadata:
   author: Jamie Hill (OverKill Hill P³)
   version: "0.3.0"
   category: diagramming
+  catalog_display_name: "Architecture"
+  catalog_role: "domain"
+  catalog_description: "System and solution architecture diagrams — C4 model (Context/Container/Component/Code), architecture-beta cloud diagrams, block diagrams, and integration flows."
   origin: okhp3/mermaid-theme-builder
   homepage: https://overkillhill.com
   author-github: https://github.com/OKHP3
