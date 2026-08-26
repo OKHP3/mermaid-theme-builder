@@ -222,6 +222,64 @@ describe("ProfileDetailsPanel — Escape state transitions", () => {
   });
 });
 
+describe("ProfileDetailsPanel — keyboard focus trap", () => {
+  function markFocusableElementsVisible() {
+    const dialog = screen.getByRole("dialog");
+    for (const element of dialog.querySelectorAll<HTMLElement>("button")) {
+      Object.defineProperty(element, "offsetParent", {
+        configurable: true,
+        value: document.body,
+      });
+    }
+    const hiddenFileInput = dialog.querySelector<HTMLInputElement>("input[type='file']");
+    if (hiddenFileInput) {
+      Object.defineProperty(hiddenFileInput, "offsetParent", {
+        configurable: true,
+        value: null,
+      });
+    }
+  }
+
+  it("wraps Tab from the last action to Close and Shift+Tab back to the last action", () => {
+    const props = makeProps();
+    render(<ProfileDetailsPanel {...props} />);
+    markFocusableElementsVisible();
+
+    const dialog = screen.getByRole("dialog");
+    const closeButton = screen.getByRole("button", { name: "Close profile details" });
+    const deleteButton = screen.getByRole("button", {
+      name: `Delete profile "${SLOT_NAME}"`,
+    });
+
+    deleteButton.focus();
+    fireEvent.keyDown(dialog, { key: "Tab" });
+    expect(document.activeElement).toBe(closeButton);
+
+    closeButton.focus();
+    fireEvent.keyDown(dialog, { key: "Tab", shiftKey: true });
+    expect(document.activeElement).toBe(deleteButton);
+  });
+
+  it("keeps Tab within the delete confirmation state", () => {
+    const props = makeProps();
+    render(<ProfileDetailsPanel {...props} />);
+    fireEvent.click(screen.getByRole("button", { name: `Delete profile "${SLOT_NAME}"` }));
+    markFocusableElementsVisible();
+
+    const dialog = screen.getByRole("dialog");
+    const closeButton = screen.getByRole("button", { name: "Close profile details" });
+    const cancelButton = screen.getByRole("button", { name: "Cancel" });
+
+    cancelButton.focus();
+    fireEvent.keyDown(dialog, { key: "Tab" });
+    expect(document.activeElement).toBe(closeButton);
+
+    closeButton.focus();
+    fireEvent.keyDown(dialog, { key: "Tab", shiftKey: true });
+    expect(document.activeElement).toBe(cancelButton);
+  });
+});
+
 describe("ProfileDetailsPanel — slot changes while open", () => {
   it("resets a stale name edit and routes rename, export, and duplicate to the replacement slot", () => {
     vi.useFakeTimers();
