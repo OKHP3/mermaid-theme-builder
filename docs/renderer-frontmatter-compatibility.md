@@ -77,7 +77,7 @@ backend rendering pipeline limits in each host platform.
 | Renderer | Ceiling | Confidence | Source |
 |----------|---------|------------|--------|
 | mermaid-live | unlimited | High | Local/reference renderer |
-| GitHub | 500 chars | Medium | PRD v5 field report: 597-char directive caused rendering issues |
+| GitHub | 500 chars | Medium | PRD v5 field report: 597-char directive caused rendering issues; live render check applied the theme at 100–600 chars |
 | GitLab (cloud) | 500 chars | Low | Inferred from GitHub similarity; not independently confirmed |
 | Notion | unverified | Low | No field data; partial initDirectiveSupport already advisory |
 | Obsidian | unlimited | High | Local renderer, no backend pipeline |
@@ -125,12 +125,18 @@ flowchart TD
 
 | Renderer | 100 chars | 200 chars | 300 chars | 400 chars | 500 chars | 600 chars | Observed ceiling | Notes |
 |---|---|---|---|---|---|---|---|---|
+| GitHub (cloud) | Applies | Applies | Applies | Applies | Applies | Applies | >600 chars (not established) | Live public Markdown preview checked 2026-08-26; nodes retained the expected `#ff0054` fill at every tested length |
 | Notion | — | — | — | — | — | — | Unverified | — |
 | Confluence | — | — | — | — | — | — | Unverified | — |
 | M365/Loop | — | — | — | — | — | — | Unverified | — |
 | GitLab self-hosted | — | — | — | — | — | — | Unverified | — |
 
-When manual results are available, update `initDirectiveSafeLength` in the matching
+The GitHub result does **not** establish a hard ceiling: every fixture through 600 characters
+rendered with the expected magenta theme. Keep the shipped 500-character advisory because the
+separate PRD v5 field report observed rendering issues at 597 characters; this is a conservative
+warning threshold rather than a measured parser or hosted-renderer cutoff.
+
+When manual results are available for an unverified renderer, update `initDirectiveSafeLength` in the matching
 `RendererProfile` object in `src/data/renderer-parity.ts` and re-run `pnpm test` to verify
 the advisory thresholds.
 
