@@ -571,10 +571,33 @@ test("Ctrl+Shift+C does not interrupt the Apply or preview code editors", async 
   // The source editor is a textarea. The global shortcut must not copy the
   // themed export or change the toolbar's copied state while users edit it.
   const diagramEditor = page.getByLabel("Mermaid diagram code input");
-  await diagramEditor.focus();
+  const sourceEditorState = await diagramEditor.evaluate((element) => {
+    const editor = element as HTMLTextAreaElement;
+    editor.focus();
+    editor.setSelectionRange(1, Math.min(editor.value.length, 12));
+    return {
+      value: editor.value,
+      selectionStart: editor.selectionStart,
+      selectionEnd: editor.selectionEnd,
+    };
+  });
+  expect(sourceEditorState.selectionEnd).toBeGreaterThan(sourceEditorState.selectionStart);
   for (const shortcut of ["Control+Shift+C", "Meta+Shift+C"]) {
     await diagramEditor.press(shortcut);
     await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(sentinel);
+    await expect(diagramEditor).toHaveValue(sourceEditorState.value);
+    await expect
+      .poll(() =>
+        diagramEditor.evaluate((element) => {
+          const editor = element as HTMLTextAreaElement;
+          return {
+            value: editor.value,
+            selectionStart: editor.selectionStart,
+            selectionEnd: editor.selectionEnd,
+          };
+        })
+      )
+      .toEqual(sourceEditorState);
   }
   await expect(styledCodeBtn).toHaveText("Styled Code");
 
@@ -584,9 +607,32 @@ test("Ctrl+Shift+C does not interrupt the Apply or preview code editors", async 
   await page.getByTitle("Edit the styled code before copying").click();
   const previewEditor = page.getByLabel("Styled code output — edit before copying");
   await expect(previewEditor).toBeFocused();
+  const previewEditorState = await previewEditor.evaluate((element) => {
+    const editor = element as HTMLTextAreaElement;
+    editor.setSelectionRange(1, Math.min(editor.value.length, 16));
+    return {
+      value: editor.value,
+      selectionStart: editor.selectionStart,
+      selectionEnd: editor.selectionEnd,
+    };
+  });
+  expect(previewEditorState.selectionEnd).toBeGreaterThan(previewEditorState.selectionStart);
   for (const shortcut of ["Control+Shift+C", "Meta+Shift+C"]) {
     await previewEditor.press(shortcut);
     await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(sentinel);
+    await expect(previewEditor).toHaveValue(previewEditorState.value);
+    await expect
+      .poll(() =>
+        previewEditor.evaluate((element) => {
+          const editor = element as HTMLTextAreaElement;
+          return {
+            value: editor.value,
+            selectionStart: editor.selectionStart,
+            selectionEnd: editor.selectionEnd,
+          };
+        })
+      )
+      .toEqual(previewEditorState);
   }
   await expect(styledCodeBtn).toHaveText("Styled Code");
 });
