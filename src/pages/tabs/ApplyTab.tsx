@@ -212,6 +212,32 @@ export function ApplyTab({
     setFamilyHintDismissed(isHintDismissed(effectiveDetection.family));
   }, [effectiveDetection.family, hintResetToken]);
 
+  const directiveLengthAdvisory = useMemo((): string | null => {
+    if (!inputCode.trim() || !rendererProfile) return null;
+
+    const dirLength = computeInitDirectiveLength(
+      selectedPalette,
+      effectiveDetection.family,
+      look,
+      fontSize || undefined,
+      typography,
+      Object.keys(advancedMermaidConfig).length > 0 ? advancedMermaidConfig : undefined
+    );
+    const check = checkInitDirectiveLength(dirLength, rendererProfile);
+    if (check.status !== "caution") return null;
+
+    return `%%{init}%% directive (${check.directiveLength} chars) may exceed ${rendererProfile.shortName}'s ${check.ceiling}-char rendering limit — validate before publishing`;
+  }, [
+    inputCode,
+    rendererProfile,
+    selectedPalette,
+    effectiveDetection.family,
+    look,
+    fontSize,
+    typography,
+    advancedMermaidConfig,
+  ]);
+
   const exportAdvisories = useMemo((): string[] => {
     if (!inputCode.trim() || !rendererTarget) return [];
     const r = getRendererById(rendererTarget);
@@ -248,21 +274,8 @@ export function ApplyTab({
     // "init-directive" (frontmatter has no length concern) and the renderer
     // has a measured numeric ceiling.  "unlimited" renderers are always safe;
     // "unverified" renderers get no advisory (no data to warn on).
-    if (outputFormat === "init-directive") {
-      const dirLength = computeInitDirectiveLength(
-        selectedPalette,
-        effectiveDetection.family,
-        look,
-        fontSize || undefined,
-        typography,
-        Object.keys(advancedMermaidConfig).length > 0 ? advancedMermaidConfig : undefined
-      );
-      const check = checkInitDirectiveLength(dirLength, r);
-      if (check.status === "caution") {
-        advisories.push(
-          `%%{init}%% directive (${check.directiveLength} chars) may exceed ${r.shortName}'s ${check.ceiling}-char rendering limit — validate before publishing`
-        );
-      }
+    if (outputFormat === "init-directive" && directiveLengthAdvisory) {
+      advisories.push(directiveLengthAdvisory);
     }
 
     return advisories;
@@ -276,6 +289,7 @@ export function ApplyTab({
     fontSize,
     typography,
     advancedMermaidConfig,
+    directiveLengthAdvisory,
   ]);
 
   const isExtracted = isExtractedPaletteId(selectedPaletteId);
@@ -761,6 +775,7 @@ export function ApplyTab({
         generatePreview={handleScaffoldPreview}
         rendererTarget={rendererTarget}
         onRendererTargetChange={onRendererTargetChange}
+        directiveLengthAdvisory={directiveLengthAdvisory}
       />
     </div>
   );
