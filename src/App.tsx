@@ -393,6 +393,7 @@ export function AppShell() {
   const [activeMyThemeSlotId, setActiveMyThemeSlotId] = useState<string | null>("my-theme-1");
   const [outputFormat, setOutputFormat] = useState<OutputFormat>("init-directive");
   const [outputFormatOverridden, setOutputFormatOverridden] = useState(false);
+  const [rendererTargetHintDismissed, setRendererTargetHintDismissed] = useState(false);
   const [strokeWidth, setStrokeWidth] = useState<number | undefined>(undefined);
   const [advancedMermaidConfig, setAdvancedMermaidConfig] = useState<
     import("@/lib/theme-engine").AdvancedMermaidConfig
@@ -408,6 +409,12 @@ export function AppShell() {
     const recommended = getRendererDefaultOutputFormat(rendererTarget);
     setOutputFormat((current) => (current === recommended ? current : recommended));
   }, [rendererTarget, outputFormatOverridden]);
+
+  // Once a renderer has been selected, keep the no-target guidance dismissed
+  // even if the user later returns to the generic target.
+  useEffect(() => {
+    if (rendererTarget) setRendererTargetHintDismissed(true);
+  }, [rendererTarget]);
 
   const handleRendererTargetChange = useCallback(
     (nextRendererTarget: string) => {
@@ -565,6 +572,10 @@ export function AppShell() {
             .slice(0, RECENT_PALETTES_MAX)
         );
       }
+      if (!didApplyShare && typeof persisted.rendererTarget === "string") {
+        setRendererTarget(persisted.rendererTarget);
+        if (persisted.rendererTarget) setRendererTargetHintDismissed(true);
+      }
       if (typeof persisted.fontSize === "string") setFontSize(persisted.fontSize);
       if (persisted.typography && typeof persisted.typography === "object") {
         const t = persisted.typography as TypographySettings;
@@ -631,6 +642,9 @@ export function AppShell() {
       }
       if (typeof persisted.outputFormatOverridden === "boolean") {
         setOutputFormatOverridden(persisted.outputFormatOverridden);
+      }
+      if (persisted.rendererTargetHintDismissed === true) {
+        setRendererTargetHintDismissed(true);
       }
       if (
         typeof persisted.strokeWidth === "number" &&
@@ -769,6 +783,7 @@ export function AppShell() {
       activeMyThemeSlotId,
       outputFormat,
       outputFormatOverridden,
+      rendererTargetHintDismissed,
       strokeWidth,
       advancedMermaidConfig,
       firstVisitComplete,
@@ -791,6 +806,7 @@ export function AppShell() {
     typography,
     rendererTarget,
     outputFormatOverridden,
+    rendererTargetHintDismissed,
     previewMode,
     lastExampleType,
     lastSelectedExampleId,
@@ -2064,6 +2080,8 @@ export function AppShell() {
                   onShowToast={showToast}
                   onShowProfileDetails={handleShowProfileDetails}
                   rendererTarget={rendererTarget}
+                  rendererTargetHintDismissed={rendererTargetHintDismissed}
+                  onDismissRendererTargetHint={() => setRendererTargetHintDismissed(true)}
                   outputFormat={outputFormat}
                   onCopyForRenderer={handleCopyForRenderer}
                   onCopyShareLink={activeMyThemeSlotId ? handleReferenceShareLink : undefined}

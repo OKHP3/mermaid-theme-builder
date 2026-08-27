@@ -57,6 +57,8 @@ export interface PersistedState {
   fontSize?: string;
   typography?: TypographySettings;
   rendererTarget?: string;
+  /** True after renderer guidance is dismissed or a renderer is selected. */
+  rendererTargetHintDismissed?: boolean;
   previewMode?: string;
   lastExampleType?: Record<string, "flowchart" | "sequence">;
   lastSelectedExampleId?: string;

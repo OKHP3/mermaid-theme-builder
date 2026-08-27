@@ -53,6 +53,24 @@ async function gotoTab(page: Page, tab: "apply" | "reference", state?: object): 
   });
 }
 
+/** Seed only once so a reload can verify the persisted hint dismissal. */
+async function gotoTabWithReloadSafeSeed(page: Page, tab: "reference"): Promise<void> {
+  await page.addInitScript(
+    ({ stateKey, firstVisitKey }) => {
+      if (sessionStorage.getItem("__mtb_reference_hint_seeded")) return;
+      sessionStorage.setItem("__mtb_reference_hint_seeded", "true");
+      localStorage.clear();
+      localStorage.setItem(firstVisitKey, "true");
+      localStorage.removeItem(stateKey);
+    },
+    { stateKey: STATE_KEY, firstVisitKey: FIRST_VISIT_KEY }
+  );
+
+  await page.goto(`/#${tab}`);
+  await page.waitForLoadState("load");
+  await expect(page.getByRole("tab", { name: "Reference", exact: true }).first()).toBeVisible();
+}
+
 /** Open the Reference tab's distribution accordion. */
 async function openDistribution(page: Page): Promise<void> {
   await page.getByRole("tab", { name: "Reference", exact: true }).first().click();
@@ -110,6 +128,54 @@ test.describe("Reference distribution center", () => {
       }
     });
   }
+
+  test("shows a dismissible no-renderer hint and remembers the dismissal", async ({ page }) => {
+    await gotoTabWithReloadSafeSeed(page, "reference");
+    await openDistribution(page);
+
+    const hint = page.getByText("Select a renderer target in Compose for best results.", {
+      exact: true,
+    });
+    await expect(hint).toBeVisible();
+    await page.getByRole("button", { name: "Dismiss renderer target hint" }).click();
+    await expect(hint).not.toBeVisible();
+    await expect
+      .poll(() =>
+        page.evaluate(() => {
+          const raw = localStorage.getItem("mtb.state.v1");
+          return raw ? JSON.parse(raw).rendererTargetHintDismissed : false;
+        })
+      )
+      .toBe(true);
+
+    await page.reload();
+    await page.waitForLoadState("load");
+    await expect(page.getByRole("tab", { name: "Reference", exact: true }).first()).toBeVisible();
+    await openDistribution(page);
+    await expect(
+      page.getByText("Select a renderer target in Compose for best results.", { exact: true })
+    ).not.toBeVisible();
+  });
+
+  test("keeps the hint hidden after a renderer is selected and then cleared", async ({ page }) => {
+    await gotoTab(page, "apply");
+    const rendererSelect = page.getByLabel("Select target renderer");
+    await rendererSelect.selectOption("github");
+    await expect
+      .poll(() =>
+        page.evaluate(() => {
+          const raw = localStorage.getItem("mtb.state.v1");
+          return raw ? JSON.parse(raw).rendererTargetHintDismissed : false;
+        })
+      )
+      .toBe(true);
+
+    await rendererSelect.selectOption("");
+    await openDistribution(page);
+    await expect(
+      page.getByText("Select a renderer target in Compose for best results.", { exact: true })
+    ).not.toBeVisible();
+  });
 
   test("disables profile sharing when no My Theme slot is active", async ({ page }) => {
     await gotoTab(page, "reference", EMPTY_SLOTS_STATE);

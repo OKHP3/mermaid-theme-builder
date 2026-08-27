@@ -43,6 +43,10 @@ interface ReferenceTabProps {
   onShowToast?: (msg: ReactNode) => void;
   /** Currently selected renderer target id (e.g. "github", "obsidian"). */
   rendererTarget?: string;
+  /** Whether the no-renderer guidance has already been dismissed or completed. */
+  rendererTargetHintDismissed?: boolean;
+  /** Dismiss the no-renderer guidance without changing renderer selection. */
+  onDismissRendererTargetHint?: () => void;
   /** User's current output format preference. */
   outputFormat?: "init-directive" | "frontmatter";
   /**
@@ -170,6 +174,8 @@ export function ReferenceTab({
   onImportAsNewSlot,
   onShowToast = () => {},
   rendererTarget = "",
+  rendererTargetHintDismissed = false,
+  onDismissRendererTargetHint = () => {},
   outputFormat = "init-directive",
   onCopyForRenderer,
   onCopyShareLink,
@@ -474,6 +480,27 @@ export function ReferenceTab({
           </summary>
 
           <div className="border-t border-border">
+            {!rendererTarget && !rendererTargetHintDismissed && (
+              <div
+                role="note"
+                className="mx-4 mt-3 flex items-start justify-between gap-3 rounded border border-primary/20 bg-primary/5 px-3 py-2"
+              >
+                <p className="text-[10px] text-muted-foreground leading-relaxed">
+                  <span className="font-medium text-primary">
+                    Select a renderer target in Compose for best results.
+                  </span>{" "}
+                  Each destination will then show the format it is ready to receive.
+                </p>
+                <button
+                  type="button"
+                  onClick={onDismissRendererTargetHint}
+                  aria-label="Dismiss renderer target hint"
+                  className="shrink-0 text-muted-foreground/60 hover:text-foreground transition-colors"
+                >
+                  <span aria-hidden="true">×</span>
+                </button>
+              </div>
+            )}
             {/* ── Profile share link shortcut ─────────────────────────────── */}
             <div className="px-4 py-3 flex items-start justify-between gap-3 border-b border-border bg-muted/20">
               <div className="min-w-0">
