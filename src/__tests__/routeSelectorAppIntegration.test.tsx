@@ -27,6 +27,10 @@ vi.mock("@/pages/tabs/ExtractTab", () => ({ ExtractTab: () => null }));
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { createElement } from "react";
 import { AppShell } from "@/App";
+import { encodeShareableTheme } from "@/lib/persistence";
+import { encodeProfileToken } from "@/lib/profile-share";
+import { BRAND_PALETTES } from "@/lib/palettes";
+import { createGovernanceProfile } from "@/lib/governance-profile";
 
 const STORAGE_KEY = "mtb.state.v1";
 const FIRST_VISIT_KEY = "mtb.firstVisit";
@@ -36,7 +40,7 @@ function tablists(): Element[] {
 }
 
 function tabsNamed(name: string): HTMLElement[] {
-  return screen.getAllByRole("tab", { name, exact: true });
+  return screen.getAllByRole("tab", { name });
 }
 
 async function expectActiveTab(name: string): Promise<void> {
@@ -74,6 +78,66 @@ afterAll(() => {
 });
 
 describe("AppShell first-use route selector integration", () => {
+  it("bypasses the selector and activates Extract for a URL hash", async () => {
+    window.history.replaceState({}, "", "/#extract");
+
+    render(createElement(AppShell));
+
+    expect(screen.queryByRole("heading", { name: "What would you like to do?" })).toBeNull();
+    await expectActiveTab("Extract");
+    expect(screen.queryByRole("heading", { name: "What would you like to do?" })).toBeNull();
+  });
+
+  it("bypasses the selector and applies a shared theme token", async () => {
+    const token = encodeShareableTheme({
+      v: 1,
+      paletteName: "Shared integration theme",
+      themeVariables: {
+        primaryColor: "#123456",
+      },
+    });
+    window.history.replaceState({}, "", `/?theme=${encodeURIComponent(token)}`);
+
+    render(createElement(AppShell));
+
+    expect(screen.queryByRole("heading", { name: "What would you like to do?" })).toBeNull();
+    await waitFor(() => {
+      expect(screen.queryByRole("heading", { name: "What would you like to do?" })).toBeNull();
+      expect(persistedState().selectedPaletteId).toMatch(/^shared-/);
+      expect(
+        (persistedState().userPalettes as Array<{ name: string }>).map((p) => p.name)
+      ).toContain("Shared integration theme");
+    });
+  });
+
+  it("bypasses the selector and applies a shared profile token", async () => {
+    const profile = createGovernanceProfile(
+      {
+        id: "my-theme-2",
+        name: "Shared integration profile",
+        colors: BRAND_PALETTES[0].colors,
+        rendererTarget: "obsidian",
+        outputFormat: "frontmatter",
+      },
+      "2026-08-27T12:00:00.000Z"
+    );
+    const token = encodeProfileToken(profile);
+    window.history.replaceState({}, "", `/?profile=${encodeURIComponent(token)}`);
+
+    render(createElement(AppShell));
+
+    expect(screen.queryByRole("heading", { name: "What would you like to do?" })).toBeNull();
+    await waitFor(() => {
+      expect(screen.queryByRole("heading", { name: "What would you like to do?" })).toBeNull();
+      const state = persistedState();
+      expect((state.myThemeSlots as Array<{ name: string }>).map((slot) => slot.name)).toContain(
+        "Shared integration profile"
+      );
+      expect(state.activeMyThemeSlotId).toBe("my-theme-2");
+      expect(state.rendererTarget).toBe("obsidian");
+    });
+  });
+
   it("shows the selector for a brand-new user and hides both tab navigations", async () => {
     render(createElement(AppShell));
 
