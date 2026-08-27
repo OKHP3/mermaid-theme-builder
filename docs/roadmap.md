@@ -192,7 +192,7 @@ These will never be added regardless of version:
 
 ## Detailed Planning Documents
 
-- [v0.5–v0.7 Detailed Release Plan](roadmap/mermaid-theme-builder-v0.5-v0.7-plan.md)
+- No separate v0.5 to v0.7 planning document is currently maintained in this repository.
 
 ---
 
