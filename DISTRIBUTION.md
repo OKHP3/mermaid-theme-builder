@@ -15,7 +15,7 @@ Update this file whenever a new submission is made or a status changes.
 | **Target file** | `docs/ecosystem/integrations-community.md` in [mermaid-js/mermaid](https://github.com/mermaid-js/mermaid) |
 | **PR** | [#8034](https://github.com/mermaid-js/mermaid/pull/8034) |
 | **Submitted** | 2026-08-06 |
-| **Status** | ⏳ Pending review |
+| **Status** | ⏳ Pending review — checked 2026-08-27; PR remains open and unmerged |
 | **Entry added** | `### Other` section, alphabetically after `mermaid-server` |
 | **Entry text** | `- [Mermaid Theme Builder: Visual governance workbench for Mermaid — brand palette enforcement, renderer-aware export, and SKILL.md agent skill for Claude Code, Cursor, and GitHub Copilot](https://github.com/OKHP3/mermaid-theme-builder)` |
 
@@ -28,7 +28,7 @@ Update this file whenever a new submission is made or a status changes.
 | **Directory** | [Awesome Diagramming](https://github.com/demian0311/awesome-diagramming) |
 | **PR** | [#1](https://github.com/demian0311/awesome-diagramming/pull/1) |
 | **Submitted** | 2026-08-06 |
-| **Status** | ⏳ Pending review |
+| **Status** | ❌ Rejected — 2026-08-09; PR closed without merge (no maintainer change request recorded) |
 | **Entry added** | `### General Purpose` section, immediately after the Mermaid entry |
 | **Entry text** | `* [Mermaid Theme Builder](https://github.com/OKHP3/mermaid-theme-builder) (Free, Open Source, Mermaid governance layer, Ease of use - Easy, Visual Appearance - Modern). Brand palette enforcement, renderer-aware export (5 formats), 31 diagram families, SKILL.md agent skill. Live - [Link](https://okhp3.github.io/mermaid-theme-builder/)` |
 
