@@ -38,6 +38,10 @@ Update this file whenever a new submission is made or a status changes.
 
 These directories use web forms that cannot be automated. All metadata is pre-filled below — copy and submit when ready.
 
+### Verification note — 2026-08-27
+
+Neither listing is currently present in the public directories. The AgenticSkills form has a real submission endpoint, but it requires a contact email that is not included in this log; no submission was made without that required field. The agentskills.my form currently has no server submission endpoint: its client-side handler only logs the form data and displays a local success message. Treat both entries below as pending manual submission until a real review/listing confirmation exists.
+
 ### agenticskills.io
 
 **Submit at:** https://agenticskills.io/submit
