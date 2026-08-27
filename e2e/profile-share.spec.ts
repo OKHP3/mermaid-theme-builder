@@ -60,4 +60,24 @@ test.describe("Profile share URL bootstrap", () => {
       "false"
     );
   });
+
+  test("shows a dismissible error for a malformed profile without creating a slot", async ({
+    page,
+  }) => {
+    await page.addInitScript(() => {
+      localStorage.clear();
+      localStorage.setItem("mtb.firstVisit", "true");
+      sessionStorage.clear();
+    });
+    await page.goto("/?profile=xyz");
+    await page.waitForLoadState("load");
+
+    const alert = page.getByRole("alert");
+    await expect(alert).toContainText("Could not load shared profile", { timeout: 8_000 });
+    await expect(page.locator(`#${APPLY_PREFIX}-my-theme-1`)).toBeVisible();
+    await expect(page.locator(`#${APPLY_PREFIX}-my-theme-2`)).toHaveCount(0);
+
+    await page.getByRole("button", { name: "Dismiss error" }).click();
+    await expect(alert).toHaveCount(0);
+  });
 });
