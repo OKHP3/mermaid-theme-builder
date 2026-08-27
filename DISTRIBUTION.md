@@ -45,6 +45,7 @@ Neither listing is currently present in the public directories. The AgenticSkill
 ### agenticskills.io
 
 **Submit at:** https://agenticskills.io/submit
+**Status — 2026-08-27:** Submission attempted with the metadata below, but the endpoint returned HTTP 503: `Submission review queue is not configured.` No review issue, confirmation link, or directory listing was created.
 
 | Field | Value |
 |-------|-------|
@@ -61,6 +62,7 @@ Neither listing is currently present in the public directories. The AgenticSkill
 ### agentskills.my
 
 **Submit at:** https://agentskills.my/submit
+**Status — 2026-08-27:** Not submitted. The live page's handler only logs the form payload in the browser and shows a local success message; it makes no network request and provides no review or confirmation record.
 
 | Field | Value |
 |-------|-------|

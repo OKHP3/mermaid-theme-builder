@@ -7,3 +7,4 @@
 - [Plausible privacy transport](plausible-privacy.md) — manual analytics trackers can add referrer data; protect the complete request with E2E interception.
 - [Inline editing in composite widgets](inline-editing-composite-widgets.md) — isolate editor keys from parent navigation; let native Tab movement commit through blur.
 - [Playwright full-suite validation](playwright-suite-runtime.md) — long serial runs and preview-port collisions can masquerade as broad E2E regressions
+- [Skill directory submissions](skill-directory-submission-quirks.md) — require server-side confirmation; agentskills.my is client-only and AgenticSkills may reject submissions when its review queue is unconfigured
