@@ -77,6 +77,8 @@ interface ExportToolbarProps {
   outputFormatOverridden?: boolean;
   /** Restores the format recommended by the active renderer. */
   onResetOutputFormat?: () => void;
+  /** Increments when the app performs a full factory reset. */
+  resetToken?: number;
   /**
    * Test seam only — seeds the initial copiedType state so unit tests can
    * assert badge visibility during the "Copied!" flash without needing to
@@ -108,6 +110,7 @@ export function ExportToolbar({
   onOutputFormatChange,
   outputFormatOverridden = false,
   onResetOutputFormat,
+  resetToken = 0,
   _testInitialCopiedType = null,
 }: ExportToolbarProps) {
   const [copiedType, setCopiedType] = useState<ExportType | null>(_testInitialCopiedType);
@@ -120,6 +123,13 @@ export function ExportToolbar({
     setShowExportPreview(next);
     saveExportPreviewOpen(next);
   }, []);
+
+  useEffect(() => {
+    if (resetToken === 0) return;
+    setShowExportPreview(false);
+    setPreviewCopied(false);
+    saveExportPreviewOpen(false);
+  }, [resetToken]);
 
   // Directive-length advisory — computed only when the preview is open, the
   // format is init-directive, and a renderer with a numeric ceiling is selected.

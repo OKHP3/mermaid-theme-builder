@@ -66,6 +66,7 @@ interface ApplyTabProps {
   previewMode: PreviewMode;
   onPreviewModeChange: (mode: PreviewMode) => void;
   hintResetToken: number;
+  settingsResetToken?: number;
   onResetSyntaxHints: () => void;
   myThemeSlots?: MyThemeSlot[];
   activeMyThemeSlotId?: string | null;
@@ -124,6 +125,7 @@ export function ApplyTab({
   previewMode,
   onPreviewModeChange,
   hintResetToken,
+  settingsResetToken = 0,
   onResetSyntaxHints,
   myThemeSlots = [],
   activeMyThemeSlotId = null,
@@ -749,6 +751,7 @@ export function ApplyTab({
               onOutputFormatChange={onOutputFormatChange}
               outputFormatOverridden={outputFormatOverridden}
               onResetOutputFormat={onResetOutputFormat}
+              resetToken={settingsResetToken}
             />
           </div>
         </section>

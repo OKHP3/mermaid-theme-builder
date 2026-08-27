@@ -373,6 +373,7 @@ export function AppShell() {
     warnValues: Array<{ key: string; value: string }>;
   } | null>(null);
   const [hintResetToken, setHintResetToken] = useState(0);
+  const [settingsResetToken, setSettingsResetToken] = useState(0);
   const [showSettingsMenu, setShowSettingsMenu] = useState(false);
   const [confirmResetPalettes, setConfirmResetPalettes] = useState(false);
   const settingsBtnRef = useRef<HTMLButtonElement>(null);
@@ -1811,6 +1812,7 @@ export function AppShell() {
                     setOutputFormat("init-directive");
                     setOutputFormatOverridden(false);
                     setPreviewMode("themed");
+                    setSettingsResetToken((t) => t + 1);
                     setLastExampleType({});
                     setLastSelectedExampleId("");
                     updateMyThemeSlots([createDefaultMyThemeSlot(1, BRAND_PALETTES[0].colors)]);
@@ -1952,6 +1954,7 @@ export function AppShell() {
                 previewMode={previewMode}
                 onPreviewModeChange={setPreviewMode}
                 hintResetToken={hintResetToken}
+                settingsResetToken={settingsResetToken}
                 onResetSyntaxHints={handleResetSyntaxHints}
                 myThemeSlots={myThemeSlots}
                 activeMyThemeSlotId={activeMyThemeSlotId}
