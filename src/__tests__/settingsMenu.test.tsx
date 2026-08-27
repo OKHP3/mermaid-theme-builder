@@ -399,6 +399,20 @@ describe("Settings menu — Clear all settings", () => {
     });
   });
 
+  it("clears renderer target hint dismissal and persists the reset value", async () => {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ ...JSON.parse(SEEDED_STATE), rendererTargetHintDismissed: true })
+    );
+    render(createElement(App, null));
+    openSettingsMenu();
+    fireEvent.click(screen.getByText("Clear all settings"));
+
+    await waitFor(() => {
+      expect(getPersistedState().rendererTargetHintDismissed).toBe(false);
+    });
+  });
+
   it("resets includeMetaComments to true — seeded false becomes true after clearing", async () => {
     // SEEDED_STATE seeds includeMetaComments: false; the default is true.
     localStorage.setItem(STORAGE_KEY, SEEDED_STATE);

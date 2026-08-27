@@ -1803,6 +1803,7 @@ export function AppShell() {
                     setFontSize("");
                     setTypography(DEFAULT_TYPOGRAPHY);
                     setRendererTarget("");
+                    setRendererTargetHintDismissed(false);
                     setOutputFormat("init-directive");
                     setOutputFormatOverridden(false);
                     setPreviewMode("themed");
