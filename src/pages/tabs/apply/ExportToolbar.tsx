@@ -125,6 +125,10 @@ export function ExportToolbar({
   }, []);
 
   useEffect(() => {
+    setPreviewCopied(false);
+  }, [effectiveExportCode]);
+
+  useEffect(() => {
     if (resetToken === 0) return;
     setShowExportPreview(false);
     setPreviewCopied(false);

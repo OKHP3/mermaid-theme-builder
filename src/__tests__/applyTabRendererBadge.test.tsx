@@ -487,3 +487,34 @@ describe("ExportToolbar — Preview directive-length badge", () => {
     expect(screen.queryByTestId("directive-length-badge")).toBeNull();
   });
 });
+
+describe("ExportToolbar — Preview copy flash", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.runAllTimers();
+    vi.useRealTimers();
+  });
+
+  it("resets Copied! immediately when the effective export code changes", async () => {
+    const { rerender } = render(createElement(ExportToolbar, TOOLBAR_BASE_PROPS));
+
+    fireEvent.click(screen.getByRole("button", { name: "Preview" }));
+    fireEvent.click(screen.getByRole("button", { name: "Copy export code from preview" }));
+    await act(async () => {
+      await Promise.resolve();
+    });
+    expect(screen.getByRole("button", { name: "Copied!" })).toBeTruthy();
+
+    rerender(
+      createElement(ExportToolbar, {
+        ...TOOLBAR_BASE_PROPS,
+        effectiveExportCode: `${DIAGRAM}\n  B --> C[Updated]`,
+      })
+    );
+
+    expect(screen.getByRole("button", { name: "Copy export code from preview" })).toBeTruthy();
+  });
+});
