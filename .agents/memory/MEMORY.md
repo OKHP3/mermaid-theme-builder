@@ -6,3 +6,4 @@
 - [Dependabot branch refresh](dependabot-branch-refresh.md) — fetching origin can recreate new Dependabot refs after cleanup; treat them as current proposals, not necessarily dead branches.
 - [Plausible privacy transport](plausible-privacy.md) — manual analytics trackers can add referrer data; protect the complete request with E2E interception.
 - [Inline editing in composite widgets](inline-editing-composite-widgets.md) — isolate editor keys from parent navigation; let native Tab movement commit through blur.
+- [Serial Playwright suite runtime](playwright-suite-runtime.md) — full serial E2E runs can exceed the shell limit; use focused specs or split shards for complete verification
