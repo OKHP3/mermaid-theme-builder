@@ -46,6 +46,7 @@ import { ExportToolbar } from "@/pages/tabs/apply/ExportToolbar";
 import { BRAND_PALETTES } from "@/lib/palettes";
 import { DEFAULT_TYPOGRAPHY } from "@/lib/typography";
 import { getRendererById } from "@/data/renderer-parity";
+import { computeInitDirectiveLength } from "@/lib/theme-engine";
 
 // ---------------------------------------------------------------------------
 // Fixtures
@@ -414,5 +415,75 @@ describe("ExportToolbar — renderer badge hidden when copiedType is 'prompt' (T
 
     const badge = promptBtn!.querySelector('[title*="tailored for"]');
     expect(badge, "renderer badge must be present when not in copied state").not.toBeNull();
+  });
+});
+
+describe("ExportToolbar — Preview directive-length badge", () => {
+  const directiveLength = computeInitDirectiveLength(
+    TOOLBAR_BASE_PROPS.exportOptions.palette,
+    TOOLBAR_BASE_PROPS.exportOptions.diagramFamily
+  );
+
+  function rendererWithCeiling(ceiling: number | "unlimited" | "unverified") {
+    return { ...GITHUB, initDirectiveSafeLength: ceiling };
+  }
+
+  it("shows the current directive count for a renderer with a numeric ceiling", () => {
+    const ceiling = Math.ceil(directiveLength / 0.8);
+    render(
+      createElement(ExportToolbar, {
+        ...TOOLBAR_BASE_PROPS,
+        rendererProfile: rendererWithCeiling(ceiling),
+      })
+    );
+
+    const badge = screen.getByTestId("directive-length-badge");
+    expect(badge.textContent).toBe(`${directiveLength} / ${ceiling} chars`);
+    expect(badge.className).toContain("text-muted-foreground");
+  });
+
+  it("turns amber when the directive is within 10% of the ceiling", () => {
+    const ceiling = Math.ceil(directiveLength / 0.95);
+    render(
+      createElement(ExportToolbar, {
+        ...TOOLBAR_BASE_PROPS,
+        rendererProfile: rendererWithCeiling(ceiling),
+      })
+    );
+
+    const badge = screen.getByTestId("directive-length-badge");
+    expect(directiveLength).toBeGreaterThanOrEqual(ceiling * 0.9);
+    expect(directiveLength).toBeLessThanOrEqual(ceiling);
+    expect(badge.className).toContain("text-amber-700");
+  });
+
+  it("turns red when the directive exceeds the ceiling", () => {
+    const ceiling = directiveLength - 1;
+    render(
+      createElement(ExportToolbar, {
+        ...TOOLBAR_BASE_PROPS,
+        rendererProfile: rendererWithCeiling(ceiling),
+      })
+    );
+
+    const badge = screen.getByTestId("directive-length-badge");
+    expect(badge.className).toContain("text-red-600");
+  });
+
+  it.each([
+    ["no renderer", undefined, "init-directive" as const],
+    ["YAML frontmatter", rendererWithCeiling(500), "frontmatter" as const],
+    ["an unlimited ceiling", rendererWithCeiling("unlimited"), "init-directive" as const],
+    ["an unverified ceiling", rendererWithCeiling("unverified"), "init-directive" as const],
+  ])("hides the badge for %s", (_label, rendererProfile, outputFormat) => {
+    render(
+      createElement(ExportToolbar, {
+        ...TOOLBAR_BASE_PROPS,
+        rendererProfile,
+        outputFormat,
+      })
+    );
+
+    expect(screen.queryByTestId("directive-length-badge")).toBeNull();
   });
 });
