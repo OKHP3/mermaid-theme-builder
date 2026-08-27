@@ -174,9 +174,33 @@ export function familyThemeOverlay(
       };
 
     case "xychart":
-      // XY chart series colors are controlled by config.xyChart.plotColorPalette (not themeVariables).
-      // The variables below are the standard themeVariables most relevant to XY chart rendering:
-      // background, axis label text, title, and plot border colors all respond to these keys.
+      // WHY THIS CASE LOOKS DIFFERENT FROM EVERY OTHER FAMILY — DO NOT "FIX" IT
+      //
+      // XY chart series colors are NOT controlled by standard Mermaid themeVariables.
+      // They are controlled by the Mermaid *config* key `xyChart.plotColorPalette`,
+      // which expects a comma-separated string of hex colors — one per series,
+      // cycling if there are more series than colors.
+      //   Docs: https://mermaid.js.org/syntax/xyChart.html
+      //
+      // HOW IT GETS INTO THE %%{init}%% DIRECTIVE
+      // The theme engine (buildInitDirective in theme-engine.ts) merges this overlay
+      // into the `themeVariables` object and serialises every entry as "key": "value".
+      // Mermaid reads the `xyChart` key inside themeVariables and interprets its value
+      // as the plotColorPalette — equivalent to passing `config.xyChart.plotColorPalette`
+      // but expressed within the single themeVariables block that the %%{init}%%
+      // directive already emits. This avoids a second top-level config key.
+      //
+      // WHY THE VALUE IS A COMMA-JOINED STRING (not an object or individual keys)
+      // Mermaid's XY chart renderer reads `themeVariables.xyChart` as a raw
+      // comma-joined hex list. Changing this to individual named keys
+      // (e.g. xyChart1, xyChart2…) or to an array would silently break color
+      // application in the renderer — the snapshot tests would fail but the
+      // cause would be opaque.
+      //
+      // ORDER OF COLORS: primary, secondary, tertiary, lineColor, nodeBorder, mainBkg
+      // This order matches the visual priority: bar/line series use primary and
+      // secondary first; lineColor and nodeBorder serve accent series; mainBkg
+      // provides a neutral fallback if more than five series are present.
       return {
         xyChart: [primary, secondary, tertiary, lineColor, nodeBorder, mainBkg].join(","),
       };

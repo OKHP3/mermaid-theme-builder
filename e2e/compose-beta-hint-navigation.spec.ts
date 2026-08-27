@@ -37,6 +37,9 @@ const LS_PREVIEW_KEY = "mtb.compose.previewSampleId";
  */
 const BETA_SAMPLE_ID = "sankey-effort-to-output";
 
+/** A catalog entry whose badge is "Experimental" — also triggers the hint bar. */
+const EXPERIMENTAL_SAMPLE_ID = "venn-governance-triangle";
+
 // ---------------------------------------------------------------------------
 // Test
 // ---------------------------------------------------------------------------
@@ -123,5 +126,44 @@ test("beta hint bar disappears when the preview picker switches to a non-beta di
 
   // 5. The hint bar must disappear — the "See support details →" button should
   //    no longer be attached to the DOM.
+  await expect(seeDetailsBtn).not.toBeAttached({ timeout: 5_000 });
+});
+
+test("Experimental hint bar disappears when the preview picker switches to a non-beta diagram", async ({
+  page,
+}) => {
+  // 1. Seed localStorage with the Experimental sample so the hint is visible
+  //    on the first Compose render.
+  await page.addInitScript(
+    ({ key, value }: { key: string; value: string }) => {
+      window.localStorage.clear();
+      localStorage.setItem("mtb.firstVisit", "true");
+      window.sessionStorage.clear();
+      window.localStorage.setItem(key, value);
+    },
+    { key: LS_PREVIEW_KEY, value: EXPERIMENTAL_SAMPLE_ID }
+  );
+
+  await page.goto("/");
+  await page.waitForLoadState("load");
+
+  // 2. Switch to the Compose tab.
+  await Promise.all([
+    page.waitForURL((url) => url.hash === "#compose"),
+    page.getByRole("tab", { name: "Compose" }).first().click(),
+  ]);
+
+  // 3. Confirm the Experimental variant of the hint is visible.
+  const hint = page.getByRole("note");
+  await expect(hint).toBeVisible({ timeout: 8_000 });
+  await expect(hint).toContainText("Experimental diagram type");
+  const seeDetailsBtn = page.getByRole("button", { name: "See support details →" });
+  await expect(seeDetailsBtn).toBeVisible();
+
+  // 4. Switch the preview picker to a non-beta diagram.
+  const picker = page.getByLabel("Preview diagram");
+  await picker.selectOption(NON_BETA_SAMPLE_ID);
+
+  // 5. The Experimental hint must disappear as the selected sample changes.
   await expect(seeDetailsBtn).not.toBeAttached({ timeout: 5_000 });
 });

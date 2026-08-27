@@ -56,6 +56,57 @@ export const TIER_ORDER: TypographyTierKey[] = [
   "edgeLabel",
 ];
 
+const GOOGLE_FONT_PRESETS = {
+  "DM Sans": {
+    id: "dm-sans",
+    href: "https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&display=swap",
+  },
+  "Alfa Slab One": {
+    id: "alfa-slab-one",
+    href: "https://fonts.googleapis.com/css2?family=Alfa+Slab+One&display=swap",
+  },
+  "JetBrains Mono": {
+    id: "jetbrains-mono",
+    href: "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap",
+  },
+  Inter: {
+    id: "inter",
+    href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap",
+  },
+} as const;
+
+function getPrimaryFontFamily(fontFamily: string): string {
+  const firstFamily = fontFamily.split(",", 1)[0]?.trim() ?? "";
+  if (
+    (firstFamily.startsWith('"') && firstFamily.endsWith('"')) ||
+    (firstFamily.startsWith("'") && firstFamily.endsWith("'"))
+  ) {
+    return firstFamily.slice(1, -1);
+  }
+  return firstFamily;
+}
+
+/**
+ * Lazily adds the Google Fonts stylesheet for a supported preset. Custom and
+ * system font stacks are intentionally ignored, and the stable link ID keeps
+ * repeated selections across typography tiers from requesting a font twice.
+ */
+export function loadGoogleFont(
+  fontFamily: string,
+  doc: Document | undefined = typeof document === "undefined" ? undefined : document
+): void {
+  const primaryFontFamily = getPrimaryFontFamily(fontFamily);
+  const preset = GOOGLE_FONT_PRESETS[primaryFontFamily as keyof typeof GOOGLE_FONT_PRESETS];
+  if (!preset || !doc || doc.getElementById(`mtb-google-font-${preset.id}`)) return;
+
+  const link = doc.createElement("link");
+  link.id = `mtb-google-font-${preset.id}`;
+  link.rel = "stylesheet";
+  link.href = preset.href;
+  link.dataset.mtbGoogleFont = preset.id;
+  doc.head.appendChild(link);
+}
+
 export function enforceHierarchy(settings: TypographySettings): TypographySettings {
   const s = { ...settings };
   // subgraphTitle cannot exceed diagramTitle

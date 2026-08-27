@@ -50,12 +50,12 @@
   /* Header surface (always-dark, identical in light and dark mode) */
   --forge-header-bg: var(--okh-forge-teal); /* #1c3a34 */
   --forge-header-fg: #e5e7eb;
-  --forge-header-muted: rgba(229, 231, 235, 0.55);
+  --forge-header-muted: rgba(229, 231, 235, 0.62);
   --forge-header-border: rgba(255, 255, 255, 0.07);
 
   /* Footer rail (always-dark, darker than header) */
   --forge-footer-bg: #0f1a17;
-  --forge-footer-fg: rgba(229, 231, 235, 0.45);
+  --forge-footer-fg: rgba(229, 231, 235, 0.65);
   --forge-footer-border: rgba(255, 255, 255, 0.08);
 
   /* Mobile nav (always-dark, matches header tone) */
@@ -128,7 +128,7 @@
 
   /* Primary — rust-orange #c46a2c */
   --primary: 25 63% 47%;
-  --primary-foreground: 0 0% 100%;
+  --primary-foreground: 222 47% 11%;
 
   /* Secondary / Muted / Accent */
   --secondary: 33 28% 92%;
@@ -225,7 +225,7 @@
   --popover-border: 224 20% 18%;
 
   --primary: 25 63% 58%; /* rust-orange, lifted for dark bg */
-  --primary-foreground: 0 0% 100%;
+  --primary-foreground: 222 47% 11%;
 
   --secondary: 224 20% 16%;
   --secondary-foreground: 220 14% 88%;

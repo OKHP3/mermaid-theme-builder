@@ -29,3 +29,4 @@ to = "/index.html"
 [services.env]
 PORT = "18624"
 BASE_PATH = "/mermaid-theme-builder/"
+CHOKIDAR_USEPOLLING = "true"

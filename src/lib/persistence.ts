@@ -57,6 +57,8 @@ export interface PersistedState {
   fontSize?: string;
   typography?: TypographySettings;
   rendererTarget?: string;
+  /** True after renderer guidance is dismissed or a renderer is selected. */
+  rendererTargetHintDismissed?: boolean;
   previewMode?: string;
   lastExampleType?: Record<string, "flowchart" | "sequence">;
   lastSelectedExampleId?: string;
@@ -64,6 +66,8 @@ export interface PersistedState {
   activeMyThemeSlotId?: string | null;
   /** Persisted output format preference: "init-directive" or "frontmatter". */
   outputFormat?: string;
+  /** True when the output format was explicitly chosen instead of recommended. */
+  outputFormatOverridden?: boolean;
   /** Persisted global classDef stroke-width override in pixels. */
   strokeWidth?: number;
   /** Persisted advanced Mermaid config overrides (htmlLabels, deterministicIds, seed). */

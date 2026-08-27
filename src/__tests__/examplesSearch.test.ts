@@ -11,7 +11,8 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { ALL_EXAMPLES, filterExamples } from "@/lib/examples-filter";
+import { ALL_EXAMPLES, filterExamples, assertNoDuplicateIds } from "@/lib/examples-filter";
+import type { ExampleItem } from "@/lib/examples-filter";
 import { EXAMPLE_CATALOG } from "@/data/example-library";
 
 describe("ExamplesTab — filterExamples (real assembled list)", () => {
@@ -304,5 +305,52 @@ describe("EXAMPLE_CATALOG — data integrity", () => {
       duplicates,
       `duplicate ids found across assembled ALL_EXAMPLES (catalog + brand previews + showcase): ${duplicates.join(", ")}`
     ).toHaveLength(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// assertNoDuplicateIds — runtime guard unit tests
+// ---------------------------------------------------------------------------
+
+function makeItem(id: string): ExampleItem {
+  return { id, label: id, content: "graph LR\n  A-->B", section: "Test" };
+}
+
+describe("assertNoDuplicateIds — duplicate-ID runtime guard", () => {
+  it("does not throw when all ids are unique", () => {
+    const items = [makeItem("alpha"), makeItem("beta"), makeItem("gamma")];
+    expect(() => assertNoDuplicateIds(items)).not.toThrow();
+  });
+
+  it("throws when a single id is duplicated", () => {
+    const items = [makeItem("foo"), makeItem("bar"), makeItem("foo")];
+    expect(() => assertNoDuplicateIds(items)).toThrow(/foo/);
+  });
+
+  it("error message names every duplicated id", () => {
+    const items = [
+      makeItem("alpha"),
+      makeItem("beta"),
+      makeItem("alpha"),
+      makeItem("beta"),
+      makeItem("gamma"),
+    ];
+    let message = "";
+    try {
+      assertNoDuplicateIds(items);
+    } catch (e) {
+      message = (e as Error).message;
+    }
+    expect(message).toMatch(/alpha/);
+    expect(message).toMatch(/beta/);
+    expect(message).not.toMatch(/gamma/);
+  });
+
+  it("does not throw for an empty list", () => {
+    expect(() => assertNoDuplicateIds([])).not.toThrow();
+  });
+
+  it("does not throw for a single-item list", () => {
+    expect(() => assertNoDuplicateIds([makeItem("only")])).not.toThrow();
   });
 });

@@ -5,6 +5,9 @@ metadata:
   author: Jamie Hill (OverKill Hill P³)
   version: "1.1.0"
   category: developer-tooling
+  catalog_display_name: "Governance"
+  catalog_role: "governance"
+  catalog_description: "Establish visual and behavioral standards for a diagram family — conformance profiles, style rules, and governance checks for consistent team output."
   origin: okhp3/skillz
   homepage: https://overkillhill.com
   author-github: https://github.com/OKHP3

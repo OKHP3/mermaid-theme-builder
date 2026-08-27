@@ -331,6 +331,24 @@ describe("ApplyTab — diagram selector sync: selector hidden after content shri
     expect(codePanel?.textContent).toContain("flowchart");
     expect(codePanel?.textContent).not.toContain("sequenceDiagram");
   });
+
+  it("'code' preview updates to the manually selected diagram", async () => {
+    const { container } = render(
+      createElement(ApplyTab, { ...makeProps(MULTI_INPUT), previewMode: "code" as const })
+    );
+
+    // Manually select diagram 2 through the production selector rather than
+    // using the Previous/Next convenience controls or changing input content.
+    const select = screen.getByLabelText("Select diagram") as HTMLSelectElement;
+    await act(async () => {
+      fireEvent.change(select, { target: { value: "1" } });
+    });
+
+    expect(select.value).toBe("1");
+    const codePanel = container.querySelector('[aria-label="Styled code output"]');
+    expect(codePanel).not.toBeNull();
+    expect(codePanel?.textContent).toContain("sequenceDiagram");
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -527,6 +545,55 @@ describe("ApplyTab — code-editor override: auto-clear is scoped to the active 
     });
 
     // Diagram 0's override is also cleared on visit.
+    expect(
+      container.querySelector("textarea[aria-label='Styled code output — edit before copying']")
+    ).toBeNull();
+  });
+
+  it("font-size change immediately clears only the active diagram's override; other overrides are invalidated lazily on next visit", async () => {
+    // fontSize contributes to exportCode for every diagram. Changing it while
+    // diagram 1 is active must clear that stale edit now, then clear diagram 0
+    // only when the hook next compares diagram 0's computed output.
+    const { container, rerender } = render(createElement(ApplyTab, makeProps(MULTI_INPUT)));
+
+    // 1. Create override[0].
+    await act(async () => {
+      fireEvent.click(screen.getByTitle("Edit the styled code before copying"));
+    });
+    expect(
+      container.querySelector("textarea[aria-label='Styled code output — edit before copying']")
+    ).not.toBeNull();
+
+    // 2. Visit diagram 1 and create override[1].
+    await act(async () => {
+      fireEvent.click(screen.getByLabelText("Next diagram"));
+    });
+    await act(async () => {
+      fireEvent.click(screen.getByTitle("Edit the styled code before copying"));
+    });
+    expect(
+      container.querySelector("textarea[aria-label='Styled code output — edit before copying']")
+    ).not.toBeNull();
+
+    // 3. Changing fontSize updates exportCode for every diagram. The active
+    // diagram's override is cleared immediately.
+    act(() => {
+      rerender(
+        createElement(ApplyTab, {
+          ...makeProps(MULTI_INPUT),
+          fontSize: "18",
+        })
+      );
+    });
+    expect(
+      container.querySelector("textarea[aria-label='Styled code output — edit before copying']")
+    ).toBeNull();
+
+    // 4. Diagram 0 is cleared lazily when it becomes active and its new
+    // exportCode is compared with the value recorded before the size change.
+    await act(async () => {
+      fireEvent.click(screen.getByLabelText("Previous diagram"));
+    });
     expect(
       container.querySelector("textarea[aria-label='Styled code output — edit before copying']")
     ).toBeNull();

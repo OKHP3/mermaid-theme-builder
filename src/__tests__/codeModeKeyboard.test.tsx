@@ -10,8 +10,8 @@
  *      The <pre> must carry tabIndex=0 so keyboard users can Tab into it;
  *      the empty-placeholder path must NOT add a tabIndex (nothing to read).
  *
- *   B. Edit / Reset toggle — minimal CodeModePanel wrapper using the real
- *      useCodeEditorOverride hook to verify conditional rendering logic.
+ *   B. DiagramPreviewPanel direct behavior — Edit / Reset and keyboard
+ *      handlers are exercised through the production component.
  *
  *   C. ApplyTab integration — renders the real ApplyTab component with
  *      previewMode="code" and realistic props. Asserts:
@@ -42,8 +42,8 @@ import { render, screen, act, cleanup } from "@testing-library/react";
 import { fireEvent } from "@testing-library/dom";
 import { createElement, useState, type ReactElement } from "react";
 import { HighlightedCode } from "@/components/HighlightedCode";
-import { useCodeEditorOverride } from "@/hooks/useCodeEditorOverride";
 import { ApplyTab } from "@/pages/tabs/ApplyTab";
+import { DiagramPreviewPanel } from "@/pages/tabs/apply/DiagramPreviewPanel";
 import { BRAND_PALETTES } from "@/lib/palettes";
 import { DEFAULT_TYPOGRAPHY } from "@/lib/typography";
 
@@ -57,58 +57,26 @@ const SAMPLE_CODE = "%%{init: {'theme': 'base'} }%%\nflowchart TD\n  A --> B";
 const SAMPLE_INPUT = "flowchart TD\n  A --> B";
 
 // ---------------------------------------------------------------------------
-// Minimal test wrapper: mirrors ApplyTab's code mode conditional rendering.
+// DiagramPreviewPanel props factory — directly exercises the production
+// keyboard handlers without recreating them in the test.
 // ---------------------------------------------------------------------------
 
-function CodeModePanel({ code }: { code: string }): ReactElement {
-  const { codeEditorOverride, setCodeEditorOverride, effectiveExportCode } =
-    useCodeEditorOverride(code);
-
-  if (codeEditorOverride !== null) {
-    return createElement(
-      "div",
-      null,
-      createElement("textarea", {
-        value: effectiveExportCode,
-        onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) =>
-          setCodeEditorOverride(e.target.value),
-        onKeyDown: (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-          if (e.key === "Escape") setCodeEditorOverride(null);
-        },
-        "aria-label": "Styled code output — edit before copying",
-      }),
-      createElement(
-        "button",
-        {
-          title: "Discard edits and reset to computed output",
-          onClick: () => setCodeEditorOverride(null),
-        },
-        "Reset"
-      )
-    );
-  }
-
-  return createElement(
-    "div",
-    null,
-    createElement(HighlightedCode, {
-      code: effectiveExportCode,
-      "aria-label": "Styled code output",
-      onKeyDown: (e: React.KeyboardEvent<HTMLPreElement>) => {
-        if (e.key === "Enter") setCodeEditorOverride(effectiveExportCode);
-      },
-    }),
-    effectiveExportCode
-      ? createElement(
-          "button",
-          {
-            title: "Edit the styled code before copying",
-            onClick: () => setCodeEditorOverride(effectiveExportCode),
-          },
-          "Edit"
-        )
-      : null
-  );
+function buildDiagramPreviewPanelProps(overrides: Record<string, unknown> = {}) {
+  return {
+    previewMode: "code" as const,
+    onPreviewModeChange: vi.fn(),
+    codeEditorOverride: null as string | null,
+    onCodeEditorOverrideChange: vi.fn(),
+    effectiveExportCode: SAMPLE_CODE,
+    activeDiagramCode: SAMPLE_INPUT,
+    themedCode: SAMPLE_CODE,
+    typography: DEFAULT_TYPOGRAPHY,
+    isMultiDiagram: false,
+    diagrams: [],
+    safeDiagramIdx: 0,
+    onActiveDiagramIdxChange: vi.fn(),
+    ...overrides,
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -219,97 +187,115 @@ describe("HighlightedCode — aria-label forwarding", () => {
 });
 
 // ===========================================================================
-// B. CodeModePanel wrapper — Edit / Reset toggle (hook + HighlightedCode)
+// B. DiagramPreviewPanel — direct Edit / Reset and keyboard behavior
 // ===========================================================================
 
-describe("Code mode wrapper — view mode initial state", () => {
+describe("DiagramPreviewPanel code mode — view mode initial state", () => {
   it("pre is present and textarea is absent on initial mount", () => {
-    const { container } = render(createElement(CodeModePanel, { code: SAMPLE_CODE }));
+    const { container } = render(
+      createElement(DiagramPreviewPanel, buildDiagramPreviewPanelProps())
+    );
     expect(container.querySelector("pre")).not.toBeNull();
     expect(container.querySelector("textarea")).toBeNull();
   });
 
   it("Edit button is visible in view mode", () => {
-    render(createElement(CodeModePanel, { code: SAMPLE_CODE }));
+    render(createElement(DiagramPreviewPanel, buildDiagramPreviewPanelProps()));
     expect(screen.getByTitle("Edit the styled code before copying")).not.toBeNull();
   });
 });
 
-describe("Code mode wrapper — Edit / Reset toggle", () => {
-  it("clicking Edit replaces the pre with a textarea", () => {
-    const { container } = render(createElement(CodeModePanel, { code: SAMPLE_CODE }));
+describe("DiagramPreviewPanel code mode — Edit / Reset toggle", () => {
+  it("clicking Edit requests the computed code and renders a textarea after the parent update", () => {
+    const props = buildDiagramPreviewPanelProps();
+    const { container, rerender } = render(createElement(DiagramPreviewPanel, props));
+
     act(() => {
       fireEvent.click(screen.getByTitle("Edit the styled code before copying"));
     });
+    expect(props.onCodeEditorOverrideChange).toHaveBeenCalledWith(SAMPLE_CODE);
+
+    rerender(createElement(DiagramPreviewPanel, { ...props, codeEditorOverride: SAMPLE_CODE }));
     expect(container.querySelector("textarea")).not.toBeNull();
     expect(container.querySelector("pre")).toBeNull();
   });
 
   it("textarea in edit mode has aria-label 'Styled code output — edit before copying'", () => {
-    const { container } = render(createElement(CodeModePanel, { code: SAMPLE_CODE }));
-    act(() => {
-      fireEvent.click(screen.getByTitle("Edit the styled code before copying"));
-    });
+    const props = buildDiagramPreviewPanelProps({ codeEditorOverride: SAMPLE_CODE });
+    const { container } = render(createElement(DiagramPreviewPanel, props));
     expect(container.querySelector("textarea")!.getAttribute("aria-label")).toBe(
       "Styled code output — edit before copying"
     );
   });
 
-  it("clicking Reset after Edit restores the pre and removes the textarea", () => {
-    const { container } = render(createElement(CodeModePanel, { code: SAMPLE_CODE }));
-    act(() => {
-      fireEvent.click(screen.getByTitle("Edit the styled code before copying"));
-    });
+  it("clicking Reset requests the default output and restores the pre after the parent update", () => {
+    const props = buildDiagramPreviewPanelProps({ codeEditorOverride: SAMPLE_CODE });
+    const { container, rerender } = render(createElement(DiagramPreviewPanel, props));
+
     act(() => {
       fireEvent.click(screen.getByTitle("Discard edits and reset to computed output"));
     });
+    expect(props.onCodeEditorOverrideChange).toHaveBeenCalledWith(null);
+
+    rerender(createElement(DiagramPreviewPanel, { ...props, codeEditorOverride: null }));
     expect(container.querySelector("pre")).not.toBeNull();
     expect(container.querySelector("textarea")).toBeNull();
   });
 
   it("pre after Reset still carries tabindex='0' (keyboard focus is preserved)", () => {
-    const { container } = render(createElement(CodeModePanel, { code: SAMPLE_CODE }));
-    act(() => {
-      fireEvent.click(screen.getByTitle("Edit the styled code before copying"));
-    });
+    const props = buildDiagramPreviewPanelProps({ codeEditorOverride: SAMPLE_CODE });
+    const { container, rerender } = render(createElement(DiagramPreviewPanel, props));
+
     act(() => {
       fireEvent.click(screen.getByTitle("Discard edits and reset to computed output"));
     });
+    rerender(createElement(DiagramPreviewPanel, { ...props, codeEditorOverride: null }));
     expect(container.querySelector("pre")!.getAttribute("tabindex")).toBe("0");
   });
 });
 
-describe("Code mode wrapper — Enter key activates edit mode", () => {
-  it("pressing Enter on the <pre> replaces it with a textarea", () => {
-    const { container } = render(createElement(CodeModePanel, { code: SAMPLE_CODE }));
+describe("DiagramPreviewPanel code mode — Enter key activates edit mode", () => {
+  it("pressing Enter on the <pre> requests edit mode and replaces it with a textarea", () => {
+    const props = buildDiagramPreviewPanelProps();
+    const { container, rerender } = render(createElement(DiagramPreviewPanel, props));
     const pre = container.querySelector("pre[aria-label='Styled code output']") as HTMLElement;
+
     act(() => {
       fireEvent.keyDown(pre, { key: "Enter" });
     });
+    expect(props.onCodeEditorOverrideChange).toHaveBeenCalledWith(SAMPLE_CODE);
+
+    rerender(createElement(DiagramPreviewPanel, { ...props, codeEditorOverride: SAMPLE_CODE }));
     expect(
       container.querySelector("textarea[aria-label='Styled code output — edit before copying']")
     ).not.toBeNull();
     expect(container.querySelector("pre[aria-label='Styled code output']")).toBeNull();
   });
 
-  it("pressing Space on the <pre> does NOT activate edit mode", () => {
-    const { container } = render(createElement(CodeModePanel, { code: SAMPLE_CODE }));
+  it("pressing Space on the <pre> does NOT request edit mode", () => {
+    const props = buildDiagramPreviewPanelProps();
+    const { container } = render(createElement(DiagramPreviewPanel, props));
     const pre = container.querySelector("pre[aria-label='Styled code output']") as HTMLElement;
+
     act(() => {
       fireEvent.keyDown(pre, { key: " " });
     });
+    expect(props.onCodeEditorOverrideChange).not.toHaveBeenCalled();
     expect(container.querySelector("pre[aria-label='Styled code output']")).not.toBeNull();
     expect(
       container.querySelector("textarea[aria-label='Styled code output — edit before copying']")
     ).toBeNull();
   });
 
-  it("pressing ArrowDown on the <pre> does NOT activate edit mode", () => {
-    const { container } = render(createElement(CodeModePanel, { code: SAMPLE_CODE }));
+  it("pressing ArrowDown on the <pre> does NOT request edit mode", () => {
+    const props = buildDiagramPreviewPanelProps();
+    const { container } = render(createElement(DiagramPreviewPanel, props));
     const pre = container.querySelector("pre[aria-label='Styled code output']") as HTMLElement;
+
     act(() => {
       fireEvent.keyDown(pre, { key: "ArrowDown" });
     });
+    expect(props.onCodeEditorOverrideChange).not.toHaveBeenCalled();
     expect(container.querySelector("pre[aria-label='Styled code output']")).not.toBeNull();
     expect(
       container.querySelector("textarea[aria-label='Styled code output — edit before copying']")
@@ -317,19 +303,21 @@ describe("Code mode wrapper — Enter key activates edit mode", () => {
   });
 });
 
-describe("Code mode wrapper — Escape key cancels edit mode", () => {
-  it("pressing Escape on the textarea restores the <pre> and removes the textarea", () => {
-    const { container } = render(createElement(CodeModePanel, { code: SAMPLE_CODE }));
-    act(() => {
-      fireEvent.click(screen.getByTitle("Edit the styled code before copying"));
-    });
+describe("DiagramPreviewPanel code mode — Escape key cancels edit mode", () => {
+  it("pressing Escape on the textarea requests view mode and restores the <pre>", () => {
+    const props = buildDiagramPreviewPanelProps({ codeEditorOverride: SAMPLE_CODE });
+    const { container, rerender } = render(createElement(DiagramPreviewPanel, props));
     const textarea = container.querySelector(
       "textarea[aria-label='Styled code output — edit before copying']"
     ) as HTMLElement;
     expect(textarea).not.toBeNull();
+
     act(() => {
       fireEvent.keyDown(textarea, { key: "Escape" });
     });
+    expect(props.onCodeEditorOverrideChange).toHaveBeenCalledWith(null);
+
+    rerender(createElement(DiagramPreviewPanel, { ...props, codeEditorOverride: null }));
     expect(container.querySelector("pre[aria-label='Styled code output']")).not.toBeNull();
     expect(
       container.querySelector("textarea[aria-label='Styled code output — edit before copying']")

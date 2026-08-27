@@ -211,7 +211,7 @@
   transition:
     color 0.15s,
     border-color 0.15s;
-  color: hsl(var(--foreground) / 0.55);
+  color: hsl(var(--muted-foreground));
 }
 
 .forge-tab:hover {
@@ -221,7 +221,7 @@
 
 .forge-tab-active {
   border-bottom-color: hsl(var(--primary));
-  color: hsl(var(--primary));
+  color: hsl(var(--accent-foreground));
 }
 
 /* ── Code / workbench panel ───────────────────────────────────────────── */
@@ -382,7 +382,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--okh-forge-rust);
+  color: var(--okh-forge-amber);
 }
 
 .forge-header-sep {
@@ -391,7 +391,7 @@
 
 .forge-header-meta {
   font-family: var(--app-font-mono);
-  color: rgba(229, 231, 235, 0.4);
+  color: rgba(229, 231, 235, 0.68);
 }
 
 .forge-header-icon-btn {
@@ -431,7 +431,7 @@
 }
 
 .forge-mobile-nav-item-active {
-  color: var(--okh-forge-rust);
+  color: var(--okh-forge-amber);
 }
 
 /* ── Footer text elements ─────────────────────────────────────────────── */
@@ -449,18 +449,22 @@
 
 .forge-footer-brand {
   font-weight: 600;
-  color: var(--okh-forge-rust);
+  color: var(--okh-forge-amber);
 }
 
 .forge-footer-link {
   font-size: 10px;
-  color: rgba(229, 231, 235, 0.4);
+  color: rgba(229, 231, 235, 0.65);
   transition: color 0.15s;
   text-decoration: none;
 }
 
 .forge-footer-link:hover {
   color: rgba(229, 231, 235, 0.75);
+}
+
+.forge-footer-brand.forge-footer-link {
+  color: var(--okh-forge-amber);
 }
 
 /* ── Preview panel controls (zoom/reset bar) ──────────────────────────── */

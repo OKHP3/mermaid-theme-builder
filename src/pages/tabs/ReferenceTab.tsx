@@ -28,7 +28,8 @@ interface ReferenceTabProps {
   onAddMyThemeSlot?: () => void;
   onDeleteMyThemeSlot?: (id: string) => void;
   onExportMyThemeSlot?: (id: string) => void;
-  onDuplicateMyThemeSlot?: (id: string) => void;
+  onDuplicateMyThemeSlot?: (id: string) => string | null | void;
+  onRenameMyThemeSlot?: (id: string, newName: string) => void;
   onMoveMyThemeSlotUp?: (id: string) => void;
   onMoveMyThemeSlotDown?: (id: string) => void;
   onShowProfileDetails?: (id: string) => void;
@@ -42,6 +43,10 @@ interface ReferenceTabProps {
   onShowToast?: (msg: ReactNode) => void;
   /** Currently selected renderer target id (e.g. "github", "obsidian"). */
   rendererTarget?: string;
+  /** Whether the no-renderer guidance has already been dismissed or completed. */
+  rendererTargetHintDismissed?: boolean;
+  /** Dismiss the no-renderer guidance without changing renderer selection. */
+  onDismissRendererTargetHint?: () => void;
   /** User's current output format preference. */
   outputFormat?: "init-directive" | "frontmatter";
   /**
@@ -162,12 +167,15 @@ export function ReferenceTab({
   onDeleteMyThemeSlot = () => {},
   onExportMyThemeSlot = () => {},
   onDuplicateMyThemeSlot,
+  onRenameMyThemeSlot,
   onMoveMyThemeSlotUp,
   onMoveMyThemeSlotDown,
   onShowProfileDetails,
   onImportAsNewSlot,
   onShowToast = () => {},
   rendererTarget = "",
+  rendererTargetHintDismissed = false,
+  onDismissRendererTargetHint = () => {},
   outputFormat = "init-directive",
   onCopyForRenderer,
   onCopyShareLink,
@@ -227,6 +235,7 @@ export function ReferenceTab({
   // "Copied!" feedback briefly.
   const [copiedForRenderer, setCopiedForRenderer] = useState<string | null>(null);
   const [shareLinked, setShareLinked] = useState(false);
+  const hasDiagramToCopy = inputCode.trim().length > 0;
 
   const handleDistributeCopy = useCallback(
     async (rendererId: string) => {
@@ -262,6 +271,7 @@ export function ReferenceTab({
         onDeleteMyThemeSlot={onDeleteMyThemeSlot}
         onExportMyThemeSlot={onExportMyThemeSlot}
         onDuplicateMyThemeSlot={onDuplicateMyThemeSlot}
+        onRenameMyThemeSlot={onRenameMyThemeSlot}
         onMoveMyThemeSlotUp={onMoveMyThemeSlotUp}
         onMoveMyThemeSlotDown={onMoveMyThemeSlotDown}
         onImportAsNewSlot={onImportAsNewSlot}
@@ -471,6 +481,27 @@ export function ReferenceTab({
           </summary>
 
           <div className="border-t border-border">
+            {!rendererTarget && !rendererTargetHintDismissed && (
+              <div
+                role="note"
+                className="mx-4 mt-3 flex items-start justify-between gap-3 rounded border border-primary/20 bg-primary/5 px-3 py-2"
+              >
+                <p className="text-[10px] text-muted-foreground leading-relaxed">
+                  <span className="font-medium text-primary">
+                    Select a renderer target in Compose for best results.
+                  </span>{" "}
+                  Each destination will then show the format it is ready to receive.
+                </p>
+                <button
+                  type="button"
+                  onClick={onDismissRendererTargetHint}
+                  aria-label="Dismiss renderer target hint"
+                  className="shrink-0 text-muted-foreground/60 hover:text-foreground transition-colors"
+                >
+                  <span aria-hidden="true">×</span>
+                </button>
+              </div>
+            )}
             {/* ── Profile share link shortcut ─────────────────────────────── */}
             <div className="px-4 py-3 flex items-start justify-between gap-3 border-b border-border bg-muted/20">
               <div className="min-w-0">
@@ -571,19 +602,32 @@ export function ReferenceTab({
                         <button
                           type="button"
                           onClick={() => handleDistributeCopy(renderer.id)}
-                          aria-label={`Copy ${recFormatLabel} code for ${renderer.shortName}`}
-                          title={`Copy themed diagram code formatted for ${renderer.displayName}`}
+                          disabled={!hasDiagramToCopy}
+                          aria-label={
+                            hasDiagramToCopy
+                              ? `Copy ${recFormatLabel} code for ${renderer.shortName}`
+                              : `No diagram to copy for ${renderer.shortName}`
+                          }
+                          title={
+                            hasDiagramToCopy
+                              ? `Copy themed diagram code formatted for ${renderer.displayName}`
+                              : "No diagram to copy — enter Mermaid diagram code in Apply first."
+                          }
                           className={`flex items-center gap-1 text-[10px] font-medium px-2 py-1 rounded border transition-colors ${
-                            isCopied
-                              ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30"
-                              : "bg-muted hover:bg-muted/70 text-muted-foreground hover:text-foreground border-border/50"
+                            !hasDiagramToCopy
+                              ? "bg-muted/50 text-muted-foreground/50 border-border/30 cursor-not-allowed"
+                              : isCopied
+                                ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30"
+                                : "bg-muted hover:bg-muted/70 text-muted-foreground hover:text-foreground border-border/50"
                           }`}
                         >
-                          {isCopied ? (
+                          {isCopied && hasDiagramToCopy ? (
                             <>
                               <CheckIcon />
                               Copied
                             </>
+                          ) : !hasDiagramToCopy ? (
+                            "No diagram to copy"
                           ) : (
                             <>
                               <CopyIcon />
@@ -734,7 +778,7 @@ export function ReferenceTab({
           </svg>
           GitHub repository
         </a>
-        <span className="ml-auto text-[10px] text-muted-foreground/50 font-mono">
+        <span className="ml-auto text-[10px] text-muted-foreground font-mono">
           v{__APP_VERSION__}
         </span>
       </div>

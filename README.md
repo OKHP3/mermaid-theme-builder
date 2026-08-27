@@ -4,12 +4,13 @@
 [![E2E](https://github.com/OKHP3/mermaid-theme-builder/actions/workflows/e2e.yml/badge.svg?branch=main)](https://github.com/OKHP3/mermaid-theme-builder/actions/workflows/e2e.yml)
 [![Skill Tests](https://github.com/OKHP3/mermaid-theme-builder/actions/workflows/skill-tests.yml/badge.svg?branch=main)](https://github.com/OKHP3/mermaid-theme-builder/actions/workflows/skill-tests.yml)
 [![Deploy](https://github.com/OKHP3/mermaid-theme-builder/actions/workflows/deploy-pages.yml/badge.svg?branch=main)](https://github.com/OKHP3/mermaid-theme-builder/actions/workflows/deploy-pages.yml)
+[![Release Gate](https://github.com/OKHP3/mermaid-theme-builder/actions/workflows/release-gate.yml/badge.svg)](https://github.com/OKHP3/mermaid-theme-builder/actions/workflows/release-gate.yml)
 
 Visual governance for AI-generated Mermaid diagrams — paste, theme, preview, and export with renderer-aware scaffolding. Reduces follow-on AI prompts with pre-prompt scaffold exports tuned for your target renderer.
 
 **[Live Tool](https://okhp3.github.io/mermaid-theme-builder/)** · **[Project Page](https://overkillhill.com/projects/mermaid-theme-builder/)** · **[Article](https://overkillhill.com/writings/first-diagram-is-a-liar/)**
 
-![Mermaid Theme Builder v0.6.1 — Apply tab showing palette picker, look selector, format toggle, code panel, and live themed preview](docs/screenshot-v0.5.0.jpg)
+![Mermaid Theme Builder — Apply tab showing the Extract navigation tab, palette picker, %%{init}%% and YAML format toggle, code panel, and live themed preview](docs/screenshot-latest.jpg)
 
 ---
 
@@ -26,7 +27,7 @@ Visual governance for AI-generated Mermaid diagrams — paste, theme, preview, a
 - **Renderer-aware warnings** — contextual alerts when selected look is unsupported by target renderer
 - **Stroke/border width control** — per-diagram node border width stepper in Compose (Default, 1–4 px)
 - **Extract mode** — dedicated Extract tab to pull a theme from existing themed Mermaid code
-- **100% client-side** — your Mermaid code, palette data, and exports stay in your browser. No backend, no login, no analytics. UI fonts load from Google Fonts (fonts.googleapis.com) on first visit; no diagram data or palette data leaves the browser.
+- **100% client-side** — your Mermaid code, palette data, and exports stay in your browser. No backend or login. Privacy-respecting Plausible analytics records one aggregate pageview only, with no cookies and no diagram or palette data. UI fonts load from Google Fonts (fonts.googleapis.com) on first visit; no diagram data or palette data leaves the browser.
 - **Installable as a PWA** — service worker and web app manifest included; add to home screen or desktop for offline-capable access (app shell is cached; Google Fonts require a network connection)
 
 ---

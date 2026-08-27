@@ -31,6 +31,7 @@ import {
   generateTypographyCss,
   typographyToScaffoldSection,
   hasFontFamilyInjectionChars,
+  loadGoogleFont,
   sanitizeFontFamily,
   DEFAULT_TYPOGRAPHY,
   TIER_ORDER,
@@ -41,6 +42,7 @@ import { BRAND_PALETTES } from "@/lib/palettes";
 
 afterEach(() => {
   cleanup();
+  document.head.querySelectorAll("[data-mtb-google-font]").forEach((link) => link.remove());
 });
 
 // ---------------------------------------------------------------------------
@@ -319,10 +321,44 @@ describe("ComposeTab — scale bar widths", () => {
     const widths = getScaleBarWidths(container);
     expect(widths.every((w) => w === "100%")).toBe(true);
   });
+
+  it("loads the selected Google Font when a preset is picked", () => {
+    const { getByLabelText } = render(createElement(ComposeTab, makeProps(DEFAULT_TYPOGRAPHY)));
+
+    fireEvent.change(getByLabelText("Node Label font family preset"), {
+      target: { value: "JetBrains Mono, Courier New, monospace" },
+    });
+
+    const link = document.head.querySelector<HTMLLinkElement>(
+      'link[data-mtb-google-font="jetbrains-mono"]'
+    );
+    expect(link?.rel).toBe("stylesheet");
+    expect(link?.href).toContain("family=JetBrains+Mono");
+  });
 });
 
 // ---------------------------------------------------------------------------
-// 5. generateTypographyCss
+// 5. Lazy Google Font loading
+// ---------------------------------------------------------------------------
+
+describe("loadGoogleFont", () => {
+  it("does not request a system or custom font stack", () => {
+    loadGoogleFont("Georgia, Cambria, serif");
+    loadGoogleFont("My Local Font, serif");
+
+    expect(document.head.querySelector("[data-mtb-google-font]")).toBeNull();
+  });
+
+  it("adds each supported Google preset only once", () => {
+    loadGoogleFont("'DM Sans', system-ui, sans-serif");
+    loadGoogleFont("DM Sans, system-ui, sans-serif");
+
+    expect(document.head.querySelectorAll('[data-mtb-google-font="dm-sans"]')).toHaveLength(1);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 6. generateTypographyCss
 // ---------------------------------------------------------------------------
 
 describe("generateTypographyCss — header comment", () => {
@@ -821,6 +857,54 @@ describe("generateTypographyCss — snapshots", () => {
     `);
   });
 
+  it("font-family-only diagramTitle change: emits its title selector with one declaration", () => {
+    const settings: TypographySettings = {
+      ...DEFAULT_TYPOGRAPHY,
+      diagramTitle: { fontSize: 20, fontFamily: "Alfa Slab One" },
+    };
+    expect(generateTypographyCss(settings)).toMatchInlineSnapshot(`
+      "/* Mermaid typography hierarchy — flowchart/subgraph targets */
+      /* Diagram Title */
+      .label { font-family: Alfa Slab One; }"
+    `);
+  });
+
+  it("font-family-only subgraphTitle change: emits its cluster selector with one declaration", () => {
+    const settings: TypographySettings = {
+      ...DEFAULT_TYPOGRAPHY,
+      subgraphTitle: { fontSize: 16, fontFamily: "Space Grotesk" },
+    };
+    expect(generateTypographyCss(settings)).toMatchInlineSnapshot(`
+      "/* Mermaid typography hierarchy — flowchart/subgraph targets */
+      /* Subgraph Title */
+      .cluster-label { font-family: Space Grotesk; }"
+    `);
+  });
+
+  it("font-family-only nestedSubgraphTitle change: emits its nested selector with one declaration", () => {
+    const settings: TypographySettings = {
+      ...DEFAULT_TYPOGRAPHY,
+      nestedSubgraphTitle: { fontSize: 14, fontFamily: "Source Serif" },
+    };
+    expect(generateTypographyCss(settings)).toMatchInlineSnapshot(`
+      "/* Mermaid typography hierarchy — flowchart/subgraph targets */
+      /* Nested Subgraph */
+      .cluster-label .nodeLabel { font-family: Source Serif; }"
+    `);
+  });
+
+  it("font-family-only edgeLabel change: emits its edge selector with one declaration", () => {
+    const settings: TypographySettings = {
+      ...DEFAULT_TYPOGRAPHY,
+      edgeLabel: { fontSize: 12, fontFamily: "JetBrains Mono" },
+    };
+    expect(generateTypographyCss(settings)).toMatchInlineSnapshot(`
+      "/* Mermaid typography hierarchy — flowchart/subgraph targets */
+      /* Edge Label */
+      .edgeLabel { font-family: JetBrains Mono; }"
+    `);
+  });
+
   it("fully-modified settings with fallback stacks: all five tiers in order", () => {
     const settings: TypographySettings = {
       diagramTitle: { fontSize: 24, fontFamily: "Alfa Slab One" },
@@ -1184,6 +1268,87 @@ describe("ComposeTab — FontFamilySelect in typography tier rows", () => {
     ) as HTMLElement | null;
     expect(preview).not.toBeNull();
     expect(preview!.textContent?.trim()).toBe("Aa");
+  });
+
+  it("keeps the other four tier font families empty when Diagram Title picks a preset", () => {
+    const onChange = vi.fn();
+    const { container } = render(
+      createElement(ComposeTab, makeProps(DEFAULT_TYPOGRAPHY, onChange))
+    );
+
+    const select = container.querySelector(
+      '[aria-label="Diagram Title font family preset"]'
+    ) as HTMLSelectElement | null;
+    expect(select).not.toBeNull();
+
+    fireEvent.change(select!, { target: { value: "Alfa Slab One, Georgia, serif" } });
+
+    const updated = onChange.mock.calls.at(-1)?.[0] as TypographySettings;
+    expect(updated.diagramTitle.fontFamily).toBe("Alfa Slab One, Georgia, serif");
+    for (const key of ["subgraphTitle", "nestedSubgraphTitle", "nodeLabel", "edgeLabel"] as const) {
+      expect(updated[key].fontFamily).toBe("");
+    }
+  });
+
+  it("keeps all five preset previews independent after sequential selections", () => {
+    const selections = [
+      {
+        key: "diagramTitle",
+        tierLabel: "Diagram Title",
+        fontFamily: "Alfa Slab One, Georgia, serif",
+      },
+      {
+        key: "subgraphTitle",
+        tierLabel: "Subgraph Title",
+        fontFamily: "DM Sans, system-ui, sans-serif",
+      },
+      {
+        key: "nestedSubgraphTitle",
+        tierLabel: "Nested Subgraph",
+        fontFamily: "JetBrains Mono, Courier New, monospace",
+      },
+      {
+        key: "nodeLabel",
+        tierLabel: "Node Label",
+        fontFamily: "Inter, system-ui, sans-serif",
+      },
+      {
+        key: "edgeLabel",
+        tierLabel: "Edge Label",
+        fontFamily: "Georgia, Cambria, serif",
+      },
+    ] as const;
+    const onChange = vi.fn();
+    let typography = DEFAULT_TYPOGRAPHY;
+    const { container, rerender } = render(
+      createElement(ComposeTab, makeProps(typography, onChange))
+    );
+
+    for (const { tierLabel, fontFamily } of selections) {
+      const select = container.querySelector(
+        `[aria-label="${tierLabel} font family preset"]`
+      ) as HTMLSelectElement | null;
+      expect(select).not.toBeNull();
+
+      fireEvent.change(select!, { target: { value: fontFamily } });
+      typography = onChange.mock.calls.at(-1)?.[0] as TypographySettings;
+      rerender(createElement(ComposeTab, makeProps(typography, onChange)));
+    }
+
+    const previewStyles = selections.map(({ key, tierLabel, fontFamily }) => {
+      expect(typography[key].fontFamily).toBe(fontFamily);
+      const preview = container.querySelector(
+        `[aria-label="${tierLabel} font family preview"]`
+      ) as HTMLElement | null;
+      expect(preview).not.toBeNull();
+      // happy-dom serializes multi-word names inside a stack as `"DM Sans"`;
+      // normalize those display-only quotes before comparing to the input value.
+      const style = preview!.style.fontFamily.replace(/(["'])(.*?)\1/g, "$2");
+      expect(style).toBe(fontFamily);
+      return style;
+    });
+
+    expect(new Set(previewStyles).size).toBe(5);
   });
 
   it("typing a custom font name in the text input calls onTypographyChange with that value", () => {

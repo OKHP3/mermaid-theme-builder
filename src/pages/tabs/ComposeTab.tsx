@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useRef, type ReactNode } from "react";
+import { useState, useCallback, useMemo, useRef, useEffect, type ReactNode } from "react";
 import type { Palette, ThemeColor } from "@/lib/palettes";
 import { BRAND_PALETTES, UTILITY_PALETTES } from "@/lib/palettes";
 import { PaletteSelectorBar } from "@/components/PaletteSelectorBar";
@@ -39,6 +39,7 @@ import {
   enforceHierarchy,
   isDefaultTypography,
   hasFontFamilyInjectionChars,
+  loadGoogleFont,
   sanitizeFontFamily,
 } from "@/lib/typography";
 import type { MyThemeSlot } from "@/lib/my-theme-slots";
@@ -70,6 +71,13 @@ function FontFamilySelect({
   const selectValue = isPreset ? value : "__custom__";
   const presetLabel = tierLabel ? `${tierLabel} font family preset` : "Font family preset";
   const customLabel = tierLabel ? `${tierLabel} font family override` : "Custom font family value";
+
+  // Restored typography settings should load their selected font just as a
+  // newly chosen preset does, without requesting unused fonts on page load.
+  useEffect(() => {
+    loadGoogleFont(value);
+  }, [value]);
+
   return (
     <div className="space-y-1">
       <select
@@ -77,6 +85,7 @@ function FontFamilySelect({
         onChange={(e) => {
           const v = e.target.value;
           if (v === "__custom__") return; // keep current custom value
+          loadGoogleFont(v);
           onChange(v);
         }}
         className="w-full text-xs bg-background border border-border rounded-md px-2.5 py-1.5 text-foreground focus:outline-none focus:ring-1 focus:ring-primary/50"
@@ -185,7 +194,8 @@ interface ComposeTabProps {
     profile: import("@/lib/governance-profile").GovernanceProfile,
     warnings: string[]
   ) => void;
-  onDuplicateMyThemeSlot?: (id: string) => void;
+  onDuplicateMyThemeSlot?: (id: string) => string | null | void;
+  onRenameMyThemeSlot?: (id: string, newName: string) => void;
   onMoveMyThemeSlotUp?: (id: string) => void;
   onMoveMyThemeSlotDown?: (id: string) => void;
   onShowProfileDetails?: (id: string) => void;
@@ -254,6 +264,7 @@ export function ComposeTab({
   onImportMyThemeSlot,
   onImportGovernanceProfile,
   onDuplicateMyThemeSlot,
+  onRenameMyThemeSlot,
   onMoveMyThemeSlotUp,
   onMoveMyThemeSlotDown,
   onShowProfileDetails,
@@ -332,7 +343,7 @@ export function ComposeTab({
       diagramFamily: "flowchart",
       includeMetaComments,
       includeBadge: false,
-      customThemeName: effectiveThemeName !== selectedPalette.name ? effectiveThemeName : undefined,
+      customThemeName: customThemeName.trim() ? effectiveThemeName : undefined,
       look,
       fontSize: fontSize || undefined,
       typography,
@@ -344,6 +355,7 @@ export function ComposeTab({
     [
       selectedPalette,
       includeMetaComments,
+      customThemeName,
       effectiveThemeName,
       look,
       fontSize,
@@ -616,6 +628,7 @@ export function ComposeTab({
         onImportAsNewSlot={onImportAsNewSlot}
         onShowToast={onShowToast}
         onDuplicateMyThemeSlot={onDuplicateMyThemeSlot}
+        onRenameMyThemeSlot={onRenameMyThemeSlot}
         onMoveMyThemeSlotUp={onMoveMyThemeSlotUp}
         onMoveMyThemeSlotDown={onMoveMyThemeSlotDown}
         onShowProfileDetails={onShowProfileDetails}
@@ -1612,7 +1625,7 @@ export function ComposeTab({
             <select
               value={selectedSampleId}
               onChange={(e) => handleSampleIdChange(e.target.value)}
-              className="text-xs text-muted-foreground/70 bg-transparent border-0 outline-none cursor-pointer min-w-0 truncate flex-1"
+              className="text-xs text-muted-foreground bg-transparent border-0 outline-none cursor-pointer min-w-0 truncate flex-1"
               aria-label="Preview diagram"
             >
               {EXAMPLE_GROUPS.map((group) => (
@@ -1673,7 +1686,7 @@ export function ComposeTab({
                 <span className="font-semibold">{sampleCapability.displayName}:</span>{" "}
                 {sampleCapability.description}
                 {sampleCapability.bestUsedFor && (
-                  <span className="block mt-0.5 text-amber-600/80 dark:text-amber-500/70">
+                  <span className="block mt-0.5 text-amber-800 dark:text-amber-300">
                     <span className="font-medium">Use for:</span> {sampleCapability.bestUsedFor}
                   </span>
                 )}

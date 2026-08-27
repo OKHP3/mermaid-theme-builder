@@ -17,7 +17,7 @@ import { test, expect, type Page } from "@playwright/test";
 async function openExamplesTab(page: Page): Promise<void> {
   await page.addInitScript(() => {
     window.localStorage.clear();
-      localStorage.setItem("mtb.firstVisit", "true");
+    localStorage.setItem("mtb.firstVisit", "true");
     window.sessionStorage.clear();
   });
   await page.goto("/");
@@ -97,7 +97,29 @@ test("Beta chip has amber text color (bg-amber or text-amber class)", async ({ p
 });
 
 // ---------------------------------------------------------------------------
-// Test 4 — A second Beta entry in a different section also shows a chip
+// Test 4 — A combined Canonical · Beta entry still shows the amber Beta chip
+// ---------------------------------------------------------------------------
+
+test("combined Canonical · Beta entry renders the amber Beta chip", async ({ page }) => {
+  await openExamplesTab(page);
+  await expandSection(page, "Data & Planning");
+
+  // xychart-mermaid-basic has badge: "Canonical · Beta". The UI intentionally
+  // surfaces the classification as a Beta pill rather than the full source
+  // badge string, so this protects the includes("Beta") branch directly.
+  const xychartButton = page.locator('[data-example-id="xychart-mermaid-basic"]');
+  await expect(xychartButton).toBeVisible({ timeout: 5000 });
+
+  const chip = xychartButton.locator("span").filter({ hasText: "Beta" }).first();
+  await expect(chip).toBeVisible();
+  await expect(chip).toHaveText("Beta");
+
+  const className = await chip.getAttribute("class");
+  expect(className).toMatch(/amber/);
+});
+
+// ---------------------------------------------------------------------------
+// Test 5 — A second Beta entry in a different section also shows a chip
 // ---------------------------------------------------------------------------
 
 test("Beta chip appears for a Wardley entry in the Specialty section", async ({ page }) => {
@@ -113,7 +135,7 @@ test("Beta chip appears for a Wardley entry in the Specialty section", async ({ 
 });
 
 // ---------------------------------------------------------------------------
-// Test 5 — Experimental chip is visible in the sidebar and preview header
+// Test 6 — Experimental chip is visible in the sidebar and preview header
 // ---------------------------------------------------------------------------
 
 test("Experimental chip is visible in the Specialty sidebar next to the Venn entry", async ({

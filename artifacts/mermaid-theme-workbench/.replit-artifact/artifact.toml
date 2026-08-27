@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/mermaid-theme-workbench/"
+title = "Mermaid Theme Workbench"
+description = "A standalone visual workbench for choosing Mermaid palettes, inspecting theme tokens, previewing a diagram, copying generated Mermaid configuration, and exporting a theme file."
+version = "1.0.0"
+id = "artifacts/mermaid-theme-workbench"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/mermaid-theme-workbench/" ]
+localPort = 18686
+
+[services.development]
+run = "pnpm --filter @workspace/mermaid-theme-workbench run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/mermaid-theme-workbench", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/mermaid-theme-workbench/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "18686"
+BASE_PATH = "/mermaid-theme-workbench/"

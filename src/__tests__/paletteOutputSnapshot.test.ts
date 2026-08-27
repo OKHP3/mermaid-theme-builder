@@ -785,6 +785,51 @@ describe("generateThemedCode — classDiagram body is preserved", () => {
   }
 });
 
+// ---------------------------------------------------------------------------
+// 26. customThemeName badge snapshots — remaining badge-safe families
+//
+// The flowchart coverage above pins custom badge output for one badge-safe
+// family. Sequence, state, and class diagrams accept the same badge syntax,
+// but need their own snapshots in case their inclusion in BADGE_SAFE_FAMILIES
+// regresses.
+// ---------------------------------------------------------------------------
+
+const CUSTOM_BADGE_FAMILY_FIXTURES = [
+  { family: "sequenceDiagram" as const, diagram: SEQUENCE_DIAGRAM },
+  { family: "stateDiagram" as const, diagram: STATE_DIAGRAM },
+  { family: "classDiagram" as const, diagram: CLASS_DIAGRAM },
+] as const;
+
+for (const fixture of CUSTOM_BADGE_FAMILY_FIXTURES) {
+  describe(`generateThemedCode snapshots — customThemeName "${CUSTOM_THEME_NAME}" × ${fixture.family} (badge enabled)`, () => {
+    for (const palette of BRAND_PALETTES) {
+      it(`palette "${palette.name}" (id: ${palette.id}) matches snapshot`, () => {
+        const output = generateThemedCode(fixture.diagram, {
+          ...baseOptions(palette, fixture.family),
+          includeBadge: true,
+          customThemeName: CUSTOM_THEME_NAME,
+        });
+        expect(output).toMatchSnapshot();
+      });
+    }
+  });
+
+  describe(`generateThemedCode — customThemeName "${CUSTOM_THEME_NAME}" appears in ${fixture.family} badges`, () => {
+    for (const palette of BRAND_PALETTES) {
+      it(`palette "${palette.name}" badge contains the custom name`, () => {
+        const output = generateThemedCode(fixture.diagram, {
+          ...baseOptions(palette, fixture.family),
+          includeBadge: true,
+          customThemeName: CUSTOM_THEME_NAME,
+        });
+        expect(output).toContain(
+          `MTB_ATTR(["Styled with ${CUSTOM_THEME_NAME} via Mermaid Theme Builder"])`
+        );
+      });
+    }
+  });
+}
+
 // ===========================================================================
 // GITGRAPH FAMILY
 // ===========================================================================
@@ -1147,6 +1192,259 @@ describe("generateThemedCode — xychart body is preserved", () => {
       expect(output).toContain("xychart-beta");
       expect(output).toContain("Sales Trend");
       expect(output).toContain("bar [30, 55, 80, 45]");
+    });
+  }
+});
+
+// ===========================================================================
+// JOURNEY FAMILY
+// ===========================================================================
+
+/**
+ * Minimal journey diagram — exercises the journey family overlay
+ * (taskBkgColor = primaryColor, sectionBkgColor = mainBkg, labelColor = titleColor,
+ * altSectionBkgColor = tertiaryColor, taskTextColor = primaryTextColor).
+ */
+const JOURNEY_DIAGRAM =
+  "journey\n  title My Working Day\n  section Work\n    Make tea: 5: Me\n    Do work: 1: Me, Cat\n  section Home\n    Relax: 5: Me";
+
+describe("generateThemedCode snapshots — BRAND_PALETTES × JOURNEY_DIAGRAM", () => {
+  for (const palette of BRAND_PALETTES) {
+    it(`palette "${palette.name}" (id: ${palette.id}) journey snapshot`, () => {
+      const output = generateThemedCode(JOURNEY_DIAGRAM, baseOptions(palette, "journey"));
+      expect(output).toMatchSnapshot();
+    });
+  }
+});
+
+describe("generateThemedCode — each BRAND_PALETTE produces a distinct journey output", () => {
+  it("all brand palette journey outputs are unique", () => {
+    const outputs = BRAND_PALETTES.map((palette) =>
+      generateThemedCode(JOURNEY_DIAGRAM, baseOptions(palette, "journey"))
+    );
+    for (let i = 0; i < outputs.length; i++) {
+      for (let j = i + 1; j < outputs.length; j++) {
+        expect(
+          outputs[i],
+          `Journey: palette "${BRAND_PALETTES[i].name}" and "${BRAND_PALETTES[j].name}" produced identical output`
+        ).not.toBe(outputs[j]);
+      }
+    }
+  });
+});
+
+describe("generateThemedCode — journey overlay variables resolve from palette", () => {
+  for (const palette of BRAND_PALETTES) {
+    it(`palette "${palette.name}" journey output contains taskBkgColor = primaryColor`, () => {
+      const output = generateThemedCode(JOURNEY_DIAGRAM, baseOptions(palette, "journey"));
+      const primary = paletteColor(palette, "primaryColor");
+      expect(output).toContain(`"taskBkgColor": "${primary}"`);
+    });
+
+    it(`palette "${palette.name}" journey output contains sectionBkgColor = mainBkg`, () => {
+      const output = generateThemedCode(JOURNEY_DIAGRAM, baseOptions(palette, "journey"));
+      const mainBkg = paletteColor(palette, "mainBkg");
+      expect(output).toContain(`"sectionBkgColor": "${mainBkg}"`);
+    });
+
+    it(`palette "${palette.name}" journey output contains labelColor = titleColor`, () => {
+      const output = generateThemedCode(JOURNEY_DIAGRAM, baseOptions(palette, "journey"));
+      const titleColor = paletteColor(palette, "titleColor");
+      expect(output).toContain(`"labelColor": "${titleColor}"`);
+    });
+
+    it(`palette "${palette.name}" journey output does not contain another palette's primaryColor`, () => {
+      const output = generateThemedCode(JOURNEY_DIAGRAM, baseOptions(palette, "journey"));
+      const ownPrimary = paletteColor(palette, "primaryColor");
+      for (const other of BRAND_PALETTES) {
+        if (other.id === palette.id) continue;
+        const otherPrimary = paletteColor(other, "primaryColor");
+        if (otherPrimary === ownPrimary) continue;
+        expect(
+          output,
+          `Journey: palette "${palette.name}" contains primaryColor from "${other.name}" (${otherPrimary})`
+        ).not.toContain(otherPrimary);
+      }
+    });
+  }
+});
+
+describe("generateThemedCode — journey body is preserved", () => {
+  for (const palette of BRAND_PALETTES) {
+    it(`palette "${palette.name}" preserves the journey body`, () => {
+      const output = generateThemedCode(JOURNEY_DIAGRAM, baseOptions(palette, "journey"));
+      expect(output).toContain("journey");
+      expect(output).toContain("My Working Day");
+      expect(output).toContain("Make tea: 5: Me");
+    });
+  }
+});
+
+// ===========================================================================
+// C4DIAGRAM FAMILY
+// ===========================================================================
+
+/**
+ * Minimal C4 context diagram — exercises the c4Diagram family overlay
+ * (personBkg = primaryColor, personBorder = primaryBorderColor,
+ * mainBkg = mainBkg, nodeBorder = nodeBorder, lineColor = lineColor).
+ */
+const C4_DIAGRAM =
+  'C4Context\n  title System Context\n  Person(user, "User", "End user")\n  System(sys, "My System", "Core application")\n  Rel(user, sys, "Uses")';
+
+describe("generateThemedCode snapshots — BRAND_PALETTES × C4_DIAGRAM", () => {
+  for (const palette of BRAND_PALETTES) {
+    it(`palette "${palette.name}" (id: ${palette.id}) c4Diagram snapshot`, () => {
+      const output = generateThemedCode(C4_DIAGRAM, baseOptions(palette, "c4Diagram"));
+      expect(output).toMatchSnapshot();
+    });
+  }
+});
+
+describe("generateThemedCode — each BRAND_PALETTE produces a distinct c4Diagram output", () => {
+  it("all brand palette c4Diagram outputs are unique", () => {
+    const outputs = BRAND_PALETTES.map((palette) =>
+      generateThemedCode(C4_DIAGRAM, baseOptions(palette, "c4Diagram"))
+    );
+    for (let i = 0; i < outputs.length; i++) {
+      for (let j = i + 1; j < outputs.length; j++) {
+        expect(
+          outputs[i],
+          `C4Diagram: palette "${BRAND_PALETTES[i].name}" and "${BRAND_PALETTES[j].name}" produced identical output`
+        ).not.toBe(outputs[j]);
+      }
+    }
+  });
+});
+
+describe("generateThemedCode — c4Diagram overlay variables resolve from palette", () => {
+  for (const palette of BRAND_PALETTES) {
+    it(`palette "${palette.name}" c4Diagram output contains personBkg = primaryColor`, () => {
+      const output = generateThemedCode(C4_DIAGRAM, baseOptions(palette, "c4Diagram"));
+      const primary = paletteColor(palette, "primaryColor");
+      expect(output).toContain(`"personBkg": "${primary}"`);
+    });
+
+    it(`palette "${palette.name}" c4Diagram output contains personBorder = primaryBorderColor`, () => {
+      const output = generateThemedCode(C4_DIAGRAM, baseOptions(palette, "c4Diagram"));
+      const primaryBorder = paletteColor(palette, "primaryBorderColor");
+      expect(output).toContain(`"personBorder": "${primaryBorder}"`);
+    });
+
+    it(`palette "${palette.name}" c4Diagram output contains lineColor = lineColor`, () => {
+      const output = generateThemedCode(C4_DIAGRAM, baseOptions(palette, "c4Diagram"));
+      const lineColor = paletteColor(palette, "lineColor");
+      expect(output).toContain(`"lineColor": "${lineColor}"`);
+    });
+
+    it(`palette "${palette.name}" c4Diagram output does not contain another palette's primaryColor`, () => {
+      const output = generateThemedCode(C4_DIAGRAM, baseOptions(palette, "c4Diagram"));
+      const ownPrimary = paletteColor(palette, "primaryColor");
+      for (const other of BRAND_PALETTES) {
+        if (other.id === palette.id) continue;
+        const otherPrimary = paletteColor(other, "primaryColor");
+        if (otherPrimary === ownPrimary) continue;
+        expect(
+          output,
+          `C4Diagram: palette "${palette.name}" contains primaryColor from "${other.name}" (${otherPrimary})`
+        ).not.toContain(otherPrimary);
+      }
+    });
+  }
+});
+
+describe("generateThemedCode — c4Diagram body is preserved", () => {
+  for (const palette of BRAND_PALETTES) {
+    it(`palette "${palette.name}" preserves the c4Diagram body`, () => {
+      const output = generateThemedCode(C4_DIAGRAM, baseOptions(palette, "c4Diagram"));
+      expect(output).toContain("C4Context");
+      expect(output).toContain("System Context");
+      expect(output).toContain("My System");
+    });
+  }
+});
+
+// ===========================================================================
+// BLOCK FAMILY
+// ===========================================================================
+
+/**
+ * Minimal block-beta diagram — exercises the block family overlay
+ * (mainBkg = mainBkg, nodeBorder = nodeBorder, lineColor = lineColor,
+ * clusterBkg = clusterBkg, titleColor = titleColor).
+ * block-beta shares the same themeVariable keys as flowchart but the overlay
+ * sets them explicitly so palette colors are not masked by Mermaid defaults.
+ */
+const BLOCK_DIAGRAM = 'block-beta\n  columns 2\n  A["Step 1"]\n  B["Step 2"]\n  A --> B';
+
+describe("generateThemedCode snapshots — BRAND_PALETTES × BLOCK_DIAGRAM", () => {
+  for (const palette of BRAND_PALETTES) {
+    it(`palette "${palette.name}" (id: ${palette.id}) block snapshot`, () => {
+      const output = generateThemedCode(BLOCK_DIAGRAM, baseOptions(palette, "block"));
+      expect(output).toMatchSnapshot();
+    });
+  }
+});
+
+describe("generateThemedCode — each BRAND_PALETTE produces a distinct block output", () => {
+  it("all brand palette block outputs are unique", () => {
+    const outputs = BRAND_PALETTES.map((palette) =>
+      generateThemedCode(BLOCK_DIAGRAM, baseOptions(palette, "block"))
+    );
+    for (let i = 0; i < outputs.length; i++) {
+      for (let j = i + 1; j < outputs.length; j++) {
+        expect(
+          outputs[i],
+          `Block: palette "${BRAND_PALETTES[i].name}" and "${BRAND_PALETTES[j].name}" produced identical output`
+        ).not.toBe(outputs[j]);
+      }
+    }
+  });
+});
+
+describe("generateThemedCode — block overlay variables resolve from palette", () => {
+  for (const palette of BRAND_PALETTES) {
+    it(`palette "${palette.name}" block output contains mainBkg = mainBkg`, () => {
+      const output = generateThemedCode(BLOCK_DIAGRAM, baseOptions(palette, "block"));
+      const mainBkg = paletteColor(palette, "mainBkg");
+      expect(output).toContain(`"mainBkg": "${mainBkg}"`);
+    });
+
+    it(`palette "${palette.name}" block output contains nodeBorder = nodeBorder`, () => {
+      const output = generateThemedCode(BLOCK_DIAGRAM, baseOptions(palette, "block"));
+      const nodeBorder = paletteColor(palette, "nodeBorder");
+      expect(output).toContain(`"nodeBorder": "${nodeBorder}"`);
+    });
+
+    it(`palette "${palette.name}" block output contains lineColor = lineColor`, () => {
+      const output = generateThemedCode(BLOCK_DIAGRAM, baseOptions(palette, "block"));
+      const lineColor = paletteColor(palette, "lineColor");
+      expect(output).toContain(`"lineColor": "${lineColor}"`);
+    });
+
+    it(`palette "${palette.name}" block output does not contain another palette's mainBkg`, () => {
+      const output = generateThemedCode(BLOCK_DIAGRAM, baseOptions(palette, "block"));
+      const ownMainBkg = paletteColor(palette, "mainBkg");
+      for (const other of BRAND_PALETTES) {
+        if (other.id === palette.id) continue;
+        const otherMainBkg = paletteColor(other, "mainBkg");
+        if (otherMainBkg === ownMainBkg) continue;
+        expect(
+          output,
+          `Block: palette "${palette.name}" contains mainBkg from "${other.name}" (${otherMainBkg})`
+        ).not.toContain(otherMainBkg);
+      }
+    });
+  }
+});
+
+describe("generateThemedCode — block body is preserved", () => {
+  for (const palette of BRAND_PALETTES) {
+    it(`palette "${palette.name}" preserves the block body`, () => {
+      const output = generateThemedCode(BLOCK_DIAGRAM, baseOptions(palette, "block"));
+      expect(output).toContain("block-beta");
+      expect(output).toContain("Step 1");
+      expect(output).toContain("Step 2");
     });
   }
 });

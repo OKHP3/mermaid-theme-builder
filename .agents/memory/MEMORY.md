@@ -3,3 +3,8 @@
 - [Playwright localStorage seeding](playwright-ls-seeding.md) — use addInitScript not goto+evaluate+reload; latter races with React's default initial render
 - [ComposeTab color swatches visibility](compose-tab-color-swatches.md) — Toggle Colors button must be clicked first; Apply tab swatches always in DOM but hidden, filter visible:true
 - [ComposeTab JSX balance debugging](composetab-jsx-balance.md) — use TypeScript-aware trace script (skip self-closing L896, L1328) not raw div counts; JSX comments look like section headers but are not divs — check the NEXT line for the actual opener.
+- [Dependabot branch refresh](dependabot-branch-refresh.md) — fetching origin can recreate new Dependabot refs after cleanup; treat them as current proposals, not necessarily dead branches.
+- [Plausible privacy transport](plausible-privacy.md) — manual analytics trackers can add referrer data; protect the complete request with E2E interception.
+- [Inline editing in composite widgets](inline-editing-composite-widgets.md) — isolate editor keys from parent navigation; let native Tab movement commit through blur.
+- [Playwright full-suite validation](playwright-suite-runtime.md) — long serial runs and preview-port collisions can masquerade as broad E2E regressions
+- [Skill directory submissions](skill-directory-submission-quirks.md) — require server-side confirmation; agentskills.my is client-only and AgenticSkills may reject submissions when its review queue is unconfigured

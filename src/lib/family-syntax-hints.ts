@@ -229,6 +229,42 @@ const HINTS: FamilySyntaxHint[] = [
   },
 ];
 
+// ---------------------------------------------------------------------------
+// Module-load integrity guards
+// ---------------------------------------------------------------------------
+
+/**
+ * Throw at module load time if any family key appears more than once in HINTS.
+ *
+ * A duplicate introduced while adding a new diagram type surfaces immediately
+ * in the browser console and in any script that imports this module — rather
+ * than only when the test suite runs. Analogous to assertNoDuplicateIds() in
+ * examples-filter.ts.
+ */
+(function assertNoDuplicateFamilyKeys() {
+  const seen = new Set<string>();
+  const duplicates: string[] = [];
+  for (const hint of HINTS) {
+    if (seen.has(hint.family)) duplicates.push(hint.family);
+    seen.add(hint.family);
+  }
+  if (duplicates.length > 0) {
+    throw new Error(
+      `family-syntax-hints: duplicate family key(s) found — ${duplicates.join(", ")}. ` +
+        `Every FamilySyntaxHint must have a unique family key.`
+    );
+  }
+})();
+
+/**
+ * Total number of registered diagram families in HINTS.
+ *
+ * Exported so test count guards can derive their expected value directly from
+ * the module rather than maintaining a parallel list length. This makes the
+ * count guard independent of the test-local ALL_HINT_FAMILIES snapshot array.
+ */
+export const HINT_FAMILY_COUNT = HINTS.length;
+
 const HINT_MAP = new Map<DiagramFamily, FamilySyntaxHint>(HINTS.map((h) => [h.family, h]));
 
 export function getFamilySyntaxHint(family: DiagramFamily): FamilySyntaxHint | null {

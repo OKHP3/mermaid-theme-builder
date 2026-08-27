@@ -1,5 +1,179 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`classDiagram snapshot — class-domain-model > palette "AskJamie" (id: askjamie) matches snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"classText": "#2e2b29", "classBorder": "#2d6f7e", "relationColor": "#2d6f7e", "relationLabelColor": "#2d6f7e", "primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+classDiagram
+    class ThemeEngine {
+        +Palette activePalette
+        +WatermarkOptions watermark
+        +generateThemedCode(input, options) String
+        +generateMarkdownExport(code, name) String
+        +generatePromptScaffold(palette, family) String
+    }
+
+    class Palette {
+        +String id
+        +String name
+        +String description
+        +ThemeColor[] colors
+        +clone() Palette
+    }
+
+    class ThemeColor {
+        +String key
+        +String label
+        +String value
+        +isHex() Boolean
+    }
+
+    class DiagramDetector {
+        +detectFamily(code) DetectionResult
+        -matchPatterns(code) DiagramFamily
+    }
+
+    class DetectionResult {
+        +DiagramFamily family
+        +String label
+        +Boolean hasThemeInit
+        +String[] warnings
+    }
+
+    class WatermarkOptions {
+        +Boolean enabled
+        +String themeName
+        +String toolUrl
+    }
+
+    class PresetRegistry {
+        +Palette[] builtInPalettes
+        +getPalette(id) Palette
+        +listPalettes() Palette[]
+    }
+
+    ThemeEngine --> Palette : uses
+    ThemeEngine --> DiagramDetector : depends on
+    ThemeEngine --> WatermarkOptions : configured by
+    Palette *-- ThemeColor : contains
+    PresetRegistry o-- Palette : manages
+    DiagramDetector --> DetectionResult : produces"
+`;
+
+exports[`classDiagram snapshot — class-domain-model > palette "Glee-fully" (id: glee-fully) matches snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"classText": "#2e2b29", "classBorder": "#d94f63", "relationColor": "#d94f63", "relationLabelColor": "#d94f63", "primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+classDiagram
+    class ThemeEngine {
+        +Palette activePalette
+        +WatermarkOptions watermark
+        +generateThemedCode(input, options) String
+        +generateMarkdownExport(code, name) String
+        +generatePromptScaffold(palette, family) String
+    }
+
+    class Palette {
+        +String id
+        +String name
+        +String description
+        +ThemeColor[] colors
+        +clone() Palette
+    }
+
+    class ThemeColor {
+        +String key
+        +String label
+        +String value
+        +isHex() Boolean
+    }
+
+    class DiagramDetector {
+        +detectFamily(code) DetectionResult
+        -matchPatterns(code) DiagramFamily
+    }
+
+    class DetectionResult {
+        +DiagramFamily family
+        +String label
+        +Boolean hasThemeInit
+        +String[] warnings
+    }
+
+    class WatermarkOptions {
+        +Boolean enabled
+        +String themeName
+        +String toolUrl
+    }
+
+    class PresetRegistry {
+        +Palette[] builtInPalettes
+        +getPalette(id) Palette
+        +listPalettes() Palette[]
+    }
+
+    ThemeEngine --> Palette : uses
+    ThemeEngine --> DiagramDetector : depends on
+    ThemeEngine --> WatermarkOptions : configured by
+    Palette *-- ThemeColor : contains
+    PresetRegistry o-- Palette : manages
+    DiagramDetector --> DetectionResult : produces"
+`;
+
+exports[`classDiagram snapshot — class-domain-model > palette "OKHP3" (id: overkill-hill) matches snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"classText": "#e5e7eb", "classBorder": "#c46a2c", "relationColor": "#c46a2c", "relationLabelColor": "#c46a2c", "primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+classDiagram
+    class ThemeEngine {
+        +Palette activePalette
+        +WatermarkOptions watermark
+        +generateThemedCode(input, options) String
+        +generateMarkdownExport(code, name) String
+        +generatePromptScaffold(palette, family) String
+    }
+
+    class Palette {
+        +String id
+        +String name
+        +String description
+        +ThemeColor[] colors
+        +clone() Palette
+    }
+
+    class ThemeColor {
+        +String key
+        +String label
+        +String value
+        +isHex() Boolean
+    }
+
+    class DiagramDetector {
+        +detectFamily(code) DetectionResult
+        -matchPatterns(code) DiagramFamily
+    }
+
+    class DetectionResult {
+        +DiagramFamily family
+        +String label
+        +Boolean hasThemeInit
+        +String[] warnings
+    }
+
+    class WatermarkOptions {
+        +Boolean enabled
+        +String themeName
+        +String toolUrl
+    }
+
+    class PresetRegistry {
+        +Palette[] builtInPalettes
+        +getPalette(id) Palette
+        +listPalettes() Palette[]
+    }
+
+    ThemeEngine --> Palette : uses
+    ThemeEngine --> DiagramDetector : depends on
+    ThemeEngine --> WatermarkOptions : configured by
+    Palette *-- ThemeColor : contains
+    PresetRegistry o-- Palette : manages
+    DiagramDetector --> DetectionResult : produces"
+`;
+
 exports[`gantt snapshot — gantt-basic > palette "AskJamie" (id: askjamie) matches snapshot 1`] = `
 "%%{init: {"theme": "base", "themeVariables": {"sectionBkgColor": "#fdfbf7", "altSectionBkgColor": "#e1ecef", "sectionBkgColor2": "#f6f2ee", "taskBkgColor": "#fdfbf7", "taskTextColor": "#2e2b29", "taskTextLightColor": "#2e2b29", "taskTextOutsideColor": "#2d6f7e", "taskTextDarkColor": "#2d6f7e", "activeTaskBkgColor": "#f6f2ee", "activeTaskBorderColor": "#2d6f7e", "doneTaskBkgColor": "#e1ecef", "doneTaskBorderColor": "#2d6f7e", "critBkgColor": "#dc2626", "critBorderColor": "#7f1d1d", "gridColor": "#2d6f7e", "todayLineColor": "#2d6f7e", "excludeBkgColor": "#e1ecef", "primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
 gantt
@@ -45,6 +219,171 @@ gantt
         GitHub Pages deploy:b3, after b2, 3d"
 `;
 
+exports[`gitGraph snapshot — gitgraph-repo-evolution > palette "AskJamie" (id: askjamie) matches snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"git0": "#fdfbf7", "git1": "#f6f2ee", "git2": "#2d6f7e", "git3": "#2d6f7e", "gitBranchLabel0": "#2e2b29", "gitBranchLabel1": "#2e2b29", "commitLabelColor": "#2d6f7e", "commitLabelBackground": "#f6f2ee", "primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+gitGraph
+    commit id: "init: repo scaffold"
+    commit id: "feat: core UI"
+    branch v02-alpha
+    checkout v02-alpha
+    commit id: "feat: brand presets"
+    commit id: "feat: showcase diagram"
+    commit id: "feat: watermark toggle"
+    commit id: "docs: LICENSE + AGENTS"
+    commit id: "ci: GitHub Pages"
+    checkout main
+    merge v02-alpha id: "release: v0.2-alpha"
+    branch v10-public
+    checkout v10-public
+    commit id: "feat: family themeVars"
+    commit id: "feat: example selector"
+    commit id: "feat: font dropdown"
+    commit id: "docs: design system"
+    checkout main
+    merge v10-public id: "release: v1.0"
+    branch v20-composer
+    checkout v20-composer
+    commit id: "feat: extract mode"
+    commit id: "feat: bidirectional bind"
+    commit id: "feat: diff view"
+    checkout main
+    merge v20-composer id: "release: v2.0""
+`;
+
+exports[`gitGraph snapshot — gitgraph-repo-evolution > palette "Glee-fully" (id: glee-fully) matches snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"git0": "#fffdfa", "git1": "#f6f2ee", "git2": "#d94f63", "git3": "#d94f63", "gitBranchLabel0": "#2e2b29", "gitBranchLabel1": "#2e2b29", "commitLabelColor": "#d94f63", "commitLabelBackground": "#fff7f1", "primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+gitGraph
+    commit id: "init: repo scaffold"
+    commit id: "feat: core UI"
+    branch v02-alpha
+    checkout v02-alpha
+    commit id: "feat: brand presets"
+    commit id: "feat: showcase diagram"
+    commit id: "feat: watermark toggle"
+    commit id: "docs: LICENSE + AGENTS"
+    commit id: "ci: GitHub Pages"
+    checkout main
+    merge v02-alpha id: "release: v0.2-alpha"
+    branch v10-public
+    checkout v10-public
+    commit id: "feat: family themeVars"
+    commit id: "feat: example selector"
+    commit id: "feat: font dropdown"
+    commit id: "docs: design system"
+    checkout main
+    merge v10-public id: "release: v1.0"
+    branch v20-composer
+    checkout v20-composer
+    commit id: "feat: extract mode"
+    commit id: "feat: bidirectional bind"
+    commit id: "feat: diff view"
+    checkout main
+    merge v20-composer id: "release: v2.0""
+`;
+
+exports[`gitGraph snapshot — gitgraph-repo-evolution > palette "OKHP3" (id: overkill-hill) matches snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"git0": "#111827", "git1": "#181f26", "git2": "#c46a2c", "git3": "#c46a2c", "gitBranchLabel0": "#e5e7eb", "gitBranchLabel1": "#e5e7eb", "commitLabelColor": "#c46a2c", "commitLabelBackground": "#111827", "primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+gitGraph
+    commit id: "init: repo scaffold"
+    commit id: "feat: core UI"
+    branch v02-alpha
+    checkout v02-alpha
+    commit id: "feat: brand presets"
+    commit id: "feat: showcase diagram"
+    commit id: "feat: watermark toggle"
+    commit id: "docs: LICENSE + AGENTS"
+    commit id: "ci: GitHub Pages"
+    checkout main
+    merge v02-alpha id: "release: v0.2-alpha"
+    branch v10-public
+    checkout v10-public
+    commit id: "feat: family themeVars"
+    commit id: "feat: example selector"
+    commit id: "feat: font dropdown"
+    commit id: "docs: design system"
+    checkout main
+    merge v10-public id: "release: v1.0"
+    branch v20-composer
+    checkout v20-composer
+    commit id: "feat: extract mode"
+    commit id: "feat: bidirectional bind"
+    commit id: "feat: diff view"
+    checkout main
+    merge v20-composer id: "release: v2.0""
+`;
+
+exports[`journey snapshot — journey-idea-to-shipped-tool > palette "AskJamie" (id: askjamie) matches snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"sectionBkgColor": "#fdfbf7", "altSectionBkgColor": "#e1ecef", "taskBkgColor": "#fdfbf7", "taskTextColor": "#2e2b29", "labelColor": "#2d6f7e", "primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+journey
+    title From Random Thought to Shipped Tool
+    section Spark
+        Have a random idea: 3: Jamie
+        Debate if it is useful: 2: Jamie, Claude
+        Name the pain it solves: 4: Jamie
+    section Research
+        Search for prior art: 3: Perplexity
+        Check Mermaid docs: 2: Jamie
+        Draft positioning: 4: Claude, ChatGPT
+    section Build
+        Write PRD in Notion: 4: Jamie, Claude
+        Scaffold repo in Replit: 3: Replit
+        Iterate on UI: 4: Jamie, Replit
+        Fix rendering bugs: 2: Jamie
+    section Ship
+        Push to GitHub: 5: Jamie
+        Deploy to GitHub Pages: 4: Jamie
+        Write LinkedIn article: 3: Jamie, Claude
+        Share with Mermaid team: 5: Jamie"
+`;
+
+exports[`journey snapshot — journey-idea-to-shipped-tool > palette "Glee-fully" (id: glee-fully) matches snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"sectionBkgColor": "#fffdfa", "altSectionBkgColor": "#e5d9ce", "taskBkgColor": "#fffdfa", "taskTextColor": "#2e2b29", "labelColor": "#d94f63", "primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+journey
+    title From Random Thought to Shipped Tool
+    section Spark
+        Have a random idea: 3: Jamie
+        Debate if it is useful: 2: Jamie, Claude
+        Name the pain it solves: 4: Jamie
+    section Research
+        Search for prior art: 3: Perplexity
+        Check Mermaid docs: 2: Jamie
+        Draft positioning: 4: Claude, ChatGPT
+    section Build
+        Write PRD in Notion: 4: Jamie, Claude
+        Scaffold repo in Replit: 3: Replit
+        Iterate on UI: 4: Jamie, Replit
+        Fix rendering bugs: 2: Jamie
+    section Ship
+        Push to GitHub: 5: Jamie
+        Deploy to GitHub Pages: 4: Jamie
+        Write LinkedIn article: 3: Jamie, Claude
+        Share with Mermaid team: 5: Jamie"
+`;
+
+exports[`journey snapshot — journey-idea-to-shipped-tool > palette "OKHP3" (id: overkill-hill) matches snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"sectionBkgColor": "#111827", "altSectionBkgColor": "#1c3a34", "taskBkgColor": "#111827", "taskTextColor": "#e5e7eb", "labelColor": "#c46a2c", "primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+journey
+    title From Random Thought to Shipped Tool
+    section Spark
+        Have a random idea: 3: Jamie
+        Debate if it is useful: 2: Jamie, Claude
+        Name the pain it solves: 4: Jamie
+    section Research
+        Search for prior art: 3: Perplexity
+        Check Mermaid docs: 2: Jamie
+        Draft positioning: 4: Claude, ChatGPT
+    section Build
+        Write PRD in Notion: 4: Jamie, Claude
+        Scaffold repo in Replit: 3: Replit
+        Iterate on UI: 4: Jamie, Replit
+        Fix rendering bugs: 2: Jamie
+    section Ship
+        Push to GitHub: 5: Jamie
+        Deploy to GitHub Pages: 4: Jamie
+        Write LinkedIn article: 3: Jamie, Claude
+        Share with Mermaid team: 5: Jamie"
+`;
+
 exports[`pie snapshot — pie-effort-allocation > palette "AskJamie" (id: askjamie) matches snapshot 1`] = `
 "%%{init: {"theme": "base", "themeVariables": {"pie1": "#fdfbf7", "pie2": "#f6f2ee", "pie3": "#e1ecef", "pie4": "#2d6f7e", "pie5": "#2d6f7e", "pieTitleTextColor": "#2d6f7e", "pieSectionTextColor": "#2e2b29", "pieLegendTextColor": "#2d6f7e", "primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
 pie showData
@@ -82,6 +421,84 @@ pie showData
     "Palette + Preset Design" : 10
     "Testing + Debugging" : 10
     "Documentation" : 5"
+`;
+
+exports[`quadrantChart snapshot — quadrant-opportunity > palette "AskJamie" (id: askjamie) matches snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"quadrant1Fill": "#fdfbf7", "quadrant2Fill": "#f6f2ee", "quadrant3Fill": "#e1ecef", "quadrant4Fill": "#fdfbf7", "quadrantTitleFill": "#2d6f7e", "quadrantPointFill": "#2d6f7e", "quadrantPointTextFill": "#2e2b29", "primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+quadrantChart
+    title Diagram Types: Theme Confidence vs. User Demand
+    x-axis Low Demand --> High Demand
+    y-axis Low Theme Confidence --> High Theme Confidence
+    quadrant-1 Sweet spot
+    quadrant-2 Invest in theming
+    quadrant-3 Deprioritize
+    quadrant-4 Watch and wait
+    Flowchart: [0.9, 0.95]
+    Sequence Diagram: [0.85, 0.9]
+    Class Diagram: [0.7, 0.85]
+    ERD: [0.75, 0.85]
+    Gantt: [0.6, 0.8]
+    Mind Map: [0.65, 0.7]
+    State Diagram: [0.5, 0.8]
+    Pie Chart: [0.5, 0.6]
+    C4 Model: [0.55, 0.75]
+    BPMN: [0.8, 0.1]
+    Use Case: [0.6, 0.1]
+    Wardley Map: [0.4, 0.05]
+    Org Chart: [0.7, 0.3]
+    Fishbone: [0.3, 0.05]"
+`;
+
+exports[`quadrantChart snapshot — quadrant-opportunity > palette "Glee-fully" (id: glee-fully) matches snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"quadrant1Fill": "#fffdfa", "quadrant2Fill": "#f6f2ee", "quadrant3Fill": "#e5d9ce", "quadrant4Fill": "#fffdfa", "quadrantTitleFill": "#d94f63", "quadrantPointFill": "#d94f63", "quadrantPointTextFill": "#2e2b29", "primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+quadrantChart
+    title Diagram Types: Theme Confidence vs. User Demand
+    x-axis Low Demand --> High Demand
+    y-axis Low Theme Confidence --> High Theme Confidence
+    quadrant-1 Sweet spot
+    quadrant-2 Invest in theming
+    quadrant-3 Deprioritize
+    quadrant-4 Watch and wait
+    Flowchart: [0.9, 0.95]
+    Sequence Diagram: [0.85, 0.9]
+    Class Diagram: [0.7, 0.85]
+    ERD: [0.75, 0.85]
+    Gantt: [0.6, 0.8]
+    Mind Map: [0.65, 0.7]
+    State Diagram: [0.5, 0.8]
+    Pie Chart: [0.5, 0.6]
+    C4 Model: [0.55, 0.75]
+    BPMN: [0.8, 0.1]
+    Use Case: [0.6, 0.1]
+    Wardley Map: [0.4, 0.05]
+    Org Chart: [0.7, 0.3]
+    Fishbone: [0.3, 0.05]"
+`;
+
+exports[`quadrantChart snapshot — quadrant-opportunity > palette "OKHP3" (id: overkill-hill) matches snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"quadrant1Fill": "#111827", "quadrant2Fill": "#181f26", "quadrant3Fill": "#1c3a34", "quadrant4Fill": "#111827", "quadrantTitleFill": "#c46a2c", "quadrantPointFill": "#c46a2c", "quadrantPointTextFill": "#e5e7eb", "primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+quadrantChart
+    title Diagram Types: Theme Confidence vs. User Demand
+    x-axis Low Demand --> High Demand
+    y-axis Low Theme Confidence --> High Theme Confidence
+    quadrant-1 Sweet spot
+    quadrant-2 Invest in theming
+    quadrant-3 Deprioritize
+    quadrant-4 Watch and wait
+    Flowchart: [0.9, 0.95]
+    Sequence Diagram: [0.85, 0.9]
+    Class Diagram: [0.7, 0.85]
+    ERD: [0.75, 0.85]
+    Gantt: [0.6, 0.8]
+    Mind Map: [0.65, 0.7]
+    State Diagram: [0.5, 0.8]
+    Pie Chart: [0.5, 0.6]
+    C4 Model: [0.55, 0.75]
+    BPMN: [0.8, 0.1]
+    Use Case: [0.6, 0.1]
+    Wardley Map: [0.4, 0.05]
+    Org Chart: [0.7, 0.3]
+    Fishbone: [0.3, 0.05]"
 `;
 
 exports[`stateDiagram snapshot — state-theme-lifecycle > palette "AskJamie" (id: askjamie) matches snapshot 1`] = `
@@ -214,4 +631,127 @@ stateDiagram-v2
         All edits are local.
         No data leaves the browser.
     end note"
+`;
+
+exports[`timeline snapshot — timeline-overkill-theme-builder-history > palette "AskJamie" (id: askjamie) matches snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"cScale0": "#fdfbf7", "cScale1": "#f6f2ee", "cScale2": "#e1ecef", "cScale3": "#2d6f7e", "cScale4": "#2d6f7e", "cScale5": "#e8f4f7", "cScale6": "#fdfbf7", "cScale7": "#fdfbf7", "cScale8": "#f6f2ee", "cScale9": "#e1ecef", "cScale10": "#2d6f7e", "cScale11": "#2d6f7e", "primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+timeline
+    title Mermaid Theme Builder Project History
+    section Origin
+        2026-04-01 : Mermaid diagram styling pain identified
+                   : Three-layer architecture conceived
+        2026-04-05 : Design system v1 drafted (25 diagram types)
+                   : Prompt kit synthesized from 4 AI sources
+    section Naming + Planning
+        2026-04-10 : Name research: Mermaid Theme Builder selected
+                   : PRD created in Notion
+                   : Brand separation directive established
+    section Build
+        2026-04-15 : Replit builds prototype from PRD
+                   : GitHub repo created (OKHP3/mermaid-theme-builder)
+                   : 4 generic palette presets ship
+    section V0.2
+        2026-04-25 : 3 brand presets defined (OKH, Glee-fully, AskJamie)
+                   : Showcase diagram merged (Claude + ChatGPT)
+                   : 91-type diagram taxonomy cataloged
+                   : Legal analysis on color palettes completed
+    section Architecture Hardening (V0.3)
+        2026-05-05 : Custom app icon shipped
+                   : Brand palette colors corrected
+                   : Render errors fixed (sequence, requirement, fishbone)
+    section What shipped in v0.4 and v0.5
+        2026-05-05 : Reference tab + URL routing
+                   : DiagramInventory and ClassBrowser
+        2026-05-12 : OKH Forge UI system
+                   : Pan and zoom on all previews
+                   : CI/CD pipeline restored
+    section What shipped in v0.6
+        2026-06-11 : User palette CRUD (save, rename, delete, reorder)
+                   : Palette share link via URL encoding
+                   : Export preview pane (all three formats)
+                   : Family-specific Prompt Scaffold templates
+                   : Event Modeling diagram (Mermaid 11.15)
+                   : Look mode and renderer compatibility warnings"
+`;
+
+exports[`timeline snapshot — timeline-overkill-theme-builder-history > palette "Glee-fully" (id: glee-fully) matches snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"cScale0": "#fffdfa", "cScale1": "#f6f2ee", "cScale2": "#e5d9ce", "cScale3": "#d94f63", "cScale4": "#d94f63", "cScale5": "#f9f3ef", "cScale6": "#fffdfa", "cScale7": "#fffdfa", "cScale8": "#f6f2ee", "cScale9": "#e5d9ce", "cScale10": "#d94f63", "cScale11": "#d94f63", "primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+timeline
+    title Mermaid Theme Builder Project History
+    section Origin
+        2026-04-01 : Mermaid diagram styling pain identified
+                   : Three-layer architecture conceived
+        2026-04-05 : Design system v1 drafted (25 diagram types)
+                   : Prompt kit synthesized from 4 AI sources
+    section Naming + Planning
+        2026-04-10 : Name research: Mermaid Theme Builder selected
+                   : PRD created in Notion
+                   : Brand separation directive established
+    section Build
+        2026-04-15 : Replit builds prototype from PRD
+                   : GitHub repo created (OKHP3/mermaid-theme-builder)
+                   : 4 generic palette presets ship
+    section V0.2
+        2026-04-25 : 3 brand presets defined (OKH, Glee-fully, AskJamie)
+                   : Showcase diagram merged (Claude + ChatGPT)
+                   : 91-type diagram taxonomy cataloged
+                   : Legal analysis on color palettes completed
+    section Architecture Hardening (V0.3)
+        2026-05-05 : Custom app icon shipped
+                   : Brand palette colors corrected
+                   : Render errors fixed (sequence, requirement, fishbone)
+    section What shipped in v0.4 and v0.5
+        2026-05-05 : Reference tab + URL routing
+                   : DiagramInventory and ClassBrowser
+        2026-05-12 : OKH Forge UI system
+                   : Pan and zoom on all previews
+                   : CI/CD pipeline restored
+    section What shipped in v0.6
+        2026-06-11 : User palette CRUD (save, rename, delete, reorder)
+                   : Palette share link via URL encoding
+                   : Export preview pane (all three formats)
+                   : Family-specific Prompt Scaffold templates
+                   : Event Modeling diagram (Mermaid 11.15)
+                   : Look mode and renderer compatibility warnings"
+`;
+
+exports[`timeline snapshot — timeline-overkill-theme-builder-history > palette "OKHP3" (id: overkill-hill) matches snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"cScale0": "#111827", "cScale1": "#181f26", "cScale2": "#1c3a34", "cScale3": "#c46a2c", "cScale4": "#c46a2c", "cScale5": "#0d1117", "cScale6": "#111827", "cScale7": "#111827", "cScale8": "#181f26", "cScale9": "#1c3a34", "cScale10": "#c46a2c", "cScale11": "#c46a2c", "primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+timeline
+    title Mermaid Theme Builder Project History
+    section Origin
+        2026-04-01 : Mermaid diagram styling pain identified
+                   : Three-layer architecture conceived
+        2026-04-05 : Design system v1 drafted (25 diagram types)
+                   : Prompt kit synthesized from 4 AI sources
+    section Naming + Planning
+        2026-04-10 : Name research: Mermaid Theme Builder selected
+                   : PRD created in Notion
+                   : Brand separation directive established
+    section Build
+        2026-04-15 : Replit builds prototype from PRD
+                   : GitHub repo created (OKHP3/mermaid-theme-builder)
+                   : 4 generic palette presets ship
+    section V0.2
+        2026-04-25 : 3 brand presets defined (OKH, Glee-fully, AskJamie)
+                   : Showcase diagram merged (Claude + ChatGPT)
+                   : 91-type diagram taxonomy cataloged
+                   : Legal analysis on color palettes completed
+    section Architecture Hardening (V0.3)
+        2026-05-05 : Custom app icon shipped
+                   : Brand palette colors corrected
+                   : Render errors fixed (sequence, requirement, fishbone)
+    section What shipped in v0.4 and v0.5
+        2026-05-05 : Reference tab + URL routing
+                   : DiagramInventory and ClassBrowser
+        2026-05-12 : OKH Forge UI system
+                   : Pan and zoom on all previews
+                   : CI/CD pipeline restored
+    section What shipped in v0.6
+        2026-06-11 : User palette CRUD (save, rename, delete, reorder)
+                   : Palette share link via URL encoding
+                   : Export preview pane (all three formats)
+                   : Family-specific Prompt Scaffold templates
+                   : Event Modeling diagram (Mermaid 11.15)
+                   : Look mode and renderer compatibility warnings"
 `;

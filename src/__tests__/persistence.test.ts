@@ -111,6 +111,17 @@ describe("PersistedState — previewMode round-trip", () => {
   });
 });
 
+describe("PersistedState — renderer target hint dismissal round-trip", () => {
+  it("round-trips a dismissed renderer target hint", () => {
+    savePersistedState({ ...BASE_STATE, rendererTargetHintDismissed: true });
+    expect(loadPersistedState()?.rendererTargetHintDismissed).toBe(true);
+  });
+
+  it("keeps the hint field optional for legacy state", () => {
+    expect(loadPersistedState()?.rendererTargetHintDismissed).toBeUndefined();
+  });
+});
+
 describe("clearPersistedState — clears all mtb keys", () => {
   it("clearPersistedState removes the main state key", () => {
     savePersistedState(BASE_STATE);

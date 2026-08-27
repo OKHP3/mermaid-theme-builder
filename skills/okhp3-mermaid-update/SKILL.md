@@ -14,6 +14,9 @@ metadata:
   author: Jamie Hill (OverKill Hill P³)
   version: "0.3.0"
   category: diagramming
+  catalog_display_name: "Update"
+  catalog_role: "workflow"
+  catalog_description: "Style-preserving update of an existing diagram — applies the minimum diff for new nodes, revised labels, or restructured flow without touching classDef or theme config."
   origin: okhp3/mermaid-theme-builder
   homepage: https://overkillhill.com
   author-github: https://github.com/OKHP3

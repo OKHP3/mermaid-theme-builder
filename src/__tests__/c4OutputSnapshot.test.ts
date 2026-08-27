@@ -164,29 +164,39 @@ for (const fixture of C4_SNAPSHOT_FIXTURES) {
 
 // ---------------------------------------------------------------------------
 // 4. Cross-palette isolation — no C4 output contains another palette's colors
-//    Catches: palette leak (palette B's primaryColor appearing in palette A's output)
+//    Catches: palette leak (palette B's C4 overlay color appearing in palette A's output)
 // ---------------------------------------------------------------------------
+
+const C4_OVERLAY_ISOLATION_KEYS = [
+  { overlayKey: "personBkg", paletteKey: "primaryColor" },
+  { overlayKey: "personBorder", paletteKey: "primaryBorderColor" },
+  { overlayKey: "mainBkg", paletteKey: "mainBkg" },
+  { overlayKey: "nodeBorder", paletteKey: "nodeBorder" },
+  { overlayKey: "lineColor", paletteKey: "lineColor" },
+  { overlayKey: "titleColor", paletteKey: "titleColor" },
+] as const;
 
 for (const fixture of C4_SNAPSHOT_FIXTURES) {
   const content = getCatalogContent(fixture.id);
 
   describe(`C4 palette isolation — ${fixture.id}`, () => {
     for (const palette of BRAND_PALETTES) {
-      it(`"${palette.name}" personBkg does not appear in any other palette's output`, () => {
-        const ownOutput = generateThemedCode(content, c4Options(palette));
-        const ownPersonBkg = paletteColor(palette, "primaryColor");
+      for (const { overlayKey, paletteKey } of C4_OVERLAY_ISOLATION_KEYS) {
+        it(`"${palette.name}" ${overlayKey} does not appear in any other palette's output`, () => {
+          const ownColor = paletteColor(palette, paletteKey);
 
-        for (const other of BRAND_PALETTES) {
-          if (other.id === palette.id) continue;
-          const otherPersonBkg = paletteColor(other, "primaryColor");
-          if (otherPersonBkg === ownPersonBkg) continue; // equal colors — skip
-          const otherOutput = generateThemedCode(content, c4Options(other));
-          expect(
-            otherOutput,
-            `${fixture.id}: palette "${other.name}" output contains personBkg from "${palette.name}" (${ownPersonBkg})`
-          ).not.toContain(`"personBkg": "${ownPersonBkg}"`);
-        }
-      });
+          for (const other of BRAND_PALETTES) {
+            if (other.id === palette.id) continue;
+            const otherColor = paletteColor(other, paletteKey);
+            if (otherColor === ownColor) continue; // equal colors — skip
+            const otherOutput = generateThemedCode(content, c4Options(other));
+            expect(
+              otherOutput,
+              `${fixture.id}: palette "${other.name}" output contains ${overlayKey} from "${palette.name}" (${ownColor})`
+            ).not.toContain(`"${overlayKey}": "${ownColor}"`);
+          }
+        });
+      }
     }
   });
 }

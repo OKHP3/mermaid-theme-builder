@@ -1,5 +1,59 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`generateThemedCode snapshots — BRAND_PALETTES × BLOCK_DIAGRAM > palette "AskJamie" (id: askjamie) block snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "lineColor": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+block-beta
+  columns 2
+  A["Step 1"]
+  B["Step 2"]
+  A --> B"
+`;
+
+exports[`generateThemedCode snapshots — BRAND_PALETTES × BLOCK_DIAGRAM > palette "Glee-fully" (id: glee-fully) block snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "lineColor": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+block-beta
+  columns 2
+  A["Step 1"]
+  B["Step 2"]
+  A --> B"
+`;
+
+exports[`generateThemedCode snapshots — BRAND_PALETTES × BLOCK_DIAGRAM > palette "OKHP3" (id: overkill-hill) block snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"mainBkg": "#111827", "nodeBorder": "#c46a2c", "lineColor": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+block-beta
+  columns 2
+  A["Step 1"]
+  B["Step 2"]
+  A --> B"
+`;
+
+exports[`generateThemedCode snapshots — BRAND_PALETTES × C4_DIAGRAM > palette "AskJamie" (id: askjamie) c4Diagram snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"personBkg": "#fdfbf7", "personBorder": "#2d6f7e", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "lineColor": "#2d6f7e", "titleColor": "#2d6f7e", "primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "clusterBkg": "#e8f4f7", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+C4Context
+  title System Context
+  Person(user, "User", "End user")
+  System(sys, "My System", "Core application")
+  Rel(user, sys, "Uses")"
+`;
+
+exports[`generateThemedCode snapshots — BRAND_PALETTES × C4_DIAGRAM > palette "Glee-fully" (id: glee-fully) c4Diagram snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"personBkg": "#fffdfa", "personBorder": "#d94f63", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "lineColor": "#d94f63", "titleColor": "#d94f63", "primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "clusterBkg": "#f9f3ef", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+C4Context
+  title System Context
+  Person(user, "User", "End user")
+  System(sys, "My System", "Core application")
+  Rel(user, sys, "Uses")"
+`;
+
+exports[`generateThemedCode snapshots — BRAND_PALETTES × C4_DIAGRAM > palette "OKHP3" (id: overkill-hill) c4Diagram snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"personBkg": "#111827", "personBorder": "#c46a2c", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "lineColor": "#c46a2c", "titleColor": "#c46a2c", "primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "clusterBkg": "#0d1117", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+C4Context
+  title System Context
+  Person(user, "User", "End user")
+  System(sys, "My System", "Core application")
+  Rel(user, sys, "Uses")"
+`;
+
 exports[`generateThemedCode snapshots — BRAND_PALETTES × CLASS_DIAGRAM > palette "AskJamie" (id: askjamie) classDiagram snapshot 1`] = `
 "%%{init: {"theme": "base", "themeVariables": {"classText": "#2e2b29", "classBorder": "#2d6f7e", "relationColor": "#2d6f7e", "relationLabelColor": "#2d6f7e", "primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
 classDiagram
@@ -124,6 +178,39 @@ gitGraph
   commit
   checkout main
   merge feature"
+`;
+
+exports[`generateThemedCode snapshots — BRAND_PALETTES × JOURNEY_DIAGRAM > palette "AskJamie" (id: askjamie) journey snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"sectionBkgColor": "#fdfbf7", "altSectionBkgColor": "#e1ecef", "taskBkgColor": "#fdfbf7", "taskTextColor": "#2e2b29", "labelColor": "#2d6f7e", "primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+journey
+  title My Working Day
+  section Work
+    Make tea: 5: Me
+    Do work: 1: Me, Cat
+  section Home
+    Relax: 5: Me"
+`;
+
+exports[`generateThemedCode snapshots — BRAND_PALETTES × JOURNEY_DIAGRAM > palette "Glee-fully" (id: glee-fully) journey snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"sectionBkgColor": "#fffdfa", "altSectionBkgColor": "#e5d9ce", "taskBkgColor": "#fffdfa", "taskTextColor": "#2e2b29", "labelColor": "#d94f63", "primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+journey
+  title My Working Day
+  section Work
+    Make tea: 5: Me
+    Do work: 1: Me, Cat
+  section Home
+    Relax: 5: Me"
+`;
+
+exports[`generateThemedCode snapshots — BRAND_PALETTES × JOURNEY_DIAGRAM > palette "OKHP3" (id: overkill-hill) journey snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"sectionBkgColor": "#111827", "altSectionBkgColor": "#1c3a34", "taskBkgColor": "#111827", "taskTextColor": "#e5e7eb", "labelColor": "#c46a2c", "primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+journey
+  title My Working Day
+  section Work
+    Make tea: 5: Me
+    Do work: 1: Me, Cat
+  section Home
+    Relax: 5: Me"
 `;
 
 exports[`generateThemedCode snapshots — BRAND_PALETTES × PIE_DIAGRAM > palette "AskJamie" (id: askjamie) pie snapshot 1`] = `
@@ -352,4 +439,124 @@ flowchart TD
     classDef mtb_watermark fill:none,stroke:#888,stroke-width:1px,color:#888,font-size:10px
     class MTB_ATTR mtb_watermark
     click MTB_ATTR "https://overkillhill.com/projects/mermaid-theme-builder/" _blank"
+`;
+
+exports[`generateThemedCode snapshots — customThemeName "My Forge Theme" × classDiagram (badge enabled) > palette "AskJamie" (id: askjamie) matches snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"classText": "#2e2b29", "classBorder": "#2d6f7e", "relationColor": "#2d6f7e", "relationLabelColor": "#2d6f7e", "primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+classDiagram
+  class Animal {
+    +String name
+    +makeSound() void
+  }
+  class Dog {
+    +fetch() void
+  }
+  Animal <|-- Dog
+    MTB_ATTR(["Styled with My Forge Theme via Mermaid Theme Builder"])
+    classDef mtb_watermark fill:none,stroke:#888,stroke-width:1px,color:#888,font-size:10px
+    class MTB_ATTR mtb_watermark"
+`;
+
+exports[`generateThemedCode snapshots — customThemeName "My Forge Theme" × classDiagram (badge enabled) > palette "Glee-fully" (id: glee-fully) matches snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"classText": "#2e2b29", "classBorder": "#d94f63", "relationColor": "#d94f63", "relationLabelColor": "#d94f63", "primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+classDiagram
+  class Animal {
+    +String name
+    +makeSound() void
+  }
+  class Dog {
+    +fetch() void
+  }
+  Animal <|-- Dog
+    MTB_ATTR(["Styled with My Forge Theme via Mermaid Theme Builder"])
+    classDef mtb_watermark fill:none,stroke:#888,stroke-width:1px,color:#888,font-size:10px
+    class MTB_ATTR mtb_watermark"
+`;
+
+exports[`generateThemedCode snapshots — customThemeName "My Forge Theme" × classDiagram (badge enabled) > palette "OKHP3" (id: overkill-hill) matches snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"classText": "#e5e7eb", "classBorder": "#c46a2c", "relationColor": "#c46a2c", "relationLabelColor": "#c46a2c", "primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+classDiagram
+  class Animal {
+    +String name
+    +makeSound() void
+  }
+  class Dog {
+    +fetch() void
+  }
+  Animal <|-- Dog
+    MTB_ATTR(["Styled with My Forge Theme via Mermaid Theme Builder"])
+    classDef mtb_watermark fill:none,stroke:#888,stroke-width:1px,color:#888,font-size:10px
+    class MTB_ATTR mtb_watermark"
+`;
+
+exports[`generateThemedCode snapshots — customThemeName "My Forge Theme" × sequenceDiagram (badge enabled) > palette "AskJamie" (id: askjamie) matches snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"actorBkg": "#fdfbf7", "actorBorder": "#2d6f7e", "actorTextColor": "#2e2b29", "actorLineColor": "#2d6f7e", "signalColor": "#2d6f7e", "signalTextColor": "#2d6f7e", "labelBoxBkgColor": "#f6f2ee", "labelBoxBorderColor": "#2d6f7e", "labelTextColor": "#2e2b29", "loopTextColor": "#2d6f7e", "noteBkgColor": "#e1ecef", "noteBorderColor": "#2d6f7e", "noteTextColor": "#2d6f7e", "activationBkgColor": "#f6f2ee", "activationBorderColor": "#2d6f7e", "sequenceNumberColor": "#2e2b29", "primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+sequenceDiagram
+  participant Alice
+  participant Bob
+  Alice->>Bob: Hello Bob
+  Bob-->>Alice: Hi Alice
+    MTB_ATTR(["Styled with My Forge Theme via Mermaid Theme Builder"])
+    classDef mtb_watermark fill:none,stroke:#888,stroke-width:1px,color:#888,font-size:10px
+    class MTB_ATTR mtb_watermark"
+`;
+
+exports[`generateThemedCode snapshots — customThemeName "My Forge Theme" × sequenceDiagram (badge enabled) > palette "Glee-fully" (id: glee-fully) matches snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"actorBkg": "#fffdfa", "actorBorder": "#d94f63", "actorTextColor": "#2e2b29", "actorLineColor": "#d94f63", "signalColor": "#d94f63", "signalTextColor": "#d94f63", "labelBoxBkgColor": "#f6f2ee", "labelBoxBorderColor": "#d94f63", "labelTextColor": "#2e2b29", "loopTextColor": "#d94f63", "noteBkgColor": "#e5d9ce", "noteBorderColor": "#d94f63", "noteTextColor": "#d94f63", "activationBkgColor": "#f6f2ee", "activationBorderColor": "#d94f63", "sequenceNumberColor": "#2e2b29", "primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+sequenceDiagram
+  participant Alice
+  participant Bob
+  Alice->>Bob: Hello Bob
+  Bob-->>Alice: Hi Alice
+    MTB_ATTR(["Styled with My Forge Theme via Mermaid Theme Builder"])
+    classDef mtb_watermark fill:none,stroke:#888,stroke-width:1px,color:#888,font-size:10px
+    class MTB_ATTR mtb_watermark"
+`;
+
+exports[`generateThemedCode snapshots — customThemeName "My Forge Theme" × sequenceDiagram (badge enabled) > palette "OKHP3" (id: overkill-hill) matches snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"actorBkg": "#111827", "actorBorder": "#c46a2c", "actorTextColor": "#e5e7eb", "actorLineColor": "#c46a2c", "signalColor": "#c46a2c", "signalTextColor": "#c46a2c", "labelBoxBkgColor": "#181f26", "labelBoxBorderColor": "#c46a2c", "labelTextColor": "#e5e7eb", "loopTextColor": "#c46a2c", "noteBkgColor": "#1c3a34", "noteBorderColor": "#c46a2c", "noteTextColor": "#c46a2c", "activationBkgColor": "#181f26", "activationBorderColor": "#c46a2c", "sequenceNumberColor": "#e5e7eb", "primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+sequenceDiagram
+  participant Alice
+  participant Bob
+  Alice->>Bob: Hello Bob
+  Bob-->>Alice: Hi Alice
+    MTB_ATTR(["Styled with My Forge Theme via Mermaid Theme Builder"])
+    classDef mtb_watermark fill:none,stroke:#888,stroke-width:1px,color:#888,font-size:10px
+    class MTB_ATTR mtb_watermark"
+`;
+
+exports[`generateThemedCode snapshots — customThemeName "My Forge Theme" × stateDiagram (badge enabled) > palette "AskJamie" (id: askjamie) matches snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"labelColor": "#2d6f7e", "altBackground": "#f6f2ee", "compositeBackground": "#e8f4f7", "compositeBorder": "#2d6f7e", "compositeTitleBackground": "#fdfbf7", "innerEndBackground": "#2d6f7e", "specialStateColor": "#2d6f7e", "transitionColor": "#2d6f7e", "transitionLabelColor": "#2d6f7e", "stateLabelColor": "#2d6f7e", "stateBkg": "#fdfbf7", "labelBackgroundColor": "#f6f2ee", "primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+stateDiagram-v2
+  [*] --> Idle
+  Idle --> Running : start
+  Running --> Idle : stop
+  Running --> [*]
+    MTB_ATTR(["Styled with My Forge Theme via Mermaid Theme Builder"])
+    classDef mtb_watermark fill:none,stroke:#888,stroke-width:1px,color:#888,font-size:10px
+    class MTB_ATTR mtb_watermark"
+`;
+
+exports[`generateThemedCode snapshots — customThemeName "My Forge Theme" × stateDiagram (badge enabled) > palette "Glee-fully" (id: glee-fully) matches snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"labelColor": "#d94f63", "altBackground": "#f6f2ee", "compositeBackground": "#f9f3ef", "compositeBorder": "#d94f63", "compositeTitleBackground": "#fffdfa", "innerEndBackground": "#d94f63", "specialStateColor": "#d94f63", "transitionColor": "#d94f63", "transitionLabelColor": "#d94f63", "stateLabelColor": "#d94f63", "stateBkg": "#fffdfa", "labelBackgroundColor": "#fff7f1", "primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+stateDiagram-v2
+  [*] --> Idle
+  Idle --> Running : start
+  Running --> Idle : stop
+  Running --> [*]
+    MTB_ATTR(["Styled with My Forge Theme via Mermaid Theme Builder"])
+    classDef mtb_watermark fill:none,stroke:#888,stroke-width:1px,color:#888,font-size:10px
+    class MTB_ATTR mtb_watermark"
+`;
+
+exports[`generateThemedCode snapshots — customThemeName "My Forge Theme" × stateDiagram (badge enabled) > palette "OKHP3" (id: overkill-hill) matches snapshot 1`] = `
+"%%{init: {"theme": "base", "themeVariables": {"labelColor": "#c46a2c", "altBackground": "#181f26", "compositeBackground": "#0d1117", "compositeBorder": "#c46a2c", "compositeTitleBackground": "#111827", "innerEndBackground": "#c46a2c", "specialStateColor": "#c46a2c", "transitionColor": "#c46a2c", "transitionLabelColor": "#c46a2c", "stateLabelColor": "#c46a2c", "stateBkg": "#111827", "labelBackgroundColor": "#111827", "primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+stateDiagram-v2
+  [*] --> Idle
+  Idle --> Running : start
+  Running --> Idle : stop
+  Running --> [*]
+    MTB_ATTR(["Styled with My Forge Theme via Mermaid Theme Builder"])
+    classDef mtb_watermark fill:none,stroke:#888,stroke-width:1px,color:#888,font-size:10px
+    class MTB_ATTR mtb_watermark"
 `;

@@ -46,7 +46,7 @@ async function grantClipboard(context: BrowserContext): Promise<void> {
 async function openScaffoldModal(page: Page): Promise<void> {
   await page.addInitScript(() => {
     window.localStorage.clear();
-      localStorage.setItem("mtb.firstVisit", "true");
+    localStorage.setItem("mtb.firstVisit", "true");
     window.sessionStorage.clear();
   });
   await page.goto("/");
@@ -312,6 +312,30 @@ test.describe("PromptScaffoldModal — Path C: dismiss without copying preserves
     await expect(page.locator('[role="dialog"]').getByText("last used")).toBeVisible({
       timeout: 4_000,
     });
+  });
+
+  test("dismissing with Escape keeps the Format A badge when modal is reopened", async ({
+    page,
+  }) => {
+    await openScaffoldModalWithPreference(page, "formatA");
+
+    // Confirm Format A is marked as the last-used format before dismissal.
+    const dialog = page.locator('[role="dialog"]');
+    await expect(dialog.getByText("last used")).toBeVisible({ timeout: 4_000 });
+
+    // Dismiss with the keyboard path instead of the close button.
+    await page.keyboard.press("Escape");
+    await expect(dialog).toBeHidden({ timeout: 3_000 });
+
+    // Re-open the modal and verify the badge was preserved.
+    await page.getByRole("button", { name: "Generate Prompt Pattern", exact: true }).click();
+    await page.waitForSelector('[role="dialog"]', { timeout: 8_000 });
+    await expect(page.locator('[role="dialog"]').getByText("last used")).toBeVisible({
+      timeout: 4_000,
+    });
+
+    const stored = await page.evaluate(() => localStorage.getItem("mtb-scaffold-format"));
+    expect(stored).toBe("formatA");
   });
 
   test("localStorage still holds 'formatB' after dismiss without copying", async ({ page }) => {

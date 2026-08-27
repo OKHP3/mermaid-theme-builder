@@ -29,7 +29,7 @@ test("browser Back restores Examples tab after Apply -> Examples -> Apply naviga
 }) => {
   await page.addInitScript(() => {
     window.localStorage.clear();
-      localStorage.setItem("mtb.firstVisit", "true");
+    localStorage.setItem("mtb.firstVisit", "true");
     window.sessionStorage.clear();
   });
 
@@ -66,7 +66,7 @@ test("browser Back restores Examples tab after Apply -> Examples -> Apply naviga
 test("browser Forward restores Apply tab after Back -> Forward cycle", async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.clear();
-      localStorage.setItem("mtb.firstVisit", "true");
+    localStorage.setItem("mtb.firstVisit", "true");
     window.sessionStorage.clear();
   });
 
@@ -93,4 +93,60 @@ test("browser Forward restores Apply tab after Back -> Forward cycle", async ({ 
   expect(hashOf(page.url())).toBe("#apply");
 
   await expect(page.getByRole("textbox", { name: /diagram code/i })).toBeVisible();
+});
+
+test("direct #extract URL selects the Extract tab", async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    localStorage.setItem("mtb.firstVisit", "true");
+    window.sessionStorage.clear();
+  });
+
+  await page.goto("/#extract");
+  await page.waitForLoadState("load");
+
+  expect(hashOf(page.url())).toBe("#extract");
+  await expect(page.getByRole("tab", { name: "Extract" }).first()).toHaveAttribute(
+    "aria-selected",
+    "true"
+  );
+});
+
+test("browser Back restores Apply after #apply -> #extract navigation", async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    localStorage.setItem("mtb.firstVisit", "true");
+    window.sessionStorage.clear();
+  });
+
+  await page.goto("/#apply");
+  await page.waitForLoadState("load");
+  await expect(page.getByRole("tab", { name: "Apply" }).first()).toHaveAttribute(
+    "aria-selected",
+    "true"
+  );
+
+  await Promise.all([
+    page.waitForURL((url) => url.hash === "#extract"),
+    page.getByRole("tab", { name: "Extract" }).first().click(),
+  ]);
+  await expect(page.getByRole("tab", { name: "Extract" }).first()).toHaveAttribute(
+    "aria-selected",
+    "true"
+  );
+
+  await Promise.all([page.waitForURL((url) => url.hash === "#apply"), page.goBack()]);
+  await expect(page.getByRole("tab", { name: "Apply" }).first()).toHaveAttribute(
+    "aria-selected",
+    "true"
+  );
+
+  await Promise.all([page.waitForURL((url) => url.hash === "#extract"), page.goForward()]);
+  await expect(page.getByRole("tab", { name: "Extract" }).first()).toHaveAttribute(
+    "aria-selected",
+    "true"
+  );
+  await expect(
+    page.getByRole("textbox", { name: "Paste themed Mermaid diagram here" })
+  ).toBeVisible();
 });

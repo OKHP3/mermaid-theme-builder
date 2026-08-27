@@ -73,6 +73,12 @@ interface ExportToolbarProps {
   onShowToast: (msg: ReactNode) => void;
   outputFormat?: "init-directive" | "frontmatter";
   onOutputFormatChange?: (format: "init-directive" | "frontmatter") => void;
+  /** Whether the active format is an explicit choice instead of the renderer recommendation. */
+  outputFormatOverridden?: boolean;
+  /** Restores the format recommended by the active renderer. */
+  onResetOutputFormat?: () => void;
+  /** Increments when the app performs a full factory reset. */
+  resetToken?: number;
   /**
    * Test seam only — seeds the initial copiedType state so unit tests can
    * assert badge visibility during the "Copied!" flash without needing to
@@ -102,6 +108,9 @@ export function ExportToolbar({
   onShowToast,
   outputFormat = "init-directive",
   onOutputFormatChange,
+  outputFormatOverridden = false,
+  onResetOutputFormat,
+  resetToken = 0,
   _testInitialCopiedType = null,
 }: ExportToolbarProps) {
   const [copiedType, setCopiedType] = useState<ExportType | null>(_testInitialCopiedType);
@@ -115,12 +124,24 @@ export function ExportToolbar({
     saveExportPreviewOpen(next);
   }, []);
 
-  // Directive-length advisory — computed only when the preview is open, the
-  // format is init-directive, and a renderer with a numeric ceiling is selected.
-  const directiveLengthAdvisory = useMemo((): string | null => {
-    if (!showExportPreview) return null;
+  useEffect(() => {
+    setPreviewCopied(false);
+  }, [effectiveExportCode]);
+
+  useEffect(() => {
+    if (resetToken === 0) return;
+    setShowExportPreview(false);
+    setPreviewCopied(false);
+    saveExportPreviewOpen(false);
+  }, [resetToken]);
+
+  // Keep the numeric check available while the preview is closed so the toggle
+  // can surface renderer risk before the user copies or downloads the output.
+  const directiveLengthCheck = useMemo(() => {
     if (!rendererProfile) return null;
-    if (exportOptions.outputFormat === "frontmatter") return null;
+    if (outputFormat !== "init-directive") return null;
+    const ceiling = rendererProfile.initDirectiveSafeLength;
+    if (typeof ceiling !== "number") return null;
     const len = computeInitDirectiveLength(
       exportOptions.palette,
       exportOptions.diagramFamily,
@@ -129,10 +150,21 @@ export function ExportToolbar({
       exportOptions.typography,
       exportOptions.advancedMermaidConfig
     );
-    const check = checkInitDirectiveLength(len, rendererProfile);
-    if (check.status !== "caution") return null;
-    return `%%{init}%% directive is ${check.directiveLength} chars — exceeds ${rendererProfile.shortName}'s ~${check.ceiling}-char limit. Validate before publishing, or switch to YAML frontmatter.`;
-  }, [showExportPreview, rendererProfile, exportOptions]);
+    return { ...checkInitDirectiveLength(len, rendererProfile), ceiling };
+  }, [rendererProfile, outputFormat, exportOptions]);
+
+  const directiveLengthAdvisory = useMemo((): string | null => {
+    if (!showExportPreview || directiveLengthCheck?.status !== "caution") return null;
+    return `%%{init}%% directive is ${directiveLengthCheck.directiveLength} chars — exceeds ${directiveLengthCheck.rendererName}'s ~${directiveLengthCheck.ceiling}-char limit. Validate before publishing, or switch to YAML frontmatter.`;
+  }, [showExportPreview, directiveLengthCheck]);
+
+  const directiveLengthBadgeTone =
+    directiveLengthCheck?.status === "caution"
+      ? "over"
+      : directiveLengthCheck &&
+          directiveLengthCheck.directiveLength >= directiveLengthCheck.ceiling * 0.9
+        ? "near"
+        : "safe";
 
   const handlePreviewCopy = useCallback(async () => {
     await writeToClipboard(effectiveExportCode);
@@ -151,6 +183,7 @@ export function ExportToolbar({
 
   const handleCopy = useCallback(
     async (type: ExportType) => {
+      if (type !== "prompt" && !inputCode.trim()) return;
       if (type === "prompt") {
         onShowScaffoldModal();
         return;
@@ -163,7 +196,7 @@ export function ExportToolbar({
       setCopiedType(type);
       setTimeout(() => setCopiedType(null), 2000);
     },
-    [effectiveExportCode, selectedPalette, exportOptions, onShowScaffoldModal]
+    [effectiveExportCode, selectedPalette, exportOptions, inputCode, onShowScaffoldModal]
   );
 
   useEffect(() => {
@@ -377,6 +410,22 @@ export function ExportToolbar({
               <path d="M1.679 7.932c.412-.621 1.242-1.75 2.366-2.717C5.175 4.242 6.527 3.5 8 3.5c1.473 0 2.824.742 3.955 1.715 1.124.967 1.954 2.096 2.366 2.717a.119.119 0 010 .136c-.412.621-1.242 1.75-2.366 2.717C10.825 11.758 9.473 12.5 8 12.5c-1.473 0-2.824-.742-3.955-1.715C2.92 9.818 2.09 8.689 1.679 8.068a.119.119 0 010-.136zM8 11a3 3 0 100-6 3 3 0 000 6z" />
             </svg>
             {showExportPreview ? "Hide" : "Preview"}
+            {directiveLengthCheck && (
+              <span
+                data-testid="directive-length-badge"
+                aria-hidden="true"
+                title={`${directiveLengthCheck.directiveLength} of ${directiveLengthCheck.ceiling} characters in the %%{init}%% directive`}
+                className={`ml-0.5 rounded border px-1 py-px font-mono text-[9px] leading-none ${
+                  directiveLengthBadgeTone === "over"
+                    ? "border-red-500/50 bg-red-500/10 text-red-600 dark:text-red-400"
+                    : directiveLengthBadgeTone === "near"
+                      ? "border-amber-500/50 bg-amber-500/10 text-amber-700 dark:text-amber-400"
+                      : "border-border/70 bg-muted text-muted-foreground"
+                }`}
+              >
+                {directiveLengthCheck.directiveLength} / {directiveLengthCheck.ceiling} chars
+              </span>
+            )}
           </button>
         )}
 
@@ -432,6 +481,16 @@ export function ExportToolbar({
             );
           })}
         </div>
+        {rendererProfile && outputFormatOverridden && onResetOutputFormat && (
+          <button
+            type="button"
+            onClick={onResetOutputFormat}
+            className="text-[10px] px-2 py-1 rounded border border-primary/30 text-primary hover:bg-primary/8 transition-colors"
+            title={`Use ${rendererProfile.shortName}'s recommended format`}
+          >
+            Reset to recommended
+          </button>
+        )}
 
         <button
           onClick={onOpenColorEditor}

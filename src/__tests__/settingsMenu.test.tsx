@@ -44,7 +44,7 @@ vi.mock("@/lib/family-syntax-hints", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/lib/family-syntax-hints")>();
   return {
     ...actual,
-    clearAllDismissals: vi.fn(),
+    clearAllDismissals: vi.fn(actual.clearAllDismissals),
   };
 });
 
@@ -63,6 +63,9 @@ const STORAGE_KEY = "mtb.state.v1";
 
 /** Secondary key for the ClassBrowser preview-mode preference. */
 const PREVIEW_MODE_KEY = "mtb.classBrowser.previewMode";
+
+/** Real dismissal key format used by FamilySyntaxHint for the flowchart hint. */
+const HINT_DISMISSAL_KEY = "mtb.hint-dismissed.flowchart";
 
 /**
  * A minimal seeded state that gives App non-empty customColors and
@@ -157,6 +160,16 @@ describe("Settings menu — Reset all syntax tips", () => {
     fireEvent.click(screen.getByText("Reset all syntax tips"));
     expect(localStorage.getItem(PREVIEW_MODE_KEY)).toBe("used");
   });
+
+  it("clears a seeded hint dismissal — the one Settings action allowed to reset syntax tips", () => {
+    localStorage.setItem(HINT_DISMISSAL_KEY, "1");
+    render(createElement(App, null));
+    openSettingsMenu();
+    fireEvent.click(screen.getByText("Reset all syntax tips"));
+
+    expect(vi.mocked(clearAllDismissals)).toHaveBeenCalledOnce();
+    expect(localStorage.getItem(HINT_DISMISSAL_KEY)).toBeNull();
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -244,6 +257,17 @@ describe("Settings menu — Reset all palette customizations (confirm flow)", ()
     fireEvent.click(screen.getByText("Confirm"));
     expect(localStorage.getItem(PREVIEW_MODE_KEY)).toBe("used");
   });
+
+  it("preserves a dismissed syntax hint after Confirm", () => {
+    localStorage.setItem(HINT_DISMISSAL_KEY, "1");
+    render(createElement(App, null));
+    openSettingsMenu();
+    fireEvent.click(screen.getByText("Reset all palette customizations"));
+    fireEvent.click(screen.getByText("Confirm"));
+
+    expect(vi.mocked(clearAllDismissals)).not.toHaveBeenCalled();
+    expect(localStorage.getItem(HINT_DISMISSAL_KEY)).toBe("1");
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -285,6 +309,16 @@ describe("Settings menu — Clear recent palette history", () => {
     openSettingsMenu();
     fireEvent.click(screen.getByText("Clear recent palette history"));
     expect(localStorage.getItem(PREVIEW_MODE_KEY)).toBe("used");
+  });
+
+  it("preserves a dismissed syntax hint", () => {
+    localStorage.setItem(HINT_DISMISSAL_KEY, "1");
+    render(createElement(App, null));
+    openSettingsMenu();
+    fireEvent.click(screen.getByText("Clear recent palette history"));
+
+    expect(vi.mocked(clearAllDismissals)).not.toHaveBeenCalled();
+    expect(localStorage.getItem(HINT_DISMISSAL_KEY)).toBe("1");
   });
 });
 
@@ -362,6 +396,20 @@ describe("Settings menu — Clear all settings", () => {
     await waitFor(() => {
       const saved = getPersistedState();
       expect(Object.keys((saved.customColors as Record<string, unknown>) ?? {}).length).toBe(0);
+    });
+  });
+
+  it("clears renderer target hint dismissal and persists the reset value", async () => {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ ...JSON.parse(SEEDED_STATE), rendererTargetHintDismissed: true })
+    );
+    render(createElement(App, null));
+    openSettingsMenu();
+    fireEvent.click(screen.getByText("Clear all settings"));
+
+    await waitFor(() => {
+      expect(getPersistedState().rendererTargetHintDismissed).toBe(false);
     });
   });
 

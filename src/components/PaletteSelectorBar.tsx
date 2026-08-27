@@ -26,7 +26,8 @@ interface PaletteSelectorBarProps {
     }
   ) => void;
   onShowToast: (msg: string) => void;
-  onDuplicateMyThemeSlot?: (id: string) => void;
+  onDuplicateMyThemeSlot?: (id: string) => string | null | void;
+  onRenameMyThemeSlot?: (id: string, newName: string) => void;
   onMoveMyThemeSlotUp?: (id: string) => void;
   onMoveMyThemeSlotDown?: (id: string) => void;
   /** Open the Profile Details panel for the given slot id. */
@@ -48,12 +49,17 @@ export function PaletteSelectorBar({
   onImportAsNewSlot,
   onShowToast,
   onDuplicateMyThemeSlot,
+  onRenameMyThemeSlot,
   onMoveMyThemeSlotUp,
   onMoveMyThemeSlotDown,
   onShowProfileDetails,
 }: PaletteSelectorBarProps) {
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const [editingSlotId, setEditingSlotId] = useState<string | null>(null);
+  const [editingName, setEditingName] = useState("");
+  const [pendingRenameId, setPendingRenameId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const renameInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     if (!pendingDeleteId) return;
@@ -63,6 +69,55 @@ export function PaletteSelectorBar({
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [pendingDeleteId]);
+
+  const startRename = useCallback((slot: { id: string; name: string }) => {
+    setPendingRenameId(null);
+    setEditingSlotId(slot.id);
+    setEditingName(slot.name);
+  }, []);
+
+  const focusTile = useCallback(
+    (id: string) => {
+      requestAnimationFrame(() => {
+        document.getElementById(`${tileIdPrefix}-${id}`)?.focus();
+      });
+    },
+    [tileIdPrefix]
+  );
+
+  const commitRename = useCallback(
+    (id: string, returnFocus = false) => {
+      const trimmed = editingName.trim();
+      if (trimmed) onRenameMyThemeSlot?.(id, trimmed);
+      setEditingSlotId(null);
+      setEditingName("");
+      if (returnFocus) focusTile(id);
+    },
+    [editingName, focusTile, onRenameMyThemeSlot]
+  );
+
+  const cancelRename = useCallback(
+    (id: string, returnFocus = false) => {
+      setEditingSlotId(null);
+      setEditingName("");
+      if (returnFocus) focusTile(id);
+    },
+    [focusTile]
+  );
+
+  useEffect(() => {
+    if (!pendingRenameId) return;
+    const slot = myThemeSlots.find((s) => s.id === pendingRenameId);
+    if (!slot) return;
+    setPendingRenameId(null);
+    startRename(slot);
+  }, [myThemeSlots, pendingRenameId, startRename]);
+
+  useEffect(() => {
+    if (!editingSlotId) return;
+    renameInputRef.current?.focus();
+    renameInputRef.current?.select();
+  }, [editingSlotId]);
 
   type NavItem = { type: "slot"; id: string } | { type: "palette"; id: string };
   const navItems: NavItem[] = [
@@ -128,6 +183,7 @@ export function PaletteSelectorBar({
             const isFirst = slotIndex === 0;
             const isLast = slotIndex === myThemeSlots.length - 1;
             const slotsFull = myThemeSlots.length >= 3;
+            const isEditing = editingSlotId === slot.id;
             return (
               <div key={slot.id} className="relative flex-none group/slot">
                 <button
@@ -152,17 +208,46 @@ export function PaletteSelectorBar({
                       />
                     ))}
                   </div>
-                  <span
-                    className={`text-[10px] leading-none whitespace-nowrap font-medium ${
-                      isActive ? "text-primary" : "text-muted-foreground"
-                    }`}
-                  >
-                    {displayName}
-                  </span>
-                  <span className="text-[8px] leading-none px-1 py-0.5 rounded bg-primary/10 text-primary font-semibold uppercase tracking-wide">
+                  {isEditing ? (
+                    <span className="h-2.5" aria-hidden="true" />
+                  ) : (
+                    <span
+                      onDoubleClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        startRename(slot);
+                      }}
+                      className={`text-[10px] leading-none whitespace-nowrap font-medium cursor-text ${
+                        isActive ? "text-accent-foreground" : "text-muted-foreground"
+                      }`}
+                    >
+                      {displayName}
+                    </span>
+                  )}
+                  <span className="text-[8px] leading-none px-1 py-0.5 rounded bg-primary/10 text-accent-foreground font-semibold uppercase tracking-wide">
                     Mine
                   </span>
                 </button>
+                {isEditing && (
+                  <input
+                    ref={renameInputRef}
+                    value={editingName}
+                    aria-label={`Rename ${slot.name}`}
+                    onChange={(e) => setEditingName(e.target.value)}
+                    onBlur={() => commitRename(slot.id)}
+                    onKeyDown={(e) => {
+                      e.stopPropagation();
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        commitRename(slot.id, true);
+                      } else if (e.key === "Escape") {
+                        e.preventDefault();
+                        cancelRename(slot.id, true);
+                      }
+                    }}
+                    className="absolute bottom-[18px] left-1 right-5 h-4 min-w-0 rounded border border-primary/60 bg-background px-1 text-[10px] leading-none text-foreground outline-none ring-1 ring-primary/20"
+                  />
+                )}
                 {/* Trash icon — revealed on hover, always visible on touch devices */}
                 <button
                   type="button"
@@ -237,7 +322,8 @@ export function PaletteSelectorBar({
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
-                      onDuplicateMyThemeSlot?.(slot.id);
+                      const newSlotId = onDuplicateMyThemeSlot?.(slot.id);
+                      if (typeof newSlotId === "string") setPendingRenameId(newSlotId);
                     }}
                     disabled={slotsFull}
                     aria-label={`Duplicate ${slot.name}`}
@@ -259,6 +345,27 @@ export function PaletteSelectorBar({
                         rx="1"
                         stroke="currentColor"
                         strokeWidth="1.2"
+                      />
+                    </svg>
+                  </button>
+                  {/* Rename */}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      startRename(slot);
+                    }}
+                    aria-label={`Rename ${slot.name}`}
+                    title={`Rename ${slot.name}`}
+                    className="p-0.5 rounded text-muted-foreground hover:text-primary hover:bg-primary/10 focus-visible:outline focus-visible:outline-1 focus-visible:outline-primary transition-colors"
+                  >
+                    <svg viewBox="0 0 16 16" fill="none" className="w-3 h-3" aria-hidden="true">
+                      <path
+                        d="M3 11.5V13h1.5l7.25-7.25-1.5-1.5L3 11.5zM9.75 4.75l1.5 1.5"
+                        stroke="currentColor"
+                        strokeWidth="1.2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       />
                     </svg>
                   </button>

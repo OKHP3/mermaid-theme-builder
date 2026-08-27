@@ -215,6 +215,26 @@ describe("parsePortablePalette", () => {
     expect(result.palette.colors).toHaveLength(3);
   });
 
+  it("preserves a fontFamily stack through the portable file export/import cycle", () => {
+    // Palette files carry Mermaid's palette-level fontFamily ThemeColor. The
+    // separate five-tier TypographySettings object is app state, not a field in
+    // the portable Palette schema, so this exercises the actual file boundary.
+    const fontFamily = "'DM Sans', Arial, sans-serif";
+    const paletteWithFontFamily: Palette = {
+      ...MINIMAL_PALETTE,
+      colors: [
+        ...MINIMAL_PALETTE.colors,
+        { key: "fontFamily", label: "Font family", value: fontFamily },
+      ],
+    };
+
+    const result = parsePortablePalette(paletteToPortableJson(paletteWithFontFamily));
+    if (!result.ok) throw new Error(`Expected imported palette, received: ${result.error}`);
+
+    const importedFontFamily = result.palette.colors.find((color) => color.key === "fontFamily");
+    expect(importedFontFamily?.value).toBe(fontFamily);
+  });
+
   it("returns ok:false for invalid JSON", () => {
     const result = parsePortablePalette("not json at all");
     expect(result.ok).toBe(false);
@@ -239,6 +259,49 @@ describe("parsePortablePalette", () => {
   it("returns ok:false for a plain string (not an object)", () => {
     const result = parsePortablePalette(JSON.stringify("just a string"));
     expect(result.ok).toBe(false);
+  });
+
+  describe("user-facing error messages", () => {
+    function expectExactImportError(json: string, expectedError: string) {
+      const result = parsePortablePalette(json);
+      expect(result.ok).toBe(false);
+      if (!result.ok) expect(result.error).toBe(expectedError);
+    }
+
+    it("keeps the JavaScript-provided JSON syntax reason readable", () => {
+      const result = parsePortablePalette("{ not valid json }");
+      expect(result.ok).toBe(false);
+      if (!result.ok) expect(result.error).toContain("Expected property name");
+    });
+
+    it("locks the wrong-type reason", () => {
+      expectExactImportError(
+        JSON.stringify({
+          type: "mtb-palette-bundle",
+          schemaVersion: 1,
+          colors: [{ key: "primaryColor", label: "Primary", value: "#111827" }],
+        }),
+        "Missing or wrong `type` field — expected `mtb-palette`."
+      );
+    });
+
+    it("locks the unsupported-schema reason", () => {
+      expectExactImportError(
+        JSON.stringify({
+          type: "mtb-palette",
+          schemaVersion: 2,
+          colors: [{ key: "primaryColor", label: "Primary", value: "#111827" }],
+        }),
+        "Unsupported schemaVersion — expected 1."
+      );
+    });
+
+    it("locks the missing-colors reason", () => {
+      expectExactImportError(
+        JSON.stringify({ type: "mtb-palette", schemaVersion: 1, colors: [] }),
+        "Missing or empty `colors` array."
+      );
+    });
   });
 
   it("round-trips all BUILTIN_PALETTES without error", () => {
@@ -1256,5 +1319,112 @@ describe("paletteToPortableJson → parsePortablePalette sourceUrls round-trip",
     const themedCode = generateThemedCode(ROUNDTRIP_DIAGRAM, opts);
     const output = generateMarkdownExport(themedCode, result.palette, opts);
     expect(output).not.toContain("**Brand sources:**");
+  });
+
+  it("keeps valid sourceUrls while omitting malformed URLs from Markdown after portable import", () => {
+    const validUrl = "https://example.com/brand";
+    const portablePalette = JSON.parse(paletteToPortableJson(BRAND_PALETTES[0])) as {
+      sourceUrls?: string[];
+    };
+    portablePalette.sourceUrls = [validUrl, "not a url", "ftp://x"];
+
+    const result = parsePortablePalette(JSON.stringify(portablePalette));
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+
+    const imported = result.palette;
+    const opts = roundTripBaseOptions(imported);
+    const themedCode = generateThemedCode(ROUNDTRIP_DIAGRAM, opts);
+    const output = generateMarkdownExport(themedCode, imported, opts);
+
+    expect(output).toContain("**Brand sources:**");
+    expect(output).toContain(validUrl);
+    expect(output).not.toContain("not a url");
+    expect(output).not.toContain("ftp://x");
+    expect(output).not.toContain("<not a url>");
+    expect(output).not.toContain("<ftp://x>");
+  });
+});
+
+describe("palettesToBundleJson → parsePaletteBundle sourceUrls round-trip", () => {
+  const palettesWithUrls = BRAND_PALETTES.filter((p) => p.sourceUrls && p.sourceUrls.length > 0);
+
+  it("preserves sourceUrls for every branded palette in a bundle", () => {
+    const result = parsePaletteBundle(palettesToBundleJson(palettesWithUrls));
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+
+    expect(result.palettes).toHaveLength(palettesWithUrls.length);
+    for (const [index, palette] of palettesWithUrls.entries()) {
+      expect(result.palettes[index].palette.sourceUrls).toEqual(palette.sourceUrls);
+    }
+  });
+
+  it("keeps every branded palette's source URLs in Markdown after bundle round-trip", () => {
+    const result = parsePaletteBundle(palettesToBundleJson(palettesWithUrls));
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+
+    for (const importedResult of result.palettes) {
+      const imported = importedResult.palette;
+      const opts = roundTripBaseOptions(imported);
+      const themedCode = generateThemedCode(ROUNDTRIP_DIAGRAM, opts);
+      const output = generateMarkdownExport(themedCode, imported, opts);
+
+      expect(output).toContain("**Brand sources:**");
+      for (const url of imported.sourceUrls ?? []) {
+        expect(output).toContain(url);
+      }
+    }
+  });
+
+  it("omits malformed sourceUrls from Markdown after bundle import", () => {
+    const bundle = JSON.parse(palettesToBundleJson([BRAND_PALETTES[0]])) as {
+      palettes: Array<{ sourceUrls?: string[] }>;
+    };
+    bundle.palettes[0].sourceUrls = ["not a url", "ftp://x"];
+
+    const result = parsePaletteBundle(JSON.stringify(bundle));
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+
+    const imported = result.palettes[0].palette;
+    const opts = roundTripBaseOptions(imported);
+    const themedCode = generateThemedCode(ROUNDTRIP_DIAGRAM, opts);
+    const output = generateMarkdownExport(themedCode, imported, opts);
+
+    expect(output).toContain(`# Mermaid Diagram — ${imported.name} Theme`);
+    expect(output).toContain("## Usage");
+    expect(output).toContain("## Attribution");
+    expect(output).not.toContain("**Brand sources:**");
+    expect(output).not.toContain("<");
+  });
+
+  it("keeps valid sourceUrls while omitting malformed URLs from Markdown after bundle import", () => {
+    const validUrl = "https://example.com/brand";
+    const bundle = JSON.parse(palettesToBundleJson([BRAND_PALETTES[0]])) as {
+      palettes: Array<{ sourceUrls?: string[] }>;
+    };
+    bundle.palettes[0].sourceUrls = [validUrl, "not a url", "ftp://x"];
+
+    const result = parsePaletteBundle(JSON.stringify(bundle));
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+
+    const imported = result.palettes[0].palette;
+    const opts = roundTripBaseOptions(imported);
+    const themedCode = generateThemedCode(ROUNDTRIP_DIAGRAM, opts);
+    const output = generateMarkdownExport(themedCode, imported, opts);
+
+    expect(output).toContain("**Brand sources:**");
+    expect(output).toContain(validUrl);
+    expect(output).not.toContain("not a url");
+    expect(output).not.toContain("ftp://x");
+    expect(output).not.toContain("<ftp://x>");
   });
 });

@@ -131,26 +131,35 @@ pnpm run check:version-strings
 - [ ] `pnpm run check:version-strings` exits 0 (CI also runs this on every PR)
 - [ ] `TOOL_VERSION` in `src/lib/theme-engine.ts` matches the new `package.json` version
 - [ ] `docs/attribution.md` sample attribution line (`%% Created with: Mermaid Theme Builder vX.Y.Z`) updated to new version
-- [ ] Palette `toolVersion` fields in `src/lib/exporters.ts`, `src/lib/extractor.ts`, `src/lib/palettes.ts`, and `src/App.tsx` updated if the palette schema version changed (note: palette schema version is independent of the app version — only bump if palette output format changed)
+- [ ] `PALETTE_TOOL_VERSION` in `src/lib/palettes.ts` updated if the palette schema version changed — all other production files (`src/lib/exporters.ts`, `src/lib/extractor.ts`, `src/App.tsx`) import this single constant, so a schema bump is a one-line change (note: palette schema version is independent of the app version — only bump if palette output format changed)
 
 ---
 
 ## Pre-release: screenshot
 
-Retake the README screenshot so `docs/screenshot-v0.5.0.jpg` stays current:
+Retake the README screenshot for the release version and update the stable
+`docs/screenshot-latest.jpg` README alias:
 
 ```bash
 pnpm build && pnpm serve &
 pnpm run capture-screenshot
-# then: git add docs/screenshot-v0.5.0.jpg && git commit -m "chore: refresh README screenshot for vX.Y.Z"
+# then: git add docs/screenshot-vX.Y.Z.jpg docs/screenshot-latest.jpg
+#       git commit -m "chore: refresh README screenshot for vX.Y.Z"
 ```
 
 Alternatively, the `capture-screenshot` job in `release-gate.yml` runs automatically
-on every version tag and uploads the refreshed image as a GitHub Actions artifact
-(retained 30 days) — download and commit if needed.
+on every version tag, uploads the refreshed image as a GitHub Actions artifact
+(retained 30 days), and opens a pull request when the image changed. It attempts
+to queue that PR for automatic squash merge, so protected `main` rules remain in
+effect and the release job never pushes to `main`.
 
-- [ ] `docs/screenshot-v0.5.0.jpg` visually reflects the current UI
-- [ ] README.md `![screenshot]` link still resolves (filename unchanged for v0.5.x)
+If the repository does not allow automatic merges, the queue attempt is
+non-blocking and the PR remains available for a maintainer to review and merge
+manually. Enable GitHub's **Allow auto-merge** repository setting to let these
+updates merge automatically after required checks and approvals pass.
+
+- [ ] `docs/screenshot-vX.Y.Z.jpg` visually reflects the release UI and preserves prior release screenshots
+- [ ] README.md `![screenshot]` link resolves through `docs/screenshot-latest.jpg`
 
 ---
 

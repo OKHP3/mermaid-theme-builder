@@ -40,7 +40,7 @@ const SEQUENCE = "sequenceDiagram\n  Alice->>Bob: Hello";
 async function gotoApply(page: Page) {
   await page.addInitScript(() => {
     window.localStorage.clear();
-      localStorage.setItem("mtb.firstVisit", "true");
+    localStorage.setItem("mtb.firstVisit", "true");
     window.sessionStorage.clear();
   });
   await page.goto("/");
@@ -311,4 +311,372 @@ test("Live Editor button opens mermaid.live in a new tab", async ({ page }) => {
   // so the popup already has the full mermaid.live URL on navigation start.
   await popup.waitForLoadState("domcontentloaded");
   expect(popup.url()).toMatch(/^https:\/\/mermaid\.live/);
+});
+
+// ---------------------------------------------------------------------------
+// Test 11 — Download .md with a custom theme name: heading and attribution use
+//            the custom name, not the default palette name
+// ---------------------------------------------------------------------------
+
+test("Download → .md heading carries the custom theme name and shows 'Custom — based on'", async ({
+  page,
+}) => {
+  // The user-entered theme name is stored as `n` in the persisted state blob
+  // (key: "mtb.state.v1").  Seed it via addInitScript so it is present before
+  // React initialises — the same pattern used in my-theme-slots.spec.ts.
+  const CUSTOM_NAME = "My Custom Theme";
+
+  await page.addInitScript(
+    ({
+      stateKey,
+      stateValue,
+      firstVisitKey,
+    }: {
+      stateKey: string;
+      stateValue: string;
+      firstVisitKey: string;
+    }) => {
+      localStorage.clear();
+      sessionStorage.clear();
+      localStorage.setItem(firstVisitKey, "true");
+      localStorage.setItem(stateKey, stateValue);
+    },
+    {
+      stateKey: "mtb.state.v1",
+      stateValue: JSON.stringify({
+        schemaVersion: 1,
+        firstVisitComplete: true,
+        // Pin to the first built-in brand palette so Theme ID and Version
+        // assertions are deterministic across runs.
+        selectedPaletteId: "overkill-hill",
+        // myThemeSlots must be present (even as an empty array) for the
+        // hydration effect to enter the slot-ID branch. Without it the entire
+        // block is skipped and activeMyThemeSlotId stays at its useState
+        // default of "my-theme-1", making effectiveCustomThemeName come from
+        // the slot name rather than from customThemeName.
+        myThemeSlots: [],
+        activeMyThemeSlotId: null,
+        customThemeName: CUSTOM_NAME,
+      }),
+      firstVisitKey: "mtb.firstVisit",
+    }
+  );
+
+  await page.goto("/");
+  await page.waitForLoadState("load");
+  await page.getByRole("tab", { name: "Apply" }).first().click();
+  await page.getByLabel("Mermaid diagram code input").waitFor({ state: "visible" });
+
+  // Paste a flowchart so the export controls become active.
+  await page.getByLabel("Mermaid diagram code input").fill(FLOWCHART);
+
+  // Open the download menu and download the .md file.
+  const downloadBtn = page.getByRole("button", { name: "Download" });
+  await expect(downloadBtn).toBeEnabled();
+  await downloadBtn.click();
+
+  const downloadPromise = page.waitForEvent("download");
+  await page.getByRole("button", { name: ".md" }).click();
+  const download = await downloadPromise;
+
+  expect(download.suggestedFilename()).toMatch(/\.md$/);
+
+  const filePath = await download.path();
+  expect(filePath).toBeTruthy();
+  const content = readFileSync(filePath!, "utf8");
+
+  // 1. The H1 heading must embed the custom name, not the default palette name.
+  //    generateMarkdownExport writes: `# Mermaid Diagram — {themeName} Theme`
+  expect(content).toContain(`# Mermaid Diagram — ${CUSTOM_NAME} Theme`);
+
+  // 2. The Theme attribution line must show the "Custom — based on" prefix,
+  //    confirming the isCustom branch of generateMarkdownExport was taken.
+  expect(content).toContain("Custom — based on");
+
+  // 3. The full palette metadata must survive the custom-name branch — a
+  //    regression that drops Theme ID or Version would otherwise pass silently.
+  //    "overkill-hill" version comes from BUILTIN_PALETTES in src/lib/palettes.ts.
+  expect(content).toContain("**Theme ID:** `overkill-hill`");
+  expect(content).toContain("**Version:** 0.2.0");
+
+  // 4. The %%{init}%% directive must still be present.
+  expect(content).toContain("%%{init:");
+
+  // 5. The fenced Mermaid code block must be present.
+  expect(content).toContain("```mermaid");
+});
+
+// ---------------------------------------------------------------------------
+// Test 14 — Markdown clipboard copy with a custom theme name: heading and
+//            attribution use the custom name, not the default palette name
+// ---------------------------------------------------------------------------
+
+test("'Markdown' copy carries the custom theme name and shows 'Custom — based on'", async ({
+  page,
+  context,
+}) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+
+  const CUSTOM_NAME = "My Custom Theme";
+
+  // Seed the persisted state before React initialises.  `myThemeSlots` must
+  // be present, even as an empty array, so hydration applies the null active
+  // slot and preserves customThemeName instead of using the default slot name.
+  await page.addInitScript(
+    ({
+      stateKey,
+      stateValue,
+      firstVisitKey,
+    }: {
+      stateKey: string;
+      stateValue: string;
+      firstVisitKey: string;
+    }) => {
+      localStorage.clear();
+      sessionStorage.clear();
+      localStorage.setItem(firstVisitKey, "true");
+      localStorage.setItem(stateKey, stateValue);
+    },
+    {
+      stateKey: "mtb.state.v1",
+      stateValue: JSON.stringify({
+        schemaVersion: 1,
+        firstVisitComplete: true,
+        selectedPaletteId: "overkill-hill",
+        myThemeSlots: [],
+        activeMyThemeSlotId: null,
+        customThemeName: CUSTOM_NAME,
+      }),
+      firstVisitKey: "mtb.firstVisit",
+    }
+  );
+
+  await page.goto("/");
+  await page.waitForLoadState("load");
+  await page.getByRole("tab", { name: "Apply" }).first().click();
+  await page.getByLabel("Mermaid diagram code input").waitFor({ state: "visible" });
+  await page.getByLabel("Mermaid diagram code input").fill(FLOWCHART);
+
+  const markdownBtn = page.getByRole("button", { name: "Markdown" });
+  await expect(markdownBtn).toBeEnabled();
+  await markdownBtn.click();
+  await expect(page.getByRole("button", { name: /Copied!/ })).toBeVisible({ timeout: 3000 });
+
+  const content = await page.evaluate(() => navigator.clipboard.readText());
+
+  expect(content).toContain(`# Mermaid Diagram — ${CUSTOM_NAME} Theme`);
+  expect(content).toContain("Custom — based on");
+  expect(content).toContain("```mermaid");
+  expect(content).toContain("%%{init:");
+});
+
+// ---------------------------------------------------------------------------
+// Test 12 — Download and copy buttons are disabled before diagram code is
+//            pasted, enabled after
+// ---------------------------------------------------------------------------
+
+test("Download and copy buttons are disabled before code is pasted and enabled after", async ({
+  page,
+}) => {
+  await gotoApply(page);
+
+  const textarea = page.getByLabel("Mermaid diagram code input");
+  const downloadBtn = page.getByRole("button", { name: "Download" });
+  const styledCodeBtn = page.getByRole("button", { name: "Styled Code" });
+  const markdownBtn = page.getByRole("button", { name: "Markdown" });
+  await expect(downloadBtn).toBeVisible();
+  await expect(styledCodeBtn).toBeVisible();
+  await expect(markdownBtn).toBeVisible();
+
+  // The Apply tab pre-populates a default diagram. Clear it to reach the
+  // "no code yet" state that the disabled guard targets.
+  await textarea.fill("");
+
+  // With an empty textarea the guard `disabled={!inputCode.trim()}` must keep
+  // all diagram-dependent export buttons disabled.
+  await expect(downloadBtn).toBeDisabled();
+  await expect(styledCodeBtn).toBeDisabled();
+  await expect(markdownBtn).toBeDisabled();
+
+  // Pasting a flowchart must lift the disabled state for all three controls.
+  await pasteDiagram(page, FLOWCHART);
+  await expect(downloadBtn).toBeEnabled();
+  await expect(styledCodeBtn).toBeEnabled();
+  await expect(markdownBtn).toBeEnabled();
+});
+
+// ---------------------------------------------------------------------------
+// Test 15 — keyboard copy shortcut refuses empty input and copies styled code
+//            for a valid diagram
+// ---------------------------------------------------------------------------
+
+test("Ctrl+Shift+C does not copy empty input and copies styled code for a flowchart", async ({
+  page,
+  context,
+}) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await gotoApply(page);
+
+  const textarea = page.getByLabel("Mermaid diagram code input");
+  const applyTab = page.getByRole("tab", { name: "Apply" }).first();
+  const sentinel = "clipboard must remain unchanged";
+
+  // Seed the clipboard so a no-op is observable, then clear the default
+  // diagram. Focus the Apply tab before pressing the shortcut so the
+  // textarea's typing guard does not intentionally swallow the event.
+  await page.evaluate((value) => navigator.clipboard.writeText(value), sentinel);
+  await textarea.fill("");
+  await expect(textarea).toHaveValue("");
+  for (const shortcut of ["Control+Shift+C", "Meta+Shift+C"]) {
+    await applyTab.press(shortcut);
+    await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(sentinel);
+  }
+  await expect(page.getByRole("button", { name: "Styled Code" })).not.toHaveAttribute(
+    "aria-label",
+    "Copied!"
+  );
+
+  // A valid diagram must still travel through the same shortcut path and
+  // copy the themed export rather than the raw source.
+  await pasteDiagram(page, FLOWCHART);
+  await applyTab.press("Control+Shift+C");
+  await expect(page.getByRole("button", { name: /Copied!/ })).toBeVisible({ timeout: 3000 });
+
+  const copied = await page.evaluate(() => navigator.clipboard.readText());
+  expect(copied).toContain("%%{init:");
+  expect(copied).toContain("flowchart TD");
+  expect(copied).toContain("themeVariables");
+
+  await applyTab.press("Meta+Shift+C");
+  await expect(page.getByRole("button", { name: /Copied!/ })).toBeVisible({ timeout: 3000 });
+  await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(copied);
+});
+
+// ---------------------------------------------------------------------------
+// Test 16 — keyboard copy shortcut leaves editable fields untouched
+// ---------------------------------------------------------------------------
+
+test("Ctrl+Shift+C does not interrupt the Apply or preview code editors", async ({
+  page,
+  context,
+}) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await gotoApply(page);
+  await pasteDiagram(page, FLOWCHART);
+
+  const sentinel = "clipboard must remain unchanged while editing";
+  const styledCodeBtn = page.getByRole("button", { name: "Styled Code" });
+  await page.evaluate((value) => navigator.clipboard.writeText(value), sentinel);
+
+  // The source editor is a textarea. The global shortcut must not copy the
+  // themed export or change the toolbar's copied state while users edit it.
+  const diagramEditor = page.getByLabel("Mermaid diagram code input");
+  const sourceEditorState = await diagramEditor.evaluate((element) => {
+    const editor = element as HTMLTextAreaElement;
+    editor.focus();
+    editor.setSelectionRange(1, Math.min(editor.value.length, 12));
+    return {
+      value: editor.value,
+      selectionStart: editor.selectionStart,
+      selectionEnd: editor.selectionEnd,
+    };
+  });
+  expect(sourceEditorState.selectionEnd).toBeGreaterThan(sourceEditorState.selectionStart);
+  for (const shortcut of ["Control+Shift+C", "Meta+Shift+C"]) {
+    await diagramEditor.press(shortcut);
+    await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(sentinel);
+    await expect(diagramEditor).toHaveValue(sourceEditorState.value);
+    await expect
+      .poll(() =>
+        diagramEditor.evaluate((element) => {
+          const editor = element as HTMLTextAreaElement;
+          return {
+            value: editor.value,
+            selectionStart: editor.selectionStart,
+            selectionEnd: editor.selectionEnd,
+          };
+        })
+      )
+      .toEqual(sourceEditorState);
+  }
+  await expect(styledCodeBtn).toHaveText("Styled Code");
+
+  // The Code preview has a second, editable textarea. Verify the same guard
+  // protects edits made to the styled export before copying.
+  await page.locator('[data-preview-mode="code"]').click();
+  await page.getByTitle("Edit the styled code before copying").click();
+  const previewEditor = page.getByLabel("Styled code output — edit before copying");
+  await expect(previewEditor).toBeFocused();
+  const previewEditorState = await previewEditor.evaluate((element) => {
+    const editor = element as HTMLTextAreaElement;
+    editor.setSelectionRange(1, Math.min(editor.value.length, 16));
+    return {
+      value: editor.value,
+      selectionStart: editor.selectionStart,
+      selectionEnd: editor.selectionEnd,
+    };
+  });
+  expect(previewEditorState.selectionEnd).toBeGreaterThan(previewEditorState.selectionStart);
+  for (const shortcut of ["Control+Shift+C", "Meta+Shift+C"]) {
+    await previewEditor.press(shortcut);
+    await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(sentinel);
+    await expect(previewEditor).toHaveValue(previewEditorState.value);
+    await expect
+      .poll(() =>
+        previewEditor.evaluate((element) => {
+          const editor = element as HTMLTextAreaElement;
+          return {
+            value: editor.value,
+            selectionStart: editor.selectionStart,
+            selectionEnd: editor.selectionEnd,
+          };
+        })
+      )
+      .toEqual(previewEditorState);
+  }
+  await expect(styledCodeBtn).toHaveText("Styled Code");
+});
+
+// ---------------------------------------------------------------------------
+// Test 13 — Live Editor URL encodes themed code after a palette switch
+// ---------------------------------------------------------------------------
+
+test("Live Editor URL payload encodes themed code after a palette switch", async ({ page }) => {
+  await gotoApply(page);
+  await pasteDiagram(page, FLOWCHART);
+
+  // Switch to the second brand palette tile so we exercise a non-default
+  // palette — same selection technique as the clipboard palette-switch test.
+  const paletteTiles = page.locator('[role="radio"][id^="apply-palette-tile-"]');
+  await expect(paletteTiles.nth(1)).toBeVisible();
+  await paletteTiles.nth(1).click();
+
+  const liveEditorBtn = page.getByRole("button", { name: "Live Editor" });
+  await expect(liveEditorBtn).toBeEnabled();
+
+  const popupPromise = page.waitForEvent("popup");
+  await liveEditorBtn.click();
+  const popup = await popupPromise;
+  await popup.waitForLoadState("domcontentloaded");
+
+  const url = popup.url();
+  expect(url).toMatch(/^https:\/\/mermaid\.live/);
+
+  // Decode the URL-safe base64 payload.
+  // Format: https://mermaid.live/edit#base64:<urlSafeBase64(utf8(JSON(state)))>
+  // URL-safe encoding swaps +→- and /→_ and strips trailing = padding.
+  const fragment = url.split("#base64:")[1];
+  expect(fragment).toBeTruthy();
+
+  const standard = fragment.replace(/-/g, "+").replace(/_/g, "/");
+  const padded = standard + "=".repeat((4 - (standard.length % 4)) % 4);
+  const decoded = Buffer.from(padded, "base64").toString("utf8");
+  const state = JSON.parse(decoded) as { code: string };
+
+  // The %%{init}%% directive proves the palette theme was injected —
+  // a regression that sends bare un-themed code would fail this check.
+  expect(state.code).toContain("%%{init:");
+
+  // The original diagram source must also be present.
+  expect(state.code).toContain("flowchart TD");
 });

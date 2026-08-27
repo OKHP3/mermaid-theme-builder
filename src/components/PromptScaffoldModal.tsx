@@ -66,6 +66,7 @@ interface PromptScaffoldModalProps {
   generatePreview: (format: ScaffoldFormat) => string;
   rendererTarget: string;
   onRendererTargetChange: (v: string) => void;
+  directiveLengthAdvisory?: string | null;
 }
 
 export function PromptScaffoldModal({
@@ -75,6 +76,7 @@ export function PromptScaffoldModal({
   generatePreview,
   rendererTarget,
   onRendererTargetChange,
+  directiveLengthAdvisory = null,
 }: PromptScaffoldModalProps) {
   const [copiedFormat, setCopiedFormat] = useState<ScaffoldFormat | null>(null);
   const [isClosing, setIsClosing] = useState(false);
@@ -238,6 +240,30 @@ export function PromptScaffoldModal({
                         : "border-border"
                 } ${isDimmed ? "opacity-40 pointer-events-none" : ""}`}
               >
+                {directiveLengthAdvisory && opt.format !== "formatB" && (
+                  <div
+                    role="alert"
+                    aria-label={`Directive length advisory for ${opt.badge}`}
+                    className="px-3 py-2 border-b border-amber-500/20 bg-amber-500/5 flex items-start gap-1.5"
+                  >
+                    <svg
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      className="w-3 h-3 shrink-0 text-amber-500/80 mt-px"
+                      aria-hidden="true"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    <p className="text-[10px] text-amber-700 dark:text-amber-400/90 leading-snug">
+                      {directiveLengthAdvisory}
+                    </p>
+                  </div>
+                )}
+
                 {/* Copy button — main card body */}
                 <button
                   onClick={() => handleCopy(opt.format)}

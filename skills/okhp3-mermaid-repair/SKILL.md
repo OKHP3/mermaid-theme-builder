@@ -13,6 +13,9 @@ metadata:
   author: Jamie Hill (OverKill Hill P³)
   version: "0.3.0"
   category: diagramming
+  catalog_display_name: "Repair"
+  catalog_role: "workflow"
+  catalog_description: "Syntax repair for broken Mermaid diagrams — diagnoses parse failures and applies the minimum fix without restructuring content, style, or labels."
   origin: okhp3/mermaid-theme-builder
   homepage: https://overkillhill.com
   author-github: https://github.com/OKHP3

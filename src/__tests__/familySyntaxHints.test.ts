@@ -13,7 +13,11 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { getFamilySyntaxHint, getAllFamilySyntaxHints } from "@/lib/family-syntax-hints";
+import {
+  getFamilySyntaxHint,
+  getAllFamilySyntaxHints,
+  HINT_FAMILY_COUNT,
+} from "@/lib/family-syntax-hints";
 import type { ClassDefStatus } from "@/lib/family-syntax-hints";
 import { CLASSDEF_CAPABLE_FAMILIES } from "@/lib/theme-engine";
 import type { DiagramFamily } from "@/data/mermaid-capabilities";
@@ -271,14 +275,17 @@ const ALL_HINT_FAMILIES: DiagramFamily[] = [
 ];
 
 describe("HINTS registry — count guard (Task #435)", () => {
-  it("HINTS registry length matches ALL_HINT_FAMILIES", () => {
-    const all = getAllFamilySyntaxHints();
+  it("ALL_HINT_FAMILIES snapshot list length matches HINT_FAMILY_COUNT from the module", () => {
+    // HINT_FAMILY_COUNT is the authoritative count exported by family-syntax-hints.ts
+    // (= HINTS.length). Comparing against it here makes this guard independent of the
+    // cross-reference between getAllFamilySyntaxHints() and ALL_HINT_FAMILIES —
+    // each guard now has a single source of truth.
     expect(
-      all.length,
-      `getAllFamilySyntaxHints() returned ${all.length} entries but ALL_HINT_FAMILIES has ` +
-        `${ALL_HINT_FAMILIES.length}. Add the new family to ALL_HINT_FAMILIES (or remove ` +
-        `it from HINTS) to keep the two lists in sync.`
-    ).toBe(ALL_HINT_FAMILIES.length);
+      ALL_HINT_FAMILIES,
+      `ALL_HINT_FAMILIES has ${ALL_HINT_FAMILIES.length} entries but the HINTS registry ` +
+        `exports HINT_FAMILY_COUNT=${HINT_FAMILY_COUNT}. ` +
+        `Add the new family to ALL_HINT_FAMILIES (or remove it from HINTS) to keep the two lists in sync.`
+    ).toHaveLength(HINT_FAMILY_COUNT);
   });
 });
 

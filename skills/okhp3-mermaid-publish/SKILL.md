@@ -16,6 +16,9 @@ metadata:
   author: Jamie Hill (OverKill Hill P³)
   version: "0.3.0"
   category: diagramming
+  catalog_display_name: "Publish & Export"
+  catalog_role: "workflow"
+  catalog_description: "Render and publish finished diagrams — local PNG/SVG output, Markdown embedding, and Mermaid Chart MCP for shareable links. Use after passing all three validation gates."
   origin: okhp3/mermaid-theme-builder
   homepage: https://overkillhill.com
   author-github: https://github.com/OKHP3
