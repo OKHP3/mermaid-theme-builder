@@ -177,6 +177,23 @@ test.describe("Reference distribution center", () => {
     ).not.toBeVisible();
   });
 
+  test("disables every destination copy button when the diagram input is empty", async ({
+    page,
+  }) => {
+    await gotoTab(page, "apply");
+    await page.getByLabel("Mermaid diagram code input").fill(" \n\t ");
+
+    await openDistribution(page);
+
+    const disabledCopyButtons = page.getByRole("button", { name: /No diagram to copy for/ });
+    await expect(disabledCopyButtons).toHaveCount(RENDERER_PROFILES.length);
+    await expect(disabledCopyButtons.first()).toBeDisabled();
+    await expect(disabledCopyButtons.first()).toHaveAttribute(
+      "title",
+      "No diagram to copy — enter Mermaid diagram code in Apply first."
+    );
+  });
+
   test("disables profile sharing when no My Theme slot is active", async ({ page }) => {
     await gotoTab(page, "reference", EMPTY_SLOTS_STATE);
     await openDistribution(page);

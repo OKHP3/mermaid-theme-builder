@@ -1221,6 +1221,10 @@ export function AppShell() {
     async (rendererId: string) => {
       const renderer = getRendererById(rendererId);
       if (!renderer) return;
+      if (!inputCode.trim()) {
+        showToast("No diagram to copy. Add Mermaid diagram code first.");
+        return;
+      }
       // Renderers with partial init-directive support: force init-directive.
       // Full-support renderers: respect the user's chosen output format.
       const format: "init-directive" | "frontmatter" =

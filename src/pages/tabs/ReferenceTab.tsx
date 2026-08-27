@@ -235,6 +235,7 @@ export function ReferenceTab({
   // "Copied!" feedback briefly.
   const [copiedForRenderer, setCopiedForRenderer] = useState<string | null>(null);
   const [shareLinked, setShareLinked] = useState(false);
+  const hasDiagramToCopy = inputCode.trim().length > 0;
 
   const handleDistributeCopy = useCallback(
     async (rendererId: string) => {
@@ -601,19 +602,32 @@ export function ReferenceTab({
                         <button
                           type="button"
                           onClick={() => handleDistributeCopy(renderer.id)}
-                          aria-label={`Copy ${recFormatLabel} code for ${renderer.shortName}`}
-                          title={`Copy themed diagram code formatted for ${renderer.displayName}`}
+                          disabled={!hasDiagramToCopy}
+                          aria-label={
+                            hasDiagramToCopy
+                              ? `Copy ${recFormatLabel} code for ${renderer.shortName}`
+                              : `No diagram to copy for ${renderer.shortName}`
+                          }
+                          title={
+                            hasDiagramToCopy
+                              ? `Copy themed diagram code formatted for ${renderer.displayName}`
+                              : "No diagram to copy — enter Mermaid diagram code in Apply first."
+                          }
                           className={`flex items-center gap-1 text-[10px] font-medium px-2 py-1 rounded border transition-colors ${
-                            isCopied
-                              ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30"
-                              : "bg-muted hover:bg-muted/70 text-muted-foreground hover:text-foreground border-border/50"
+                            !hasDiagramToCopy
+                              ? "bg-muted/50 text-muted-foreground/50 border-border/30 cursor-not-allowed"
+                              : isCopied
+                                ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30"
+                                : "bg-muted hover:bg-muted/70 text-muted-foreground hover:text-foreground border-border/50"
                           }`}
                         >
-                          {isCopied ? (
+                          {isCopied && hasDiagramToCopy ? (
                             <>
                               <CheckIcon />
                               Copied
                             </>
+                          ) : !hasDiagramToCopy ? (
+                            "No diagram to copy"
                           ) : (
                             <>
                               <CopyIcon />
