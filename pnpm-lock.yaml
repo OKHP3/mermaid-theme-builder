@@ -22,8 +22,8 @@ catalogs:
       specifier: ^5.90.21
       version: 5.101.4
     '@types/node':
-      specifier: ^26.1.2
-      version: 26.2.0
+      specifier: ^26.4.0
+      version: 26.4.0
     '@types/react':
       specifier: ^19.2.18
       version: 19.2.18
@@ -181,7 +181,7 @@ importers:
         version: 4.3.3
       '@tailwindcss/vite':
         specifier: 'catalog:'
-        version: 4.3.2(vite@8.1.4(@types/node@26.2.0)(jiti@2.7.0)(yaml@2.9.0))
+        version: 4.3.2(vite@8.1.4(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0))
       '@testing-library/dom':
         specifier: ^10.4.1
         version: 10.4.1
@@ -190,7 +190,7 @@ importers:
         version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.18))(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@types/node':
         specifier: 'catalog:'
-        version: 26.2.0
+        version: 26.4.0
       '@types/react':
         specifier: 'catalog:'
         version: 19.2.18
@@ -199,7 +199,7 @@ importers:
         version: 19.2.3(@types/react@19.2.18)
       '@vitejs/plugin-react':
         specifier: 'catalog:'
-        version: 6.0.5(vite@8.1.4(@types/node@26.2.0)(jiti@2.7.0)(yaml@2.9.0))
+        version: 6.0.5(vite@8.1.4(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0))
       axe-core:
         specifier: ^4.13.0
         version: 4.13.0
@@ -238,10 +238,10 @@ importers:
         version: 7.0.2
       vite:
         specifier: 'catalog:'
-        version: 8.1.4(@types/node@26.2.0)(jiti@2.7.0)(yaml@2.9.0)
+        version: 8.1.4(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0)
       vitest:
         specifier: ^4.1.10
-        version: 4.1.10(@types/node@26.2.0)(happy-dom@20.10.6)(vite@8.1.4(@types/node@26.2.0)(jiti@2.7.0)(yaml@2.9.0))
+        version: 4.1.10(@types/node@26.4.0)(happy-dom@20.10.6)(vite@8.1.4(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0))
 
   artifacts/mermaid-theme-builder: {}
 
@@ -345,13 +345,13 @@ importers:
         version: 0.5.20(tailwindcss@4.3.2)
       '@tailwindcss/vite':
         specifier: 'catalog:'
-        version: 4.3.2(vite@8.1.4(@types/node@26.2.0)(jiti@2.7.0)(yaml@2.9.0))
+        version: 4.3.2(vite@8.1.4(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0))
       '@tanstack/react-query':
         specifier: 'catalog:'
         version: 5.101.4(react@19.2.8)
       '@types/node':
         specifier: 'catalog:'
-        version: 26.2.0
+        version: 26.4.0
       '@types/react':
         specifier: 'catalog:'
         version: 19.2.18
@@ -360,7 +360,7 @@ importers:
         version: 19.2.3(@types/react@19.2.18)
       '@vitejs/plugin-react':
         specifier: 'catalog:'
-        version: 6.0.5(vite@8.1.4(@types/node@26.2.0)(jiti@2.7.0)(yaml@2.9.0))
+        version: 6.0.5(vite@8.1.4(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0))
       class-variance-authority:
         specifier: 'catalog:'
         version: 0.7.1
@@ -426,7 +426,7 @@ importers:
         version: 1.1.2(@types/react-dom@19.2.3(@types/react@19.2.18))(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       vite:
         specifier: 'catalog:'
-        version: 8.1.4(@types/node@26.2.0)(jiti@2.7.0)(yaml@2.9.0)
+        version: 8.1.4(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0)
       wouter:
         specifier: ^3.3.5
         version: 3.10.0(react@19.2.8)
@@ -1701,8 +1701,8 @@ packages:
   '@types/geojson@7946.0.16':
     resolution: {integrity: sha512-6C8nqWur3j98U6+lXDfTUWIfgvZU+EumvpHKcYjujKH7woYyLj2sUmff0tRhrqM7BohUw7Pz3ZB1jj2gW9Fvmg==}
 
-  '@types/node@26.2.0':
-    resolution: {integrity: sha512-5IviulTZeRNp2vAJ514cc/HUlY5nZ9fCbq9DMyC52BrhFZACo3nI0R7qBxhQmo/d27NFe96ur/b7Wwxklda+kg==}
+  '@types/node@26.4.0':
+    resolution: {integrity: sha512-faiGnoIrLH/V8cibOMEAZ8pMw6oXqSukl29ra4mN8GdaB2ZewzeaLj+INpV5N+Z1eKWzY+IzaIZH2EIR6YZRNQ==}
 
   '@types/react-dom@19.2.3':
     resolution: {integrity: sha512-jp2L/eY6fn+KgVVQAOqYItbF0VY/YApe5Mz2F0aykSO8gx31bYCZyvSeYxCHKvzHG5eZjc+zyaS5BrBWya2+kQ==}
@@ -4376,12 +4376,12 @@ snapshots:
       postcss-selector-parser: 6.0.10
       tailwindcss: 4.3.2
 
-  '@tailwindcss/vite@4.3.2(vite@8.1.4(@types/node@26.2.0)(jiti@2.7.0)(yaml@2.9.0))':
+  '@tailwindcss/vite@4.3.2(vite@8.1.4(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0))':
     dependencies:
       '@tailwindcss/node': 4.3.2
       '@tailwindcss/oxide': 4.3.2
       tailwindcss: 4.3.2
-      vite: 8.1.4(@types/node@26.2.0)(jiti@2.7.0)(yaml@2.9.0)
+      vite: 8.1.4(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0)
 
   '@tanstack/query-core@5.101.4': {}
 
@@ -4554,7 +4554,7 @@ snapshots:
 
   '@types/geojson@7946.0.16': {}
 
-  '@types/node@26.2.0':
+  '@types/node@26.4.0':
     dependencies:
       undici-types: 8.3.0
 
@@ -4573,7 +4573,7 @@ snapshots:
 
   '@types/ws@8.18.1':
     dependencies:
-      '@types/node': 26.2.0
+      '@types/node': 26.4.0
 
   '@typescript/typescript-aix-ppc64@7.0.2':
     optional: true
@@ -4640,10 +4640,10 @@ snapshots:
       d3-selection: 3.0.0
       d3-transition: 3.0.1(d3-selection@3.0.0)
 
-  '@vitejs/plugin-react@6.0.5(vite@8.1.4(@types/node@26.2.0)(jiti@2.7.0)(yaml@2.9.0))':
+  '@vitejs/plugin-react@6.0.5(vite@8.1.4(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0))':
     dependencies:
       '@rolldown/pluginutils': 1.0.1
-      vite: 8.1.4(@types/node@26.2.0)(jiti@2.7.0)(yaml@2.9.0)
+      vite: 8.1.4(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0)
 
   '@vitest/expect@4.1.10':
     dependencies:
@@ -4654,13 +4654,13 @@ snapshots:
       chai: 6.2.2
       tinyrainbow: 3.1.0
 
-  '@vitest/mocker@4.1.10(vite@8.1.4(@types/node@26.2.0)(jiti@2.7.0)(yaml@2.9.0))':
+  '@vitest/mocker@4.1.10(vite@8.1.4(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0))':
     dependencies:
       '@vitest/spy': 4.1.10
       estree-walker: 3.0.3
       magic-string: 0.30.21
     optionalDependencies:
-      vite: 8.1.4(@types/node@26.2.0)(jiti@2.7.0)(yaml@2.9.0)
+      vite: 8.1.4(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0)
 
   '@vitest/pretty-format@4.1.10':
     dependencies:
@@ -4771,7 +4771,7 @@ snapshots:
 
   buffer-image-size@0.6.4:
     dependencies:
-      '@types/node': 26.2.0
+      '@types/node': 26.4.0
 
   buffer@6.0.3:
     dependencies:
@@ -5174,7 +5174,7 @@ snapshots:
 
   happy-dom@20.10.6:
     dependencies:
-      '@types/node': 26.2.0
+      '@types/node': 26.4.0
       '@types/whatwg-mimetype': 3.0.2
       '@types/ws': 8.18.1
       buffer-image-size: 0.6.4
@@ -5952,7 +5952,7 @@ snapshots:
       d3-time: 3.1.0
       d3-timer: 3.0.1
 
-  vite@8.1.4(@types/node@26.2.0)(jiti@2.7.0)(yaml@2.9.0):
+  vite@8.1.4(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0):
     dependencies:
       lightningcss: 1.32.0
       picomatch: 4.0.5
@@ -5960,15 +5960,15 @@ snapshots:
       rolldown: 1.1.5
       tinyglobby: 0.2.17
     optionalDependencies:
-      '@types/node': 26.2.0
+      '@types/node': 26.4.0
       fsevents: 2.3.3
       jiti: 2.7.0
       yaml: 2.9.0
 
-  vitest@4.1.10(@types/node@26.2.0)(happy-dom@20.10.6)(vite@8.1.4(@types/node@26.2.0)(jiti@2.7.0)(yaml@2.9.0)):
+  vitest@4.1.10(@types/node@26.4.0)(happy-dom@20.10.6)(vite@8.1.4(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0)):
     dependencies:
       '@vitest/expect': 4.1.10
-      '@vitest/mocker': 4.1.10(vite@8.1.4(@types/node@26.2.0)(jiti@2.7.0)(yaml@2.9.0))
+      '@vitest/mocker': 4.1.10(vite@8.1.4(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0))
       '@vitest/pretty-format': 4.1.10
       '@vitest/runner': 4.1.10
       '@vitest/snapshot': 4.1.10
@@ -5985,10 +5985,10 @@ snapshots:
       tinyexec: 1.2.2
       tinyglobby: 0.2.17
       tinyrainbow: 3.1.0
-      vite: 8.1.4(@types/node@26.2.0)(jiti@2.7.0)(yaml@2.9.0)
+      vite: 8.1.4(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0)
       why-is-node-running: 2.3.0
     optionalDependencies:
-      '@types/node': 26.2.0
+      '@types/node': 26.4.0
       happy-dom: 20.10.6
     transitivePeerDependencies:
       - msw
