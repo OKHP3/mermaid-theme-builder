@@ -680,3 +680,36 @@ test("Live Editor URL payload encodes themed code after a palette switch", async
   // The original diagram source must also be present.
   expect(state.code).toContain("flowchart TD");
 });
+
+// ---------------------------------------------------------------------------
+// Test 17 — Live Editor URL encodes themed sequence diagram code
+// ---------------------------------------------------------------------------
+
+test("Live Editor URL payload encodes themed sequence diagram code", async ({ page }) => {
+  await gotoApply(page);
+  await pasteDiagram(page, SEQUENCE);
+
+  const liveEditorBtn = page.getByRole("button", { name: "Live Editor" });
+  await expect(liveEditorBtn).toBeEnabled();
+
+  const popupPromise = page.waitForEvent("popup");
+  await liveEditorBtn.click();
+  const popup = await popupPromise;
+  await popup.waitForLoadState("domcontentloaded");
+
+  const url = popup.url();
+  expect(url).toMatch(/^https:\/\/mermaid\.live/);
+
+  // Decode the URL-safe base64 payload using the same mermaid.live state
+  // format as Test 13.
+  const fragment = url.split("#base64:")[1];
+  expect(fragment).toBeTruthy();
+
+  const standard = fragment.replace(/-/g, "+").replace(/_/g, "/");
+  const padded = standard + "=".repeat((4 - (standard.length % 4)) % 4);
+  const decoded = Buffer.from(padded, "base64").toString("utf8");
+  const state = JSON.parse(decoded) as { code: string };
+
+  expect(state.code).toContain("%%{init:");
+  expect(state.code).toContain("sequenceDiagram");
+});
