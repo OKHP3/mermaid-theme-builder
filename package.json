@@ -36,7 +36,7 @@
   },
   "devDependencies": {
     "@mermaid-js/mermaid-zenuml": "^0.2.3",
-    "@napi-rs/canvas": "^1.0.3",
+    "@napi-rs/canvas": "^1.0.8",
     "@playwright/test": "^1.62.1",
     "@replit/vite-plugin-cartographer": "catalog:",
     "@replit/vite-plugin-dev-banner": "catalog:",
