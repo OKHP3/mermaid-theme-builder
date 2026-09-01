@@ -112,6 +112,40 @@ test("direct #extract URL selects the Extract tab", async ({ page }) => {
   );
 });
 
+test("direct #compose URL selects the Compose tab", async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    localStorage.setItem("mtb.firstVisit", "true");
+    window.sessionStorage.clear();
+  });
+
+  await page.goto("/#compose");
+  await page.waitForLoadState("load");
+
+  expect(hashOf(page.url())).toBe("#compose");
+  await expect(page.getByRole("tab", { name: "Compose" }).first()).toHaveAttribute(
+    "aria-selected",
+    "true"
+  );
+});
+
+test("direct #reference URL selects the Reference tab", async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    localStorage.setItem("mtb.firstVisit", "true");
+    window.sessionStorage.clear();
+  });
+
+  await page.goto("/#reference");
+  await page.waitForLoadState("load");
+
+  expect(hashOf(page.url())).toBe("#reference");
+  await expect(page.getByRole("tab", { name: "Reference" }).first()).toHaveAttribute(
+    "aria-selected",
+    "true"
+  );
+});
+
 test("browser Back restores Apply after #apply -> #extract navigation", async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.clear();
