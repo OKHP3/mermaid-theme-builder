@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import type { ScaffoldFormat } from "@/lib/theme-engine";
 import {
   SCAFFOLD_FORMAT_KEY,
@@ -82,6 +82,7 @@ export function PromptScaffoldModal({
   const [isClosing, setIsClosing] = useState(false);
   const [lastUsedFormat, setLastUsedFormat] = useState<ScaffoldFormat | null>(null);
   const [openPreview, setOpenPreview] = useState<ScaffoldFormat | null>(null);
+  const openerRef = useRef<HTMLElement | null>(null);
 
   // Load saved preference whenever the modal opens; reset preview state
   useEffect(() => {
@@ -89,6 +90,17 @@ export function PromptScaffoldModal({
       setLastUsedFormat(readLastFormat());
       setOpenPreview(null);
     }
+  }, [open]);
+
+  // Restore focus to the control that opened the modal after it closes.
+  useEffect(() => {
+    if (!open) return;
+    openerRef.current =
+      document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    return () => {
+      openerRef.current?.focus();
+      openerRef.current = null;
+    };
   }, [open]);
 
   const handleClose = useCallback(() => {

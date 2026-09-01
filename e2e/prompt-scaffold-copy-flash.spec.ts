@@ -350,3 +350,18 @@ test.describe("PromptScaffoldModal — Path C: dismiss without copying preserves
     expect(stored).toBe("formatB");
   });
 });
+
+// ---------------------------------------------------------------------------
+// Path D — keyboard dismissal restores focus to the trigger
+// ---------------------------------------------------------------------------
+
+test.describe("PromptScaffoldModal — Path D: keyboard focus restoration", () => {
+  test("Escape dismissal returns focus to the Generate Prompt Pattern button", async ({ page }) => {
+    await openScaffoldModal(page);
+
+    const trigger = page.getByRole("button", { name: "Generate Prompt Pattern", exact: true });
+    await page.keyboard.press("Escape");
+    await expect(page.locator('[role="dialog"]')).toBeHidden({ timeout: 3_000 });
+    await expect(trigger).toBeFocused();
+  });
+});
