@@ -232,4 +232,10 @@ test("'No classDef' badge on Prompt Scaffold disappears after switching to flowc
 
   // The same inline button must no longer show a stale No classDef badge.
   await expect(noClassDefBadge).not.toBeAttached({ timeout: 5_000 });
+
+  // The warning disappearing must not disable the button's primary action.
+  await promptScaffoldButton.click();
+  await expect(page.getByRole("dialog", { name: "Generate Prompt Pattern" })).toBeVisible({
+    timeout: 5_000,
+  });
 });
