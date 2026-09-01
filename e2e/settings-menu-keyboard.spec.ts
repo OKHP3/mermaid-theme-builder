@@ -10,6 +10,7 @@ import { test, expect } from "@playwright/test";
  *     focus to the first role=menuitem.
  *  3. Pressing Escape closes the menu and returns focus to the trigger button.
  *  4. Pressing ArrowDown / ArrowUp at the menu boundaries wraps focus.
+ *  5. Pressing Home / End jumps focus to the menu boundaries.
  *
  * A regression in any of these paths would leave keyboard-only users unable
  * to reach settings (e.g. reset syntax tips or clear palette history).
@@ -144,6 +145,32 @@ test.describe("Settings menu keyboard navigation", () => {
 
     // ArrowUp at the beginning must wrap to the last item.
     await page.keyboard.press("ArrowUp");
+    await expect(menuItems.last()).toBeFocused();
+  });
+
+  test("Home and End move focus to the first and last menuitems", async ({ page }) => {
+    const settingsBtn = page.getByRole("button", { name: "Settings", exact: true });
+    await settingsBtn.focus();
+    await page.keyboard.press("Enter");
+
+    const menu = page.getByRole("menu", { name: "Settings" });
+    await expect(menu).toBeVisible();
+    const menuItems = page.getByRole("menuitem");
+    const itemCount = await menuItems.count();
+    expect(itemCount).toBeGreaterThan(2);
+
+    // Start from a non-boundary item so both shortcuts are tested as jumps.
+    await page.keyboard.press("ArrowDown");
+    await page.keyboard.press("ArrowDown");
+    await expect(menuItems.nth(1)).toBeFocused();
+
+    await page.keyboard.press("Home");
+    await expect(menuItems.first()).toBeFocused();
+
+    await page.keyboard.press("ArrowDown");
+    await expect(menuItems.nth(1)).toBeFocused();
+
+    await page.keyboard.press("End");
     await expect(menuItems.last()).toBeFocused();
   });
 
