@@ -119,7 +119,41 @@ test("combined Canonical · Beta entry renders the amber Beta chip", async ({ pa
 });
 
 // ---------------------------------------------------------------------------
-// Test 5 — A second Beta entry in a different section also shows a chip
+// Test 5 — The combined badge remains visible in the preview header
+// ---------------------------------------------------------------------------
+
+test("combined Canonical · Beta entry keeps an amber Beta chip in the preview header", async ({
+  page,
+}) => {
+  await openExamplesTab(page);
+  await expandSection(page, "Data & Planning");
+
+  const xychartButton = page.locator('[data-example-id="xychart-mermaid-basic"]');
+  await expect(xychartButton).toBeVisible({ timeout: 5000 });
+
+  const sidebarChip = xychartButton
+    .locator("span")
+    .filter({ hasText: /^Beta$/ })
+    .first();
+  await expect(sidebarChip).toBeVisible();
+
+  await xychartButton.click();
+
+  const previewHeader = page.getByText("Themed preview", { exact: true }).locator("..");
+  const headerChip = previewHeader
+    .locator("span")
+    .filter({ hasText: /^Beta$/ })
+    .first();
+  await expect(headerChip).toBeVisible();
+  await expect(headerChip).toHaveText("Beta");
+
+  const headerClassName = await headerChip.getAttribute("class");
+  expect(headerClassName).toMatch(/amber/);
+  await expect(sidebarChip).toBeVisible();
+});
+
+// ---------------------------------------------------------------------------
+// Test 6 — A second Beta entry in a different section also shows a chip
 // ---------------------------------------------------------------------------
 
 test("Beta chip appears for a Wardley entry in the Specialty section", async ({ page }) => {
@@ -135,7 +169,7 @@ test("Beta chip appears for a Wardley entry in the Specialty section", async ({ 
 });
 
 // ---------------------------------------------------------------------------
-// Test 6 — Experimental chip is visible in the sidebar and preview header
+// Test 7 — Experimental chip is visible in the sidebar and preview header
 // ---------------------------------------------------------------------------
 
 test("Experimental chip is visible in the Specialty sidebar next to the Venn entry", async ({
@@ -184,7 +218,7 @@ test("Experimental chip also appears in the preview header after selecting the V
 });
 
 // ---------------------------------------------------------------------------
-// Test 9 — Entries without a badge show no chip
+// Test 10 — Entries without a badge show no chip
 // ---------------------------------------------------------------------------
 
 test("Sidebar entries without a badge show no chip text", async ({ page }) => {
