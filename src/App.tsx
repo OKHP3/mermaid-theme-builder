@@ -2112,10 +2112,7 @@ export function AppShell() {
         style={{ background: "#0f1a17", borderTop: "1px solid rgba(212,201,181,0.08)" }}
         hidden={hydrated && !firstVisitComplete}
       >
-        <p
-          className="text-[9px] text-center"
-          style={{ color: "rgba(212,201,181,0.45)", lineHeight: 1.4 }}
-        >
+        <p className="forge-mobile-disclaimer text-[9px] text-center">
           Not affiliated with Mermaid, Mermaid Chart, or Mermaid.ai
         </p>
       </div>

@@ -402,7 +402,7 @@ export function ExportToolbar({
             aria-pressed={showExportPreview}
             className={`flex items-center gap-1 text-[10px] px-2 py-1 rounded border font-medium transition-colors ${
               showExportPreview
-                ? "border-primary/40 bg-primary/8 text-primary"
+                ? "border-primary/40 bg-primary/8 text-accent-foreground"
                 : "border-border text-muted-foreground hover:bg-muted hover:text-foreground"
             }`}
           >
@@ -466,7 +466,7 @@ export function ExportToolbar({
                 aria-pressed={isActive}
                 className={`relative text-[10px] px-2 py-1 font-mono font-medium transition-colors ${
                   isActive
-                    ? "bg-primary/15 text-primary"
+                    ? "bg-primary/15 text-accent-foreground"
                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 }`}
               >
@@ -485,7 +485,7 @@ export function ExportToolbar({
           <button
             type="button"
             onClick={onResetOutputFormat}
-            className="text-[10px] px-2 py-1 rounded border border-primary/30 text-primary hover:bg-primary/8 transition-colors"
+            className="text-[10px] px-2 py-1 rounded border border-primary/30 text-accent-foreground hover:bg-primary/8 transition-colors"
             title={`Use ${rendererProfile.shortName}'s recommended format`}
           >
             Reset to recommended
@@ -555,7 +555,7 @@ export function ExportToolbar({
                   : isPrimary
                     ? "border-primary bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
                     : isAccent
-                      ? "border-primary/35 bg-primary/8 text-primary hover:bg-primary/14 disabled:opacity-40 disabled:cursor-not-allowed"
+                      ? "border-primary/35 bg-primary/8 text-accent-foreground hover:bg-primary/14 disabled:opacity-40 disabled:cursor-not-allowed"
                       : "border-border bg-card text-foreground hover:bg-muted hover:border-primary/30 disabled:opacity-40 disabled:cursor-not-allowed"
               }`}
             >
@@ -581,7 +581,7 @@ export function ExportToolbar({
               {type === "prompt" && !copied && rendererProfile && (
                 <span
                   title={`Scaffold is tailored for ${rendererProfile.shortName} — clear the renderer target for a portable generic version`}
-                  className="ml-0.5 px-1.5 py-px rounded text-[10px] font-semibold leading-none bg-primary/15 text-primary border border-primary/30 cursor-help"
+                  className="ml-0.5 px-1.5 py-px rounded text-[10px] font-semibold leading-none bg-primary/15 text-accent-foreground border border-primary/30 cursor-help"
                 >
                   {rendererProfile.shortName}
                 </span>
@@ -649,7 +649,7 @@ export function ExportToolbar({
                         <>
                           bootstrap
                           {rendererProfile && (
-                            <span className="px-1.5 py-px rounded text-[10px] font-semibold leading-none bg-primary/15 text-primary border border-primary/30">
+                            <span className="px-1.5 py-px rounded text-[10px] font-semibold leading-none bg-primary/15 text-accent-foreground border border-primary/30">
                               {rendererProfile.shortName}
                             </span>
                           )}
@@ -667,7 +667,7 @@ export function ExportToolbar({
                         <>
                           prompt
                           {rendererProfile && (
-                            <span className="px-1.5 py-px rounded text-[10px] font-semibold leading-none bg-primary/15 text-primary border border-primary/30">
+                            <span className="px-1.5 py-px rounded text-[10px] font-semibold leading-none bg-primary/15 text-accent-foreground border border-primary/30">
                               {rendererProfile.shortName}
                             </span>
                           )}
