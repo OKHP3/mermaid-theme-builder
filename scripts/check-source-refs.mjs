@@ -105,8 +105,7 @@ if (allFiles.length === 0) {
 // Matches a local file-path reference in a comment.
 // Roots: src/ e2e/ scripts/ docs/
 // Extensions: .ts .tsx .sh .mjs .js .md .snap
-const PATH_RE =
-  /\b(src|e2e|scripts|docs)\/([\w./-]+?\.(ts|tsx|sh|mjs|js|md|snap))\b/g;
+const PATH_RE = /\b(src|e2e|scripts|docs)\/([\w./-]+?\.(ts|tsx|sh|mjs|js|md|snap))\b/g;
 
 // A line is "comment context" if, after stripping leading whitespace, it starts
 // with one of: // * /** /*
