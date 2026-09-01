@@ -23,6 +23,9 @@ import {
   expectPunctColor,
   countPropKeyColorOccurrences,
   countHexColorOccurrences,
+  expectSwatchFillColor,
+  expectNoSwatchFillColor,
+  expectSwatchStrokeColor,
 } from "./helpers/hlAssert";
 
 /**
@@ -161,6 +164,27 @@ describe("ClassBrowser — supportsClassDef={true} (active state)", () => {
     const html = render({ supportsClassDef: true });
     expect(html).toContain("primary");
     expect(html).toContain("secondary");
+  });
+
+  it("keeps each class card's fill and stroke colors associated with the correct class", () => {
+    const html = render({ supportsClassDef: true });
+
+    function cardHtml(name: string): string {
+      const cardStart = html.indexOf(`aria-label="Copy usage :::${name}"`);
+      expect(cardStart, `card for ${name}`).toBeGreaterThanOrEqual(0);
+      const cardEnd = html.indexOf("</button>", cardStart);
+      expect(cardEnd, `end of card for ${name}`).toBeGreaterThan(cardStart);
+      return html.slice(cardStart, cardEnd);
+    }
+
+    const primaryCard = cardHtml("primary");
+    expectSwatchFillColor(primaryCard, SAMPLE_CLASS_DEFS[0].fill);
+    expectSwatchStrokeColor(primaryCard, SAMPLE_CLASS_DEFS[0].stroke);
+    expectNoSwatchFillColor(primaryCard, SAMPLE_CLASS_DEFS[1].fill);
+
+    const secondaryCard = cardHtml("secondary");
+    expectSwatchFillColor(secondaryCard, SAMPLE_CLASS_DEFS[1].fill);
+    expectSwatchStrokeColor(secondaryCard, SAMPLE_CLASS_DEFS[1].stroke);
   });
 
   it("card copy-usage button is present (native button element)", () => {

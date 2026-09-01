@@ -91,6 +91,23 @@ export function expectNoPunctColor(html: string): void {
   expect(html).not.toContain(`color:${HL.punct}`);
 }
 
+// ── ClassBrowser — rendered swatch colors ───────────────────────────────────
+
+/** Asserts a ClassBrowser card contains the expected swatch fill color. */
+export function expectSwatchFillColor(html: string, expectedColor: string): void {
+  expect(html).toContain(`background-color:${expectedColor}`);
+}
+
+/** Asserts a ClassBrowser card does not contain an unexpected swatch fill color. */
+export function expectNoSwatchFillColor(html: string, unexpectedColor: string): void {
+  expect(html).not.toContain(`background-color:${unexpectedColor}`);
+}
+
+/** Asserts a ClassBrowser card contains the expected swatch stroke color. */
+export function expectSwatchStrokeColor(html: string, expectedColor: string): void {
+  expect(html).toContain(`stroke="${expectedColor}"`);
+}
+
 // ── %%{init}%% directive ─────────────────────────────────────────────────
 
 /** Asserts the HTML contains the init-directive bracket color (amber). */
