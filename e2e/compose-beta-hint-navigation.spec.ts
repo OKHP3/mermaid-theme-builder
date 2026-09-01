@@ -167,3 +167,56 @@ test("Experimental hint bar disappears when the preview picker switches to a non
   // 5. The Experimental hint must disappear as the selected sample changes.
   await expect(seeDetailsBtn).not.toBeAttached({ timeout: 5_000 });
 });
+
+test("Experimental hint returns when revisiting the preview after a reload", async ({ page }) => {
+  // Seed the Experimental sample before React's first render, but only on the
+  // first document. addInitScript runs again for page.reload(), so reseeding
+  // here would hide a broken localStorage write.
+  await page.addInitScript(
+    ({ key, value }: { key: string; value: string }) => {
+      if (window.sessionStorage.getItem("__composeBetaHintTestSeeded") === "true") return;
+
+      window.localStorage.clear();
+      localStorage.setItem("mtb.firstVisit", "true");
+      window.sessionStorage.clear();
+      window.sessionStorage.setItem("__composeBetaHintTestSeeded", "true");
+      window.localStorage.setItem(key, value);
+    },
+    { key: LS_PREVIEW_KEY, value: EXPERIMENTAL_SAMPLE_ID }
+  );
+
+  await page.goto("/");
+  await page.waitForLoadState("load");
+
+  await Promise.all([
+    page.waitForURL((url) => url.hash === "#compose"),
+    page.getByRole("tab", { name: "Compose" }).first().click(),
+  ]);
+
+  const hint = page.getByRole("note");
+  const seeDetailsBtn = page.getByRole("button", { name: "See support details →" });
+  await expect(hint).toBeVisible({ timeout: 8_000 });
+  await expect(hint).toContainText("Experimental diagram type");
+  await expect(seeDetailsBtn).toBeVisible();
+
+  // Change away from the Experimental preview and verify the hint clears.
+  const picker = page.getByLabel("Preview diagram");
+  await picker.selectOption(NON_BETA_SAMPLE_ID);
+  await expect(seeDetailsBtn).not.toBeAttached({ timeout: 5_000 });
+
+  // A reload must retain the standard selection rather than restoring stale
+  // Experimental state from the initial render.
+  await page.reload();
+  await page.waitForLoadState("load");
+  await expect(page.getByLabel("Preview diagram")).toHaveValue(NON_BETA_SAMPLE_ID);
+  await expect(page.getByRole("button", { name: "See support details →" })).not.toBeAttached({
+    timeout: 5_000,
+  });
+
+  // Revisit the Experimental selection and confirm its specific support hint
+  // is derived from the newly selected catalog entry.
+  await page.getByLabel("Preview diagram").selectOption(EXPERIMENTAL_SAMPLE_ID);
+  await expect(hint).toBeVisible({ timeout: 5_000 });
+  await expect(hint).toContainText("Experimental diagram type");
+  await expect(page.getByRole("button", { name: "See support details →" })).toBeVisible();
+});
