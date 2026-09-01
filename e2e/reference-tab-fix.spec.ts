@@ -12,6 +12,8 @@
  *   2. Clicking Fix updates the diagram textarea — the typo is gone and the
  *      correct token is present.
  *   3. The Fix button disappears once the typo has been corrected.
+ *   4. Clicking Fix refreshes the rendered preview for the visible class
+ *      assignment.
  *
  * Note: the Class Library section is collapsed by default; these tests click
  * the "Class Library" summary to open it before asserting the Fix button.
@@ -171,4 +173,43 @@ test("Fix button only corrects the selected typo when multiple typos are present
   await expect(input).not.toHaveValue(/:::prmary/);
   await expect(input).toHaveValue(/:::secndary/);
   await expect(secondaryFixButton).toBeVisible();
+});
+
+// ---------------------------------------------------------------------------
+// Test 6 — Fixing a class typo refreshes the rendered diagram preview
+// ---------------------------------------------------------------------------
+
+test("fixing a class typo refreshes the rendered diagram preview", async ({ page }) => {
+  await loadWithDiagram(page, DIAGRAM_WITH_TYPO);
+  await openApplyTab(page);
+
+  // Wait for the visible class assignment to render before exercising Fix.
+  const preview = page.locator('section[aria-label="Diagram preview"] [id^="mermaid-preview-"]');
+  const renderedDiagram = preview.locator("svg.flowchart");
+  await expect(renderedDiagram).toBeVisible({ timeout: 10_000 });
+  const initialMarkup = await renderedDiagram.evaluate((svg) => svg.outerHTML);
+
+  await openClassLibrary(page);
+  const fixButton = page.getByRole("button", { name: "Fix :::prmary → :::primary" });
+  await expect(fixButton).toBeVisible({ timeout: 5000 });
+  await fixButton.click();
+
+  // Fix is applied from Reference, so return to Apply before checking the
+  // preview's visible state.
+  await openApplyTab(page);
+
+  // This assertion is intentionally independent of the source textarea and
+  // Fix-button state: the corrected source must produce a fresh SVG preview.
+  await expect
+    .poll(
+      async () => {
+        const currentDiagram = preview.locator("svg.flowchart");
+        if (!(await currentDiagram.count())) return null;
+        return currentDiagram.first().evaluate((svg) => svg.outerHTML);
+      },
+      { timeout: 10_000 }
+    )
+    .not.toBe(initialMarkup);
+  await expect(renderedDiagram).toBeVisible();
+  await expect(page.getByText("Render Error", { exact: true })).toHaveCount(0);
 });

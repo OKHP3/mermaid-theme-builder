@@ -23,6 +23,54 @@ function compareCodePoints(a, b) {
   return a < b ? -1 : a > b ? 1 : 0;
 }
 
+const DISPLAY_NAME_OVERRIDES = {
+  "okhp3-mermaid-architecture": "Architecture",
+  "okhp3-mermaid-bpmn": "BPMN / Business Process",
+  "okhp3-mermaid-core": "Mermaid Core",
+  "okhp3-mermaid-data": "Data Models",
+  "okhp3-mermaid-governance": "Governance",
+  "okhp3-mermaid-publish": "Publish & Export",
+  "okhp3-mermaid-repair": "Repair",
+  "okhp3-mermaid-theme-builder": "Theme Builder",
+  "okhp3-mermaid-update": "Update",
+  "okhp3-skill-promotion": "Skill Promotion",
+};
+
+const ROLE_OVERRIDES = {
+  "okhp3-mermaid-core": "foundation",
+  "okhp3-mermaid-architecture": "domain",
+  "okhp3-mermaid-bpmn": "domain",
+  "okhp3-mermaid-data": "domain",
+  "okhp3-mermaid-governance": "governance",
+  "okhp3-mermaid-publish": "workflow",
+  "okhp3-mermaid-repair": "workflow",
+  "okhp3-mermaid-theme-builder": "tooling",
+  "okhp3-mermaid-update": "workflow",
+  "okhp3-skill-promotion": "tooling",
+};
+
+const DESCRIPTION_OVERRIDES = {
+  "okhp3-mermaid-architecture":
+    "System and solution architecture diagrams — C4 model (Context/Container/Component/Code), architecture-beta cloud diagrams, block diagrams, and integration flows.",
+  "okhp3-mermaid-bpmn":
+    "BPMN-informed business process modeling — workflows, approval chains, swim lanes, cross-department handoffs, and decision gateways in Mermaid syntax.",
+  "okhp3-mermaid-core":
+    "Foundation skill for all Mermaid diagram work — load this first. Handles diagram type selection, the OKHP3 design system, file naming, and the three-gate validation framework.",
+  "okhp3-mermaid-data":
+    "Entity-relationship diagrams, class diagrams, and schema documentation — data models and object structures with cardinality and relationship annotations.",
+  "okhp3-mermaid-governance":
+    "Establish visual and behavioral standards for a diagram family — conformance profiles, style rules, and governance checks for consistent team output.",
+  "okhp3-mermaid-publish":
+    "Render and publish finished diagrams — local PNG/SVG output, Markdown embedding, and Mermaid Chart MCP for shareable links. Use after passing all three validation gates.",
+  "okhp3-mermaid-repair":
+    "Syntax repair for broken Mermaid diagrams — diagnoses parse failures and applies the minimum fix without restructuring content, style, or labels.",
+  "okhp3-mermaid-theme-builder":
+    "Apply reusable color palettes and visual governance to Mermaid diagrams — themeVariables blocks, %%{init}%% configuration, and renderer-safe styled output.",
+  "okhp3-mermaid-update":
+    "Style-preserving update of an existing diagram — applies the minimum diff for new nodes, revised labels, or restructured flow without touching classDef or theme config.",
+  "okhp3-skill-promotion":
+    "Promote and synchronize a project-local Agent Skill into a portable, reviewable distribution package — provenance record, canonical family assignment, and safe handoff into OKHP3/skillz.",
+};
 function usage() {
   console.log(`Usage: node scripts/sync-skills-catalog.mjs [options]
 
@@ -121,8 +169,9 @@ function parseFrontmatter(text, filePath) {
   return result;
 }
 
-function displayNameFor(name, metadata) {
+function displayNameFor(name, metadata = {}) {
   if (metadata.catalog_display_name) return metadata.catalog_display_name;
+  if (DISPLAY_NAME_OVERRIDES[name]) return DISPLAY_NAME_OVERRIDES[name];
   const label = name
     .replace(/^okhp3-/, "")
     .replace(/^mermaid-/, "")
@@ -132,16 +181,18 @@ function displayNameFor(name, metadata) {
   return label || name;
 }
 
-function roleFor(category, metadata) {
+function roleFor(name, category, metadata = {}) {
   if (metadata.catalog_role) return metadata.catalog_role;
+  if (ROLE_OVERRIDES[name]) return ROLE_OVERRIDES[name];
   if (category === "diagramming") return "domain";
   if (category === "workflow") return "workflow";
   if (category === "governance") return "governance";
   return "tooling";
 }
 
-function descriptionFor(description, metadata) {
+function descriptionFor(name, description, metadata = {}) {
   if (metadata.catalog_description) return metadata.catalog_description;
+  if (DESCRIPTION_OVERRIDES[name]) return DESCRIPTION_OVERRIDES[name];
   return description.length <= 220 ? description : `${description.slice(0, 217).trimEnd()}...`;
 }
 
@@ -182,8 +233,8 @@ async function discoverSkills(skillsDir) {
     }
 
     const displayName = displayNameFor(name, frontmatter.metadata);
-    const role = roleFor(category, frontmatter.metadata);
-    const catalogDescription = descriptionFor(description, frontmatter.metadata);
+    const role = roleFor(name, category, frontmatter.metadata);
+    const catalogDescription = descriptionFor(name, description, frontmatter.metadata);
     if (!ROLE_ORDER.includes(role)) {
       throw new Error(
         `${skillPath}: metadata.catalog_role must be one of ${ROLE_ORDER.join(", ")}`
