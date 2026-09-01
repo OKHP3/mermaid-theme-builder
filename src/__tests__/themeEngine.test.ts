@@ -144,6 +144,90 @@ describe("generateThemedCode", () => {
     );
     expect(frontmatter.themeVariables).toEqual(init.themeVariables);
   });
+
+  const FAMILY_OVERLAY_CASES = [
+    {
+      family: "sequenceDiagram",
+      diagram: "sequenceDiagram\n  Alice->>Bob: Hello",
+      overlayKey: "actorBkg",
+    },
+    {
+      family: "stateDiagram",
+      diagram: "stateDiagram-v2\n  [*] --> Ready",
+      overlayKey: "stateBkg",
+    },
+    {
+      family: "erDiagram",
+      diagram: "erDiagram\n  USER ||--o{ ORDER : places",
+      overlayKey: "entityFill",
+    },
+    {
+      family: "classDiagram",
+      diagram: "classDiagram\n  Animal <|-- Duck",
+      overlayKey: "classText",
+    },
+    {
+      family: "gantt",
+      diagram: "gantt\n  title Project\n  section Work\n  Task :done, task, 2026-01-01, 1d",
+      overlayKey: "taskBkgColor",
+    },
+    {
+      family: "journey",
+      diagram: "journey\n  title User journey\n  section Work\n    Task: 5: User",
+      overlayKey: "taskBkgColor",
+    },
+    {
+      family: "pie",
+      diagram: 'pie title Allocation\n  "Work" : 60\n  "Rest" : 40',
+      overlayKey: "pie1",
+    },
+    {
+      family: "gitGraph",
+      diagram: "gitGraph\n  commit",
+      overlayKey: "git0",
+    },
+    {
+      family: "quadrantChart",
+      diagram: "quadrantChart\n  x-axis Low --> High\n  y-axis Low --> High\n  Point: [0.5, 0.5]",
+      overlayKey: "quadrant1Fill",
+    },
+    {
+      family: "timeline",
+      diagram: "timeline\n  title History\n  2026 : Theme Builder",
+      overlayKey: "cScale0",
+    },
+    {
+      family: "xychart",
+      diagram: "xychart-beta\n  x-axis [A, B]\n  bar [1, 2]",
+      overlayKey: "xyChart",
+    },
+    {
+      family: "block",
+      diagram: "block-beta\n  A[Start] --> B[End]",
+      overlayKey: "mainBkg",
+    },
+  ] as const;
+
+  it.each(FAMILY_OVERLAY_CASES)(
+    "keeps $family overlay variables aligned between init and frontmatter",
+    ({ family, diagram, overlayKey }) => {
+      const options = {
+        ...BASE_OPTIONS,
+        palette: BRAND_PALETTES[0],
+        diagramFamily: family,
+      } as const;
+      const init = extractTheme(generateThemedCode(diagram, options));
+      const frontmatter = extractTheme(
+        generateThemedCode(diagram, { ...options, outputFormat: "frontmatter" })
+      );
+
+      expect(init.sourceFormat).toBe("init-directive");
+      expect(frontmatter.sourceFormat).toBe("frontmatter");
+      expect(init.themeVariables[overlayKey]).toBeTruthy();
+      expect(frontmatter.themeVariables[overlayKey]).toBe(init.themeVariables[overlayKey]);
+      expect(frontmatter.themeVariables).toEqual(init.themeVariables);
+    }
+  );
 });
 
 describe("generateMarkdownExport", () => {
