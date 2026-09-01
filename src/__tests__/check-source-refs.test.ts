@@ -1,10 +1,9 @@
 /**
  * Integration tests for scripts/check-source-refs.mjs.
  *
- * The script scans all TypeScript files in src/ and e2e/ for comment-line
- * cross-references and exits 1 if any referenced path does not exist on disk.
- * These tests confirm that a deliberately drifted path is caught (exit 1) and
- * that a valid reference passes (exit 0).
+ * The script scans TypeScript files for comment-line cross-references and exits
+ * 1 if any referenced path does not exist on disk. These tests scope the scan
+ * to their temporary fixture so unrelated repository drift cannot affect them.
  *
  * Relevant files:
  * - scripts/check-source-refs.mjs — the script under test
@@ -19,17 +18,17 @@ import { fileURLToPath } from "node:url";
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const SCRIPT = resolve(root, "scripts/check-source-refs.mjs");
 
-// The fixture lives inside src/__tests__/ so the scanner finds it automatically
-// (the script runs `find src -type f \( -name "*.ts" … \)`).
+// The fixture lives inside src/__tests__/ and is passed explicitly with --file.
 // The leading double-underscore name makes it easy to identify as a test artifact.
 const FIXTURE = resolve(root, "src/__tests__/__drift-fixture.ts");
+const FIXTURE_RELATIVE = "src/__tests__/__drift-fixture.ts";
 
 function writeFixture(content: string): void {
   writeFileSync(FIXTURE, content, "utf8");
 }
 
-function runScript(): { status: number; stdout: string; stderr: string } {
-  const result = spawnSync("node", [SCRIPT], { cwd: root, encoding: "utf8" });
+function runScript(...args: string[]): { status: number; stdout: string; stderr: string } {
+  const result = spawnSync("node", [SCRIPT, ...args], { cwd: root, encoding: "utf8" });
   return {
     status: result.status ?? 1,
     stdout: result.stdout ?? "",
@@ -55,7 +54,7 @@ describe("check-source-refs.mjs", () => {
     // // or *, so the reference must be in a comment, not a string or import.
     writeFixture("// See: src/nonexistent/does-not-exist.ts\nexport {};\n");
 
-    const { status, stderr } = runScript();
+    const { status, stderr } = runScript("--file", FIXTURE_RELATIVE);
 
     expect(status).toBe(1);
     // The broken path should appear in the error output.
@@ -68,7 +67,7 @@ describe("check-source-refs.mjs", () => {
     // Reference a path that is guaranteed to exist: the script under test itself.
     writeFixture("// See: scripts/check-source-refs.mjs\nexport {};\n");
 
-    const { status } = runScript();
+    const { status } = runScript("--file", FIXTURE_RELATIVE);
 
     expect(status).toBe(0);
   });

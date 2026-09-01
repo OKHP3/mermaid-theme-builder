@@ -25,13 +25,15 @@
  *
  * Usage:
  *   node scripts/check-source-refs.mjs          # scans src/ and e2e/
+ *   node scripts/check-source-refs.mjs --file src/__tests__/fixture.ts
+ *                                               # scans one TypeScript file
  *   pnpm run check:source-refs
  *
  * Exits 0 when all referenced paths resolve; exits 1 with clear output otherwise.
  */
 
 import { readFileSync, existsSync } from "node:fs";
-import { resolve, dirname } from "node:path";
+import { resolve, dirname, relative, isAbsolute } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execSync } from "node:child_process";
 
@@ -56,8 +58,40 @@ function findTs(dir) {
   }
 }
 
+function getFilesToScan() {
+  const fileFlagIndex = process.argv.indexOf("--file");
+  if (fileFlagIndex === -1) {
+    return scanDirs.flatMap(findTs);
+  }
+
+  const fileArg = process.argv[fileFlagIndex + 1];
+  if (!fileArg || fileArg.startsWith("--")) {
+    console.error("Usage: node scripts/check-source-refs.mjs --file <path-to-typescript-file>");
+    process.exit(1);
+  }
+
+  const absPath = resolve(root, fileArg);
+  const relPath = relative(root, absPath);
+  if (isAbsolute(relPath) || relPath.startsWith("..")) {
+    console.error(`File must be inside the repository: ${fileArg}`);
+    process.exit(1);
+  }
+
+  if (!/\.(ts|tsx)$/i.test(absPath)) {
+    console.error(`--file must point to a TypeScript file: ${fileArg}`);
+    process.exit(1);
+  }
+
+  if (!existsSync(absPath)) {
+    console.error(`File not found: ${fileArg}`);
+    process.exit(1);
+  }
+
+  return [relPath];
+}
+
 const scanDirs = ["src", "e2e"];
-const allFiles = scanDirs.flatMap(findTs);
+const allFiles = getFilesToScan();
 
 if (allFiles.length === 0) {
   console.error("No TypeScript files found to scan.");
