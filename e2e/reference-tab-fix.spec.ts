@@ -23,12 +23,14 @@ import { test, expect, type Page } from "@playwright/test";
 
 // ---------------------------------------------------------------------------
 // Fixture — a flowchart that:
+//   • defines a visible primary class style
 //   • uses :::prmary (one-character-deletion typo of "primary")
 //     so the ClassBrowser detects it as an unknown class name with a
 //     near-miss suggestion of "primary" (edit distance = 1)
 // ---------------------------------------------------------------------------
 
 const DIAGRAM_WITH_TYPO = `flowchart TD
+  classDef primary fill:#123456,stroke:#c46a2c,color:#e5e7eb
   A[Start]:::prmary --> B[Finish]:::prmary
 `;
 
@@ -42,13 +44,16 @@ const DIAGRAM_WITH_TWO_TYPOS = `flowchart TD
 
 async function loadWithDiagram(page: Page, inputCode: string): Promise<void> {
   await page.addInitScript((code) => {
-    window.localStorage.clear();
-    localStorage.setItem("mtb.firstVisit", "true");
-    window.sessionStorage.clear();
-    window.localStorage.setItem(
-      "mtb.state.v1",
-      JSON.stringify({ schemaVersion: 1, inputCode: code })
-    );
+    const seedKey = "mtb.reference-tab-fix.seeded";
+    if (!window.sessionStorage.getItem(seedKey)) {
+      window.localStorage.clear();
+      localStorage.setItem("mtb.firstVisit", "true");
+      window.localStorage.setItem(
+        "mtb.state.v1",
+        JSON.stringify({ schemaVersion: 1, inputCode: code })
+      );
+      window.sessionStorage.setItem(seedKey, "true");
+    }
   }, inputCode);
 
   await page.goto("/");
@@ -212,4 +217,45 @@ test("fixing a class typo refreshes the rendered diagram preview", async ({ page
     .not.toBe(initialMarkup);
   await expect(renderedDiagram).toBeVisible();
   await expect(page.getByText("Render Error", { exact: true })).toHaveCount(0);
+});
+
+// ---------------------------------------------------------------------------
+// Test 7 — Fixing a class typo preserves node styling after a page reload
+// ---------------------------------------------------------------------------
+
+test("fixed class assignment keeps its classDef styling after page reload", async ({ page }) => {
+  await loadWithDiagram(page, DIAGRAM_WITH_TYPO);
+  await openApplyTab(page);
+  await openClassLibrary(page);
+
+  const fixButton = page.getByRole("button", { name: "Fix :::prmary → :::primary" });
+  await expect(fixButton).toBeVisible({ timeout: 5000 });
+  await fixButton.click();
+
+  // Wait for the corrected source to reach persistence before reloading. The
+  // styling assertion below remains separate from source-text assertions.
+  await expect
+    .poll(
+      () =>
+        page.evaluate(() => {
+          const raw = window.localStorage.getItem("mtb.state.v1");
+          if (!raw) return "";
+          return (JSON.parse(raw) as { inputCode?: string }).inputCode ?? "";
+        }),
+      { timeout: 5000 }
+    )
+    .toContain(":::primary");
+
+  await page.reload();
+  await openApplyTab(page);
+
+  const preview = page.locator('section[aria-label="Diagram preview"] [id^="mermaid-preview-"]');
+  const primaryNode = preview.locator("svg.flowchart .node").first();
+  await expect(primaryNode).toBeVisible({ timeout: 10_000 });
+
+  // This is intentionally a reload-only assertion: the corrected assignment
+  // must still receive the classDef's concrete fill and stroke values.
+  const primaryNodeShape = primaryNode.locator("rect.label-container");
+  await expect(primaryNodeShape).toHaveCSS("fill", "rgb(18, 52, 86)");
+  await expect(primaryNodeShape).toHaveCSS("stroke", "rgb(196, 106, 44)");
 });
