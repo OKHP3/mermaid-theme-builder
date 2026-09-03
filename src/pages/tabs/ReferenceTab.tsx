@@ -47,6 +47,10 @@ interface ReferenceTabProps {
   rendererTargetHintDismissed?: boolean;
   /** Dismiss the no-renderer guidance without changing renderer selection. */
   onDismissRendererTargetHint?: () => void;
+  /** When provided, open the distribution section and focus this renderer card. */
+  openDistributionRenderer?: string | null;
+  /** Clear a one-shot distribution navigation request after it is handled. */
+  onDistributionOpened?: () => void;
   /** User's current output format preference. */
   outputFormat?: "init-directive" | "frontmatter";
   /**
@@ -176,6 +180,8 @@ export function ReferenceTab({
   rendererTarget = "",
   rendererTargetHintDismissed = false,
   onDismissRendererTargetHint = () => {},
+  openDistributionRenderer = null,
+  onDistributionOpened,
   outputFormat = "init-directive",
   onCopyForRenderer,
   onCopyShareLink,
@@ -200,6 +206,8 @@ export function ReferenceTab({
 
   const rendererParityRef = useRef<HTMLDetailsElement>(null);
   const classLibraryRef = useRef<HTMLDetailsElement>(null);
+  const distributionRef = useRef<HTMLDetailsElement>(null);
+  const destinationCardRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   // Single accordion state — only one section open at a time; all collapsed on load.
   const [openRefSection, setOpenRefSection] = useState<string | null>(null);
@@ -229,6 +237,30 @@ export function ReferenceTab({
     el.scrollIntoView({ behavior: "smooth", block: "start" });
     onParityMatrixOpened?.();
   }, [openParityMatrix, onParityMatrixOpened]);
+
+  // When navigated here from the Apply renderer selector, open the distribution
+  // section and move focus to the matching destination card. The request is
+  // one-shot so normal Reference navigation remains unchanged afterward.
+  useEffect(() => {
+    if (!openDistributionRenderer) return;
+    if (classLibraryRef.current) classLibraryRef.current.open = false;
+    if (rendererParityRef.current) rendererParityRef.current.open = false;
+    setOpenRefSection("distribute");
+
+    const frame = requestAnimationFrame(() => {
+      const details = distributionRef.current;
+      if (details) details.open = true;
+
+      const card = destinationCardRefs.current[openDistributionRenderer];
+      if (card) {
+        card.scrollIntoView({ behavior: "smooth", block: "center" });
+        card.focus({ preventScroll: true });
+      }
+      onDistributionOpened?.();
+    });
+
+    return () => cancelAnimationFrame(frame);
+  }, [openDistributionRenderer, onDistributionOpened]);
 
   // ── Distribution section copy state ────────────────────────────────────────
   // Track which renderer's copy button was last clicked so we can flash
@@ -450,6 +482,7 @@ export function ReferenceTab({
 
         {/* ── Use in… Distribution Center ──────────────────────────────────── */}
         <details
+          ref={distributionRef}
           className="group border-b border-border"
           open={openRefSection === "distribute"}
           onToggle={(e) =>
@@ -557,7 +590,14 @@ export function ReferenceTab({
                 return (
                   <div
                     key={renderer.id}
-                    className={`px-4 py-2.5 flex items-center gap-3 transition-colors ${
+                    ref={(element) => {
+                      destinationCardRefs.current[renderer.id] = element;
+                    }}
+                    data-renderer-id={renderer.id}
+                    role="group"
+                    aria-label={`${renderer.displayName} export destination`}
+                    tabIndex={-1}
+                    className={`px-4 py-2.5 flex items-center gap-3 transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-inset ${
                       isSelected ? "bg-primary/5" : "hover:bg-muted/20"
                     }`}
                   >

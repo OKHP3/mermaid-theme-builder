@@ -13,6 +13,7 @@ interface DiagramDetectHeaderProps {
   onLookChange: (v: MermaidLook) => void;
   rendererTarget: string;
   onRendererTargetChange: (v: string) => void;
+  onNavigateToRendererExport?: (rendererId: string) => void;
   rendererProfile: RendererProfile | undefined;
   rendererLookWarning: string | null;
   showSyntaxTipButton?: boolean;
@@ -28,6 +29,7 @@ export function DiagramDetectHeader({
   onLookChange,
   rendererTarget,
   onRendererTargetChange,
+  onNavigateToRendererExport,
   rendererProfile,
   rendererLookWarning,
   showSyntaxTipButton = false,
@@ -180,6 +182,18 @@ export function DiagramDetectHeader({
               {rendererProfile.mermaidVersionApprox}
             </span>
           )
+        )}
+        {rendererProfile && onNavigateToRendererExport && (
+          <button
+            type="button"
+            onClick={() => onNavigateToRendererExport(rendererProfile.id)}
+            aria-label={`Open ${rendererProfile.shortName} export card in Reference`}
+            title={`Open Reference > Use in… for ${rendererProfile.displayName}`}
+            className="shrink-0 inline-flex items-center gap-1 rounded border border-primary/25 bg-primary/5 px-1.5 py-0.5 text-[10px] font-medium text-primary transition-colors hover:bg-primary/15"
+          >
+            <span aria-hidden="true">→</span>
+            Use in…
+          </button>
         )}
       </div>
 

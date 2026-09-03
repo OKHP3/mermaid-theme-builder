@@ -357,6 +357,7 @@ export function AppShell() {
   const settingsBtnRef = useRef<HTMLButtonElement>(null);
   const settingsMenuRef = useRef<HTMLDivElement>(null);
   const [openParityMatrix, setOpenParityMatrix] = useState(false);
+  const [openDistributionRenderer, setOpenDistributionRenderer] = useState<string | null>(null);
   const [myThemeSlots, setMyThemeSlots] = useState<MyThemeSlot[]>(() => [
     createDefaultMyThemeSlot(1, BRAND_PALETTES[0].colors),
   ]);
@@ -435,6 +436,11 @@ export function AppShell() {
   const handleNavigateToParityMatrix = useCallback(() => {
     setActiveTab("reference");
     setOpenParityMatrix(true);
+  }, []);
+
+  const handleNavigateToRendererExport = useCallback((rendererId: string) => {
+    setActiveTab("reference");
+    setOpenDistributionRenderer(rendererId);
   }, []);
 
   const supportsClassDef = useMemo(
@@ -1933,6 +1939,7 @@ export function AppShell() {
                 onOutputFormatChange={handleOutputFormatChange}
                 outputFormatOverridden={outputFormatOverridden}
                 onResetOutputFormat={handleResetOutputFormat}
+                onNavigateToRendererExport={handleNavigateToRendererExport}
                 strokeWidth={strokeWidth}
                 lastExampleType={lastExampleType}
                 onRecordExampleType={handleRecordExampleType}
@@ -2059,6 +2066,8 @@ export function AppShell() {
                   onInputChange={setInputCode}
                   openParityMatrix={openParityMatrix}
                   onParityMatrixOpened={() => setOpenParityMatrix(false)}
+                  openDistributionRenderer={openDistributionRenderer}
+                  onDistributionOpened={() => setOpenDistributionRenderer(null)}
                   myThemeSlots={myThemeSlots}
                   activeMyThemeSlotId={activeMyThemeSlotId}
                   onSelectMyThemeSlot={handleSelectMyThemeSlot}

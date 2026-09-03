@@ -56,6 +56,7 @@ interface ApplyTabProps {
   typography: TypographySettings;
   rendererTarget: string;
   onRendererTargetChange: (v: string) => void;
+  onNavigateToRendererExport?: (rendererId: string) => void;
   outputFormat?: "init-directive" | "frontmatter";
   onOutputFormatChange?: (format: "init-directive" | "frontmatter") => void;
   outputFormatOverridden?: boolean;
@@ -115,6 +116,7 @@ export function ApplyTab({
   typography,
   rendererTarget,
   onRendererTargetChange,
+  onNavigateToRendererExport,
   outputFormat = "init-directive",
   onOutputFormatChange,
   outputFormatOverridden = false,
@@ -577,6 +579,7 @@ export function ApplyTab({
                 onLookChange={onLookChange}
                 rendererTarget={rendererTarget}
                 onRendererTargetChange={onRendererTargetChange}
+                onNavigateToRendererExport={onNavigateToRendererExport}
                 rendererProfile={rendererProfile}
                 rendererLookWarning={rendererLookWarning}
                 showSyntaxTipButton={

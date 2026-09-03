@@ -141,6 +141,42 @@ test.describe("Reference distribution center", () => {
     });
   }
 
+  for (const renderer of RENDERER_PROFILES.filter(
+    (candidate) => candidate.id === "github" || candidate.id === "notion"
+  )) {
+    test(`${renderer.shortName} shortcut opens and focuses its export card`, async ({ page }) => {
+      await gotoTab(page, "apply");
+
+      const rendererSelect = page.getByLabel("Select target renderer");
+      await rendererSelect.selectOption(renderer.id);
+
+      const shortcut = page.getByRole("button", {
+        name: `Open ${renderer.shortName} export card in Reference`,
+      });
+      await expect(shortcut).toBeVisible();
+
+      await Promise.all([page.waitForURL((url) => url.hash === "#reference"), shortcut.click()]);
+
+      const card = page.locator(`[data-renderer-id="${renderer.id}"]`);
+      await expect(card).toBeVisible();
+      await expect(card).toBeFocused();
+      await expect(card).toHaveClass(/bg-primary\/5/);
+      await expect(card).toBeInViewport();
+      await expect(card).toHaveAttribute(
+        "aria-label",
+        `${renderer.displayName} export destination`
+      );
+
+      const distribution = card.locator("xpath=ancestor::details");
+      await expect(distribution).toHaveAttribute("open", "");
+
+      // The shortcut uses the normal tab hash, so browser Back returns to
+      // Apply without losing the selected renderer.
+      await Promise.all([page.waitForURL((url) => url.hash === "#apply"), page.goBack()]);
+      await expect(rendererSelect).toHaveValue(renderer.id);
+    });
+  }
+
   test("shows a dismissible no-renderer hint and remembers the dismissal", async ({ page }) => {
     await gotoTabWithReloadSafeSeed(page, "reference");
     await openDistribution(page);
