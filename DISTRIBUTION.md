@@ -34,35 +34,32 @@ Update this file whenever a new submission is made or a status changes.
 
 ---
 
-## Pending Manual Submission
-
-These directories use web forms that cannot be automated. All metadata is pre-filled below — copy and submit when ready.
-
-### Verification note — 2026-08-27
-
-Neither listing is currently present in the public directories. The AgenticSkills form has a real submission endpoint, but it requires a contact email that is not included in this log; no submission was made without that required field. The agentskills.my form currently has no server submission endpoint: its client-side handler only logs the form data and displays a local success message. Treat both entries below as pending manual submission until a real review/listing confirmation exists.
-
-### agenticskills.io
-
-**Submit at:** https://agenticskills.io/submit
-**Status — 2026-08-27:** Submission attempted with the metadata below, but the endpoint returned HTTP 503: `Submission review queue is not configured.` No review issue, confirmation link, or directory listing was created.
+### AgenticSkills
 
 | Field | Value |
 |-------|-------|
-| Skill Name | Mermaid Theme Builder |
-| GitHub Repository URL | https://github.com/OKHP3/mermaid-theme-builder |
-| Category | Design & UI/UX |
-| Short Description (≤200 chars) | Brand palette enforcement and renderer-aware export for Mermaid diagram-as-code. 31 diagram families, 5 export formats, SKILL.md agent skill for Claude Code, Cursor, and GitHub Copilot. |
-| Tags | mermaid, diagram, theming, governance, skill, claude-code, cursor |
-| Author Name | Jamie Hill (OverKill Hill P³) |
-| Website | https://overkillhill.com/projects/mermaid-theme-builder/ |
+| **Directory** | [AgenticSkills](https://agenticskills.io/) |
+| **Submission endpoint** | [Submit a Skill](https://agenticskills.io/submit) |
+| **Review confirmation** | [Review issue URL returned by AgenticSkills](https://github.com/Korona7x17/agenticskills/issues/92) |
+| **Submitted** | 2026-09-03 |
+| **Status** | ⏳ Pending review — endpoint returned HTTP 200 with `ok: true` and a review issue URL. The returned GitHub repository currently responds 404 when checked publicly on 2026-09-03, so no public listing is claimed yet. |
+
+---
+
+## Pending Manual Submission
+
+The remaining directory below has no server-backed submission path. Its metadata is pre-filled for a future operator-supported intake.
+
+### Verification note — 2026-09-03
+
+The [AgenticSkills](https://agenticskills.io/) submission is recorded above. The [agentskills.my form](https://agentskills.my/submit) still only logs the form payload in the browser and displays a local success message; it makes no network request and provides no review or confirmation record.
 
 ---
 
 ### agentskills.my
 
 **Submit at:** https://agentskills.my/submit
-**Status — 2026-08-27:** Not submitted. The live page's handler only logs the form payload in the browser and shows a local success message; it makes no network request and provides no review or confirmation record.
+**Status — 2026-09-03:** Not submitted. The live page's handler only logs the form payload in the browser and shows a local success message; it makes no network request and provides no review or confirmation record.
 
 | Field | Value |
 |-------|-------|
