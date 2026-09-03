@@ -8,6 +8,8 @@
 
 import { test, expect, type Page } from "@playwright/test";
 import { RENDERER_PROFILES } from "../src/data/renderer-parity";
+import { createDefaultMyThemeSlot } from "../src/lib/my-theme-slots";
+import { PROFILE_SHARE_PARAM } from "../src/lib/profile-share";
 
 const STATE_KEY = "mtb.state.v1";
 const FIRST_VISIT_KEY = "mtb.firstVisit";
@@ -25,6 +27,16 @@ const EMPTY_SLOTS_STATE = {
   recentPaletteIds: [],
   myThemeSlots: [],
   activeMyThemeSlotId: null,
+};
+
+const ACTIVE_PROFILE_NAME = "Reference Share Theme";
+const ACTIVE_PROFILE_STATE = {
+  ...EMPTY_SLOTS_STATE,
+  myThemeSlots: [{ ...createDefaultMyThemeSlot(1), name: ACTIVE_PROFILE_NAME }],
+  activeMyThemeSlotId: "my-theme-1",
+  rendererTarget: "github",
+  outputFormat: "frontmatter",
+  outputFormatOverridden: true,
 };
 
 /**
@@ -210,5 +222,51 @@ test.describe("Reference distribution center", () => {
     await expect(
       page.getByRole("button", { name: "Copy profile share link to clipboard" })
     ).toBeEnabled();
+  });
+
+  test("copies a profile link that restores the same slot and renderer settings in a new session", async ({
+    page,
+    context,
+    browser,
+  }) => {
+    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+    await gotoTab(page, "apply", ACTIVE_PROFILE_STATE);
+    await openDistribution(page);
+
+    const copyProfileLink = page.getByRole("button", {
+      name: "Copy profile share link to clipboard",
+    });
+    await expect(copyProfileLink).toBeEnabled();
+    await copyProfileLink.click();
+    await expect(copyProfileLink).toContainText("Copied");
+
+    const sharedUrl = await page.evaluate(() => navigator.clipboard.readText());
+    const parsedSharedUrl = new URL(sharedUrl);
+    expect(parsedSharedUrl.searchParams.get(PROFILE_SHARE_PARAM)).toMatch(/^[A-Za-z0-9_-]+$/);
+
+    const cleanContext = await browser.newContext({
+      storageState: { cookies: [], origins: [] },
+    });
+    try {
+      const cleanPage = await cleanContext.newPage();
+      await cleanPage.goto(sharedUrl);
+      await cleanPage.waitForLoadState("load");
+
+      const importedSlot = cleanPage.locator("#apply-palette-tile-my-theme-2");
+      await expect(importedSlot).toHaveAttribute("title", ACTIVE_PROFILE_NAME, {
+        timeout: 8_000,
+      });
+      await expect(importedSlot).toHaveAttribute("aria-checked", "true");
+
+      await cleanPage.getByRole("tab", { name: "Apply", exact: true }).first().click();
+      await expect(cleanPage.getByLabel("Select target renderer")).toHaveValue("github");
+      await expect(
+        cleanPage
+          .getByRole("group", { name: "Theme directive format" })
+          .getByRole("button", { name: "YAML" })
+      ).toHaveAttribute("aria-pressed", "true");
+    } finally {
+      await cleanContext.close();
+    }
   });
 });
