@@ -556,7 +556,7 @@ test("Ctrl+Shift+C does not copy empty input and copies styled code for a flowch
 // Test 16 — keyboard copy shortcut leaves editable fields untouched
 // ---------------------------------------------------------------------------
 
-test("Ctrl+Shift+C does not interrupt the Apply or preview code editors", async ({
+test("Ctrl+Shift+C does not interrupt the Apply, preview, or color editors", async ({
   page,
   context,
 }) => {
@@ -633,6 +633,51 @@ test("Ctrl+Shift+C does not interrupt the Apply or preview code editors", async 
         })
       )
       .toEqual(previewEditorState);
+  }
+  await expect(styledCodeBtn).toHaveText("Styled Code");
+
+  // The color editor contains the remaining user-editable form controls:
+  // color-token text fields and the font-family text field. The shortcut
+  // guard must leave every in-progress edit and caret selection untouched.
+  await page.getByRole("button", { name: "Edit Colors", exact: true }).click();
+  const colorEditor = page.getByRole("dialog", { name: /Edit colors for/ });
+  const colorInputs = colorEditor.locator('input[type="text"]');
+  await expect(colorInputs.first()).toBeVisible();
+  expect(await colorInputs.count()).toBeGreaterThan(0);
+
+  for (let index = 0; index < (await colorInputs.count()); index += 1) {
+    const colorInput = colorInputs.nth(index);
+    const inputState = await colorInput.evaluate((element) => {
+      const input = element as HTMLInputElement;
+      input.focus();
+      input.setSelectionRange(1, Math.min(input.value.length, 8));
+      return {
+        value: input.value,
+        selectionStart: input.selectionStart,
+        selectionEnd: input.selectionEnd,
+      };
+    });
+    expect(inputState.selectionEnd).toBeGreaterThan(inputState.selectionStart);
+
+    for (const shortcut of ["Control+Shift+C", "Meta+Shift+C"]) {
+      await colorInput.press(shortcut);
+      await expect
+        .poll(() => page.evaluate(() => navigator.clipboard.readText()))
+        .toBe(sentinel);
+      await expect(colorInput).toHaveValue(inputState.value);
+      await expect
+        .poll(() =>
+          colorInput.evaluate((element) => {
+            const input = element as HTMLInputElement;
+            return {
+              value: input.value,
+              selectionStart: input.selectionStart,
+              selectionEnd: input.selectionEnd,
+            };
+          })
+        )
+        .toEqual(inputState);
+    }
   }
   await expect(styledCodeBtn).toHaveText("Styled Code");
 });
