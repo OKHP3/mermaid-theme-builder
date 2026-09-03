@@ -2,7 +2,12 @@
 
 import { describe, expect, it } from "vitest";
 import { buildPaletteFromShare } from "@/App";
-import { paletteToPortableJson, parsePortablePalette } from "@/lib/exporters";
+import {
+  paletteToPortableJson,
+  palettesToBundleJson,
+  parsePaletteBundle,
+  parsePortablePalette,
+} from "@/lib/exporters";
 import { BUILTIN_PALETTES, PALETTE_TOOL_VERSION, REQUIRED_COLOR_KEYS } from "@/lib/palettes";
 import { extractTheme, paletteFromExtracted } from "@/lib/extractor";
 import type { ShareablePayload } from "@/lib/persistence";
@@ -14,6 +19,19 @@ describe("palette tool version propagation", () => {
     expect(result.ok).toBe(true);
     if (!result.ok) return;
     expect(result.palette.attribution.toolVersion).toBe(PALETTE_TOOL_VERSION);
+  });
+
+  it("embeds the shared version in every palette restored from a multi-palette bundle", () => {
+    const result = parsePaletteBundle(
+      palettesToBundleJson([BUILTIN_PALETTES[0], BUILTIN_PALETTES[1]])
+    );
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.palettes).toHaveLength(2);
+    for (const imported of result.palettes) {
+      expect(imported.palette.attribution.toolVersion).toBe(PALETTE_TOOL_VERSION);
+    }
   });
 
   it("embeds the shared version in palettes created from extracted Mermaid code", () => {
