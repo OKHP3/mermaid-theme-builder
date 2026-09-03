@@ -158,6 +158,8 @@ export function clearPersistedState(): void {
 
 // ───────────────────────── shareable URL ─────────────────────────
 
+export const SHAREABLE_THEME_PARAM = "theme" as const;
+
 export interface ShareablePayload {
   v: number;
   paletteName?: string;
@@ -221,6 +223,48 @@ export function decodeShareableTheme(token: string): ShareablePayload | null {
   } catch (err) {
     console.warn("[mtb] failed to decode share token", err);
     return null;
+  }
+}
+
+/**
+ * Read the palette share token from the current URL.
+ * Returns null when the parameter is absent or cannot be decoded.
+ */
+export function readShareToken(): ShareablePayload | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const url = new URL(window.location.href);
+    const token = url.searchParams.get(SHAREABLE_THEME_PARAM);
+    if (!token) return null;
+    return decodeShareableTheme(token);
+  } catch {
+    return null;
+  }
+}
+
+/** Return true when the palette share parameter is present, even if malformed. */
+export function hasShareToken(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    return new URL(window.location.href).searchParams.has(SHAREABLE_THEME_PARAM);
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Remove the palette share parameter from the URL using history.replaceState
+ * so the link is not re-imported on page refresh.
+ */
+export function clearShareToken(): void {
+  if (typeof window === "undefined") return;
+  try {
+    const url = new URL(window.location.href);
+    if (!url.searchParams.has(SHAREABLE_THEME_PARAM)) return;
+    url.searchParams.delete(SHAREABLE_THEME_PARAM);
+    window.history.replaceState({}, "", url.toString());
+  } catch {
+    // ignore — replaceState is best-effort
   }
 }
 

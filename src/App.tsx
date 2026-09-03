@@ -39,7 +39,9 @@ import {
   clearPersistedState,
   hasCompletedFirstVisit,
   markFirstVisitComplete,
-  decodeShareableTheme,
+  readShareToken,
+  hasShareToken,
+  clearShareToken,
   type ShareablePayload,
 } from "@/lib/persistence";
 import {
@@ -247,30 +249,6 @@ export function buildPaletteFromShare(payload: ShareablePayload): Palette {
       toolVersion: PALETTE_TOOL_VERSION,
     },
   };
-}
-
-function readShareToken(): ShareablePayload | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const url = new URL(window.location.href);
-    const token = url.searchParams.get("theme");
-    if (!token) return null;
-    return decodeShareableTheme(token);
-  } catch {
-    return null;
-  }
-}
-
-function clearShareToken(): void {
-  if (typeof window === "undefined") return;
-  try {
-    const url = new URL(window.location.href);
-    if (!url.searchParams.has("theme")) return;
-    url.searchParams.delete("theme");
-    window.history.replaceState({}, "", url.toString());
-  } catch {
-    // ignore
-  }
 }
 
 const RECENT_PALETTES_MAX = 5;
@@ -495,7 +473,17 @@ export function AppShell() {
     const hasUrlTab = TABS.includes(initialHashRef.current as AppTab);
 
     let didApplyShare = false;
-    const share = readShareToken();
+    // Profile shares are the richer contract and therefore win whenever the
+    // profile parameter is present. Read both before applying either payload,
+    // then consume both parameters so a manually combined URL cannot apply
+    // the losing theme later or re-import it on refresh.
+    const profileToken = readProfileShareToken();
+    const hasProfileToken = profileToken !== null;
+    const hasThemeToken = hasShareToken();
+    const share = hasProfileToken ? null : readShareToken();
+    if (hasThemeToken) clearShareToken();
+    if (hasProfileToken) clearProfileShareToken();
+
     if (share) {
       const palette = buildPaletteFromShare(share);
       const taken = new Set<string>(BUILTIN_PALETTES.map((p) => p.id));
@@ -513,7 +501,6 @@ export function AppShell() {
         setRendererTarget(share.rendererTarget);
       }
       setToast(`Loaded shared theme: ${palette.name}`);
-      clearShareToken();
       didApplyShare = true;
 
       // Validate raw decoded keys BEFORE buildPaletteFromShare canonicalizes
@@ -676,9 +663,7 @@ export function AppShell() {
     }
     // ── Profile share token (applied after persisted state) ────────────────
     // Uses ?profile=<base64url> — distinct from the legacy ?theme= palette param.
-    const profileToken = readProfileShareToken();
     if (profileToken) {
-      clearProfileShareToken();
       const profileResult = decodeProfileToken(profileToken);
       if (!profileResult.ok) {
         setProfileShareError(profileResult.error);
@@ -747,8 +732,8 @@ export function AppShell() {
     // selector, and users who closed before completing it on a prior visit.
     // The selector is bypassed when an inbound URL hash, theme share token,
     // or profile share token already implies a destination.
-    // `profileToken` was captured before clearProfileShareToken() was called,
-    // so `hadProfileToken` correctly reflects arrival state.
+    // `profileToken` was captured before URL cleanup, so `hadProfileToken`
+    // correctly reflects the arrival state.
     const hadProfileToken = !!profileToken;
     if (!hasCompletedFirstVisit() && !hasUrlTab && !didApplyShare && !hadProfileToken) {
       setFirstVisitComplete(false);

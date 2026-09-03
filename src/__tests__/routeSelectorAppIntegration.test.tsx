@@ -138,6 +138,51 @@ describe("AppShell first-use route selector integration", () => {
     });
   });
 
+  it("lets a profile share win over a conflicting theme share and consumes both links", async () => {
+    const themeToken = encodeShareableTheme({
+      v: 1,
+      paletteName: "Losing palette share",
+      themeVariables: {
+        primaryColor: "#123456",
+      },
+    });
+    const profile = createGovernanceProfile(
+      {
+        id: "my-theme-2",
+        name: "Winning profile share",
+        colors: BRAND_PALETTES[0].colors,
+        rendererTarget: "obsidian",
+        outputFormat: "frontmatter",
+      },
+      "2026-08-27T12:00:00.000Z"
+    );
+    const profileToken = encodeProfileToken(profile);
+    window.history.replaceState(
+      {},
+      "",
+      `/?theme=${encodeURIComponent(themeToken)}&profile=${encodeURIComponent(profileToken)}`
+    );
+
+    render(createElement(AppShell));
+
+    expect(screen.queryByRole("heading", { name: "What would you like to do?" })).toBeNull();
+    expect(new URL(window.location.href).searchParams.has("theme")).toBe(false);
+    expect(new URL(window.location.href).searchParams.has("profile")).toBe(false);
+    await waitFor(() => {
+      expect(screen.queryByRole("heading", { name: "What would you like to do?" })).toBeNull();
+      const state = persistedState();
+      expect((state.myThemeSlots as Array<{ name: string }>).map((slot) => slot.name)).toContain(
+        "Winning profile share"
+      );
+      expect(state.activeMyThemeSlotId).toBe("my-theme-2");
+      expect(state.rendererTarget).toBe("obsidian");
+      expect(state.selectedPaletteId).not.toMatch(/^shared-/);
+      expect(
+        (state.userPalettes as Array<{ name: string }>).map((palette) => palette.name)
+      ).not.toContain("Losing palette share");
+    });
+  });
+
   it("shows the selector for a brand-new user and hides both tab navigations", async () => {
     render(createElement(AppShell));
 
