@@ -30,6 +30,9 @@ jobs:
       - name: Setup pnpm + Node.js
         uses: ./.github/actions/setup-pnpm
 
+      - name: CI workflow contract check
+        run: pnpm run check:ci-workflow
+
       - name: Unit tests (Vitest)
         run: pnpm test
 
