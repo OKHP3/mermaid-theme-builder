@@ -17,7 +17,7 @@
     "test": "vitest run --config vitest.config.ts",
     "test:e2e": "pnpm check:playwright-chromium && node scripts/run-e2e.mjs",
     "check:playwright-chromium": "node scripts/check-playwright-chromium.mjs",
-    "check:ci-workflow": "node scripts/check-ci-workflow.mjs",
+    "check:ci-workflow": "node --test scripts/check-ci-workflow.test.mjs && node scripts/check-ci-workflow.mjs",
     "capture-screenshot": "node scripts/capture-screenshot.mjs",
     "check:source-refs": "node scripts/check-source-refs.mjs",
     "check:version-strings": "node scripts/check-version-strings.mjs",
@@ -30,7 +30,7 @@
     "lint": "tsc --noEmit"
   },
   "simple-git-hooks": {
-    "pre-commit": "pnpm lint-staged && node scripts/check-source-refs.mjs"
+    "pre-commit": "pnpm lint-staged && node scripts/check-source-refs.mjs && node scripts/check-ci-workflow.mjs"
   },
   "lint-staged": {
     "*.{ts,tsx,json,css}": "prettier --write"
