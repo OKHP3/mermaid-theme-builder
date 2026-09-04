@@ -16,6 +16,7 @@ import { describe, it, expect, vi } from "vitest";
 import { render, waitFor, fireEvent } from "@testing-library/react";
 import { createElement, type ReactNode } from "react";
 import { ComposeTab } from "@/pages/tabs/ComposeTab";
+import { PaletteSelectorBar } from "@/components/PaletteSelectorBar";
 import { BRAND_PALETTES } from "@/lib/palettes";
 import { DEFAULT_TYPOGRAPHY } from "@/lib/typography";
 
@@ -91,6 +92,29 @@ function triggerFileChange(input: HTMLInputElement, mockFile: { text: () => Prom
   fireEvent.change(input);
 }
 
+function renderPaletteSelectorBar(overrides: { onShowToast?: (msg: ReactNode) => void } = {}) {
+  const palette = BRAND_PALETTES[0];
+  const { container } = render(
+    <PaletteSelectorBar
+      allPalettes={BRAND_PALETTES}
+      selectedPaletteId={palette.id}
+      customColors={{}}
+      onSelectPalette={vi.fn()}
+      myThemeSlots={[]}
+      activeMyThemeSlotId={null}
+      onSelectMyThemeSlot={vi.fn()}
+      onAddMyThemeSlot={vi.fn()}
+      onDeleteMyThemeSlot={vi.fn()}
+      onExportMyThemeSlot={vi.fn()}
+      onShowToast={overrides.onShowToast ?? vi.fn()}
+    />
+  );
+  const input = container.querySelector(
+    'input[aria-label="Import palette JSON as new slot"]'
+  ) as HTMLInputElement;
+  return { container, input };
+}
+
 // ── Tests ────────────────────────────────────────────────────────────────────
 
 describe("handleFileChosen catch block — formatImportError wiring", () => {
@@ -140,5 +164,30 @@ describe("handleFileChosen catch block — formatImportError wiring", () => {
 
     expect(typeof arg).toBe("string");
     expect(arg as string).toBe("Import failed: Could not read file.");
+  });
+});
+
+describe("PaletteSelectorBar import catch block — formatImportError wiring", () => {
+  it("passes a ReactNode with a <code> field name to onShowToast when file.text() rejects with a field-pattern error", async () => {
+    const onShowToast = vi.fn();
+    const { input } = renderPaletteSelectorBar({ onShowToast });
+    const mockFile = new File([""], "palette.json", { type: "application/json" });
+    vi.spyOn(mockFile, "text").mockRejectedValue(
+      new Error("Field 'version' must be a string, got number.")
+    );
+
+    triggerFileChange(input, mockFile);
+
+    await waitFor(() => expect(onShowToast).toHaveBeenCalledOnce());
+
+    const arg: ReactNode = onShowToast.mock.calls[0][0];
+    expect(typeof arg).not.toBe("string");
+
+    const { container: toastDom } = render(<>{arg}</>);
+    const code = toastDom.querySelector("code");
+    expect(code).not.toBeNull();
+    expect(code!.textContent).toBe("version");
+    expect(toastDom.textContent).toContain("Import failed:");
+    expect(toastDom.textContent).toContain("must be a string, got number.");
   });
 });

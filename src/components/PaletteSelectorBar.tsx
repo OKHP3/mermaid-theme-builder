@@ -1,8 +1,9 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, type ReactNode } from "react";
 import { BUILTIN_PALETTES } from "@/lib/palettes";
 import type { Palette, ThemeColor } from "@/lib/palettes";
 import { isExtractedPaletteId } from "@/lib/extractor";
 import { parsePortablePalette } from "@/lib/exporters";
+import { formatImportError } from "@/lib/importErrorFormat";
 
 const SWATCH_INDICES = [0, 3, 4, 6];
 
@@ -25,7 +26,7 @@ interface PaletteSelectorBarProps {
       warnValues: Array<{ key: string; value: string }>;
     }
   ) => void;
-  onShowToast: (msg: string) => void;
+  onShowToast: (msg: ReactNode) => void;
   onDuplicateMyThemeSlot?: (id: string) => string | null | void;
   onRenameMyThemeSlot?: (id: string, newName: string) => void;
   onMoveMyThemeSlotUp?: (id: string) => void;
@@ -592,7 +593,11 @@ export function PaletteSelectorBar({
               warnValues: result.warnValues,
             });
           } catch (err) {
-            onShowToast(`Import failed: ${err instanceof Error ? err.message : String(err)}`);
+            onShowToast(
+              formatImportError(
+                `Import failed: ${err instanceof Error ? err.message : String(err)}`
+              )
+            );
           }
         }}
       />
