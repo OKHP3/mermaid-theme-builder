@@ -10,7 +10,7 @@
  * and tags.
  */
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { ALL_EXAMPLES, filterExamples, assertNoDuplicateIds } from "@/lib/examples-filter";
 import type { ExampleItem } from "@/lib/examples-filter";
 import { EXAMPLE_CATALOG } from "@/data/example-library";
@@ -352,5 +352,42 @@ describe("assertNoDuplicateIds — duplicate-ID runtime guard", () => {
 
   it("does not throw for a single-item list", () => {
     expect(() => assertNoDuplicateIds([makeItem("only")])).not.toThrow();
+  });
+});
+
+describe("ALL_EXAMPLES — module-level duplicate-ID guard", () => {
+  it("rejects the module import when a raw catalog entry collides with the showcase id", async () => {
+    vi.resetModules();
+    vi.doMock("@/data/example-library", async () => {
+      const actual =
+        await vi.importActual<typeof import("@/data/example-library")>("@/data/example-library");
+
+      return {
+        ...actual,
+        EXAMPLE_GROUPS: [
+          ...actual.EXAMPLE_GROUPS,
+          {
+            category: "flow",
+            label: "Duplicate ID fixture",
+            entries: [
+              {
+                id: "showcase",
+                label: "Duplicate showcase",
+                family: "flowchart",
+                category: "flow",
+                content: "flowchart LR\n  A-->B",
+              },
+            ],
+          },
+        ],
+      };
+    });
+
+    try {
+      await expect(import("@/lib/examples-filter")).rejects.toThrow(/duplicate id.*showcase/i);
+    } finally {
+      vi.doUnmock("@/data/example-library");
+      vi.resetModules();
+    }
   });
 });
