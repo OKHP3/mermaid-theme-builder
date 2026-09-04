@@ -231,6 +231,38 @@ test("'Markdown' copy button copies a ```mermaid fenced block with %%{init}%% to
 });
 
 // ---------------------------------------------------------------------------
+// Test 8b — YAML format toggle → Markdown copy preserves frontmatter
+// ---------------------------------------------------------------------------
+
+test("'Markdown' copy preserves YAML frontmatter when the YAML format is selected", async ({
+  page,
+  context,
+}) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await gotoApply(page);
+  await pasteDiagram(page, FLOWCHART);
+
+  const yamlButton = page.getByRole("button", { name: "YAML" });
+  await expect(yamlButton).toBeVisible();
+  await yamlButton.click();
+  await expect(yamlButton).toHaveAttribute("aria-pressed", "true");
+
+  const markdownBtn = page.getByRole("button", { name: "Markdown" });
+  await expect(markdownBtn).toBeEnabled();
+  await markdownBtn.click();
+  await expect(page.getByRole("button", { name: /Copied!/ })).toBeVisible({ timeout: 3000 });
+
+  const clipText = await page.evaluate(() => navigator.clipboard.readText());
+
+  expect(clipText).toContain("```mermaid");
+  expect(clipText).toContain("---\n# Mermaid v10.5+ preferred format");
+  expect(clipText).toContain("config:\n  theme: base");
+  expect(clipText).toContain("themeVariables:");
+  expect(clipText).toContain("flowchart TD");
+  expect(clipText).not.toContain("%%{init:");
+});
+
+// ---------------------------------------------------------------------------
 // Test 9 — Download menu → .md file contains fenced code block + %%{init}%%
 // ---------------------------------------------------------------------------
 
@@ -661,9 +693,7 @@ test("Ctrl+Shift+C does not interrupt the Apply, preview, or color editors", asy
 
     for (const shortcut of ["Control+Shift+C", "Meta+Shift+C"]) {
       await colorInput.press(shortcut);
-      await expect
-        .poll(() => page.evaluate(() => navigator.clipboard.readText()))
-        .toBe(sentinel);
+      await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(sentinel);
       await expect(colorInput).toHaveValue(inputState.value);
       await expect
         .poll(() =>
