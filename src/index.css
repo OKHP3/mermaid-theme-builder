@@ -517,7 +517,7 @@
   line-height: 1;
   min-width: 38px;
   text-align: center;
-  color: rgba(212, 201, 181, 0.55); /* --okh-forge-code-fg at 55% */
+  color: var(--okh-forge-code-fg);
   user-select: none;
 }
 
