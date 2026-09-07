@@ -1925,6 +1925,7 @@ export function AppShell() {
                 onInputChange={setInputCode}
                 includeMetaComments={includeMetaComments}
                 includeBadge={includeBadge}
+                customThemeName={effectiveCustomThemeName}
                 effectiveThemeName={effectiveThemeName}
                 onSwitchTab={setActiveTab}
                 onExtractTheme={handleExtractFromCode}

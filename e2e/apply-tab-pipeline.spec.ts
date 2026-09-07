@@ -535,6 +535,50 @@ test("'Markdown' copy carries the custom theme name and shows 'Custom — based 
 });
 
 // ---------------------------------------------------------------------------
+// Test 14b — Compose exact palette name → Apply Markdown copy keeps the
+//             deliberate custom-name attribution
+// ---------------------------------------------------------------------------
+
+test("Compose exact palette name stays custom when Markdown is copied from Apply", async ({
+  page,
+  context,
+}) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+
+  const PALETTE_ID = "overkill-hill";
+  const PALETTE_NAME = "OKHP3";
+
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.localStorage.setItem("mtb.firstVisit", "true");
+    window.sessionStorage.clear();
+  });
+
+  await page.goto("/");
+  await page.waitForLoadState("load");
+
+  await page.getByRole("tab", { name: "Compose", exact: true }).click();
+  await page.locator(`#compose-palette-tile-${PALETTE_ID}`).click();
+  await page.getByRole("button", { name: "Export Theme", exact: true }).click();
+
+  const themeNameInput = page.getByPlaceholder(PALETTE_NAME);
+  await expect(themeNameInput).toBeVisible();
+  await themeNameInput.fill(PALETTE_NAME);
+
+  await page.getByRole("tab", { name: "Apply", exact: true }).first().click();
+  await page.getByLabel("Mermaid diagram code input").fill(FLOWCHART);
+
+  const markdownButton = page.getByRole("button", { name: "Markdown" });
+  await expect(markdownButton).toBeEnabled();
+  await markdownButton.click();
+  await expect(page.getByRole("button", { name: /Copied!/ })).toBeVisible({ timeout: 3000 });
+
+  const content = await page.evaluate(() => navigator.clipboard.readText());
+  expect(content).toContain(`# Mermaid Diagram — ${PALETTE_NAME} Theme`);
+  expect(content).toContain(`Custom — based on ${PALETTE_NAME}`);
+});
+
+// ---------------------------------------------------------------------------
 // Test 12 — Download and copy buttons are disabled before diagram code is
 //            pasted, enabled after
 // ---------------------------------------------------------------------------

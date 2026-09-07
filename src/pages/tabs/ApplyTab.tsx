@@ -43,6 +43,7 @@ interface ApplyTabProps {
   onInputChange: (code: string) => void;
   includeMetaComments: boolean;
   includeBadge: boolean;
+  customThemeName?: string;
   effectiveThemeName: string;
   onSwitchTab: (tab: AppTab) => void;
   onExtractTheme: (name?: string) => Palette | null;
@@ -103,6 +104,7 @@ export function ApplyTab({
   onInputChange,
   includeMetaComments,
   includeBadge,
+  customThemeName = "",
   effectiveThemeName,
   onSwitchTab,
   onExtractTheme: _onExtractTheme,
@@ -311,7 +313,10 @@ export function ApplyTab({
       diagramFamily: effectiveDetection.family,
       includeMetaComments,
       includeBadge,
-      customThemeName: effectiveThemeName !== selectedPalette.name ? effectiveThemeName : undefined,
+      customThemeName:
+        customThemeName.trim() || effectiveThemeName !== selectedPalette.name
+          ? effectiveThemeName
+          : undefined,
       look,
       fontSize: fontSize || undefined,
       typography,
@@ -326,6 +331,7 @@ export function ApplyTab({
       effectiveDetection.family,
       includeMetaComments,
       includeBadge,
+      customThemeName,
       effectiveThemeName,
       look,
       fontSize,
