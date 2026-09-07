@@ -28,6 +28,7 @@ import {
   type ScaffoldFormat,
 } from "@/lib/theme-engine";
 import { BRAND_PALETTES, BUILTIN_PALETTES } from "@/lib/palettes";
+import type { Palette } from "@/lib/palettes";
 
 // ---------------------------------------------------------------------------
 // Fixture
@@ -41,7 +42,7 @@ const SIMPLE_DIAGRAM =
 // Helpers
 // ---------------------------------------------------------------------------
 
-function baseOptions(palette: (typeof BRAND_PALETTES)[number]): ExportOptions {
+function baseOptions(palette: Palette): ExportOptions {
   return {
     palette,
     diagramFamily: "flowchart",
@@ -392,6 +393,60 @@ function customNameOptions(palette: (typeof BRAND_PALETTES)[number]): ExportOpti
   };
 }
 
+/**
+ * Imported-style fixtures intentionally share a custom export name while
+ * retaining different source metadata and theme values. The palette name,
+ * primaryColor, and lineColor are the values that must keep their outputs
+ * distinguishable.
+ */
+const IMPORTED_PALETTES: Palette[] = [
+  {
+    id: "imported-midnight",
+    name: "Imported Midnight",
+    description: "A cool imported palette for dark technical diagrams.",
+    version: "1.0.0",
+    colors: [
+      { key: "primaryColor", label: "Primary", value: "#172554" },
+      { key: "lineColor", label: "Lines", value: "#2563eb" },
+      { key: "background", label: "Background", value: "#eff6ff" },
+    ],
+    attribution: {
+      enabledByDefault: false,
+      label: "Imported fixture",
+      url: "https://example.com/imported-midnight",
+      themeName: "Imported Midnight",
+      toolName: "Fixture",
+      toolVersion: "1.0.0",
+    },
+  },
+  {
+    id: "imported-sunrise",
+    name: "Imported Sunrise",
+    description: "A warm imported palette for approachable process diagrams.",
+    version: "1.0.0",
+    colors: [
+      { key: "primaryColor", label: "Primary", value: "#9a3412" },
+      { key: "lineColor", label: "Lines", value: "#ea580c" },
+      { key: "background", label: "Background", value: "#fff7ed" },
+    ],
+    attribution: {
+      enabledByDefault: false,
+      label: "Imported fixture",
+      url: "https://example.com/imported-sunrise",
+      themeName: "Imported Sunrise",
+      toolName: "Fixture",
+      toolVersion: "1.0.0",
+    },
+  },
+];
+
+function importedCustomNameOptions(palette: Palette): ExportOptions {
+  return {
+    ...baseOptions(palette),
+    customThemeName: "My Brand",
+  };
+}
+
 describe("generateMarkdownExport snapshots — customThemeName path", () => {
   for (const palette of BRAND_PALETTES) {
     it(`palette "${palette.name}" (id: ${palette.id}) with customThemeName "My Brand" matches snapshot`, () => {
@@ -437,6 +492,47 @@ describe("customThemeName cross-palette uniqueness", () => {
     const unique = new Set(outputs);
     expect(unique.size).toBe(BRAND_PALETTES.length);
   });
+});
+
+// ---------------------------------------------------------------------------
+// 7c. Imported/user-created palette uniqueness — customThemeName must not
+//     collapse distinct imported palette metadata or theme values
+// ---------------------------------------------------------------------------
+
+describe("customThemeName uniqueness for imported palettes", () => {
+  it("keeps imported Markdown exports distinct with the same custom name", () => {
+    const outputs = IMPORTED_PALETTES.map((palette) => {
+      const opts = importedCustomNameOptions(palette);
+      const themedCode = generateThemedCode(SIMPLE_DIAGRAM, opts);
+      return generateMarkdownExport(themedCode, palette, opts);
+    });
+
+    expect(new Set(outputs).size).toBe(IMPORTED_PALETTES.length);
+    for (const [index, palette] of IMPORTED_PALETTES.entries()) {
+      const primaryColor = palette.colors.find((color) => color.key === "primaryColor")?.value;
+      const lineColor = palette.colors.find((color) => color.key === "lineColor")?.value;
+      expect(outputs[index]).toContain(palette.name);
+      expect(outputs[index]).toContain(primaryColor);
+      expect(outputs[index]).toContain(lineColor);
+    }
+  });
+
+  for (const format of SCAFFOLD_FORMATS) {
+    it(`keeps imported "${format}" scaffolds distinct with the same custom name`, () => {
+      const outputs = IMPORTED_PALETTES.map((palette) =>
+        generatePromptScaffoldWithFormat(palette, importedCustomNameOptions(palette), format)
+      );
+
+      expect(new Set(outputs).size).toBe(IMPORTED_PALETTES.length);
+      for (const [index, palette] of IMPORTED_PALETTES.entries()) {
+        const primaryColor = palette.colors.find((color) => color.key === "primaryColor")?.value;
+        const lineColor = palette.colors.find((color) => color.key === "lineColor")?.value;
+        expect(outputs[index]).toContain(palette.name);
+        expect(outputs[index]).toContain(primaryColor);
+        expect(outputs[index]).toContain(lineColor);
+      }
+    });
+  }
 });
 
 // ---------------------------------------------------------------------------
