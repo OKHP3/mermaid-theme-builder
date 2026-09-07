@@ -80,6 +80,12 @@ function parseFrontmatter(code: string): { theme?: string; vars: Record<string, 
     if (!kv) continue;
     vars[kv[1]] = normalizeColor(kv[2]);
   }
+  const xyChartMatch = after.match(
+    /^[ \t]*xyChart\s*:\s*\n[ \t]+plotColorPalette\s*:\s*(?:"([^"]*)"|'([^']*)'|([^\n]+))/m
+  );
+  if (xyChartMatch) {
+    vars.xyChart = (xyChartMatch[1] ?? xyChartMatch[2] ?? xyChartMatch[3] ?? "").trim();
+  }
   return { theme, vars };
 }
 
@@ -165,6 +171,13 @@ function parseInitDirective(code: string): { theme?: string; vars: Record<string
         vars[key] = normalizeColor(value);
       }
     }
+  }
+  const xyChartMatch = inside.match(
+    /["']xyChart["']\s*:\s*\{\s*["']plotColorPalette["']\s*:\s*["']([^"']*)["']/
+  );
+  if (xyChartMatch) {
+    vars.xyChart = xyChartMatch[1];
+    delete vars.plotColorPalette;
   }
   return { theme, vars };
 }

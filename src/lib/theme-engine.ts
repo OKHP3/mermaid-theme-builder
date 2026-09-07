@@ -1,6 +1,6 @@
 import type { Palette } from "./palettes";
 import type { DiagramFamily } from "./detector";
-import { familyThemeOverlay } from "./family-theming";
+import { familyThemeOverlay, type ThemeVariableValue } from "./family-theming";
 import {
   typographyToScaffoldSection,
   type TypographySettings,
@@ -175,7 +175,10 @@ function buildThemeVars(palette: Palette): Record<string, string> {
  *
  * Keys unsupported by a diagram family are silently omitted.
  */
-function applyTypographyToVars(vars: Record<string, string>, typography: TypographySettings): void {
+function applyTypographyToVars(
+  vars: Record<string, ThemeVariableValue>,
+  typography: TypographySettings
+): void {
   // nodeLabel.fontSize → universal `fontSize` themeVariable (lower priority than
   // explicit fontSize override — caller applies the explicit override after this).
   vars["fontSize"] = `${typography.nodeLabel.fontSize}px`;
@@ -238,12 +241,12 @@ function buildInitDirective(
 
   const varEntries = Object.entries(vars)
     .filter(([k]) => k !== "fontFamily")
-    .map(([k, v]) => `"${k}": "${v}"`)
+    .map(([k, v]) => `"${k}": ${JSON.stringify(v)}`)
     .join(", ");
 
-  const fontFamilyEntry = vars["fontFamily"]
-    ? `"fontFamily": "${sanitizeFontFamily(vars["fontFamily"])}"`
-    : null;
+  const fontFamily = vars["fontFamily"];
+  const fontFamilyEntry =
+    typeof fontFamily === "string" ? `"fontFamily": "${sanitizeFontFamily(fontFamily)}"` : null;
   const themeVarsStr = [varEntries, fontFamilyEntry].filter(Boolean).join(", ");
 
   const lookEntry = look && look !== "classic" ? `"look": "${look}", ` : "";
@@ -255,7 +258,7 @@ function buildInitDirective(
   let extraConfig = "";
   if (typography && family === "sequenceDiagram" && vars["fontSize"]) {
     const resolvedPx = vars["fontSize"];
-    const numericSize = parseInt(resolvedPx, 10);
+    const numericSize = typeof resolvedPx === "string" ? parseInt(resolvedPx, 10) : Number.NaN;
     if (!isNaN(numericSize)) {
       extraConfig = `"sequence": {"fontSize": ${numericSize}}, `;
     }
@@ -509,19 +512,27 @@ function buildFrontmatter(
 ): string {
   const baseVars = buildThemeVars(palette);
   const overlay = familyThemeOverlay(palette, family);
-  const vars: Record<string, string> = { ...overlay, ...baseVars };
+  const vars: Record<string, ThemeVariableValue> = { ...overlay, ...baseVars };
 
   if (typography) applyTypographyToVars(vars, typography);
   if (fontSize) vars["fontSize"] = fontSize;
 
   const varEntries = Object.entries(vars)
     .filter(([k]) => k !== "fontFamily")
-    .map(([k, v]) => `    ${k}: "${v}"`)
+    .flatMap(([k, v]) => {
+      if (typeof v === "string") return [`    ${k}: "${v}"`];
+      return [
+        `    ${k}:`,
+        ...Object.entries(v).map(
+          ([nestedKey, nestedValue]) => `      ${nestedKey}: "${nestedValue}"`
+        ),
+      ];
+    })
     .join("\n");
 
-  const fontFamilyLine = vars["fontFamily"]
-    ? `    fontFamily: "${sanitizeFontFamily(vars["fontFamily"])}"`
-    : null;
+  const fontFamily = vars["fontFamily"];
+  const fontFamilyLine =
+    typeof fontFamily === "string" ? `    fontFamily: "${sanitizeFontFamily(fontFamily)}"` : null;
 
   const themeLines = [varEntries, fontFamilyLine].filter(Boolean).join("\n");
   const lookLine = look && look !== "classic" ? `  look: ${look}\n` : "";

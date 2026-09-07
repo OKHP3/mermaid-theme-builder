@@ -1085,9 +1085,10 @@ describe("generateThemedCode — timeline body is preserved", () => {
 
 /**
  * Minimal XY chart — exercises the xychart family overlay.
- * Unlike every other family, xychart uses a single `xyChart` key whose value
- * is a comma-joined color string: [primary,secondary,tertiary,lineColor,nodeBorder,mainBkg].
- * These tests confirm that unusual format serialises into the %%{init} block
+ * Unlike every other family, xychart uses a nested `xyChart.plotColorPalette`
+ * key whose value is a comma-joined color string:
+ * [primary,secondary,tertiary,lineColor,nodeBorder,mainBkg].
+ * These tests confirm that the renderer-specific object shape is serialized
  * without being dropped or mangled.
  */
 const XYCHART_DIAGRAM =
@@ -1129,7 +1130,7 @@ describe("generateThemedCode — xychart overlay produces the correct joined col
       const nodeBorder = paletteColor(palette, "nodeBorder");
       const mainBkg = paletteColor(palette, "mainBkg");
       const expected = [primary, secondary, tertiary, line, nodeBorder, mainBkg].join(",");
-      expect(output).toContain(`"xyChart": "${expected}"`);
+      expect(output).toContain(`"xyChart": {"plotColorPalette":"${expected}"}`);
     });
 
     it(`palette "${palette.name}" xychart output contains all six palette colors in order`, () => {

@@ -31,6 +31,12 @@ import { test, expect, type Page } from "@playwright/test";
 
 const FLOWCHART = "flowchart TD\n  A[Start] --> B[End]";
 const SEQUENCE = "sequenceDiagram\n  Alice->>Bob: Hello";
+const XYCHART = `xychart-beta
+  title "Sales"
+  x-axis [Jan, Feb, Mar]
+  y-axis "Revenue" 0 --> 100
+  bar [30, 50, 70]
+  line [20, 40, 60]`;
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -320,6 +326,32 @@ test("paste sequenceDiagram → family chip shows 'Sequence Diagram'", async ({ 
       .filter({ hasText: /^Sequence Diagram$/ })
       .first()
   ).toBeVisible({ timeout: 5000 });
+});
+
+// ---------------------------------------------------------------------------
+// Test 9b — xychart → first bar uses the palette's primary color
+// ---------------------------------------------------------------------------
+
+test("xychart preview uses the selected palette primary color for its first bar", async ({
+  page,
+}) => {
+  await gotoApply(page);
+
+  // Ocean Depth's primaryColor is intentionally distinctive and is emitted
+  // into Mermaid's comma-joined xyChart palette configuration.
+  await page.locator("#apply-palette-tile-ocean-depth").click();
+  await pasteDiagram(page, XYCHART);
+
+  const themedPreview = page.locator(
+    'section[aria-label="Diagram preview"] [id^="mermaid-preview-"]'
+  );
+  const xychartSvg = themedPreview.locator('svg[aria-roledescription="xychart"]');
+  await expect(xychartSvg).toBeVisible({ timeout: 10000 });
+  const firstBar = xychartSvg.locator(".bar-plot-0 rect").first();
+  await expect(firstBar).toBeVisible({ timeout: 10000 });
+
+  const firstBarFill = await firstBar.getAttribute("fill");
+  expect(firstBarFill?.toLowerCase()).toBe("#1a4f8a");
 });
 
 // ---------------------------------------------------------------------------

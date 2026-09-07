@@ -8,4 +8,5 @@
 - [Direct Playwright smoke checks](playwright-direct-launch.md) — standalone browser scripts must reuse the repo's discovered Chromium executable; default launch may lack the bundled browser
 - [Inline editing in composite widgets](inline-editing-composite-widgets.md) — isolate editor keys from parent navigation; let native Tab movement commit through blur.
 - [Playwright full-suite validation](playwright-suite-runtime.md) — long serial runs and preview-port collisions can masquerade as broad E2E regressions
+- [Mermaid xychart theming](mermaid-xychart-theme-variables.md) — Mermaid 11 expects xyChart.plotColorPalette as a nested themeVariables object, not a quoted comma-list value
 - [Skill directory submissions](skill-directory-submission-quirks.md) — require server-side confirmation; agentskills.my is client-only and AgenticSkills may reject submissions when its review queue is unconfigured
