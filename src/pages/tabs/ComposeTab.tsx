@@ -140,7 +140,7 @@ interface ComposeTabProps {
   effectiveThemeName: string;
   userPalettes: Palette[];
   onSavePalette: (name: string) => void;
-  onImportPalette: (palette: Palette) => void;
+  onImportPalette: (palette: Palette, options?: { suppressToast?: boolean }) => void;
   onDeleteUserPalette: (id: string) => void;
   onShowToast: (msg: ReactNode) => void;
   look: MermaidLook;
@@ -527,7 +527,7 @@ export function ComposeTab({
           const combinedInvalid: Array<{ key: string; value: string }> = [];
           const combinedWarn: Array<{ key: string; value: string }> = [];
           for (const imp of result.palettes) {
-            onImportPalette(imp.palette);
+            onImportPalette(imp.palette, { suppressToast: true });
             for (const k of imp.missingKeys)
               if (!combinedMissing.includes(k)) combinedMissing.push(k);
             for (const k of imp.unknownKeys)

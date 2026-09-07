@@ -55,6 +55,33 @@ const CLEAN_PALETTE_JSON = JSON.stringify({
   colors: [{ key: "primaryColor", label: "Primary", value: "#123456" }],
 });
 
+/** Two clean palettes — exercises the bundle-level success toast. */
+const CLEAN_BUNDLE_JSON = JSON.stringify({
+  type: "mtb-palette-bundle",
+  schemaVersion: 1,
+  count: 2,
+  palettes: [
+    {
+      type: "mtb-palette",
+      schemaVersion: 1,
+      id: "test-bundle-one",
+      name: "Bundle One",
+      description: "test",
+      version: "1.0.0",
+      colors: [{ key: "primaryColor", label: "Primary", value: "#123456" }],
+    },
+    {
+      type: "mtb-palette",
+      schemaVersion: 1,
+      id: "test-bundle-two",
+      name: "Bundle Two",
+      description: "test",
+      version: "1.0.0",
+      colors: [{ key: "primaryColor", label: "Primary", value: "#654321" }],
+    },
+  ],
+});
+
 // ---------------------------------------------------------------------------
 // Helper
 // ---------------------------------------------------------------------------
@@ -107,6 +134,23 @@ test.describe("Import success toast", () => {
     const toast = page.locator('[role="status"]');
     await expect(toast).toBeVisible({ timeout: 4_000 });
     await expect(toast).toContainText('Imported "Clean Import Test" into "My Theme 1".');
+
+    // AppShell clears every toast after 2.5 s. Keep a 1 s buffer to avoid
+    // making the assertion depend on timer scheduling at the threshold.
+    await page.waitForTimeout(3500);
+
+    await expect(toast).not.toBeVisible();
+  });
+
+  test("bundle import keeps the bundle success toast visible and auto-dismisses", async ({
+    page,
+  }) => {
+    await openComposeAndImport(page, CLEAN_BUNDLE_JSON);
+
+    const toast = page.locator('[role="status"]');
+    await expect(toast).toBeVisible({ timeout: 4_000 });
+    await expect(toast).toHaveText("Imported 2 palettes from bundle.");
+    await expect(toast).not.toContainText("Imported palette:");
 
     // AppShell clears every toast after 2.5 s. Keep a 1 s buffer to avoid
     // making the assertion depend on timer scheduling at the threshold.

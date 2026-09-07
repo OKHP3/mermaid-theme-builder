@@ -1490,24 +1490,27 @@ export function AppShell() {
     [selectedPalette, userPalettes]
   );
 
-  const handleImportPalette = useCallback((palette: Palette) => {
-    setUserPalettes((prev) => {
-      const taken = new Set<string>([
-        ...BUILTIN_PALETTES.map((p) => p.id),
-        ...prev.map((p) => p.id),
-      ]);
-      const safeId =
-        taken.has(palette.id) || !palette.id ? uniquePaletteId("imported-", taken) : palette.id;
-      const safe: Palette = { ...palette, id: safeId };
-      // Defer selection until next tick so userPalettes update applies first.
-      queueMicrotask(() => {
-        setSelectedPaletteId(safeId);
-        setCustomThemeName("");
-        setToast(`Imported palette: ${safe.name}`);
+  const handleImportPalette = useCallback(
+    (palette: Palette, options?: { suppressToast?: boolean }) => {
+      setUserPalettes((prev) => {
+        const taken = new Set<string>([
+          ...BUILTIN_PALETTES.map((p) => p.id),
+          ...prev.map((p) => p.id),
+        ]);
+        const safeId =
+          taken.has(palette.id) || !palette.id ? uniquePaletteId("imported-", taken) : palette.id;
+        const safe: Palette = { ...palette, id: safeId };
+        // Defer selection until next tick so userPalettes update applies first.
+        queueMicrotask(() => {
+          setSelectedPaletteId(safeId);
+          setCustomThemeName("");
+          if (!options?.suppressToast) setToast(`Imported palette: ${safe.name}`);
+        });
+        return [...prev, safe];
       });
-      return [...prev, safe];
-    });
-  }, []);
+    },
+    []
+  );
 
   const handleDeleteUserPalette = useCallback((id: string) => {
     setUserPalettes((prev) => prev.filter((p) => p.id !== id));
