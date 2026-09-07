@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { familyThemeOverlay } from "@/lib/family-theming";
 import type { Palette } from "@/lib/palettes";
+import type { DiagramFamily } from "@/lib/detector";
 
 const TEST_PALETTE: Palette = {
   id: "test",
@@ -80,18 +81,31 @@ describe("familyThemeOverlay — c4Diagram", () => {
   });
 });
 
-describe("familyThemeOverlay — fallback families", () => {
-  it("returns empty object for flowchart (uses base palette directly)", () => {
-    expect(familyThemeOverlay(TEST_PALETTE, "flowchart")).toEqual({});
-  });
+const NO_OVERLAY_FAMILIES = [
+  "flowchart",
+  "mindmap",
+  "requirementDiagram",
+  "architectureBeta",
+  "sankey",
+  "packet",
+  "kanban",
+  "treemap",
+  "venn",
+  "ishikawa",
+  "wardley",
+  "treeView",
+  "zenuml",
+  "radar",
+  "eventModeling",
+  "unknown",
+] as const satisfies readonly DiagramFamily[];
 
-  it("returns empty object for unknown", () => {
-    expect(familyThemeOverlay(TEST_PALETTE, "unknown")).toEqual({});
-  });
-
-  it("returns empty object for mindmap", () => {
-    expect(familyThemeOverlay(TEST_PALETTE, "mindmap")).toEqual({});
-  });
+describe("familyThemeOverlay — default-overlay families", () => {
+  for (const family of NO_OVERLAY_FAMILIES) {
+    it(`returns no family-specific theme variables for ${family}`, () => {
+      expect(familyThemeOverlay(TEST_PALETTE, family), family).toEqual({});
+    });
+  }
 });
 
 describe("familyThemeOverlay — palette fallback defaults", () => {
