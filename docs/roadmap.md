@@ -112,9 +112,11 @@
 - [ ] **Root-level `htmlLabels`** - emit at root config level in `%%{init}%%` exports (11.13+ migration: deprecated `flowchart.htmlLabels`)
 
 ### Testing
+
 - [x] **Playwright smoke tests** - confirmed shipped and actively growing: `e2e/` has 25+ spec files and a wired `test:e2e` script as of 2026-08-04, well beyond the original "core pipeline" smoke-test scope
 
 ### v1.0.0 evaluation
+
 The WCAG 2.1 AA automated audit gate is complete. v1.0.0 is not yet earned until the remaining roadmap gates are explicitly checked and pass.
 
 ---
@@ -124,6 +126,7 @@ The WCAG 2.1 AA automated audit gate is complete. v1.0.0 is not yet earned until
 **Status:** Shipped. Tag: `v0.6.1`. Evidence log: `docs/evidence-log-v061.md`.
 
 ### Shipped
+
 - **GA4 analytics removed** — measurement ID `G-VJ1BKXS27H` removed; `usePageTracking` hook deleted; zero outbound network requests during normal use
 - **Privacy copy corrected** — README updated to accurately reflect no data collection
 - **DECISIONS_NEEDED.md** — standing process record for ambiguous product decisions; analytics policy resolved as Option A (no analytics)
@@ -157,6 +160,12 @@ The WCAG 2.1 AA automated audit gate is complete. v1.0.0 is not yet earned until
 
 **Goals:** Polish, publish, and make the site properly discoverable.
 
+**Readiness review:** [`docs/equilibrium-review-v1-readiness.md`](equilibrium-review-v1-readiness.md)
+and its [machine-readable record](equilibrium-review-v1-readiness.json), completed
+2026-09-07. Decision: **defer-for-evidence** for `v1.0.0`; continued `v0.6.2`
+use is approved only with explicit renderer, accessibility, safety, and
+non-sensitive-use limits.
+
 - [x] **Privacy-respecting analytics** — Plausible pageviews use a sanitized origin and pathname only; no cookies, query strings, hash fragments, diagram content, or palette data (2026-08-24)
 - [ ] **GitHub release cadence** — tagged releases with CHANGELOG notes for each version
 - [x] **Accessibility** — WCAG 2.1 AA automated release-blocker audit verified; see `docs/accessibility-audit.md` (2026-08-24)
@@ -172,6 +181,7 @@ The WCAG 2.1 AA automated audit gate is complete. v1.0.0 is not yet earned until
 **Rule for agents:** Before marking a task that touches user-visible behavior as complete, check whether a version bump is warranted. If yes, update `package.json`, add a `CHANGELOG.md` entry, commit, tag, and push the tag to GitHub. A GitHub release is required for any tag that crosses a minor version boundary (e.g. v0.5.0 → v0.6.0).
 
 **Earning versions:**
+
 - `v0.x.y` patch: bug fixes and internal refactors with no user-visible behavior change.
 - `v0.x.0` minor: any shipped user-visible feature or capability, however small.
 - `v1.0.0`: earned only when all v1.0.0 gates in the roadmap pass (currently: analytics + WCAG 2.1 AA audit + full keyboard navigation). Do not tag v1.0.0 until every gate is explicitly checked and passes.

@@ -1,0 +1,613 @@
+{
+  "schema_version": "1.0",
+  "review_protocol": "equilibrium-v1",
+  "review_mode": "conditional-five-role",
+  "evaluation_status": "live",
+  "review_date": "2026-09-07",
+  "artifact": {
+    "identity": "Mermaid Theme Builder static browser application",
+    "path": ".",
+    "sha256": null,
+    "git_commit": "19c2ddc5d67df097338f98ced37b17064bf5974e",
+    "version": "0.6.2",
+    "runtime": {
+      "node": "24.20.0",
+      "pnpm": "10.26.1",
+      "mermaid": "11.16.0",
+      "vite": "8.1.4",
+      "typescript": "7.0.2",
+      "vitest": "4.1.10",
+      "playwright": "1.62.1",
+      "axe_core": "4.13.0"
+    }
+  },
+  "decision_question": "Is the frozen 0.6.2 artifact ready for a bounded public v1.0.0 release within its browser-only, privacy-preserving, renderer-aware scope?",
+  "acceptance_criteria": [
+    {
+      "id": "AC-01",
+      "dimension": "correctness",
+      "criterion": "Fresh-browser representative full and partial-family journeys paste, detect, theme, preview, copy, and download valid source without stale output."
+    },
+    {
+      "id": "AC-02",
+      "dimension": "user_outcome",
+      "criterion": "Extract, profile/share, palette import/export, Prompt Scaffold, Examples, and Reference journeys are discoverable and preserve selected theme/source state."
+    },
+    {
+      "id": "AC-03",
+      "dimension": "privacy_safety",
+      "criterion": "No backend, login, diagram telemetry, or cloud storage is introduced; documented requests cannot carry diagram or palette data; hostile inputs fail closed."
+    },
+    {
+      "id": "AC-04",
+      "dimension": "accessibility",
+      "criterion": "Automated critical/serious axe scans remain clean and manual keyboard, screen-reader, zoom/reflow, contrast, and customized-state journeys are reviewed."
+    },
+    {
+      "id": "AC-05",
+      "dimension": "renderer_portability",
+      "criterion": "External renderer claims are either proven with dated evidence or visibly narrowed to guidance with validation caveats."
+    },
+    {
+      "id": "AC-06",
+      "dimension": "evidence_sufficiency",
+      "criterion": "Required checks run on the exact candidate commit and skipped jobs fail closed; external and manual evidence is dated and scoped."
+    },
+    {
+      "id": "AC-07",
+      "dimension": "maintainability_release_truth",
+      "criterion": "Public truth surfaces, release assets, debt records, registries, skills, and workflows agree on shipped, planned, observed, and unverified claims."
+    }
+  ],
+  "evidence_sources": [
+    {
+      "id": "E-01",
+      "source": "git commit, package.json, pnpm-lock.yaml",
+      "status": "live",
+      "finding": "Exact 0.6.2 baseline; Mermaid 11.16.0; Node 24; pnpm 10.26.1."
+    },
+    {
+      "id": "E-02",
+      "source": "pnpm test",
+      "status": "live",
+      "finding": "89 test files and 3163 tests passed."
+    },
+    {
+      "id": "E-03",
+      "source": "pnpm run typecheck",
+      "status": "live",
+      "finding": "TypeScript check passed."
+    },
+    {
+      "id": "E-04",
+      "source": "PORT=18624 BASE_PATH=/mermaid-theme-builder/ pnpm run build",
+      "status": "live",
+      "finding": "Production build passed; Vite emitted non-blocking script and chunk-size warnings."
+    },
+    {
+      "id": "E-05",
+      "source": "pnpm test:e2e workflow log for frozen tree",
+      "status": "live",
+      "finding": "243 browser tests passed, including the XY-chart palette assertion."
+    },
+    {
+      "id": "E-06",
+      "source": "check:ci-workflow, check:version-strings, check:technology-versions, check:doc-truth, check:skills-catalog, check:source-refs, scripts/check-links.sh",
+      "status": "live",
+      "finding": "Current mechanical consistency checks passed."
+    },
+    {
+      "id": "E-07",
+      "source": "docs/accessibility-audit.md and e2e/accessibility-audit.spec.ts",
+      "status": "historical",
+      "finding": "Twenty axe scans across five tabs, two themes, and desktop/mobile reported no Critical or Serious findings on 2026-09-01."
+    },
+    {
+      "id": "E-08",
+      "source": "docs/renderer-frontmatter-compatibility.md and src/data/renderer-parity.ts",
+      "status": "analytical",
+      "finding": "Renderer guidance exists; Notion, Confluence, M365/Loop, self-hosted GitLab, and several ceilings remain unverified."
+    },
+    {
+      "id": "E-09",
+      "source": "docs/threat-model.md, src/components/MermaidPreview.tsx, src/lib/exporters.ts",
+      "status": "analytical",
+      "finding": "Threat boundaries and strict Mermaid controls exist; hostile sink behavior is not directly proven."
+    },
+    {
+      "id": "E-10",
+      "source": "docs/screenshot-v0.6.1.jpg, docs/screenshot-latest.jpg, .github/workflows/release-gate.yml",
+      "status": "historical",
+      "finding": "Release imagery is not evidence of the frozen 0.6.2 UI until a current capture is reviewed."
+    },
+    {
+      "id": "E-11",
+      "source": "docs/roadmap.md, docs/release-checklist.md, docs/technical-debt-register.md, docs/product-brief.md",
+      "status": "analytical",
+      "finding": "Several acceptance and maturity signals remain unchecked or stale despite narrow automated checks."
+    },
+    {
+      "id": "E-12",
+      "source": "hostile-input, deep-persistence, PWA-update, manual-accessibility, and external-renderer runs",
+      "status": "not-run",
+      "finding": "Decisive missing evidence package."
+    }
+  ],
+  "independence": {
+    "reviewer_contexts_separated": true,
+    "shared_model_or_source_limits": [
+      "Evidence, outcome, and safety reviewers used separate delegated contexts but the same frozen repository source set.",
+      "The underlying model identity was not available; agreement is correlated and is not independent external corroboration.",
+      "No specialist security, accessibility, legal, or renderer-owner review was performed."
+    ]
+  },
+  "initial_reviews": [
+    {
+      "role": "evidence_reviewer",
+      "execution_status": "live",
+      "evidence_status": "analytical",
+      "decision_signal": "defer-for-evidence",
+      "summary": "Local implementation and checks support credible v0.6.2 use; privacy egress, renderer parity, extraction round trips, hostile sinks, and complete release gates remain provisional or blocked."
+    },
+    {
+      "role": "outcome_reviewer",
+      "execution_status": "live",
+      "evidence_status": "analytical",
+      "decision_signal": "defer-for-evidence",
+      "summary": "Apply, Examples, Reference, Compose, and Extract are useful within limits; eight-format outcome proof, family-wide consistency, keyboard completion, and product-brief wording remain incomplete."
+    },
+    {
+      "role": "safety_portability_reviewer",
+      "execution_status": "live",
+      "evidence_status": "analytical",
+      "decision_signal": "defer-for-evidence",
+      "summary": "Strict mode, explicit navigation, and same-origin service-worker boundaries are promising; raw SVG/CSS sinks, malformed persistence, PWA recovery, manual accessibility, renderer portability, and tag operations remain unproven."
+    }
+  ],
+  "concordance": {
+    "result": "material_concordance",
+    "basis": "All three initial reviewers independently selected defer-for-evidence for v1.0, with the same high-consequence evidence gaps.",
+    "material_disagreements": []
+  },
+  "disruptor": {
+    "triggered": true,
+    "authority": "analytical",
+    "execution_status": "live",
+    "falsification_hypotheses": [
+      {
+        "id": "CEX-01",
+        "hypothesis": "Hostile Mermaid or SVG content escapes strict mode into executable preview/export content.",
+        "result": "not-run",
+        "decisive_test": "Playwright sentinel and DOM/SVG inspection for scripts, event attributes, dangerous links, foreignObject, and external execution."
+      },
+      {
+        "id": "CEX-02",
+        "hypothesis": "Imported CSS/font/color/name/description values break style boundaries or trigger network fetches.",
+        "result": "not-run",
+        "decisive_test": "Hostile palette export corpus across CSS, SVG, JSON, init, and frontmatter."
+      },
+      {
+        "id": "CEX-03",
+        "hypothesis": "Deeply malformed or oversized share/profile/localStorage state crashes or persists bad data.",
+        "result": "not-run",
+        "decisive_test": "Bounded parser and recovery test with malformed nested objects and oversized values."
+      },
+      {
+        "id": "CEX-04",
+        "hypothesis": "Normal use sends source content through analytics, fonts, referrers, service-worker requests, or explicit navigation.",
+        "result": "partial",
+        "decisive_test": "Fresh-browser request inventory with secrets in source, query, and hash."
+      },
+      {
+        "id": "CEX-05",
+        "hypothesis": "Service worker serves an old shell referencing removed chunks after update/offline launch.",
+        "result": "not-run",
+        "decisive_test": "Build-A/build-B offline and worker-update integration test."
+      },
+      {
+        "id": "CEX-06",
+        "hypothesis": "Keyboard, screen-reader, zoom, forced-colors, or customized states fail despite axe scans.",
+        "result": "not-run",
+        "decisive_test": "Manual accessibility protocol with dated results."
+      },
+      {
+        "id": "CEX-07",
+        "hypothesis": "Unverified renderers or long directives silently ignore output.",
+        "result": "partial",
+        "decisive_test": "Renderer/version submission matrix with observed theme, look, and format results."
+      },
+      {
+        "id": "CEX-08",
+        "hypothesis": "Malformed tags or failing commits reach a workflow that only checks changelog and screenshot.",
+        "result": "analytical",
+        "decisive_test": "Fork dry run and least-privilege workflow contract."
+      }
+    ],
+    "disposition": "The counterexamples do not overturn defer-for-evidence; several remain material untested boundaries."
+  },
+  "negotiator": {
+    "triggered": true,
+    "execution_status": "live",
+    "evidence_status": "analytical",
+    "decision": "defer-for-evidence",
+    "decisive_evidence": [
+      "Hostile export sinks are not proven inert.",
+      "Deep persisted-state validation and recovery are absent.",
+      "PWA update/recovery behavior is unvalidated.",
+      "Tag-time release automation does not enforce the complete v1 evidence package.",
+      "Manual accessibility and external renderer evidence remain outside the current live proof."
+    ],
+    "bounded_current_use": "Approve-with-limits for non-sensitive, user-reviewed diagrams in browser and controlled preview use. Do not call v1 ready, security-validated, or renderer-validated.",
+    "unresolved_items": [
+      "Hostile preview and export behavior",
+      "Malformed and oversized import/share/persistence handling",
+      "PWA cache/update recovery",
+      "Manual accessibility coverage",
+      "External renderer evidence",
+      "Exact-SHA tag/release enforcement",
+      "Stale documentation and release imagery"
+    ]
+  },
+  "claim_ledger": [
+    {
+      "claim_id": "CLM-01",
+      "claim": "Diagram and palette transformation is browser-side with no backend, login, or cloud storage.",
+      "claim_type": "fact",
+      "status": "supported",
+      "evidence_ids": ["E-01", "E-09"],
+      "consequence_if_false": "Core privacy and product boundary are false.",
+      "next_test": "Fresh source and build audit confirming no server/API surface and browser-only state flow."
+    },
+    {
+      "claim_id": "CLM-02",
+      "claim": "No diagram or palette data leaves the browser during normal use.",
+      "claim_type": "product_claim",
+      "status": "provisional",
+      "evidence_ids": ["E-06", "E-09"],
+      "consequence_if_false": "Confidential source may leak through an undocumented request.",
+      "next_test": "Fresh-context request allowlist across paste, render, edit, extract, import, and export."
+    },
+    {
+      "claim_id": "CLM-03",
+      "claim": "The existing aggregate pageview is privacy-constrained and not content telemetry.",
+      "claim_type": "fact",
+      "status": "supported",
+      "evidence_ids": ["E-06", "E-09"],
+      "consequence_if_false": "Privacy language misleads users.",
+      "next_test": "Repeat sanitized pageview assertion and prohibit any analytics expansion."
+    },
+    {
+      "claim_id": "CLM-04",
+      "claim": "Family detection and capability labels are accurate for all advertised families.",
+      "claim_type": "product_claim",
+      "status": "provisional",
+      "evidence_ids": ["E-02", "E-05"],
+      "consequence_if_false": "Users receive incorrect overlays or support expectations.",
+      "next_test": "Built-app fixture matrix for 31 families plus unknown input."
+    },
+    {
+      "claim_id": "CLM-05",
+      "claim": "Renderer profiles are reliable compatibility claims.",
+      "claim_type": "product_claim",
+      "status": "provisional",
+      "evidence_ids": ["E-08"],
+      "consequence_if_false": "Exports silently fail in target hosts.",
+      "next_test": "Live/holdout renderer submission matrix for representative flowchart and sequence outputs."
+    },
+    {
+      "claim_id": "CLM-06",
+      "claim": "Strict Mermaid mode prevents executable preview content.",
+      "claim_type": "safety_claim",
+      "status": "provisional",
+      "evidence_ids": ["E-09"],
+      "consequence_if_false": "Malicious diagrams can execute in the app origin.",
+      "next_test": "Hostile preview and rendered-SVG corpus with sentinel assertion."
+    },
+    {
+      "claim_id": "CLM-07",
+      "claim": "Downloaded SVG/CSS/frontmatter artifacts are inert and safe to reopen.",
+      "claim_type": "safety_claim",
+      "status": "blocked",
+      "evidence_ids": ["E-09", "E-12"],
+      "consequence_if_false": "Crafted metadata can create active content or break style boundaries elsewhere.",
+      "next_test": "Hostile palette export corpus and structural/external-URL assertions."
+    },
+    {
+      "claim_id": "CLM-08",
+      "claim": "Extract, import, share, and local persistence preserve reusable governance state.",
+      "claim_type": "outcome_claim",
+      "status": "supported",
+      "evidence_ids": ["E-02", "E-05"],
+      "consequence_if_false": "Users lose reusable governance state.",
+      "next_test": "Fresh-context round trip including custom names, typography, renderer, format, and advanced settings."
+    },
+    {
+      "claim_id": "CLM-09",
+      "claim": "All eight advertised download formats are outcome-valid.",
+      "claim_type": "outcome_claim",
+      "status": "provisional",
+      "evidence_ids": ["E-02", "E-05"],
+      "consequence_if_false": "Users receive malformed or stale deliverables.",
+      "next_test": "Download/signature/parse/content checks for all eight formats and two families."
+    },
+    {
+      "claim_id": "CLM-10",
+      "claim": "Prompt Scaffold always reflects the latest source and selected theme.",
+      "claim_type": "outcome_claim",
+      "status": "provisional",
+      "evidence_ids": ["E-02", "E-05"],
+      "consequence_if_false": "Generated AI instructions encode stale theme or source.",
+      "next_test": "Change source after opening scaffold and assert the regenerated content is current."
+    },
+    {
+      "claim_id": "CLM-11",
+      "claim": "The product meets WCAG 2.1 AA broadly.",
+      "claim_type": "product_claim",
+      "status": "disputed",
+      "evidence_ids": ["E-07", "E-11"],
+      "consequence_if_false": "v1 accessibility labeling overstates evidence.",
+      "next_test": "Manual keyboard, screen-reader, zoom/reflow, contrast, reduced-motion, and customized-state review."
+    },
+    {
+      "claim_id": "CLM-12",
+      "claim": "The PWA is offline-capable and recovers across releases.",
+      "claim_type": "product_claim",
+      "status": "provisional",
+      "evidence_ids": ["E-09", "E-11"],
+      "consequence_if_false": "Users receive blank or stale apps after updates.",
+      "next_test": "Build-A/build-B offline/update integration test."
+    },
+    {
+      "claim_id": "CLM-13",
+      "claim": "Release automation enforces the v1 evidence package.",
+      "claim_type": "release_claim",
+      "status": "blocked",
+      "evidence_ids": ["E-09", "E-11"],
+      "consequence_if_false": "A tag can be published without safety, build, or test evidence.",
+      "next_test": "Exact-SHA tag dry run with fail-closed required checks and least-privilege verification."
+    },
+    {
+      "claim_id": "CLM-14",
+      "claim": "Public documentation accurately describes the current product.",
+      "claim_type": "documentation_claim",
+      "status": "disputed",
+      "evidence_ids": ["E-06", "E-10", "E-11"],
+      "consequence_if_false": "Maintainers and users make decisions from stale maturity signals.",
+      "next_test": "Truth-surface reconciliation followed by doc/link/version checks."
+    }
+  ],
+  "release_gates": [
+    {
+      "id": "A",
+      "name": "validation health",
+      "sequence": 1,
+      "existing_tasks": ["#659", "#660", "#670", "#666"],
+      "new_work": [
+        "Make environment requirements explicit and fail closed on skipped required checks."
+      ],
+      "owner_role": "CI and release maintainer",
+      "prerequisite": "Stage 0 freeze",
+      "acceptance": "Exact candidate passes unit, typecheck, build, format, docs/source/version/skills/link checks, and E2E with reproducible environment behavior.",
+      "evidence_status": "live",
+      "completion_status": "incomplete"
+    },
+    {
+      "id": "B",
+      "name": "accessibility",
+      "sequence": 2,
+      "existing_tasks": ["#601", "#589", "#591", "#639"],
+      "new_work": ["Manual specialist review beyond axe scans."],
+      "owner_role": "Accessibility reviewer and UI maintainer",
+      "prerequisite": "Gate A",
+      "acceptance": "Automated scans and manual keyboard, screen-reader, zoom/reflow, contrast, and customized-state journey pass.",
+      "evidence_status": "historical",
+      "completion_status": "incomplete"
+    },
+    {
+      "id": "S",
+      "name": "privacy and safety",
+      "sequence": 3,
+      "existing_tasks": [],
+      "new_work": [
+        "Hostile preview/export/import/share/persistence corpus, request allowlist, explicit-navigation, and PWA tests."
+      ],
+      "owner_role": "Security and privacy reviewer",
+      "prerequisite": "Gate A; Gate B for error/focus acceptance",
+      "acceptance": "Hostile inputs fail closed, bad state recovers, requests are allowlisted, and service-worker behavior is bounded.",
+      "evidence_status": "not-run",
+      "completion_status": "incomplete"
+    },
+    {
+      "id": "C",
+      "name": "core journeys",
+      "sequence": 4,
+      "existing_tasks": [
+        "#599",
+        "#642",
+        "#643",
+        "#644",
+        "#645",
+        "#646",
+        "#647",
+        "#648",
+        "#649",
+        "#664",
+        "#673"
+      ],
+      "new_work": [],
+      "owner_role": "Core journey maintainer",
+      "prerequisite": "Gates A, B, and S",
+      "acceptance": "Extract/history, first-use/share links, export preview/copy/stale state, empty/clipboard states, and remaining journey cases pass in fresh contexts.",
+      "evidence_status": "live",
+      "completion_status": "incomplete"
+    },
+    {
+      "id": "D",
+      "name": "renderer and output evidence",
+      "sequence": 5,
+      "existing_tasks": ["#598", "#614", "#615", "#616", "#600", "#665", "#676"],
+      "new_work": ["Holdout/live renderer submissions and all-eight-format outcome checks."],
+      "owner_role": "Renderer evidence owner",
+      "prerequisite": "Gates A, C, and S",
+      "acceptance": "Representative outputs are proven or explicitly narrowed for each renderer tier; unverified claims remain visible.",
+      "evidence_status": "live",
+      "completion_status": "incomplete"
+    },
+    {
+      "id": "E",
+      "name": "palette and profile integrity",
+      "sequence": 6,
+      "existing_tasks": [
+        "#578",
+        "#579",
+        "#580",
+        "#581",
+        "#582",
+        "#583",
+        "#585",
+        "#587",
+        "#588",
+        "#589",
+        "#590",
+        "#617",
+        "#618"
+      ],
+      "new_work": [],
+      "owner_role": "Palette and persistence maintainer",
+      "prerequisite": "Gates A, B, and S",
+      "acceptance": "Names, slots, order, share links, saved formats, syntax hints, and profile state cannot silently change user intent.",
+      "evidence_status": "live",
+      "completion_status": "incomplete"
+    },
+    {
+      "id": "F",
+      "name": "release truth and distribution",
+      "sequence": 7,
+      "existing_tasks": ["#603", "#650", "#651", "#652", "#655"],
+      "new_work": ["Reconcile stale truth surfaces and enforce exact-SHA tag gates."],
+      "owner_role": "Documentation and release maintainer",
+      "prerequisite": "Gates A through E",
+      "acceptance": "Public docs/assets agree and a release dry run proves failing or skipped checks cannot publish.",
+      "evidence_status": "analytical",
+      "completion_status": "incomplete"
+    }
+  ],
+  "privacy_boundary": {
+    "backend": "out_of_scope",
+    "login": "out_of_scope",
+    "database": "out_of_scope",
+    "cloud_storage": "out_of_scope",
+    "diagram_telemetry": "out_of_scope",
+    "new_analytics": "rejected",
+    "owner_only_analytics_proof_task": {
+      "reference": "#729",
+      "disposition": "retire_or_reject_as_release_gate",
+      "reason": "Analytics is not a valid mitigation for this privacy-first product and must not expand the boundary."
+    },
+    "existing_aggregate_pageview": "Permitted only as the documented constrained exception; it must not contain diagram or palette data and is not a release gate."
+  },
+  "mitigations": [
+    {
+      "id": "M-01",
+      "name": "Stabilize validation and fail closed",
+      "owner_role": "CI and release maintainer",
+      "prerequisite": "Stage 0 freeze",
+      "acceptance": "Required checks run on exact SHA with PORT/BASE_PATH supplied; skipped checks fail closed; environment failures are reproducible.",
+      "evidence_status": "live",
+      "re_review_trigger": "Workflow, runner, Node, pnpm, Playwright, or build configuration change"
+    },
+    {
+      "id": "M-02",
+      "name": "Complete accessibility evidence",
+      "owner_role": "Accessibility reviewer and UI maintainer",
+      "prerequisite": "M-01",
+      "acceptance": "Manual keyboard, screen-reader, zoom/reflow, contrast, reduced-motion, and customized-state review passes or is explicitly scoped.",
+      "evidence_status": "not-run",
+      "re_review_trigger": "Interactive control, overlay, layout, theme, or palette-editor change"
+    },
+    {
+      "id": "M-03",
+      "name": "Prove hostile input and output boundaries",
+      "owner_role": "Security and privacy reviewer",
+      "prerequisite": "M-01; M-02 for error/focus behavior",
+      "acceptance": "Hostile Mermaid, SVG, CSS, font, color, import, share, and persistence fixtures fail closed without execution, leakage, or crash.",
+      "evidence_status": "not-run",
+      "re_review_trigger": "Mermaid, exporter, parser, persistence, share, analytics, font, or service-worker change"
+    },
+    {
+      "id": "M-04",
+      "name": "Validate PWA update and offline recovery",
+      "owner_role": "Web platform maintainer",
+      "prerequisite": "M-01 and M-03",
+      "acceptance": "Build-A/build-B worker update and offline scenarios produce a usable current shell or actionable failure.",
+      "evidence_status": "not-run",
+      "re_review_trigger": "Service-worker, manifest, cache, asset, or deployment change"
+    },
+    {
+      "id": "M-05",
+      "name": "Prove renderer and eight-format output boundaries",
+      "owner_role": "Renderer evidence owner",
+      "prerequisite": "M-01 and M-03",
+      "acceptance": "Live/holdout renderer matrix and all-eight-format payload checks pass or public claims are narrowed.",
+      "evidence_status": "live",
+      "re_review_trigger": "Mermaid/renderer version, profile, output format, theme engine, or family overlay change"
+    },
+    {
+      "id": "M-06",
+      "name": "Reconcile release truth and exact-SHA distribution",
+      "owner_role": "Documentation and release maintainer",
+      "prerequisite": "M-01 through M-05",
+      "acceptance": "Truth surfaces, screenshots, debt register, and workflows agree; release dry run blocks failing or skipped checks.",
+      "evidence_status": "not-run",
+      "re_review_trigger": "New release cycle or any public claim, workflow, screenshot, or dependency change"
+    }
+  ],
+  "release_decision": "defer-for-evidence",
+  "bounded_current_use": {
+    "decision": "approve-with-limits",
+    "limits": [
+      "Non-sensitive, user-reviewed diagrams only.",
+      "Renderer profiles are guidance, not compatibility guarantees.",
+      "Strict Mermaid mode is not a hostile-input certification.",
+      "Automated axe results are not universal WCAG certification.",
+      "Do not tag or publish v1.0 from this baseline alone.",
+      "Keep analytics, telemetry, backend, login, cloud storage, and diagram-content collection out of scope."
+    ]
+  },
+  "limitations": [
+    "No specialist security, accessibility, legal, or renderer-owner review was performed.",
+    "No external renderer holdout or live submission matrix was completed.",
+    "No hostile export, deep persistence, PWA update, or manual accessibility run was completed.",
+    "Delegated reviewers shared the same source set and unknown underlying model identity.",
+    "The review assesses evidence sufficiency, not universal correctness or certification."
+  ],
+  "review_expiry_triggers": [
+    "Mermaid, Vite, Node, pnpm, Playwright, or renderer version change",
+    "New diagram family, export format, palette schema, profile/share, or persistence behavior",
+    "Privacy boundary, analytics transport, fonts, service worker, external navigation, or browser-origin security change",
+    "Security, accessibility, legal, or renderer-owner finding",
+    "CI, release workflow, tag, deployment, or screenshot automation change",
+    "README, product brief, roadmap, changelog, checklist, threat model, or other public-claim change",
+    "New release cycle or promotion beyond v0.6.2"
+  ],
+  "follow_up": [
+    {
+      "title": "Prove hostile diagram and export inputs cannot create active content",
+      "category": "test_gaps",
+      "status": "recommended",
+      "scope": "Playwright and unit corpus for hostile Mermaid, SVG, CSS, font, color, name, and description values across preview, SVG, CSS, frontmatter, and JSON export sinks."
+    },
+    {
+      "title": "Make invalid saved and shared state recover without crashing",
+      "category": "test_gaps",
+      "status": "recommended",
+      "scope": "Deep schema validation, size bounds, reset/recovery behavior, and fresh-context tests for localStorage, theme tokens, and profile tokens."
+    },
+    {
+      "title": "Make tagged releases prove the exact candidate passed every required gate",
+      "category": "tech_debt",
+      "status": "recommended",
+      "scope": "Release workflow contract and fork dry runs for semver tags, changelog, build, unit, E2E, documentation, safety corpus, deploy health, and least-privilege permissions."
+    }
+  ]
+}
