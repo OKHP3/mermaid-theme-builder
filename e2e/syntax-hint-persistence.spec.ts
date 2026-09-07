@@ -9,6 +9,7 @@
 import { test, expect } from "@playwright/test";
 
 const FLOWCHART = "flowchart TD\n  A[Start] --> B[End]";
+const SEQUENCE = "sequenceDiagram\n  Alice->>Bob: Hello";
 
 test.describe("FamilySyntaxHint dismissal persistence", () => {
   test.beforeEach(async ({ page }) => {
@@ -41,5 +42,29 @@ test.describe("FamilySyntaxHint dismissal persistence", () => {
     await input.fill(FLOWCHART);
 
     await expect(hintBar).not.toBeVisible({ timeout: 3000 });
+  });
+
+  test("dismissing flowchart leaves the sequence syntax tip available", async ({ page }) => {
+    await page.getByRole("tab", { name: "Apply", exact: true }).first().click();
+
+    const input = page.getByLabel("Mermaid diagram code input");
+    await input.waitFor({ state: "visible" });
+    await input.fill(FLOWCHART);
+
+    const flowchartHint = page.getByRole("note", { name: "Syntax tips for flowchart" });
+    await expect(flowchartHint).toBeVisible({ timeout: 5000 });
+
+    await page.getByRole("button", { name: "Dismiss flowchart syntax tip" }).click();
+    await expect(flowchartHint).not.toBeVisible({ timeout: 3000 });
+
+    await input.fill(SEQUENCE);
+
+    const sequenceHint = page.getByRole("note", { name: "Syntax tips for sequenceDiagram" });
+    await expect(sequenceHint).toBeVisible({ timeout: 5000 });
+    await expect(flowchartHint).not.toBeVisible();
+
+    // Switching back must not revive the family that was dismissed.
+    await input.fill(FLOWCHART);
+    await expect(flowchartHint).not.toBeVisible({ timeout: 3000 });
   });
 });
