@@ -125,7 +125,7 @@ export interface ExportOptions {
 }
 
 const TOOL_URL = "https://overkillhill.com/projects/mermaid-theme-builder/";
-const TOOL_VERSION = "0.6.1";
+const TOOL_VERSION = "0.6.2";
 
 const BADGE_SAFE_FAMILIES: DiagramFamily[] = [
   "flowchart",
