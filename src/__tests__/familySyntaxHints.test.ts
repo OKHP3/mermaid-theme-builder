@@ -12,7 +12,7 @@
  *      valid classDefStatus enum value, unique family key).
  */
 
-import { describe, it, expect } from "vitest";
+import { afterEach, describe, it, expect, vi } from "vitest";
 import {
   getFamilySyntaxHint,
   getAllFamilySyntaxHints,
@@ -21,6 +21,31 @@ import {
 import type { ClassDefStatus } from "@/lib/family-syntax-hints";
 import { CLASSDEF_CAPABLE_FAMILIES } from "@/lib/theme-engine";
 import type { DiagramFamily } from "@/data/mermaid-capabilities";
+
+afterEach(() => {
+  vi.doUnmock("@/lib/family-syntax-hints-data");
+  vi.resetModules();
+});
+
+describe("family-syntax-hints — module-level duplicate-family guard", () => {
+  it("rejects the module import when the HINTS source injects a duplicate family", async () => {
+    vi.resetModules();
+    vi.doMock("@/lib/family-syntax-hints-data", async () => {
+      const actual = await vi.importActual<typeof import("@/lib/family-syntax-hints-data")>(
+        "@/lib/family-syntax-hints-data"
+      );
+
+      return {
+        ...actual,
+        HINTS: [...actual.HINTS, { ...actual.HINTS[0], family: "flowchart" }],
+      };
+    });
+
+    await expect(import("@/lib/family-syntax-hints")).rejects.toThrow(
+      /duplicate family key.*flowchart/i
+    );
+  });
+});
 
 // ---------------------------------------------------------------------------
 // 1. Exact-set sentinel — every family in the registry returns a hint
