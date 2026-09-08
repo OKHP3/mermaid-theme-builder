@@ -50,6 +50,34 @@ const EXPERIMENTAL_SAMPLE_ID = "venn-governance-triangle";
  */
 const NON_BETA_SAMPLE_ID = "compose-instructions";
 
+test("stale preview selection falls back to the default diagram without a support hint", async ({
+  page,
+}) => {
+  // An ID from an older catalog must not leave the picker in an invalid state
+  // or make the fallback diagram inherit the old diagram family's warning.
+  await page.addInitScript(
+    ({ key, value }: { key: string; value: string }) => {
+      window.localStorage.clear();
+      localStorage.setItem("mtb.firstVisit", "true");
+      window.sessionStorage.clear();
+      window.localStorage.setItem(key, value);
+    },
+    { key: LS_PREVIEW_KEY, value: "stale-preview-id-from-an-older-catalog" }
+  );
+
+  await page.goto("/");
+  await page.waitForLoadState("load");
+
+  await Promise.all([
+    page.waitForURL((url) => url.hash === "#compose"),
+    page.getByRole("tab", { name: "Compose" }).first().click(),
+  ]);
+
+  await expect(page.getByLabel("Preview diagram")).toHaveValue(NON_BETA_SAMPLE_ID);
+  await expect(page.getByRole("note")).not.toBeAttached();
+  await expect(page.getByRole("button", { name: "See support details →" })).not.toBeAttached();
+});
+
 test("'See support details →' switches to Reference tab and reveals Renderer Parity Matrix", async ({
   page,
 }) => {

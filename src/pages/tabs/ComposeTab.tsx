@@ -368,9 +368,13 @@ export function ComposeTab({
 
   const [selectedSampleId, setSelectedSampleId] = useState<string>(() => {
     try {
-      return localStorage.getItem("mtb.compose.previewSampleId") ?? "compose-instructions";
+      const storedId = localStorage.getItem("mtb.compose.previewSampleId");
+      return (
+        (storedId && EXAMPLE_CATALOG.some((entry) => entry.id === storedId) ? storedId : null) ??
+        EXAMPLE_CATALOG[0].id
+      );
     } catch {
-      return "compose-instructions";
+      return EXAMPLE_CATALOG[0].id;
     }
   });
 
