@@ -48,6 +48,29 @@ beforeEach(cleanFixture);
 afterEach(cleanFixture);
 
 describe("check-source-refs.mjs", () => {
+  it.each([
+    {
+      label: "a missing file",
+      fileArg: "src/__tests__/__missing-fixture.ts",
+      guidance: "File not found: src/__tests__/__missing-fixture.ts",
+    },
+    {
+      label: "a non-TypeScript file",
+      fileArg: "package.json",
+      guidance: "--file must point to a TypeScript file: package.json",
+    },
+    {
+      label: "a path outside the repository",
+      fileArg: "../outside-repository.ts",
+      guidance: "File must be inside the repository: ../outside-repository.ts",
+    },
+  ])("exits 1 and explains why --file is invalid for $label", ({ fileArg, guidance }) => {
+    const { status, stderr } = runScript("--file", fileArg);
+
+    expect(status).toBe(1);
+    expect(stderr).toContain(guidance);
+  });
+
   it("exits 1 and reports the broken path when a comment references a non-existent file", () => {
     // Introduce a cross-reference that points to a path that does not exist.
     // The script's comment-context filter only picks up lines starting with
