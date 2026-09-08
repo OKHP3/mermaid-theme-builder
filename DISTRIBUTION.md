@@ -34,6 +34,20 @@ Update this file whenever a new submission is made or a status changes.
 
 ---
 
+### shubhamgrg04/awesome-diagramming — upstream maintainer intake
+
+| Field | Value |
+|-------|-------|
+| **Directory** | [Awesome Diagramming](https://github.com/shubhamgrg04/awesome-diagramming) |
+| **Contribution guidance** | No `CONTRIBUTING.md`; the README says “Feel free to contribute,” and recent tool suggestions use issues as the intake path |
+| **Maintainer contact / proposal** | [Issue #51](https://github.com/shubhamgrg04/awesome-diagramming/issues/51) |
+| **Submitted** | 2026-09-07 |
+| **Status** | ⏳ Awaiting maintainer direction — proposal submitted to the canonical upstream repository; no replacement PR opened while the maintainer confirms the preferred format |
+| **Appropriateness** | Appropriate to propose: Mermaid is already listed in `### General Purpose` with matching Free / Open Source / Diagram as code / Easy / Modern criteria, and Theme Builder is a Mermaid governance companion rather than a renderer replacement |
+| **Proposed entry** | `* [Mermaid Theme Builder](https://github.com/OKHP3/mermaid-theme-builder) (Free, Open Source, Mermaid governance layer, Ease of use - Easy, Visual Appearance - Modern). Brand palette enforcement, renderer-aware export (5 formats), 31 diagram families, SKILL.md agent skill. Live - [Link](https://okhp3.github.io/mermaid-theme-builder/)` |
+
+---
+
 ### AgenticSkills
 
 | Field | Value |
