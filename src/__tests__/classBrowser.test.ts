@@ -187,6 +187,57 @@ describe("ClassBrowser — supportsClassDef={true} (active state)", () => {
     expectSwatchStrokeColor(secondaryCard, SAMPLE_CLASS_DEFS[1].stroke);
   });
 
+  it("keeps advanced class styles visible and scoped to the matching card", () => {
+    const advancedClassDef: ClassDef = {
+      name: "advanced",
+      fill: "#172554",
+      stroke: "#38bdf8",
+      color: "#f8fafc",
+      extra: "stroke-dasharray:5 3,opacity:0.6,stroke-width:2px,font-weight:bold,font-style:italic",
+      description: "Advanced node style",
+    };
+    const plainClassDef: ClassDef = {
+      name: "plain",
+      fill: "#3f3f46",
+      stroke: "#a1a1aa",
+      color: "#fafafa",
+      extra: "",
+      description: "Plain node style",
+    };
+    const html = render({
+      supportsClassDef: true,
+      classDefs: [advancedClassDef, plainClassDef],
+    });
+
+    function cardHtml(name: string): string {
+      const buttonStart = html.indexOf(`aria-label="Copy usage :::${name}"`);
+      expect(buttonStart, `card for ${name}`).toBeGreaterThanOrEqual(0);
+      const cardStart = html.lastIndexOf("<div", buttonStart);
+      expect(cardStart, `outer card for ${name}`).toBeGreaterThanOrEqual(0);
+      const cardEnd = html.indexOf("</button>", buttonStart);
+      expect(cardEnd, `end of card for ${name}`).toBeGreaterThan(cardStart);
+      return html.slice(cardStart, cardEnd);
+    }
+
+    const advancedCard = cardHtml("advanced");
+    expect(advancedCard).toContain("advanced");
+    expect(advancedCard).not.toContain("plain");
+    expect(advancedCard).toContain('style="opacity:0.6"');
+    expect(advancedCard).toContain('stroke-dasharray="5 3"');
+    expect(advancedCard).toContain('stroke-width="2"');
+    expect(advancedCard).toContain("font-weight:bold");
+    expect(advancedCard).toContain("font-style:italic");
+
+    const plainCard = cardHtml("plain");
+    expect(plainCard).toContain("plain");
+    expect(plainCard).not.toContain("advanced");
+    expect(plainCard).not.toContain('style="opacity:0.6"');
+    expect(plainCard).not.toContain('stroke-dasharray="5 3"');
+    expect(plainCard).not.toContain('stroke-width="2"');
+    expect(plainCard).not.toContain("font-weight:bold");
+    expect(plainCard).not.toContain("font-style:italic");
+  });
+
   it("card copy-usage button is present (native button element)", () => {
     const html = render({ supportsClassDef: true });
     expect(html).toContain('aria-label="Copy usage :::primary"');
