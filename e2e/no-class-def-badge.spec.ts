@@ -239,3 +239,49 @@ test("'No classDef' badge on Prompt Scaffold disappears after switching to flowc
     timeout: 5_000,
   });
 });
+
+test("Prompt Scaffold preview uses the latest flowchart and active theme after a source change", async ({
+  page,
+}) => {
+  await gotoApply(page);
+
+  // Start with a non-classDef diagram so the modal is first rendered from a
+  // different family.
+  await pasteDiagram(page, SANKEY);
+  await expect(
+    page
+      .locator("button")
+      .filter({ hasText: /Sankey/i })
+      .first()
+  ).toBeVisible({
+    timeout: 8_000,
+  });
+
+  // Replace the source, then wait for the visible family state before opening
+  // the modal. This mirrors the user flow where the active source changes
+  // without navigating away from Apply.
+  await pasteDiagram(page, FLOWCHART);
+  await expect(
+    page
+      .locator("button")
+      .filter({ hasText: /^Flowchart$/ })
+      .first()
+  ).toBeVisible({
+    timeout: 8_000,
+  });
+
+  const promptScaffoldButton = page.getByRole("button", { name: /Prompt Scaffold/ });
+  await promptScaffoldButton.click();
+
+  const dialog = page.getByRole("dialog", { name: "Generate Prompt Pattern" });
+  await expect(dialog).toBeVisible({ timeout: 5_000 });
+
+  // Open the user-visible preview and verify it was generated from the
+  // current family and palette, not the pre-transition Sankey state.
+  await dialog.getByRole("button", { name: "Preview Format A scaffold" }).click();
+  const preview = dialog.locator('pre[aria-label="Scaffold preview for %%{init}%% directive"]');
+  await expect(preview).toBeVisible();
+  await expect(preview).toContainText("When generating flowchart diagrams");
+  await expect(preview).toContainText("**Theme ID:** `my-theme-1`");
+  await expect(preview).not.toContainText("When generating sankey diagrams");
+});
