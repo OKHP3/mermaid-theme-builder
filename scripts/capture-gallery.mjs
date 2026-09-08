@@ -9,15 +9,21 @@
  */
 
 import { chromium } from "@playwright/test";
-import { accessSync, constants, mkdirSync } from "node:fs";
+import { accessSync, constants, mkdirSync, readFileSync } from "node:fs";
 import { delimiter, dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, "..");
 const GALLERY_DIR = resolve(ROOT, "docs/gallery");
+const PACKAGE_JSON = resolve(ROOT, "package.json");
 const BASE = "http://localhost:80/mermaid-theme-builder/";
 const VIEWPORT = { width: 1280, height: 800 };
+const releaseVersion = JSON.parse(readFileSync(PACKAGE_JSON, "utf8")).version;
+
+if (typeof releaseVersion !== "string" || releaseVersion.trim() === "") {
+  throw new Error(`Expected package.json to contain a non-empty release version; received "${releaseVersion}".`);
+}
 
 function isExecutable(filePath) {
   try {
@@ -108,6 +114,51 @@ async function gotoTab(page, tab) {
   await page.goto(`${BASE}#${tab}`);
   await page.waitForLoadState("networkidle");
   await wait(1000);
+}
+
+/**
+ * Confirm the running app is built from the same release as package.json.
+ *
+ * Vite appends a short Git SHA to the title-bar badge in development and
+ * preview builds, so accept the package version exactly or as that badge's
+ * version prefix. This check must complete before any screenshot path is
+ * opened; otherwise a stale server could replace the current gallery assets.
+ */
+async function verifyReleaseVersion(browser) {
+  const ctx = await browser.newContext({ viewport: VIEWPORT });
+  try {
+    await ctx.addInitScript(seedStorage, {
+      paletteId: "okhp3",
+      rendererTarget: "",
+      outputFormat: "init-directive",
+    });
+    const page = await ctx.newPage();
+    await gotoTab(page, "apply");
+
+    const badge = page.locator(".forge-header-meta");
+    await badge.waitFor({ state: "visible", timeout: 8000 });
+    const renderedBadge = (await badge.textContent())?.trim() ?? "";
+    const expectedBadge = `v${releaseVersion}`;
+    const hasExpectedVersion =
+      renderedBadge === expectedBadge ||
+      renderedBadge.startsWith(`${expectedBadge}-`) ||
+      renderedBadge.startsWith(`${expectedBadge}+`);
+
+    if (!hasExpectedVersion) {
+      throw new Error(
+        [
+          "Gallery capture aborted before writing assets.",
+          `The rendered title-bar badge was "${renderedBadge || "(missing)"}",`,
+          `but package.json requires release version "${expectedBadge}".`,
+          "Start the app from the current checkout and retry the capture.",
+        ].join(" ")
+      );
+    }
+
+    console.log(`✓ Release preflight passed (${renderedBadge})`);
+  } finally {
+    await ctx.close();
+  }
 }
 
 // --------------------------------------------------------------------------
@@ -323,8 +374,6 @@ async function shot5(browser) {
 // Main
 // --------------------------------------------------------------------------
 async function main() {
-  mkdirSync(GALLERY_DIR, { recursive: true });
-  console.log(`Saving screenshots to ${GALLERY_DIR}`);
   const executablePath = resolveChromiumExecutable();
   console.log(`Using Chromium executable: ${executablePath}`);
 
@@ -334,6 +383,10 @@ async function main() {
   });
 
   try {
+    await verifyReleaseVersion(browser);
+    mkdirSync(GALLERY_DIR, { recursive: true });
+    console.log(`Saving screenshots to ${GALLERY_DIR}`);
+
     await shot1(browser);
     await shot2(browser);
     await shot3(browser);
