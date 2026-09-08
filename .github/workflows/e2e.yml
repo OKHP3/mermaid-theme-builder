@@ -55,11 +55,20 @@ jobs:
 
       - name: Wait for server
         run: |
+          server_ready=false
           for i in $(seq 1 30); do
-            curl -sf http://localhost:4173/mermaid-theme-builder/ && echo "Server ready" && break
+            if curl -sf http://localhost:4173/mermaid-theme-builder/; then
+              echo "Server ready"
+              server_ready=true
+              break
+            fi
             echo "Waiting... attempt $i"
             sleep 2
           done
+          if [ "$server_ready" != "true" ]; then
+            echo "Preview server did not start after 30 attempts" >&2
+            exit 1
+          fi
 
       - name: Run E2E tests
         run: pnpm test:e2e
