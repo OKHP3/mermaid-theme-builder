@@ -234,3 +234,20 @@ test("Sidebar entries without a badge show no chip text", async ({ page }) => {
   const amberSpan = fcButton.locator("span").filter({ hasText: /^(Beta|Experimental)$/ });
   await expect(amberSpan).not.toBeAttached();
 });
+
+test("Canonical-only entries show no status chip in the preview header", async ({ page }) => {
+  await openExamplesTab(page);
+  await expandSection(page, "Flowchart & Sequence");
+
+  // flowchart-mermaid-basic has badge: "Canonical", so the preview header
+  // must not inherit either of the status chips used for Beta or Experimental.
+  const fcButton = page.locator('[data-example-id="flowchart-mermaid-basic"]');
+  await expect(fcButton).toBeVisible({ timeout: 5000 });
+  await fcButton.click();
+
+  const previewHeader = page.getByText("Themed preview", { exact: true }).locator("..");
+  const statusChips = previewHeader
+    .locator("span")
+    .filter({ hasText: /^(Beta|Experimental)$/ });
+  await expect(statusChips).not.toBeVisible();
+});
