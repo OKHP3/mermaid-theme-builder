@@ -354,6 +354,29 @@ test("xychart preview uses the selected palette primary color for its first bar"
   expect(firstBarFill?.toLowerCase()).toBe("#1a4f8a");
 });
 
+test("sequence preview renders with the selected palette styles", async ({ page }) => {
+  await gotoApply(page);
+  await page.locator("#apply-palette-tile-ocean-depth").click();
+  await pasteDiagram(page, SEQUENCE);
+
+  const themedPreview = page.locator(
+    'section[aria-label="Diagram preview"] [id^="mermaid-preview-"]'
+  );
+  const sequenceSvg = themedPreview.locator('svg[aria-roledescription="sequence"]');
+  await expect(sequenceSvg).toBeVisible({ timeout: 10000 });
+
+  // Sequence diagrams use Mermaid's family-specific CSS selectors rather than
+  // flowchart node attributes, so assert the computed styles users see.
+  const actor = sequenceSvg.locator("rect.actor.actor-top").first();
+  await expect(actor).toBeVisible();
+  await expect(actor).toHaveCSS("fill", "rgb(26, 79, 138)");
+  await expect(actor).toHaveCSS("stroke", "rgb(13, 48, 96)");
+
+  const messageLine = sequenceSvg.locator("line.messageLine0").first();
+  await expect(messageLine).toHaveCount(1);
+  await expect(messageLine).toHaveCSS("stroke", "rgb(37, 99, 235)");
+});
+
 // ---------------------------------------------------------------------------
 // Test 10 — Live Editor button opens mermaid.live in a new tab
 // ---------------------------------------------------------------------------
