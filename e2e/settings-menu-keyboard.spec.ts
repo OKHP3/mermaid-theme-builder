@@ -11,6 +11,7 @@ import { test, expect } from "@playwright/test";
  *  3. Pressing Escape closes the menu and returns focus to the trigger button.
  *  4. Pressing ArrowDown / ArrowUp at the menu boundaries wraps focus.
  *  5. Pressing Home / End jumps focus to the menu boundaries.
+ *  6. Pressing Enter / Space activates the focused menu action.
  *
  * A regression in any of these paths would leave keyboard-only users unable
  * to reach settings (e.g. reset syntax tips or clear palette history).
@@ -172,6 +173,41 @@ test.describe("Settings menu keyboard navigation", () => {
 
     await page.keyboard.press("End");
     await expect(menuItems.last()).toBeFocused();
+  });
+
+  test("ArrowDown then Enter activates the focused settings action", async ({ page }) => {
+    const settingsBtn = page.getByRole("button", { name: "Settings", exact: true });
+    await settingsBtn.focus();
+    await page.keyboard.press("Enter");
+
+    const menu = page.getByRole("menu", { name: "Settings" });
+    await expect(menu).toBeVisible();
+    const syntaxTipsItem = page.getByRole("menuitem", { name: "Reset all syntax tips" });
+
+    await page.keyboard.press("ArrowDown");
+    await expect(syntaxTipsItem).toBeFocused();
+    await page.keyboard.press("Enter");
+
+    await expect(menu).not.toBeVisible();
+    await expect(page.getByRole("status")).toContainText("Syntax tips restored.");
+  });
+
+  test("End then Space activates the last settings action", async ({ page }) => {
+    const settingsBtn = page.getByRole("button", { name: "Settings", exact: true });
+    await settingsBtn.focus();
+    await page.keyboard.press("Enter");
+
+    const menu = page.getByRole("menu", { name: "Settings" });
+    await expect(menu).toBeVisible();
+    const clearSettingsItem = page.getByRole("menuitem", { name: "Clear all settings" });
+
+    await page.keyboard.press("ArrowDown");
+    await page.keyboard.press("End");
+    await expect(clearSettingsItem).toBeFocused();
+    await page.keyboard.press("Space");
+
+    await expect(menu).not.toBeVisible();
+    await expect(page.getByRole("status")).toContainText("All settings cleared.");
   });
 
   test("Escape closes the menu and returns focus to the settings button", async ({ page }) => {
