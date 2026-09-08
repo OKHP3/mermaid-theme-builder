@@ -365,3 +365,32 @@ test.describe("PromptScaffoldModal — Path D: keyboard focus restoration", () =
     await expect(trigger).toBeFocused();
   });
 });
+
+// ---------------------------------------------------------------------------
+// Path E — pointer dismissal restores focus to the trigger
+// ---------------------------------------------------------------------------
+
+test.describe("PromptScaffoldModal — Path E: pointer focus restoration", () => {
+  test("Close button dismissal returns focus to the Generate Prompt Pattern button", async ({
+    page,
+  }) => {
+    await openScaffoldModal(page);
+
+    const trigger = page.getByRole("button", { name: "Generate Prompt Pattern", exact: true });
+    await page.getByRole("button", { name: "Close" }).click();
+    await expect(page.locator('[role="dialog"]')).toBeHidden({ timeout: 3_000 });
+    await expect(trigger).toBeFocused();
+  });
+
+  test("backdrop dismissal returns focus to the Generate Prompt Pattern button", async ({
+    page,
+  }) => {
+    await openScaffoldModal(page);
+
+    const trigger = page.getByRole("button", { name: "Generate Prompt Pattern", exact: true });
+    const backdrop = page.locator('[role="dialog"]').locator("..").locator('[aria-hidden="true"]');
+    await backdrop.click({ position: { x: 4, y: 4 } });
+    await expect(page.locator('[role="dialog"]')).toBeHidden({ timeout: 3_000 });
+    await expect(trigger).toBeFocused();
+  });
+});
