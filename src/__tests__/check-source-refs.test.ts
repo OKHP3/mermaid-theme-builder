@@ -48,6 +48,16 @@ beforeEach(cleanFixture);
 afterEach(cleanFixture);
 
 describe("check-source-refs.mjs", () => {
+  it("finds broken references in an unscoped scan on every host", () => {
+    writeFixture("// See: src/nonexistent/does-not-exist.ts\nexport {};\n");
+
+    const { status, stdout, stderr } = runScript();
+
+    expect(status).toBe(1);
+    expect(stdout).not.toContain("No TypeScript files found");
+    expect(stderr).toContain("src/nonexistent/does-not-exist.ts");
+  });
+
   it.each([
     {
       label: "a missing file",

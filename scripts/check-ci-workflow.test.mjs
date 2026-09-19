@@ -6,7 +6,10 @@ import { fileURLToPath } from "node:url";
 import { REQUIRED_CHECKS, validateCiWorkflow } from "./lib/ci-workflow-contract.mjs";
 
 const root = resolve(fileURLToPath(new URL("..", import.meta.url)));
-const workflow = readFileSync(resolve(root, ".github/workflows/ci.yml"), "utf8");
+const workflow = readFileSync(resolve(root, ".github/workflows/ci.yml"), "utf8").replace(
+  /\r\n/g,
+  "\n"
+);
 const packageJson = JSON.parse(readFileSync(resolve(root, "package.json"), "utf8"));
 
 function errorsFor(candidate) {

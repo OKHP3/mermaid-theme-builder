@@ -22,6 +22,7 @@
     "check:source-refs": "node scripts/check-source-refs.mjs",
     "check:version-strings": "node scripts/check-version-strings.mjs",
     "check:technology-versions": "node scripts/check-technology-versions.mjs",
+    "test:technology-versions": "node --test scripts/check-technology-versions.test.mjs scripts/update-technology-issue.test.mjs",
     "check:doc-truth": "node scripts/check-doc-truth.mjs",
     "check:skills-catalog": "node --test scripts/sync-skills-catalog.test.mjs && node scripts/sync-skills-catalog.mjs --check",
     "sync:skills-catalog": "node scripts/sync-skills-catalog.mjs",
@@ -30,7 +31,7 @@
     "lint": "tsc --noEmit"
   },
   "simple-git-hooks": {
-    "pre-commit": "pnpm lint-staged && node scripts/check-source-refs.mjs && node scripts/check-ci-workflow.mjs"
+    "pre-commit": "corepack pnpm lint-staged && node scripts/check-source-refs.mjs && node scripts/check-ci-workflow.mjs"
   },
   "lint-staged": {
     "*.{ts,tsx,json,css}": "prettier --write"

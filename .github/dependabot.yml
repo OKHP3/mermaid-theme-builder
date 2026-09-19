@@ -13,24 +13,56 @@ updates:
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
-      interval: "weekly"
-      day: "monday"
-    open-pull-requests-limit: 5
+      interval: "daily"
+      time: "06:00"
+      timezone: "America/Chicago"
+    cooldown:
+      default-days: 3
+    open-pull-requests-limit: 10
+    groups:
+      react-family:
+        patterns: ["react", "react-dom", "@types/react", "@types/react-dom"]
+        update-types: ["minor", "patch"]
+      tailwind-family:
+        patterns: ["tailwindcss", "@tailwindcss/*"]
+        update-types: ["minor", "patch"]
+      vite-family:
+        patterns: ["vite", "@vitejs/plugin-react"]
+        update-types: ["minor", "patch"]
+      maintenance:
+        patterns: ["*"]
+        exclude-patterns:
+          [
+            "mermaid",
+            "@mermaid-js/*",
+            "react",
+            "react-dom",
+            "@types/react",
+            "@types/react-dom",
+            "tailwindcss",
+            "@tailwindcss/*",
+            "vite",
+            "@vitejs/plugin-react",
+          ]
+        update-types: ["minor", "patch"]
     labels:
       - "dependencies"
       - "npm"
     commit-message:
       prefix: "chore(deps)"
     ignore:
-      # Mermaid major version upgrades require registry review — handle manually.
+      # Mermaid major version upgrades require registry review. Handle manually.
       - dependency-name: "mermaid"
         update-types: ["version-update:semver-major"]
 
   - package-ecosystem: "github-actions"
-    directory: "/"
+    directories:
+      - "/"
+      - "/.github/actions/setup-pnpm"
     schedule:
-      interval: "weekly"
-      day: "monday"
+      interval: "daily"
+      time: "06:00"
+      timezone: "America/Chicago"
     open-pull-requests-limit: 5
     labels:
       - "dependencies"

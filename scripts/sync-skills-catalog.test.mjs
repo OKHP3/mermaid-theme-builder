@@ -108,3 +108,22 @@ test("canonical description and category remain authoritative without UI metadat
     rmSync(fixture.root, { recursive: true, force: true });
   }
 });
+
+test("Windows line endings do not create catalog drift and survive regeneration", () => {
+  const fixture = createFixture(skillFile());
+  try {
+    assert.equal(run(fixture).status, 0);
+    const windowsSource = readFileSync(fixture.output, "utf8").replace(/\r?\n/g, "\r\n");
+    writeFileSync(fixture.output, windowsSource);
+    assert.equal(run(fixture, "--check").status, 0);
+    assert.equal(readFileSync(fixture.output, "utf8"), windowsSource);
+
+    writeFileSync(join(fixture.skillDir, "SKILL.md"), skillFile({ category: "workflow" }));
+    assert.equal(run(fixture, "--check").status, 1);
+    assert.equal(run(fixture).status, 0);
+    assert.doesNotMatch(readFileSync(fixture.output, "utf8"), /(?<!\r)\n/);
+    assert.equal(run(fixture, "--check").status, 0);
+  } finally {
+    rmSync(fixture.root, { recursive: true, force: true });
+  }
+});

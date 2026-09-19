@@ -546,6 +546,12 @@ workflow definitions, documentation, and recent Git history.
   names, skill path, or release status changes, update this snapshot and the
   relevant inventory entries using verified repository evidence. Do not treat
   inferred mission or vision statements as implementation guarantees.
+- **Technology audit, verified 2026-09-18:** `docs/technology-inventory.md`
+  records the deployed root app, the separate `artifacts/mermaid-theme-workbench/`
+  package, skill support scripts, runtimes, and action dependencies. The daily
+  technology workflow audits all tracked package manifests and lockfile entries.
+  Dependabot proposes updates; runtime and Mermaid compatibility reviews remain
+  required before release. A local edit is not evidence of hosted activation.
 
 #### 9.1 Project identity and brand firewall
 

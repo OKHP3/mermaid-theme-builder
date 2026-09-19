@@ -33,6 +33,9 @@ jobs:
       - name: CI workflow contract check
         run: pnpm run check:ci-workflow
 
+      - name: Technology audit regression tests
+        run: pnpm run test:technology-versions
+
       - name: Unit tests (Vitest)
         run: pnpm test
 
