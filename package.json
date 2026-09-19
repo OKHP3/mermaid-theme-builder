@@ -37,7 +37,7 @@
     "*.{ts,tsx,json,css}": "prettier --write"
   },
   "devDependencies": {
-    "@mermaid-js/mermaid-zenuml": "^0.2.3",
+    "@mermaid-js/mermaid-zenuml": "^1.0.0",
     "@napi-rs/canvas": "^1.0.8",
     "@playwright/test": "^1.62.1",
     "@replit/vite-plugin-cartographer": "catalog:",
