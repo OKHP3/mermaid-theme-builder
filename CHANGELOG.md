@@ -1,11 +1,18 @@
 ## [Unreleased]
 
 ### Changed
+- Audit all workspace dependencies, locked packages, runtimes, and GitHub Actions daily; group related Dependabot updates and maintain one review issue for unresolved version changes.
+- Use the project's Corepack-selected pnpm in commit and Replit post-merge hooks.
 - **Palette schema version is now a single constant** (`PALETTE_TOOL_VERSION` in `src/lib/palettes.ts`). All production files that embed a palette `toolVersion` field now import this constant instead of repeating the string literal, so a palette schema bump is a one-line change. The `check:version-strings` consistency guard continues to catch any drift automatically.
 - **Privacy-respecting analytics**: Plausible records one aggregate pageview with only the origin and pathname. Query strings, hash fragments, Mermaid code, palette data, localStorage values, and custom properties are excluded.
 
 ### Added
+- Technology inventory, source-linked version report, and a GitHub/Replit/Windows synchronization runbook.
 - **Plausible pageview script**: the first-party transport sends only the sanitized pageview created by `src/lib/privacy-analytics.ts`, with a null referrer and `no-referrer` request policy.
+
+### Fixed
+- Discover source references with Node on Windows and preserve Windows line endings when checking or regenerating the skill catalog.
+- Keep simulated component tests independent of external font stylesheet downloads; browser tests retain real rendering coverage.
 
 ---
 

@@ -32,10 +32,9 @@
  * Exits 0 when all referenced paths resolve; exits 1 with clear output otherwise.
  */
 
-import { readFileSync, existsSync } from "node:fs";
+import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { resolve, dirname, relative, isAbsolute } from "node:path";
 import { fileURLToPath } from "node:url";
-import { execSync } from "node:child_process";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, "..");
@@ -45,17 +44,11 @@ const root = resolve(__dirname, "..");
 // ---------------------------------------------------------------------------
 
 function findTs(dir) {
-  try {
-    return execSync(`find ${dir} -type f \\( -name "*.ts" -o -name "*.tsx" \\)`, {
-      cwd: root,
-      encoding: "utf8",
-    })
-      .trim()
-      .split("\n")
-      .filter(Boolean);
-  } catch {
-    return [];
-  }
+  return readdirSync(resolve(root, dir), { withFileTypes: true }).flatMap((entry) => {
+    const path = `${dir}/${entry.name}`;
+    if (entry.isDirectory()) return findTs(path);
+    return entry.isFile() && /\.tsx?$/.test(entry.name) ? [path] : [];
+  });
 }
 
 function getFilesToScan() {

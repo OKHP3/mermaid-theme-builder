@@ -2,61 +2,64 @@ name: Technology Version Audit
 
 on:
   schedule:
-    - cron: "0 14 * * 1"
+    - cron: "17 14 * * *"
   workflow_dispatch:
 
 permissions:
   contents: read
+  issues: write
 
 concurrency:
   group: technology-version-audit
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   audit:
-    name: Audit runtimes and direct dependencies
+    name: Audit all packages, actions, and runtimes
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v6.1.0
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
           node-version: 24
-          cache: pnpm
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile --ignore-scripts
+      # The audit uses Node built-ins and reads the lockfile. No dependency
+      # installation is needed, so a broken install cannot conceal drift.
+      - name: Test audit and issue handling
+        run: node --test scripts/check-technology-versions.test.mjs scripts/update-technology-issue.test.mjs
 
       - name: Run technology version audit
-        run: node scripts/check-technology-versions.mjs --json --fail-on-errors > "$RUNNER_TEMP/technology-version-report.json"
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/check-technology-versions.mjs --output-dir "$RUNNER_TEMP/technology-audit" --fail-on-errors
 
       - name: Add audit summary
         if: always()
         run: |
-          if [ -f "$RUNNER_TEMP/technology-version-report.json" ]; then
-            node -e '
-              const fs = require("node:fs");
-              const report = JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP + "/technology-version-report.json", "utf8"));
-              const summary = report.summary;
-              console.log(`Direct npm updates available: ${summary.outdatedNpm}`);
-              console.log(`Audit errors: ${summary.npmErrors + summary.runtimeErrors}`);
-              console.log(`Node.js latest LTS: ${report.runtimes.node.latestLts}`);
-              console.log(`Python latest stable: ${report.runtimes.python.latestStable}`);
-            '
+          if [ -f "$RUNNER_TEMP/technology-audit/technology-version-summary.md" ]; then
+            cat "$RUNNER_TEMP/technology-audit/technology-version-summary.md" >> "$GITHUB_STEP_SUMMARY"
           else
-            echo "Technology version audit did not produce a report."
+            echo "Audit failed before producing a report. Review the failed step." >> "$GITHUB_STEP_SUMMARY"
           fi
 
-      - name: Upload audit report
+      - name: Maintain one review issue
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          if [ -f "$RUNNER_TEMP/technology-audit/technology-version-report.json" ]; then
+            node scripts/update-technology-issue.mjs "$RUNNER_TEMP/technology-audit/technology-version-report.json"
+          fi
+
+      - name: Upload complete audit
         if: always()
         uses: actions/upload-artifact@v7
         with:
           name: technology-version-report
-          path: ${{ runner.temp }}/technology-version-report.json
-          if-no-files-found: warn
+          path: ${{ runner.temp }}/technology-audit/
+          retention-days: 30
+          if-no-files-found: error
