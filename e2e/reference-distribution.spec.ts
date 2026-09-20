@@ -126,7 +126,11 @@ test.describe("Reference distribution center", () => {
       await copyButton.click();
       await expect(copyButton).toContainText("Copied");
 
-      const copied = await page.evaluate(() => navigator.clipboard.readText());
+      // Windows clipboard transport uses CRLF.
+      const copied = (await page.evaluate(() => navigator.clipboard.readText())).replace(
+        /\r\n/g,
+        "\n"
+      );
       expect(copied).toContain("flowchart TD");
       expect(copied).toContain("themeVariables");
 

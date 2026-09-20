@@ -7,7 +7,7 @@ Mermaid Theme Builder maintains an explicit capability registry that is separate
 - How well each diagram responds to `%%{init}%%` theme variables
 - Which advanced Mermaid features (classDef, linkStyle, subgraph) are supported
 
-**Verified against Mermaid version:** `11.14.0`  
+**Verified against Mermaid version:** `11.17.2`  
 **Registry file:** `src/data/mermaid-capabilities.ts`
 
 The app uses Mermaid as an npm dependency for rendering. It does not auto-detect new diagram types at runtime — the registry is updated manually when Mermaid releases new or promoted diagram types.
@@ -129,3 +129,9 @@ Mermaid's rendering engine is included as an npm dependency. When Mermaid adds a
 4. What caveats to show in the UI
 
 The capability registry decouples these concerns. The Mermaid dependency handles rendering; the registry handles what the Theme Builder knows how to style.
+
+## Dependency review — 2026-09-20
+
+Mermaid 11.17.2 retains the existing diagram-family inventory. The 11.17 release changes C4 and class rendering, adds flowchart shapes and ER subgraphs, and improves XY chart legends; the registry continues to describe conservative theme support. Family preview tests cover the existing catalog before release. [Upstream release notes](https://github.com/mermaid-js/mermaid/releases/tag/mermaid@11.17.0).
+
+ZenUML stays pinned at 0.2.3. Version 1 requires Mermaid 12 and a newer browser floor, so it must move with a reviewed Mermaid 12 migration rather than bring a second incompatible renderer into this release. [ZenUML 1 release notes](https://github.com/mermaid-js/mermaid/releases/tag/@mermaid-js%2Fmermaid-zenuml@1.0.0).

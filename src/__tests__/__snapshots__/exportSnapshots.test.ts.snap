@@ -7,7 +7,7 @@ exports[`generateMarkdownExport snapshots — BRAND_PALETTES × SIMPLE_DIAGRAM >
 **Theme ID:** \`askjamie\`  
 **Version:** 0.2.0  
 **Generated:** 2025-01-15  
-**Mermaid version:** 11.16.0  
+**Mermaid version:** 11.17.2  
 **Tool:** [Mermaid Theme Builder](https://overkillhill.com/projects/mermaid-theme-builder/)
 **Brand sources:** <https://askjamie.bot/> · <https://github.com/OKHP3/AskJamie/blob/main/assets/css/theme.css>
 **Use for:** Support flows, helpdesk diagrams, explainers, user-assistance workflows, and friendly AI-generated step-by-step guides
@@ -42,7 +42,7 @@ exports[`generateMarkdownExport snapshots — BRAND_PALETTES × SIMPLE_DIAGRAM >
 **Theme ID:** \`glee-fully\`  
 **Version:** 0.2.0  
 **Generated:** 2025-01-15  
-**Mermaid version:** 11.16.0  
+**Mermaid version:** 11.17.2  
 **Tool:** [Mermaid Theme Builder](https://overkillhill.com/projects/mermaid-theme-builder/)
 **Brand sources:** <https://glee-fully.tools/> · <https://github.com/OKHP3/Glee-fullyTools/blob/main/assets/css/theme.css>
 **Use for:** Life-organization, personal productivity, family-friendly, consumer-facing, and approachable explainer diagrams
@@ -77,7 +77,7 @@ exports[`generateMarkdownExport snapshots — BRAND_PALETTES × SIMPLE_DIAGRAM >
 **Theme ID:** \`overkill-hill\`  
 **Version:** 0.2.0  
 **Generated:** 2025-01-15  
-**Mermaid version:** 11.16.0  
+**Mermaid version:** 11.17.2  
 **Tool:** [Mermaid Theme Builder](https://overkillhill.com/projects/mermaid-theme-builder/)
 **Brand sources:** <https://overkillhill.com/> · <https://github.com/OKHP3/OverKill-Hill/blob/main/assets/css/theme.css>
 **Use for:** Technical, architectural, systems, AI tooling, strategy, and executive-facing diagrams
@@ -112,7 +112,7 @@ exports[`generateMarkdownExport snapshots — customThemeName path > palette "As
 **Theme ID:** \`askjamie\`  
 **Version:** 0.2.0  
 **Generated:** 2025-01-15  
-**Mermaid version:** 11.16.0  
+**Mermaid version:** 11.17.2  
 **Tool:** [Mermaid Theme Builder](https://overkillhill.com/projects/mermaid-theme-builder/)
 **Brand sources:** <https://askjamie.bot/> · <https://github.com/OKHP3/AskJamie/blob/main/assets/css/theme.css>
 **Use for:** Support flows, helpdesk diagrams, explainers, user-assistance workflows, and friendly AI-generated step-by-step guides
@@ -147,7 +147,7 @@ exports[`generateMarkdownExport snapshots — customThemeName path > palette "Gl
 **Theme ID:** \`glee-fully\`  
 **Version:** 0.2.0  
 **Generated:** 2025-01-15  
-**Mermaid version:** 11.16.0  
+**Mermaid version:** 11.17.2  
 **Tool:** [Mermaid Theme Builder](https://overkillhill.com/projects/mermaid-theme-builder/)
 **Brand sources:** <https://glee-fully.tools/> · <https://github.com/OKHP3/Glee-fullyTools/blob/main/assets/css/theme.css>
 **Use for:** Life-organization, personal productivity, family-friendly, consumer-facing, and approachable explainer diagrams
@@ -182,7 +182,7 @@ exports[`generateMarkdownExport snapshots — customThemeName path > palette "OK
 **Theme ID:** \`overkill-hill\`  
 **Version:** 0.2.0  
 **Generated:** 2025-01-15  
-**Mermaid version:** 11.16.0  
+**Mermaid version:** 11.17.2  
 **Tool:** [Mermaid Theme Builder](https://overkillhill.com/projects/mermaid-theme-builder/)
 **Brand sources:** <https://overkillhill.com/> · <https://github.com/OKHP3/OverKill-Hill/blob/main/assets/css/theme.css>
 **Use for:** Technical, architectural, systems, AI tooling, strategy, and executive-facing diagrams

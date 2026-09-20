@@ -42,24 +42,24 @@ catalog:
   "@replit/vite-plugin-cartographer": ^0.6.1
   "@replit/vite-plugin-dev-banner": ^0.1.2
   "@replit/vite-plugin-runtime-error-modal": ^0.0.6
-  "@tailwindcss/vite": ^4.3.2
-  "@tanstack/react-query": ^5.90.21
-  "@types/node": ^26.4.0
-  "@types/react": ^19.2.18
-  "@types/react-dom": ^19.2.3
-  "@vitejs/plugin-react": ^6.0.5
+  "@tailwindcss/vite": ^4.3.3
+  "@tanstack/react-query": ^5.102.8
+  "@types/node": ^26.6.1
+  "@types/react": ^19.3.0
+  "@types/react-dom": ^19.3.0
+  "@vitejs/plugin-react": ^6.1.1
   class-variance-authority: ^0.7.1
   clsx: ^2.1.1
   drizzle-orm: ^0.45.2
-  framer-motion: ^13.1.0
-  lucide-react: ^1.14.0
-  react: 19.2.8
-  react-dom: 19.2.8
-  tailwind-merge: ^3.3.1
-  tailwindcss: ^4.3.2
+  framer-motion: ^13.3.0
+  lucide-react: ^1.46.0
+  react: 19.3.0
+  react-dom: 19.3.0
+  tailwind-merge: ^3.7.0
+  tailwindcss: ^4.3.3
   tsx: ^4.21.0
-  vite: ^8.1.4
-  zod: ^4.4.3
+  vite: ^8.3.0
+  zod: ^4.6.5
 
 autoInstallPeers: false
 
@@ -155,9 +155,10 @@ overrides:
   esbuild: "0.27.3"
   # Force uuid to patched version to fix GHSA-w5hq-g745-h8pq (buffer bounds check vuln)
   uuid: "^11.1.1"
-  # Force dompurify to patched version (>=3.4.9) to fix multiple CVEs:
+  # Force dompurify to patched version (>=3.4.13) to fix multiple CVEs:
   # GHSA-vxr8-fq34-vvx9, GHSA-gvmj-g25r-r7wr, GHSA-rp9w-3fw7-7cwq, GHSA-hpcv-96wg-7vj8,
   # GHSA-cmwh-pvxp-8882, GHSA-r47g-fvhr-h676, GHSA-76mc-f452-cxcm, GHSA-x4vx-rjvf-j5p4
-  dompurify: "^3.4.9"
+  dompurify: "^3.4.13"
   # Force ws to patched version (>=8.21.0) to fix GHSA-96hv-2xvq-fx4p (memory exhaustion DoS)
   ws: "^8.21.0"
+  "postcss-selector-parser@6": ^6.1.3

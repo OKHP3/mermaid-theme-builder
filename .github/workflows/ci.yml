@@ -25,7 +25,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Setup pnpm + Node.js
         uses: ./.github/actions/setup-pnpm
@@ -38,6 +38,9 @@ jobs:
 
       - name: Unit tests (Vitest)
         run: pnpm test
+
+      - name: Preview scaffold regression tests
+        run: pnpm run test:workbench
 
       - name: Type check
         run: pnpm run typecheck

@@ -1,5 +1,15 @@
 ## [Unreleased]
 
+---
+
+## [0.6.3] - 2026-09-20
+
+### Fixed
+- Patch the dependency-level DOMPurify, selector parser, and Vitest advisories; use official core renderer entry points and document the remaining ZenUML embedded-sanitizer review.
+- Reconcile supported dependency and Actions updates, including Mermaid 11.17.2 rendering fixes. Keep ZenUML on its compatible pinned release.
+- Typecheck the retained preview scaffold in CI and migrate its calendar, chart, and resizable-panel wrappers to their current APIs.
+- Restore the missing Apply workspace layout styles and refresh the release screenshot while preserving older release images.
+
 ### Changed
 - Audit all workspace dependencies, locked packages, runtimes, and GitHub Actions daily; group related Dependabot updates and maintain one review issue for unresolved version changes.
 - Use the project's Corepack-selected pnpm in commit and Replit post-merge hooks.
@@ -74,6 +84,8 @@ Phase 2 P0 capability fixes, plus documentation truth sync across all public sur
 
 **Verdict: v0.6.0.** v1.0.0 remains blocked by its other roadmap gates; the WCAG 2.1 AA automated audit gate now passes.
 
-[Unreleased]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.6.1...HEAD
+[Unreleased]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.6.3...HEAD
+[0.6.3]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.6.2...v0.6.3
+[0.6.2]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.6.1...v0.6.2
 [0.6.1]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.5.0...v0.6.0
