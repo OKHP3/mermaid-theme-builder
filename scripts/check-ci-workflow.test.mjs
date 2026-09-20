@@ -70,3 +70,9 @@ for (const check of REQUIRED_CHECKS) {
     assert.match(errorsFor(moved).join("\n"), new RegExp(`active ci job is missing "${command}"`));
   });
 }
+
+
+test("release screenshot commits cannot suppress post-merge validation", () => {
+  const release = readFileSync(resolve(root, ".github/workflows/release-gate.yml"), "utf8");
+  assert.doesNotMatch(release, /\[(?:skip ci|ci skip|no ci|skip actions|actions skip)\]/i);
+});

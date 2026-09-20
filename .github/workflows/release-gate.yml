@@ -95,7 +95,7 @@ jobs:
           fi
           branch="automation/refresh-readme-screenshot-${GITHUB_RUN_ID}"
           git switch -c "$branch"
-          git commit -m "chore: refresh README screenshot for ${{ github.ref_name }} [skip ci]"
+          git commit -m "chore: refresh README screenshot for ${{ github.ref_name }}"
           git push --set-upstream origin "$branch"
           echo "branch=$branch" >> "$GITHUB_OUTPUT"
           echo "changed=true" >> "$GITHUB_OUTPUT"
