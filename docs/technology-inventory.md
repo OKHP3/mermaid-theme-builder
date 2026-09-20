@@ -2,6 +2,8 @@
 
 Reviewed September 18, 2026 (America/Chicago). Registry retrievals continued on September 19 UTC.
 
+The dated September 18 inventory below is historical evidence. The [September 20 dependency review](dependency-review-2026-09-20.md) records the v0.6.3 changes, validated Mermaid 11.17.2 pin, and remaining upgrade decisions. The checked-in manifests and lockfile define current versions.
+
 This review answers which technologies the solution uses, which versions are in place, which stable releases are available, and how future updates reach a reviewed release.
 
 Mermaid Theme Builder is a personal OverKill Hill P3 project by Jamie Hill.

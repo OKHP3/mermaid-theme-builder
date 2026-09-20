@@ -130,7 +130,7 @@ Mermaid's rendering engine is included as an npm dependency. When Mermaid adds a
 
 The capability registry decouples these concerns. The Mermaid dependency handles rendering; the registry handles what the Theme Builder knows how to style.
 
-## Dependency review — 2026-09-20
+## Dependency review: 2026-09-20
 
 Mermaid 11.17.2 retains the existing diagram-family inventory. The 11.17 release changes C4 and class rendering, adds flowchart shapes and ER subgraphs, and improves XY chart legends; the registry continues to describe conservative theme support. Family preview tests cover the existing catalog before release. [Upstream release notes](https://github.com/mermaid-js/mermaid/releases/tag/mermaid@11.17.0).
 

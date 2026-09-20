@@ -1,4 +1,4 @@
-# Dependency and workspace review — 2026-09-20
+# Dependency and workspace review: 2026-09-20
 
 The public application remains the root Vite app. The retained `artifacts/mermaid-theme-workbench` scaffold is not the deployed application; its component wrappers now participate in typechecking and regression tests so dependency updates cannot silently break them.
 
