@@ -74,5 +74,5 @@ for (const check of REQUIRED_CHECKS) {
 
 test("release screenshot commits cannot suppress post-merge validation", () => {
   const release = readFileSync(resolve(root, ".github/workflows/release-gate.yml"), "utf8");
-  assert.doesNotMatch(release, /\[(?:skip ci|ci skip|no ci|skip actions|actions skip)\]/i);
+  assert.doesNotMatch(release, /\[(?:skip ci|ci skip|no ci|skip actions|actions skip)\]|skip-checks:\s*true/i);
 });
