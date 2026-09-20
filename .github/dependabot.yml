@@ -6,7 +6,7 @@
 # - CI runs typecheck and build on each PR.
 # - The Mermaid capability registry (src/data/mermaid-capabilities.ts) must be
 #   reviewed and updated when mermaid itself is upgraded, before merging.
-# - All PRs require human review and merge.
+# - All PRs require owner or owner-authorized agent review and protected merge.
 
 version: 2
 updates:
@@ -51,6 +51,9 @@ updates:
     commit-message:
       prefix: "chore(deps)"
     ignore:
+      # Both renderer packages require a coordinated major migration and registry review.
+      - dependency-name: "@mermaid-js/mermaid-zenuml"
+        update-types: ["version-update:semver-major"]
       # Mermaid major version upgrades require registry review. Handle manually.
       - dependency-name: "mermaid"
         update-types: ["version-update:semver-major"]

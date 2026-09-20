@@ -1,4 +1,4 @@
-export const MERMAID_VERSION_VERIFIED = "11.16.0";
+export const MERMAID_VERSION_VERIFIED = "11.17.2";
 
 export type DiagramFamily =
   | "flowchart"
