@@ -57,7 +57,7 @@
     "lightningcss-win32-x64-msvc": "1.33.0",
     "lint-staged": "^17.5.1",
     "pngjs": "^7.0.0",
-    "prettier": "^3.9.6",
+    "prettier": "^3.9.8",
     "react": "catalog:",
     "react-dom": "catalog:",
     "simple-git-hooks": "^2.14.0",
