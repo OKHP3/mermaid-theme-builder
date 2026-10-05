@@ -58,8 +58,8 @@ catalogs:
       specifier: ^4.3.3
       version: 4.3.3
     vite:
-      specifier: ^8.3.1
-      version: 8.3.1
+      specifier: ^8.3.2
+      version: 8.3.2
     zod:
       specifier: ^4.6.5
       version: 4.6.5
@@ -182,7 +182,7 @@ importers:
         version: 4.3.3
       '@tailwindcss/vite':
         specifier: 'catalog:'
-        version: 4.3.3(vite@8.3.1(@types/node@26.6.2)(jiti@2.7.0)(yaml@2.9.0))
+        version: 4.3.3(vite@8.3.2(@types/node@26.6.2)(jiti@2.7.0)(yaml@2.9.0))
       '@testing-library/dom':
         specifier: ^10.4.2
         version: 10.4.2
@@ -200,7 +200,7 @@ importers:
         version: 19.3.0(@types/react@19.3.0)
       '@vitejs/plugin-react':
         specifier: 'catalog:'
-        version: 6.1.1(vite@8.3.1(@types/node@26.6.2)(jiti@2.7.0)(yaml@2.9.0))
+        version: 6.1.1(vite@8.3.2(@types/node@26.6.2)(jiti@2.7.0)(yaml@2.9.0))
       axe-core:
         specifier: ^4.13.0
         version: 4.13.0
@@ -239,10 +239,10 @@ importers:
         version: 7.0.2
       vite:
         specifier: 'catalog:'
-        version: 8.3.1(@types/node@26.6.2)(jiti@2.7.0)(yaml@2.9.0)
+        version: 8.3.2(@types/node@26.6.2)(jiti@2.7.0)(yaml@2.9.0)
       vitest:
         specifier: ^5.0.2
-        version: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.5)(vite@8.3.1(@types/node@26.6.2)(jiti@2.7.0)(yaml@2.9.0))
+        version: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.5)(vite@8.3.2(@types/node@26.6.2)(jiti@2.7.0)(yaml@2.9.0))
 
   artifacts/mermaid-theme-builder: {}
 
@@ -346,7 +346,7 @@ importers:
         version: 0.5.20(tailwindcss@4.3.3)
       '@tailwindcss/vite':
         specifier: 'catalog:'
-        version: 4.3.3(vite@8.3.1(@types/node@26.6.2)(jiti@2.7.0)(yaml@2.9.0))
+        version: 4.3.3(vite@8.3.2(@types/node@26.6.2)(jiti@2.7.0)(yaml@2.9.0))
       '@tanstack/react-query':
         specifier: 'catalog:'
         version: 5.103.2(react@19.3.0)
@@ -361,7 +361,7 @@ importers:
         version: 19.3.0(@types/react@19.3.0)
       '@vitejs/plugin-react':
         specifier: 'catalog:'
-        version: 6.1.1(vite@8.3.1(@types/node@26.6.2)(jiti@2.7.0)(yaml@2.9.0))
+        version: 6.1.1(vite@8.3.2(@types/node@26.6.2)(jiti@2.7.0)(yaml@2.9.0))
       class-variance-authority:
         specifier: 'catalog:'
         version: 0.7.1
@@ -427,7 +427,7 @@ importers:
         version: 1.1.2(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       vite:
         specifier: 'catalog:'
-        version: 8.3.1(@types/node@26.6.2)(jiti@2.7.0)(yaml@2.9.0)
+        version: 8.3.2(@types/node@26.6.2)(jiti@2.7.0)(yaml@2.9.0)
       wouter:
         specifier: ^3.11.0
         version: 3.11.0(react@19.3.0)
@@ -3106,8 +3106,8 @@ packages:
   victory-vendor@37.3.6:
     resolution: {integrity: sha512-SbPDPdDBYp+5MJHhBCAyI7wKM3d5ivekigc2Dk2s7pgbZ9wIgIBYGVw4zGHBml/qTFbexrofXW6Gu4noGxrOwQ==}
 
-  vite@8.3.1:
-    resolution: {integrity: sha512-/bvH9E9tmCXRGp2uXY3WbOldqpTwFkbha/8ANaEQ6VkxhH60KyqLwgZq6lG2y+4uT55x9+9eUHMpQ7uGnOCKjA==}
+  vite@8.3.2:
+    resolution: {integrity: sha512-SQr1x6W5vVSbROg7vsyXIaxK9b0G7zsT68acdWWRmnBUsgDieLCRG+Rep9WdZgcposvv/GSnr4GUUBqB3vXq6w==}
     engines: {node: ^20.19.0 || >=22.12.0}
     hasBin: true
     peerDependencies:
@@ -4309,12 +4309,12 @@ snapshots:
       postcss-selector-parser: 6.1.4
       tailwindcss: 4.3.3
 
-  '@tailwindcss/vite@4.3.3(vite@8.3.1(@types/node@26.6.2)(jiti@2.7.0)(yaml@2.9.0))':
+  '@tailwindcss/vite@4.3.3(vite@8.3.2(@types/node@26.6.2)(jiti@2.7.0)(yaml@2.9.0))':
     dependencies:
       '@tailwindcss/node': 4.3.3
       '@tailwindcss/oxide': 4.3.3
       tailwindcss: 4.3.3
-      vite: 8.3.1(@types/node@26.6.2)(jiti@2.7.0)(yaml@2.9.0)
+      vite: 8.3.2(@types/node@26.6.2)(jiti@2.7.0)(yaml@2.9.0)
 
   '@tanstack/query-core@5.103.2': {}
 
@@ -4570,19 +4570,19 @@ snapshots:
       d3-selection: 3.0.0
       d3-transition: 3.0.1(d3-selection@3.0.0)
 
-  '@vitejs/plugin-react@6.1.1(vite@8.3.1(@types/node@26.6.2)(jiti@2.7.0)(yaml@2.9.0))':
+  '@vitejs/plugin-react@6.1.1(vite@8.3.2(@types/node@26.6.2)(jiti@2.7.0)(yaml@2.9.0))':
     dependencies:
       '@rolldown/pluginutils': 1.0.1
-      vite: 8.3.1(@types/node@26.6.2)(jiti@2.7.0)(yaml@2.9.0)
+      vite: 8.3.2(@types/node@26.6.2)(jiti@2.7.0)(yaml@2.9.0)
 
-  '@vitest/mocker@5.0.2(vite@8.3.1(@types/node@26.6.2)(jiti@2.7.0)(yaml@2.9.0))':
+  '@vitest/mocker@5.0.2(vite@8.3.2(@types/node@26.6.2)(jiti@2.7.0)(yaml@2.9.0))':
     dependencies:
       '@jridgewell/trace-mapping': 0.3.31
       '@vitest/spy': 5.0.2
       estree-walker: 3.0.3
       magic-string: 1.4.2
     optionalDependencies:
-      vite: 8.3.1(@types/node@26.6.2)(jiti@2.7.0)(yaml@2.9.0)
+      vite: 8.3.2(@types/node@26.6.2)(jiti@2.7.0)(yaml@2.9.0)
 
   '@vitest/spy@5.0.2': {}
 
@@ -5736,7 +5736,7 @@ snapshots:
       d3-time: 3.1.0
       d3-timer: 3.0.1
 
-  vite@8.3.1(@types/node@26.6.2)(jiti@2.7.0)(yaml@2.9.0):
+  vite@8.3.2(@types/node@26.6.2)(jiti@2.7.0)(yaml@2.9.0):
     dependencies:
       lightningcss: 1.33.0
       picomatch: 4.0.7
@@ -5749,10 +5749,10 @@ snapshots:
       jiti: 2.7.0
       yaml: 2.9.0
 
-  vitest@5.0.2(@types/node@26.6.2)(happy-dom@20.14.5)(vite@8.3.1(@types/node@26.6.2)(jiti@2.7.0)(yaml@2.9.0)):
+  vitest@5.0.2(@types/node@26.6.2)(happy-dom@20.14.5)(vite@8.3.2(@types/node@26.6.2)(jiti@2.7.0)(yaml@2.9.0)):
     dependencies:
       '@types/chai': 5.2.3
-      '@vitest/mocker': 5.0.2(vite@8.3.1(@types/node@26.6.2)(jiti@2.7.0)(yaml@2.9.0))
+      '@vitest/mocker': 5.0.2(vite@8.3.2(@types/node@26.6.2)(jiti@2.7.0)(yaml@2.9.0))
       chai: 6.2.2
       es-module-lexer: 2.3.2
       expect-type: 1.4.0
@@ -5763,7 +5763,7 @@ snapshots:
       tinybench: 6.2.0
       tinyexec: 1.3.1
       tinyglobby: 0.2.17
-      vite: 8.3.1(@types/node@26.6.2)(jiti@2.7.0)(yaml@2.9.0)
+      vite: 8.3.2(@types/node@26.6.2)(jiti@2.7.0)(yaml@2.9.0)
       why-is-node-running: 3.2.2
     optionalDependencies:
       '@types/node': 26.6.2
