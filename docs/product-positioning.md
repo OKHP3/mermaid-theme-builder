@@ -3,6 +3,11 @@
 **Last updated:** 2026-06-20
 **Derived from:** Market Research (`docs/market-research.md`), three independent research sessions
 
+> **Research freshness:** This positioning preserves the June proposal. Read the
+> [October 14, 2026 review](market-research-review-2026-10-14.md) before relying on
+> its competitor exclusions, growth thresholds, naming conclusions, or staged
+> enterprise recommendations. Those claims are limited, corrected, or deferred.
+
 ---
 
 ## Canonical Positioning Statement

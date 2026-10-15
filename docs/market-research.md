@@ -2,7 +2,9 @@
 
 **Research date:** 2026-05-21  
 **Sources:** Three independent research passes (Claude Opus 4.5, Perplexity, ChatGPT o3)  
-**Status:** Authoritative internal reference — not published externally
+**Status:** Historical research snapshot. Current decision guidance is in the
+[October 14, 2026 review](market-research-review-2026-10-14.md). The body below
+preserves the May findings, including claims corrected by that review.
 
 ---
 
