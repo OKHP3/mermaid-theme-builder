@@ -415,7 +415,7 @@ export function PaletteSelectorBar({
                   strokeLinecap="round"
                 />
               </svg>
-              <span className="text-[9px] leading-none font-medium whitespace-nowrap">New</span>
+              <span className="text-[9px] leading-none font-medium whitespace-nowrap">Add</span>
             </button>
           )}
 
