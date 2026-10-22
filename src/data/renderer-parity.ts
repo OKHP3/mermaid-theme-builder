@@ -281,11 +281,11 @@ export function supportLabel(s: RendererSupport): string {
 export function supportColor(s: RendererSupport): string {
   switch (s) {
     case "full":
-      return "text-emerald-600 dark:text-emerald-400 bg-emerald-500/10";
+      return "text-foreground bg-emerald-500/10";
     case "partial":
-      return "text-amber-600 dark:text-amber-400 bg-amber-500/10";
+      return "text-foreground bg-amber-500/10";
     case "none":
-      return "text-rose-600 dark:text-rose-400 bg-rose-500/10";
+      return "text-foreground bg-rose-500/10";
     case "unknown":
       return "text-muted-foreground bg-muted/50";
   }

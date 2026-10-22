@@ -630,7 +630,7 @@ export function ReferenceTab({
                         </span>
                       </div>
                       {isPartial && (
-                        <p className="text-[10px] text-amber-600 dark:text-amber-400 leading-snug">
+                        <p className="text-[10px] text-accent-foreground leading-snug">
                           %%{"{init}"}%% preferred — partial theme variable support
                         </p>
                       )}

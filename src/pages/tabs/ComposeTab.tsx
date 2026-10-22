@@ -755,7 +755,7 @@ export function ComposeTab({
                           aria-pressed={look === opt.value}
                           className={`flex-1 text-[11px] px-1 py-1.5 rounded-md border font-medium transition-all ${
                             look === opt.value
-                              ? "border-primary bg-primary/10 text-primary"
+                              ? "border-primary bg-primary/10 text-accent-foreground"
                               : "border-border bg-background hover:bg-muted text-muted-foreground"
                           }`}
                         >
@@ -799,7 +799,7 @@ export function ComposeTab({
                             aria-pressed={strokeWidth === opt.value}
                             className={`flex-1 text-[11px] px-1 py-1.5 rounded-md border font-medium transition-all ${
                               strokeWidth === opt.value
-                                ? "border-primary bg-primary/10 text-primary"
+                                ? "border-primary bg-primary/10 text-accent-foreground"
                                 : "border-border bg-background hover:bg-muted text-muted-foreground"
                             }`}
                           >
@@ -963,7 +963,7 @@ export function ComposeTab({
                         title={opt.desc}
                         className={`flex-1 text-xs py-1 rounded-md border font-medium transition-all ${
                           (fontSize || "16px") === opt.value
-                            ? "border-primary bg-primary/10 text-primary"
+                            ? "border-primary bg-primary/10 text-accent-foreground"
                             : "border-border bg-background hover:bg-muted text-muted-foreground"
                         }`}
                       >
@@ -1052,7 +1052,7 @@ export function ComposeTab({
                               className="w-10 text-[10px] font-mono text-center bg-background border border-border rounded px-1 py-0.5 text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                               aria-label={`${meta.label} font size in pixels`}
                             />
-                            <span className="text-[9px] text-muted-foreground/60">px</span>
+                            <span className="text-[9px] text-muted-foreground">px</span>
                             <button
                               type="button"
                               disabled={tier.fontSize >= maxSize}
@@ -1084,14 +1084,14 @@ export function ComposeTab({
                             title={`${tier.fontSize}px sample`}
                           >
                             <span
-                              className="text-muted-foreground/45 font-semibold leading-none"
+                              className="text-muted-foreground font-semibold leading-none"
                               style={{ fontSize: `${tier.fontSize}px` }}
                             >
                               Aa
                             </span>
                           </div>
                         </div>
-                        <p className="text-[9px] text-muted-foreground/60 leading-snug">
+                        <p className="text-[9px] text-muted-foreground leading-snug">
                           {meta.description}
                         </p>
                         <FontFamilySelect
@@ -1275,11 +1275,10 @@ export function ComposeTab({
                       className={`text-[10px] font-medium block mb-1 transition-colors ${
                         advancedMermaidConfig.deterministicIds === true
                           ? "text-foreground"
-                          : "text-muted-foreground/50"
+                          : "text-muted-foreground"
                       }`}
                     >
-                      ID seed{" "}
-                      <span className="font-normal text-muted-foreground/60">(optional)</span>
+                      ID seed <span className="font-normal text-muted-foreground">(optional)</span>
                     </label>
                     <input
                       id="advanced-deterministicIDSeed"
@@ -1341,7 +1340,7 @@ export function ComposeTab({
                     value={customThemeName}
                     onChange={(e) => onCustomThemeNameChange(e.target.value)}
                     placeholder={customThemeNamePlaceholder ?? selectedPalette.name}
-                    className="w-full text-xs bg-background border border-border rounded-md px-2.5 py-1.5 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/50"
+                    className="w-full text-xs bg-background border border-border rounded-md px-2.5 py-1.5 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50"
                   />
                   {effectiveThemeName !== selectedPalette.name && customThemeName.trim() && (
                     <p className="text-[10px] text-muted-foreground mt-0.5">
@@ -1399,7 +1398,7 @@ export function ComposeTab({
                   {activeMyThemeSlotId && onCopyProfileShareLink && (
                     <button
                       onClick={() => onCopyProfileShareLink(activeMyThemeSlotId)}
-                      className="col-span-2 text-xs px-2 py-1.5 rounded-md border border-primary/30 bg-primary/5 hover:bg-primary/10 hover:border-primary/50 text-primary font-medium transition-all"
+                      className="col-span-2 text-xs px-2 py-1.5 rounded-md border border-primary/30 bg-primary/5 hover:bg-primary/10 hover:border-primary/50 text-accent-foreground font-medium transition-all"
                     >
                       Copy Profile Share Link
                     </button>
@@ -1407,7 +1406,7 @@ export function ComposeTab({
                 </div>
                 {userPalettes.length > 0 && (
                   <div className="mt-2 flex flex-col gap-0.5">
-                    <p className="forge-eyebrow text-muted-foreground/50 mb-0.5">Saved palettes</p>
+                    <p className="forge-eyebrow text-muted-foreground mb-0.5">Saved palettes</p>
                     {userPalettes.map((p) => (
                       <PaletteRow
                         key={p.id}
@@ -1732,7 +1731,7 @@ export function ComposeTab({
               }}
               placeholder="My Custom Theme"
               autoFocus
-              className="w-full text-sm bg-background border border-border rounded-md px-3 py-2 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/50 mb-4"
+              className="w-full text-sm bg-background border border-border rounded-md px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 mb-4"
             />
             <div className="flex gap-2 justify-end">
               <button
@@ -1786,7 +1785,7 @@ function PaletteRow({
         aria-pressed={selected}
         aria-label={`Select ${palette.name} palette${customized ? " (customized)" : ""}`}
         className={`flex-1 text-left px-2.5 py-2 text-xs font-medium ${
-          selected ? "text-primary" : "text-muted-foreground hover:text-foreground"
+          selected ? "text-accent-foreground" : "text-muted-foreground hover:text-foreground"
         }`}
       >
         <div className="flex items-center gap-2">
@@ -1805,7 +1804,9 @@ function PaletteRow({
               {extraTag}
             </span>
           )}
-          {customized && <span className="text-[9px] text-primary/60 font-normal">customized</span>}
+          {customized && (
+            <span className="text-[9px] text-accent-foreground font-normal">customized</span>
+          )}
         </div>
       </button>
       {onDelete && (
