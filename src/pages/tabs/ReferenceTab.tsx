@@ -422,14 +422,14 @@ export function ReferenceTab({
                         href={renderer.url}
                         target="_blank"
                         rel="noreferrer noopener"
-                        className="hover:text-primary transition-colors"
+                        className="hover:text-accent-foreground transition-colors"
                         title={renderer.notes}
                       >
                         {renderer.shortName}
                       </a>
                       {renderer.caveats.length > 0 && (
                         <span
-                          className="ml-1 text-muted-foreground/50"
+                          className="ml-1 text-muted-foreground"
                           title={renderer.caveats.join("\n")}
                         >
                           *
@@ -455,7 +455,7 @@ export function ReferenceTab({
               </tbody>
             </table>
             <div className="px-3 py-2 flex flex-wrap gap-x-4 gap-y-0.5">
-              <p className="text-[9px] text-muted-foreground/50 w-full">
+              <p className="text-[9px] text-muted-foreground w-full">
                 * Hover renderer name for notes. Caveats marked with asterisk. Looks: Classic / Neo
                 / Hand-Drawn. Capabilities: init = %%{"{"}init{"}"}%% directives, themeVars =
                 themeVariables, classDef = inline node styling, CSS = external stylesheet injection,
@@ -469,7 +469,7 @@ export function ReferenceTab({
                     href={r.sourceUrl}
                     target="_blank"
                     rel="noreferrer noopener"
-                    className="text-[9px] text-muted-foreground/40 hover:text-muted-foreground transition-colors"
+                    className="text-[9px] text-muted-foreground hover:text-muted-foreground transition-colors"
                     title={`Source: ${r.sourceUrl}`}
                   >
                     {r.shortName} docs ↗
@@ -504,7 +504,7 @@ export function ReferenceTab({
                 {RENDERER_PROFILES.length} destinations · copy formatted export code
               </span>
               {rendererTarget && openRefSection !== "distribute" && (
-                <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+                <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-primary/10 text-accent-foreground border border-primary/20">
                   {RENDERER_PROFILES.find((r) => r.id === rendererTarget)?.shortName ??
                     rendererTarget}
                 </span>
@@ -520,7 +520,7 @@ export function ReferenceTab({
                 className="mx-4 mt-3 flex items-start justify-between gap-3 rounded border border-primary/20 bg-primary/5 px-3 py-2"
               >
                 <p className="text-[10px] text-muted-foreground leading-relaxed">
-                  <span className="font-medium text-primary">
+                  <span className="font-medium text-accent-foreground">
                     Select a renderer target in Compose for best results.
                   </span>{" "}
                   Each destination will then show the format it is ready to receive.
@@ -529,7 +529,7 @@ export function ReferenceTab({
                   type="button"
                   onClick={onDismissRendererTargetHint}
                   aria-label="Dismiss renderer target hint"
-                  className="shrink-0 text-muted-foreground/60 hover:text-foreground transition-colors"
+                  className="shrink-0 text-muted-foreground hover:text-foreground transition-colors"
                 >
                   <span aria-hidden="true">×</span>
                 </button>
@@ -554,7 +554,7 @@ export function ReferenceTab({
                   shareLinked
                     ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30"
                     : onCopyShareLink
-                      ? "bg-primary/10 text-primary border-primary/20 hover:bg-primary/20"
+                      ? "bg-primary/10 text-accent-foreground border-primary/20 hover:bg-primary/20"
                       : "bg-muted text-muted-foreground border-border cursor-not-allowed opacity-50"
                 }`}
               >
@@ -618,19 +618,19 @@ export function ReferenceTab({
                           href={renderer.url}
                           target="_blank"
                           rel="noreferrer noopener"
-                          className={`text-xs font-medium transition-colors hover:text-primary ${
-                            isSelected ? "text-primary" : "text-foreground"
+                          className={`text-xs font-medium transition-colors hover:text-accent-foreground ${
+                            isSelected ? "text-accent-foreground" : "text-foreground"
                           }`}
                         >
                           {renderer.shortName}
                         </a>
                         <SupportBadge support={renderer.initDirectiveSupport} />
-                        <span className="text-[10px] font-mono text-muted-foreground/60">
+                        <span className="text-[10px] font-mono text-muted-foreground">
                           {recFormatLabel}
                         </span>
                       </div>
                       {isPartial && (
-                        <p className="text-[10px] text-amber-600 dark:text-amber-400 leading-snug">
+                        <p className="text-[10px] text-accent-foreground leading-snug">
                           %%{"{init}"}%% preferred — partial theme variable support
                         </p>
                       )}
@@ -655,7 +655,7 @@ export function ReferenceTab({
                           }
                           className={`flex items-center gap-1 text-[10px] font-medium px-2 py-1 rounded border transition-colors ${
                             !hasDiagramToCopy
-                              ? "bg-muted/50 text-muted-foreground/50 border-border/30 cursor-not-allowed"
+                              ? "bg-muted/50 text-muted-foreground border-border/30 cursor-not-allowed"
                               : isCopied
                                 ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30"
                                 : "bg-muted hover:bg-muted/70 text-muted-foreground hover:text-foreground border-border/50"
@@ -682,7 +682,7 @@ export function ReferenceTab({
                         rel="noreferrer noopener"
                         aria-label={`${renderer.shortName} Mermaid documentation`}
                         title={`Mermaid documentation for ${renderer.displayName}`}
-                        className="text-muted-foreground/40 hover:text-primary transition-colors"
+                        className="text-muted-foreground hover:text-accent-foreground transition-colors"
                       >
                         <ExternalLinkIcon className="w-3.5 h-3.5" />
                       </a>
@@ -693,7 +693,7 @@ export function ReferenceTab({
             </div>
 
             {/* Footer note */}
-            <p className="px-4 py-2 text-[9px] text-muted-foreground/40 border-t border-border/50">
+            <p className="px-4 py-2 text-[9px] text-muted-foreground border-t border-border/50">
               Copy buttons produce the themed export code (%%{"{init}"}%% directive or YAML
               frontmatter + diagram source) ready to paste into the target platform. Format
               selection follows your current Output Format setting, except for renderers with
@@ -744,7 +744,7 @@ export function ReferenceTab({
                 href={SKILLS_FAMILY_URL}
                 target="_blank"
                 rel="noreferrer noopener"
-                className="text-primary underline underline-offset-2 hover:text-primary/80 transition-colors"
+                className="text-accent-foreground underline underline-offset-2 hover:text-accent-foreground transition-colors"
               >
                 Browse all on GitHub ↗
               </a>
@@ -767,7 +767,7 @@ export function ReferenceTab({
                       >
                         {meta.label}
                       </span>
-                      <span className="text-[10px] font-mono text-muted-foreground/60">
+                      <span className="text-[10px] font-mono text-muted-foreground">
                         v{skill.version}
                       </span>
                     </div>
@@ -780,7 +780,7 @@ export function ReferenceTab({
                     target="_blank"
                     rel="noreferrer noopener"
                     aria-label={`View ${skill.displayName} skill on GitHub`}
-                    className="shrink-0 mt-0.5 text-muted-foreground/50 hover:text-primary transition-colors"
+                    className="shrink-0 mt-0.5 text-muted-foreground hover:text-accent-foreground transition-colors"
                     title="View SKILL.md on GitHub"
                   >
                     <ExternalLinkIcon className="w-3.5 h-3.5" />
@@ -798,7 +798,7 @@ export function ReferenceTab({
           href={TAXONOMY_DOCS_URL}
           target="_blank"
           rel="noreferrer noopener"
-          className="text-xs text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1"
+          className="text-xs text-muted-foreground hover:text-accent-foreground transition-colors inline-flex items-center gap-1"
         >
           <ExternalLinkIcon className="w-3 h-3" />
           Visual Language Diagram Taxonomy
@@ -807,7 +807,7 @@ export function ReferenceTab({
           href={GITHUB_REPO_URL}
           target="_blank"
           rel="noreferrer noopener"
-          className="text-xs text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1"
+          className="text-xs text-muted-foreground hover:text-accent-foreground transition-colors inline-flex items-center gap-1"
         >
           <svg viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3">
             <path

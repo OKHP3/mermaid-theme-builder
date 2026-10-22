@@ -503,7 +503,7 @@ export function PaletteSelectorBar({
                 </div>
                 <span
                   className={`text-[10px] leading-none whitespace-nowrap font-medium ${
-                    isSelected ? "text-primary" : "text-muted-foreground"
+                    isSelected ? "text-accent-foreground" : "text-muted-foreground"
                   }`}
                 >
                   {p.name.length > 12 ? p.name.slice(0, 11) + "\u2026" : p.name}

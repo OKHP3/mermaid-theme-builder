@@ -314,7 +314,7 @@ export function ExportToolbar({
           <div className="flex items-center justify-between px-3 py-1.5 border-b border-border/50">
             <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">
               Export Preview
-              <span className="ml-2 normal-case font-normal text-foreground/60">
+              <span className="ml-2 normal-case font-normal text-muted-foreground">
                 {outputFormat === "frontmatter" ? "YAML frontmatter" : "%%{init}%% directive"}
               </span>
             </span>
@@ -380,8 +380,9 @@ export function ExportToolbar({
           )}
 
           <pre
+            role="region"
+            tabIndex={0}
             aria-label="Export code preview"
-            aria-readonly="true"
             className="overflow-auto max-h-52 px-3 py-2 text-[10px] font-mono text-foreground/80 whitespace-pre leading-relaxed select-all"
           >
             {effectiveExportCode}
@@ -496,7 +497,7 @@ export function ExportToolbar({
           onClick={onOpenColorEditor}
           className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-md border transition-all font-medium ${
             hasCustomizations
-              ? "border-primary/40 bg-primary/8 text-primary hover:bg-primary/12"
+              ? "border-primary/40 bg-primary/8 text-accent-foreground hover:bg-primary/12"
               : "border-border text-muted-foreground hover:text-foreground hover:bg-muted"
           }`}
         >

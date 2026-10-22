@@ -136,22 +136,22 @@ export const PUBLIC_MERMAID_SKILLS: PublicSkill[] = [
 export const SKILL_ROLE_META: Record<SkillRole, { label: string; className: string }> = {
   foundation: {
     label: "Foundation",
-    className: "bg-primary/10 text-primary border-primary/20",
+    className: "bg-primary/10 text-foreground border-primary/20",
   },
   domain: {
     label: "Domain",
-    className: "bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20",
+    className: "bg-sky-500/10 text-foreground border-sky-500/20",
   },
   workflow: {
     label: "Workflow",
-    className: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20",
+    className: "bg-emerald-500/10 text-foreground border-emerald-500/20",
   },
   tooling: {
     label: "Tooling",
-    className: "bg-violet-500/10 text-violet-700 dark:text-violet-400 border-violet-500/20",
+    className: "bg-violet-500/10 text-foreground border-violet-500/20",
   },
   governance: {
     label: "Governance",
-    className: "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20",
+    className: "bg-amber-500/10 text-foreground border-amber-500/20",
   },
 };

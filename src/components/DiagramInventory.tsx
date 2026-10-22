@@ -101,7 +101,7 @@ function CapabilityRow({ cap }: { cap: DiagramCapability }) {
           {cap.exampleFile ? (
             <div className="flex items-center gap-1">
               {cap.examplePending ? (
-                <span className="text-[10px] text-muted-foreground/60 italic">pending</span>
+                <span className="text-[10px] text-muted-foreground italic">pending</span>
               ) : (
                 <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">
                   ✓
@@ -316,6 +316,7 @@ export function DiagramInventory({
         <button
           type="button"
           onClick={handleToggle}
+          aria-expanded={isOpen}
           className="w-full flex items-center justify-between px-4 py-2.5 border-b border-border bg-card/80 hover:bg-muted/40 transition-colors select-none cursor-pointer shrink-0"
         >
           <div className="flex items-center gap-2">
@@ -381,7 +382,7 @@ export function DiagramInventory({
                 onClick={() => setFilter(tab.id)}
                 className={`px-3 py-1 text-xs font-medium rounded transition-all ${
                   filter === tab.id
-                    ? "bg-primary/10 text-primary"
+                    ? "bg-primary/10 text-accent-foreground"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
@@ -406,7 +407,7 @@ export function DiagramInventory({
                   <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                     Mermaid Families
                   </h3>
-                  <span className="text-[10px] text-muted-foreground/60">
+                  <span className="text-[10px] text-muted-foreground">
                     {filteredCapabilities.length} entries
                   </span>
                 </div>
@@ -429,7 +430,7 @@ export function DiagramInventory({
                   <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                     Capability Gaps
                   </h3>
-                  <span className="text-[10px] text-muted-foreground/60">
+                  <span className="text-[10px] text-muted-foreground">
                     {filteredGaps.length} entries
                   </span>
                   <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-400/20">

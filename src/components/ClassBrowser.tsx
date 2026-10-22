@@ -78,7 +78,6 @@ function ClassNode({
           ? "border-emerald-500/60 ring-1 ring-emerald-500/25 hover:border-emerald-500/80"
           : "border-border/40 hover:border-primary/50"
       }`}
-      style={{ opacity: opacity ?? 1 }}
     >
       {/* Primary action: copy usage annotation — covers the whole card */}
       <button
@@ -99,7 +98,7 @@ function ClassNode({
       >
         <div
           className="relative flex items-center justify-center px-2 py-3"
-          style={{ backgroundColor: def.fill }}
+          style={{ backgroundColor: def.fill, opacity: opacity ?? 1 }}
         >
           <svg
             className="absolute inset-0 w-full h-full"
@@ -118,6 +117,7 @@ function ClassNode({
             />
           </svg>
           <span
+            aria-hidden="true"
             className="relative z-10 text-[11px] font-mono leading-tight text-center break-all px-1"
             style={{ color: def.color, fontWeight, fontStyle }}
           >
@@ -146,7 +146,7 @@ function ClassNode({
           <p className="text-[10px] text-muted-foreground leading-tight line-clamp-1">
             {def.description}
           </p>
-          <p className="text-[9px] text-muted-foreground/50 font-mono mt-0.5 leading-none group-hover:text-primary/70 transition-colors">
+          <p className="text-[9px] text-muted-foreground font-mono mt-0.5 leading-none group-hover:text-accent-foreground transition-colors">
             :::{def.name}
           </p>
         </div>
@@ -354,8 +354,8 @@ export function ClassBrowser({
               <span
                 className={`inline-flex items-center text-[10px] font-semibold px-1.5 py-0.5 rounded-full tabular-nums ${
                   supportsClassDef
-                    ? "text-primary/80 bg-primary/10"
-                    : "text-muted-foreground/60 bg-muted/60"
+                    ? "text-accent-foreground bg-primary/10"
+                    : "text-muted-foreground bg-muted/60"
                 }`}
                 title={
                   supportsClassDef
@@ -388,7 +388,7 @@ export function ClassBrowser({
           </div>
           <div className="flex items-center gap-2 shrink-0">
             {supportsClassDef && toastLabel && (
-              <span className="text-[10px] bg-primary/10 text-primary px-2 py-1 rounded-full font-mono animate-in fade-in duration-150">
+              <span className="text-[10px] bg-primary/10 text-accent-foreground px-2 py-1 rounded-full font-mono animate-in fade-in duration-150">
                 {toastLabel}
               </span>
             )}
@@ -415,7 +415,7 @@ export function ClassBrowser({
               aria-label="Preview all classDefs"
               className={`inline-flex items-center justify-center w-[26px] h-[26px] rounded-md text-[10px] border transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus:ring-1 focus:ring-primary/60 ${
                 showPreview
-                  ? "border-primary/50 bg-primary/10 text-primary"
+                  ? "border-primary/50 bg-primary/10 text-accent-foreground"
                   : "border-border/50 bg-card/70 text-muted-foreground hover:text-foreground hover:border-primary/40 hover:bg-card"
               }`}
             >
@@ -852,7 +852,7 @@ export function ClassBrowser({
         ))}
       </div>
 
-      <p className="mt-4 text-[10px] text-muted-foreground/50 text-center">
+      <p className="mt-4 text-[10px] text-muted-foreground text-center">
         {supportsClassDef
           ? "Styles update live as you edit palette colors in the sidebar"
           : "Color previews update live — tokens are inactive for this diagram type"}

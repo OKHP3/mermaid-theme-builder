@@ -1,5 +1,13 @@
 ## [Unreleased]
 
+### Fixed
+- Select the pinned pnpm through Node 24's bundled Corepack in CI and Pages, caching its verified download to avoid repeated registry outages and the stalled action self-installer.
+- Run the dependency-free link and source-reference checks without installing the workspace, so package-manager setup cannot exhaust their five-minute job limit.
+- Keep overlay controls, customized palette labels, and expanded reference content readable in both themes. Make the export preview keyboard-scrollable and separate the Compose color reset from its section toggle.
+
+### Added
+- Scan menus, dialogs, persisted profiles, customized states, and the mobile expanded editor for Critical and Serious WCAG findings.
+
 ---
 
 ## [0.6.3] - 2026-09-20

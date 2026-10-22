@@ -1723,7 +1723,7 @@ export function AppShell() {
                           setConfirmResetPalettes(false);
                           setShowSettingsMenu(false);
                         }}
-                        className="flex-1 rounded px-2 py-1 text-xs font-medium bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-colors"
+                        className="flex-1 rounded px-2 py-1 text-xs font-medium bg-destructive text-destructive-foreground hover:bg-destructive/90 dark:bg-destructive/20 dark:text-foreground dark:hover:bg-destructive/30 transition-colors"
                       >
                         Confirm
                       </button>
