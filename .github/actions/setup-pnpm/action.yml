@@ -22,6 +22,14 @@ runs:
       with:
         node-version: ${{ inputs.node-version }}
 
+    - name: Cache Corepack package managers
+      uses: actions/cache@v6
+      with:
+        path: ~/.cache/node/corepack
+        key: corepack-${{ runner.os }}-${{ runner.arch }}-node-${{ inputs.node-version }}-${{ hashFiles('package.json') }}
+        restore-keys: |
+          corepack-${{ runner.os }}-${{ runner.arch }}-node-${{ inputs.node-version }}-
+
     - name: Enable the repository-pinned pnpm
       run: |
         corepack enable pnpm
