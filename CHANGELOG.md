@@ -1,6 +1,7 @@
 ## [Unreleased]
 
 ### Fixed
+- Run the dependency-free link and source-reference checks without installing the workspace, so package-manager setup cannot exhaust their five-minute job limit.
 - Keep overlay controls, customized palette labels, and expanded reference content readable in both themes. Make the export preview keyboard-scrollable and separate the Compose color reset from its section toggle.
 
 ### Added
