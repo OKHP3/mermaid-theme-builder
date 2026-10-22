@@ -8,7 +8,7 @@ integration and applicable checks, reconcile the canonical checkout, preserve
 unrelated work, and archive the completed conversation. This is a research
 closeout, not approval of the supplied product roadmap.
 
-**Final execution receipt:** The pull request associated with this file records
+**Final execution receipt:** [PR #123](https://github.com/OKHP3/mermaid-theme-builder/pull/123) records
 its final merge revision, required check results, canonical local/remote parity,
 cleanup results, and archive eligibility. Its description is updated after those
 actions, so the final revision can be recorded without a self-referential commit.
