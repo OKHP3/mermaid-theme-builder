@@ -112,7 +112,7 @@ function describeViolations(violations: AxeResults["violations"]): string {
   return violations
     .map(
       (violation) =>
-        `${violation.impact ?? "unknown"}: ${violation.id} — ${violation.help}\n` +
+        `${violation.impact ?? "unknown"}: ${violation.id}. ${violation.help}\n` +
         `  Help: ${violation.helpUrl}\n${violation.nodes
           .map(
             (node) =>
@@ -125,10 +125,7 @@ function describeViolations(violations: AxeResults["violations"]): string {
     .join("\n\n");
 }
 
-async function expectNoCriticalOrSerious(
-  page: Page,
-  stateDescription: string
-): Promise<void> {
+async function expectNoCriticalOrSerious(page: Page, stateDescription: string): Promise<void> {
   const results = await scanForWcagViolations(page);
   const releaseBlockingViolations = results.violations.filter(
     (violation) => violation.impact === "critical" || violation.impact === "serious"
@@ -196,8 +193,9 @@ test.describe("WCAG 2.1 A/AA overlay, expanded, and persisted states", () => {
       await page.getByRole("button", { name: "Edit Colors", exact: true }).click();
       const colorDialog = page.getByRole("dialog", { name: /Edit colors for/ });
       await expect(colorDialog).toBeVisible();
-      await expect(colorDialog.getByRole("button", { name: "Reset all color overrides to default" }))
-        .toBeVisible();
+      await expect(
+        colorDialog.getByRole("button", { name: "Reset all color overrides to default" })
+      ).toBeVisible();
       await expectNoCriticalOrSerious(page, `Customized color editor dialog (${mode.name})`);
     });
 
@@ -255,7 +253,9 @@ test.describe("WCAG 2.1 A/AA overlay, expanded, and persisted states", () => {
       ]) {
         await page.locator("summary").filter({ hasText: section }).click();
         await expect(
-          page.locator("details").filter({ has: page.locator("summary").filter({ hasText: section }) })
+          page
+            .locator("details")
+            .filter({ has: page.locator("summary").filter({ hasText: section }) })
         ).toHaveAttribute("open", "");
         await expectNoCriticalOrSerious(page, `Reference ${section} panel (${mode.name})`);
       }
