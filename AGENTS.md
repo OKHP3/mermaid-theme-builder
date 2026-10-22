@@ -765,3 +765,5 @@ The detailed version policy rationale is in `docs/roadmap.md` "Version Policy" s
 
 - Windows: `C:\Users\jamie\OKH-Local\04_GitHub_Mirrors\mermaid-theme-builder`
 - Mac: `/Volumes/OKH-Local/04_GitHub_Mirrors/mermaid-theme-builder`
+
+## Imported Claude Cowork project instructions

@@ -1,0 +1,409 @@
+{
+  "schema_version": "1.0",
+  "review_protocol": "equilibrium-v1",
+  "review_mode": "conditional-five-role",
+  "evaluation_status": "live",
+  "review_date": "2026-10-14",
+  "artifact": {
+    "identity": "Owner-supplied Mermaid Theme Builder Competitive, Academic, and Market Research Report",
+    "path": null,
+    "sha256": null,
+    "version": "user-report-2026-10-14",
+    "location": "The latest substantive user message before review began; unchanged conversation artifact.",
+    "hash_limit": "A byte-exact transcript file was not supplied or exported, so no source-message hash is claimed."
+  },
+  "local_baseline": {
+    "git_commit": "1ac3e666b6768d00dc29129099fd19dd3a54af4e",
+    "app_version": "0.6.3",
+    "mermaid_dependency": "11.17.2",
+    "initial_working_tree": "clean",
+    "resource_hashes_before_review_notices": {
+      "docs/market-research.md": "c47392eaca405850e95dc06990e8c16322dcd13d68a4ce2a5ee50dd2ce6dfdc9",
+      "docs/product-positioning.md": "928196e5881a4876ccce0a48e05e29cf193b2db41f2bffc0cb83fee7cd8ab60c"
+    }
+  },
+  "decision_question": "Can the supplied report guide this existing app's next priorities within its current governance?",
+  "acceptance_criteria": [
+    {
+      "id": "AC-01",
+      "dimension": "correctness",
+      "criterion": "Consequential academic and competitor facts are checked against dated primary sources; unsupported universal negatives are bounded."
+    },
+    {
+      "id": "AC-02",
+      "dimension": "usefulness",
+      "criterion": "Recommendations distinguish current implementation, untested behavior, remaining packaging gaps, and market hypotheses."
+    },
+    {
+      "id": "AC-03",
+      "dimension": "scope",
+      "criterion": "Recommendations respect the static browser architecture, approved brands, privacy, and existing dependency constraints."
+    },
+    {
+      "id": "AC-04",
+      "dimension": "evidence_sufficiency",
+      "criterion": "Hosted visual parity, LLM adherence, demand, legal clearance, and defensibility are not claimed from source metadata or model agreement."
+    }
+  ],
+  "independence": {
+    "reviewer_contexts_separated": true,
+    "shared_model_or_source_limits": [
+      "Three initial reviewers were dispatched before any reviewer finding was returned, with separate role briefs and execution contexts.",
+      "All roles inherited parent context and used the same model family; some sources overlap. Agreement is correlated, not independent market validation.",
+      "The disruptor intentionally received initial concordance. The parent served as negotiator and authored the review addendum.",
+      "No specialist legal review, customer study, competitor installation, external-renderer comparison, or protected LLM holdout ran."
+    ]
+  },
+  "initial_reviews": [
+    {
+      "role": "evidence_reviewer",
+      "agent": "/root/research_evidence",
+      "execution_status": "completed",
+      "evidence_status": ["live", "analytical"],
+      "decision_signal": "defer-for-evidence",
+      "summary": "Current sources contradict the strongest novelty claims and several paper, price, and upstream timeline assertions.",
+      "claims": [
+        {
+          "id": "E-01",
+          "claim": "MermaidSeqBench reports 132 pairs and judge-dependent syntax scores of 92.01 and 68.89.",
+          "status": "supported",
+          "evidence": ["https://arxiv.org/html/2511.14967v1"],
+          "limit": "Judge scores are not compiler pass percentages or visual-compliance measurements."
+        },
+        {
+          "id": "E-03",
+          "claim": "GPT-4.1-mini entity F1 is below 0.94.",
+          "status": "disputed",
+          "evidence": ["https://arxiv.org/html/2512.02170v1"],
+          "correction": "Table 1 gives entity F1 0.986 and relationship F1 0.979."
+        },
+        {
+          "id": "E-05",
+          "claim": "Mermaid Studio offers only editor-side theming autocomplete.",
+          "status": "disputed",
+          "evidence": [
+            "https://mermaidstudio.dev/docs/features/custom-themes/",
+            "https://mermaidstudio.dev/docs/features/custom-themes/import-export/"
+          ],
+          "correction": "Documents per-family frontmatter application and JSON theme exchange."
+        },
+        {
+          "id": "E-06",
+          "claim": "Mermaid Studio lacks a relevant agent workflow.",
+          "status": "disputed",
+          "evidence": ["https://mermaidstudio.dev/docs/features/mcp-tools/"],
+          "correction": "Documents MCP validation/rendering and a generate-validate-render instruction scaffold."
+        },
+        {
+          "id": "E-07",
+          "claim": "Studio's type count and prices in the report are current.",
+          "status": "disputed",
+          "evidence": ["https://mermaidstudio.dev/docs/editions/"],
+          "correction": "32 types; personal Core/Studio $25/$49 yearly, commercial $75/$149 yearly."
+        },
+        {
+          "id": "E-08",
+          "claim": "Mermaid Chart's relevant offering is limited to a prebuilt selector.",
+          "status": "disputed",
+          "evidence": [
+            "https://mermaid.ai/docs/style-and-customize/create-custom-styles",
+            "https://mermaid.ai/docs/ai/mcp-server"
+          ],
+          "limit": "Vendor-documented custom styling and authenticated validation/rendering do not establish equivalent governance enforcement."
+        },
+        {
+          "id": "E-09",
+          "claim": "Chart's current entry price is $80 per user yearly.",
+          "status": "disputed",
+          "evidence": ["https://mermaid.ai/pricing"],
+          "correction": "Plus/Premium $10/$20 per user monthly billed annually; Basic allowances conflict on the page."
+        },
+        {
+          "id": "E-12",
+          "claim": "Mermaid v12 is only a future possibility.",
+          "status": "disputed",
+          "evidence": [
+            "https://github.com/mermaid-js/mermaid/releases/tag/mermaid%4012.0.0",
+            "https://github.com/mermaid-js/mermaid/releases/tag/mermaid%4012.2.0"
+          ],
+          "limit": "Released v12 does not demonstrate the full compound kill condition."
+        },
+        {
+          "id": "E-13",
+          "claim": "No direct competitor exists and the inventory is exhaustive.",
+          "status": "provisional",
+          "evidence": ["E-05", "E-06", "E-08"],
+          "next_test": "Publish bounded feature criteria and compare current competitor exports on shared fixtures."
+        }
+      ]
+    },
+    {
+      "role": "outcome_reviewer",
+      "agent": "/root/research_outcome",
+      "execution_status": "completed",
+      "evidence_status": ["analytical"],
+      "decision_signal": "defer-for-evidence",
+      "approved_use": "Strategic hypotheses only.",
+      "summary": "Much of Stage 1 already exists; metadata and historical observations do not prove hosted parity or demand.",
+      "claims": [
+        {
+          "id": "OUT-01",
+          "claim": "Stage 1's contract/scaffold workflow is absent.",
+          "status": "disputed",
+          "evidence": [
+            "src/lib/theme-engine.ts:806",
+            "src/App.tsx:1018",
+            "skills/okhp3-mermaid-theme-builder/scripts/generate-prompt-scaffold.mjs:58"
+          ],
+          "next_test": "Inventory and validate current exported artifacts."
+        },
+        {
+          "id": "OUT-02",
+          "claim": "Existing exports already equal the proposed complete bundle.",
+          "status": "provisional",
+          "evidence": [
+            "src/lib/governance-profile.ts:28",
+            "src/lib/governance-profile.ts:230",
+            "src/App.tsx:1025",
+            "src/lib/exporters.ts:159"
+          ],
+          "limit": "UI profile export does not populate semantic classes or embed the prompt; palette bundle is a palette collection."
+        },
+        {
+          "id": "OUT-03",
+          "claim": "Renderer profiles prove visual parity.",
+          "status": "disputed",
+          "evidence": [
+            "src/data/renderer-parity.ts:41",
+            "docs/renderer-frontmatter-compatibility.md:126"
+          ],
+          "next_test": "Record dated host/plugin/version/configuration observations with fixture hashes and actual styling."
+        },
+        {
+          "id": "OUT-04",
+          "claim": "classDef can enforce equivalent semantics across all families.",
+          "status": "disputed",
+          "evidence": ["src/lib/theme-engine.ts:819", "src/lib/theme-engine.ts:1311"],
+          "next_test": "Define attainable invariants per family."
+        },
+        {
+          "id": "OUT-05",
+          "claim": "500 weekly active exporters can be used as a current gate.",
+          "status": "blocked",
+          "evidence": ["src/lib/privacy-analytics.ts:13"],
+          "limit": "Sanitized pageviews do not measure unique weekly exporters."
+        },
+        {
+          "id": "OUT-07",
+          "claim": "Existing roadmap checkboxes accurately identify missing work.",
+          "status": "disputed",
+          "evidence": [
+            "docs/roadmap.md:89",
+            "docs/roadmap.md:103",
+            "docs/equilibrium-review-v1-readiness.md:18"
+          ],
+          "next_test": "Reconcile source presence with separate runtime/readiness evidence."
+        }
+      ]
+    },
+    {
+      "role": "safety_portability_reviewer",
+      "agent": "/root/research_scope",
+      "execution_status": "completed",
+      "evidence_status": ["live", "analytical"],
+      "decision_signal": "defer-for-evidence",
+      "approved_use": "Narrowed research direction with explicit scope limits.",
+      "summary": "Cloud login proposals conflict with governance; portability, deterministic LLM behavior, telemetry, and naming assurances lack adequate evidence.",
+      "claims": [
+        {
+          "id": "SP-02",
+          "claim": "A universal classDef library governs every family.",
+          "status": "disputed",
+          "evidence": [
+            "src/lib/theme-engine.ts:2108",
+            "https://mermaid.js.org/syntax/sequenceDiagram.html"
+          ],
+          "next_test": "Use supported mechanisms per family."
+        },
+        {
+          "id": "SP-04",
+          "claim": "Init is the universal preferred portable encoding.",
+          "status": "provisional",
+          "evidence": ["https://mermaid.js.org/config/directives.html"],
+          "next_test": "Retain frontmatter and directives with measured target defaults."
+        },
+        {
+          "id": "SP-05",
+          "claim": "Implicit derivation proves nondeterminism.",
+          "status": "disputed",
+          "evidence": ["https://mermaid.js.org/config/theming.html"],
+          "next_test": "Compare identical pinned configuration repeatedly."
+        },
+        {
+          "id": "SP-06",
+          "claim": "A scaffold deterministically makes an LLM comply.",
+          "status": "disputed",
+          "evidence": ["src/lib/theme-engine.ts"],
+          "next_test": "Run independently chosen generation/revision tasks and separate syntax, semantics, styling, and rendering metrics."
+        },
+        {
+          "id": "SP-09",
+          "claim": "SSO and cloud themes are valid later app stages.",
+          "status": "blocked",
+          "evidence": ["AGENTS.md:603", "docs/roadmap.md:193"],
+          "next_test": "Require a distinct product/scope decision."
+        },
+        {
+          "id": "SP-10",
+          "claim": "Search snippets and TOS silence imply legal naming safety.",
+          "status": "disputed",
+          "evidence": [
+            "https://www.uspto.gov/trademarks/search/comprehensive-clearance-search-similar-trademarks"
+          ],
+          "limit": "Legal clearance not performed; informal searches do not establish rights."
+        }
+      ]
+    }
+  ],
+  "concordance": {
+    "result": "material_concordance",
+    "basis": "All initial roles deferred adopting the report as the roadmap and retained only a narrowed validation hypothesis.",
+    "material_disagreements": [],
+    "scope_of_agreement": "Research sufficiency and current app scope, not demand or product success."
+  },
+  "disruptor": {
+    "triggered": true,
+    "agent": "/root/research_disruptor",
+    "authority": "analytical",
+    "execution_status": "completed",
+    "decision_signal": "approve-with-limits",
+    "falsification_hypotheses": [
+      {
+        "id": "CEX-01",
+        "hypothesis": "Deterministic configuration application delivers equal or better realized styling with less effort than prompt retention.",
+        "evidence": ["src/lib/theme-engine.ts:344"],
+        "decisive_test": "Compare 12 shared generation/revision tasks with scaffold-only versus generation plus existing application; measure styles, semantics, repair count, and effort."
+      },
+      {
+        "id": "CEX-02",
+        "hypothesis": "Same-version hosts/configurations disagree enough that a version-only parity matrix is not predictive.",
+        "evidence": ["docs/renderer-frontmatter-compatibility.md:24"],
+        "decisive_test": "Render unchanged fixtures under two identified configurations sharing a Mermaid version, with font/CSS/security settings recorded."
+      },
+      {
+        "id": "CEX-03",
+        "hypothesis": "A retained theme contract can preserve incorrect capability promises.",
+        "evidence": ["src/lib/theme-engine.ts:1629", "src/data/mermaid-capabilities.ts:197"],
+        "decisive_test": "Vary journey color tokens on the pinned renderer and inspect computed styles before reconciling scaffold and registry."
+      }
+    ],
+    "test_results": [
+      {
+        "id": "CEX-01",
+        "status": "partial",
+        "result": "Parent confirmed deterministic directive generation/application exists; comparative outcome trial not run."
+      },
+      {
+        "id": "CEX-02",
+        "status": "partial",
+        "result": "Existing compatibility document contains unverified and installation-dependent entries; paired host trial not run."
+      },
+      {
+        "id": "CEX-03",
+        "status": "partial",
+        "result": "Parent independently confirmed a textual journey-scaffold/registry contradiction; correct rendered capability not determined."
+      }
+    ]
+  },
+  "negotiator": {
+    "triggered": true,
+    "agent": "/root",
+    "execution_status": "completed",
+    "decision": "defer-for-evidence",
+    "rationale": "Primary sources defeat several broad novelty and current-fact assertions; local source defeats greenfield Stage 1 framing. The strongest surviving objection is that contract retention can preserve incorrect promises and may add little over deterministic application. A small corrected validation study is useful, while commercial positioning and staged implementation remain unapproved.",
+    "decisive_evidence": [
+      "E-03",
+      "E-05",
+      "E-06",
+      "E-08",
+      "E-12",
+      "OUT-01",
+      "OUT-03",
+      "SP-09",
+      "CEX-01",
+      "CEX-03"
+    ],
+    "unresolved_items": [
+      "Actual competitor theme-contract equivalence",
+      "Current hosted parity",
+      "Journey token behavior",
+      "Comparative benefit of prompt retention",
+      "App-specific repeat-use demand",
+      "Legal naming clearance"
+    ]
+  },
+  "release_decision": "defer-for-evidence",
+  "approved_use": "The reviewed addendum supports bounded study design with explicit caveats. It does not approve the supplied report for publication, roadmap adoption, enterprise architecture, renaming, dependency changes, or release.",
+  "review_output": {
+    "path": "docs/market-research-review-2026-10-14.md",
+    "sha256": "9052400931fa569b10f67622dca508f409a945eb7a2bb5497687fae603b35221",
+    "decision": "approve-with-limits"
+  },
+  "validation": {
+    "scope": "Documentation only",
+    "checks": [
+      {
+        "check": "node scripts/check-doc-truth.mjs",
+        "status": "PASS",
+        "detail": "Version, family count, skill count, and TypeScript checks passed."
+      },
+      {
+        "check": "node scripts/check-source-refs.mjs",
+        "status": "PASS",
+        "detail": "197 TypeScript files; 40 source cross-references checked."
+      },
+      {
+        "check": "bash scripts/check-links.sh",
+        "status": "BLOCKED",
+        "detail": "Host Bash lacks mapfile. Exit 127; Linux CI checker not executed."
+      },
+      {
+        "check": "Changed-file Markdown links, JSON, artifact hash, scope, and language screens",
+        "status": "PASS",
+        "detail": "13 relative links resolve; JSON parses; initial role structure and baseline hashes agree; historical bodies preserved beyond review notices; new review files contain no em dashes, trailing whitespace, or flagged US English variants. Git diff whitespace check uses cr-at-eol for existing CRLF documents."
+      },
+      {
+        "check": "Dated npm API window, 2026-10-06 through 2026-10-12",
+        "status": "PASS",
+        "detail": "Direct fixed-window API request confirms 18,782,236 downloads."
+      },
+      {
+        "check": "Application tests/build, competitor runtime, hosted parity, LLM holdout, demand study, legal clearance",
+        "status": "NOT RUN"
+      }
+    ]
+  },
+  "limitations": [
+    "Live status refers to source retrieval and actual reviewer execution. Implementation and strategy conclusions are analytical.",
+    "No exhaustive inventory or numerical defensibility estimate is established.",
+    "Source-message hash unavailable; exact baseline hashes identify only companion repository documents.",
+    "Competitor pages are vendor claims, not observed runtime behavior.",
+    "Custom-styles page was retrieved by evidence reviewer; parent repeat fetch failed.",
+    "Historical compatibility observations were read, not rerun.",
+    "Paper correctness results do not measure styling or customer demand.",
+    "All proposed outcome trials and held-out LLM evaluations are not-run."
+  ],
+  "follow_up": [
+    {
+      "owner": "Project owner or a separately scoped executor",
+      "action": "Reconcile journey scaffold promises with pinned-renderer evidence, then validate current profiles/scaffolds against deterministic application and a small versioned family/host fixture set.",
+      "status": "proposal"
+    },
+    {
+      "owner": "Project owner",
+      "action": "Obtain direct workflow feedback before adopting growth thresholds, a commercial moat claim, a name change, or enterprise scope.",
+      "status": "proposal"
+    }
+  ],
+  "review_expiry_trigger": "Relevant competitor or upstream release, new hosted evidence, app contract/schema change, or direct user study."
+}
