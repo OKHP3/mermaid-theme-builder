@@ -262,6 +262,10 @@ test.describe("WCAG 2.1 A/AA overlay, expanded, and persisted states", () => {
       }
 
       await page.getByRole("button", { name: /Diagram Inventory/ }).click();
+      await expect(page.getByRole("button", { name: /Diagram Inventory/ })).toHaveAttribute(
+        "aria-expanded",
+        "true"
+      );
       await expectNoCriticalOrSerious(page, `Reference Diagram Inventory (${mode.name})`);
     });
 
@@ -269,6 +273,8 @@ test.describe("WCAG 2.1 A/AA overlay, expanded, and persisted states", () => {
       await openTab(page, AUDITED_TABS[2], mode, PROFILE_STATE);
       await page.getByRole("button", { name: "Browse all supported families" }).click();
       await expect(page.getByText("Diagram Family Inventory", { exact: true })).toBeVisible();
+      await page.getByRole("button", { name: /Diagram Inventory/ }).click();
+      await expect(page.getByRole("searchbox", { name: "Search diagram types" })).toBeVisible();
       await expectNoCriticalOrSerious(page, `Examples Diagram Inventory (${mode.name})`);
     });
   }

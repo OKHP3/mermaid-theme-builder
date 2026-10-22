@@ -316,6 +316,7 @@ export function DiagramInventory({
         <button
           type="button"
           onClick={handleToggle}
+          aria-expanded={isOpen}
           className="w-full flex items-center justify-between px-4 py-2.5 border-b border-border bg-card/80 hover:bg-muted/40 transition-colors select-none cursor-pointer shrink-0"
         >
           <div className="flex items-center gap-2">
@@ -381,7 +382,7 @@ export function DiagramInventory({
                 onClick={() => setFilter(tab.id)}
                 className={`px-3 py-1 text-xs font-medium rounded transition-all ${
                   filter === tab.id
-                    ? "bg-primary/10 text-primary"
+                    ? "bg-primary/10 text-accent-foreground"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
