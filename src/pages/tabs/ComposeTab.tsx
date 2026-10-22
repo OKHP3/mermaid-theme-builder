@@ -816,33 +816,14 @@ export function ComposeTab({
 
           {/* ── Colors ── */}
           <div className="border-b border-border">
-            <div
-              role="button"
-              tabIndex={0}
-              onClick={() => toggleSection("colors")}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  toggleSection("colors");
-                }
-              }}
-              className="flex items-center justify-between px-4 py-2.5 cursor-pointer hover:bg-muted/40 transition-colors select-none"
-              aria-expanded={colorsOpen}
-            >
-              <span className="text-xs font-medium text-foreground">Colors</span>
-              <div className="flex items-center gap-2">
-                {hasCustomizations && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onResetPalette();
-                    }}
-                    aria-label={`Reset ${selectedPalette.name} colors to defaults`}
-                    className="text-[10px] text-muted-foreground hover:text-destructive transition-colors"
-                  >
-                    Reset
-                  </button>
-                )}
+            <div className="flex items-center gap-2 px-4 py-2.5 hover:bg-muted/40 transition-colors select-none">
+              <button
+                type="button"
+                onClick={() => toggleSection("colors")}
+                className="flex flex-1 items-center justify-between text-left"
+                aria-expanded={colorsOpen}
+              >
+                <span className="text-xs font-medium text-foreground">Colors</span>
                 <svg
                   viewBox="0 0 20 20"
                   fill="currentColor"
@@ -855,7 +836,17 @@ export function ComposeTab({
                     clipRule="evenodd"
                   />
                 </svg>
-              </div>
+              </button>
+              {hasCustomizations && (
+                <button
+                  type="button"
+                  onClick={onResetPalette}
+                  aria-label={`Reset ${selectedPalette.name} colors to defaults`}
+                  className="text-[10px] text-muted-foreground hover:text-destructive transition-colors"
+                >
+                  Reset
+                </button>
+              )}
             </div>
             <div className={colorsOpen ? "border-t border-border" : "hidden"}>
               <div className="p-3">

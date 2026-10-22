@@ -184,7 +184,7 @@ test.describe("WCAG 2.1 A/AA overlay, expanded, and persisted states", () => {
       await page.getByRole("button", { name: "Download", exact: true }).click();
       await expect(page.getByText(".mermaid", { exact: true }).first()).toBeVisible();
       await expectNoCriticalOrSerious(page, `Apply download menu (${mode.name})`);
-      await page.getByRole("button", { name: "Download", exact: true }).click();
+      await page.keyboard.press("Escape");
 
       await page.getByRole("button", { name: "Preview", exact: true }).click();
       await expect(page.getByTestId("export-preview-pane")).toBeVisible();
@@ -208,6 +208,7 @@ test.describe("WCAG 2.1 A/AA overlay, expanded, and persisted states", () => {
 
     test(`Persisted profile details dialog passes in ${mode.name}`, async ({ page }) => {
       await openTab(page, AUDITED_TABS[0], mode, PROFILE_STATE);
+      await page.getByRole("radio", { name: /Persisted Audi/ }).hover();
       await page
         .getByRole("button", { name: "Profile details for Persisted Audit Profile" })
         .click();
@@ -226,7 +227,7 @@ test.describe("WCAG 2.1 A/AA overlay, expanded, and persisted states", () => {
         "Advanced",
         "Export Theme",
       ]) {
-        await page.getByText(section, { exact: true }).click();
+        await page.getByRole("button", { name: section, exact: true }).click();
         const expandedSection = page.locator('[aria-expanded="true"]').filter({ hasText: section });
         await expect(expandedSection.first()).toBeVisible();
         await expectNoCriticalOrSerious(page, `Compose ${section} section (${mode.name})`);
@@ -266,7 +267,8 @@ test.describe("WCAG 2.1 A/AA overlay, expanded, and persisted states", () => {
 
     test(`Examples expanded Diagram Inventory passes in ${mode.name}`, async ({ page }) => {
       await openTab(page, AUDITED_TABS[2], mode, PROFILE_STATE);
-      await page.getByRole("button", { name: /Diagram Inventory/ }).click();
+      await page.getByRole("button", { name: "Browse all supported families" }).click();
+      await expect(page.getByText("Diagram Family Inventory", { exact: true })).toBeVisible();
       await expectNoCriticalOrSerious(page, `Examples Diagram Inventory (${mode.name})`);
     });
   }

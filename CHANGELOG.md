@@ -1,5 +1,11 @@
 ## [Unreleased]
 
+### Fixed
+- Keep overlay controls, customized palette labels, and expanded reference content readable in both themes. Make the export preview keyboard-scrollable and separate the Compose color reset from its section toggle.
+
+### Added
+- Scan menus, dialogs, persisted profiles, customized states, and the mobile expanded editor for Critical and Serious WCAG findings.
+
 ---
 
 ## [0.6.3] - 2026-09-20

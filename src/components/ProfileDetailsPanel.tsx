@@ -303,7 +303,7 @@ export function ProfileDetailsPanel({
         {/* ── Header ──────────────────────────────────────────────────────── */}
         <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-border">
           <div className="flex items-center gap-2 min-w-0">
-            <span className="text-[8px] leading-none px-1.5 py-0.5 rounded bg-primary/10 text-primary font-semibold uppercase tracking-wide shrink-0">
+            <span className="text-[8px] leading-none px-1.5 py-0.5 rounded bg-primary/10 text-accent-foreground font-semibold uppercase tracking-wide shrink-0">
               Mine
             </span>
             <h2 id="pdp-title" className="text-sm font-semibold text-foreground leading-none">
@@ -347,7 +347,7 @@ export function ProfileDetailsPanel({
                 <button
                   type="button"
                   onClick={commitName}
-                  className="text-xs px-2.5 py-1.5 rounded-md border border-primary/60 bg-primary/10 text-primary hover:bg-primary/20 font-medium transition-colors"
+                  className="text-xs px-2.5 py-1.5 rounded-md border border-primary/60 bg-primary/10 text-accent-foreground hover:bg-primary/20 font-medium transition-colors"
                 >
                   Save
                 </button>
@@ -449,7 +449,7 @@ export function ProfileDetailsPanel({
                 className={`w-full flex items-center justify-center gap-1.5 text-xs px-3 py-2 rounded-md border font-medium transition-all mt-3 ${
                   copiedShareLink
                     ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-                    : "border-primary/30 bg-primary/5 hover:bg-primary/15 hover:border-primary/50 text-primary"
+                    : "border-primary/30 bg-primary/5 hover:bg-primary/15 hover:border-primary/50 text-accent-foreground"
                 }`}
                 aria-label="Copy share link for this profile"
               >
@@ -586,7 +586,7 @@ export function ProfileDetailsPanel({
               <button
                 type="button"
                 onClick={() => setConfirmingDelete(true)}
-                className="flex items-center justify-center gap-1.5 text-xs px-3 py-2 rounded-md border border-destructive/30 bg-background hover:bg-destructive/10 hover:border-destructive/60 text-destructive/70 hover:text-destructive font-medium transition-all"
+                className="flex items-center justify-center gap-1.5 text-xs px-3 py-2 rounded-md border border-destructive/30 bg-background hover:bg-destructive/10 hover:border-destructive/60 text-foreground font-medium transition-all"
                 aria-label={`Delete profile "${slot.name}"`}
               >
                 <svg
