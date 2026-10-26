@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import {
   loadPersistedState,
+  resolvePersistedOutputFormat,
   savePersistedState,
   clearPersistedState,
   PREVIEW_MODE_KEY,
@@ -35,6 +36,29 @@ Object.defineProperty(globalThis, "window", {
 
 beforeEach(() => {
   localStorageMock.clear();
+});
+
+describe("resolvePersistedOutputFormat", () => {
+  it("uses the renderer recommendation when the saved format is invalid", () => {
+    expect(resolvePersistedOutputFormat("broken", true, "frontmatter")).toEqual({
+      outputFormat: "frontmatter",
+      outputFormatOverridden: false,
+    });
+  });
+
+  it("preserves a valid explicit choice when it differs from the recommendation", () => {
+    expect(resolvePersistedOutputFormat("init-directive", true, "frontmatter")).toEqual({
+      outputFormat: "init-directive",
+      outputFormatOverridden: true,
+    });
+  });
+
+  it("clears a stale override when the saved format matches the recommendation", () => {
+    expect(resolvePersistedOutputFormat("frontmatter", true, "frontmatter")).toEqual({
+      outputFormat: "frontmatter",
+      outputFormatOverridden: false,
+    });
+  });
 });
 
 const BASE_STATE: PersistedState = {

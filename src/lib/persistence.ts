@@ -5,6 +5,23 @@ import type { MyThemeSlot } from "./my-theme-slots";
 export const PERSISTENCE_SCHEMA_VERSION = 1;
 const STORAGE_KEY = "mtb.state.v1";
 
+export type PersistedOutputFormat = "init-directive" | "frontmatter";
+
+export function resolvePersistedOutputFormat(
+  storedFormat: unknown,
+  storedOverride: unknown,
+  recommendedFormat: PersistedOutputFormat
+): { outputFormat: PersistedOutputFormat; outputFormatOverridden: boolean } {
+  const isValidFormat = storedFormat === "init-directive" || storedFormat === "frontmatter";
+  const outputFormat = isValidFormat ? storedFormat : recommendedFormat;
+
+  return {
+    outputFormat,
+    outputFormatOverridden:
+      isValidFormat && storedOverride === true && outputFormat !== recommendedFormat,
+  };
+}
+
 /**
  * Dedicated key that is written *immediately* (outside the save-effect cycle)
  * when the user completes or skips the first-use route selector.  Using a
