@@ -1,12 +1,13 @@
 import { expect, test, type Page } from "@playwright/test";
 
-async function gotoApply(page: Page): Promise<void> {
-  await page.addInitScript(() => {
+async function gotoApply(page: Page, initialState?: Record<string, unknown>): Promise<void> {
+  await page.addInitScript((state) => {
     if (sessionStorage.getItem("renderer-format-test-seeded") === "true") return;
     localStorage.clear();
     localStorage.setItem("mtb.firstVisit", "true");
+    if (state) localStorage.setItem("mtb.state.v1", JSON.stringify(state));
     sessionStorage.setItem("renderer-format-test-seeded", "true");
-  });
+  }, initialState ?? null);
   await page.goto("/");
   await page.waitForLoadState("load");
   await expect(page.getByLabel("Select target renderer")).toBeVisible();
@@ -75,5 +76,36 @@ test.describe("renderer-aware output format recommendations", () => {
     await expect(page.getByLabel("Select target renderer")).toHaveValue("github");
     await expect(formatButton(page, "YAML")).toHaveAttribute("aria-pressed", "true");
     await expect(page.getByRole("button", { name: "Reset to recommended" })).toHaveCount(0);
+  });
+
+  test("an invalid saved format falls back to GitHub YAML without an override", async ({
+    page,
+  }) => {
+    await gotoApply(page, {
+      schemaVersion: 1,
+      selectedPaletteId: "overkill-hill",
+      customColors: {},
+      includeMetaComments: true,
+      includeBadge: true,
+      customThemeName: "",
+      inputCode: "flowchart TD\n  A --> B",
+      userPalettes: [],
+      rendererTarget: "github",
+      outputFormat: "invalid-format",
+      outputFormatOverridden: true,
+    });
+
+    await expect(page.getByLabel("Select target renderer")).toHaveValue("github");
+    await expect(formatButton(page, "YAML")).toHaveAttribute("aria-pressed", "true");
+    await expect(formatButton(page, "%%{init}%%")).toHaveAttribute("aria-pressed", "false");
+    await expect(page.getByRole("button", { name: "Reset to recommended" })).toHaveCount(0);
+    await expect
+      .poll(() =>
+        page.evaluate(() => {
+          const saved = JSON.parse(localStorage.getItem("mtb.state.v1") ?? "null");
+          return [saved?.outputFormat, saved?.outputFormatOverridden];
+        })
+      )
+      .toEqual(["frontmatter", false]);
   });
 });
