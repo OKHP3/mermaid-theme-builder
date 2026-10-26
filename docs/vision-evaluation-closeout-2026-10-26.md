@@ -6,6 +6,12 @@
 
 **Overall status:** BLOCKED on Replit access and Free Mode verification. Do not archive.
 
+**Integration and final execution record:**
+[PR #125](https://github.com/OKHP3/mermaid-theme-builder/pull/125).
+Its description records final checks, merge revision, content comparison,
+local/remote synchronization, and retained recovery resources after those
+actions occur. The overall Replit blocker remains separate from PR integration.
+
 Mermaid Theme Builder is a personal OverKill Hill P3 project by Jamie Hill.
 It is not affiliated with Builders FirstSource, BFS, Mermaid, Mermaid Chart,
 Mermaid.ai, or any third-party brand represented by user-entered colors.
@@ -117,6 +123,7 @@ proposed feature.
 | Version-string checker | PASS | Current source/attribution version strings agree with 0.6.3 |
 | Local whitespace | PASS before closeout edits | `git diff --check` was clean; repeat for the final receipt |
 | Public skill suite | PASS locally | All 86 tests passed against the unchanged skill package during this closeout |
+| Pre-PR browser gate | PASS | [Run 40410740248](https://github.com/OKHP3/mermaid-theme-builder/actions/runs/40410740248) built the unchanged app source under Node 24 and passed all 273 Chromium tests; its head was `41632473ab7f3a2ad743d529b24f96ae911cd951`, before subsequent receipt-only edits |
 | Historical Vitest storage issue | Later correction present | Commits `3c64f7d` and `0840d33` added storage isolation and per-file browser environments. This source inspection does not substitute for fresh tests |
 | Local supported toolchain | Not available through current default tools | Default Node is 26.10.0 and `corepack` is absent. Do not label a Node 26 run as supported Node 24 validation |
 | Current public page | Read live | It now reports 0.6.1, 31 families, 10 skills, and TypeScript 7.0, so several August findings were addressed later. It still lists Mermaid 11.16.0 and omits Extract from its quick-route row |
