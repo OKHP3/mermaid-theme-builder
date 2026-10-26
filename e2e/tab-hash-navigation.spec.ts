@@ -184,3 +184,34 @@ test("browser Back restores Apply after #apply -> #extract navigation", async ({
     page.getByRole("textbox", { name: "Paste themed Mermaid diagram here" })
   ).toBeVisible();
 });
+
+test("direct tab bookmarks select the matching mobile navigation tab", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    localStorage.setItem("mtb.firstVisit", "true");
+    window.sessionStorage.clear();
+  });
+
+  const tabs = [
+    { id: "apply", name: "Apply" },
+    { id: "compose", name: "Compose" },
+    { id: "examples", name: "Examples" },
+    { id: "reference", name: "Reference" },
+    { id: "extract", name: "Extract" },
+  ] as const;
+
+  for (const tab of tabs) {
+    await page.goto(`/#${tab.id}`);
+    await page.waitForLoadState("load");
+
+    const mobileNav = page.locator(".forge-mobile-nav");
+    await expect(mobileNav).toBeVisible();
+    await expect(page.locator(`#tabpanel-${tab.id}:not([hidden])`)).toBeVisible();
+    await expect(mobileNav.getByRole("tab", { name: tab.name, exact: true })).toHaveAttribute(
+      "aria-selected",
+      "true"
+    );
+    await expect(mobileNav.getByRole("tab", { selected: true })).toHaveCount(1);
+  }
+});
