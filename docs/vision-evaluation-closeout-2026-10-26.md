@@ -1,7 +1,9 @@
 # Vision evaluation and public-page review closeout
 
-**Task:** Evaluate app vision alignment, `019fd792-e5c2-7c93-8481-33789a53f3be`.  
-**Recorded:** October 26, 2026, on the local Mac.  
+**Task:** Evaluate app vision alignment, `019fd792-e5c2-7c93-8481-33789a53f3be`.
+
+**Recorded:** October 26, 2026, on the local Mac.
+
 **Overall status:** BLOCKED on Replit access and Free Mode verification. Do not archive.
 
 Mermaid Theme Builder is a personal OverKill Hill P3 project by Jamie Hill.
@@ -133,10 +135,15 @@ The first closeout commit attempt failed because the new worktree had no
 `lint-staged` dependency for its existing pre-commit hook. The correction was
 `pnpm install --frozen-lockfile --ignore-scripts` in that isolated worktree,
 using pinned pnpm 10.26.1. It installed 451 packages without changing tracked
-manifests or the lockfile. The next commit attempt must execute the unchanged
-hook normally; no hook-skip variable or security bypass is authorized. This
+manifests or the lockfile. The retry executed the unchanged hook successfully;
+no hook-skip variable or security bypass was used. This
 created dependency files and shared package-cache entries, so this closeout
 does not claim that it wrote only the receipt file on the host.
+
+A second, committed-diff inspection found two Markdown hard-break lines with
+trailing spaces. Those spaces were removed and the check was rerun against
+the full diff from `origin/main`, covering the committed artifact rather than
+only unstaged content.
 
 The public-page read is sufficient to establish remaining content drift. It
 does not validate every site interaction, prove cross-renderer compatibility,
