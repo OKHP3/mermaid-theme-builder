@@ -116,6 +116,7 @@ proposed feature.
 | Source-reference checker | PASS | 40 references checked across 197 TypeScript files |
 | Version-string checker | PASS | Current source/attribution version strings agree with 0.6.3 |
 | Local whitespace | PASS before closeout edits | `git diff --check` was clean; repeat for the final receipt |
+| Public skill suite | PASS locally | All 86 tests passed against the unchanged skill package during this closeout |
 | Historical Vitest storage issue | Later correction present | Commits `3c64f7d` and `0840d33` added storage isolation and per-file browser environments. This source inspection does not substitute for fresh tests |
 | Local supported toolchain | Not available through current default tools | Default Node is 26.10.0 and `corepack` is absent. Do not label a Node 26 run as supported Node 24 validation |
 | Current public page | Read live | It now reports 0.6.1, 31 families, 10 skills, and TypeScript 7.0, so several August findings were addressed later. It still lists Mermaid 11.16.0 and omits Extract from its quick-route row |
@@ -165,6 +166,15 @@ search returned unrelated projects, which were excluded. The second Replit
 connection returned `UNAUTHORIZED` and explicitly requested reauthentication.
 No project UUID was guessed. No question or update was dispatched to a Replit
 agent, and no paid mode, upgrade, credit purchase, or deployment was started.
+
+After the owner reported that access was restored, both connections were
+rechecked. The same exact-URL lookup still returned no editable website on
+the accessible connection, the exact application-title resolver returned
+`found=false`, and the other connection still returned `UNAUTHORIZED`.
+The bundled browser runtime was also checked through its supported discovery
+API and returned an empty browser inventory. No authenticated UI session was
+available for an alternative Free Mode check. The owner was asked for current
+editable URLs and the restored account identity while GitHub work continued.
 
 The connector can discover projects and dispatch agent requests but does not
 expose a Free Mode selector or independently attested mode field. Reconnection
