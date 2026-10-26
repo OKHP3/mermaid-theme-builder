@@ -2,13 +2,15 @@
 
 **Task:** Audit repository and seed docs, `019f95e0-1f19-7033-bad5-654275cd19f3`.
 **Recorded:** October 26, 2026, on the local Mac checkout.
-**Status:** Local closeout in progress. Remote persistence and archival are
-pending the gates below.
+**Status:** Closeout record prepared on a dedicated branch. Remote verification
+and archival are pending the gates below.
 
 This is a summary and evidence ledger, not a transcript. The original request
 limited the audit and documentation changes to this repository. The later
 closeout request authorized a thread-specific record, local commits, validation,
-and archival after its gates; it did not authorize publication or merging.
+and archival after its gates. On October 26, the owner authorized pushing the
+closeout branch to the existing remote and explicitly excluded merging and
+deployment.
 
 Mermaid Theme Builder is a personal OverKill Hill P3 project by Jamie Hill.
 It is not affiliated with Builders FirstSource, BFS, Mermaid, Mermaid Chart,
@@ -58,10 +60,10 @@ inventoried in this closeout and must not be represented as untouched.
 | Original recon and decision memo | July task response gives purpose, function, context, architecture, clarity, and doc findings; current README, package, and guidance support the purpose | This task | Verified complete, as a historical audit |
 | Preserve and patch instruction files | July patch is in `bf4943a`; later `2ddfeaf` supersedes its skill-path conclusion. `49dc607` deliberately removed the Claude stub | Project maintainers | Verified complete for the original audit; later changes preserved |
 | Report findings and limits | July response identifies the files changed and failed or blocked local checks. This record corrects the outside-root claim and stale path conclusion | This task | Verified complete with corrections |
-| Preserve a self-contained closeout | This file contains the evidence, history limits, and continuation instructions | This task | Local record prepared; remote persistence pending |
-| Validate artifacts and challenge completion | Pass A and separate Pass B are recorded below; the resulting commit still needs verification | This task | Local checks complete; commit inspection pending |
-| Commit and remote persistence | Closeout request calls for a scoped commit. A push to `main` triggers Pages deployment and publication is not authorized by the request | This task and owner | Local commit pending; remote publication requires authorization |
-| Archive this exact task | Only after all required gates, including authorized remote persistence, pass | This task | Blocked until remaining gates are resolved |
+| Preserve a self-contained closeout | This file contains the evidence, history limits, and continuation instructions; first committed as `f70c3e0` | This task | Locally complete; final remote verification pending |
+| Validate artifacts and challenge completion | Pass A and a separate Pass B are recorded below; the initial commit was inspected and matched its working file by SHA-256 | This task | Local checks complete; final revision inspection pending |
+| Commit and remote persistence | Owner authorized pushing the dedicated closeout branch; `main` push triggers Pages deployment and remains outside scope | This task | Initial local commit verified; final branch push and verification pending |
+| Archive this exact task | Only after all applicable gates and exact remote revision verification pass | This task | Pending final verification |
 
 Project-wide changes to the skill distribution, test environment, deployment,
 or application are outside the original audit. Historical findings are not
@@ -92,11 +94,13 @@ targeted guidance, not implementation of every project-wide finding. The
 later skill-path and Claude-stub decisions are recorded. A scoped credential
 pattern scan found no matches, and this record makes no live deployment claim.
 Historical tool output coverage is incomplete and is explicitly disclosed.
-This is a self-review, not an independent reviewer. The actual commit remains
-to be checked after creation.
+This is a self-review, not an independent reviewer. The initial commit
+`f70c3e0` was inspected and its record matched the working file by SHA-256.
+The final revision must be checked separately after these updates.
 
-Next: verify and commit only this record, review its final content and commit,
-then request authorization for the appropriate remote branch and review path
-if remote persistence is required. Do not push to `main`, merge, deploy, or
-archive while that gate remains unresolved. Reruns should update this record
-rather than create a duplicate.
+Next: commit and inspect this update, push only
+`codex/audit-closeout-019f95e0`, and compare the remote branch revision with
+the final local commit. The owner explicitly excluded merging and deployment.
+After the remaining applicable gates pass, archive only this task using the
+supported archive action. Reruns should update this record rather than create
+a duplicate.
