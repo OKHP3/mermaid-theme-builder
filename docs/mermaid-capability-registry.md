@@ -7,7 +7,7 @@ Mermaid Theme Builder maintains an explicit capability registry that is separate
 - How well each diagram responds to `%%{init}%%` theme variables
 - Which advanced Mermaid features (classDef, linkStyle, subgraph) are supported
 
-**Verified against Mermaid version:** `11.17.2`  
+**Review candidate:** `12.0.0`. Release acceptance and Replit synchronization are not yet complete. See [upgrade review](mermaid-12-review-2026-10-26.md).
 **Registry file:** `src/data/mermaid-capabilities.ts`
 
 The app uses Mermaid as an npm dependency for rendering. It does not auto-detect new diagram types at runtime — the registry is updated manually when Mermaid releases new or promoted diagram types.
@@ -18,6 +18,7 @@ The app uses Mermaid as an npm dependency for rendering. It does not auto-detect
 
 | ID | Display Name | Stability | Style Strategy | classDef | linkStyle | Subgraph |
 |---|---|---|---|---|---|---|
+| `usecase` | Use Case Diagram | beta | limited | Yes | No | No |
 | `flowchart` | Flowchart | stable | **full** | ✅ | ✅ | ✅ |
 | `sequenceDiagram` | Sequence Diagram | stable | partial | — | — | — |
 | `classDiagram` | Class Diagram | stable | partial | ✅ | — | — |

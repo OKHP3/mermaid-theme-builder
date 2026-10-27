@@ -66,10 +66,25 @@ describe("generateThemedCode", () => {
     expect(result).toContain("18px");
   });
 
-  it("does not include look key for classic (default)", () => {
+  it("pins the selected classic look instead of inheriting renderer defaults", () => {
     const result = generateThemedCode(SIMPLE_FLOWCHART, { ...BASE_OPTIONS, look: "classic" });
-    expect(result).not.toContain('"look"');
+    expect(result).toContain('"look": "classic"');
+    expect(result).toContain('"layout": "dagre"');
   });
+
+  it.each(["init-directive", "frontmatter"] as const)(
+    "keeps the default classic appearance and Dagre layout in %s output",
+    (outputFormat) => {
+      const result = generateThemedCode(SIMPLE_FLOWCHART, { ...BASE_OPTIONS, outputFormat });
+      if (outputFormat === "frontmatter") {
+        expect(result).toContain("  look: classic\n");
+        expect(result).toContain("  layout: dagre\n");
+      } else {
+        expect(result).toContain('"look": "classic"');
+        expect(result).toContain('"layout": "dagre"');
+      }
+    }
+  );
 
   it("strips existing %%{init}%% from input before re-theming", () => {
     const withInit = '%%{init: {"theme": "dark"}}%%\nflowchart TD\n  A --> B';

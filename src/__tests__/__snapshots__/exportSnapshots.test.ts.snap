@@ -17,7 +17,7 @@ exports[`generateMarkdownExport snapshots — BRAND_PALETTES × SIMPLE_DIAGRAM >
 Paste the code block below into any Mermaid-compatible renderer. The \`%%{init}%%\` directive applies the theme automatically.
 
 \`\`\`mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
 flowchart TD
   A[User Request] --> B[Validate Input]
   B --> C[Return Response]
@@ -52,7 +52,7 @@ exports[`generateMarkdownExport snapshots — BRAND_PALETTES × SIMPLE_DIAGRAM >
 Paste the code block below into any Mermaid-compatible renderer. The \`%%{init}%%\` directive applies the theme automatically.
 
 \`\`\`mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
 flowchart TD
   A[User Request] --> B[Validate Input]
   B --> C[Return Response]
@@ -87,7 +87,7 @@ exports[`generateMarkdownExport snapshots — BRAND_PALETTES × SIMPLE_DIAGRAM >
 Paste the code block below into any Mermaid-compatible renderer. The \`%%{init}%%\` directive applies the theme automatically.
 
 \`\`\`mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
 flowchart TD
   A[User Request] --> B[Validate Input]
   B --> C[Return Response]
@@ -122,7 +122,7 @@ exports[`generateMarkdownExport snapshots — customThemeName path > palette "As
 Paste the code block below into any Mermaid-compatible renderer. The \`%%{init}%%\` directive applies the theme automatically.
 
 \`\`\`mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
 flowchart TD
   A[User Request] --> B[Validate Input]
   B --> C[Return Response]
@@ -157,7 +157,7 @@ exports[`generateMarkdownExport snapshots — customThemeName path > palette "Gl
 Paste the code block below into any Mermaid-compatible renderer. The \`%%{init}%%\` directive applies the theme automatically.
 
 \`\`\`mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
 flowchart TD
   A[User Request] --> B[Validate Input]
   B --> C[Return Response]
@@ -192,7 +192,7 @@ exports[`generateMarkdownExport snapshots — customThemeName path > palette "OK
 Paste the code block below into any Mermaid-compatible renderer. The \`%%{init}%%\` directive applies the theme automatically.
 
 \`\`\`mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
 flowchart TD
   A[User Request] --> B[Validate Input]
   B --> C[Return Response]
@@ -254,7 +254,7 @@ Choose ONE of the two formats below based on your renderer. Never use both in th
 > Use this for: Microsoft Loop, Notion, older renderers, or anywhere YAML frontmatter is not supported.
 
 \`\`\`
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
 \`\`\`
 
 ### Format B — YAML frontmatter (preferred, Mermaid v10.5+)
@@ -266,6 +266,8 @@ Choose ONE of the two formats below based on your renderer. Never use both in th
 # Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported
 config:
   theme: base
+  look: classic
+  layout: dagre
   themeVariables:
     primaryColor: "#fdfbf7"
     primaryTextColor: "#2e2b29"
@@ -307,7 +309,7 @@ Add these comment lines immediately after the theme directive:
 This is the complete styling vocabulary for this theme. Apply these classDef classes to nodes using \`:::className\` syntax. Do NOT add any other fill, stroke, or color values — use only these classes.
 
 \`\`\`mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
 flowchart TD
     classDef primary fill:#fdfbf7,stroke:#2d6f7e,color:#2e2b29
     classDef secondary fill:#f6f2ee,stroke:#2d6f7e,color:#2e2b29
@@ -359,7 +361,7 @@ flowchart TD
 Use \`style SubgraphName ...\` statements to apply visual hierarchy to subgraphs. Replace \`SubgraphName\` with the actual subgraph ID.
 
 \`\`\`mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
 flowchart TD
     %% Tier 1 — Primary system boundary (most prominent)
     style SubgraphName fill:#fdfbf7,stroke:#2d6f7e,color:#2d6f7e
@@ -429,7 +431,7 @@ Calm mid-century tones with muted aquas and beige — clean, readable, ideal for
 ## Example output structure
 
 \`\`\`mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
 %% Theme: AskJamie
 %% Theme ID: askjamie
 %% Tool: https://overkillhill.com/projects/mermaid-theme-builder/
@@ -547,7 +549,7 @@ Do NOT use this theme for:
 Use the \`%%{init}%%\` directive (Format A) — compatible with Mermaid v9+, Microsoft Loop, Notion, and most renderers.
 
 \`\`\`
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
 \`\`\`
 
 ---
@@ -569,7 +571,7 @@ Add these comment lines immediately after the theme directive:
 This is the complete styling vocabulary for this theme. Apply these classDef classes to nodes using \`:::className\` syntax. Do NOT add any other fill, stroke, or color values — use only these classes.
 
 \`\`\`mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
 flowchart TD
     classDef primary fill:#fdfbf7,stroke:#2d6f7e,color:#2e2b29
     classDef secondary fill:#f6f2ee,stroke:#2d6f7e,color:#2e2b29
@@ -621,7 +623,7 @@ flowchart TD
 Use \`style SubgraphName ...\` statements to apply visual hierarchy to subgraphs. Replace \`SubgraphName\` with the actual subgraph ID.
 
 \`\`\`mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
 flowchart TD
     %% Tier 1 — Primary system boundary (most prominent)
     style SubgraphName fill:#fdfbf7,stroke:#2d6f7e,color:#2d6f7e
@@ -691,7 +693,7 @@ Calm mid-century tones with muted aquas and beige — clean, readable, ideal for
 ## Example output structure
 
 \`\`\`mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
 %% Theme: AskJamie
 %% Theme ID: askjamie
 %% Tool: https://overkillhill.com/projects/mermaid-theme-builder/
@@ -813,6 +815,8 @@ Use YAML frontmatter (Format B) — the preferred format for Mermaid v10.5+, Mer
 # Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported
 config:
   theme: base
+  look: classic
+  layout: dagre
   themeVariables:
     primaryColor: "#fdfbf7"
     primaryTextColor: "#2e2b29"
@@ -858,6 +862,8 @@ This is the complete styling vocabulary for this theme. Apply these classDef cla
 # Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported
 config:
   theme: base
+  look: classic
+  layout: dagre
   themeVariables:
     primaryColor: "#fdfbf7"
     primaryTextColor: "#2e2b29"
@@ -933,6 +939,8 @@ Use \`style SubgraphName ...\` statements to apply visual hierarchy to subgraphs
 # Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported
 config:
   theme: base
+  look: classic
+  layout: dagre
   themeVariables:
     primaryColor: "#fdfbf7"
     primaryTextColor: "#2e2b29"
@@ -1026,6 +1034,8 @@ Calm mid-century tones with muted aquas and beige — clean, readable, ideal for
 # Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported
 config:
   theme: base
+  look: classic
+  layout: dagre
   themeVariables:
     primaryColor: "#fdfbf7"
     primaryTextColor: "#2e2b29"
@@ -1165,7 +1175,7 @@ Choose ONE of the two formats below based on your renderer. Never use both in th
 > Use this for: Microsoft Loop, Notion, older renderers, or anywhere YAML frontmatter is not supported.
 
 \`\`\`
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
 \`\`\`
 
 ### Format B — YAML frontmatter (preferred, Mermaid v10.5+)
@@ -1177,6 +1187,8 @@ Choose ONE of the two formats below based on your renderer. Never use both in th
 # Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported
 config:
   theme: base
+  look: classic
+  layout: dagre
   themeVariables:
     primaryColor: "#fffdfa"
     primaryTextColor: "#2e2b29"
@@ -1218,7 +1230,7 @@ Add these comment lines immediately after the theme directive:
 This is the complete styling vocabulary for this theme. Apply these classDef classes to nodes using \`:::className\` syntax. Do NOT add any other fill, stroke, or color values — use only these classes.
 
 \`\`\`mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
 flowchart TD
     classDef primary fill:#fffdfa,stroke:#d94f63,color:#2e2b29
     classDef secondary fill:#f6f2ee,stroke:#d94f63,color:#2e2b29
@@ -1270,7 +1282,7 @@ flowchart TD
 Use \`style SubgraphName ...\` statements to apply visual hierarchy to subgraphs. Replace \`SubgraphName\` with the actual subgraph ID.
 
 \`\`\`mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
 flowchart TD
     %% Tier 1 — Primary system boundary (most prominent)
     style SubgraphName fill:#fffdfa,stroke:#d94f63,color:#d94f63
@@ -1340,7 +1352,7 @@ Warm and playful with coral and cream — approachable, energetic, great for how
 ## Example output structure
 
 \`\`\`mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
 %% Theme: Glee-fully
 %% Theme ID: glee-fully
 %% Tool: https://overkillhill.com/projects/mermaid-theme-builder/
@@ -1456,7 +1468,7 @@ Do NOT use this theme for:
 Use the \`%%{init}%%\` directive (Format A) — compatible with Mermaid v9+, Microsoft Loop, Notion, and most renderers.
 
 \`\`\`
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
 \`\`\`
 
 ---
@@ -1478,7 +1490,7 @@ Add these comment lines immediately after the theme directive:
 This is the complete styling vocabulary for this theme. Apply these classDef classes to nodes using \`:::className\` syntax. Do NOT add any other fill, stroke, or color values — use only these classes.
 
 \`\`\`mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
 flowchart TD
     classDef primary fill:#fffdfa,stroke:#d94f63,color:#2e2b29
     classDef secondary fill:#f6f2ee,stroke:#d94f63,color:#2e2b29
@@ -1530,7 +1542,7 @@ flowchart TD
 Use \`style SubgraphName ...\` statements to apply visual hierarchy to subgraphs. Replace \`SubgraphName\` with the actual subgraph ID.
 
 \`\`\`mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
 flowchart TD
     %% Tier 1 — Primary system boundary (most prominent)
     style SubgraphName fill:#fffdfa,stroke:#d94f63,color:#d94f63
@@ -1600,7 +1612,7 @@ Warm and playful with coral and cream — approachable, energetic, great for how
 ## Example output structure
 
 \`\`\`mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
 %% Theme: Glee-fully
 %% Theme ID: glee-fully
 %% Tool: https://overkillhill.com/projects/mermaid-theme-builder/
@@ -1720,6 +1732,8 @@ Use YAML frontmatter (Format B) — the preferred format for Mermaid v10.5+, Mer
 # Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported
 config:
   theme: base
+  look: classic
+  layout: dagre
   themeVariables:
     primaryColor: "#fffdfa"
     primaryTextColor: "#2e2b29"
@@ -1765,6 +1779,8 @@ This is the complete styling vocabulary for this theme. Apply these classDef cla
 # Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported
 config:
   theme: base
+  look: classic
+  layout: dagre
   themeVariables:
     primaryColor: "#fffdfa"
     primaryTextColor: "#2e2b29"
@@ -1840,6 +1856,8 @@ Use \`style SubgraphName ...\` statements to apply visual hierarchy to subgraphs
 # Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported
 config:
   theme: base
+  look: classic
+  layout: dagre
   themeVariables:
     primaryColor: "#fffdfa"
     primaryTextColor: "#2e2b29"
@@ -1933,6 +1951,8 @@ Warm and playful with coral and cream — approachable, energetic, great for how
 # Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported
 config:
   theme: base
+  look: classic
+  layout: dagre
   themeVariables:
     primaryColor: "#fffdfa"
     primaryTextColor: "#2e2b29"
@@ -2074,7 +2094,7 @@ Choose ONE of the two formats below based on your renderer. Never use both in th
 > Use this for: Microsoft Loop, Notion, older renderers, or anywhere YAML frontmatter is not supported.
 
 \`\`\`
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
 \`\`\`
 
 ### Format B — YAML frontmatter (preferred, Mermaid v10.5+)
@@ -2086,6 +2106,8 @@ Choose ONE of the two formats below based on your renderer. Never use both in th
 # Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported
 config:
   theme: base
+  look: classic
+  layout: dagre
   themeVariables:
     primaryColor: "#111827"
     primaryTextColor: "#e5e7eb"
@@ -2127,7 +2149,7 @@ Add these comment lines immediately after the theme directive:
 This is the complete styling vocabulary for this theme. Apply these classDef classes to nodes using \`:::className\` syntax. Do NOT add any other fill, stroke, or color values — use only these classes.
 
 \`\`\`mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
 flowchart TD
     classDef primary fill:#111827,stroke:#c46a2c,color:#e5e7eb
     classDef secondary fill:#181f26,stroke:#c46a2c,color:#e5e7eb
@@ -2179,7 +2201,7 @@ flowchart TD
 Use \`style SubgraphName ...\` statements to apply visual hierarchy to subgraphs. Replace \`SubgraphName\` with the actual subgraph ID.
 
 \`\`\`mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
 flowchart TD
     %% Tier 1 — Primary system boundary (most prominent)
     style SubgraphName fill:#111827,stroke:#c46a2c,color:#c46a2c
@@ -2249,7 +2271,7 @@ Industrial dark mode with teal and amber forge accents — bold, high-contrast, 
 ## Example output structure
 
 \`\`\`mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
 %% Theme: OKHP3
 %% Theme ID: overkill-hill
 %% Tool: https://overkillhill.com/projects/mermaid-theme-builder/
@@ -2367,7 +2389,7 @@ Do NOT use this theme for:
 Use the \`%%{init}%%\` directive (Format A) — compatible with Mermaid v9+, Microsoft Loop, Notion, and most renderers.
 
 \`\`\`
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
 \`\`\`
 
 ---
@@ -2389,7 +2411,7 @@ Add these comment lines immediately after the theme directive:
 This is the complete styling vocabulary for this theme. Apply these classDef classes to nodes using \`:::className\` syntax. Do NOT add any other fill, stroke, or color values — use only these classes.
 
 \`\`\`mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
 flowchart TD
     classDef primary fill:#111827,stroke:#c46a2c,color:#e5e7eb
     classDef secondary fill:#181f26,stroke:#c46a2c,color:#e5e7eb
@@ -2441,7 +2463,7 @@ flowchart TD
 Use \`style SubgraphName ...\` statements to apply visual hierarchy to subgraphs. Replace \`SubgraphName\` with the actual subgraph ID.
 
 \`\`\`mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
 flowchart TD
     %% Tier 1 — Primary system boundary (most prominent)
     style SubgraphName fill:#111827,stroke:#c46a2c,color:#c46a2c
@@ -2511,7 +2533,7 @@ Industrial dark mode with teal and amber forge accents — bold, high-contrast, 
 ## Example output structure
 
 \`\`\`mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
 %% Theme: OKHP3
 %% Theme ID: overkill-hill
 %% Tool: https://overkillhill.com/projects/mermaid-theme-builder/
@@ -2633,6 +2655,8 @@ Use YAML frontmatter (Format B) — the preferred format for Mermaid v10.5+, Mer
 # Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported
 config:
   theme: base
+  look: classic
+  layout: dagre
   themeVariables:
     primaryColor: "#111827"
     primaryTextColor: "#e5e7eb"
@@ -2678,6 +2702,8 @@ This is the complete styling vocabulary for this theme. Apply these classDef cla
 # Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported
 config:
   theme: base
+  look: classic
+  layout: dagre
   themeVariables:
     primaryColor: "#111827"
     primaryTextColor: "#e5e7eb"
@@ -2753,6 +2779,8 @@ Use \`style SubgraphName ...\` statements to apply visual hierarchy to subgraphs
 # Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported
 config:
   theme: base
+  look: classic
+  layout: dagre
   themeVariables:
     primaryColor: "#111827"
     primaryTextColor: "#e5e7eb"
@@ -2846,6 +2874,8 @@ Industrial dark mode with teal and amber forge accents — bold, high-contrast, 
 # Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported
 config:
   theme: base
+  look: classic
+  layout: dagre
   themeVariables:
     primaryColor: "#111827"
     primaryTextColor: "#e5e7eb"
@@ -2987,7 +3017,7 @@ Choose ONE of the two formats below based on your renderer. Never use both in th
 > Use this for: Microsoft Loop, Notion, older renderers, or anywhere YAML frontmatter is not supported.
 
 \`\`\`
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
 \`\`\`
 
 ### Format B — YAML frontmatter (preferred, Mermaid v10.5+)
@@ -2999,6 +3029,8 @@ Choose ONE of the two formats below based on your renderer. Never use both in th
 # Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported
 config:
   theme: base
+  look: classic
+  layout: dagre
   themeVariables:
     primaryColor: "#fdfbf7"
     primaryTextColor: "#2e2b29"
@@ -3040,7 +3072,7 @@ Add these comment lines immediately after the theme directive:
 This is the complete styling vocabulary for this theme. Apply these classDef classes to nodes using \`:::className\` syntax. Do NOT add any other fill, stroke, or color values — use only these classes.
 
 \`\`\`mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
 flowchart TD
     classDef primary fill:#fdfbf7,stroke:#2d6f7e,color:#2e2b29
     classDef secondary fill:#f6f2ee,stroke:#2d6f7e,color:#2e2b29
@@ -3092,7 +3124,7 @@ flowchart TD
 Use \`style SubgraphName ...\` statements to apply visual hierarchy to subgraphs. Replace \`SubgraphName\` with the actual subgraph ID.
 
 \`\`\`mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
 flowchart TD
     %% Tier 1 — Primary system boundary (most prominent)
     style SubgraphName fill:#fdfbf7,stroke:#2d6f7e,color:#2d6f7e
@@ -3162,7 +3194,7 @@ Calm mid-century tones with muted aquas and beige — clean, readable, ideal for
 ## Example output structure
 
 \`\`\`mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
 %% Theme: My Brand
 %% Theme ID: askjamie
 %% Tool: https://overkillhill.com/projects/mermaid-theme-builder/
@@ -3280,7 +3312,7 @@ Do NOT use this theme for:
 Use the \`%%{init}%%\` directive (Format A) — compatible with Mermaid v9+, Microsoft Loop, Notion, and most renderers.
 
 \`\`\`
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
 \`\`\`
 
 ---
@@ -3302,7 +3334,7 @@ Add these comment lines immediately after the theme directive:
 This is the complete styling vocabulary for this theme. Apply these classDef classes to nodes using \`:::className\` syntax. Do NOT add any other fill, stroke, or color values — use only these classes.
 
 \`\`\`mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
 flowchart TD
     classDef primary fill:#fdfbf7,stroke:#2d6f7e,color:#2e2b29
     classDef secondary fill:#f6f2ee,stroke:#2d6f7e,color:#2e2b29
@@ -3354,7 +3386,7 @@ flowchart TD
 Use \`style SubgraphName ...\` statements to apply visual hierarchy to subgraphs. Replace \`SubgraphName\` with the actual subgraph ID.
 
 \`\`\`mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
 flowchart TD
     %% Tier 1 — Primary system boundary (most prominent)
     style SubgraphName fill:#fdfbf7,stroke:#2d6f7e,color:#2d6f7e
@@ -3424,7 +3456,7 @@ Calm mid-century tones with muted aquas and beige — clean, readable, ideal for
 ## Example output structure
 
 \`\`\`mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#fdfbf7", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#2d6f7e", "lineColor": "#2d6f7e", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#2d6f7e", "tertiaryColor": "#e1ecef", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#2d6f7e", "textColor": "#2e2b29", "background": "#f6f2ee", "mainBkg": "#fdfbf7", "nodeBorder": "#2d6f7e", "clusterBkg": "#e8f4f7", "titleColor": "#2d6f7e", "edgeLabelBackground": "#f6f2ee", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
 %% Theme: My Brand
 %% Theme ID: askjamie
 %% Tool: https://overkillhill.com/projects/mermaid-theme-builder/
@@ -3546,6 +3578,8 @@ Use YAML frontmatter (Format B) — the preferred format for Mermaid v10.5+, Mer
 # Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported
 config:
   theme: base
+  look: classic
+  layout: dagre
   themeVariables:
     primaryColor: "#fdfbf7"
     primaryTextColor: "#2e2b29"
@@ -3591,6 +3625,8 @@ This is the complete styling vocabulary for this theme. Apply these classDef cla
 # Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported
 config:
   theme: base
+  look: classic
+  layout: dagre
   themeVariables:
     primaryColor: "#fdfbf7"
     primaryTextColor: "#2e2b29"
@@ -3666,6 +3702,8 @@ Use \`style SubgraphName ...\` statements to apply visual hierarchy to subgraphs
 # Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported
 config:
   theme: base
+  look: classic
+  layout: dagre
   themeVariables:
     primaryColor: "#fdfbf7"
     primaryTextColor: "#2e2b29"
@@ -3759,6 +3797,8 @@ Calm mid-century tones with muted aquas and beige — clean, readable, ideal for
 # Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported
 config:
   theme: base
+  look: classic
+  layout: dagre
   themeVariables:
     primaryColor: "#fdfbf7"
     primaryTextColor: "#2e2b29"
@@ -3898,7 +3938,7 @@ Choose ONE of the two formats below based on your renderer. Never use both in th
 > Use this for: Microsoft Loop, Notion, older renderers, or anywhere YAML frontmatter is not supported.
 
 \`\`\`
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
 \`\`\`
 
 ### Format B — YAML frontmatter (preferred, Mermaid v10.5+)
@@ -3910,6 +3950,8 @@ Choose ONE of the two formats below based on your renderer. Never use both in th
 # Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported
 config:
   theme: base
+  look: classic
+  layout: dagre
   themeVariables:
     primaryColor: "#fffdfa"
     primaryTextColor: "#2e2b29"
@@ -3951,7 +3993,7 @@ Add these comment lines immediately after the theme directive:
 This is the complete styling vocabulary for this theme. Apply these classDef classes to nodes using \`:::className\` syntax. Do NOT add any other fill, stroke, or color values — use only these classes.
 
 \`\`\`mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
 flowchart TD
     classDef primary fill:#fffdfa,stroke:#d94f63,color:#2e2b29
     classDef secondary fill:#f6f2ee,stroke:#d94f63,color:#2e2b29
@@ -4003,7 +4045,7 @@ flowchart TD
 Use \`style SubgraphName ...\` statements to apply visual hierarchy to subgraphs. Replace \`SubgraphName\` with the actual subgraph ID.
 
 \`\`\`mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
 flowchart TD
     %% Tier 1 — Primary system boundary (most prominent)
     style SubgraphName fill:#fffdfa,stroke:#d94f63,color:#d94f63
@@ -4073,7 +4115,7 @@ Warm and playful with coral and cream — approachable, energetic, great for how
 ## Example output structure
 
 \`\`\`mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
 %% Theme: My Brand
 %% Theme ID: glee-fully
 %% Tool: https://overkillhill.com/projects/mermaid-theme-builder/
@@ -4189,7 +4231,7 @@ Do NOT use this theme for:
 Use the \`%%{init}%%\` directive (Format A) — compatible with Mermaid v9+, Microsoft Loop, Notion, and most renderers.
 
 \`\`\`
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
 \`\`\`
 
 ---
@@ -4211,7 +4253,7 @@ Add these comment lines immediately after the theme directive:
 This is the complete styling vocabulary for this theme. Apply these classDef classes to nodes using \`:::className\` syntax. Do NOT add any other fill, stroke, or color values — use only these classes.
 
 \`\`\`mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
 flowchart TD
     classDef primary fill:#fffdfa,stroke:#d94f63,color:#2e2b29
     classDef secondary fill:#f6f2ee,stroke:#d94f63,color:#2e2b29
@@ -4263,7 +4305,7 @@ flowchart TD
 Use \`style SubgraphName ...\` statements to apply visual hierarchy to subgraphs. Replace \`SubgraphName\` with the actual subgraph ID.
 
 \`\`\`mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
 flowchart TD
     %% Tier 1 — Primary system boundary (most prominent)
     style SubgraphName fill:#fffdfa,stroke:#d94f63,color:#d94f63
@@ -4333,7 +4375,7 @@ Warm and playful with coral and cream — approachable, energetic, great for how
 ## Example output structure
 
 \`\`\`mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#fffdfa", "primaryTextColor": "#2e2b29", "primaryBorderColor": "#d94f63", "lineColor": "#d94f63", "secondaryColor": "#f6f2ee", "secondaryTextColor": "#2e2b29", "secondaryBorderColor": "#d94f63", "tertiaryColor": "#e5d9ce", "tertiaryTextColor": "#2e2b29", "tertiaryBorderColor": "#d94f63", "textColor": "#2e2b29", "background": "#fff7f1", "mainBkg": "#fffdfa", "nodeBorder": "#d94f63", "clusterBkg": "#f9f3ef", "titleColor": "#d94f63", "edgeLabelBackground": "#fff7f1", "fontFamily": "Open Sans, system-ui, sans-serif"}}}%%
 %% Theme: My Brand
 %% Theme ID: glee-fully
 %% Tool: https://overkillhill.com/projects/mermaid-theme-builder/
@@ -4453,6 +4495,8 @@ Use YAML frontmatter (Format B) — the preferred format for Mermaid v10.5+, Mer
 # Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported
 config:
   theme: base
+  look: classic
+  layout: dagre
   themeVariables:
     primaryColor: "#fffdfa"
     primaryTextColor: "#2e2b29"
@@ -4498,6 +4542,8 @@ This is the complete styling vocabulary for this theme. Apply these classDef cla
 # Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported
 config:
   theme: base
+  look: classic
+  layout: dagre
   themeVariables:
     primaryColor: "#fffdfa"
     primaryTextColor: "#2e2b29"
@@ -4573,6 +4619,8 @@ Use \`style SubgraphName ...\` statements to apply visual hierarchy to subgraphs
 # Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported
 config:
   theme: base
+  look: classic
+  layout: dagre
   themeVariables:
     primaryColor: "#fffdfa"
     primaryTextColor: "#2e2b29"
@@ -4666,6 +4714,8 @@ Warm and playful with coral and cream — approachable, energetic, great for how
 # Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported
 config:
   theme: base
+  look: classic
+  layout: dagre
   themeVariables:
     primaryColor: "#fffdfa"
     primaryTextColor: "#2e2b29"
@@ -4807,7 +4857,7 @@ Choose ONE of the two formats below based on your renderer. Never use both in th
 > Use this for: Microsoft Loop, Notion, older renderers, or anywhere YAML frontmatter is not supported.
 
 \`\`\`
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
 \`\`\`
 
 ### Format B — YAML frontmatter (preferred, Mermaid v10.5+)
@@ -4819,6 +4869,8 @@ Choose ONE of the two formats below based on your renderer. Never use both in th
 # Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported
 config:
   theme: base
+  look: classic
+  layout: dagre
   themeVariables:
     primaryColor: "#111827"
     primaryTextColor: "#e5e7eb"
@@ -4860,7 +4912,7 @@ Add these comment lines immediately after the theme directive:
 This is the complete styling vocabulary for this theme. Apply these classDef classes to nodes using \`:::className\` syntax. Do NOT add any other fill, stroke, or color values — use only these classes.
 
 \`\`\`mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
 flowchart TD
     classDef primary fill:#111827,stroke:#c46a2c,color:#e5e7eb
     classDef secondary fill:#181f26,stroke:#c46a2c,color:#e5e7eb
@@ -4912,7 +4964,7 @@ flowchart TD
 Use \`style SubgraphName ...\` statements to apply visual hierarchy to subgraphs. Replace \`SubgraphName\` with the actual subgraph ID.
 
 \`\`\`mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
 flowchart TD
     %% Tier 1 — Primary system boundary (most prominent)
     style SubgraphName fill:#111827,stroke:#c46a2c,color:#c46a2c
@@ -4982,7 +5034,7 @@ Industrial dark mode with teal and amber forge accents — bold, high-contrast, 
 ## Example output structure
 
 \`\`\`mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
 %% Theme: My Brand
 %% Theme ID: overkill-hill
 %% Tool: https://overkillhill.com/projects/mermaid-theme-builder/
@@ -5100,7 +5152,7 @@ Do NOT use this theme for:
 Use the \`%%{init}%%\` directive (Format A) — compatible with Mermaid v9+, Microsoft Loop, Notion, and most renderers.
 
 \`\`\`
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
 \`\`\`
 
 ---
@@ -5122,7 +5174,7 @@ Add these comment lines immediately after the theme directive:
 This is the complete styling vocabulary for this theme. Apply these classDef classes to nodes using \`:::className\` syntax. Do NOT add any other fill, stroke, or color values — use only these classes.
 
 \`\`\`mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
 flowchart TD
     classDef primary fill:#111827,stroke:#c46a2c,color:#e5e7eb
     classDef secondary fill:#181f26,stroke:#c46a2c,color:#e5e7eb
@@ -5174,7 +5226,7 @@ flowchart TD
 Use \`style SubgraphName ...\` statements to apply visual hierarchy to subgraphs. Replace \`SubgraphName\` with the actual subgraph ID.
 
 \`\`\`mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
 flowchart TD
     %% Tier 1 — Primary system boundary (most prominent)
     style SubgraphName fill:#111827,stroke:#c46a2c,color:#c46a2c
@@ -5244,7 +5296,7 @@ Industrial dark mode with teal and amber forge accents — bold, high-contrast, 
 ## Example output structure
 
 \`\`\`mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
+%%{init: {"look": "classic", "layout": "dagre", "theme": "base", "themeVariables": {"primaryColor": "#111827", "primaryTextColor": "#e5e7eb", "primaryBorderColor": "#c46a2c", "lineColor": "#c46a2c", "secondaryColor": "#181f26", "secondaryTextColor": "#e5e7eb", "secondaryBorderColor": "#c46a2c", "tertiaryColor": "#1c3a34", "tertiaryTextColor": "#e5e7eb", "tertiaryBorderColor": "#c46a2c", "textColor": "#e5e7eb", "background": "#111827", "mainBkg": "#111827", "nodeBorder": "#c46a2c", "clusterBkg": "#0d1117", "titleColor": "#c46a2c", "edgeLabelBackground": "#181f26", "fontFamily": "DM Sans, system-ui, sans-serif"}}}%%
 %% Theme: My Brand
 %% Theme ID: overkill-hill
 %% Tool: https://overkillhill.com/projects/mermaid-theme-builder/
@@ -5366,6 +5418,8 @@ Use YAML frontmatter (Format B) — the preferred format for Mermaid v10.5+, Mer
 # Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported
 config:
   theme: base
+  look: classic
+  layout: dagre
   themeVariables:
     primaryColor: "#111827"
     primaryTextColor: "#e5e7eb"
@@ -5411,6 +5465,8 @@ This is the complete styling vocabulary for this theme. Apply these classDef cla
 # Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported
 config:
   theme: base
+  look: classic
+  layout: dagre
   themeVariables:
     primaryColor: "#111827"
     primaryTextColor: "#e5e7eb"
@@ -5486,6 +5542,8 @@ Use \`style SubgraphName ...\` statements to apply visual hierarchy to subgraphs
 # Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported
 config:
   theme: base
+  look: classic
+  layout: dagre
   themeVariables:
     primaryColor: "#111827"
     primaryTextColor: "#e5e7eb"
@@ -5579,6 +5637,8 @@ Industrial dark mode with teal and amber forge accents — bold, high-contrast, 
 # Mermaid v10.5+ preferred format — use instead of %%{init}%% where supported
 config:
   theme: base
+  look: classic
+  layout: dagre
   themeVariables:
     primaryColor: "#111827"
     primaryTextColor: "#e5e7eb"

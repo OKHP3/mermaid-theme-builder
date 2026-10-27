@@ -1,5 +1,11 @@
 ## [Unreleased]
 
+### Under review
+- Repair the Mermaid 12 lockfile, pair it with ZenUML 1.0.1, and retain the existing sanitizer and release-age security controls.
+- Pin Classic and Dagre in preview initialization and both export formats rather than inherit changed renderer defaults.
+- Recognize the new use case beta family with limited-support guidance. Its bundled example and broader styling validation remain pending.
+- Add positive browser-render checks for the changed layout families and ZenUML. This candidate is not a released or Replit-synchronized version.
+
 ---
 
 ## [0.6.4] - 2026-10-26

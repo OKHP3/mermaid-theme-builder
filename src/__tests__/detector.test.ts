@@ -4,6 +4,16 @@ import { DIAGRAM_CAPABILITIES } from "@/data/mermaid-capabilities";
 import { EXAMPLE_CATALOG } from "@/data/example-library";
 
 describe("detectDiagram — family detection", () => {
+  it("detects Mermaid 12 use case input with conservative capability guidance", () => {
+    const result = detectDiagram(
+      "usecase-beta\n  actor Reader\n  Read(Read guide)\n  Reader --> Read"
+    );
+    expect(result.family).toBe("usecase");
+    const capability = DIAGRAM_CAPABILITIES.find((entry) => entry.id === result.family);
+    expect(capability?.stability).toBe("beta");
+    expect(capability?.styleStrategy).toBe("limited");
+    expect(capability?.minMermaidVersion).toBe("12.0.0");
+  });
   it("returns unknown for empty string", () => {
     expect(detectDiagram("").family).toBe("unknown");
   });
