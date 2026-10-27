@@ -509,7 +509,7 @@ Replit Agent:
 
 #### 9.0 Project context snapshot
 
-Verified 2026-09-20 from the repository layout, manifests, source entry points,
+Verified 2026-10-26 from the repository layout, manifests, source entry points,
 workflow definitions, documentation, and recent Git history.
 
 - **Identity and purpose, confirmed:** Mermaid Theme Builder is a personal
@@ -525,10 +525,10 @@ workflow definitions, documentation, and recent Git history.
 - **Vision, inferred:** Serve as the visual governance layer in the OKHP3
   Visual Language Stack while remaining a small, static, privacy-respecting
   utility.
-- **Current status, confirmed:** The root package is version `0.6.3`, and the
+- **Current status, confirmed:** The root package is version `0.6.4`, and the
   application source plus CI and GitHub Pages deployment workflows are present.
   The README documents a live URL, but this alignment pass did not independently
-  verify remote deployment health. Version `0.6.3` contains workspace layout and dependency compatibility fixes, and
+  verify remote deployment health. Version `0.6.4` adds saved renderer-format recovery and regression coverage to the prior workspace and dependency fixes, and
   `0.7.0` and `1.0.0` are planned.
 - **Architecture, confirmed:** The root package is the application. The
   workspace also contains a thin Replit artifact package. Runtime diagram

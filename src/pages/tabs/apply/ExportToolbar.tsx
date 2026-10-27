@@ -482,16 +482,19 @@ export function ExportToolbar({
             );
           })}
         </div>
-        {rendererProfile && outputFormatOverridden && onResetOutputFormat && (
-          <button
-            type="button"
-            onClick={onResetOutputFormat}
-            className="text-[10px] px-2 py-1 rounded border border-primary/30 text-accent-foreground hover:bg-primary/8 transition-colors"
-            title={`Use ${rendererProfile.shortName}'s recommended format`}
-          >
-            Reset to recommended
-          </button>
-        )}
+        {rendererProfile &&
+          outputFormatOverridden &&
+          outputFormat !== getRendererDefaultOutputFormat(rendererProfile.id) &&
+          onResetOutputFormat && (
+            <button
+              type="button"
+              onClick={onResetOutputFormat}
+              className="text-[10px] px-2 py-1 rounded border border-primary/30 text-accent-foreground hover:bg-primary/8 transition-colors"
+              title={`Use ${rendererProfile.shortName}'s recommended format`}
+            >
+              Reset to recommended
+            </button>
+          )}
 
         <button
           onClick={onOpenColorEditor}
