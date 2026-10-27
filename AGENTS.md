@@ -509,7 +509,7 @@ Replit Agent:
 
 #### 9.0 Project context snapshot
 
-Verified 2026-09-20 from the repository layout, manifests, source entry points,
+Verified 2026-10-26 from the repository layout, manifests, source entry points,
 workflow definitions, documentation, and recent Git history.
 
 - **Identity and purpose, confirmed:** Mermaid Theme Builder is a personal

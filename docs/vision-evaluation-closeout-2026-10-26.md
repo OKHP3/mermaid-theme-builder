@@ -4,8 +4,9 @@
 
 **Recorded:** October 26, 2026, on the local Mac.
 
-**Overall status:** IN PROGRESS. Replit access is recovered; approved integration,
-final synchronization, validation, and eligible cleanup remain. Do not archive.
+**Overall status:** The final PR execution record linked below is authoritative.
+The dated checkpoints here record progress, not an implied completion claim.
+Archive only after that execution record verifies COMPLETE.
 
 **Integration and final execution record:**
 [PR #125](https://github.com/OKHP3/mermaid-theme-builder/pull/125).
