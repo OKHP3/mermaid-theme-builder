@@ -6,7 +6,10 @@ import { fileURLToPath } from "node:url";
 import { REQUIRED_CHECKS, validateCiWorkflow } from "./lib/ci-workflow-contract.mjs";
 
 const root = resolve(fileURLToPath(new URL("..", import.meta.url)));
-const workflow = readFileSync(resolve(root, ".github/workflows/ci.yml"), "utf8");
+const workflow = readFileSync(resolve(root, ".github/workflows/ci.yml"), "utf8").replace(
+  /\r\n/g,
+  "\n"
+);
 const packageJson = JSON.parse(readFileSync(resolve(root, "package.json"), "utf8"));
 
 function errorsFor(candidate) {
@@ -67,3 +70,9 @@ for (const check of REQUIRED_CHECKS) {
     assert.match(errorsFor(moved).join("\n"), new RegExp(`active ci job is missing "${command}"`));
   });
 }
+
+
+test("release screenshot commits cannot suppress post-merge validation", () => {
+  const release = readFileSync(resolve(root, ".github/workflows/release-gate.yml"), "utf8");
+  assert.doesNotMatch(release, /\[(?:skip ci|ci skip|no ci|skip actions|actions skip)\]|skip-checks:\s*true/i);
+});

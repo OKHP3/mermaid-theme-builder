@@ -1,11 +1,36 @@
 ## [Unreleased]
 
+### Fixed
+- Select the pinned pnpm through Node 24's bundled Corepack in CI and Pages, caching its verified download to avoid repeated registry outages and the stalled action self-installer.
+- Run the dependency-free link and source-reference checks without installing the workspace, so package-manager setup cannot exhaust their five-minute job limit.
+- Keep overlay controls, customized palette labels, and expanded reference content readable in both themes. Make the export preview keyboard-scrollable and separate the Compose color reset from its section toggle.
+
+### Added
+- Scan menus, dialogs, persisted profiles, customized states, and the mobile expanded editor for Critical and Serious WCAG findings.
+
+---
+
+## [0.6.3] - 2026-09-20
+
+### Fixed
+- Patch the dependency-level DOMPurify, selector parser, and Vitest advisories; use official core renderer entry points and document the remaining ZenUML embedded-sanitizer review.
+- Reconcile supported dependency and Actions updates, including Mermaid 11.17.2 rendering fixes. Keep ZenUML on its compatible pinned release.
+- Typecheck the retained preview scaffold in CI and migrate its calendar, chart, and resizable-panel wrappers to their current APIs.
+- Restore the missing Apply workspace layout styles and refresh the release screenshot while preserving older release images.
+
 ### Changed
+- Audit all workspace dependencies, locked packages, runtimes, and GitHub Actions daily; group related Dependabot updates and maintain one review issue for unresolved version changes.
+- Use the project's Corepack-selected pnpm in commit and Replit post-merge hooks.
 - **Palette schema version is now a single constant** (`PALETTE_TOOL_VERSION` in `src/lib/palettes.ts`). All production files that embed a palette `toolVersion` field now import this constant instead of repeating the string literal, so a palette schema bump is a one-line change. The `check:version-strings` consistency guard continues to catch any drift automatically.
 - **Privacy-respecting analytics**: Plausible records one aggregate pageview with only the origin and pathname. Query strings, hash fragments, Mermaid code, palette data, localStorage values, and custom properties are excluded.
 
 ### Added
+- Technology inventory, source-linked version report, and a GitHub/Replit/Windows synchronization runbook.
 - **Plausible pageview script**: the first-party transport sends only the sanitized pageview created by `src/lib/privacy-analytics.ts`, with a null referrer and `no-referrer` request policy.
+
+### Fixed
+- Discover source references with Node on Windows and preserve Windows line endings when checking or regenerating the skill catalog.
+- Keep simulated component tests independent of external font stylesheet downloads; browser tests retain real rendering coverage.
 
 ---
 
@@ -67,6 +92,8 @@ Phase 2 P0 capability fixes, plus documentation truth sync across all public sur
 
 **Verdict: v0.6.0.** v1.0.0 remains blocked by its other roadmap gates; the WCAG 2.1 AA automated audit gate now passes.
 
-[Unreleased]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.6.1...HEAD
+[Unreleased]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.6.3...HEAD
+[0.6.3]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.6.2...v0.6.3
+[0.6.2]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.6.1...v0.6.2
 [0.6.1]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.5.0...v0.6.0

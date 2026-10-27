@@ -55,7 +55,12 @@ test.describe("Apply export preview", () => {
     await page.getByRole("button", { name: "Copy export code from preview" }).click();
     await expect(page.getByRole("button", { name: "Copied!" })).toBeVisible();
 
-    await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(expectedCode);
+    // Clipboard text is CRLF on Windows even when the exported DOM text is LF.
+    await expect
+      .poll(async () =>
+        (await page.evaluate(() => navigator.clipboard.readText())).replace(/\r\n/g, "\n")
+      )
+      .toBe(expectedCode);
   });
 
   test("keeps the pane open across Apply → Reference → Apply navigation", async ({ page }) => {

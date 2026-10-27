@@ -222,7 +222,8 @@ describe("ClassBrowser — supportsClassDef={true} (active state)", () => {
     const advancedCard = cardHtml("advanced");
     expect(advancedCard).toContain("advanced");
     expect(advancedCard).not.toContain("plain");
-    expect(advancedCard).toContain('style="opacity:0.6"');
+    expect(advancedCard).toContain("opacity:0.6");
+    expect(advancedCard.slice(0, advancedCard.indexOf(">"))).not.toContain("opacity:");
     expect(advancedCard).toContain('stroke-dasharray="5 3"');
     expect(advancedCard).toContain('stroke-width="2"');
     expect(advancedCard).toContain("font-weight:bold");
@@ -231,7 +232,7 @@ describe("ClassBrowser — supportsClassDef={true} (active state)", () => {
     const plainCard = cardHtml("plain");
     expect(plainCard).toContain("plain");
     expect(plainCard).not.toContain("advanced");
-    expect(plainCard).not.toContain('style="opacity:0.6"');
+    expect(plainCard).not.toContain("opacity:0.6");
     expect(plainCard).not.toContain('stroke-dasharray="5 3"');
     expect(plainCard).not.toContain('stroke-width="2"');
     expect(plainCard).not.toContain("font-weight:bold");

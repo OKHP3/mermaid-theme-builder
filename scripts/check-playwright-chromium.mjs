@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { createRequire } from "node:module";
 import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
 import { chmod, mkdir, mkdtemp, readFile, rm, unlink, writeFile } from "node:fs/promises";
@@ -122,12 +123,11 @@ try {
 
   try {
     await run(
-      process.platform === "win32" ? "pnpm.cmd" : "pnpm",
+      process.execPath,
       [
-        "exec",
-        "playwright",
+        createRequire(import.meta.url).resolve("@playwright/test/cli"),
         "test",
-        smokeSpecPath,
+        "playwright-chromium-config-smoke",
         "--project=chromium",
         "--workers=1",
         "--reporter=line",

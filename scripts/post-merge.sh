@@ -27,4 +27,4 @@ fi
 echo "post-merge: packageManager OK (${PKG_MANAGER})"
 
 # ── Install dependencies ───────────────────────────────────────────────────
-pnpm install --frozen-lockfile
+corepack pnpm install --frozen-lockfile

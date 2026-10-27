@@ -1,10 +1,11 @@
 name: Setup pnpm + Node.js
 description: >
-  Sets up pnpm, configures Node.js with the pnpm cache, and runs
+  Configures Node.js, enables the repository-pinned pnpm through Corepack, caches
+  its content-addressable store, and runs
   `pnpm install --frozen-lockfile --ignore-scripts`.
-  NOTE: the calling workflow must run `actions/checkout` before this action —
+  NOTE: the calling workflow must run `actions/checkout` before this action.
   local composite actions are resolved from the checked-out workspace.
-  Centralising these three steps means a single version bump here propagates
+  Centralizing these steps means a single version bump here propagates
   to every workflow that uses this action.
 
 inputs:
@@ -16,17 +17,29 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Setup pnpm
-      uses: pnpm/action-setup@v6
-
     - name: Setup Node.js
-      uses: actions/setup-node@v6
+      uses: actions/setup-node@v7
       with:
         node-version: ${{ inputs.node-version }}
-        cache: pnpm
+
+    - name: Cache Corepack package managers
+      uses: actions/cache@v6
+      with:
+        path: ~/.cache/node/corepack
+        key: corepack-${{ runner.os }}-${{ runner.arch }}-node-${{ inputs.node-version }}-${{ hashFiles('package.json') }}
+        restore-keys: |
+          corepack-${{ runner.os }}-${{ runner.arch }}-node-${{ inputs.node-version }}-
+
+    - name: Enable the repository-pinned pnpm
+      run: |
+        corepack enable pnpm
+        corepack pnpm --version
+      shell: bash
+      env:
+        COREPACK_ENABLE_DOWNLOAD_PROMPT: "0"
 
     - name: Cache pnpm content-addressable store
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       with:
         path: ~/.local/share/pnpm/store
         key: pnpm-store-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}

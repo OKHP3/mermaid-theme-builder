@@ -100,13 +100,13 @@ The [AgenticSkills](https://agenticskills.io/) submission is recorded above. The
 
 ```
 Name:         Mermaid Theme Builder
-Version:      v0.6.1
+Version:      v0.6.3
 GitHub:       https://github.com/OKHP3/mermaid-theme-builder
 Live app:     https://okhp3.github.io/mermaid-theme-builder/
 Project page: https://overkillhill.com/projects/mermaid-theme-builder/
 License:      MIT
 Language:     TypeScript 7.0
-Mermaid:      11.16.0
+Mermaid:      11.17.2
 
 Short (≤200 chars):
   Brand palette enforcement and renderer-aware export for Mermaid diagram-as-code.

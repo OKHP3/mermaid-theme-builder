@@ -33,6 +33,17 @@ function renderSelector(
 
 afterEach(cleanup);
 
+describe("PaletteSelectorBar accessible labels", () => {
+  it("includes the visible add label in the accessible name", () => {
+    renderSelector([]);
+
+    const button = screen.getByRole("button", { name: /^Add My Theme workspace$/ });
+    const visibleLabel = button.textContent?.trim();
+    expect(visibleLabel).toBeTruthy();
+    expect(button.getAttribute("aria-label")?.toLowerCase()).toContain(visibleLabel?.toLowerCase());
+  });
+});
+
 describe("PaletteSelectorBar — inline slot rename", () => {
   it.each(["Enter", "Tab"])("commits a changed name on %s", (key) => {
     const slot = createDefaultMyThemeSlot(1);

@@ -222,11 +222,11 @@ export function PromptScaffoldModal({
             ))}
           </select>
           {selectedRendererProfile ? (
-            <span className="text-[10px] text-muted-foreground/50 shrink-0 hidden sm:block">
+            <span className="text-[10px] text-muted-foreground shrink-0 hidden sm:block">
               {selectedRendererProfile.mermaidVersionApprox}
             </span>
           ) : (
-            <span className="text-[10px] text-muted-foreground/40 shrink-0 hidden sm:block">
+            <span className="text-[10px] text-muted-foreground shrink-0 hidden sm:block">
               conservative output
             </span>
           )}
@@ -294,10 +294,10 @@ export function PromptScaffoldModal({
                         <span
                           className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full border ${
                             opt.format === "formatA"
-                              ? "bg-blue-500/10 text-blue-400 border-blue-500/20"
+                              ? "bg-blue-500/10 text-accent-foreground border-blue-500/20"
                               : opt.format === "formatB"
-                                ? "bg-purple-500/10 text-purple-400 border-purple-500/20"
-                                : "bg-primary/10 text-primary border-primary/20"
+                                ? "bg-purple-500/10 text-accent-foreground border-purple-500/20"
+                                : "bg-primary/10 text-accent-foreground border-primary/20"
                           }`}
                         >
                           {opt.badge}
@@ -306,7 +306,7 @@ export function PromptScaffoldModal({
                           {opt.label}
                         </span>
                         {isLastUsed && (
-                          <span className="text-[9px] font-medium text-primary/70 bg-primary/8 border border-primary/20 px-1.5 py-0.5 rounded-full leading-none">
+                          <span className="text-[9px] font-medium text-accent-foreground bg-primary/8 border border-primary/20 px-1.5 py-0.5 rounded-full leading-none">
                             last used
                           </span>
                         )}
@@ -314,7 +314,7 @@ export function PromptScaffoldModal({
                       <p className="text-[11px] text-muted-foreground mt-1.5 leading-snug">
                         {opt.description}
                       </p>
-                      <p className="text-[10px] text-muted-foreground/60 mt-1 leading-none">
+                      <p className="text-[10px] text-muted-foreground mt-1 leading-none">
                         {opt.renderer}
                       </p>
                     </div>
@@ -337,8 +337,8 @@ export function PromptScaffoldModal({
                           fill="currentColor"
                           className={`w-4 h-4 transition-colors ${
                             isLastUsed
-                              ? "text-primary/50 group-hover:text-primary"
-                              : "text-muted-foreground/40 group-hover:text-muted-foreground"
+                              ? "text-primary/50 group-hover:text-accent-foreground"
+                              : "text-muted-foreground group-hover:text-muted-foreground"
                           }`}
                         >
                           <path d="M7 3.5A1.5 1.5 0 018.5 2h3.879a1.5 1.5 0 011.06.44l3.122 3.12A1.5 1.5 0 0117 6.622V12.5a1.5 1.5 0 01-1.5 1.5h-1v-3.379a3 3 0 00-.879-2.121L10.5 5.379A3 3 0 008.379 4.5H7v-1z" />
@@ -385,8 +385,8 @@ export function PromptScaffoldModal({
                     copied
                       ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
                       : isPreviewing
-                        ? "border-primary/20 bg-primary/5 text-primary/80 hover:bg-primary/10"
-                        : "border-border/60 bg-muted/20 text-muted-foreground/60 hover:text-muted-foreground hover:bg-muted/40"
+                        ? "border-primary/20 bg-primary/5 text-accent-foreground hover:bg-primary/10"
+                        : "border-border/60 bg-muted/20 text-muted-foreground hover:text-muted-foreground hover:bg-muted/40"
                   }`}
                   aria-expanded={isPreviewing}
                   aria-label={
@@ -473,7 +473,7 @@ export function PromptScaffoldModal({
         </div>
 
         <div className="px-4 pb-4 pt-1">
-          <p className="text-[10px] text-muted-foreground/50 text-center leading-snug">
+          <p className="text-[10px] text-muted-foreground text-center leading-snug">
             The scaffold never leaves your browser — all processing is local.
           </p>
         </div>

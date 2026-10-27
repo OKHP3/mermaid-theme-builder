@@ -6,6 +6,13 @@ export default defineConfig({
   plugins: [react()],
   test: {
     environment: "node",
+    // Component tests should not wait for hosted font stylesheets. Playwright
+    // covers the rendered browser behavior with real styles.
+    environmentOptions: {
+      happyDOM: {
+        settings: { disableCSSFileLoading: true, handleDisabledFileLoadingAsSuccess: true },
+      },
+    },
     setupFiles: ["src/__tests__/setup/storage-isolation.ts"],
     clearMocks: true,
     testTimeout: 10000,

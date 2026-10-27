@@ -116,7 +116,11 @@ test("clipboard contains %%{init}%% themed Mermaid block after 'Styled Code' cli
   await page.getByRole("button", { name: "Styled Code" }).click();
   await page.getByRole("button", { name: /Copied!/ }).waitFor({ state: "visible" });
 
-  const clipText = await page.evaluate(() => navigator.clipboard.readText());
+  // Windows clipboard transport uses CRLF; compare the exported content independent of line endings.
+  const clipText = (await page.evaluate(() => navigator.clipboard.readText())).replace(
+    /\r\n/g,
+    "\n"
+  );
   expect(clipText).toContain("%%{init:");
   expect(clipText).toContain("flowchart");
   // Themed output embeds themeVariables.
@@ -222,7 +226,11 @@ test("'Markdown' copy button copies a ```mermaid fenced block with %%{init}%% to
   // Button should flash "Copied!" immediately.
   await expect(page.getByRole("button", { name: /Copied!/ })).toBeVisible({ timeout: 3000 });
 
-  const clipText = await page.evaluate(() => navigator.clipboard.readText());
+  // Windows clipboard transport uses CRLF; compare the exported content independent of line endings.
+  const clipText = (await page.evaluate(() => navigator.clipboard.readText())).replace(
+    /\r\n/g,
+    "\n"
+  );
 
   // Must contain the fenced Mermaid code block.
   expect(clipText).toContain("```mermaid");
@@ -258,7 +266,11 @@ test("'Markdown' copy preserves YAML frontmatter when the YAML format is selecte
   await markdownBtn.click();
   await expect(page.getByRole("button", { name: /Copied!/ })).toBeVisible({ timeout: 3000 });
 
-  const clipText = await page.evaluate(() => navigator.clipboard.readText());
+  // Windows clipboard transport uses CRLF; compare the exported content independent of line endings.
+  const clipText = (await page.evaluate(() => navigator.clipboard.readText())).replace(
+    /\r\n/g,
+    "\n"
+  );
 
   expect(clipText).toContain("```mermaid");
   expect(clipText).toContain("---\n# Mermaid v10.5+ preferred format");

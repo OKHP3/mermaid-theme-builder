@@ -509,7 +509,7 @@ Replit Agent:
 
 #### 9.0 Project context snapshot
 
-Verified 2026-07-13 from the repository layout, manifests, source entry points,
+Verified 2026-09-20 from the repository layout, manifests, source entry points,
 workflow definitions, documentation, and recent Git history.
 
 - **Identity and purpose, confirmed:** Mermaid Theme Builder is a personal
@@ -525,10 +525,10 @@ workflow definitions, documentation, and recent Git history.
 - **Vision, inferred:** Serve as the visual governance layer in the OKHP3
   Visual Language Stack while remaining a small, static, privacy-respecting
   utility.
-- **Current status, confirmed:** The root package is version `0.6.2`, and the
+- **Current status, confirmed:** The root package is version `0.6.3`, and the
   application source plus CI and GitHub Pages deployment workflows are present.
   The README documents a live URL, but this alignment pass did not independently
-  verify remote deployment health. Version `0.6.2` contains maintenance fixes, and
+  verify remote deployment health. Version `0.6.3` contains workspace layout and dependency compatibility fixes, and
   `0.7.0` and `1.0.0` are planned.
 - **Architecture, confirmed:** The root package is the application. The
   workspace also contains a thin Replit artifact package. Runtime diagram
@@ -546,6 +546,12 @@ workflow definitions, documentation, and recent Git history.
   names, skill path, or release status changes, update this snapshot and the
   relevant inventory entries using verified repository evidence. Do not treat
   inferred mission or vision statements as implementation guarantees.
+- **Technology audit, verified 2026-09-18:** `docs/technology-inventory.md`
+  records the deployed root app, the separate `artifacts/mermaid-theme-workbench/`
+  package, skill support scripts, runtimes, and action dependencies. The daily
+  technology workflow audits all tracked package manifests and lockfile entries.
+  Dependabot proposes updates; runtime and Mermaid compatibility reviews remain
+  required before release. A local edit is not evidence of hosted activation.
 
 #### 9.1 Project identity and brand firewall
 
@@ -620,7 +626,7 @@ Any change that breaks this flow is a defect, regardless of other intent.
 
 #### 9.4 Mermaid dependency governance
 
-- Mermaid is used as an npm dependency (currently `11.16.0` -- pinned exactly).
+- Mermaid is used as an npm dependency (currently `11.17.2` -- pinned exactly).
 - Do not fork Mermaid. Do not copy Mermaid source into this repo.
 - Dependency updates must be reviewed and tested before release.
 - After each Mermaid version upgrade, manually update the constants in
@@ -636,7 +642,7 @@ Mermaid dependency is upgraded:
 
 ```typescript
 // src/data/mermaid-capabilities.ts
-export const MERMAID_VERSION_VERIFIED = "11.16.0";
+export const MERMAID_VERSION_VERIFIED = "11.17.2";
 ```
 
 #### 9.5 App-specific conventions
@@ -759,3 +765,5 @@ The detailed version policy rationale is in `docs/roadmap.md` "Version Policy" s
 
 - Windows: `C:\Users\jamie\OKH-Local\04_GitHub_Mirrors\mermaid-theme-builder`
 - Mac: `/Volumes/OKH-Local/04_GitHub_Mirrors/mermaid-theme-builder`
+
+## Imported Claude Cowork project instructions

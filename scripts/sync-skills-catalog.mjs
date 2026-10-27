@@ -292,7 +292,8 @@ function replaceGeneratedArray(source, generated) {
     );
   }
   const endOffset = end + GENERATED_END.length;
-  return `${source.slice(0, start)}${generated}${source.slice(endOffset)}`;
+  const lineEnding = source.includes("\r\n") ? "\r\n" : "\n";
+  return `${source.slice(0, start)}${generated.replace(/\r?\n/g, lineEnding)}${source.slice(endOffset)}`;
 }
 
 async function main() {
