@@ -4,7 +4,9 @@
 
 **Recorded:** October 26, 2026, on the local Mac.
 
-**Overall status:** BLOCKED on Replit access and Free Mode verification. Do not archive.
+**Overall status:** The final PR execution record linked below is authoritative.
+The dated checkpoints here record progress, not an implied completion claim.
+Archive only after that execution record verifies COMPLETE.
 
 **Integration and final execution record:**
 [PR #125](https://github.com/OKHP3/mermaid-theme-builder/pull/125).
@@ -219,3 +221,68 @@ the required Replit step is blocked. Do not delete the shared clones or another
 task's branches. Archive only task
 `019fd792-e5c2-7c93-8481-33789a53f3be` and only after the overall status becomes
 COMPLETE. A merged receipt alone is not completion.
+
+## Replit access recovery and approved integration
+
+This later checkpoint supersedes the earlier access-only blocker. The unlocked
+Replit desktop app exposes both linked projects, even though the Chrome tab and
+connectors still lack authenticated access. The Mermaid Theme Builder composer
+shows Free agent modes and its prior work shows Free with no credits used.
+No paid fallback or new deployment was started. No secret value was inspected.
+
+The application checkout is `/home/runner/workspace`, on `main` at
+`0b6aa77e47ec25a2260b5bf6697b27b6489c1bcc`. Before reconciliation it was four
+commits ahead and two behind `origin/main`, with one unstaged deletion:
+`e2e/.playwright-chromium-config-smoke.spec.mjs`. Its complete committed tip is
+preserved on GitHub as `codex/replit-preservation-2026-10-26`. The deleted file
+is the temporary fixture written and removed by
+`scripts/check-playwright-chromium.mjs`; it is not an intended shipped test.
+
+The owner explicitly approved integrating these three commits through a tested
+PR, excluding the temporary fixture:
+
+- `a2c2acb500b276f3803263f8243ba5d9d196fe9f`: expanded accessibility evidence.
+- `be366d6dd744704b595b48f9611f4965352b180c`: direct mobile bookmark regression.
+- `d203541af601ae449784c399396953f210d14002`: saved renderer-format recovery.
+
+They were cherry-picked onto current main in a new isolated worktree,
+`/Volumes/OKH-Local/01_ChatGPT_Exports/Codex/worktrees/vision-sync-2026-10-26/mermaid-theme-builder`,
+on `codex/replit-sync-2026-10-26`. The older worktree was found on unrelated
+branch `chore/mermaid-v12-validation` at `79f1263cd5e118701e191639033979cf3a0c5462`
+and was not changed or removed. The patch release is 0.6.4 under repository
+version policy; Mermaid remains pinned to 11.17.2.
+
+The website Replit checkout is clean at
+`b6871f7fa7cb26f60be2042324a08df21b3f3710`, matching a successful remote-ref
+lookup and the canonical local clone. Its two recovery stashes and old prunable
+worktree records are retained, not claimed as this task's cleanup targets.
+The existing preview renders `/projects/mermaid-theme-builder/`. That page still
+has dated release/dependency wording and the previously reported unsupported
+claims. This task delivered a review, not an approved website rewrite.
+
+A native accessibility focus attempt placed a read-only Git inventory command
+in the agent composer rather than Shell. Replit reported the send as
+unconfirmed. That pending message was dismissed without retry; subsequent
+commands were entered in the confirmed Shell. No successful implementation
+agent turn is claimed. Shell Git transport successfully published the recovery
+branch without exposing credentials.
+
+Final PR, CI, tag, deployment, Replit revision and behavior checks, local main,
+and cleanup dispositions must be recorded in the linked PR execution receipt
+after completion. Until then, this integration is in progress, not COMPLETE.
+
+The bundled Node 24.19.0 runtime is now available locally. The initial unit run
+passed all 3,176 tests; typecheck, formatting, version strings, and documentation
+truth checks passed. The local production build failed loading
+`lightningcss.darwin-arm64.node`. Inspection found the workspace explicitly
+removes the Darwin Lightning CSS and Tailwind Oxide optional packages. This is
+an existing host-compatibility limit, not a failure of the renderer-format fix.
+Do not add dependencies or change that policy in this scoped reconciliation.
+Use the existing Linux CI build and full Chromium gate on the reviewed revision;
+record their actual results, rather than treating the failed Mac build as a pass.
+Existing CRLF endings in attribution and HTML are retained; whitespace checks
+must account for CR-at-EOL without ignoring ordinary trailing spaces.
+The final 0.6.4 unit run also passed 3,176 tests, with 86 public skill tests,
+source references, and the skill-catalog check passing. The local link shell
+script stopped because the system Bash lacks `mapfile`; the protected Linux
+link workflow remains the required gate, not an inferred local pass.

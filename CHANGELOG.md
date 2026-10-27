@@ -1,11 +1,17 @@
 ## [Unreleased]
 
+---
+
+## [0.6.4] - 2026-10-26
+
 ### Fixed
+- Recover invalid saved output formats with the selected renderer's recommendation and clear stale override flags. Keep explicit valid choices and hide redundant reset actions.
 - Select the pinned pnpm through Node 24's bundled Corepack in CI and Pages, caching its verified download to avoid repeated registry outages and the stalled action self-installer.
 - Run the dependency-free link and source-reference checks without installing the workspace, so package-manager setup cannot exhaust their five-minute job limit.
 - Keep overlay controls, customized palette labels, and expanded reference content readable in both themes. Make the export preview keyboard-scrollable and separate the Compose color reset from its section toggle.
 
 ### Added
+- Verify direct mobile tab bookmarks and saved-format recovery with regression tests.
 - Scan menus, dialogs, persisted profiles, customized states, and the mobile expanded editor for Critical and Serious WCAG findings.
 
 ---
@@ -92,7 +98,8 @@ Phase 2 P0 capability fixes, plus documentation truth sync across all public sur
 
 **Verdict: v0.6.0.** v1.0.0 remains blocked by its other roadmap gates; the WCAG 2.1 AA automated audit gate now passes.
 
-[Unreleased]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.6.3...HEAD
+[Unreleased]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.6.4...HEAD
+[0.6.4]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.6.3...v0.6.4
 [0.6.3]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.6.2...v0.6.3
 [0.6.2]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.6.1...v0.6.2
 [0.6.1]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.6.0...v0.6.1
