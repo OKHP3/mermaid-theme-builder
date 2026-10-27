@@ -43,7 +43,8 @@ for (const item of cases) {
     await page.goto("./#apply");
     await page.getByLabel("Mermaid diagram code input").fill(item.code);
     const preview = page.locator('section[aria-label="Diagram preview"] [id^="mermaid-preview-"]');
-    const svg = preview.locator("svg");
+    // Scope to rendered content, excluding loading and zoom-control icons.
+    const svg = preview.locator('[title^="Drag to pan"] svg');
     await expect(svg).toBeVisible({ timeout: 30000 });
     await expect(svg).toContainText(item.marker, { timeout: 30000 });
     const dimensions = await svg.evaluate((element) => {
@@ -52,7 +53,7 @@ for (const item of cases) {
     });
     expect(dimensions.width).toBeGreaterThan(0);
     expect(dimensions.height).toBeGreaterThan(0);
-    await expect(preview.locator("pre.text-destructive\\/80")).toHaveCount(0);
+    await expect(preview.getByText("Render Error", { exact: true })).toHaveCount(0);
     expect(pageErrors).toEqual([]);
   });
 }
