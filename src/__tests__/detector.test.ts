@@ -4,6 +4,10 @@ import { DIAGRAM_CAPABILITIES } from "@/data/mermaid-capabilities";
 import { EXAMPLE_CATALOG } from "@/data/example-library";
 
 describe("detectDiagram — family detection", () => {
+  it("preserves the established primary family order when adding beta support", () => {
+    expect(DIAGRAM_CAPABILITIES[0].id).toBe("flowchart");
+    expect(DIAGRAM_CAPABILITIES.at(-1)?.id).toBe("usecase");
+  });
   it("detects Mermaid 12 use case input with conservative capability guidance", () => {
     const result = detectDiagram(
       "usecase-beta\n  actor Reader\n  Read(Read guide)\n  Reader --> Read"

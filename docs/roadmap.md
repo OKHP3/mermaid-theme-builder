@@ -138,7 +138,18 @@ The WCAG 2.1 AA automated audit gate is complete. v1.0.0 is not yet earned until
 
 ---
 
-## v0.7.0 — Governance Profiles (Planned)
+## v0.7.0 - Mermaid 12 compatibility
+
+Owner approved this release scope on October 26, 2026, gated on required checks
+and Replit preview acceptance. It covers the renderer migration, explicit
+Classic/Dagre defaults, security dependency corrections, and limited use case
+beta detection. See [upgrade evidence](mermaid-12-review-2026-10-26.md).
+The package version alone does not prove release, deployment, or Replit parity.
+
+## Governance Profiles expansion - planned, version unassigned
+
+The broader work formerly penciled in for v0.7.0 remains planned. The
+compatibility release does not complete or cancel those requirements.
 
 ---
 
