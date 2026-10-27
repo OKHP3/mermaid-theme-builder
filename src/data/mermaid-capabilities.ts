@@ -32,6 +32,7 @@ export type DiagramFamily =
   | "swimlane"
   | "zenuml"
   | "radar"
+  | "usecase"
   | "unknown";
 
 export type DiagramStability = "stable" | "beta" | "experimental" | "unknown";
@@ -840,6 +841,30 @@ export const DIAGRAM_CAPABILITIES: DiagramCapability[] = [
     minMermaidVersion: "11.16.0",
     supportedLooks: ["classic"],
     unsupportedLooks: ["neo", "handDrawn"],
+  },
+  {
+    id: "usecase",
+    displayName: "Use Case Diagram",
+    declarations: /^\s*usecase-beta\b/im,
+    stability: "beta",
+    styleStrategy: "limited",
+    supportsClassDef: true,
+    supportsLinkStyle: false,
+    supportsSubgraphStyle: false,
+    notes:
+      "Mermaid 12 beta family. Family-specific actor and use case colors need target-renderer validation; full palette coverage is not promised.",
+    supportStatus: "partial",
+    themeConfidence: "low",
+    notationCompliance: "mermaid-native",
+    description: "Actors, use cases, and system boundaries for describing system interactions.",
+    bestUsedFor: "System scope and actor interactions.",
+    warning:
+      "Requires Mermaid 12.0.0 or newer. Validate in the target renderer before publication.",
+    exampleFile: null,
+    examplePending: true,
+    minMermaidVersion: "12.0.0",
+    supportedLooks: ["classic"],
+    unsupportedLooks: [],
   },
 ];
 

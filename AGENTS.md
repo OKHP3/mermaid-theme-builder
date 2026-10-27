@@ -525,11 +525,12 @@ workflow definitions, documentation, and recent Git history.
 - **Vision, inferred:** Serve as the visual governance layer in the OKHP3
   Visual Language Stack while remaining a small, static, privacy-respecting
   utility.
-- **Current status, confirmed:** The root package is version `0.6.4`, and the
+- **Current status, confirmed:** The root package is version `0.7.0`, and the
   application source plus CI and GitHub Pages deployment workflows are present.
-  The README documents a live URL, but this alignment pass did not independently
-  verify remote deployment health. Version `0.6.4` adds saved renderer-format recovery and regression coverage to the prior workspace and dependency fixes, and
-  `0.7.0` and `1.0.0` are planned.
+  Version `0.7.0` prepares the reviewed Mermaid 12 compatibility release, with
+  explicit appearance defaults and limited use case beta detection. Shipping
+  status is recorded in PR128 and the release record, not inferred from this
+  source version. Broader Governance Profiles work and `1.0.0` remain planned.
 - **Architecture, confirmed:** The root package is the application. The
   workspace also contains a thin Replit artifact package. Runtime diagram
   processing is browser-only, with local browser persistence and no backend,
@@ -626,7 +627,7 @@ Any change that breaks this flow is a defect, regardless of other intent.
 
 #### 9.4 Mermaid dependency governance
 
-- Mermaid is used as an npm dependency (currently `11.17.2` -- pinned exactly).
+- Mermaid is used as an npm dependency (currently `12.0.0` -- pinned exactly).
 - Do not fork Mermaid. Do not copy Mermaid source into this repo.
 - Dependency updates must be reviewed and tested before release.
 - After each Mermaid version upgrade, manually update the constants in
@@ -642,7 +643,7 @@ Mermaid dependency is upgraded:
 
 ```typescript
 // src/data/mermaid-capabilities.ts
-export const MERMAID_VERSION_VERIFIED = "11.17.2";
+export const MERMAID_VERSION_VERIFIED = "12.0.0";
 ```
 
 #### 9.5 App-specific conventions

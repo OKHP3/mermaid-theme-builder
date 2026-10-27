@@ -16,8 +16,8 @@ Visual governance for AI-generated Mermaid diagrams — paste, theme, preview, a
 
 ## Features
 
-- **31 diagram families** detected with family-specific theming overlays (18 native, 13 partial/beta; 10 additional capability gaps documented)
-- **3 rendering looks** - Classic, Neo, Hand-Drawn - sourced from Mermaid v11.17.2's look API
+- **32 diagram families** detected (18 native, 14 partial/beta; 10 additional capability gaps documented). Use case diagrams have limited support and no bundled example yet.
+- **3 rendering looks** - Classic, Neo, Hand-Drawn. Classic and Dagre are explicit output defaults so a renderer upgrade does not silently change the selected appearance.
 - **8 renderer profiles** - mermaid.live, GitHub, GitLab, Notion, Obsidian, Confluence, CLI, Microsoft Loop/M365 - with parity matrix and contextual look warnings
 - **5-tier typography hierarchy** — Diagram Title → Subgraph → Nested Subgraph → Node Label → Edge Label — with enforced parent-child sizing constraints
 - **Renderer-aware output format** — toggle between `%%{init}%%` directive and YAML frontmatter; defaults to the recommended format per renderer
@@ -44,11 +44,15 @@ Visual governance for AI-generated Mermaid diagrams — paste, theme, preview, a
 
 ---
 
-## Looks (Mermaid v11.17.2)
+## Looks (Mermaid v12.0.0)
+
+The app requires an ES2024-capable browser, including Safari 17.4 or newer.
+Renderer destinations may use different Mermaid versions; validate exported
+diagrams in the destination rather than assume preview parity.
 
 | Look | Keyword | Renderer support |
 |------|---------|-----------------|
-| Classic | (default, omit look key) | Universal |
+| Classic | `"look": "classic"` (explicit default) | Validate in the target renderer |
 | Neo | `"look": "neo"` | mermaid.live, GitHub (partial), CLI, Obsidian (partial) |
 | Hand-Drawn | `"look": "handDrawn"` | mermaid.live, CLI, Obsidian (partial) — requires Rough.js |
 
@@ -73,15 +77,15 @@ Full parity matrix with caveats is available in the **Reference** tab of the liv
 
 ---
 
-## Supported Diagram Families (31 + 10 gaps)
+## Supported Diagram Families (32 + 10 gaps)
 
 **Native support (18):** Flowchart, Sequence, Class, State, ER, Gantt, Pie, Git Graph, Mindmap, Timeline, Quadrant Chart, User Journey, Requirement, ZenUML, Kanban, Cynefin, Railroad, Swimlane.
 
-**Partial/beta support (13):** C4, Architecture Beta, Block, Sankey, XY Chart, Packet, Radar, Treemap, Venn, Ishikawa, Wardley, Tree View, Event Modeling.
+**Partial/beta support (14):** C4, Architecture Beta, Block, Sankey, XY Chart, Packet, Radar, Treemap, Venn, Ishikawa, Wardley, Tree View, Event Modeling, Use Case.
 
 **Documented capability gaps (10):** BPMN 2.0, ArchiMate, SysML, Value-Stream Map, Service Blueprint, OKR Alignment Map, DFD, Decision Tree, Org Chart, Threat Model DFD — tracked with "not natively supported" status so users know why they render as generic flowcharts.
 
-> The in-app **Reference** tab is the canonical source of truth: 31 families total (18 native, 13 partial/beta) and 10 tracked as explicit capability gaps.
+> The in-app **Reference** tab is the canonical source of truth: 32 families total (18 native, 14 partial/beta) and 10 tracked as explicit capability gaps.
 
 Capabilities documented per family: stability, look support, themeVariable confidence, classDef support, linkStyle support, subgraph support, `minMermaidVersion`.
 
@@ -152,7 +156,7 @@ pnpm test:e2e
 |-------|-----------|
 | Framework | React 19 + Vite 8 |
 | Styling | Tailwind CSS v4 |
-| Rendering | Mermaid.js 11.17.2 |
+| Rendering | Mermaid.js 12.0.0 |
 | Type checking | TypeScript 7.0 (strict) |
 | Testing | Vitest 4 |
 | Package manager | pnpm 11 (workspaces) |

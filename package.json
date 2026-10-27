@@ -1,6 +1,6 @@
 {
   "name": "@workspace/mermaid-theme-builder",
-  "version": "0.6.4",
+  "version": "0.7.0",
   "packageManager": "pnpm@10.26.1",
   "engines": {
     "node": ">=24.0.0"
@@ -38,7 +38,7 @@
     "*.{ts,tsx,json,css}": "prettier --write"
   },
   "devDependencies": {
-    "@mermaid-js/mermaid-zenuml": "0.2.3",
+    "@mermaid-js/mermaid-zenuml": "1.0.1",
     "@napi-rs/canvas": "^1.0.9",
     "@playwright/test": "^1.63.0",
     "@replit/vite-plugin-cartographer": "catalog:",
