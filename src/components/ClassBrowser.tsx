@@ -92,7 +92,7 @@ function ClassNode({
             onCopyUsage(def.name);
           }
         }}
-        aria-label={`Copy usage :::${def.name}`}
+        aria-label={`Copy usage ${def.name} ${def.description} :::${def.name}`}
         title={`Click to copy :::${def.name}`}
         className="w-full flex flex-col items-stretch gap-0 text-left cursor-pointer focus:outline-none focus:ring-1 focus:ring-inset focus:ring-primary/60"
       >

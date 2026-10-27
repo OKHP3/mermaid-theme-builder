@@ -498,7 +498,7 @@ export function ProfileDetailsPanel({
                 type="button"
                 onClick={() => onExport(slot.id)}
                 className="flex items-center justify-center gap-1.5 text-xs px-3 py-2 rounded-md border border-border bg-background hover:bg-muted/60 hover:border-primary/40 text-foreground font-medium transition-all"
-                aria-label="Export profile as JSON"
+                aria-label="Export JSON profile"
               >
                 <svg
                   viewBox="0 0 16 16"
@@ -522,7 +522,7 @@ export function ProfileDetailsPanel({
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 className="flex items-center justify-center gap-1.5 text-xs px-3 py-2 rounded-md border border-border bg-background hover:bg-muted/60 hover:border-primary/40 text-foreground font-medium transition-all"
-                aria-label="Import profile from JSON file"
+                aria-label="Import JSON profile from file"
               >
                 <svg
                   viewBox="0 0 16 16"
