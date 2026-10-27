@@ -35,3 +35,15 @@ The [ZenUML 1.0.1 release](https://github.com/mermaid-js/mermaid/releases/tag/@m
 ## Restart boundary
 
 Review clone: `/tmp/mermaid-v12-review.MFwVlN/fresh`, branch `codex/review-mermaid-12-closeout`. Shared task worktrees were repurposed by another writer and must not be deleted or switched. The [central closeout execution receipt](https://github.com/OKHP3/mermaid-theme-builder/pull/125) records prior integrations and the final state as it occurs. Archive only after it reports verified COMPLETE.
+
+## Validation addendum, 9:44 p.m. Central
+
+[Linux CI40438467954](https://github.com/OKHP3/mermaid-theme-builder/actions/runs/40438467954) passed on application source `0f726c6`. The final application inputs are identical to that source; subsequent commits corrected only the new browser-test selector.
+
+[Browser run40439402886](https://github.com/OKHP3/mermaid-theme-builder/actions/runs/40439402886) passed all 282 tests in 5.3 minutes on `79a2e4bb4f98b2e6789c493ea8668ee18ec293f5`. All seven new positive rendering cases passed, including use case and ZenUML. No failed, flaky, or skipped test summary was reported.
+
+Earlier run40438470349 finished its test step with 275 existing tests passed and seven ambiguous-locator failures. The workflow was canceled during finalization and is not a pass. Its logs showed control icons and a nested ZenUML arrow SVG matching the new assertion. Replacement40439277830 was canceled after confirming that merely narrowing to the canvas still included the nested SVG. The final selector uses the root SVG's actual Mermaid accessibility metadata. Visibility, expected label, nonzero dimensions, absence of render errors, and absence of page errors remain required.
+
+The remaining low KaTeX advisory affects the same 0.16.47 dependency already present in the prior validated release. It is not an upgrade regression. The advisory describes a gadget requiring prior prototype pollution and unsanitized insertion; this app retains strict Mermaid processing and the patched sanitizer. That context is not proof of immunity. No out-of-range KaTeX update or advisory suppression was introduced.
+
+The candidate now has Linux production and browser evidence. It still needs required PR checks, release/version handling before shipping, Replit-specific frozen installation and preview verification, merge/source/deployment reconciliation, and final closeout. The Mac remains locked and the authenticated Edge connection is unavailable. Do not archive or claim Replit parity.
