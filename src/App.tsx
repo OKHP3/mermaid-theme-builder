@@ -42,6 +42,7 @@ import {
   readShareToken,
   hasShareToken,
   clearShareToken,
+  resolvePersistedOutputFormat,
   type ShareablePayload,
 } from "@/lib/persistence";
 import {
@@ -628,15 +629,17 @@ export function AppShell() {
           setActiveMyThemeSlotId(null);
         }
       }
-      if (
-        typeof persisted.outputFormat === "string" &&
-        (persisted.outputFormat === "init-directive" || persisted.outputFormat === "frontmatter")
-      ) {
-        setOutputFormat(persisted.outputFormat);
-      }
-      if (typeof persisted.outputFormatOverridden === "boolean") {
-        setOutputFormatOverridden(persisted.outputFormatOverridden);
-      }
+      const savedRendererTarget =
+        !didApplyShare && typeof persisted.rendererTarget === "string"
+          ? persisted.rendererTarget
+          : rendererTarget;
+      const savedOutputFormat = resolvePersistedOutputFormat(
+        persisted.outputFormat,
+        persisted.outputFormatOverridden,
+        getRendererDefaultOutputFormat(savedRendererTarget)
+      );
+      setOutputFormat(savedOutputFormat.outputFormat);
+      setOutputFormatOverridden(savedOutputFormat.outputFormatOverridden);
       if (persisted.rendererTargetHintDismissed === true) {
         setRendererTargetHintDismissed(true);
       }

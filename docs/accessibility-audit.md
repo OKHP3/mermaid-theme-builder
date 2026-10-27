@@ -1,6 +1,6 @@
 # Accessibility audit
 
-**Audit date:** 2026-09-01
+**Audit date:** 2026-10-26
 **Status:** WCAG 2.1 A/AA automated release-blocker gate passing
 
 ## Automated scope
@@ -24,15 +24,40 @@ Each tab is audited in four rendered modes:
 Each scan injects axe-core 4.13.0 and evaluates the `wcag2a`, `wcag2aa`, `wcag21a`,
 and `wcag21aa` rule sets. Critical and Serious axe findings fail the test.
 
+## Opened and customized states
+
+The same Critical/Serious release-blocker check also opens and scans these states
+in both light and dark desktop themes:
+
+- Settings menu and its palette-reset confirmation state
+- Apply family menu, download menu, expanded export preview, customized color
+  editor dialog, and Prompt Scaffold dialog
+- Compose Import Theme, Look, Colors, Typography, Advanced, and Export Theme
+  sections; Save Theme and Prompt Pattern dialogs
+- Persisted My Theme profile details dialog
+- Reference Class Library, Renderer Parity Matrix, Use in…, Agent Skills, and
+  Diagram Inventory panels
+- Examples Diagram Inventory panel
+
+The expanded Apply code editor is also scanned in light and dark mobile layouts.
+The customized fixture hydrates a saved palette color override, custom name, and
+YAML output preference. The profile dialog fixture hydrates a saved My Theme
+profile. These are representative persisted states, not an exhaustive import or
+custom-palette combination matrix.
+
+A failing Critical or Serious result includes the axe rule and impact, help link,
+affected selector, element HTML, and axe failure guidance in the test output.
+
 Run it with:
 
 ```sh
 ./scripts/run-e2e.sh e2e/accessibility-audit.spec.ts
 ```
 
-## 2026-09-01 result
+## 2026-10-26 result
 
-All 20 scans passed with no Critical or Serious violations.
+All 36 Playwright cases passed, covering 66 axe scans with no Critical or Serious
+violations: 20 first-visit tab/theme/layout scans and 46 opened-state scans.
 
 The dark and mobile audit also caught and remediated low-contrast mobile disclaimer
 text and light-theme tinted export controls. The existing desktop audit remains a
@@ -46,4 +71,5 @@ certification. It does not replace manual keyboard, screen-reader, zoom/reflow,
 high-contrast, or reduced-motion review. Moderate and Minor axe findings do not fail
 this gate and should be triaged when they appear. The dark and mobile modes covered
 here are the app's explicit theme and viewport states; arbitrary viewport sizes and
-user-customized palette states remain outside this automated scope.
+unrepresented imported/custom palette combinations remain outside this automated
+scope.
