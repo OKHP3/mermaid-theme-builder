@@ -27,7 +27,13 @@ import {
   downloadTextFile,
   makeFilename,
 } from "@/lib/exporters";
-import { parseGovernanceProfile, GOVERNANCE_PROFILE_TYPE } from "@/lib/governance-profile";
+import {
+  parseGovernanceProfile,
+  GOVERNANCE_PROFILE_TYPE,
+  profileToPortableJson,
+  type GovernanceProfile,
+} from "@/lib/governance-profile";
+import { buildProfileShareUrl } from "@/lib/profile-share";
 import { encodeShareableTheme, paletteToShareablePayload } from "@/lib/persistence";
 import { formatImportError } from "@/lib/importErrorFormat";
 import {
@@ -118,8 +124,11 @@ async function writeToClipboard(text: string) {
     el.value = text;
     document.body.appendChild(el);
     el.select();
-    document.execCommand("copy");
-    document.body.removeChild(el);
+    try {
+      if (!document.execCommand("copy")) throw new Error("Copy failed. Download the JSON instead.");
+    } finally {
+      document.body.removeChild(el);
+    }
   }
 }
 
@@ -139,7 +148,10 @@ interface ComposeTabProps {
   onCustomThemeNameChange: (v: string) => void;
   effectiveThemeName: string;
   userPalettes: Palette[];
-  onSavePalette: (name: string) => void;
+  onSavePalette: (name: string) => void | Promise<boolean>;
+  completeTheme?: GovernanceProfile;
+  onExportLibrary?: () => void;
+  savedThemeCount?: number;
   onImportPalette: (palette: Palette, options?: { suppressToast?: boolean }) => void;
   onDeleteUserPalette: (id: string) => void;
   onShowToast: (msg: ReactNode) => void;
@@ -176,6 +188,7 @@ interface ComposeTabProps {
   onAddMyThemeSlot?: () => void;
   onDeleteMyThemeSlot?: (id: string) => void;
   onExportMyThemeSlot?: (id: string) => void;
+  onImportThemeFile?: (json: string) => void;
   onImportAsNewSlot?: (
     palette: Palette,
     warnings: {
@@ -236,6 +249,9 @@ export function ComposeTab({
   effectiveThemeName,
   userPalettes,
   onSavePalette,
+  completeTheme,
+  onExportLibrary,
+  savedThemeCount = 0,
   onImportPalette,
   onDeleteUserPalette,
   onShowToast,
@@ -261,6 +277,7 @@ export function ComposeTab({
   onDeleteMyThemeSlot = () => {},
   onExportMyThemeSlot = () => {},
   onImportAsNewSlot,
+  onImportThemeFile,
   onImportMyThemeSlot,
   onImportGovernanceProfile,
   onDuplicateMyThemeSlot,
@@ -446,6 +463,21 @@ export function ComposeTab({
   );
 
   const handleCopyShareLink = useCallback(async () => {
+    if (completeTheme) {
+      try {
+        await writeToClipboard(buildProfileShareUrl(completeTheme));
+        setCopiedShare(true);
+        setTimeout(() => setCopiedShare(false), 2000);
+        onShowToast("The complete theme is embedded in the link and visible to recipients.");
+      } catch (error) {
+        onShowToast(
+          error instanceof Error
+            ? error.message
+            : "Could not copy the link. Download theme JSON instead."
+        );
+      }
+      return;
+    }
     const payload = paletteToShareablePayload(selectedPalette, customThemeName, {
       look: look !== "classic" ? look : undefined,
       rendererTarget: rendererTarget || undefined,
@@ -456,18 +488,22 @@ export function ComposeTab({
     await writeToClipboard(url.toString());
     setCopiedShare(true);
     setTimeout(() => setCopiedShare(false), 2000);
-  }, [selectedPalette, customThemeName, look, rendererTarget]);
+  }, [selectedPalette, customThemeName, look, rendererTarget, completeTheme, onShowToast]);
 
   const handleExportJson = useCallback(() => {
     downloadTextFile(
       makeFilename(effectiveThemeName, "theme", "json"),
-      paletteToPortableJson(selectedPalette),
+      completeTheme ? profileToPortableJson(completeTheme) : paletteToPortableJson(selectedPalette),
       "application/json;charset=utf-8"
     );
     onShowToast("Downloaded .theme.json file.");
-  }, [selectedPalette, effectiveThemeName, onShowToast]);
+  }, [selectedPalette, effectiveThemeName, onShowToast, completeTheme]);
 
   const handleExportBundle = useCallback(() => {
+    if (onExportLibrary) {
+      onExportLibrary();
+      return;
+    }
     downloadTextFile(
       `my-palettes.palette-bundle.json`,
       palettesToBundleJson(userPalettes),
@@ -476,7 +512,7 @@ export function ComposeTab({
     onShowToast(
       `Downloaded bundle with ${userPalettes.length} palette${userPalettes.length === 1 ? "" : "s"}.`
     );
-  }, [userPalettes, onShowToast]);
+  }, [userPalettes, onShowToast, onExportLibrary]);
 
   const handleImportClick = useCallback(() => {
     fileInputRef.current?.click();
@@ -487,9 +523,17 @@ export function ComposeTab({
       const file = e.target.files?.[0];
       e.target.value = "";
       if (!file) return;
+      if (file.size > 5_000_000) {
+        onShowToast("The theme file is too large. Keep the original for recovery.");
+        return;
+      }
       onImportDiagnosticsChange(null);
       try {
         const text = await file.text();
+        if (onImportThemeFile) {
+          onImportThemeFile(text);
+          return;
+        }
 
         // Peek at the top-level `type` field to route single vs bundle.
         let topLevelType: string | undefined;
@@ -616,10 +660,10 @@ export function ComposeTab({
     ]
   );
 
-  const handleConfirmSave = useCallback(() => {
+  const handleConfirmSave = useCallback(async () => {
     const trimmed = savePaletteName.trim();
     if (!trimmed) return;
-    onSavePalette(trimmed);
+    if ((await onSavePalette(trimmed)) === false) return;
     setSavePaletteName("");
     setShowSaveDialog(false);
   }, [savePaletteName, onSavePalette]);
@@ -643,7 +687,7 @@ export function ComposeTab({
         </div>
         <div className="workspace-actions">
           <button type="button" className="workspace-button" onClick={openSaveDialog}>
-            Save theme
+            Save a copy
           </button>
           <button type="button" className="workspace-button" onClick={handleExportJson}>
             Export JSON
@@ -684,6 +728,7 @@ export function ComposeTab({
           onDeleteMyThemeSlot={onDeleteMyThemeSlot}
           onExportMyThemeSlot={onExportMyThemeSlot}
           onImportAsNewSlot={onImportAsNewSlot}
+          onImportThemeFile={onImportThemeFile}
           onShowToast={onShowToast}
           onDuplicateMyThemeSlot={onDuplicateMyThemeSlot}
           onRenameMyThemeSlot={onRenameMyThemeSlot}
@@ -1480,15 +1525,28 @@ export function ComposeTab({
                     ))}
                   </div>
                 )}
-                {userPalettes.length > 0 && (
+                {(userPalettes.length > 0 || savedThemeCount > 0) && (
                   <button
                     onClick={handleExportBundle}
                     className="w-full mt-2 text-xs px-2 py-1.5 rounded-md border border-border bg-background hover:bg-muted hover:border-primary/40 font-medium transition-all"
                     title={`Export all ${userPalettes.length} saved palette${userPalettes.length === 1 ? "" : "s"} as a single bundle file`}
                   >
-                    Export All Themes
+                    Download theme library
                   </button>
                 )}
+                <button
+                  className="mt-2 w-full rounded-md border border-border px-2 py-1.5 text-xs"
+                  title="Colors and palette metadata only. Omits typography, destination, and output preferences."
+                  onClick={() =>
+                    downloadTextFile(
+                      makeFilename(effectiveThemeName, "legacy-palette", "json"),
+                      paletteToPortableJson(selectedPalette),
+                      "application/json"
+                    )
+                  }
+                >
+                  Export legacy palette (colors only)
+                </button>
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -1797,10 +1855,11 @@ export function ComposeTab({
               id="save-palette-dialog-title"
               className="text-sm font-semibold text-foreground mb-1"
             >
-              Save as new palette
+              Save a complete theme copy
             </p>
             <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
-              Saves the current colors and theme name as a named palette in your local browser.
+              Saves colors, typography, destination, and output preferences in this browser. Diagram
+              text stays separate.
             </p>
             <input
               type="text"
@@ -1827,7 +1886,7 @@ export function ComposeTab({
                 disabled={!savePaletteName.trim()}
                 className="text-xs px-3 py-1.5 rounded-md bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Save palette
+                Save theme copy
               </button>
             </div>
           </div>

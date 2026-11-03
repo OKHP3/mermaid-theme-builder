@@ -31,6 +31,7 @@ import { encodeShareableTheme } from "@/lib/persistence";
 import { encodeProfileToken } from "@/lib/profile-share";
 import { BRAND_PALETTES } from "@/lib/palettes";
 import { createGovernanceProfile } from "@/lib/governance-profile";
+import { persistedWorkspaceView } from "./helpers/theme-library-view";
 
 const STORAGE_KEY = "mtb.state.v1";
 const FIRST_VISIT_KEY = "mtb.firstVisit";
@@ -51,8 +52,7 @@ async function expectActiveTab(name: string): Promise<void> {
 }
 
 function persistedState(): Record<string, unknown> {
-  const raw = localStorage.getItem(STORAGE_KEY);
-  return raw ? (JSON.parse(raw) as Record<string, unknown>) : {};
+  return persistedWorkspaceView();
 }
 
 beforeAll(() => {
@@ -110,7 +110,7 @@ describe("AppShell first-use route selector integration", () => {
     });
   });
 
-  it("bypasses the selector and applies a shared profile token", async () => {
+  it("bypasses the selector and reviews a shared profile before importing", async () => {
     const profile = createGovernanceProfile(
       {
         id: "my-theme-2",
@@ -127,14 +127,20 @@ describe("AppShell first-use route selector integration", () => {
     render(createElement(AppShell));
 
     expect(screen.queryByRole("heading", { name: "What would you like to do?" })).toBeNull();
+    expect(screen.getByRole("dialog", { name: "Review theme import" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Import as copies" }));
     await waitFor(() => {
       expect(screen.queryByRole("heading", { name: "What would you like to do?" })).toBeNull();
       const state = persistedState();
       expect((state.myThemeSlots as Array<{ name: string }>).map((slot) => slot.name)).toContain(
         "Shared integration profile"
       );
-      expect(state.activeMyThemeSlotId).toBe("my-theme-2");
-      expect(state.rendererTarget).toBe("obsidian");
+      expect(state.activeMyThemeSlotId).toBeNull();
+      expect(
+        (state.myThemeSlots as Array<{ id: string; rendererTarget: string }>).find(
+          (theme) => theme.id === "my-theme-2"
+        )?.rendererTarget
+      ).toBe("obsidian");
     });
   });
 
@@ -168,14 +174,19 @@ describe("AppShell first-use route selector integration", () => {
     expect(screen.queryByRole("heading", { name: "What would you like to do?" })).toBeNull();
     expect(new URL(window.location.href).searchParams.has("theme")).toBe(false);
     expect(new URL(window.location.href).searchParams.has("profile")).toBe(false);
+    fireEvent.click(screen.getByRole("button", { name: "Import as copies" }));
     await waitFor(() => {
       expect(screen.queryByRole("heading", { name: "What would you like to do?" })).toBeNull();
       const state = persistedState();
       expect((state.myThemeSlots as Array<{ name: string }>).map((slot) => slot.name)).toContain(
         "Winning profile share"
       );
-      expect(state.activeMyThemeSlotId).toBe("my-theme-2");
-      expect(state.rendererTarget).toBe("obsidian");
+      expect(state.activeMyThemeSlotId).toBeNull();
+      expect(
+        (state.myThemeSlots as Array<{ id: string; rendererTarget: string }>).find(
+          (theme) => theme.id === "my-theme-2"
+        )?.rendererTarget
+      ).toBe("obsidian");
       expect(state.selectedPaletteId).not.toMatch(/^shared-/);
       expect(
         (state.userPalettes as Array<{ name: string }>).map((palette) => palette.name)

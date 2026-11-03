@@ -20,7 +20,7 @@ vi.mock("@/components/PaletteSelectorBar", () => ({
   },
 }));
 
-import { act, cleanup, render, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { createElement, StrictMode } from "react";
 import { AppShell } from "@/App";
 import { BRAND_PALETTES, type Palette } from "@/lib/palettes";
@@ -46,8 +46,8 @@ function importedPalette(name: string): Palette {
   };
 }
 
-describe("Import as new slot — synchronous reservation", () => {
-  it("reserves distinct slots for two imports before React rerenders and shows one capacity toast", async () => {
+describe("Reviewed imports preserve concurrent candidates", () => {
+  it("retains two pending imports and assigns distinct IDs only after confirmation", async () => {
     render(createElement(StrictMode, null, createElement(AppShell)));
 
     await waitFor(() =>
@@ -60,22 +60,25 @@ describe("Import as new slot — synchronous reservation", () => {
       importAsNewSlot(importedPalette("Second"), cleanWarnings);
     });
 
-    expect(paletteSelectorState.props.myThemeSlots.map((slot: { id: string }) => slot.id)).toEqual([
-      "my-theme-1",
-      "my-theme-2",
-      "my-theme-3",
-    ]);
+    expect(paletteSelectorState.props.myThemeSlots).toHaveLength(0);
+    expect(screen.getByRole("dialog", { name: "Review theme import" }).textContent).toContain(
+      "2 themes"
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Import as copies" }));
+    await waitFor(() => expect(paletteSelectorState.props.myThemeSlots).toHaveLength(2));
     expect(
       new Set(paletteSelectorState.props.myThemeSlots.map((slot: { id: string }) => slot.id)).size
-    ).toBe(3);
+    ).toBe(2);
 
     await act(async () => {
       importAsNewSlot(importedPalette("Third"), cleanWarnings);
+      importAsNewSlot(importedPalette("First"), cleanWarnings);
     });
 
+    fireEvent.click(screen.getByRole("button", { name: "Import as copies" }));
+    await waitFor(() => expect(paletteSelectorState.props.myThemeSlots).toHaveLength(4));
     expect(
-      screen.getAllByText("All 3 My Theme slots are in use — delete one before importing.")
-    ).toHaveLength(1);
-    expect(paletteSelectorState.props.myThemeSlots).toHaveLength(3);
+      new Set(paletteSelectorState.props.myThemeSlots.map((slot: { id: string }) => slot.id)).size
+    ).toBe(4);
   });
 });

@@ -69,6 +69,15 @@ test("selected example persists across a page reload", async ({ page }) => {
   // Confirm it is now selected before reloading.
   const labelBefore = await getSelectedExampleLabel(page);
   expect(labelBefore.trim()).toBe(NON_DEFAULT_LABEL);
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          JSON.parse(localStorage.getItem("mtb.state.v2") ?? "null")?.editorSession.preferences
+            .lastSelectedExampleId
+      )
+    )
+    .toBe(NON_DEFAULT_ID);
 
   // Reload the page — the App re-mounts and hydrates from localStorage.
   await page.reload();

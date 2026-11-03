@@ -18,4 +18,26 @@ beforeEach(() => {
   if (typeof window.sessionStorage !== "undefined") {
     window.sessionStorage.clear();
   }
+  // Happy DOM does not implement Web Locks. Model exclusive ordering for unit
+  // tests; real multi-tab locking is separately exercised in browser tests.
+  if (!window.navigator) return;
+  let tail = Promise.resolve();
+  Object.defineProperty(window.navigator, "locks", {
+    configurable: true,
+    value: {
+      request: async (_name: string, _options: unknown, work: () => unknown) => {
+        const previous = tail;
+        let release!: () => void;
+        tail = new Promise<void>((resolve) => {
+          release = resolve;
+        });
+        await previous;
+        try {
+          return await work();
+        } finally {
+          release();
+        }
+      },
+    },
+  });
 });

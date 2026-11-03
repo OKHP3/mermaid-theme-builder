@@ -1,5 +1,16 @@
 ## [Unreleased]
 
+### Added
+- Complete local themes with isolated appearance, typography, destination, export, and provenance settings.
+- Explicit save and copy actions, recoverable drafts, searchable collections, reviewed imports, complete share links, and saved-library backup and restore.
+- Additive legacy recovery, verified browser writes, cross-tab conflict protection, and separately labeled workspace recovery downloads.
+
+### Changed
+- Remove the three-theme limit while preserving existing diagram, preview, export, and legacy import workflows.
+- Export complete theme JSON from Apply and Compose. Keep the color-only legacy export separately labeled.
+
+These Increment 2 changes are a review candidate, not a released version.
+
 ---
 
 ## [0.8.0] - 2026-11-03

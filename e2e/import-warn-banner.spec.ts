@@ -119,6 +119,10 @@ async function openComposeAndImport(page: Page, json: string): Promise<void> {
     mimeType: "application/json",
     buffer: Buffer.from(json),
   });
+  const review = page.getByRole("dialog", { name: "Review theme import" });
+  await expect(review).toBeVisible();
+  await review.getByRole("button", { name: "Import as copies", exact: true }).click();
+  await expect(review).not.toBeVisible();
 }
 
 // ---------------------------------------------------------------------------
@@ -133,7 +137,7 @@ test.describe("Import success toast", () => {
 
     const toast = page.locator('[role="status"]');
     await expect(toast).toBeVisible({ timeout: 4_000 });
-    await expect(toast).toContainText('Imported "Clean Import Test" into "My Theme 1".');
+    await expect(toast).toContainText("Imported 1 complete theme");
 
     // AppShell clears every toast after 2.5 s. Keep a 1 s buffer to avoid
     // making the assertion depend on timer scheduling at the threshold.
@@ -149,7 +153,7 @@ test.describe("Import success toast", () => {
 
     const toast = page.locator('[role="status"]');
     await expect(toast).toBeVisible({ timeout: 4_000 });
-    await expect(toast).toHaveText("Imported 2 palettes from bundle.");
+    await expect(toast).toContainText("Imported 2 complete themes");
     await expect(toast).not.toContainText("Imported palette:");
 
     // AppShell clears every toast after 2.5 s. Keep a 1 s buffer to avoid

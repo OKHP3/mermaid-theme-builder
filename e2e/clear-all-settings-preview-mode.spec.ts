@@ -45,6 +45,10 @@ test("Clear all settings removes the saved preview mode and a reload starts from
 
   await page.getByRole("button", { name: "Settings", exact: true }).click();
   await page.getByRole("menuitem", { name: "Clear all settings", exact: true }).click();
+  await page
+    .getByRole("dialog", { name: "Clear this workspace?" })
+    .getByRole("button", { name: "Confirm clear workspace", exact: true })
+    .click();
 
   // clearPersistedState removes this dedicated key synchronously.
   await expect

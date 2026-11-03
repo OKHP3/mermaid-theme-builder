@@ -19,7 +19,7 @@ for (const width of [320, 390, 1280]) {
     );
     if (width < 768) {
       await page.getByRole("button", { name: "Choose theme" }).click();
-      await expect(page.locator("#apply-palette-tile-my-theme-1")).toBeVisible();
+      await expect(page.locator("#apply-palette-tile-overkill-hill")).toBeVisible();
       await page.getByRole("button", { name: "Edit diagram code" }).click();
     }
     await expect(source).toHaveValue("flowchart LR\n A[Start] --> B[Done]");
@@ -34,7 +34,9 @@ test("Studio actions preserve current work and keep save keyboard-operable", asy
   await expect(page).toHaveURL(/#compose$/);
   await page.getByRole("button", { name: "Export Theme", exact: true }).click();
   await page.getByLabel("My Theme's Name", { exact: true }).fill("Review theme");
-  const save = page.getByRole("button", { name: "Save theme", exact: true });
+  const save = page
+    .getByRole("tabpanel", { name: "Compose", exact: true })
+    .getByRole("button", { name: "Save a copy", exact: true });
   await save.click();
   await expect(page.getByLabel("New theme name")).toBeFocused();
   await page.getByLabel("New theme name").press("Shift+Tab");
@@ -48,8 +50,18 @@ test("Studio actions preserve current work and keep save keyboard-operable", asy
   await expect(page.getByLabel("Mermaid diagram code input")).toHaveValue(source);
   await expect(page.getByRole("heading", { name: "Review theme", exact: true })).toBeVisible();
   await expect
-    .poll(() => page.evaluate(() => JSON.parse(localStorage.getItem("mtb.state.v1")!).inputCode))
-    .toBe(source);
+    .poll(() =>
+      page.evaluate(() => {
+        const state = JSON.parse(localStorage.getItem("mtb.state.v2")!);
+        return [
+          state.editorSession.inputCode,
+          state.drafts.find(
+            (draft: { id: string }) => draft.id === state.editorSession.selectedPaletteId
+          )?.name,
+        ];
+      })
+    )
+    .toEqual([source, "Review theme"]);
   await page.reload();
   await expect(page.getByLabel("Mermaid diagram code input")).toHaveValue(source);
   await expect(page.getByRole("heading", { name: "Review theme", exact: true })).toBeVisible();

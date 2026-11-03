@@ -4,6 +4,7 @@ import type { Palette, ThemeColor } from "@/lib/palettes";
 import { isExtractedPaletteId } from "@/lib/extractor";
 import { parsePortablePalette } from "@/lib/exporters";
 import { formatImportError } from "@/lib/importErrorFormat";
+import { ThemeDialog } from "./ThemeLibraryStatus";
 
 const SWATCH_INDICES = [0, 3, 4, 6];
 
@@ -26,6 +27,7 @@ interface PaletteSelectorBarProps {
       warnValues: Array<{ key: string; value: string }>;
     }
   ) => void;
+  onImportThemeFile?: (json: string) => void;
   onShowToast: (msg: ReactNode) => void;
   onDuplicateMyThemeSlot?: (id: string) => string | null | void;
   onRenameMyThemeSlot?: (id: string, newName: string) => void;
@@ -48,6 +50,7 @@ export function PaletteSelectorBar({
   onDeleteMyThemeSlot,
   onExportMyThemeSlot,
   onImportAsNewSlot,
+  onImportThemeFile,
   onShowToast,
   onDuplicateMyThemeSlot,
   onRenameMyThemeSlot,
@@ -56,6 +59,10 @@ export function PaletteSelectorBar({
   onShowProfileDetails,
 }: PaletteSelectorBarProps) {
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const [themeSearch, setThemeSearch] = useState("");
+  const visibleThemes = myThemeSlots.filter((theme) =>
+    theme.name.toLocaleLowerCase("en-US").includes(themeSearch.trim().toLocaleLowerCase("en-US"))
+  );
   const [editingSlotId, setEditingSlotId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState("");
   const [pendingRenameId, setPendingRenameId] = useState<string | null>(null);
@@ -122,15 +129,22 @@ export function PaletteSelectorBar({
 
   type NavItem = { type: "slot"; id: string } | { type: "palette"; id: string };
   const navItems: NavItem[] = [
-    ...myThemeSlots.map((s) => ({ type: "slot" as const, id: s.id })),
+    ...visibleThemes.map((s) => ({ type: "slot" as const, id: s.id })),
     ...allPalettes.map((p) => ({ type: "palette" as const, id: p.id })),
   ];
   const currentNavId = activeMyThemeSlotId ?? selectedPaletteId;
   const navLen = navItems.length;
+  const tabStopId = navItems.some((item) => item.id === currentNavId)
+    ? currentNavId
+    : navItems[0]?.id;
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
-      const idx = navItems.findIndex((item) => item.id === currentNavId);
+      const focused = (e.target as HTMLElement).closest('[role="radio"]')?.id;
+      const focusedId = focused?.startsWith(`${tileIdPrefix}-`)
+        ? focused.slice(tileIdPrefix.length + 1)
+        : currentNavId;
+      const idx = navItems.findIndex((item) => item.id === focusedId);
       if (idx < 0) return;
       let nextIdx: number | null = null;
       if (e.key === "ArrowRight" || e.key === "ArrowDown") {
@@ -159,9 +173,7 @@ export function PaletteSelectorBar({
         }
       }
     },
-    // navItems is rebuilt each render so use navLen + currentNavId for dep stability
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [currentNavId, navLen, onSelectMyThemeSlot, onSelectPalette, tileIdPrefix]
+    [currentNavId, navItems, navLen, onSelectMyThemeSlot, onSelectPalette, tileIdPrefix]
   );
 
   const pendingSlot = pendingDeleteId ? myThemeSlots.find((s) => s.id === pendingDeleteId) : null;
@@ -170,28 +182,43 @@ export function PaletteSelectorBar({
     <>
       <div className="flex-none border-b border-border bg-card/30 px-3 py-2 print-hide">
         <div
+          className={`mb-2 ${myThemeSlots.length > 3 ? "flex" : "hidden md:flex"} flex-wrap items-center gap-2 text-xs`}
+        >
+          <span className="font-semibold">My themes ({myThemeSlots.length})</span>
+          <input
+            aria-label="Search my themes"
+            type="search"
+            value={themeSearch}
+            onChange={(event) => setThemeSearch(event.target.value)}
+            placeholder="Search my themes"
+            className="min-w-0 max-w-full rounded-md border border-border bg-background px-2 py-1"
+          />
+          {themeSearch && !visibleThemes.length && <span role="status">No matching themes</span>}
+        </div>
+        <div
           role="radiogroup"
           aria-label="Palette selector"
           className="flex gap-1 overflow-x-auto pb-0.5 scrollbar-thin"
           onKeyDown={handleKeyDown}
         >
           {/* My Theme slot tiles */}
-          {myThemeSlots.map((slot, slotIndex) => {
+          {visibleThemes.map((slot) => {
+            const slotIndex = myThemeSlots.findIndex((item) => item.id === slot.id);
             const swatchColors = SWATCH_INDICES.map((i) => slot.colors[i]?.value ?? "#888");
             const isActive = activeMyThemeSlotId === slot.id;
             const displayName =
               slot.name.length > 15 ? slot.name.slice(0, 14) + "\u2026" : slot.name;
             const isFirst = slotIndex === 0;
             const isLast = slotIndex === myThemeSlots.length - 1;
-            const slotsFull = myThemeSlots.length >= 3;
             const isEditing = editingSlotId === slot.id;
             return (
               <div key={slot.id} className="relative flex-none group/slot">
                 <button
                   id={`${tileIdPrefix}-${slot.id}`}
                   role="radio"
+                  aria-label={`${slot.name} Mine`}
                   aria-checked={isActive}
-                  tabIndex={isActive ? 0 : -1}
+                  tabIndex={tabStopId === slot.id ? 0 : -1}
                   onClick={() => onSelectMyThemeSlot(slot.id)}
                   title={slot.name}
                   className={`flex flex-col items-center gap-1 px-2 pt-1.5 pb-5 pr-5 rounded-lg transition-all border focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
@@ -326,9 +353,8 @@ export function PaletteSelectorBar({
                       const newSlotId = onDuplicateMyThemeSlot?.(slot.id);
                       if (typeof newSlotId === "string") setPendingRenameId(newSlotId);
                     }}
-                    disabled={slotsFull}
                     aria-label={`Duplicate ${slot.name}`}
-                    title={slotsFull ? "All 3 slots in use" : `Duplicate ${slot.name}`}
+                    title={`Duplicate ${slot.name}`}
                     className="p-0.5 rounded text-muted-foreground hover:text-foreground hover:bg-muted/60 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-muted-foreground focus-visible:outline focus-visible:outline-1 focus-visible:outline-primary transition-colors"
                   >
                     <svg viewBox="0 0 16 16" fill="none" className="w-3 h-3" aria-hidden="true">
@@ -398,8 +424,8 @@ export function PaletteSelectorBar({
             );
           })}
 
-          {/* Add slot button — hidden once 3 slots exist */}
-          {myThemeSlots.length < 3 && (
+          {/* Create a draft without an arbitrary collection limit. */}
+          {
             <button
               type="button"
               onClick={onAddMyThemeSlot}
@@ -417,10 +443,10 @@ export function PaletteSelectorBar({
               </svg>
               <span className="text-[9px] leading-none font-medium whitespace-nowrap">Add</span>
             </button>
-          )}
+          }
 
-          {/* Import JSON as new slot button — hidden once 3 slots exist */}
-          {myThemeSlots.length < 3 ? (
+          {/* Import files through the complete-theme review flow. */}
+          {
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
@@ -439,24 +465,7 @@ export function PaletteSelectorBar({
               </svg>
               <span className="text-[9px] leading-none font-medium whitespace-nowrap">Import</span>
             </button>
-          ) : (
-            <span
-              aria-disabled="true"
-              title="All 3 slots are in use — delete one to import"
-              className="flex-none flex flex-col items-center justify-center gap-1 px-2 py-1.5 rounded-lg border border-dashed border-border/30 text-muted-foreground/50 cursor-not-allowed"
-            >
-              <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4" aria-hidden="true">
-                <path
-                  d="M8 11V3M5 6l3-3 3 3M3 13h10"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-              <span className="text-[9px] leading-none font-medium whitespace-nowrap">Import</span>
-            </span>
-          )}
+          }
 
           {/* Faint divider between My Theme section and built-in presets */}
           {myThemeSlots.length > 0 && (
@@ -483,7 +492,7 @@ export function PaletteSelectorBar({
                 id={`${tileIdPrefix}-${p.id}`}
                 role="radio"
                 aria-checked={isSelected}
-                tabIndex={isSelected ? 0 : -1}
+                tabIndex={tabStopId === p.id ? 0 : -1}
                 onClick={() => onSelectPalette(p.id)}
                 title={p.description}
                 className={`flex-none flex flex-col items-center gap-1 px-2 py-1.5 rounded-lg transition-all border focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
@@ -525,48 +534,41 @@ export function PaletteSelectorBar({
 
         {/* Delete confirmation dialog */}
         {pendingSlot && (
-          <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
-            onClick={() => setPendingDeleteId(null)}
+          <ThemeDialog
+            title={`Delete "${pendingSlot.name}"?`}
+            onClose={() => setPendingDeleteId(null)}
           >
-            <div
-              className="bg-card border border-border rounded-xl shadow-xl p-5 w-64 mx-4"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <p className="text-sm font-semibold text-foreground mb-1">
-                Delete &ldquo;{pendingSlot.name}&rdquo;?
-              </p>
-              <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
-                This workspace and its colors will be permanently removed.
-              </p>
-              <div className="flex flex-col gap-2">
-                <button
-                  type="button"
-                  onClick={() => onExportMyThemeSlot(pendingSlot.id)}
-                  className="w-full text-xs px-3 py-2 rounded-md border border-border hover:bg-muted/60 text-foreground font-medium transition-colors text-left"
-                >
-                  Export JSON first
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    onDeleteMyThemeSlot(pendingSlot.id);
-                    setPendingDeleteId(null);
-                  }}
-                  className="w-full text-xs px-3 py-2 rounded-md bg-destructive hover:bg-destructive/90 text-destructive-foreground font-semibold transition-colors"
-                >
-                  Delete
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setPendingDeleteId(null)}
-                  className="w-full text-xs px-3 py-2 rounded-md hover:bg-muted/60 text-muted-foreground font-medium transition-colors"
-                >
-                  Cancel
-                </button>
-              </div>
+            <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
+              This theme and its draft will be removed from the current library. Export JSON first
+              to keep a copy. Diagram text will not change.
+            </p>
+            <div className="flex flex-col gap-2">
+              <button
+                type="button"
+                onClick={() => onExportMyThemeSlot(pendingSlot.id)}
+                className="w-full text-xs px-3 py-2 rounded-md border border-border hover:bg-muted/60 text-foreground font-medium transition-colors text-left"
+              >
+                Export JSON first
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  onDeleteMyThemeSlot(pendingSlot.id);
+                  setPendingDeleteId(null);
+                }}
+                className="w-full text-xs px-3 py-2 rounded-md bg-destructive hover:bg-destructive/90 text-destructive-foreground font-semibold transition-colors"
+              >
+                Delete
+              </button>
+              <button
+                type="button"
+                onClick={() => setPendingDeleteId(null)}
+                className="w-full text-xs px-3 py-2 rounded-md hover:bg-muted/60 text-muted-foreground font-medium transition-colors"
+              >
+                Cancel
+              </button>
             </div>
-          </div>
+          </ThemeDialog>
         )}
       </div>
 
@@ -581,8 +583,16 @@ export function PaletteSelectorBar({
           const file = e.target.files?.[0];
           e.target.value = "";
           if (!file) return;
+          if (file.size > 5_000_000) {
+            onShowToast("The theme file is too large. Keep the original for recovery.");
+            return;
+          }
           try {
             const text = await file.text();
+            if (onImportThemeFile) {
+              onImportThemeFile(text);
+              return;
+            }
             const result = parsePortablePalette(text);
             if (!result.ok) {
               onShowToast(`Import failed: ${result.error}`);

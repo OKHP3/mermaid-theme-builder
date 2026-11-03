@@ -37,7 +37,7 @@ Visual governance for AI-generated Mermaid diagrams — paste, theme, preview, a
 ### Theme-first workspace
 
 Start in **Compose** to build a reusable visual style. The active theme name,
-**Save theme**, **Export JSON**, and **Use theme** actions stay together above
+**Save a copy**, **Export JSON**, and **Use theme** actions stay together above
 the sample preview. A compact sample is the default for new sessions; valid
 saved sample choices are retained.
 
@@ -47,11 +47,19 @@ On mobile, **Theme**, **Preview**, and **Code** focus on one task at a time.
 Compatibility guidance includes input, family, look, and destination advisories.
 A local preview does not validate an external renderer.
 
-This increment keeps existing saved themes, storage keys, import/export
-formats, and all five hash links. It does not migrate profiles or remove the
-three-slot limit. Save and JSON export retain their existing palette contracts;
-complete profile persistence is a separate increment. Browser-local storage is
-not a backup.
+The Increment 2 review candidate adds complete saved themes, separate automatic
+drafts, search, and a library without the former three-theme count limit.
+**Save changes** updates a named theme; **Save as copy** creates an independent
+theme. Switching a dirty theme offers Save, Keep draft, Discard, or Cancel.
+Theme selection never replaces your diagram text.
+
+The new library is additive: the original browser snapshot is retained unchanged.
+Complete-theme JSON and links include typography, destination, and output
+preferences. Legacy palette files and links remain readable. **Library backup**
+downloads saved themes without diagram text; **workspace recovery** explicitly
+includes diagram text and drafts. Browser-local storage is not a backup.
+See [complete themes and recovery](docs/complete-themes.md) for compatibility and
+rollback limits. This candidate is not release or deployment evidence.
 
 | Tab | Purpose |
 |-----|---------|

@@ -638,6 +638,12 @@ Any change that breaks this flow is a defect, regardless of other intent.
 
 #### 9.4 Mermaid dependency governance
 
+Increment 2 is an unreleased review candidate for complete local themes. Its
+additive `mtb.state.v2` library preserves `mtb.state.v1`, separates drafts from
+named saves, and requires explicit owner preview approval before merge or
+release. See `docs/complete-themes.md`. Package version and Mermaid pins remain
+unchanged in this candidate.
+
 - Mermaid is used as an npm dependency (currently `12.2.0` -- pinned exactly).
 - Do not fork Mermaid. Do not copy Mermaid source into this repo.
 - Dependency updates must be reviewed and tested before release.
