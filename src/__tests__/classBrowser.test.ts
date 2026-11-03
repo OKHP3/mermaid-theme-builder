@@ -170,7 +170,7 @@ describe("ClassBrowser — supportsClassDef={true} (active state)", () => {
     const html = render({ supportsClassDef: true });
 
     function cardHtml(name: string): string {
-      const cardStart = html.indexOf(`aria-label="Copy usage ${name} `);
+      const cardStart = html.indexOf(`title="Click to copy :::${name}"`);
       expect(cardStart, `card for ${name}`).toBeGreaterThanOrEqual(0);
       const cardEnd = html.indexOf("</button>", cardStart);
       expect(cardEnd, `end of card for ${name}`).toBeGreaterThan(cardStart);
@@ -210,7 +210,7 @@ describe("ClassBrowser — supportsClassDef={true} (active state)", () => {
     });
 
     function cardHtml(name: string): string {
-      const buttonStart = html.indexOf(`aria-label="Copy usage ${name} `);
+      const buttonStart = html.indexOf(`title="Click to copy :::${name}"`);
       expect(buttonStart, `card for ${name}`).toBeGreaterThanOrEqual(0);
       const cardStart = html.lastIndexOf("<div", buttonStart);
       expect(cardStart, `outer card for ${name}`).toBeGreaterThanOrEqual(0);
@@ -241,12 +241,18 @@ describe("ClassBrowser — supportsClassDef={true} (active state)", () => {
 
   it("card copy-usage button is present (native button element)", () => {
     const html = render({ supportsClassDef: true });
-    expect(html).toContain('aria-label="Copy usage primary ');
+    expect(html).toContain('title="Click to copy :::primary"');
   });
 
   it("includes the visible class name, description, and token in the button name", () => {
     const html = render({ supportsClassDef: true });
-    expect(html).toContain('aria-label="Copy usage primary Primary node style :::primary"');
+    const start = html.indexOf('title="Click to copy :::primary"');
+    const button = html.slice(start, html.indexOf("</button>", start));
+    expect(button).toContain('class="sr-only">Copy usage ');
+    expect(button).toContain("Primary node style");
+    expect(button).toContain(":::primary");
+    expect(button).not.toContain("aria-hidden");
+    expect(button).not.toContain("aria-label");
   });
 });
 

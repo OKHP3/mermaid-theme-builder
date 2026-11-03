@@ -549,7 +549,7 @@ export function ReferenceTab({
                 type="button"
                 onClick={handleClickShareLink}
                 disabled={!onCopyShareLink}
-                aria-label="Copy profile share link to clipboard"
+                title="Copy profile share link to clipboard"
                 className={`shrink-0 flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1.5 rounded border transition-colors ${
                   shareLinked
                     ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30"
@@ -571,6 +571,7 @@ export function ReferenceTab({
                     Copy link
                   </>
                 )}
+                <span className="sr-only"> for this profile</span>
               </button>
             </div>
 

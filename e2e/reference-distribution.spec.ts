@@ -250,18 +250,14 @@ test.describe("Reference distribution center", () => {
     await gotoTab(page, "reference", EMPTY_SLOTS_STATE);
     await openDistribution(page);
 
-    await expect(
-      page.getByRole("button", { name: "Copy profile share link to clipboard" })
-    ).toBeDisabled();
+    await expect(page.getByRole("button", { name: "Copy link for this profile" })).toBeDisabled();
   });
 
   test("enables profile sharing when a My Theme slot is active", async ({ page }) => {
     await gotoTab(page, "reference");
     await openDistribution(page);
 
-    await expect(
-      page.getByRole("button", { name: "Copy profile share link to clipboard" })
-    ).toBeEnabled();
+    await expect(page.getByRole("button", { name: "Copy link for this profile" })).toBeEnabled();
   });
 
   test("copies a profile link that restores the same slot and renderer settings in a new session", async ({
@@ -273,12 +269,12 @@ test.describe("Reference distribution center", () => {
     await gotoTab(page, "apply", ACTIVE_PROFILE_STATE);
     await openDistribution(page);
 
-    const copyProfileLink = page.getByRole("button", {
-      name: "Copy profile share link to clipboard",
-    });
+    const copyProfileLink = page.getByTitle("Copy profile share link to clipboard");
     await expect(copyProfileLink).toBeEnabled();
+    await expect(copyProfileLink).toHaveAccessibleName("Copy link for this profile");
     await copyProfileLink.click();
     await expect(copyProfileLink).toContainText("Copied");
+    await expect(copyProfileLink).toHaveAccessibleName("Copied! for this profile");
 
     const sharedUrl = await page.evaluate(() => navigator.clipboard.readText());
     const parsedSharedUrl = new URL(sharedUrl);
