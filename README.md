@@ -44,7 +44,7 @@ Visual governance for AI-generated Mermaid diagrams — paste, theme, preview, a
 
 ---
 
-## Looks (Mermaid v12.0.0)
+## Looks (Mermaid v12.2.0)
 
 The app requires an ES2024-capable browser, including Safari 17.4 or newer.
 Renderer destinations may use different Mermaid versions; validate exported
@@ -154,13 +154,18 @@ pnpm test:e2e
 
 | Layer | Technology |
 |-------|-----------|
-| Framework | React 19 + Vite 8 |
-| Styling | Tailwind CSS v4 |
-| Rendering | Mermaid.js 12.0.0 |
-| Type checking | TypeScript 7.0 (strict) |
-| Testing | Vitest 4 |
-| Package manager | pnpm 11 (workspaces) |
+| Framework | React 19.3.1 + Vite 8.3.5 |
+| Styling | Tailwind CSS 4.3.3 |
+| Rendering | Mermaid.js 12.2.0 |
+| Type checking | TypeScript 7.0.2 (strict) |
+| Testing | Vitest 5.0.5 + Playwright 1.64.1 |
+| Package manager | pnpm 12.16.1 (workspaces) |
 | Hosting | GitHub Pages (static) |
+
+See [stable foundation maintenance](docs/foundation-maintenance.md) for the daily
+update proposal workflow, release-age policy, CI runtime pins, and Replit host
+compatibility holds. The complete version audit is generated from every tracked
+package manifest and the lockfile; older dated inventories remain historical.
 
 ---
 

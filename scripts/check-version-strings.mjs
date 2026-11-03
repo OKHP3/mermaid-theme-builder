@@ -68,6 +68,12 @@ check(
   new RegExp(`MERMAID_VERSION_VERIFIED\\s*=\\s*\"${String(mermaid).replace(/\./g, "\\.")}\"`),
   "Review official release notes and rendering regressions before updating MERMAID_VERSION_VERIFIED."
 );
+check(
+  "README rendering stack matches the vendor pin",
+  "README.md",
+  new RegExp(`\\| Rendering \\| Mermaid\\.js ${String(mermaid).replace(/\./g, "\\.")} \\|`),
+  "Update the current README stack after completing the Mermaid compatibility review."
+);
 
 if (!version) {
   console.error("Could not read version from package.json");
