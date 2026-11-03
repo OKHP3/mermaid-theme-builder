@@ -509,8 +509,9 @@ Replit Agent:
 
 #### 9.0 Project context snapshot
 
-Verified 2026-10-26 from the repository layout, manifests, source entry points,
-workflow definitions, documentation, and recent Git history.
+Foundation and release status verified 2026-11-02 from repository evidence,
+PR #131 checks, GitHub Pages, and Replit Free acceptance. Architecture context
+retains the 2026-10-26 baseline.
 
 - **Identity and purpose, confirmed:** Mermaid Theme Builder is a personal
   OverKill Hill P3 browser tool for applying renderer-aware visual themes to
@@ -527,10 +528,12 @@ workflow definitions, documentation, and recent Git history.
   utility.
 - **Current status, confirmed:** The root package is version `0.7.0`, and the
   application source plus CI and GitHub Pages deployment workflows are present.
-  Version `0.7.0` prepares the reviewed Mermaid 12 compatibility release, with
-  explicit appearance defaults and limited use case beta detection. Shipping
-  status is recorded in PR128 and the release record, not inferred from this
-  source version. Broader Governance Profiles work and `1.0.0` remain planned.
+  Version `0.7.0` was published from `fd03013` after PR #131 passed its required
+  checks and Replit Free acceptance. Pages deployment and the live version were
+  verified. Mermaid is pinned to `12.2.0`, with explicit appearance defaults
+  and limited use case beta detection. The post-release repeat-install policy
+  fix is tracked in PR #133. Broader Governance Profiles work and `1.0.0`
+  remain planned.
 - **Architecture, confirmed:** The root package is the application. The
   workspace also contains a thin Replit artifact package. Runtime diagram
   processing is browser-only, with local browser persistence and no backend,
@@ -556,6 +559,9 @@ workflow definitions, documentation, and recent Git history.
   The current exact-pin proposal workflow is `foundation-updates.yml`; see
   `docs/foundation-maintenance.md`. CI runtime pins are `.node-version` and
   `.python-version`; Replit host selectors are separately verified.
+  On 2026-11-02, both hosted maintenance workflows completed successfully.
+  The updater proposed zero eligible changes; the audit retained the explicit
+  release-age and Replit host migration holds in review issue #83.
 
 #### 9.1 Project identity and brand firewall
 

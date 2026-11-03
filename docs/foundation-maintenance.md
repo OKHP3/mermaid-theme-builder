@@ -94,6 +94,14 @@ CI's Node 26 target does not prove Replit Node 26 support. Python 3.11 and the
 Replit Nix channel also remain host migration items, not silently edited to
 unverified module names. No paid mode or deployment was used.
 
+Release acceptance subsequently passed at review head `66eebf2`: Replit's
+managed preview rendered a themed flowchart and produced Classic/Dagre export
+code. PR #131 merged to `fd03013`, v0.7.0 was published, and Pages plus the live
+app were verified. Replit's clean main was fast-forwarded to that release.
+A repeat frozen install exposed the intentionally skipped Git-hook setup;
+PR #133's explicit deny policy passed two consecutive frozen installs on the
+existing Replit workspace without enabling dependency scripts.
+
 ## Security and acceptance
 
 The upgrade patches source-map-js to 1.2.2, the legacy PostCSS selector parser
