@@ -86,8 +86,10 @@ test("complete themes remain isolated through save, switch, reload, and three di
   await expect.poll(async () => (await readLibrary(page)).themes[0].fontSize).toBe("28px");
   await compose.getByRole("radio", { name: "Theme B Mine", exact: true }).click();
   await expect(page.getByLabel("Custom font size", { exact: true })).toHaveValue("14px");
+  await expect.poll(async () => (await readLibrary(page)).editorSession.activeThemeId).toBe(b.id);
   await compose.getByRole("radio", { name: "Theme A Mine", exact: true }).click();
   await expect(page.getByLabel("Custom font size", { exact: true })).toHaveValue("28px");
+  await expect.poll(async () => (await readLibrary(page)).editorSession.activeThemeId).toBe(a.id);
   await page.reload();
   await expect(page.getByRole("region", { name: "Theme library status" })).toContainText(
     "Saved on this browser"
