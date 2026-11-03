@@ -67,7 +67,11 @@ export function FamilySyntaxHint({ family, resetToken, onDismiss }: FamilySyntax
             <p className="forge-eyebrow text-sky-700 dark:text-sky-300/80 mb-1">
               {hint.family} syntax
             </p>
-            <pre className="text-[10px] leading-relaxed text-foreground/80 font-mono whitespace-pre overflow-x-auto scrollbar-thin">
+            <pre
+              tabIndex={0}
+              aria-label={`${hint.family} syntax example`}
+              className="text-[10px] leading-relaxed text-foreground/80 font-mono whitespace-pre overflow-x-auto scrollbar-thin"
+            >
               {hint.keyIdiom}
             </pre>
           </div>

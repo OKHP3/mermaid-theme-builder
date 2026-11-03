@@ -4,9 +4,9 @@
  * Tests for the Theme Preview diagram picker (ComposeTab.tsx lines 244–271).
  *
  * Behaviors covered:
- *   1. Default selection resolves to EXAMPLE_CATALOG[0].id ("compose-instructions") when localStorage is empty.
+ *   1. Default selection resolves to the compact starter ID ("flowchart-basic") when localStorage is empty.
  *   2. Changing the selection writes to localStorage key "mtb.compose.previewSampleId".
- *   3. An unknown stored id falls back gracefully to EXAMPLE_CATALOG[0] without throwing.
+ *   3. An unknown stored id falls back gracefully to the compact starter without throwing.
  *   4. The beta render-confidence hint appears/disappears based on the selected entry's badge.
  *
  * Strategy: render the real ComposeTab with heavily-mocked children so the
@@ -119,18 +119,25 @@ afterEach(() => {
 });
 
 // ---------------------------------------------------------------------------
-// 1. Default selection — empty localStorage → EXAMPLE_CATALOG[0] ("compose-instructions")
+// 1. Default selection: empty localStorage uses the compact starter ("flowchart-basic")
 // ---------------------------------------------------------------------------
 
 describe("previewPicker — default selection", () => {
-  it("the preview select defaults to EXAMPLE_CATALOG[0].id when localStorage is empty", () => {
+  it("preserves a valid saved sample instead of replacing it with the new starter", () => {
+    localStorage.setItem(LS_KEY, "compose-instructions");
     const { container } = renderTab();
-    expect(getPickerSelect(container).value).toBe(EXAMPLE_CATALOG[0].id);
+    expect(getPickerSelect(container).value).toBe("compose-instructions");
+    expect(localStorage.getItem(LS_KEY)).toBe("compose-instructions");
   });
 
-  it("the default id matches EXAMPLE_CATALOG[0].id", () => {
+  it("the preview select defaults to the compact starter ID when localStorage is empty", () => {
     const { container } = renderTab();
-    expect(getPickerSelect(container).value).toBe(EXAMPLE_CATALOG[0].id);
+    expect(getPickerSelect(container).value).toBe("flowchart-basic");
+  });
+
+  it("the default id matches the compact starter ID", () => {
+    const { container } = renderTab();
+    expect(getPickerSelect(container).value).toBe("flowchart-basic");
   });
 
   it("the mocked preview receives the themed code for the default entry on initial render", () => {
@@ -179,7 +186,7 @@ describe("previewPicker — localStorage write on selection change", () => {
 });
 
 // ---------------------------------------------------------------------------
-// 3. Unknown stored id fallback — EXAMPLE_CATALOG[0] used, no throw
+// 3. Unknown stored id fallback: compact starter used, no throw
 // ---------------------------------------------------------------------------
 
 describe("previewPicker — unknown stored id fallback", () => {
@@ -188,27 +195,25 @@ describe("previewPicker — unknown stored id fallback", () => {
     expect(() => renderTab()).not.toThrow();
   });
 
-  it("the mocked preview receives non-empty themed code from the EXAMPLE_CATALOG[0] fallback", () => {
+  it("the mocked preview receives non-empty themed code from the compact starter fallback", () => {
     localStorage.setItem(LS_KEY, "completely-unknown-diagram-id-xyz");
     const { container } = renderTab();
     const preview = getMermaidPreview(container);
-    // sampleEntry falls back to EXAMPLE_CATALOG[0] via the ?? operator.
+    // sampleEntry falls back to the compact starter via the ?? operator.
     // generateThemedCode always prepends %%{init:...} so the code is non-empty and themed.
     const code = preview.getAttribute("data-code") ?? "";
     expect(code.length).toBeGreaterThan(0);
     expect(code).toContain("%%{init:");
-    // Confirm the fallback used flowchart content from EXAMPLE_CATALOG[0], not an error string.
+    // Confirm the fallback used flowchart content from the compact starter, not an error string.
     expect(code).toContain("flowchart");
   });
 
-  it("the select snaps to the first available option when the stale id has no matching <option>", () => {
+  it("the select uses the compact starter when the stored id is stale", () => {
     localStorage.setItem(LS_KEY, "completely-unknown-diagram-id-xyz");
     const { container } = renderTab();
-    // Browser behavior: a controlled <select> whose value prop doesn't match any
-    // <option> renders as if the first option is selected. happy-dom matches this.
-    // So select.value is the first catalog entry, not the unknown string.
+    // Unknown stored IDs resolve before rendering, so label and content agree.
     const select = getPickerSelect(container);
-    expect(select.value).toBe(EXAMPLE_CATALOG[0].id);
+    expect(select.value).toBe("flowchart-basic");
   });
 });
 

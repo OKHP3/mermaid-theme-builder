@@ -68,7 +68,7 @@ async function fetchCompiledCss(page: Page): Promise<string> {
 async function loadApp(page: Page, options?: { inputCode?: string }): Promise<void> {
   await page.addInitScript((inputCode) => {
     window.localStorage.clear();
-      localStorage.setItem("mtb.firstVisit", "true");
+    localStorage.setItem("mtb.firstVisit", "true");
     window.sessionStorage.clear();
     if (inputCode) {
       window.localStorage.setItem(
@@ -144,8 +144,8 @@ test.describe("ClassBrowser preview panel - color-mix opacity rendering", () => 
 
   test("preview header label renders at reduced opacity", async ({ page }) => {
     const colorStr = await page.evaluate(() => {
-      const spans = Array.from(document.querySelectorAll("span"));
-      const span = spans.find((s) => s.textContent?.includes("Preview"));
+      const closeButton = document.querySelector('button[aria-label="Close preview"]');
+      const span = closeButton?.parentElement?.parentElement?.querySelector("span");
       if (!span) return null;
       return window.getComputedStyle(span).color;
     });

@@ -60,6 +60,7 @@ Flat pnpm workspace. The Mermaid Theme Builder is the root application package, 
 **App icon:** Custom "Forked Flow" SVG icon — dark navy bg, cream input node, rust-orange fork connectors, orange themed output node. `src/components/AppIcon.tsx` used in header. PNG rasters generated via `node scripts/generate-icons.mjs` (pngjs, no native deps).
 
 **Design language (OKH P³ Forge):**
+
 - Header: always-dark `#1c3a34` (`.forge-header`) — persists across light/dark mode
 - Background: warm paper token `33 18% 94%` + subtle 28px crosshatch grid
 - Code panels: dark teal `.forge-code-panel` (`#0f1f1c` bg, `#d4c9b5` cream text, JetBrains Mono)
@@ -71,6 +72,8 @@ Flat pnpm workspace. The Mermaid Theme Builder is the root application package, 
 - Fonts: Alfa Slab One (h1), DM Sans (body), JetBrains Mono (code)
 
 **Features:**
+
+- **Theme-first workspace (v0.8.0):** Compose promotes the active theme and existing Save/Export/Use actions. Apply keeps source beside the preview, with focused Theme/Preview/Code views on mobile. Existing routes, storage, imports, and exports are retained; no profile migration is included.
 - Paste Mermaid code → auto-detects diagram family (flowchart, sequence, class, ER, Gantt, pie, etc.)
 - Built-in brand palettes: Overkill Hill, AskJamie, Glee Fully, and utility palettes
 - Two-way live color editor — click color swatches to update, preview updates instantly
@@ -83,6 +86,7 @@ Flat pnpm workspace. The Mermaid Theme Builder is the root application package, 
 - GitHub Pages compatible (pure static build)
 
 **Key source files:**
+
 - `src/lib/palettes.ts` — palette definitions and BUILTIN_PALETTES
 - `src/lib/detector.ts` — diagram family detection
 - `src/lib/theme-engine.ts` — theme application and export generation
@@ -102,6 +106,7 @@ Flat pnpm workspace. The Mermaid Theme Builder is the root application package, 
 - `src/pages/tabs/*.tsx` — Apply, Compose, Examples, Extract, and Reference tabs
 
 **Authoring references (`examples/`):**
+
 - 68 `.mmd` source files - authoring references for diagram content inlined into source data modules
 - Not included in the build; dev/authoring use only
 

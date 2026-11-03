@@ -73,7 +73,7 @@ test("stale preview selection falls back to the default diagram without a suppor
     page.getByRole("tab", { name: "Compose" }).first().click(),
   ]);
 
-  await expect(page.getByLabel("Preview diagram")).toHaveValue(NON_BETA_SAMPLE_ID);
+  await expect(page.getByLabel("Preview diagram")).toHaveValue("flowchart-basic");
   await expect(page.getByRole("note")).not.toBeAttached();
   await expect(page.getByRole("button", { name: "See support details →" })).not.toBeAttached();
 });

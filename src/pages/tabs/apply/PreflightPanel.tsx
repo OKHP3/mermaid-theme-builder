@@ -250,6 +250,7 @@ function StatusIcon({ status }: { status: PreflightItem["status"] }) {
 }
 
 interface PreflightPanelProps {
+  inputWarnings?: string[];
   /** Renderer-target compatibility advisories (dismissible). */
   exportAdvisories: string[];
   advisoryDismissed: boolean;
@@ -270,6 +271,7 @@ interface PreflightPanelProps {
 }
 
 export function PreflightPanel({
+  inputWarnings = [],
   exportAdvisories,
   advisoryDismissed,
   onDismissAdvisory,
@@ -287,23 +289,27 @@ export function PreflightPanel({
 }: PreflightPanelProps) {
   const [expanded, setExpanded] = useState(false);
 
-  // Only renderer advisories are shown here — they are dismissible per session.
-  // Detector warnings and capability notes remain in ExportToolbar so they are
-  // always visible regardless of advisory dismissal.
-  const allIssues = [...exportAdvisories, ...(rendererLookWarning ? [rendererLookWarning] : [])];
+  // Keep every issue reachable from the workspace guidance summary.
+  // ExportToolbar also retains the persistent detector and capability warnings.
+  const report = buildPreflightReport({
+    family,
+    capability,
+    rendererProfile,
+    look,
+    selectedPalette,
+    outputFormat,
+  });
+  const allIssues = inputCode.trim()
+    ? [
+        ...new Set([
+          ...exportAdvisories,
+          ...(rendererLookWarning ? [rendererLookWarning] : []),
+          ...inputWarnings,
+          ...report.items.filter((item) => item.status !== "preserved").map((item) => item.detail),
+        ]),
+      ]
+    : [];
   const hasAnyIssue = allIssues.length > 0;
-
-  // Build the structured report (only needed when expanded)
-  const report = expanded
-    ? buildPreflightReport({
-        family,
-        capability,
-        rendererProfile,
-        look,
-        selectedPalette,
-        outputFormat,
-      })
-    : null;
 
   return (
     <>
@@ -333,7 +339,9 @@ export function PreflightPanel({
             <button
               type="button"
               onClick={() => setExpanded((v) => !v)}
-              aria-label={expanded ? "Collapse preflight report" : "Expand preflight report"}
+              aria-label={
+                expanded ? "Collapse preflight report" : "Expand preflight report details"
+              }
               className="shrink-0 text-[9px] font-medium text-amber-600 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-200 transition-colors px-1.5 py-0.5 rounded border border-amber-500/30 hover:border-amber-500/60"
             >
               {expanded ? "Collapse" : "Details"}
