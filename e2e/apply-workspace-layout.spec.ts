@@ -54,8 +54,8 @@ test("Studio actions preserve current work and keep save keyboard-operable", asy
       page.evaluate(() => {
         const state = JSON.parse(localStorage.getItem("mtb.state.v2")!);
         return [
-          state.editorSession.inputCode,
-          state.drafts.find(
+          state?.editorSession.inputCode,
+          state?.drafts.find(
             (draft: { id: string }) => draft.id === state.editorSession.selectedPaletteId
           )?.name,
         ];
