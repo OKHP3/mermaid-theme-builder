@@ -4,9 +4,10 @@ import { resolve } from "node:path";
 
 // Guard against accidentally bumping the Node.js major version in package.json
 // engines.node, .nvmrc, or .node-version to a value that would break CI runners
-// or the Replit environment.  The project pins Node.js 24 — any other major is a breakage.
+// or the Replit environment. Replit remains on supported Node 24 while CI uses Node 26 LTS.
 
 const REQUIRED_MAJOR = 24;
+const CI_MAJOR = 26;
 
 const ROOT = resolve(import.meta.dirname, "../..");
 
@@ -75,7 +76,7 @@ describe("Node.js version declarations", () => {
   describe(".node-version (optional)", () => {
     const nodeVersion = readOptional(".node-version");
 
-    it(`declares major version ${REQUIRED_MAJOR} when present`, () => {
+    it(`pins the reviewed CI Node ${CI_MAJOR} LTS line`, () => {
       if (nodeVersion === null) return; // file absent — nothing to check
 
       const major = extractMajor(nodeVersion);
@@ -85,9 +86,9 @@ describe("Node.js version declarations", () => {
       ).not.toBeNull();
       expect(
         major,
-        `.node-version major must be ${REQUIRED_MAJOR}, got ${major} (content: "${nodeVersion}"). ` +
-          `Update the expected major in this test only after verifying Node.js ${major} works in the Replit environment.`
-      ).toBe(REQUIRED_MAJOR);
+        `.node-version major must be ${CI_MAJOR}, got ${major}. Review a new LTS major before changing this guard.`
+      ).toBe(CI_MAJOR);
+      expect(nodeVersion).toMatch(/^\d+\.\d+\.\d+$/);
     });
   });
 });

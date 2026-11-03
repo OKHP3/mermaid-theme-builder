@@ -1,0 +1,62 @@
+name: Stable Foundation Updates
+
+on:
+  schedule:
+    - cron: "43 14 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+
+concurrency:
+  group: stable-foundation-updates
+  cancel-in-progress: false
+
+jobs:
+  propose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+      - name: Keep one update proposal open
+        id: pending
+        run: |
+          count=$(gh pr list --state open --search 'in:title "chore: refresh stable foundation pins" author:app/github-actions' --json number --jq length)
+          echo "count=$count" >> "$GITHUB_OUTPUT"
+      - name: Test and resolve stable vendor releases
+        if: steps.pending.outputs.count == '0'
+        run: |
+          node --test scripts/update-foundation.test.mjs
+          node scripts/update-foundation.mjs --apply
+      - name: Resolve and verify the frozen dependency graph
+        if: steps.pending.outputs.count == '0'
+        run: |
+          node scripts/run-pnpm.mjs install --lockfile-only --ignore-scripts
+          node scripts/run-pnpm.mjs install --frozen-lockfile --ignore-scripts
+      - name: Open a review proposal and trigger exact-branch checks
+        if: steps.pending.outputs.count == '0'
+        run: |
+          if git diff --quiet; then
+            echo "Stable foundation pins are current." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          branch="automation/foundation-${GITHUB_RUN_ID}"
+          git switch -c "$branch"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add package.json artifacts/*/package.json pnpm-workspace.yaml pnpm-lock.yaml .node-version .python-version
+          git diff --cached --check
+          git commit -m 'chore: refresh stable foundation pins'
+          git push origin "$branch"
+          gh pr create --base main --head "$branch" --title 'chore: refresh stable foundation pins' --body 'Exact stable vendor tags after a three-day cooldown. Review the complete diff and official release notes. Mermaid updates intentionally fail the version gate until capability metadata and rendering acceptance are reviewed. Major upgrades, runtime changes, and Replit compatibility require review. No auto-merge and no paid Replit action. The four required workflows are explicitly dispatched because GITHUB_TOKEN-created PRs do not trigger pull_request workflows.'
+          for workflow in ci.yml e2e.yml link-check.yml skill-tests.yml; do
+            gh workflow run "$workflow" --ref "$branch"
+          done

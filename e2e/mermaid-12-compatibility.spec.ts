@@ -29,6 +29,16 @@ const cases = [
     code: "usecase-beta\n  actor Reader\n  Read(ReviewUseCase)\n  Reader --> Read",
   },
   { name: "ZenUML adapter", marker: "ReviewActor", code: "zenuml\n  ReviewActor.method()" },
+  {
+    name: "mindmap labels",
+    marker: "ReviewMindmap",
+    code: "mindmap\n  root((ReviewMindmap))\n    First\n    Second",
+  },
+  {
+    name: "circle label sizing",
+    marker: "ReviewCircleLabel",
+    code: "flowchart LR\n  A((ReviewCircleLabel)) --> B(((Done)))",
+  },
 ];
 
 for (const item of cases) {

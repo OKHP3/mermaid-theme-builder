@@ -27,7 +27,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
-          node-version: 24
+          node-version-file: .node-version
 
       - name: Check TypeScript source cross-references
         run: node scripts/check-source-refs.mjs

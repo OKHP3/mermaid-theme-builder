@@ -553,6 +553,9 @@ workflow definitions, documentation, and recent Git history.
   technology workflow audits all tracked package manifests and lockfile entries.
   Dependabot proposes updates; runtime and Mermaid compatibility reviews remain
   required before release. A local edit is not evidence of hosted activation.
+  The current exact-pin proposal workflow is `foundation-updates.yml`; see
+  `docs/foundation-maintenance.md`. CI runtime pins are `.node-version` and
+  `.python-version`; Replit host selectors are separately verified.
 
 #### 9.1 Project identity and brand firewall
 
@@ -627,7 +630,7 @@ Any change that breaks this flow is a defect, regardless of other intent.
 
 #### 9.4 Mermaid dependency governance
 
-- Mermaid is used as an npm dependency (currently `12.0.0` -- pinned exactly).
+- Mermaid is used as an npm dependency (currently `12.2.0` -- pinned exactly).
 - Do not fork Mermaid. Do not copy Mermaid source into this repo.
 - Dependency updates must be reviewed and tested before release.
 - After each Mermaid version upgrade, manually update the constants in
@@ -643,7 +646,7 @@ Mermaid dependency is upgraded:
 
 ```typescript
 // src/data/mermaid-capabilities.ts
-export const MERMAID_VERSION_VERIFIED = "12.0.0";
+export const MERMAID_VERSION_VERIFIED = "12.2.0";
 ```
 
 #### 9.5 App-specific conventions

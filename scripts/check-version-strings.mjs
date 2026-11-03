@@ -18,6 +18,7 @@
 import { readFileSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { parseLockfile, stableVersion } from "./lib/technology-versions.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, "..");
@@ -47,6 +48,26 @@ function check(label, file, pattern, hint) {
 
 const pkg = JSON.parse(read("package.json"));
 const version = pkg.version; // e.g. "0.5.0"
+
+const mermaid = pkg.dependencies?.mermaid;
+const lockfile = parseLockfile(read("pnpm-lock.yaml"));
+if (lockfile.importers["."]?.mermaid !== mermaid) {
+  errors.push("The Mermaid lockfile resolution does not match the exact manifest pin.");
+}
+const prereleases = lockfile.packages.filter((entry) => !stableVersion(entry.current));
+if (prereleases.length) {
+  errors.push(
+    `Prerelease resolutions require review: ${prereleases.map((entry) => `${entry.name}@${entry.current}`).join(", ")}`
+  );
+}
+if (!/^\d+\.\d+\.\d+$/.test(mermaid ?? ""))
+  errors.push("Mermaid must use an exact stable vendor pin.");
+check(
+  "Mermaid capability review matches the vendor pin",
+  "src/data/mermaid-capabilities.ts",
+  new RegExp(`MERMAID_VERSION_VERIFIED\\s*=\\s*\"${String(mermaid).replace(/\./g, "\\.")}\"`),
+  "Review official release notes and rendering regressions before updating MERMAID_VERSION_VERIFIED."
+);
 
 if (!version) {
   console.error("Could not read version from package.json");

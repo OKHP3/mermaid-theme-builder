@@ -18,7 +18,9 @@ updates:
       timezone: "America/Chicago"
     cooldown:
       default-days: 3
-    open-pull-requests-limit: 10
+    # Stable Foundation Updates owns version PRs, including catalog and runtime pins.
+    # Zero disables duplicate version PRs, not Dependabot security updates.
+    open-pull-requests-limit: 0
     groups:
       react-family:
         patterns: ["react", "react-dom", "@types/react", "@types/react-dom"]
