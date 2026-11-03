@@ -27,6 +27,8 @@ export function ColorEditorPanel({
 }: ColorEditorPanelProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
   const openerRef = useRef<HTMLButtonElement | null>(null);
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
 
   // Focus trap + initial focus + restore for the dialog.
   useEffect(() => {
@@ -47,7 +49,7 @@ export function ColorEditorPanel({
 
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        onClose();
+        onCloseRef.current();
         return;
       }
       if (e.key !== "Tab") return;
@@ -78,7 +80,7 @@ export function ColorEditorPanel({
         // ignore
       }
     };
-  }, [onClose]);
+  }, []);
 
   return (
     <>
