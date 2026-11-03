@@ -15,10 +15,10 @@ paths = [ "/mermaid-theme-builder/" ]
 localPort = 18624
 
 [services.development]
-run = "pnpm run dev"
+run = 'node "$(git rev-parse --show-toplevel)/scripts/run-pnpm.mjs" -w run dev'
 
 [services.production]
-build = [ "pnpm", "run", "build" ]
+build = [ "sh", "-c", 'node "$(git rev-parse --show-toplevel)/scripts/run-pnpm.mjs" -w run build' ]
 publicDir = "dist/public"
 serve = "static"
 

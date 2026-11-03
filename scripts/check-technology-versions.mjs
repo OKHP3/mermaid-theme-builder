@@ -178,6 +178,25 @@ await runtime(
   }
 );
 
+// CI pins are distinct from Replit module selectors and this process's runtime.
+for (const [name, file, sourceName] of [
+  ["Node.js CI pin", ".node-version", "Node.js"],
+  ["Python CI pin", ".python-version", "Python"],
+]) {
+  if (!files.includes(file)) continue;
+  const source = runtimes.find((row) => row.name === sourceName);
+  const current = read(file).trim();
+  const latest = sourceName === "Node.js" ? source?.latestLts : source?.latest;
+  runtimes.push({
+    name,
+    declared: current,
+    latest,
+    source: source?.source,
+    status: versionStatus(current, latest),
+    note: "Pinned CI target, not an observation of the Replit or local host.",
+  });
+}
+
 const actionRefs = files
   .filter((f) => /^\.github\/(workflows|actions)\/.+\.ya?ml$/.test(f))
   .flatMap((file) =>

@@ -92,10 +92,10 @@ function ClassNode({
             onCopyUsage(def.name);
           }
         }}
-        aria-label={`Copy usage :::${def.name}`}
         title={`Click to copy :::${def.name}`}
         className="w-full flex flex-col items-stretch gap-0 text-left cursor-pointer focus:outline-none focus:ring-1 focus:ring-inset focus:ring-primary/60"
       >
+        <span className="sr-only">Copy usage </span>
         <div
           className="relative flex items-center justify-center px-2 py-3"
           style={{ backgroundColor: def.fill, opacity: opacity ?? 1 }}
@@ -117,7 +117,6 @@ function ClassNode({
             />
           </svg>
           <span
-            aria-hidden="true"
             className="relative z-10 text-[11px] font-mono leading-tight text-center break-all px-1"
             style={{ color: def.color, fontWeight, fontStyle }}
           >

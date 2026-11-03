@@ -24,8 +24,21 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
-          node-version: 24
+          node-version-file: .node-version
 
       - name: Run skill tests
         working-directory: skills/okhp3-mermaid-theme-builder
         run: node --test tests/*.test.mjs
+
+      - name: Setup stable Python for support utilities
+        uses: actions/setup-python@v7
+        with:
+          python-version-file: .python-version
+
+      - name: Test Python support utilities
+        env:
+          PYTHONUTF8: "1"
+        run: |
+          git ls-files -z '*test*.py' | while IFS= read -r -d '' test_file; do
+            python "$test_file"
+          done

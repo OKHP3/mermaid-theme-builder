@@ -3,6 +3,7 @@
 **Project:** Mermaid Theme Builder
 **Author:** OverKill Hill P³
 **Created:** 2026-05-23
+**October 26 scope update:** This is historical planning. The owner-approved v0.7.0 release covers [Mermaid 12 compatibility](mermaid-12-review-2026-10-26.md), not completion of the broader Governance Profiles plan. Unchecked work below remains planned; consult the [current roadmap](roadmap.md).
 **Status:** Planning document — tasks are checked off as they are completed
 **Repository:** https://github.com/OKHP3/mermaid-theme-builder
 

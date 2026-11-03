@@ -302,7 +302,8 @@ describe("ProfileDetailsPanel — slot changes while open", () => {
     fireEvent.keyDown(replacementInput, { key: "Enter" });
     expect(props.onRename).toHaveBeenCalledWith("my-theme-2", "Replacement Contract");
 
-    fireEvent.click(screen.getByRole("button", { name: "Export profile as JSON" }));
+    expect(screen.getByRole("button", { name: "Import JSON profile from file" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Export JSON profile" }));
     expect(props.onExport).toHaveBeenCalledWith("my-theme-2");
 
     fireEvent.click(screen.getByRole("button", { name: 'Duplicate profile "My Theme 2"' }));

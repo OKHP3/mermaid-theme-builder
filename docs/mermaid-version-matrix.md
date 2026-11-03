@@ -1,5 +1,9 @@
 # Mermaid Version Feature Matrix
 
+Current Mermaid 12.2.0 migration and maintenance policy: see
+[stable foundation maintenance](foundation-maintenance.md). The 11.x matrix
+below is retained historical coverage, not the current installed version.
+
 **Last updated:** 2026-07-13  
 **Covers:** Mermaid 11.11.0 through 11.16.0  
 **Sources:** Official Mermaid GitHub release notes, ChatGPT research pass (2026-05-21)  

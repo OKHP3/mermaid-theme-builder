@@ -4,9 +4,9 @@ import { resolve } from "node:path";
 
 // Guard against accidentally copying a downstream packageManager version bump
 // (e.g. from mermaid's own package.json) that would crash every workflow.
-// The project pins pnpm 10.x.x — any other major is a breakage.
+// pnpm 12 uses its native launcher rather than the old Corepack JS entry point.
 
-const REQUIRED_MAJOR = 10;
+const REQUIRED_MAJOR = 12;
 const PACKAGE_MANAGER_RE = /^pnpm@(\d+)\.(\d+)\.(\d+)$/;
 
 const packageJson = JSON.parse(

@@ -48,6 +48,9 @@ jobs:
       - name: Build
         run: pnpm run build
 
+      - name: Build the separate workbench
+        run: pnpm --filter @workspace/mermaid-theme-workbench run build
+
       - name: Format check (Prettier)
         run: pnpm run format
 

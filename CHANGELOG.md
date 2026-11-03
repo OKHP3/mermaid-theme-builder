@@ -2,6 +2,23 @@
 
 ---
 
+## [0.7.0] - 2026-11-02
+
+### Changed
+- Pin Mermaid 12.2.0 and stable workspace dependencies, with a daily exact-pin update proposal workflow and capability-review gate.
+- Migrate to native pnpm 12.16.1, test CI on Node 26 LTS and Python 3.15, and retain Replit's supported Node 24 host until its system-library migration is verified.
+- Patch source-map-js, PostCSS selector parsing, and Vitest mocker advisories without bypassing the release-age policy.
+- Keep visible control text in accessible names and support Replit's native npm wrapper with the pinned package-manager launcher.
+- Let Vite optimize Mermaid's nested CommonJS dependencies and verify all nine compatibility cases through both production and development servers.
+- Repair the Mermaid 12 lockfile, pair it with ZenUML 1.0.1, and retain the existing sanitizer and release-age security controls.
+- Pin Classic and Dagre in preview initialization and both export formats rather than inherit changed renderer defaults.
+- Recognize the new use case beta family with limited-support guidance. Its bundled example and broader styling validation remain pending.
+- Add positive browser-render checks for the changed layout families and ZenUML.
+- Require the Mermaid 12 browser floor: ES2024 and Safari 17.4 or newer. Node 24 remains the project runtime.
+- This compatibility release does not mark the broader Governance Profiles roadmap or v1.0 gates complete.
+
+---
+
 ## [0.6.4] - 2026-10-26
 
 ### Fixed
@@ -98,7 +115,8 @@ Phase 2 P0 capability fixes, plus documentation truth sync across all public sur
 
 **Verdict: v0.6.0.** v1.0.0 remains blocked by its other roadmap gates; the WCAG 2.1 AA automated audit gate now passes.
 
-[Unreleased]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.6.4...HEAD
+[Unreleased]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.7.0...HEAD
+[0.7.0]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.6.4...v0.7.0
 [0.6.4]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.6.3...v0.6.4
 [0.6.3]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.6.2...v0.6.3
 [0.6.2]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.6.1...v0.6.2

@@ -125,7 +125,7 @@ export interface ExportOptions {
 }
 
 const TOOL_URL = "https://overkillhill.com/projects/mermaid-theme-builder/";
-const TOOL_VERSION = "0.6.4";
+const TOOL_VERSION = "0.7.0";
 
 const BADGE_SAFE_FAMILIES: DiagramFamily[] = [
   "flowchart",
@@ -249,7 +249,8 @@ function buildInitDirective(
     typeof fontFamily === "string" ? `"fontFamily": "${sanitizeFontFamily(fontFamily)}"` : null;
   const themeVarsStr = [varEntries, fontFamilyEntry].filter(Boolean).join(", ");
 
-  const lookEntry = look && look !== "classic" ? `"look": "${look}", ` : "";
+  // Pin the UI selection across renderer versions with different defaults.
+  const lookEntry = `"look": "${look ?? "classic"}", "layout": "dagre", `;
   const archEntry = family === "architectureBeta" ? `"architecture": {"randomize": false}, ` : "";
 
   // Sequence-specific config: emit `sequence.fontSize` using the SAME resolved
@@ -535,7 +536,7 @@ function buildFrontmatter(
     typeof fontFamily === "string" ? `    fontFamily: "${sanitizeFontFamily(fontFamily)}"` : null;
 
   const themeLines = [varEntries, fontFamilyLine].filter(Boolean).join("\n");
-  const lookLine = look && look !== "classic" ? `  look: ${look}\n` : "";
+  const lookLine = `  look: ${look ?? "classic"}\n  layout: dagre\n`;
   const archLine = family === "architectureBeta" ? `  architecture:\n    randomize: false\n` : "";
   const advancedLines = buildAdvancedFrontmatterLines(advanced);
 

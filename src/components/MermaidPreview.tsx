@@ -35,6 +35,9 @@ async function getMermaid(): Promise<MermaidType> {
       startOnLoad: false,
       securityLevel: "strict",
       suppressErrorRendering: true,
+      theme: "default",
+      look: "classic",
+      layout: "dagre",
     });
 
     initializationDone = true;
