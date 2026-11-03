@@ -153,7 +153,17 @@ compatibility release does not complete or cancel those requirements.
 
 ---
 
-## v0.8.0 — Editor + Accessibility + Layout Tier Tokens
+## v0.8.0 - Theme-first workspace, Increment 1
+
+Owner approved Increment 1 for gated merge and release on November 3, 2026.
+The scope includes named-theme actions, a larger preview, focused mobile views,
+destination-aware guidance, and keyboard-contained theme saving. Existing
+storage contracts, imports, exports, and hash routes are preserved. Profile
+migration and the three-slot storage limit are not changed.
+
+The package version alone does not prove release, deployment, or Replit parity.
+
+## Editor, accessibility, and layout tier tokens - planned, version unassigned
 
 **Status:** Planned
 

@@ -34,7 +34,7 @@ Visual governance for AI-generated Mermaid diagrams — paste, theme, preview, a
 
 ## Tabs
 
-### Theme-first preview (not released)
+### Theme-first workspace
 
 Start in **Compose** to build a reusable visual style. The active theme name,
 **Save theme**, **Export JSON**, and **Use theme** actions stay together above
@@ -47,11 +47,11 @@ On mobile, **Theme**, **Preview**, and **Code** focus on one task at a time.
 Compatibility guidance includes input, family, look, and destination advisories.
 A local preview does not validate an external renderer.
 
-This review increment keeps existing saved themes, storage keys, import/export
+This increment keeps existing saved themes, storage keys, import/export
 formats, and all five hash links. It does not migrate profiles or remove the
 three-slot limit. Save and JSON export retain their existing palette contracts;
 complete profile persistence is a separate increment. Browser-local storage is
-not a backup. The live release and screenshot above remain unchanged until approval.
+not a backup.
 
 | Tab | Purpose |
 |-----|---------|

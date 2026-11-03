@@ -73,7 +73,7 @@ Flat pnpm workspace. The Mermaid Theme Builder is the root application package, 
 
 **Features:**
 
-- **Theme-first review preview, not released:** Compose promotes the active theme and existing Save/Export/Use actions. Apply keeps source beside the preview, with focused Theme/Preview/Code views on mobile. Existing routes, storage, imports, and exports are retained; no profile migration is included.
+- **Theme-first workspace (v0.8.0):** Compose promotes the active theme and existing Save/Export/Use actions. Apply keeps source beside the preview, with focused Theme/Preview/Code views on mobile. Existing routes, storage, imports, and exports are retained; no profile migration is included.
 - Paste Mermaid code → auto-detects diagram family (flowchart, sequence, class, ER, Gantt, pie, etc.)
 - Built-in brand palettes: Overkill Hill, AskJamie, Glee Fully, and utility palettes
 - Two-way live color editor — click color swatches to update, preview updates instantly

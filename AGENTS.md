@@ -509,9 +509,9 @@ Replit Agent:
 
 #### 9.0 Project context snapshot
 
-Foundation and release status verified 2026-11-02 from repository evidence,
-PR #131 checks, GitHub Pages, and Replit Free acceptance. Architecture context
-retains the 2026-10-26 baseline.
+Foundation release verified 2026-11-02 from repository evidence, PR #131 checks,
+GitHub Pages, and Replit Free acceptance. Increment 1 was approved for gated
+release on 2026-11-03. Architecture context retains the 2026-10-26 baseline.
 
 - **Identity and purpose, confirmed:** Mermaid Theme Builder is a personal
   OverKill Hill P3 browser tool for applying renderer-aware visual themes to
@@ -526,14 +526,16 @@ retains the 2026-10-26 baseline.
 - **Vision, inferred:** Serve as the visual governance layer in the OKHP3
   Visual Language Stack while remaining a small, static, privacy-respecting
   utility.
-- **Current status, confirmed:** The root package is version `0.7.0`, and the
+- **Current status, confirmed:** The root package is version `0.8.0`, and the
   application source plus CI and GitHub Pages deployment workflows are present.
   Version `0.7.0` was published from `fd03013` after PR #131 passed its required
   checks and Replit Free acceptance. Pages deployment and the live version were
   verified. Mermaid is pinned to `12.2.0`, with explicit appearance defaults
   and limited use case beta detection. The post-release repeat-install policy
-  fix is tracked in PR #133. Broader Governance Profiles work and `1.0.0`
-  remain planned.
+  fix merged in PR #133. Version `0.8.0` packages the owner-approved theme-first
+  workspace without changing saved data or export contracts. Its package
+  version is not deployment evidence; verify the release tag and Pages run.
+  Broader Governance Profiles work and `1.0.0` remain planned.
 - **Architecture, confirmed:** The root package is the application. The
   workspace also contains a thin Replit artifact package. Runtime diagram
   processing is browser-only, with local browser persistence and no backend,
