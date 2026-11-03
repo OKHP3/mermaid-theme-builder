@@ -31,19 +31,9 @@ interface RouteOption {
 
 const ROUTE_OPTIONS: RouteOption[] = [
   {
-    tab: "apply",
-    title: "Apply a Theme",
-    description: "Pick a palette and export themed code for your Mermaid diagrams",
-    icon: (
-      <svg viewBox="0 0 20 20" fill="currentColor" className="w-6 h-6" aria-hidden="true">
-        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-      </svg>
-    ),
-  },
-  {
     tab: "compose",
     title: "Create a Theme",
-    description: "Build a custom palette from scratch and export or share it",
+    description: "Build a reusable visual style for all your diagrams",
     icon: (
       <svg viewBox="0 0 20 20" fill="currentColor" className="w-6 h-6" aria-hidden="true">
         <path
@@ -51,6 +41,16 @@ const ROUTE_OPTIONS: RouteOption[] = [
           d="M4 2a2 2 0 00-2 2v11a3 3 0 106 0V4a2 2 0 00-2-2H4zm1 14a1 1 0 100-2 1 1 0 000 2zm5-1.757l4.9-4.9a2 2 0 000-2.828L13.485 5.1a2 2 0 00-2.828 0L10 5.757v8.486zM16 18H9.071l6-6H16a2 2 0 012 2v2a2 2 0 01-2 2z"
           clipRule="evenodd"
         />
+      </svg>
+    ),
+  },
+  {
+    tab: "apply",
+    title: "Apply a Theme",
+    description: "Pick a palette and export themed code for your Mermaid diagrams",
+    icon: (
+      <svg viewBox="0 0 20 20" fill="currentColor" className="w-6 h-6" aria-hidden="true">
+        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
       </svg>
     ),
   },
@@ -133,7 +133,7 @@ export function RouteSelector({ onSelect }: RouteSelectorProps) {
           What would you like to do?
         </h1>
         <p className="text-xs text-muted-foreground leading-relaxed">
-          Pick a starting point — you can always switch tabs later.
+          Start with a reusable theme, or bring a diagram you already have.
         </p>
       </div>
 
@@ -153,8 +153,8 @@ export function RouteSelector({ onSelect }: RouteSelectorProps) {
             data-tab={opt.tab}
             type="button"
             onClick={() => onSelect(opt.tab)}
-            className="group flex flex-col items-start gap-3 rounded-lg border border-border bg-card/50 hover:bg-card hover:border-primary/40 p-4 text-left transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:border-primary/60"
-            aria-label={`${opt.title} — ${opt.description}`}
+            className="group flex flex-col items-start gap-3 rounded-lg border border-border bg-card/50 hover:bg-card hover:border-primary/40 p-4 text-left transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:border-primary/60"
+            aria-label={`${opt.title}. ${opt.description}`}
           >
             <div className="text-primary/70 group-hover:text-primary group-focus-visible:text-primary transition-colors">
               {opt.icon}

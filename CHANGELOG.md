@@ -1,6 +1,11 @@
 ## [Unreleased]
 
+### Changed
+- Prepare a theme-first review preview with named-theme actions, a larger diagram area, focused mobile views, and preserved routes and storage contracts. Not released.
+- Replace misleading rendering choices and universal readiness wording with destination-aware guidance. Keep valid saved preview samples; use a compact starter for new sessions.
+
 ### Fixed
+- Associate the theme-name field with its label and keep the Save theme dialog keyboard-contained with focus return.
 - Migrate pnpm's build policy to its current allow/deny map, explicitly deny dependency-driven Git hook setup, and verify repeat frozen installations in CI.
 
 ---
