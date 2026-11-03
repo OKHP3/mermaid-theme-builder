@@ -73,6 +73,27 @@ jobs:
       - name: Run E2E tests
         run: pnpm test:e2e
 
+      - name: Verify Mermaid through the development server
+        env:
+          NODE_ENV: development
+          PORT: "4174"
+          PLAYWRIGHT_BASE_URL: http://localhost:4174/mermaid-theme-builder/
+        run: |
+          pnpm dev > "$RUNNER_TEMP/mtb-dev-preview.log" 2>&1 &
+          server_ready=false
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:4174/mermaid-theme-builder/ > /dev/null; then
+              server_ready=true
+              break
+            fi
+            sleep 2
+          done
+          if [ "$server_ready" != "true" ]; then
+            tail -100 "$RUNNER_TEMP/mtb-dev-preview.log"
+            exit 1
+          fi
+          pnpm exec playwright test e2e/mermaid-12-compatibility.spec.ts
+
       - name: Upload Playwright report on failure
         if: failure()
         uses: actions/upload-artifact@v7

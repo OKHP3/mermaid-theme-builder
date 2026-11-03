@@ -54,9 +54,6 @@ export default defineConfig({
         ]
       : []),
   ],
-  optimizeDeps: {
-    exclude: ["mermaid", "@mermaid-js/mermaid-zenuml"],
-  },
   resolve: {
     alias: {
       mermaid: path.resolve(import.meta.dirname, "node_modules/mermaid/dist/mermaid.core.mjs"),

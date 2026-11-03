@@ -39,6 +39,9 @@ adds opt-in depth coloring for mindmaps and fixes label sizing, ELK routing,
 mindmap labels, and swimlane rendering. No new Builder controls or expanded
 styling promises are introduced. Positive rendering regressions include the
 existing seven migration cases plus mindmap labels and circle-label sizing.
+The same nine cases run through Vite's development server in CI. Mermaid's core
+entry points remain official vendor modules; they are no longer excluded from
+dependency optimization, so nested CommonJS packages are converted for browsers.
 
 `check:version-strings` rejects any mismatch between the exact Mermaid pin and
 `MERMAID_VERSION_VERIFIED`. The updater deliberately does not mark a new

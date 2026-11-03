@@ -9,6 +9,7 @@
 - Migrate to native pnpm 12.16.1, test CI on Node 26 LTS and Python 3.15, and retain Replit's supported Node 24 host until its system-library migration is verified.
 - Patch source-map-js, PostCSS selector parsing, and Vitest mocker advisories without bypassing the release-age policy.
 - Keep visible control text in accessible names and support Replit's native npm wrapper with the pinned package-manager launcher.
+- Let Vite optimize Mermaid's nested CommonJS dependencies and verify all nine compatibility cases through both production and development servers.
 - Repair the Mermaid 12 lockfile, pair it with ZenUML 1.0.1, and retain the existing sanitizer and release-age security controls.
 - Pin Classic and Dagre in preview initialization and both export formats rather than inherit changed renderer defaults.
 - Recognize the new use case beta family with limited-support guidance. Its bundled example and broader styling validation remain pending.
