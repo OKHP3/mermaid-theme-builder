@@ -94,6 +94,14 @@ CI's Node 26 target does not prove Replit Node 26 support. Python 3.11 and the
 Replit Nix channel also remain host migration items, not silently edited to
 unverified module names. No paid mode or deployment was used.
 
+Release acceptance subsequently passed at review head `66eebf2`: Replit's
+managed preview rendered a themed flowchart and produced Classic/Dagre export
+code. PR #131 merged to `fd03013`, v0.7.0 was published, and Pages plus the live
+app were verified. Replit's clean main was fast-forwarded to that release.
+A repeat frozen install exposed the intentionally skipped Git-hook setup;
+PR #133's explicit deny policy passed two consecutive frozen installs on the
+existing Replit workspace without enabling dependency scripts.
+
 ## Security and acceptance
 
 The upgrade patches source-map-js to 1.2.2, the legacy PostCSS selector parser
@@ -101,6 +109,12 @@ to 6.1.5, and Vitest to 5.0.5. The findings affect source-map/selector processin
 and test mock-server behavior. They are development dependencies, but that
 classification alone is not proof of unreachability. Patches are preferred to
 assuming safety. The package audit reported zero advisories after resolution.
+
+pnpm 12 uses an explicit `allowBuilds` policy with strict review enabled. Git hook
+setup is denied during dependency installation, not approved or allowed to run.
+Contributors can install the reviewed repository hooks explicitly. CI verifies
+two successive frozen, script-disabled installs to cover existing workspaces as
+well as fresh runners.
 
 Before merge, require frozen install, full unit tests, both builds, Workbench
 tests, typechecks, formatting, metadata/doc/workflow checks, skill tests, and

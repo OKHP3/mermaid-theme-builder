@@ -40,5 +40,8 @@ runs:
           pnpm-store-${{ runner.os }}-
 
     - name: Install dependencies
-      run: pnpm install --frozen-lockfile --ignore-scripts
+      run: |
+        pnpm install --frozen-lockfile --ignore-scripts
+        # Verify incremental installs, including intentionally denied dependency scripts.
+        pnpm install --frozen-lockfile --ignore-scripts
       shell: bash

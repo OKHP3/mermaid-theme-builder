@@ -1,5 +1,8 @@
 ## [Unreleased]
 
+### Fixed
+- Migrate pnpm's build policy to its current allow/deny map, explicitly deny dependency-driven Git hook setup, and verify repeat frozen installations in CI.
+
 ---
 
 ## [0.7.0] - 2026-11-02
