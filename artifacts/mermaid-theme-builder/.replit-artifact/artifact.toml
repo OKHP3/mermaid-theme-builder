@@ -15,10 +15,10 @@ paths = [ "/mermaid-theme-builder/" ]
 localPort = 18624
 
 [services.development]
-run = "pnpm run dev"
+run = "node scripts/run-pnpm.mjs run dev"
 
 [services.production]
-build = [ "pnpm", "run", "build" ]
+build = [ "node", "scripts/run-pnpm.mjs", "run", "build" ]
 publicDir = "dist/public"
 serve = "static"
 

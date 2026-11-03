@@ -5,7 +5,7 @@ router = "application"
 deploymentTarget = "autoscale"
 
 [deployment.postBuild]
-args = ["pnpm", "store", "prune"]
+args = ["node", "scripts/run-pnpm.mjs", "store", "prune"]
 env = { "CI" = "true" }
 
 [workflows]
@@ -38,7 +38,7 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "pnpm test"
+args = "node scripts/run-pnpm.mjs test"
 
 [workflows.workflow.metadata]
 isValidation = true
@@ -49,7 +49,7 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "pnpm run typecheck"
+args = "node scripts/run-pnpm.mjs run typecheck"
 
 [workflows.workflow.metadata]
 isValidation = true
@@ -60,7 +60,7 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "pnpm test:e2e"
+args = "node scripts/run-pnpm.mjs test:e2e"
 
 [workflows.workflow.metadata]
 isValidation = true
@@ -74,7 +74,7 @@ isValidation = true
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "pnpm run format"
+args = "node scripts/run-pnpm.mjs run format"
 
 [agent]
 stack = "PNPM_WORKSPACE"

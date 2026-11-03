@@ -75,6 +75,8 @@ including lookup failures and Replit runtime/channel drift.
 Use `node scripts/run-pnpm.mjs <command>` on hosts with an older Corepack.
 pnpm 12 is a native executable; old Corepack expects a removed JavaScript file.
 CI installs the exact `packageManager` value through npm with scripts disabled.
+Replit preview, build, and validation entry points use the same launcher rather
+than its older global pnpm. The launcher preserves Replit's native npm wrapper.
 [Vendor installation guidance](https://pnpm.io/installation) and
 [GitHub ecosystem support](https://docs.github.com/en/code-security/reference/supply-chain-security/supported-ecosystems-and-repositories)
 confirm native pnpm 12 and Dependabot support.

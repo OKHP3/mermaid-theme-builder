@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { readFileSync } from "node:fs";
 import { exactUpdate, selectStableRelease, updateCatalog } from "./lib/foundation-updates.mjs";
 
 const now = Date.parse("2026-11-03T00:00:00Z");
@@ -56,4 +57,19 @@ test("changes only actual catalog users and fails on missing entries", () => {
     source.replace("^19.0.0", "19.3.1")
   );
   assert.throws(() => updateCatalog(source, new Map([["missing", "1.0.0"]])));
+});
+
+test("Replit launch and validation entry points use the exact-pin launcher", () => {
+  const replit = readFileSync(new URL("../.replit", import.meta.url), "utf8");
+  assert.doesNotMatch(replit, /^args = "pnpm /m);
+  for (const command of ["test", "run typecheck", "test:e2e", "run format"])
+    assert.ok(replit.includes(`args = "node scripts/run-pnpm.mjs ${command}"`));
+  for (const artifact of ["mermaid-theme-builder", "mermaid-theme-workbench"]) {
+    const config = readFileSync(
+      new URL(`../artifacts/${artifact}/.replit-artifact/artifact.toml`, import.meta.url),
+      "utf8"
+    );
+    assert.match(config, /^run = "node scripts\/run-pnpm\.mjs /m);
+    assert.match(config, /^build = \[ "node", "scripts\/run-pnpm\.mjs", /m);
+  }
 });
