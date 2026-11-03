@@ -80,3 +80,17 @@ test("Replit launch and validation entry points use the exact-pin launcher", () 
     if (artifact === "mermaid-theme-builder") assert.match(config, / -w run dev/);
   }
 });
+
+test("pnpm 12 explicitly denies hook installation and retains strict build review", () => {
+  const workspace = readFileSync(new URL("../pnpm-workspace.yaml", import.meta.url), "utf8");
+  assert.match(workspace, /^strictDepBuilds: true$/m);
+  assert.match(workspace, /^allowBuilds:$/m);
+  assert.match(workspace, /^  simple-git-hooks: false$/m);
+  assert.doesNotMatch(workspace, /^onlyBuiltDependencies:|^dangerouslyAllowAllBuilds:/m);
+  const setup = readFileSync(
+    new URL("../.github/actions/setup-pnpm/action.yml", import.meta.url),
+    "utf8"
+  );
+  const installStep = setup.slice(setup.indexOf("- name: Install dependencies"));
+  assert.equal(installStep.match(/pnpm install --frozen-lockfile --ignore-scripts/g)?.length, 2);
+});

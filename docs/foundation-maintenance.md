@@ -102,6 +102,12 @@ and test mock-server behavior. They are development dependencies, but that
 classification alone is not proof of unreachability. Patches are preferred to
 assuming safety. The package audit reported zero advisories after resolution.
 
+pnpm 12 uses an explicit `allowBuilds` policy with strict review enabled. Git hook
+setup is denied during dependency installation, not approved or allowed to run.
+Contributors can install the reviewed repository hooks explicitly. CI verifies
+two successive frozen, script-disabled installs to cover existing workspaces as
+well as fresh runners.
+
 Before merge, require frozen install, full unit tests, both builds, Workbench
 tests, typechecks, formatting, metadata/doc/workflow checks, skill tests, and
 the full Playwright suite. Review license changes separately when a vendor

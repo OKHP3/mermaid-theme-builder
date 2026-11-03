@@ -63,11 +63,14 @@ catalog:
 
 autoInstallPeers: false
 
-onlyBuiltDependencies:
-  - "@swc/core"
-  - esbuild
-  - msw
-  - unrs-resolver
+strictDepBuilds: true
+allowBuilds:
+  "@swc/core": true
+  esbuild: true
+  msw: true
+  unrs-resolver: true
+  # Hooks are installed explicitly for contributors, never by dependency installation.
+  simple-git-hooks: false
 
 overrides:
   # replit uses linux-x64 only, we can exclude all other platforms
