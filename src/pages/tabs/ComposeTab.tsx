@@ -278,6 +278,19 @@ export function ComposeTab({
   const [showScaffoldModal, setShowScaffoldModal] = useState(false);
   const [savePaletteName, setSavePaletteName] = useState("");
   const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const [workspaceFocus, setWorkspaceFocus] = useState<"theme" | "preview">("preview");
+  const saveReturnFocusRef = useRef<HTMLElement | null>(null);
+  const openSaveDialog = () => {
+    saveReturnFocusRef.current = document.activeElement as HTMLElement | null;
+    setShowSaveDialog(true);
+  };
+  useEffect(() => {
+    if (!showSaveDialog) return;
+    return () => {
+      const trigger = saveReturnFocusRef.current;
+      if (trigger?.isConnected) trigger.focus();
+    };
+  }, [showSaveDialog]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [tierDraftSizes, setTierDraftSizes] = useState<Partial<Record<TypographyTierKey, string>>>(
     {}
@@ -366,15 +379,17 @@ export function ComposeTab({
     ]
   );
 
+  const defaultSample =
+    EXAMPLE_CATALOG.find((entry) => entry.id === "flowchart-basic") ?? EXAMPLE_CATALOG[0];
   const [selectedSampleId, setSelectedSampleId] = useState<string>(() => {
     try {
       const storedId = localStorage.getItem("mtb.compose.previewSampleId");
       return (
         (storedId && EXAMPLE_CATALOG.some((entry) => entry.id === storedId) ? storedId : null) ??
-        EXAMPLE_CATALOG[0].id
+        defaultSample.id
       );
     } catch {
-      return EXAMPLE_CATALOG[0].id;
+      return defaultSample.id;
     }
   });
 
@@ -388,8 +403,8 @@ export function ComposeTab({
   }, []);
 
   const sampleEntry = useMemo(
-    () => EXAMPLE_CATALOG.find((e) => e.id === selectedSampleId) ?? EXAMPLE_CATALOG[0],
-    [selectedSampleId]
+    () => EXAMPLE_CATALOG.find((e) => e.id === selectedSampleId) ?? defaultSample,
+    [selectedSampleId, defaultSample]
   );
 
   const sampleCapability = useMemo(() => {
@@ -616,30 +631,71 @@ export function ComposeTab({
   const isCurrentUserPalette = userPalettes.some((p) => p.id === selectedPaletteId);
 
   return (
-    <div className="flex flex-col h-full overflow-hidden">
-      <PaletteSelectorBar
-        allPalettes={allPalettes}
-        selectedPaletteId={selectedPaletteId}
-        customColors={customColors}
-        onSelectPalette={onSelectPalette}
-        tileIdPrefix="compose-palette-tile"
-        myThemeSlots={myThemeSlots}
-        activeMyThemeSlotId={activeMyThemeSlotId}
-        onSelectMyThemeSlot={onSelectMyThemeSlot}
-        onAddMyThemeSlot={onAddMyThemeSlot}
-        onDeleteMyThemeSlot={onDeleteMyThemeSlot}
-        onExportMyThemeSlot={onExportMyThemeSlot}
-        onImportAsNewSlot={onImportAsNewSlot}
-        onShowToast={onShowToast}
-        onDuplicateMyThemeSlot={onDuplicateMyThemeSlot}
-        onRenameMyThemeSlot={onRenameMyThemeSlot}
-        onMoveMyThemeSlotUp={onMoveMyThemeSlotUp}
-        onMoveMyThemeSlotDown={onMoveMyThemeSlotDown}
-        onShowProfileDetails={onShowProfileDetails}
-      />
+    <div
+      className="theme-studio flex flex-col h-full overflow-hidden"
+      data-workspace-focus={workspaceFocus}
+    >
+      <header className="workspace-header">
+        <div className="workspace-identity">
+          <span className="workspace-eyebrow">Theme studio</span>
+          <h2>{effectiveThemeName || selectedPalette.name}</h2>
+          <p>Build a style once. Reuse it across your diagrams.</p>
+        </div>
+        <div className="workspace-actions">
+          <button type="button" className="workspace-button" onClick={openSaveDialog}>
+            Save theme
+          </button>
+          <button type="button" className="workspace-button" onClick={handleExportJson}>
+            Export JSON
+          </button>
+          <button
+            type="button"
+            className="workspace-button workspace-button-primary"
+            onClick={() => onSwitchTab("apply")}
+          >
+            Use theme
+          </button>
+        </div>
+      </header>
+      <div className="workspace-focus" role="group" aria-label="Studio focus">
+        {(["theme", "preview"] as const).map((view) => (
+          <button
+            key={view}
+            type="button"
+            aria-pressed={workspaceFocus === view}
+            aria-label={view === "theme" ? "Edit theme settings" : "Preview sample diagram"}
+            onClick={() => setWorkspaceFocus(view)}
+          >
+            {view === "theme" ? "Theme" : "Preview"}
+          </button>
+        ))}
+      </div>
+      <div className="workspace-library">
+        <PaletteSelectorBar
+          allPalettes={allPalettes}
+          selectedPaletteId={selectedPaletteId}
+          customColors={customColors}
+          onSelectPalette={onSelectPalette}
+          tileIdPrefix="compose-palette-tile"
+          myThemeSlots={myThemeSlots}
+          activeMyThemeSlotId={activeMyThemeSlotId}
+          onSelectMyThemeSlot={onSelectMyThemeSlot}
+          onAddMyThemeSlot={onAddMyThemeSlot}
+          onDeleteMyThemeSlot={onDeleteMyThemeSlot}
+          onExportMyThemeSlot={onExportMyThemeSlot}
+          onImportAsNewSlot={onImportAsNewSlot}
+          onShowToast={onShowToast}
+          onDuplicateMyThemeSlot={onDuplicateMyThemeSlot}
+          onRenameMyThemeSlot={onRenameMyThemeSlot}
+          onMoveMyThemeSlotUp={onMoveMyThemeSlotUp}
+          onMoveMyThemeSlotDown={onMoveMyThemeSlotDown}
+          onShowProfileDetails={onShowProfileDetails}
+        />
+      </div>
 
-      <div className="flex flex-col md:flex-row flex-1 overflow-hidden min-h-0">
-        <div className="flex flex-col w-full md:w-[35%] border-b md:border-b-0 md:border-r border-border overflow-y-auto shrink-0">
+      <div className="studio-content flex flex-col md:flex-row flex-1 overflow-hidden min-h-0">
+        <div className="studio-inspector flex flex-col w-full border-b md:border-b-0 md:border-r border-border overflow-y-auto shrink-0">
+          <h3 className="workspace-section-title">Edit your theme</h3>
           {/* ── Import Theme ── */}
           <div className="border-b border-border">
             <button
@@ -1332,10 +1388,14 @@ export function ComposeTab({
             <div className={myPalettesOpen ? "border-t border-border" : "hidden"}>
               <div className="p-3">
                 <div className="mb-3">
-                  <label className="text-xs font-medium text-foreground block mb-1">
+                  <label
+                    htmlFor="compose-theme-name"
+                    className="text-xs font-medium text-foreground block mb-1"
+                  >
                     My Theme's Name
                   </label>
                   <input
+                    id="compose-theme-name"
                     type="text"
                     value={customThemeName}
                     onChange={(e) => onCustomThemeNameChange(e.target.value)}
@@ -1374,7 +1434,7 @@ export function ComposeTab({
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <button
-                    onClick={() => setShowSaveDialog(true)}
+                    onClick={openSaveDialog}
                     className="text-xs px-2 py-1.5 rounded-md border border-border bg-background hover:bg-muted hover:border-primary/40 font-medium transition-all"
                   >
                     Save Theme as
@@ -1611,7 +1671,7 @@ export function ComposeTab({
           </div>
         </div>
 
-        <div className="flex-1 flex flex-col overflow-hidden min-h-[280px] md:min-h-0">
+        <div className="studio-preview flex-1 flex flex-col overflow-hidden min-h-[280px] md:min-h-0">
           <div className="flex items-center px-4 py-2 border-b border-border bg-card/20 flex-none gap-[5px] min-w-0">
             <span className="text-xs font-medium text-muted-foreground shrink-0">
               Theme Preview
@@ -1710,6 +1770,27 @@ export function ComposeTab({
             role="dialog"
             aria-modal="true"
             aria-labelledby="save-palette-dialog-title"
+            onKeyDown={(event) => {
+              if (event.key === "Escape") {
+                event.stopPropagation();
+                setShowSaveDialog(false);
+              }
+              if (event.key !== "Tab") return;
+              const controls = Array.from(
+                event.currentTarget.querySelectorAll<HTMLElement>(
+                  "input:not(:disabled), button:not(:disabled)"
+                )
+              );
+              const first = controls[0];
+              const last = controls[controls.length - 1];
+              if (event.shiftKey && document.activeElement === first) {
+                event.preventDefault();
+                last?.focus();
+              } else if (!event.shiftKey && document.activeElement === last) {
+                event.preventDefault();
+                first?.focus();
+              }
+            }}
             className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-sm bg-card border border-border rounded-lg shadow-2xl p-5"
           >
             <p
@@ -1723,6 +1804,7 @@ export function ComposeTab({
             </p>
             <input
               type="text"
+              aria-label="New theme name"
               value={savePaletteName}
               onChange={(e) => setSavePaletteName(e.target.value)}
               onKeyDown={(e) => {

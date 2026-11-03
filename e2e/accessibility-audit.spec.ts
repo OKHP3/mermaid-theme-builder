@@ -285,6 +285,7 @@ test.describe("WCAG 2.1 A/AA overlay, expanded, and persisted states", () => {
   ] as const) {
     test(`Apply expanded code editor passes in ${mode.name}`, async ({ page }) => {
       await openTab(page, AUDITED_TABS[0], mode, CUSTOMIZED_STATE);
+      await page.getByRole("button", { name: "Edit diagram code" }).click();
       await page.getByRole("button", { name: "Expand code editor" }).click();
       await expect(page.getByRole("button", { name: "Collapse code editor" })).toBeVisible();
       await expectNoCriticalOrSerious(page, `Apply expanded code editor (${mode.name})`);

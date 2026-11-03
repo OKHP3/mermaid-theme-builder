@@ -1584,9 +1584,7 @@ export function AppShell() {
             <div className="flex items-baseline gap-2 leading-none">
               <h1 className="forge-header-title">Mermaid Theme Builder</h1>
             </div>
-            <p className="forge-header-subtitle">
-              visual governance for AI-generated Mermaid diagrams
-            </p>
+            <p className="forge-header-subtitle">One visual style. Many diagrams.</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
