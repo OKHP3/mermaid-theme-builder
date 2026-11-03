@@ -69,7 +69,14 @@ test("Replit launch and validation entry points use the exact-pin launcher", () 
       new URL(`../artifacts/${artifact}/.replit-artifact/artifact.toml`, import.meta.url),
       "utf8"
     );
-    assert.match(config, /^run = "node scripts\/run-pnpm\.mjs /m);
-    assert.match(config, /^build = \[ "node", "scripts\/run-pnpm\.mjs", /m);
+    assert.match(
+      config,
+      /^run = 'node "\$\(git rev-parse --show-toplevel\)\/scripts\/run-pnpm\.mjs" /m
+    );
+    assert.match(
+      config,
+      /^build = \[ "sh", "-c", 'node "\$\(git rev-parse --show-toplevel\)\/scripts\/run-pnpm\.mjs" /m
+    );
+    if (artifact === "mermaid-theme-builder") assert.match(config, / -w run dev/);
   }
 });

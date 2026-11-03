@@ -12,10 +12,10 @@ paths = [ "/mermaid-theme-workbench/" ]
 localPort = 18686
 
 [services.development]
-run = "node scripts/run-pnpm.mjs --filter @workspace/mermaid-theme-workbench run dev"
+run = 'node "$(git rev-parse --show-toplevel)/scripts/run-pnpm.mjs" --filter @workspace/mermaid-theme-workbench run dev'
 
 [services.production]
-build = [ "node", "scripts/run-pnpm.mjs", "--filter", "@workspace/mermaid-theme-workbench", "run", "build" ]
+build = [ "sh", "-c", 'node "$(git rev-parse --show-toplevel)/scripts/run-pnpm.mjs" --filter @workspace/mermaid-theme-workbench run build' ]
 serve = "static"
 publicDir = "artifacts/mermaid-theme-workbench/dist/public"
 
