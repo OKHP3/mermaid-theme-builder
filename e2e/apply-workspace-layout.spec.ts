@@ -82,3 +82,14 @@ test("Promoted copy action exports the current styled code", async ({ page, cont
   await source.fill("");
   await expect(page.getByRole("button", { name: "Copy code", exact: true })).toBeDisabled();
 });
+
+test("A saved export pane does not collapse the desktop diagram preview", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 720 });
+  await page.addInitScript(() => localStorage.setItem("mtb.exportPreview.open", "true"));
+  await page.goto("./#apply");
+  await expect(page.getByTestId("export-preview-pane")).toBeVisible();
+  const preview = page.locator(".theme-workbench-preview [data-print-only]");
+  await expect.poll(async () => (await preview.boundingBox())?.height ?? 0).toBeGreaterThan(140);
+  await expect(page.getByRole("button", { name: "Copy code", exact: true })).toBeInViewport();
+  await expect(page.getByLabel("Mermaid diagram code input")).toBeInViewport();
+});

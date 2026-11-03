@@ -5,6 +5,7 @@
 - Replace misleading rendering choices and universal readiness wording with destination-aware guidance. Keep valid saved preview samples; use a compact starter for new sessions.
 
 ### Fixed
+- Keep the desktop diagram preview usable when a saved export-code panel is open.
 - Associate the theme-name field with its label and keep the Save theme dialog keyboard-contained with focus return.
 - Migrate pnpm's build policy to its current allow/deny map, explicitly deny dependency-driven Git hook setup, and verify repeat frozen installations in CI.
 

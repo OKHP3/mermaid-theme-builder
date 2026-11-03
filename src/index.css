@@ -842,6 +842,16 @@
   display: none;
 }
 
+@media (min-width: 768px) {
+  .theme-workbench {
+    overflow-y: auto;
+  }
+  .theme-workbench-content {
+    flex-shrink: 0;
+    min-height: calc(var(--spacing) * 84);
+  }
+}
+
 @media (max-width: 767px) {
   .workspace-header {
     align-items: flex-start;
