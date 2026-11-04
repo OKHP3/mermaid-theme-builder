@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useId } from "react";
 import { type TypographySettings, generateTypographyCss } from "@/lib/typography";
 import { createStyleCapture } from "@/lib/style-cleanup";
+import { queuePreviewRender } from "@/lib/preview-render-queue";
 
 interface MermaidPreviewProps {
   code: string;
@@ -439,7 +440,8 @@ export function MermaidPreview({ code, className, typography }: MermaidPreviewPr
     const diagramId = `mermaid-${uniqueId}-${Date.now()}`;
     setLoading(true);
 
-    (async () => {
+    void queuePreviewRender(async () => {
+      if (canceled) return;
       try {
         const mermaid = await getMermaid();
 
@@ -481,7 +483,7 @@ export function MermaidPreview({ code, className, typography }: MermaidPreviewPr
           setStatusAnnouncement(`Render error: ${cleanMessage.slice(0, 100)}`);
         }
       }
-    })();
+    });
 
     return () => {
       canceled = true;

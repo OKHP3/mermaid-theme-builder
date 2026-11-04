@@ -11,6 +11,8 @@ import {
   type MermaidLook,
 } from "@/lib/theme-engine";
 import { MermaidPreview } from "@/components/MermaidPreview";
+import { CrossDiagramGallery } from "@/components/CrossDiagramGallery";
+import { CROSS_DIAGRAM_SAMPLES } from "@/lib/cross-diagram-preview";
 import { ColorSwatch } from "@/components/ColorSwatch";
 import { PromptScaffoldModal } from "@/components/PromptScaffoldModal";
 import { GENERIC_EXAMPLE } from "@/data/examples";
@@ -378,6 +380,7 @@ export function ComposeTab({
       fontSize: fontSize || undefined,
       typography,
       rendererTarget,
+      outputFormat: completeTheme?.outputFormat,
       strokeWidth,
       advancedMermaidConfig:
         Object.keys(advancedMermaidConfig).length > 0 ? advancedMermaidConfig : undefined,
@@ -393,6 +396,7 @@ export function ComposeTab({
       rendererTarget,
       strokeWidth,
       advancedMermaidConfig,
+      completeTheme?.outputFormat,
     ]
   );
 
@@ -419,9 +423,15 @@ export function ComposeTab({
     }
   }, []);
 
+  const [galleryOpen, setGalleryOpen] = useState(false);
+  const [gallerySampleId, setGallerySampleId] = useState(
+    CROSS_DIAGRAM_SAMPLES[0]?.entry.id ?? defaultSample.id
+  );
   const sampleEntry = useMemo(
-    () => EXAMPLE_CATALOG.find((e) => e.id === selectedSampleId) ?? defaultSample,
-    [selectedSampleId, defaultSample]
+    () =>
+      EXAMPLE_CATALOG.find((e) => e.id === (galleryOpen ? gallerySampleId : selectedSampleId)) ??
+      defaultSample,
+    [selectedSampleId, defaultSample, galleryOpen, gallerySampleId]
   );
 
   const sampleCapability = useMemo(() => {
@@ -437,7 +447,11 @@ export function ComposeTab({
   const previewBadgeLabel = sampleEntry.badge?.includes("Experimental") ? "Experimental" : "Beta";
 
   const sampleThemedCode = useMemo(
-    () => generateThemedCode(sampleEntry.content, exportOptions),
+    () =>
+      generateThemedCode(sampleEntry.content, {
+        ...exportOptions,
+        diagramFamily: detectDiagram(sampleEntry.content).family,
+      }),
     [sampleEntry, exportOptions]
   );
 
@@ -678,6 +692,7 @@ export function ComposeTab({
     <div
       className="theme-studio flex flex-col h-full overflow-hidden"
       data-workspace-focus={workspaceFocus}
+      data-gallery-open={galleryOpen}
     >
       <header className="workspace-header">
         <div className="workspace-identity">
@@ -1729,14 +1744,21 @@ export function ComposeTab({
           </div>
         </div>
 
-        <div className="studio-preview flex-1 flex flex-col overflow-hidden min-h-[280px] md:min-h-0">
+        <div
+          className="studio-preview flex-1 flex flex-col overflow-hidden min-h-[280px] md:min-h-0"
+          data-gallery-open={galleryOpen}
+        >
           <div className="flex items-center px-4 py-2 border-b border-border bg-card/20 flex-none gap-[5px] min-w-0">
             <span className="text-xs font-medium text-muted-foreground shrink-0">
-              Theme Preview
+              {galleryOpen ? "Compare theme" : "Theme Preview"}
             </span>
             <select
+              hidden={galleryOpen}
               value={selectedSampleId}
-              onChange={(e) => handleSampleIdChange(e.target.value)}
+              onChange={(e) => {
+                setGalleryOpen(false);
+                handleSampleIdChange(e.target.value);
+              }}
               className="text-xs text-muted-foreground bg-transparent border-0 outline-none cursor-pointer min-w-0 truncate flex-1"
               aria-label="Preview diagram"
             >
@@ -1750,10 +1772,30 @@ export function ComposeTab({
                 </optgroup>
               ))}
             </select>
+            <button
+              type="button"
+              className="workspace-button"
+              aria-expanded={galleryOpen}
+              aria-controls="compose-cross-diagram-gallery"
+              onClick={() => setGalleryOpen((open) => !open)}
+            >
+              {galleryOpen ? "Close comparison" : "Compare samples"}
+            </button>
             <span className="ml-auto text-xs font-medium text-foreground shrink-0">
               {effectiveThemeName}
             </span>
           </div>
+          {galleryOpen && (
+            <div id="compose-cross-diagram-gallery" className="studio-gallery shrink-0">
+              <CrossDiagramGallery
+                selectedId={gallerySampleId}
+                onSelect={setGallerySampleId}
+                rendererTarget={rendererTarget}
+                look={look}
+                onUseTheme={() => onSwitchTab("apply")}
+              />
+            </div>
+          )}
           {isBetaPreview && (
             <div
               role="note"
@@ -1785,7 +1827,7 @@ export function ComposeTab({
               </button>
             </div>
           )}
-          <div className="flex-1 overflow-auto p-4">
+          <div className="studio-canvas flex-1 overflow-auto p-4">
             <MermaidPreview
               code={sampleThemedCode}
               className="w-full h-full"
@@ -1793,7 +1835,7 @@ export function ComposeTab({
             />
           </div>
           {sampleCapability && (
-            <div className="flex-none border-t border-border px-4 py-2 bg-amber-50/60 dark:bg-amber-950/20">
+            <div className="studio-caption flex-none border-t border-border px-4 py-2 bg-amber-50/60 dark:bg-amber-950/20">
               <p className="text-[11px] text-amber-700 dark:text-amber-400 leading-relaxed">
                 <span className="font-semibold">{sampleCapability.displayName}:</span>{" "}
                 {sampleCapability.description}
