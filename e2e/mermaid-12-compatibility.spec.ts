@@ -138,9 +138,13 @@ flowchart TB
   end
   outer --> a
   da --> a`);
-  await page.getByRole("tab", { name: "original", exact: true }).click();
   const svg = page.locator('section[aria-label="Diagram preview"] svg[aria-roledescription]');
   await expect(svg).toContainText("ReviewTarget", { timeout: 30000 });
+  const themedId = await svg.getAttribute("id");
+  expect(themedId).toBeTruthy();
+  await page.getByRole("tab", { name: "original", exact: true }).click();
+  await expect(svg).not.toHaveAttribute("id", themedId!);
+  await expect(svg).toContainText("ReviewTarget");
   await expect(svg.locator("path.flowchart-link")).toHaveCount(2);
   const positions = () =>
     svg
@@ -148,11 +152,15 @@ flowchart TB
       .evaluateAll((nodes) => nodes.map((node) => node.getAttribute("transform")));
   const originalPositions = await positions();
   expect(originalPositions.length).toBe(2);
+  const originalId = await svg.getAttribute("id");
+  expect(originalId).toBeTruthy();
   await page.getByRole("tab", { name: "themed", exact: true }).click();
+  await expect(svg).not.toHaveAttribute("id", originalId!);
   await expect(svg).toContainText("ReviewTarget", { timeout: 30000 });
   await expect(svg.locator("path.flowchart-link")).toHaveCount(2);
   // The explicit ELK source layout differs from the preserved themed Dagre default.
-  // Compare rendered geometry, not vendor chunk names or generated element IDs.
+  // SVG identity above waits for replacement; geometry proves the layout difference.
+  // No assertion depends on vendor chunk names or specific generated ID values.
   await expect.poll(positions).not.toEqual(originalPositions);
   await expect(page.getByLabel("Mermaid diagram code input")).toHaveValue(/ReviewSource/);
 });
