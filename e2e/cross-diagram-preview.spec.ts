@@ -165,3 +165,21 @@ test("gallery is keyboard-operable and fits a narrow viewport without serious ac
     violations.filter((v: { impact: string }) => ["critical", "serious"].includes(v.impact))
   ).toEqual([]);
 });
+
+test("mobile Theme focus closes comparison and restores the editor without changing data", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await seed(page);
+  const compare = page.getByRole("button", { name: "Compare samples", exact: true });
+  await compare.click();
+  await page.getByRole("button", { name: "Edit theme settings", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Edit your theme", exact: true })).toBeVisible();
+  await expect(page.getByRole("region", { name: "Cross-diagram sample gallery" })).toHaveCount(0);
+  await page.getByRole("button", { name: "Preview sample diagram", exact: true }).click();
+  await expect(page.getByRole("combobox", { name: "Preview diagram", exact: true })).toBeVisible();
+  await expect(compare).not.toHaveAttribute("aria-controls", "compose-cross-diagram-gallery");
+  const saved = await page.evaluate(() => JSON.parse(localStorage.getItem("mtb.state.v2")!));
+  expect(saved.themes).toEqual([theme]);
+  expect(saved.editorSession.inputCode).toBe(source);
+});

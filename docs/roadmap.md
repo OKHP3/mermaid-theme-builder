@@ -4,15 +4,28 @@
 
 - Foundation modernization: v0.7.0, followed by the reviewed pin refresh in PR #134.
 - Increment 1: theme-first workspace, released as v0.8.0.
-- Increment 2: complete saved themes and recoverable local library, approved for
-  gated release as v0.9.0. See [complete themes](complete-themes.md).
-- Increment 3: cross-diagram preview and repeat-use polish, packaged for gated
-  release as v0.10.0. See [preview behavior](cross-diagram-preview.md).
+- Increment 2: complete saved themes and recoverable local library, released as
+  [v0.9.0](https://github.com/OKHP3/mermaid-theme-builder/releases/tag/v0.9.0).
+  Pages run 41787273594 and live revision 3e4ef7b were verified.
+  See [complete themes](complete-themes.md).
+- Increment 3: cross-diagram preview and repeat-use polish, released as
+  [v0.10.0](https://github.com/OKHP3/mermaid-theme-builder/releases/tag/v0.10.0).
+  Pages run 41790125567 and live revision ded312b were verified.
+  See [preview behavior](cross-diagram-preview.md).
+- Increment 4: bounded offline-cache repair, packaged for gated release as
+  v0.10.1. See [offline boundaries](offline-reliability.md).
 - Follow-on improvements are authorized when viable, with separate scope and validation.
   This does not satisfy or waive the v1.0 gates below.
 
 The dated sections below retain the earlier roadmap history. Release tags and
 Pages runs, not this document alone, establish deployment.
+
+The original revitalization has three formal increments. Follow-on numbers are
+not a promise of six releases. Current open work includes manual accessibility
+and keyboard acceptance, owner-only analytics evidence if that feature is kept,
+dependency review in issue #83, and the embedded-distribution review in issue #98.
+Existing Replit tasks remain a separate administrative record, not automatically
+Done because a related GitHub change shipped. No v1.0 readiness claim is made.
 
 > **Status as of 2026-08-05:** Tags: `v0.5.0` (2026-05-12), `v0.6.0` (2026-08-04), `v0.6.1` (2026-08-05). The live app's Reference tab catalogs 31 diagram families and a 10-skill Agent Skills catalog. Evidence log for the v0.6.1 sprint: `docs/evidence-log-v061.md`.
 

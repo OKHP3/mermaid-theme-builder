@@ -526,7 +526,7 @@ release on 2026-11-03. Architecture context retains the 2026-10-26 baseline.
 - **Vision, inferred:** Serve as the visual governance layer in the OKHP3
   Visual Language Stack while remaining a small, static, privacy-respecting
   utility.
-- **Current status, confirmed:** The root package is version `0.10.0`, and the
+- **Current status, confirmed:** The root package is version `0.10.1`, and the
   application source plus CI and GitHub Pages deployment workflows are present.
   Version `0.7.0` was published from `fd03013` after PR #131 passed its required
   checks and Replit Free acceptance. Pages deployment and the live version were
@@ -638,15 +638,20 @@ Any change that breaks this flow is a defect, regardless of other intent.
 
 #### 9.4 Mermaid dependency governance
 
-Increment 3 (v0.10.0) adds on-demand cross-diagram comparison and repeat-use
-actions without changing storage or dependency pins. Its implementation and
-deployment are owner-authorized; required checks and live verification remain
-mandatory. See `docs/cross-diagram-preview.md`.
+Increment 4 (v0.10.1) repairs application-scoped offline caching without changing
+theme storage or dependency pins. It preserves sibling caches and bypasses
+unversioned development modules. Offline use covers features warmed online, not
+every diagram family automatically. See `docs/offline-reliability.md`.
 
-Increment 2 (v0.9.0) was owner-approved for gated merge and release on 2026-11-04. Its
+Increment 3 (v0.10.0) adds on-demand cross-diagram comparison and repeat-use
+actions without changing storage or dependency pins. PR #139 merged as ded312b
+after required checks. Pages run 41790125567 and live v0.10.0-ded312b were verified
+on 2026-11-04. See `docs/cross-diagram-preview.md`.
+
+Increment 2 (v0.9.0) was released on 2026-11-04 from PR #137, merge 3e4ef7b. Its
 additive `mtb.state.v2` library preserves `mtb.state.v1`, separates drafts from
-named saves. See `docs/complete-themes.md`. Verify the release tag and Pages run
-before claiming deployment. Mermaid and other dependency pins are unchanged.
+named saves. Pages run 41787273594 and live v0.9.0-3e4ef7b were verified.
+See `docs/complete-themes.md`. Mermaid and other dependency pins are unchanged.
 
 - Mermaid is used as an npm dependency (currently `12.2.0` -- pinned exactly).
 - Do not fork Mermaid. Do not copy Mermaid source into this repo.

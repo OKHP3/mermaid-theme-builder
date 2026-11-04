@@ -2,6 +2,17 @@
 
 ---
 
+## [0.10.1] - 2026-11-04
+
+### Fixed
+- Scope offline caches to this application, preserving sibling applications and ambiguous legacy caches.
+- Fetch current page content online, cache only validated production pages and hashed assets, and avoid freezing development modules.
+- Verify a warmed offline reload and return online without changing saved themes or diagram source.
+- Restore the editor when mobile Theme focus is selected during comparison, and remove an inactive gallery control reference.
+- Use shared spacing tokens for the gallery without changing its default dimensions.
+
+---
+
 ## [0.10.0] - 2026-11-04
 
 ### Added
@@ -156,7 +167,8 @@ Phase 2 P0 capability fixes, plus documentation truth sync across all public sur
 
 **Verdict: v0.6.0.** v1.0.0 remains blocked by its other roadmap gates; the WCAG 2.1 AA automated audit gate now passes.
 
-[Unreleased]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.10.0...HEAD
+[Unreleased]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.10.1...HEAD
+[0.10.1]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.10.0...v0.10.1
 [0.10.0]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.7.0...v0.8.0

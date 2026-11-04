@@ -73,6 +73,10 @@ Flat pnpm workspace. The Mermaid Theme Builder is the root application package, 
 
 **Features:**
 
+- **Increment 4 (v0.10.1):** Application-scoped offline cache repair. Development
+  modules bypass the cache. Existing stored themes and sibling caches are preserved.
+  See `docs/offline-reliability.md`. Replit remains Free-only; GitHub Pages is the
+  deployment target. No Agent task or Replit Publish action is required.
 - **Increment 3 (v0.10.0):** On-demand cross-diagram comparison, destination guidance,
   and a next-diagram paste action. See `docs/cross-diagram-preview.md`. The owner
   reserved this increment and viable follow-ons for the external executor in this

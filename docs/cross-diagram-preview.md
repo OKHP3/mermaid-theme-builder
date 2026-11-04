@@ -10,6 +10,9 @@ Comparison temporarily focuses the workspace on the samples. Comparing samples d
 not replace your own diagram or change a saved theme. Theme edits update the
 selected sample using the current appearance, typography, and output format.
 
+On mobile, selecting **Theme** closes comparison and restores theme editing.
+The normal preview picker remains available when returning to **Preview**.
+
 The gallery separates family coverage from the selected destination's documented
 color, look, and font limits. It does not test an external renderer. Verify your
 export in its destination before publishing. **Use with my diagram** returns
