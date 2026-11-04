@@ -526,7 +526,7 @@ release on 2026-11-03. Architecture context retains the 2026-10-26 baseline.
 - **Vision, inferred:** Serve as the visual governance layer in the OKHP3
   Visual Language Stack while remaining a small, static, privacy-respecting
   utility.
-- **Current status, confirmed:** The root package is version `0.9.0`, and the
+- **Current status, confirmed:** The root package is version `0.10.0`, and the
   application source plus CI and GitHub Pages deployment workflows are present.
   Version `0.7.0` was published from `fd03013` after PR #131 passed its required
   checks and Replit Free acceptance. Pages deployment and the live version were
@@ -637,6 +637,11 @@ generate themed Mermaid -> preview -> copy or export
 Any change that breaks this flow is a defect, regardless of other intent.
 
 #### 9.4 Mermaid dependency governance
+
+Increment 3 (v0.10.0) adds on-demand cross-diagram comparison and repeat-use
+actions without changing storage or dependency pins. Its implementation and
+deployment are owner-authorized; required checks and live verification remain
+mandatory. See `docs/cross-diagram-preview.md`.
 
 Increment 2 (v0.9.0) was owner-approved for gated merge and release on 2026-11-04. Its
 additive `mtb.state.v2` library preserves `mtb.state.v1`, separates drafts from

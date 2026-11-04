@@ -6,7 +6,8 @@
 - Increment 1: theme-first workspace, released as v0.8.0.
 - Increment 2: complete saved themes and recoverable local library, approved for
   gated release as v0.9.0. See [complete themes](complete-themes.md).
-- Increment 3: approved cross-diagram preview and repeat-use polish. Not yet implemented.
+- Increment 3: cross-diagram preview and repeat-use polish, packaged for gated
+  release as v0.10.0. See [preview behavior](cross-diagram-preview.md).
 - Follow-on improvements are authorized when viable, with separate scope and validation.
   This does not satisfy or waive the v1.0 gates below.
 

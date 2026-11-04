@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { ApplyTab } from "@/pages/tabs/ApplyTab";
 import { BRAND_PALETTES } from "@/lib/palettes";
 import { DEFAULT_TYPOGRAPHY } from "@/lib/typography";
@@ -47,6 +47,21 @@ const props: Parameters<typeof ApplyTab>[0] = {
 afterEach(cleanup);
 
 describe("Theme-first Apply workspace", () => {
+  it("prepares the next paste without clearing source or changing the theme", async () => {
+    const onInputChange = vi.fn();
+    const onSelectPalette = vi.fn();
+    render(<ApplyTab {...props} onInputChange={onInputChange} onSelectPalette={onSelectPalette} />);
+    fireEvent.click(screen.getByRole("button", { name: "Paste next diagram" }));
+    const input = screen.getByLabelText("Mermaid diagram code input") as HTMLTextAreaElement;
+    await waitFor(() => expect(document.activeElement).toBe(input));
+    expect(input.value).toBe(props.inputCode);
+    expect(input.selectionStart).toBe(0);
+    expect(input.selectionEnd).toBe(props.inputCode.length);
+    expect(document.activeElement).toBe(input);
+    expect(onInputChange).not.toHaveBeenCalled();
+    expect(onSelectPalette).not.toHaveBeenCalled();
+  });
+
   it("does not offer fake rendering controls or universal readiness", () => {
     render(<ApplyTab {...props} />);
     expect(screen.queryByRole("button", { name: "Canvas" })).toBeNull();

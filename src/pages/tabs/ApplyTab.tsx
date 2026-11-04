@@ -155,6 +155,7 @@ export function ApplyTab({
   const [familyHintDismissed, setFamilyHintDismissed] = useState(false);
   const [showScaffoldModal, setShowScaffoldModal] = useState(false);
   const [textareaExpanded, setTextareaExpanded] = useState(false);
+  const sourceInputRef = useRef<HTMLTextAreaElement>(null);
   const [activeDiagramIdx, setActiveDiagramIdx] = useState(0);
   const [familyOverride, setFamilyOverride] = useState<DiagramFamily | null>(null);
   const [workspaceFocus, setWorkspaceFocus] = useState<"theme" | "preview" | "code">("preview");
@@ -451,6 +452,22 @@ export function ApplyTab({
           <p>One visual style. Every diagram you bring.</p>
         </div>
         <div className="workspace-actions">
+          <button
+            type="button"
+            className="workspace-button"
+            onClick={() => {
+              setWorkspaceFocus("code");
+              requestAnimationFrame(() => {
+                sourceInputRef.current?.focus();
+                sourceInputRef.current?.select();
+              });
+              onShowToast(
+                "Paste your next diagram. Your theme stays selected; existing code is kept until you replace it."
+              );
+            }}
+          >
+            Paste next diagram
+          </button>
           <button type="button" className="workspace-button" onClick={() => onSwitchTab("compose")}>
             Edit theme
           </button>
@@ -533,6 +550,7 @@ export function ApplyTab({
               </p>
             )}
             <textarea
+              ref={sourceInputRef}
               id="apply-diagram-source"
               value={inputCode}
               onChange={(e) => onInputChange(e.target.value)}

@@ -47,6 +47,10 @@ On mobile, **Theme**, **Preview**, and **Code** focus on one task at a time.
 Compatibility guidance includes input, family, look, and destination advisories.
 A local preview does not validate an external renderer.
 
+**Compare samples** in Compose applies one theme to Flowchart, Sequence, and ER
+samples on demand. **Paste next diagram** in Apply selects existing source for
+replacement while keeping the theme. See [cross-diagram preview](docs/cross-diagram-preview.md).
+
 Increment 2 (v0.9.0) adds complete saved themes, separate automatic
 drafts, search, and a library without the former three-theme count limit.
 **Save changes** updates a named theme; **Save as copy** creates an independent

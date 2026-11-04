@@ -835,6 +835,99 @@
 .studio-preview {
   min-width: 0;
 }
+.cross-diagram-gallery {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid hsl(var(--border));
+  background: hsl(var(--card));
+}
+.studio-preview[data-gallery-open="true"] {
+  overflow-y: auto;
+}
+.theme-studio[data-gallery-open="true"] > .workspace-library,
+.theme-studio[data-gallery-open="true"] .studio-inspector {
+  display: none;
+}
+.studio-preview[data-gallery-open="true"] .studio-canvas {
+  flex: none;
+  height: 340px;
+  min-height: 280px;
+}
+@media (min-width: 768px) {
+  .studio-preview[data-gallery-open="true"] {
+    display: grid;
+    grid-template-columns: 230px minmax(0, 1fr);
+    grid-template-rows: auto auto auto;
+    align-content: start;
+  }
+  .studio-preview[data-gallery-open="true"] > div:first-child,
+  .studio-preview[data-gallery-open="true"] .studio-caption {
+    grid-column: 1 / -1;
+  }
+  .studio-preview[data-gallery-open="true"] .studio-canvas {
+    height: 100%;
+  }
+  .studio-preview[data-gallery-open="true"] .gallery-samples {
+    grid-template-columns: 1fr;
+  }
+  .studio-preview[data-gallery-open="true"] .gallery-samples button {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.125rem 0.5rem;
+  }
+  .studio-preview[data-gallery-open="true"] .gallery-number {
+    grid-row: span 2;
+  }
+  .studio-gallery {
+    border-right: 1px solid hsl(var(--border));
+  }
+}
+.gallery-heading {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  align-items: baseline;
+  justify-content: space-between;
+}
+.gallery-heading h3 {
+  font-size: var(--text-sm);
+  font-weight: 700;
+}
+.gallery-heading p,
+.gallery-compatibility {
+  font-size: var(--text-xs);
+  color: hsl(var(--foreground));
+}
+.gallery-samples {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin: 0.75rem 0;
+}
+.gallery-samples button {
+  display: grid;
+  text-align: left;
+  gap: 0.25rem;
+  padding: 0.625rem;
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  font-size: var(--text-xs);
+  background: hsl(var(--background));
+  overflow-wrap: anywhere;
+}
+.gallery-samples button[aria-pressed="true"] {
+  border-color: hsl(var(--primary));
+  box-shadow: inset 0 0 0 1px hsl(var(--primary));
+}
+.gallery-samples button:focus-visible {
+  outline: 2px solid hsl(var(--primary));
+  outline-offset: 3px;
+}
+.gallery-number {
+  font-family: "JetBrains Mono", monospace;
+  font-weight: 700;
+}
+.gallery-samples small {
+  font-size: inherit;
+}
 .studio-preview > div:first-child {
   flex-wrap: wrap;
 }
