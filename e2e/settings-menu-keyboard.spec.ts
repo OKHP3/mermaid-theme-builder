@@ -207,6 +207,9 @@ test.describe("Settings menu keyboard navigation", () => {
     await page.keyboard.press("Space");
 
     await expect(menu).not.toBeVisible();
+    const confirmation = page.getByRole("dialog", { name: "Clear this workspace?" });
+    await expect(confirmation).toBeVisible();
+    await confirmation.getByRole("button", { name: "Confirm clear workspace" }).click();
     await expect(page.getByRole("status")).toContainText("All settings cleared.");
   });
 

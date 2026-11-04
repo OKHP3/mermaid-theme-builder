@@ -24,6 +24,7 @@ import { getFamilySyntaxHint, isHintDismissed } from "@/lib/family-syntax-hints"
 import { type TypographySettings } from "@/lib/typography";
 import type { AppTab } from "@/App";
 import type { MyThemeSlot } from "@/lib/my-theme-slots";
+import type { GovernanceProfile } from "@/lib/governance-profile";
 import { DiagramDetectHeader } from "./apply/DiagramDetectHeader";
 import { PreflightPanel, buildPreflightReport } from "./apply/PreflightPanel";
 import { DiagramPreviewPanel, type PreviewMode } from "./apply/DiagramPreviewPanel";
@@ -31,6 +32,7 @@ import { ExportToolbar } from "./apply/ExportToolbar";
 import { ColorEditorPanel } from "./apply/ColorEditorPanel";
 
 interface ApplyTabProps {
+  completeTheme?: GovernanceProfile;
   selectedPalette: Palette;
   selectedPaletteId: string;
   onSelectPalette: (id: string) => void;
@@ -81,6 +83,7 @@ interface ApplyTabProps {
   onMoveMyThemeSlotUp?: (id: string) => void;
   onMoveMyThemeSlotDown?: (id: string) => void;
   onShowProfileDetails?: (id: string) => void;
+  onImportThemeFile?: (json: string) => void;
   onImportAsNewSlot?: (
     palette: import("@/lib/palettes").Palette,
     warnings: {
@@ -92,6 +95,7 @@ interface ApplyTabProps {
 }
 
 export function ApplyTab({
+  completeTheme,
   selectedPalette,
   selectedPaletteId,
   onSelectPalette,
@@ -143,6 +147,7 @@ export function ApplyTab({
   onMoveMyThemeSlotDown,
   onShowProfileDetails,
   onImportAsNewSlot,
+  onImportThemeFile,
   advancedMermaidConfig = {},
 }: ApplyTabProps) {
   const [showColorEditor, setShowColorEditor] = useState(false);
@@ -503,6 +508,7 @@ export function ApplyTab({
           onMoveMyThemeSlotUp={onMoveMyThemeSlotUp}
           onMoveMyThemeSlotDown={onMoveMyThemeSlotDown}
           onImportAsNewSlot={onImportAsNewSlot}
+          onImportThemeFile={onImportThemeFile}
           onShowToast={onShowToast}
           onShowProfileDetails={onShowProfileDetails}
         />
@@ -614,6 +620,7 @@ export function ApplyTab({
       </div>
       <div className="theme-workbench-export">
         <ExportToolbar
+          completeTheme={completeTheme}
           warnings={warnings}
           showCapabilityNote={!!showCapabilityNote}
           capability={effectiveDetection.capability}

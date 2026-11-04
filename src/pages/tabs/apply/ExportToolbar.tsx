@@ -49,7 +49,10 @@ const DOWNLOAD_LABELS: Record<DownloadType, string> = {
   bundle: ".bundle.json",
 };
 
+import { profileToPortableJson, type GovernanceProfile } from "@/lib/governance-profile";
+
 interface ExportToolbarProps {
+  completeTheme?: GovernanceProfile;
   /** @deprecated Pass warnings to PreflightPanel in the parent instead. */
   warnings?: string[];
   /** @deprecated Pass capability note to PreflightPanel in the parent instead. */
@@ -88,6 +91,7 @@ interface ExportToolbarProps {
 }
 
 export function ExportToolbar({
+  completeTheme,
   warnings = [],
   showCapabilityNote = false,
   capability,
@@ -229,7 +233,9 @@ export function ExportToolbar({
         } else if (type === "json") {
           downloadTextFile(
             makeFilename(effectiveThemeName, "theme", "json"),
-            paletteToPortableJson(selectedPalette),
+            completeTheme
+              ? profileToPortableJson(completeTheme)
+              : paletteToPortableJson(selectedPalette),
             "application/json;charset=utf-8"
           );
           onShowToast("Downloaded .theme.json file.");
@@ -285,6 +291,7 @@ export function ExportToolbar({
     },
     [
       downloadingType,
+      completeTheme,
       effectiveExportCode,
       themedCode,
       typography,
@@ -687,7 +694,7 @@ export function ExportToolbar({
                       )}
                       {t === "svg" && "vector"}
                       {t === "png" && "raster 2x"}
-                      {t === "json" && "palette"}
+                      {t === "json" && (completeTheme ? "complete theme" : "palette")}
                       {t === "css" && "variables"}
                       {t === "bundle" && "all palettes"}
                     </span>

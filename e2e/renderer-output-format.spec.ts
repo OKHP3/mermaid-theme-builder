@@ -63,6 +63,17 @@ test.describe("renderer-aware output format recommendations", () => {
     await expect(formatButton(page, "%%{init}%%")).toHaveAttribute("aria-pressed", "true");
     await expect(page.getByRole("button", { name: "Reset to recommended" })).toBeVisible();
 
+    await expect
+      .poll(() =>
+        page.evaluate(() => {
+          const state = JSON.parse(localStorage.getItem("mtb.state.v2") ?? "null");
+          const draft = state?.drafts.find(
+            (item: { id: string }) => item.id === state.editorSession.selectedPaletteId
+          );
+          return [draft?.rendererTarget, draft?.outputFormat, draft?.outputFormatOverridden];
+        })
+      )
+      .toEqual(["github", "init-directive", true]);
     await page.reload();
     await expect(page.getByLabel("Select target renderer")).toHaveValue("github");
     await expect(formatButton(page, "%%{init}%%")).toHaveAttribute("aria-pressed", "true");
@@ -72,6 +83,17 @@ test.describe("renderer-aware output format recommendations", () => {
     await expect(formatButton(page, "YAML")).toHaveAttribute("aria-pressed", "true");
     await expect(page.getByRole("button", { name: "Reset to recommended" })).toHaveCount(0);
 
+    await expect
+      .poll(() =>
+        page.evaluate(() => {
+          const state = JSON.parse(localStorage.getItem("mtb.state.v2") ?? "null");
+          const draft = state?.drafts.find(
+            (item: { id: string }) => item.id === state.editorSession.selectedPaletteId
+          );
+          return [draft?.rendererTarget, draft?.outputFormat, draft?.outputFormatOverridden];
+        })
+      )
+      .toEqual(["github", "frontmatter", false]);
     await page.reload();
     await expect(page.getByLabel("Select target renderer")).toHaveValue("github");
     await expect(formatButton(page, "YAML")).toHaveAttribute("aria-pressed", "true");
@@ -102,7 +124,7 @@ test.describe("renderer-aware output format recommendations", () => {
     await expect
       .poll(() =>
         page.evaluate(() => {
-          const saved = JSON.parse(localStorage.getItem("mtb.state.v1") ?? "null");
+          const saved = JSON.parse(localStorage.getItem("mtb.state.v2") ?? "null")?.drafts[0];
           return [saved?.outputFormat, saved?.outputFormatOverridden];
         })
       )

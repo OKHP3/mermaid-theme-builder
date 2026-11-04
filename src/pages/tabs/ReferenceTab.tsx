@@ -33,6 +33,7 @@ interface ReferenceTabProps {
   onMoveMyThemeSlotUp?: (id: string) => void;
   onMoveMyThemeSlotDown?: (id: string) => void;
   onShowProfileDetails?: (id: string) => void;
+  onImportThemeFile?: (json: string) => void;
   onImportAsNewSlot?: (
     palette: import("@/lib/palettes").Palette,
     warnings: {
@@ -176,6 +177,7 @@ export function ReferenceTab({
   onMoveMyThemeSlotDown,
   onShowProfileDetails,
   onImportAsNewSlot,
+  onImportThemeFile,
   onShowToast = () => {},
   rendererTarget = "",
   rendererTargetHintDismissed = false,
@@ -307,6 +309,7 @@ export function ReferenceTab({
         onMoveMyThemeSlotUp={onMoveMyThemeSlotUp}
         onMoveMyThemeSlotDown={onMoveMyThemeSlotDown}
         onImportAsNewSlot={onImportAsNewSlot}
+        onImportThemeFile={onImportThemeFile}
         onShowToast={onShowToast}
         onShowProfileDetails={onShowProfileDetails}
       />

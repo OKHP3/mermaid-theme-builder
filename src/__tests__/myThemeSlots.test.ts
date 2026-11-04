@@ -28,8 +28,8 @@ describe("nextSlotNumber", () => {
     expect(nextSlotNumber([makeSlot(1), makeSlot(2)])).toBe(3);
   });
 
-  it("returns null when all three slots exist", () => {
-    expect(nextSlotNumber([makeSlot(1), makeSlot(2), makeSlot(3)])).toBeNull();
+  it("offers a fourth theme after the original three slots", () => {
+    expect(nextSlotNumber([makeSlot(1), makeSlot(2), makeSlot(3)])).toBe(4);
   });
 
   it("returns 2 after deleting the middle slot (slots 1 and 3 remain)", () => {

@@ -24,9 +24,12 @@ function makeSlot(n: 1 | 2 | 3): MyThemeSlot {
 // ── duplicateSlot ─────────────────────────────────────────────────────────────
 
 describe("duplicateSlot", () => {
-  it("returns null when all 3 slots are in use", () => {
+  it("duplicates into a fourth theme without losing the original three", () => {
     const slots = [makeSlot(1), makeSlot(2), makeSlot(3)];
-    expect(duplicateSlot(slots, "my-theme-1")).toBeNull();
+    const result = duplicateSlot(slots, "my-theme-1");
+    expect(result?.newSlotId).toBe("my-theme-4");
+    expect(result?.slots).toHaveLength(4);
+    expect(result?.slots.slice(0, 3)).toEqual(slots);
   });
 
   it("returns null when source id is not found", () => {

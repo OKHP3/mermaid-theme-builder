@@ -1,5 +1,18 @@
 # Roadmap
 
+## Revitalization status (2026-11-04)
+
+- Foundation modernization: v0.7.0, followed by the reviewed pin refresh in PR #134.
+- Increment 1: theme-first workspace, released as v0.8.0.
+- Increment 2: complete saved themes and recoverable local library, approved for
+  gated release as v0.9.0. See [complete themes](complete-themes.md).
+- Increment 3: approved cross-diagram preview and repeat-use polish. Not yet implemented.
+- Follow-on improvements are authorized when viable, with separate scope and validation.
+  This does not satisfy or waive the v1.0 gates below.
+
+The dated sections below retain the earlier roadmap history. Release tags and
+Pages runs, not this document alone, establish deployment.
+
 > **Status as of 2026-08-05:** Tags: `v0.5.0` (2026-05-12), `v0.6.0` (2026-08-04), `v0.6.1` (2026-08-05). The live app's Reference tab catalogs 31 diagram families and a 10-skill Agent Skills catalog. Evidence log for the v0.6.1 sprint: `docs/evidence-log-v061.md`.
 
 ## v0.1.0 — Foundation (Shipped 2026-04-23)

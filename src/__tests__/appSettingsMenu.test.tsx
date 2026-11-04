@@ -151,7 +151,7 @@ describe("AppShell settings menu — Reset all syntax tips", () => {
   it("shows the 'Syntax tips restored.' toast after clicking 'Reset all syntax tips'", async () => {
     render(createElement(AppShell));
     await openMenuAndClickReset();
-    const toast = screen.getByRole("status");
+    const toast = screen.getByRole("status", { name: "Notification" });
     expect(toast.textContent).toContain("Syntax tips restored.");
   });
 

@@ -73,6 +73,8 @@ Flat pnpm workspace. The Mermaid Theme Builder is the root application package, 
 
 **Features:**
 
+- **Increment 2 (v0.9.0):** Complete themes and separate drafts use additive `mtb.state.v2` storage. Original `mtb.state.v1` bytes remain unchanged. Explicit saves, search beyond three themes, reviewed import, complete JSON/links, and local backup/recovery are described in `docs/complete-themes.md`. The owner approved gated merge and release on 2026-11-04. Verify the release tag and Pages run independently. Keep all Replit work in Free mode.
+
 - **Theme-first workspace (v0.8.0):** Compose promotes the active theme and existing Save/Export/Use actions. Apply keeps source beside the preview, with focused Theme/Preview/Code views on mobile. Existing routes, storage, imports, and exports are retained; no profile migration is included.
 - Paste Mermaid code → auto-detects diagram family (flowchart, sequence, class, ER, Gantt, pie, etc.)
 - Built-in brand palettes: Overkill Hill, AskJamie, Glee Fully, and utility palettes
@@ -92,7 +94,9 @@ Flat pnpm workspace. The Mermaid Theme Builder is the root application package, 
 - `src/lib/theme-engine.ts` — theme application and export generation
 - `src/lib/extractor.ts` — extract theme from existing Mermaid code
 - `src/lib/family-theming.ts` — per-diagram-family theme overlays
-- `src/lib/persistence.ts` — localStorage state, shareable URL encoding
+- `src/lib/persistence.ts` - legacy state and palette-share compatibility helpers
+- `src/lib/theme-library.ts` - complete-theme storage, migration, and library portability
+- `src/hooks/useThemeLibrary.ts` - serialized saves, conflict detection, and recovery state
 - `src/lib/diff.ts` — diff view between original and themed code
 - `src/lib/diagram-split.ts` — multi-diagram splitting
 - `src/lib/exporters.ts` — file download, SVG/PNG render, JSON import/export

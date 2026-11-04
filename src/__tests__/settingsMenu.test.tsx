@@ -53,6 +53,7 @@ import { fireEvent } from "@testing-library/dom";
 import { createElement } from "react";
 import App from "@/App";
 import { clearAllDismissals } from "@/lib/family-syntax-hints";
+import { persistedWorkspaceView } from "./helpers/theme-library-view";
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -103,12 +104,11 @@ function getMenu(): Element | null {
 }
 
 function getToast(): string {
-  return screen.getByRole("status").textContent ?? "";
+  return screen.getByRole("status", { name: "Notification" }).textContent ?? "";
 }
 
 function getPersistedState(): Record<string, unknown> {
-  const raw = localStorage.getItem(STORAGE_KEY);
-  return raw ? (JSON.parse(raw) as Record<string, unknown>) : {};
+  return persistedWorkspaceView();
 }
 
 // ---------------------------------------------------------------------------
@@ -190,12 +190,12 @@ describe("Settings menu — Reset all palette customizations (confirm flow)", ()
     expect(screen.queryByText("Reset all palette customizations")).toBeNull();
   });
 
-  it('fires the "All palette customizations reset." toast after Confirm', () => {
+  it('fires the "All palette customizations reset." toast after Confirm', async () => {
     render(createElement(App, null));
     openSettingsMenu();
     fireEvent.click(screen.getByText("Reset all palette customizations"));
     fireEvent.click(screen.getByText("Confirm"));
-    expect(getToast()).toContain("All palette customizations reset.");
+    await waitFor(() => expect(getToast()).toContain("All palette customizations reset."));
   });
 
   it("closes the settings menu after Confirm", () => {
@@ -246,7 +246,7 @@ describe("Settings menu — Reset all palette customizations (confirm flow)", ()
     openSettingsMenu();
     fireEvent.click(screen.getByText("Reset all palette customizations"));
     fireEvent.click(screen.getByText("Cancel"));
-    expect(screen.queryByRole("status")).toBeNull();
+    expect(screen.queryByRole("status", { name: "Notification" })).toBeNull();
   });
 
   it("does not clear the ClassBrowser preview-mode preference after Confirm (PREVIEW_MODE_KEY survives)", () => {
@@ -326,19 +326,27 @@ describe("Settings menu — Clear recent palette history", () => {
 // 4. Clear all settings
 // ---------------------------------------------------------------------------
 
-describe("Settings menu — Clear all settings", () => {
-  it('shows the "All settings cleared." toast after clicking', () => {
+describe("Settings menu: Clear all settings", async () => {
+  it('shows the "All settings cleared." toast after clicking', async () => {
     render(createElement(App, null));
     openSettingsMenu();
     fireEvent.click(screen.getByText("Clear all settings"));
+    fireEvent.click(await screen.findByRole("button", { name: "Confirm clear workspace" }));
+    await waitFor(() =>
+      expect(screen.queryByRole("dialog", { name: "Clear this workspace?" })).toBeNull()
+    );
     expect(getToast()).toContain("All settings cleared.");
   });
 
-  it("closes the settings menu after the action", () => {
+  it("closes the settings menu after the action", async () => {
     render(createElement(App, null));
     openSettingsMenu();
     expect(getMenu()).not.toBeNull();
     fireEvent.click(screen.getByText("Clear all settings"));
+    fireEvent.click(await screen.findByRole("button", { name: "Confirm clear workspace" }));
+    await waitFor(() =>
+      expect(screen.queryByRole("dialog", { name: "Clear this workspace?" })).toBeNull()
+    );
     expect(getMenu()).toBeNull();
   });
 
@@ -349,6 +357,10 @@ describe("Settings menu — Clear all settings", () => {
     render(createElement(App, null));
     openSettingsMenu();
     fireEvent.click(screen.getByText("Clear all settings"));
+    fireEvent.click(await screen.findByRole("button", { name: "Confirm clear workspace" }));
+    await waitFor(() =>
+      expect(screen.queryByRole("dialog", { name: "Clear this workspace?" })).toBeNull()
+    );
 
     await waitFor(() => {
       const saved = getPersistedState();
@@ -361,6 +373,10 @@ describe("Settings menu — Clear all settings", () => {
     render(createElement(App, null));
     openSettingsMenu();
     fireEvent.click(screen.getByText("Clear all settings"));
+    fireEvent.click(await screen.findByRole("button", { name: "Confirm clear workspace" }));
+    await waitFor(() =>
+      expect(screen.queryByRole("dialog", { name: "Clear this workspace?" })).toBeNull()
+    );
 
     await waitFor(() => {
       const saved = getPersistedState();
@@ -368,7 +384,7 @@ describe("Settings menu — Clear all settings", () => {
     });
   });
 
-  it("clears the preview-mode key — PREVIEW_MODE_KEY is null after clicking", () => {
+  it("clears the preview-mode key after confirmation", async () => {
     // PREVIEW_MODE_KEY has no re-save useEffect, so it stays null after
     // clearPersistedState() runs — unlike STORAGE_KEY which is re-written
     // with the default state by App's persistence useEffect.
@@ -377,6 +393,10 @@ describe("Settings menu — Clear all settings", () => {
     render(createElement(App, null));
     openSettingsMenu();
     fireEvent.click(screen.getByText("Clear all settings"));
+    fireEvent.click(await screen.findByRole("button", { name: "Confirm clear workspace" }));
+    await waitFor(() =>
+      expect(screen.queryByRole("dialog", { name: "Clear this workspace?" })).toBeNull()
+    );
     // clearPersistedState is synchronous — PREVIEW_MODE_KEY is erased before
     // the next microtask tick.
     expect(localStorage.getItem(PREVIEW_MODE_KEY)).toBeNull();
@@ -388,6 +408,10 @@ describe("Settings menu — Clear all settings", () => {
     render(createElement(App, null));
     openSettingsMenu();
     fireEvent.click(screen.getByText("Clear all settings"));
+    fireEvent.click(await screen.findByRole("button", { name: "Confirm clear workspace" }));
+    await waitFor(() =>
+      expect(screen.queryByRole("dialog", { name: "Clear this workspace?" })).toBeNull()
+    );
 
     // PREVIEW_MODE_KEY is synchronously null.
     expect(localStorage.getItem(PREVIEW_MODE_KEY)).toBeNull();
@@ -407,6 +431,10 @@ describe("Settings menu — Clear all settings", () => {
     render(createElement(App, null));
     openSettingsMenu();
     fireEvent.click(screen.getByText("Clear all settings"));
+    fireEvent.click(await screen.findByRole("button", { name: "Confirm clear workspace" }));
+    await waitFor(() =>
+      expect(screen.queryByRole("dialog", { name: "Clear this workspace?" })).toBeNull()
+    );
 
     await waitFor(() => {
       expect(getPersistedState().rendererTargetHintDismissed).toBe(false);
@@ -419,6 +447,10 @@ describe("Settings menu — Clear all settings", () => {
     render(createElement(App, null));
     openSettingsMenu();
     fireEvent.click(screen.getByText("Clear all settings"));
+    fireEvent.click(await screen.findByRole("button", { name: "Confirm clear workspace" }));
+    await waitFor(() =>
+      expect(screen.queryByRole("dialog", { name: "Clear this workspace?" })).toBeNull()
+    );
 
     await waitFor(() => {
       const saved = getPersistedState();
@@ -432,6 +464,10 @@ describe("Settings menu — Clear all settings", () => {
     render(createElement(App, null));
     openSettingsMenu();
     fireEvent.click(screen.getByText("Clear all settings"));
+    fireEvent.click(await screen.findByRole("button", { name: "Confirm clear workspace" }));
+    await waitFor(() =>
+      expect(screen.queryByRole("dialog", { name: "Clear this workspace?" })).toBeNull()
+    );
 
     await waitFor(() => {
       const saved = getPersistedState();
@@ -445,6 +481,10 @@ describe("Settings menu — Clear all settings", () => {
     render(createElement(App, null));
     openSettingsMenu();
     fireEvent.click(screen.getByText("Clear all settings"));
+    fireEvent.click(await screen.findByRole("button", { name: "Confirm clear workspace" }));
+    await waitFor(() =>
+      expect(screen.queryByRole("dialog", { name: "Clear this workspace?" })).toBeNull()
+    );
 
     await waitFor(() => {
       const saved = getPersistedState();
@@ -458,6 +498,10 @@ describe("Settings menu — Clear all settings", () => {
     render(createElement(App, null));
     openSettingsMenu();
     fireEvent.click(screen.getByText("Clear all settings"));
+    fireEvent.click(await screen.findByRole("button", { name: "Confirm clear workspace" }));
+    await waitFor(() =>
+      expect(screen.queryByRole("dialog", { name: "Clear this workspace?" })).toBeNull()
+    );
 
     await waitFor(() => {
       const saved = getPersistedState();

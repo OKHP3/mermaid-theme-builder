@@ -74,6 +74,7 @@ interface ExamplesTabProps {
   onMoveMyThemeSlotUp?: (id: string) => void;
   onMoveMyThemeSlotDown?: (id: string) => void;
   onShowProfileDetails?: (id: string) => void;
+  onImportThemeFile?: (json: string) => void;
   onImportAsNewSlot?: (
     palette: import("@/lib/palettes").Palette,
     warnings: {
@@ -105,6 +106,7 @@ export function ExamplesTab({
   onMoveMyThemeSlotDown,
   onShowProfileDetails,
   onImportAsNewSlot,
+  onImportThemeFile,
   onShowToast = () => {},
 }: ExamplesTabProps) {
   const [selectedId, setSelectedId] = useState(() => {
@@ -255,6 +257,7 @@ export function ExamplesTab({
         onMoveMyThemeSlotUp={onMoveMyThemeSlotUp}
         onMoveMyThemeSlotDown={onMoveMyThemeSlotDown}
         onImportAsNewSlot={onImportAsNewSlot}
+        onImportThemeFile={onImportThemeFile}
         onShowToast={onShowToast}
         onShowProfileDetails={onShowProfileDetails}
       />

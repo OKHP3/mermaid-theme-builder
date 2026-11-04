@@ -17,7 +17,7 @@ const SELECTOR_HEADING = /What would you like to do/i;
 
 const EMPTY_SLOTS_STATE = {
   schemaVersion: 1,
-  selectedPaletteId: "okh-forge-night",
+  selectedPaletteId: "overkill-hill",
   customColors: {},
   includeMetaComments: true,
   includeBadge: true,
@@ -194,8 +194,10 @@ test.describe("Reference distribution center", () => {
     await expect
       .poll(() =>
         page.evaluate(() => {
-          const raw = localStorage.getItem("mtb.state.v1");
-          return raw ? JSON.parse(raw).rendererTargetHintDismissed : false;
+          const raw = localStorage.getItem("mtb.state.v2");
+          return raw
+            ? JSON.parse(raw).editorSession.preferences.rendererTargetHintDismissed
+            : false;
         })
       )
       .toBe(true);
@@ -216,8 +218,10 @@ test.describe("Reference distribution center", () => {
     await expect
       .poll(() =>
         page.evaluate(() => {
-          const raw = localStorage.getItem("mtb.state.v1");
-          return raw ? JSON.parse(raw).rendererTargetHintDismissed : false;
+          const raw = localStorage.getItem("mtb.state.v2");
+          return raw
+            ? JSON.parse(raw).editorSession.preferences.rendererTargetHintDismissed
+            : false;
         })
       )
       .toBe(true);
@@ -246,15 +250,21 @@ test.describe("Reference distribution center", () => {
     );
   });
 
-  test("disables profile sharing when no My Theme slot is active", async ({ page }) => {
+  test("shares the complete built-in starting theme without requiring a My Theme slot", async ({
+    page,
+    context,
+  }) => {
+    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
     await gotoTab(page, "reference", EMPTY_SLOTS_STATE);
     await openDistribution(page);
 
-    await expect(page.getByRole("button", { name: "Copy link for this profile" })).toBeDisabled();
+    await page.getByRole("button", { name: "Copy link for this profile" }).click();
+    const link = await page.evaluate(() => navigator.clipboard.readText());
+    expect(new URL(link).searchParams.get(PROFILE_SHARE_PARAM)).toBeTruthy();
   });
 
   test("enables profile sharing when a My Theme slot is active", async ({ page }) => {
-    await gotoTab(page, "reference");
+    await gotoTab(page, "reference", ACTIVE_PROFILE_STATE);
     await openDistribution(page);
 
     await expect(page.getByRole("button", { name: "Copy link for this profile" })).toBeEnabled();
@@ -288,10 +298,19 @@ test.describe("Reference distribution center", () => {
       await cleanPage.goto(sharedUrl);
       await cleanPage.waitForLoadState("load");
 
-      const importedSlot = cleanPage.locator("#apply-palette-tile-my-theme-2");
+      await cleanPage
+        .getByRole("dialog", { name: "Review theme import" })
+        .getByRole("button", { name: "Import as copies", exact: true })
+        .click();
+      const importedSlot = cleanPage.getByRole("radio", {
+        name: `${ACTIVE_PROFILE_NAME} Mine`,
+        exact: true,
+      });
       await expect(importedSlot).toHaveAttribute("title", ACTIVE_PROFILE_NAME, {
         timeout: 8_000,
       });
+      await expect(importedSlot).toHaveAttribute("aria-checked", "false");
+      await importedSlot.click();
       await expect(importedSlot).toHaveAttribute("aria-checked", "true");
 
       await cleanPage.getByRole("tab", { name: "Apply", exact: true }).first().click();

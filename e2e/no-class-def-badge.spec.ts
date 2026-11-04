@@ -282,6 +282,6 @@ test("Prompt Scaffold preview uses the latest flowchart and active theme after a
   const preview = dialog.locator('pre[aria-label="Scaffold preview for %%{init}%% directive"]');
   await expect(preview).toBeVisible();
   await expect(preview).toContainText("When generating flowchart diagrams");
-  await expect(preview).toContainText("**Theme ID:** `my-theme-1`");
+  await expect(preview).toContainText("**Theme ID:** `overkill-hill`");
   await expect(preview).not.toContainText("When generating sankey diagrams");
 });

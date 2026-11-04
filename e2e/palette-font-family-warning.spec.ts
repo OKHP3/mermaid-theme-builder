@@ -25,13 +25,13 @@ async function openMyThemeColorEditor(page: Page): Promise<void> {
   // Confirm the default My Theme workspace is active from the Compose tab
   // before moving to the Apply-only color-editor drawer.
   await page.getByRole("tab", { name: /Compose/i }).click();
-  const myThemeSlot = page.locator("#compose-palette-tile-my-theme-1");
+  const myThemeSlot = page.locator("#compose-palette-tile-overkill-hill");
   await expect(myThemeSlot).toHaveAttribute("aria-checked", "true");
 
   await page.getByRole("tab", { name: /Apply/i }).click();
   await page.getByRole("button", { name: "Edit Colors" }).first().click();
 
-  const editor = page.getByRole("dialog", { name: /Edit colors for My Theme 1/i });
+  const editor = page.getByRole("dialog", { name: /Edit colors for OKHP3/i });
   await expect(editor).toBeVisible();
   await editor.getByRole("textbox", { name: FONT_FAMILY_INPUT }).waitFor();
 }
@@ -42,7 +42,7 @@ test.describe("Palette editor font-family injection-character warning", () => {
   }) => {
     await openMyThemeColorEditor(page);
 
-    const editor = page.getByRole("dialog", { name: /Edit colors for My Theme 1/i });
+    const editor = page.getByRole("dialog", { name: /Edit colors for OKHP3/i });
     const input = editor.getByRole("textbox", { name: FONT_FAMILY_INPUT });
     const warning = editor.getByText(WARNING_TEXT);
 

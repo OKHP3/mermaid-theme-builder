@@ -22,6 +22,7 @@ import {
 // ─── URL parameter name ───────────────────────────────────────────────────────
 
 export const PROFILE_SHARE_PARAM = "profile" as const;
+export const MAX_PROFILE_SHARE_URL_LENGTH = 32_000;
 
 // ─── Base64url helpers ────────────────────────────────────────────────────────
 
@@ -50,7 +51,11 @@ function base64UrlToBytes(s: string): Uint8Array {
  * Use `buildProfileShareUrl` to get the full shareable URL.
  */
 export function encodeProfileToken(profile: GovernanceProfile): string {
-  const json = profileToPortableJson(profile);
+  const json = JSON.stringify(JSON.parse(profileToPortableJson(profile)));
+  if (json.length > MAX_PROFILE_SHARE_URL_LENGTH)
+    throw new Error(
+      "This theme is too large for a share link. Download the complete theme JSON instead."
+    );
   const bytes = new TextEncoder().encode(json);
   return bytesToBase64Url(bytes);
 }
@@ -64,6 +69,12 @@ export type ProfileTokenResult = GovernanceProfileImport | GovernanceProfileImpo
  */
 export function decodeProfileToken(token: string): ProfileTokenResult {
   try {
+    if (token.length > MAX_PROFILE_SHARE_URL_LENGTH)
+      return {
+        ok: false,
+        error:
+          "This theme link exceeds the supported size. Ask the sender for a theme JSON file. Nothing was imported.",
+      };
     const bytes = base64UrlToBytes(token);
     const json = new TextDecoder().decode(bytes);
     return parseGovernanceProfile(json);
@@ -86,7 +97,12 @@ export function buildProfileShareUrl(profile: GovernanceProfile, baseHref?: stri
   const href =
     baseHref ?? (typeof window !== "undefined" ? window.location.href : "https://example.com");
   const url = new URL(href);
+  url.searchParams.delete("theme");
   url.searchParams.set(PROFILE_SHARE_PARAM, encodeProfileToken(profile));
+  if (url.toString().length > MAX_PROFILE_SHARE_URL_LENGTH)
+    throw new Error(
+      "This theme is too large for a share link. Download the complete theme JSON instead."
+    );
   return url.toString();
 }
 
@@ -136,7 +152,11 @@ export async function writeToClipboard(text: string): Promise<void> {
     el.style.opacity = "0";
     document.body.appendChild(el);
     el.select();
-    document.execCommand("copy");
-    document.body.removeChild(el);
+    try {
+      if (!document.execCommand("copy"))
+        throw new Error("Clipboard access failed. Download the theme JSON instead.");
+    } finally {
+      document.body.removeChild(el);
+    }
   }
 }

@@ -234,7 +234,7 @@ test.describe("WCAG 2.1 A/AA overlay, expanded, and persisted states", () => {
       }
 
       await page.getByRole("button", { name: "Save Theme as", exact: true }).click();
-      await expect(page.getByRole("dialog", { name: "Save as new palette" })).toBeVisible();
+      await expect(page.getByRole("dialog", { name: "Save a complete theme copy" })).toBeVisible();
       await expectNoCriticalOrSerious(page, `Compose Save Theme dialog (${mode.name})`);
       await page.getByRole("button", { name: "Cancel", exact: true }).click();
 

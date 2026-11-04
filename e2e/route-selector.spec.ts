@@ -101,9 +101,9 @@ test.describe("First-use route selector", () => {
 
     // Tab navigation must be hidden while selector is active.
     // The nav uses role="tablist" (explicit override of the semantic nav role).
-    await expect(
-      page.getByRole("tablist", { name: DESKTOP_NAV_NAME })
-    ).toBeHidden({ timeout: 4_000 });
+    await expect(page.getByRole("tablist", { name: DESKTOP_NAV_NAME })).toBeHidden({
+      timeout: 4_000,
+    });
   });
 
   // ── 2. Legacy persisted state ─────────────────────────────────────────────
@@ -150,9 +150,9 @@ test.describe("First-use route selector", () => {
     await expect(page.getByRole("heading", { name: SELECTOR_HEADING })).not.toBeVisible({
       timeout: 4_000,
     });
-    await expect(
-      page.getByRole("tablist", { name: DESKTOP_NAV_NAME })
-    ).toBeVisible({ timeout: 4_000 });
+    await expect(page.getByRole("tablist", { name: DESKTOP_NAV_NAME })).toBeVisible({
+      timeout: 4_000,
+    });
 
     // The first-visit key must be written immediately (before the auto-save
     // effect flushes the full state blob).
@@ -164,14 +164,16 @@ test.describe("First-use route selector", () => {
       "true"
     );
 
-    // Wait for auto-save (save effect is gated on firstVisitComplete).
-    await page.waitForTimeout(500);
-
-    const raw = await page.evaluate((key: string) => localStorage.getItem(key), LS_KEY);
-    expect(raw, "localStorage must be written after route selection").not.toBeNull();
-    const saved = JSON.parse(raw!) as { firstVisitComplete?: boolean; activeTab?: string };
-    expect(saved.firstVisitComplete).toBe(true);
-    expect(saved.activeTab).toBe("apply");
+    await expect
+      .poll(() =>
+        page.evaluate(() => {
+          const preferences = JSON.parse(localStorage.getItem("mtb.state.v2") ?? "null")
+            ?.editorSession.preferences;
+          return [preferences?.firstVisitComplete, preferences?.activeTab];
+        })
+      )
+      .toEqual([true, "apply"]);
+    expect(await page.evaluate((key) => localStorage.getItem(key), LS_KEY)).toBeNull();
   });
 
   // ── 4. Returning user ─────────────────────────────────────────────────────
@@ -202,9 +204,9 @@ test.describe("First-use route selector", () => {
     });
 
     // Tab nav must be visible (not suppressed).
-    await expect(
-      page.getByRole("tablist", { name: DESKTOP_NAV_NAME })
-    ).toBeVisible({ timeout: 4_000 });
+    await expect(page.getByRole("tablist", { name: DESKTOP_NAV_NAME })).toBeVisible({
+      timeout: 4_000,
+    });
   });
 
   // ── 5. URL hash tab bypass ────────────────────────────────────────────────
@@ -219,9 +221,9 @@ test.describe("First-use route selector", () => {
     await expect(page.getByRole("heading", { name: SELECTOR_HEADING })).not.toBeVisible({
       timeout: 4_000,
     });
-    await expect(
-      page.getByRole("tablist", { name: DESKTOP_NAV_NAME })
-    ).toBeVisible({ timeout: 4_000 });
+    await expect(page.getByRole("tablist", { name: DESKTOP_NAV_NAME })).toBeVisible({
+      timeout: 4_000,
+    });
   });
 
   // ── 6. Skip button ────────────────────────────────────────────────────────
@@ -240,9 +242,9 @@ test.describe("First-use route selector", () => {
     await expect(page.getByRole("heading", { name: SELECTOR_HEADING })).not.toBeVisible({
       timeout: 4_000,
     });
-    await expect(
-      page.getByRole("tablist", { name: DESKTOP_NAV_NAME })
-    ).toBeVisible({ timeout: 4_000 });
+    await expect(page.getByRole("tablist", { name: DESKTOP_NAV_NAME })).toBeVisible({
+      timeout: 4_000,
+    });
   });
 
   // ── 7. Clear all settings re-triggers selector on next load ───────────────
@@ -266,6 +268,9 @@ test.describe("First-use route selector", () => {
     // Invoke "Clear all settings" via the settings menu.
     await page.getByRole("button", { name: /settings/i }).click();
     await page.getByRole("menuitem", { name: /clear all settings/i }).click();
+    const confirmation = page.getByRole("dialog", { name: "Clear this workspace?" });
+    await confirmation.getByRole("button", { name: "Confirm clear workspace" }).click();
+    await expect(confirmation).not.toBeVisible();
 
     // Confirm mtb.firstVisit has been removed from localStorage.
     const fvAfterClear = await page.evaluate(() => localStorage.getItem("mtb.firstVisit"));

@@ -48,6 +48,7 @@ function makeProfile(overrides?: Partial<GovernanceProfile>): GovernanceProfile 
       typography: DEFAULT_TYPOGRAPHY,
       rendererTarget: "github",
       outputFormat: "init-directive",
+      ...overrides,
     },
     FIXED_NOW
   );
@@ -65,9 +66,9 @@ const SLOT: MyThemeSlot = {
 // ─── createGovernanceProfile ──────────────────────────────────────────────────
 
 describe("createGovernanceProfile", () => {
-  it("sets schemaVersion to 2", () => {
+  it("sets schemaVersion to 3", () => {
     const profile = makeProfile();
-    expect(profile.schemaVersion).toBe(2);
+    expect(profile.schemaVersion).toBe(3);
     expect(profile.schemaVersion).toBe(GOVERNANCE_PROFILE_SCHEMA_VERSION);
   });
 
@@ -82,9 +83,10 @@ describe("createGovernanceProfile", () => {
     expect(profile.id.length).toBeGreaterThan(0);
   });
 
-  it("stores mermaidVersionVerified from MERMAID_VERSION_VERIFIED", () => {
+  it("records authoring version without inventing verification", () => {
     const profile = makeProfile();
-    expect(profile.mermaidVersionVerified).toBe(MERMAID_VERSION_VERIFIED);
+    expect(profile.mermaidVersionVerified).toBe("");
+    expect(profile.provenance?.authoredWithMermaidVersion).toBe(MERMAID_VERSION_VERIFIED);
   });
 
   it("sets createdAt and updatedAt to the provided now string", () => {
@@ -120,9 +122,9 @@ describe("createGovernanceProfile", () => {
 // ─── migrateSlotToProfile ────────────────────────────────────────────────────
 
 describe("migrateSlotToProfile", () => {
-  it("sets schemaVersion to 2", () => {
+  it("sets schemaVersion to 3", () => {
     const profile = migrateSlotToProfile(SLOT, {}, FIXED_NOW);
-    expect(profile.schemaVersion).toBe(2);
+    expect(profile.schemaVersion).toBe(3);
   });
 
   it("copies slot id and name", () => {
@@ -218,7 +220,7 @@ describe("profileToPortableJson + parseGovernanceProfile round-trip", () => {
     const restored = result.profile;
     expect(restored.id).toBe(original.id);
     expect(restored.name).toBe(original.name);
-    expect(restored.schemaVersion).toBe(2);
+    expect(restored.schemaVersion).toBe(3);
     expect(restored.colors).toEqual(original.colors);
     expect(restored.look).toBe(original.look);
     expect(restored.rendererTarget).toBe(original.rendererTarget);
@@ -362,15 +364,12 @@ describe("parseGovernanceProfile — schema version handling", () => {
     expect(hasVersionWarning).toBe(false);
   });
 
-  it("warns (but succeeds) when schemaVersion is newer than current", () => {
+  it("rejects newer schemas without silently downgrading them", () => {
     const json = makePortableJson({ schemaVersion: GOVERNANCE_PROFILE_SCHEMA_VERSION + 1 });
     const result = parseGovernanceProfile(json);
-    expect(result.ok).toBe(true);
-    if (!result.ok) return;
-    expect(result.warnings.some((w) => w.includes("newer schema"))).toBe(true);
-    // Profile should still be applied — all known fields present
-    expect(result.profile.name).toBe("Version Test");
-    expect(result.profile.schemaVersion).toBe(GOVERNANCE_PROFILE_SCHEMA_VERSION);
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.error).toContain("newer schema");
   });
 
   it("warns (but succeeds) when schemaVersion is older than current", () => {
@@ -429,12 +428,12 @@ describe("validateGovernanceProfile", () => {
     expect(result.warnings).toHaveLength(0);
   });
 
-  it("returns valid:true with warnings for a newer schemaVersion", () => {
+  it("returns valid:false for a newer schemaVersion", () => {
     const json = makePortableJson({ schemaVersion: GOVERNANCE_PROFILE_SCHEMA_VERSION + 5 });
     const result = validateGovernanceProfile(json);
-    expect(result.valid).toBe(true);
-    if (!result.valid) return;
-    expect(result.warnings.length).toBeGreaterThan(0);
+    expect(result.valid).toBe(false);
+    if (result.valid) return;
+    expect(result.errors.join(" ")).toContain("newer schema");
   });
 
   it("returns valid:false with errors for invalid JSON", () => {
@@ -586,7 +585,7 @@ describe("buildProfileHeaderComment", () => {
   });
 
   it("includes mermaidVersionVerified", () => {
-    const profile = makeProfile();
+    const profile = makeProfile({ mermaidVersionVerified: MERMAID_VERSION_VERIFIED });
     const comment = buildProfileHeaderComment(profile);
     expect(comment).toContain(MERMAID_VERSION_VERIFIED);
   });

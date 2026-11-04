@@ -1,782 +1,182 @@
-/**
- * End-to-end tests for My Theme slot interactions.
- *
- * Covers the four core behaviors of the My Theme workspace feature:
- *   1. Clicking a slot tile marks it aria-checked and deactivates the previous one.
- *   2. The "New" button creates a second slot tile and auto-activates it (max 3).
- *   3. The trash icon → Delete confirmation removes the tile from the palette bar.
- *   4. Color edits while a slot is active write to the slot's colors, not to
- *      customColors for the selected built-in palette.
- *
- * Strategy:
- *   - Most tests run on the Compose tab (the default on fresh load). Each tab
- *     has its own tileIdPrefix; tests that switch tabs scope selectors to the
- *     active tab's prefix so hidden bars cannot satisfy a locator.
- *   - Tests that need a specific slot configuration seed localStorage before the
- *     first page.goto() call so the app hydrates that state on initial load.
- *   - The trash button is opacity-0 until its parent is hovered. We hover first,
- *     then click with { force: true } to bypass CSS transition timing.
- *
- * The app runs at PLAYWRIGHT_BASE_URL (default: http://localhost:4173/mermaid-theme-builder/).
- */
-
 import { test, expect, type Page } from "@playwright/test";
+import { createDefaultMyThemeSlot } from "../src/lib/my-theme-slots";
+import type { ThemeLibrary } from "../src/lib/theme-library";
 
-// ---------------------------------------------------------------------------
-// Constants
-// ---------------------------------------------------------------------------
-
-const LS_KEY = "mtb.state.v1";
-
-/**
- * Compose tab tile ID prefix. Every tab defines its own tileIdPrefix so that
- * slot tile IDs are unique in the DOM even when multiple tabs are mounted.
- * The Compose tab (the app's default tab) uses this prefix.
- */
-const PREFIX = "compose-palette-tile";
-
-/** Selector that matches all My Theme slot tiles in the Compose tab's palette bar. */
-const SLOT_TILE_SEL = `[role="radio"][id^="${PREFIX}-my-theme-"]`;
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-/**
- * Seed localStorage with a persisted-state object, then navigate to the app
- * so it hydrates from that state on initial load.
- *
- * Uses page.addInitScript() — the script runs at document creation time,
- * before any page JavaScript executes, so React reads the seeded state on its
- * very first initialization rather than in a later hydration effect.  This
- * avoids the race where tile-1 (from React's default initial state) appears
- * before the hydration effect fires and the extra tiles are added.
- */
-async function openWithState(page: Page, state?: Record<string, unknown>): Promise<void> {
-  // Seed the first-visit key and the caller's state.  activeTab:"compose" is
-  // kept in the blob for completeness but we also click the tab explicitly
-  // below — state-blob tab restoration is unreliable when the hash-sync effect
-  // has already set a conflicting hash before the hydration effect runs.
-  const seeded: Record<string, unknown> = {
-    schemaVersion: 1,
-    firstVisitComplete: true,
-    activeTab: "compose",
-    ...(state ?? {}),
-  };
-  await page.addInitScript(
-    ({ key, value }: { key: string; value: string }) => {
-      localStorage.clear();
-      sessionStorage.clear();
-      // Set the first-visit flag so the route selector is bypassed.
-      localStorage.setItem("mtb.firstVisit", "true");
-      localStorage.setItem(key, value);
-    },
-    { key: LS_KEY, value: JSON.stringify(seeded) }
-  );
-  await page.goto("/");
-  await page.waitForLoadState("load");
-  // Navigate to the Compose tab explicitly — this is more reliable than
-  // relying on state-blob activeTab restoration which can race with the
-  // hash-sync effect that writes window.location.hash before hydration.
-  await page.getByRole("tab", { name: /Compose/i }).click();
-  // Wait for the Compose tab's My Theme 1 tile to confirm the tab is active.
-  await page.locator(`#${PREFIX}-my-theme-1`).waitFor({ timeout: 8_000 });
+const source = "flowchart LR\n A[Keep] --> B[Source]";
+const tile = (page: Page, name: string) =>
+  page.getByRole("radio", { name: name + " Mine", exact: true });
+async function state(page: Page): Promise<ThemeLibrary> {
+  return page.evaluate(() => JSON.parse(localStorage.getItem("mtb.state.v2")!));
 }
-
-/**
- * Minimal valid TypographySettings that satisfies the app's hydration guard
- * (each tier must be present as an object with fontSize and fontFamily).
- */
-const EMPTY_TYPOGRAPHY = {
-  diagramTitle: { fontSize: 20, fontFamily: "" },
-  subgraphTitle: { fontSize: 16, fontFamily: "" },
-  nestedSubgraphTitle: { fontSize: 14, fontFamily: "" },
-  nodeLabel: { fontSize: 14, fontFamily: "" },
-  edgeLabel: { fontSize: 12, fontFamily: "" },
-};
-
-/**
- * Minimal slot fixture. An empty colors array passes the app's hydration guard
- * (it only checks `Array.isArray(colors)`), so tiles render with gray placeholder
- * swatches — sufficient for aria-checked and interaction tests.
- */
-function makeSlot(n: 1 | 2 | 3) {
-  return {
-    id: `my-theme-${n}`,
-    name: `My Theme ${n}`,
-    colors: [],
-    look: "classic",
-    fontSize: "",
-    typography: EMPTY_TYPOGRAPHY,
-  };
+async function working(page: Page) {
+  const value = await state(page);
+  return [
+    ...value.themes.map((theme) => value.drafts.find((draft) => draft.id === theme.id) ?? theme),
+    ...value.drafts.filter((draft) => !value.themes.some((theme) => theme.id === draft.id)),
+  ];
 }
-
-/** Base persisted state (caller adds myThemeSlots and activeMyThemeSlotId). */
-function baseState(extra: Record<string, unknown> = {}): Record<string, unknown> {
-  return {
+async function seed(page: Page, count = 1, active = 1) {
+  const legacy = JSON.stringify({
     schemaVersion: 1,
+    myThemeSlots: Array.from({ length: count }, (_, i) => createDefaultMyThemeSlot(i + 1)),
+    activeMyThemeSlotId: "my-theme-" + active,
     selectedPaletteId: "overkill-hill",
     customColors: {},
-    includeMetaComments: true,
-    includeBadge: true,
-    customThemeName: "",
-    inputCode: "flowchart TD\n  A --> B",
     userPalettes: [],
-    recentPaletteIds: [],
-    ...extra,
-  };
+    inputCode: source,
+    includeBadge: false,
+    includeMetaComments: true,
+  });
+  await page.addInitScript((raw) => {
+    if (!localStorage.getItem("mtb.test.seeded")) {
+      localStorage.setItem("mtb.state.v1", raw);
+      localStorage.setItem("mtb.firstVisit", "true");
+      localStorage.setItem("mtb.test.seeded", "true");
+    }
+  }, legacy);
+  await page.goto("./#compose");
+  await expect(tile(page, "My Theme 1")).toBeVisible();
+  await expect.poll(async () => (await state(page))?.revision).toBeGreaterThan(0);
+  return legacy;
+}
+async function keepDraftIfAsked(page: Page) {
+  const dialog = page.getByRole("dialog", { name: "Keep your theme changes?" });
+  if (await dialog.isVisible())
+    await dialog.getByRole("button", { name: "Keep draft and switch" }).click();
 }
 
-// ---------------------------------------------------------------------------
-// 1. Clicking a slot tile activates it and deactivates the previous one
-// ---------------------------------------------------------------------------
-
-test.describe("My Theme slot — tile selection", () => {
-  test("clicking an inactive slot tile sets aria-checked=true on it and false on the previously active one", async ({
-    page,
-  }) => {
-    // Seed two slots with slot 2 active.
-    await openWithState(
-      page,
-      baseState({
-        myThemeSlots: [makeSlot(1), makeSlot(2)],
-        activeMyThemeSlotId: "my-theme-2",
-      })
-    );
-
-    const slot1 = page.locator(`#${PREFIX}-my-theme-1`);
-    const slot2 = page.locator(`#${PREFIX}-my-theme-2`);
-
-    // addInitScript seeds LS before React initializes, so both tiles are in
-    // the DOM from the first render.  Wait briefly for slot-2 as a safety net.
-    await slot2.waitFor({ timeout: 8_000 });
-
-    // Confirm starting state: slot 2 active, slot 1 inactive.
-    await expect(slot2).toHaveAttribute("aria-checked", "true");
-    await expect(slot1).toHaveAttribute("aria-checked", "false");
-
-    // Click slot 1.
-    await slot1.click();
-
-    // Slot 1 should now be active and slot 2 inactive.
-    await expect(slot1).toHaveAttribute("aria-checked", "true");
-    await expect(slot2).toHaveAttribute("aria-checked", "false");
-  });
+test("legacy selection restores themes and preserves original data", async ({ page }) => {
+  const legacy = await seed(page, 2, 2);
+  await expect(tile(page, "My Theme 2")).toHaveAttribute("aria-checked", "true");
+  await tile(page, "My Theme 1").click();
+  await keepDraftIfAsked(page);
+  await expect(tile(page, "My Theme 1")).toHaveAttribute("aria-checked", "true");
+  await expect(tile(page, "My Theme 2")).toHaveAttribute("aria-checked", "false");
+  expect(await page.evaluate(() => localStorage.getItem("mtb.state.v1"))).toBe(legacy);
+  expect((await state(page)).editorSession.inputCode).toBe(source);
 });
 
-// ---------------------------------------------------------------------------
-// 2. "New" button creates a second slot and auto-activates it
-// ---------------------------------------------------------------------------
-
-test.describe("My Theme slot — add via New button", () => {
-  test("clicking New creates a second slot tile and auto-activates it", async ({ page }) => {
-    // Fresh load: app starts with one slot (my-theme-1) active by default.
-    await openWithState(page);
-
-    const addButton = page.getByRole("button", { name: "Add My Theme workspace", exact: true });
-    await expect(addButton).toBeVisible();
-
-    // Only one My Theme tile should exist at this point.
-    await expect(page.locator(SLOT_TILE_SEL)).toHaveCount(1);
-
-    await addButton.click();
-
-    // A second slot tile should appear.
-    await expect(page.locator(SLOT_TILE_SEL)).toHaveCount(2);
-
-    // The newly added slot (my-theme-2) should be auto-activated.
-    const slot2 = page.locator(`#${PREFIX}-my-theme-2`);
-    await expect(slot2).toHaveAttribute("aria-checked", "true");
-
-    // The original slot should now be inactive.
-    const slot1 = page.locator(`#${PREFIX}-my-theme-1`);
-    await expect(slot1).toHaveAttribute("aria-checked", "false");
-  });
-
-  test("New button disappears once three slots exist", async ({ page }) => {
-    await openWithState(page);
-
-    const addButton = page.getByRole("button", { name: "Add My Theme workspace", exact: true });
-
-    // The app starts with one slot; two more clicks reach the 3-slot limit.
-    await addButton.click();
-    await addButton.click();
-
-    // At the 3-slot limit the button must no longer be visible.
-    await expect(addButton).toBeHidden();
-
-    // All three slot tiles should be present in the Compose bar.
-    await expect(page.locator(SLOT_TILE_SEL)).toHaveCount(3);
-  });
+test("New creates drafts beyond three themes without overwriting saved themes", async ({
+  page,
+}) => {
+  await seed(page, 3);
+  const add = page.getByRole("button", { name: "Add My Theme workspace", exact: true });
+  await add.click();
+  await keepDraftIfAsked(page);
+  await expect(tile(page, "My theme 4")).toHaveAttribute("aria-checked", "true");
+  await expect(add).toBeVisible();
+  await expect.poll(async () => (await working(page)).length).toBe(4);
+  expect((await state(page)).themes).toHaveLength(3);
 });
 
-// ---------------------------------------------------------------------------
-// 3. Trash icon → Delete confirmation removes the tile
-// ---------------------------------------------------------------------------
-
-test.describe("My Theme slot — delete via trash icon", () => {
-  test("trash icon → Delete removes the slot tile from the palette bar", async ({ page }) => {
-    await openWithState(page);
-
-    // Add a second slot so we can delete the first without emptying the bar.
-    const addButton = page.getByRole("button", { name: "Add My Theme workspace", exact: true });
-    await addButton.click();
-    await expect(page.locator(SLOT_TILE_SEL)).toHaveCount(2);
-
-    // Hover over slot-1 to trigger the CSS that reveals its trash button.
-    const slot1 = page.locator(`#${PREFIX}-my-theme-1`);
-    await slot1.hover();
-
-    // Click the trash button. force:true bypasses any residual opacity transition.
-    const trashBtn = page.getByRole("button", { name: "Delete My Theme 1" });
-    await trashBtn.click({ force: true });
-
-    // The confirmation dialog should appear (curly quotes around the name).
-    await expect(page.getByText(/Delete .My Theme 1./)).toBeVisible({ timeout: 4_000 });
-
-    // Confirm deletion with the red "Delete" button inside the dialog overlay.
-    const dialog = page.locator(".fixed.inset-0");
-    await dialog.getByRole("button", { name: "Delete" }).click();
-
-    // Slot-1 tile must be removed from the Compose bar.
-    await expect(page.locator(`#${PREFIX}-my-theme-1`)).toHaveCount(0);
-
-    // Only slot-2 should remain.
-    await expect(page.locator(SLOT_TILE_SEL)).toHaveCount(1);
-    await expect(page.locator(`#${PREFIX}-my-theme-2`)).toBeVisible();
-  });
+test("deletion requires confirmation and removes only the chosen theme", async ({ page }) => {
+  await seed(page, 2);
+  await tile(page, "My Theme 1").hover();
+  await page.getByRole("button", { name: "Delete My Theme 1", exact: true }).click({ force: true });
+  const dialog = page.getByRole("dialog", { name: /Delete/ });
+  await expect(dialog).toBeVisible();
+  await dialog.getByRole("button", { name: "Cancel", exact: true }).click();
+  await expect(tile(page, "My Theme 1")).toBeVisible();
+  await tile(page, "My Theme 1").hover();
+  await page.getByRole("button", { name: "Delete My Theme 1", exact: true }).click({ force: true });
+  await dialog.getByRole("button", { name: "Delete", exact: true }).click();
+  await expect(tile(page, "My Theme 1")).toHaveCount(0);
+  await expect
+    .poll(async () => (await working(page)).map((theme) => theme.name))
+    .toEqual(["My Theme 2"]);
+  expect((await state(page)).editorSession.inputCode).toBe(source);
 });
 
-// ---------------------------------------------------------------------------
-// 4. Import toast includes palette name and slot name
-// ---------------------------------------------------------------------------
-
-test.describe("My Theme slot — import toast", () => {
-  /** A minimal valid palette JSON whose colors are all clean hex values. */
-  const CLEAN_PALETTE_JSON = JSON.stringify({
-    type: "mtb-palette",
-    schemaVersion: 1,
-    id: "toast-test-palette",
-    name: "Toast Test Palette",
-    description: "test",
-    version: "1.0.0",
-    colors: [{ key: "primaryColor", label: "Primary", value: "#aabbcc" }],
-  });
-
-  test("import toast shows palette name and active slot name", async ({ page }) => {
-    // Seed state: slot-1 named "My Theme 1" is active.
-    await openWithState(
-      page,
-      baseState({
-        myThemeSlots: [makeSlot(1)],
-        activeMyThemeSlotId: "my-theme-1",
-      })
-    );
-
-    // Compose tab is the default — no tab click needed.
-    // Expand the Export Theme section so the hidden file input is accessible.
-    const toggle = page.getByRole("button", { name: "Export Theme", exact: true });
-    await toggle.waitFor({ timeout: 8_000 });
-    await toggle.click();
-
-    // Trigger import via the hidden file input (same code path as a real file picker).
-    const fileInput = page.locator('input[aria-label="Import palette JSON file"]');
-    await fileInput.setInputFiles({
-      name: "test-palette.json",
-      mimeType: "application/json",
-      buffer: Buffer.from(CLEAN_PALETTE_JSON),
-    });
-
-    // The success toast must contain both the palette name and the slot name.
-    const toast = page.locator('[role="status"]');
-    await expect(toast).toBeVisible({ timeout: 4_000 });
-    await expect(toast).toContainText("Toast Test Palette");
-    await expect(toast).toContainText("My Theme 1");
-  });
+test("color edits persist only as a draft until explicitly saved", async ({ page }) => {
+  await seed(page);
+  const original = (await state(page)).themes[0];
+  await page.getByRole("button", { name: "Colors", exact: true }).click();
+  const color = page
+    .locator('input[aria-label^="Hex value for"]')
+    .filter({ visible: true })
+    .first();
+  await color.fill("#c0ffee");
+  await color.press("Tab");
+  await expect
+    .poll(async () => (await working(page))[0].colors.some((color) => color.value === "#c0ffee"))
+    .toBe(true);
+  expect((await state(page)).themes[0]).toEqual(original);
+  expect((await state(page)).drafts.every((theme) => theme.id === "my-theme-1")).toBe(true);
+  await page
+    .getByRole("region", { name: "Theme library status" })
+    .getByRole("button", { name: "Save changes" })
+    .click();
+  await expect
+    .poll(async () =>
+      (await state(page)).themes[0].colors.some((color) => color.value === "#c0ffee")
+    )
+    .toBe(true);
 });
 
-// ---------------------------------------------------------------------------
-// 5. Color edits while a slot is active route to the slot, not customColors
-// ---------------------------------------------------------------------------
-
-// (section 6 and 7 appear below after section 5)
-
-test.describe("My Theme slot — color edit routing", () => {
-  test("editing a color writes to the active slot's colors, not to customColors", async ({
-    page,
-  }) => {
-    // Fresh load: app starts with my-theme-1 active and pre-seeded with
-    // BRAND_PALETTES[0].colors, so hex color inputs are rendered in the editor.
-    await openWithState(page);
-
-    // The Compose tab sidebar has color swatches behind the collapsed Colors section.
-    const toggleColors = page.getByRole("button", { name: "Colors", exact: true }).first();
-    await toggleColors.click();
-
-    // Wait for the first visible hex color text input.
-    const hexInput = page
-      .locator('input[aria-label^="Hex value for"]')
-      .filter({ visible: true })
-      .first();
-    await hexInput.waitFor({ timeout: 8_000 });
-
-    const newColor = "#c0ffee";
-
-    // Select all text in the input and replace it with the new hex value.
-    await hexInput.click({ clickCount: 3 });
-    await hexInput.fill(newColor);
-    await hexInput.press("Tab");
-
-    // Allow React's state update to flush and the auto-save localStorage effect
-    // to run. The effect is synchronous after each render but we give a small
-    // buffer for the browser to commit the write.
-    await page.waitForTimeout(300);
-
-    // Read the persisted state from localStorage.
-    const raw = await page.evaluate((key: string) => localStorage.getItem(key), LS_KEY);
-    expect(raw, "localStorage must contain persisted state after a color edit").not.toBeNull();
-
-    const state = JSON.parse(raw!) as {
-      myThemeSlots?: Array<{ id: string; colors: Array<{ key: string; value: string }> }>;
-      customColors?: Record<string, Array<{ key: string; value: string }>>;
-    };
-
-    // The new color must appear inside my-theme-1's colors array.
-    const slot1 = state.myThemeSlots?.find((s) => s.id === "my-theme-1");
-    expect(slot1, "my-theme-1 slot must be present in persisted state").toBeDefined();
-    const slotHasColor = slot1!.colors.some((c) => c.value === newColor);
-    expect(slotHasColor, "new color must be stored inside the slot's colors array").toBe(true);
-
-    // The built-in palette's customColors entry must NOT contain the new color —
-    // confirming the edit was routed to the slot, not the built-in override map.
-    const builtinOverrides = state.customColors?.["overkill-hill"] ?? [];
-    const leakedToBuiltin = builtinOverrides.some((c) => c.value === newColor);
-    expect(
-      leakedToBuiltin,
-      "new color must NOT leak into customColors for the built-in palette"
-    ).toBe(false);
-  });
-});
-
-// ---------------------------------------------------------------------------
-// 6. Lifecycle buttons on the Apply tab (always-mounted) are fully wired
-// ---------------------------------------------------------------------------
-
-test.describe("My Theme slot — lifecycle buttons on Apply tab", () => {
-  const APPLY_PREFIX = "apply-palette-tile";
-
-  /**
-   * Navigate to the Apply tab so its palette bar becomes visible and
-   * interactive.  The Apply tab panel is always mounted in the DOM but carries
-   * `hidden` when another tab is active, so we must click through to it
-   * before hovering its tiles.
-   */
-  async function openApplyTab(page: Page) {
-    await page.getByRole("tab", { name: "Apply" }).click();
-    await page.locator(`#${APPLY_PREFIX}-my-theme-1`).waitFor({ state: "visible", timeout: 8_000 });
-  }
-
-  test("Duplicate from Apply tab creates a slot and persists to localStorage", async ({ page }) => {
-    await openWithState(page);
-    await openApplyTab(page);
-
-    // Hover slot-1 in the Apply-tab palette bar and click its Duplicate button.
-    const applySlot1 = page.locator(`#${APPLY_PREFIX}-my-theme-1`);
-    await applySlot1.hover();
-    await page.getByRole("button", { name: "Duplicate My Theme 1" }).click({ force: true });
-
-    // Wait for auto-save.
-    await page.waitForTimeout(300);
-
-    // The new slot must be persisted in localStorage.
-    const raw = await page.evaluate((key: string) => localStorage.getItem(key), LS_KEY);
-    expect(raw).not.toBeNull();
-    const state = JSON.parse(raw!) as { myThemeSlots?: Array<{ id: string; name: string }> };
-    expect(state.myThemeSlots).toHaveLength(2);
-    expect(state.myThemeSlots!.some((s) => s.name === "My Theme 1 (copy)")).toBe(true);
-  });
-
-  test("Move Down from Apply tab reorders slots and persists to localStorage", async ({ page }) => {
-    await openWithState(
-      page,
-      baseState({
-        myThemeSlots: [makeSlot(1), makeSlot(2)],
-        activeMyThemeSlotId: "my-theme-1",
-      })
-    );
-    await openApplyTab(page);
-
-    // Move slot-1 down via the Apply-tab action bar.
-    const applySlot1 = page.locator(`#${APPLY_PREFIX}-my-theme-1`);
-    await applySlot1.hover();
-    await page.getByRole("button", { name: "Move My Theme 1 down" }).click({ force: true });
-
-    // Wait for auto-save.
-    await page.waitForTimeout(300);
-
-    const raw = await page.evaluate((key: string) => localStorage.getItem(key), LS_KEY);
-    expect(raw).not.toBeNull();
-    const state = JSON.parse(raw!) as { myThemeSlots?: Array<{ id: string }> };
-    const slots = state.myThemeSlots ?? [];
-    expect(slots).toHaveLength(2);
-    expect(slots[0].id).toBe("my-theme-2");
-    expect(slots[1].id).toBe("my-theme-1");
-  });
-
-  test("Move Up from Apply tab reorders slots and persists to localStorage", async ({ page }) => {
-    await openWithState(
-      page,
-      baseState({
-        myThemeSlots: [makeSlot(1), makeSlot(2)],
-        activeMyThemeSlotId: "my-theme-1",
-      })
-    );
-    await openApplyTab(page);
-
-    const slotTiles = page.locator(`[role="radio"][id^="${APPLY_PREFIX}-my-theme-"]`);
-    await expect(slotTiles).toHaveCount(2);
-
-    const applySlot2 = page.locator(`#${APPLY_PREFIX}-my-theme-2`);
-    await applySlot2.hover();
-    await page.getByRole("button", { name: "Move My Theme 2 up" }).click({ force: true });
-
-    await expect(slotTiles.nth(0)).toHaveAttribute("id", `${APPLY_PREFIX}-my-theme-2`);
-    await expect(slotTiles.nth(1)).toHaveAttribute("id", `${APPLY_PREFIX}-my-theme-1`);
-
+for (const tab of ["Compose", "Apply", "Examples", "Reference"]) {
+  test("Duplicate and rename remain available from " + tab, async ({ page }) => {
+    await seed(page, 3);
+    await page.getByRole("tab", { name: tab, exact: true }).click();
+    await tile(page, "My Theme 1").hover();
+    await page
+      .getByRole("button", { name: "Duplicate My Theme 1", exact: true })
+      .click({ force: true });
+    await keepDraftIfAsked(page);
+    const rename = page.getByRole("textbox", { name: "Rename My Theme 1 (copy)" });
+    await expect(rename).toBeFocused();
+    await expect(rename).toHaveJSProperty("selectionStart", 0);
+    await expect(rename).toHaveJSProperty("selectionEnd", "My Theme 1 (copy)".length);
+    await rename.fill("Reusable style");
+    await rename.press("Enter");
+    await expect(tile(page, "Reusable style")).toHaveAttribute("aria-checked", "true");
     await expect
-      .poll(async () => {
-        const raw = await page.evaluate((key: string) => localStorage.getItem(key), LS_KEY);
-        if (!raw) return null;
-        const state = JSON.parse(raw) as { myThemeSlots?: Array<{ id: string }> };
-        return state.myThemeSlots?.map((slot) => slot.id) ?? null;
-      })
-      .toEqual(["my-theme-2", "my-theme-1"]);
-  });
-});
-
-// ---------------------------------------------------------------------------
-// 7. Lifecycle buttons on Examples and Reference tabs
-// ---------------------------------------------------------------------------
-
-test.describe("My Theme slot — lifecycle buttons on Examples and Reference tabs", () => {
-  const TAB_CASES = [
-    { label: "Examples", prefix: "examples-palette-tile" },
-    { label: "Reference", prefix: "reference-palette-tile" },
-  ] as const;
-
-  async function openTabWithSlots(page: Page, label: string, prefix: string) {
-    await page.getByRole("tab", { name: label, exact: true }).click();
-    await page.locator(`#${prefix}-my-theme-1`).waitFor({ state: "visible", timeout: 8_000 });
-  }
-
-  async function expectPersistedOrder(page: Page, expected: string[]) {
+      .poll(async () => (await working(page)).map((theme) => theme.name))
+      .toContain("Reusable style");
+    expect((await state(page)).themes).toHaveLength(3);
+    await tile(page, "Reusable style").getByText("Reusable style", { exact: true }).dblclick();
+    const secondRename = page.getByRole("textbox", { name: "Rename Reusable style" });
+    await secondRename.fill("Reusable style renamed");
+    await secondRename.press("Home");
+    await expect(secondRename).toHaveJSProperty("selectionStart", 0);
+    await secondRename.press("End");
+    await expect(secondRename).toHaveJSProperty("selectionStart", 22);
+    await secondRename.press("Tab");
+    await expect(
+      page.getByRole("button", { name: "Delete Reusable style renamed", exact: true })
+    ).toBeFocused();
     await expect
-      .poll(async () => {
-        const raw = await page.evaluate((key: string) => localStorage.getItem(key), LS_KEY);
-        if (!raw) return null;
-        const state = JSON.parse(raw) as { myThemeSlots?: Array<{ id: string }> };
-        return state.myThemeSlots?.map((slot) => slot.id) ?? null;
-      })
-      .toEqual(expected);
-  }
+      .poll(async () => (await working(page)).map((theme) => theme.name))
+      .toContain("Reusable style renamed");
+  });
 
-  for (const { label, prefix } of TAB_CASES) {
-    test(`Duplicate works from ${label}`, async ({ page }) => {
-      await openWithState(page);
-      await openTabWithSlots(page, label, prefix);
-
-      const slot1 = page.locator(`#${prefix}-my-theme-1`);
-      await slot1.hover();
-      await page.getByRole("button", { name: "Duplicate My Theme 1" }).click({ force: true });
-
-      const copy = page.locator(`#${prefix}-my-theme-2`);
-      await expect(copy).toHaveAttribute("title", "My Theme 1 (copy)");
-      await expectPersistedOrder(page, ["my-theme-1", "my-theme-2"]);
-    });
-
-    test(`Move Up works from ${label}`, async ({ page }) => {
-      await openWithState(
-        page,
-        baseState({
-          myThemeSlots: [makeSlot(1), makeSlot(2)],
-          activeMyThemeSlotId: "my-theme-1",
-        })
-      );
-      await openTabWithSlots(page, label, prefix);
-
-      const slotTiles = page.locator(`[role="radio"][id^="${prefix}-my-theme-"]`);
-      const slot2 = page.locator(`#${prefix}-my-theme-2`);
-      await slot2.hover();
-      await page.getByRole("button", { name: "Move My Theme 2 up" }).click({ force: true });
-
-      await expect(slotTiles.nth(0)).toHaveAttribute("id", `${prefix}-my-theme-2`);
-      await expect(slotTiles.nth(1)).toHaveAttribute("id", `${prefix}-my-theme-1`);
-      await expectPersistedOrder(page, ["my-theme-2", "my-theme-1"]);
-    });
-
-    test(`Move Down works from ${label}`, async ({ page }) => {
-      await openWithState(
-        page,
-        baseState({
-          myThemeSlots: [makeSlot(1), makeSlot(2)],
-          activeMyThemeSlotId: "my-theme-1",
-        })
-      );
-      await openTabWithSlots(page, label, prefix);
-
-      const slotTiles = page.locator(`[role="radio"][id^="${prefix}-my-theme-"]`);
-      const slot1 = page.locator(`#${prefix}-my-theme-1`);
-      await slot1.hover();
-      await page.getByRole("button", { name: "Move My Theme 1 down" }).click({ force: true });
-
-      await expect(slotTiles.nth(0)).toHaveAttribute("id", `${prefix}-my-theme-2`);
-      await expect(slotTiles.nth(1)).toHaveAttribute("id", `${prefix}-my-theme-1`);
-      await expectPersistedOrder(page, ["my-theme-2", "my-theme-1"]);
+  for (const direction of ["up", "down"] as const) {
+    test("Move " + direction + " persists and reloads from " + tab, async ({ page }) => {
+      await seed(page, 2);
+      await page.getByRole("tab", { name: tab, exact: true }).click();
+      const name = direction === "up" ? "My Theme 2" : "My Theme 1";
+      await tile(page, name).hover();
+      await page
+        .getByRole("button", { name: "Move " + name + " " + direction, exact: true })
+        .click({ force: true });
+      await expect
+        .poll(async () => (await state(page)).themes.map((theme) => theme.id))
+        .toEqual(["my-theme-2", "my-theme-1"]);
+      await page.reload();
+      const tiles = page.getByRole("radio").filter({ hasText: /My Theme [12]/ });
+      await expect(tiles.nth(0)).toHaveAttribute("title", "My Theme 2");
+      await expect(tiles.nth(1)).toHaveAttribute("title", "My Theme 1");
     });
   }
-});
+}
 
-// ---------------------------------------------------------------------------
-// 8. Duplicate action creates a copy, activates it, and gives it "(copy)" name
-// ---------------------------------------------------------------------------
-
-test.describe("My Theme slot — duplicate", () => {
-  test("Duplicate selects the copy name for immediate rename and persists it", async ({ page }) => {
-    await openWithState(page);
-
-    const slot1 = page.locator(`#${PREFIX}-my-theme-1`);
-    await slot1.hover();
-    await page.getByRole("button", { name: "Duplicate My Theme 1" }).click({ force: true });
-
-    const renameInput = page.getByRole("textbox", { name: "Rename My Theme 1 (copy)" });
-    await expect(renameInput).toBeFocused();
-    await expect(renameInput).toHaveJSProperty("selectionStart", 0);
-    await expect(renameInput).toHaveJSProperty("selectionEnd", "My Theme 1 (copy)".length);
-
-    await renameInput.fill("Client Brand");
-    await renameInput.press("Enter");
-
-    const slot2 = page.locator(`#${PREFIX}-my-theme-2`);
-    await expect(slot2).toHaveAttribute("title", "Client Brand");
-
-    await slot2.getByText("Client Brand").dblclick();
-    const tabRenameInput = page.getByRole("textbox", { name: "Rename Client Brand" });
-    await tabRenameInput.fill("Client Brand Tabbed");
-    await tabRenameInput.press("Home");
-    await expect(tabRenameInput).toBeFocused();
-    await expect(tabRenameInput).toHaveJSProperty("selectionStart", 0);
-    await tabRenameInput.press("End");
-    await expect(tabRenameInput).toHaveJSProperty("selectionStart", "Client Brand Tabbed".length);
-    await expect(slot2).toHaveAttribute("title", "Client Brand");
-    await tabRenameInput.press("Tab");
-    await expect(slot2).toHaveAttribute("title", "Client Brand Tabbed");
-    await expect(page.getByRole("button", { name: "Delete Client Brand Tabbed" })).toBeFocused();
-
-    await page.waitForFunction(
-      ([key, id, name]) => {
-        const raw = localStorage.getItem(key);
-        if (!raw) return false;
-        const state = JSON.parse(raw) as {
-          myThemeSlots?: Array<{ id: string; name: string }>;
-        };
-        return state.myThemeSlots?.some((slot) => slot.id === id && slot.name === name) ?? false;
-      },
-      [LS_KEY, "my-theme-2", "Client Brand Tabbed"]
-    );
-  });
-
-  test("Duplicate button creates a second slot and auto-activates it", async ({ page }) => {
-    await openWithState(page);
-
-    // Only one slot at start.
-    await expect(page.locator(SLOT_TILE_SEL)).toHaveCount(1);
-
-    const slot1 = page.locator(`#${PREFIX}-my-theme-1`);
-
-    // Hover slot-1 to reveal the action bar.
-    await slot1.hover();
-
-    // Click Duplicate. force:true bypasses the CSS opacity transition.
-    const dupBtn = page.getByRole("button", { name: "Duplicate My Theme 1" });
-    await dupBtn.click({ force: true });
-
-    // A second tile must appear.
-    await expect(page.locator(SLOT_TILE_SEL)).toHaveCount(2);
-
-    // The new slot (my-theme-2) should be auto-activated.
-    const slot2 = page.locator(`#${PREFIX}-my-theme-2`);
-    await expect(slot2).toHaveAttribute("aria-checked", "true");
-
-    // The original slot must now be inactive.
-    await expect(slot1).toHaveAttribute("aria-checked", "false");
-
-    // The new slot's title attribute must carry the "(copy)" suffix.
-    await expect(slot2).toHaveAttribute("title", "My Theme 1 (copy)");
-  });
-
-  test("Duplicate button is disabled when 3 slots already exist", async ({ page }) => {
-    await openWithState(
-      page,
-      baseState({
-        myThemeSlots: [makeSlot(1), makeSlot(2), makeSlot(3)],
-        activeMyThemeSlotId: "my-theme-1",
-      })
-    );
-
-    const slot1 = page.locator(`#${PREFIX}-my-theme-1`);
-    await slot1.hover();
-
-    const dupBtn = page.getByRole("button", { name: "Duplicate My Theme 1" });
-    await expect(dupBtn).toBeDisabled();
-  });
-
-  test("Duplicate stores the new slot in localStorage", async ({ page }) => {
-    await openWithState(page);
-
-    const slot1 = page.locator(`#${PREFIX}-my-theme-1`);
-    await slot1.hover();
-    await page.getByRole("button", { name: "Duplicate My Theme 1" }).click({ force: true });
-
-    // Wait for auto-save to flush.
-    await page.waitForTimeout(300);
-
-    const raw = await page.evaluate((key: string) => localStorage.getItem(key), LS_KEY);
-    expect(raw).not.toBeNull();
-
-    const state = JSON.parse(raw!) as {
-      myThemeSlots?: Array<{ id: string; name: string }>;
-      activeMyThemeSlotId?: string;
-    };
-
-    const slots = state.myThemeSlots ?? [];
-    expect(slots).toHaveLength(2);
-
-    const copy = slots.find((s) => s.name === "My Theme 1 (copy)");
-    expect(copy, "copy slot must be present in persisted state").toBeDefined();
-    expect(copy!.id).toBe("my-theme-2");
-
-    // Active slot must be the newly duplicated one.
-    expect(state.activeMyThemeSlotId).toBe("my-theme-2");
-  });
-});
-
-// ---------------------------------------------------------------------------
-// 7. Move Up / Move Down reorders slots and the order persists in localStorage
-// ---------------------------------------------------------------------------
-
-test.describe("My Theme slot — move up / move down", () => {
-  test("Move Up button moves the target slot one position toward the start", async ({ page }) => {
-    await openWithState(
-      page,
-      baseState({
-        myThemeSlots: [makeSlot(1), makeSlot(2)],
-        activeMyThemeSlotId: "my-theme-1",
-      })
-    );
-
-    const slotTiles = page.locator(SLOT_TILE_SEL);
-    await page.locator(`#${PREFIX}-my-theme-2`).waitFor({ timeout: 8_000 });
-
-    // Initial order: slot-1 first, slot-2 second.
-    await expect(slotTiles.nth(0)).toHaveAttribute("id", `${PREFIX}-my-theme-1`);
-    await expect(slotTiles.nth(1)).toHaveAttribute("id", `${PREFIX}-my-theme-2`);
-
-    // Hover slot-2 and click Move Up.
-    const slot2 = page.locator(`#${PREFIX}-my-theme-2`);
-    await slot2.hover();
-    await page.getByRole("button", { name: "Move My Theme 2 up" }).click({ force: true });
-
-    // slot-2 must now appear first.
-    await expect(slotTiles.nth(0)).toHaveAttribute("id", `${PREFIX}-my-theme-2`);
-    await expect(slotTiles.nth(1)).toHaveAttribute("id", `${PREFIX}-my-theme-1`);
-  });
-
-  test("Move Down button moves the target slot one position toward the end", async ({ page }) => {
-    await openWithState(
-      page,
-      baseState({
-        myThemeSlots: [makeSlot(1), makeSlot(2)],
-        activeMyThemeSlotId: "my-theme-1",
-      })
-    );
-
-    await page.locator(`#${PREFIX}-my-theme-2`).waitFor({ timeout: 8_000 });
-    const slotTiles = page.locator(SLOT_TILE_SEL);
-
-    // Hover slot-1 and click Move Down.
-    const slot1 = page.locator(`#${PREFIX}-my-theme-1`);
-    await slot1.hover();
-    await page.getByRole("button", { name: "Move My Theme 1 down" }).click({ force: true });
-
-    // slot-2 must now appear first.
-    await expect(slotTiles.nth(0)).toHaveAttribute("id", `${PREFIX}-my-theme-2`);
-    await expect(slotTiles.nth(1)).toHaveAttribute("id", `${PREFIX}-my-theme-1`);
-  });
-
-  test("Move Up is disabled for the first slot", async ({ page }) => {
-    await openWithState(
-      page,
-      baseState({
-        myThemeSlots: [makeSlot(1), makeSlot(2)],
-        activeMyThemeSlotId: "my-theme-1",
-      })
-    );
-
-    await page.locator(`#${PREFIX}-my-theme-2`).waitFor({ timeout: 8_000 });
-
-    const slot1 = page.locator(`#${PREFIX}-my-theme-1`);
-    await slot1.hover();
-    const moveUpBtn = page.getByRole("button", { name: "Move My Theme 1 up" });
-    await expect(moveUpBtn).toBeDisabled();
-  });
-
-  test("Move Down is disabled for the last slot", async ({ page }) => {
-    await openWithState(
-      page,
-      baseState({
-        myThemeSlots: [makeSlot(1), makeSlot(2)],
-        activeMyThemeSlotId: "my-theme-1",
-      })
-    );
-
-    await page.locator(`#${PREFIX}-my-theme-2`).waitFor({ timeout: 8_000 });
-
-    const slot2 = page.locator(`#${PREFIX}-my-theme-2`);
-    await slot2.hover();
-    const moveDownBtn = page.getByRole("button", { name: "Move My Theme 2 down" });
-    await expect(moveDownBtn).toBeDisabled();
-  });
-
-  test("reordered slot position persists to localStorage", async ({ page }) => {
-    await openWithState(
-      page,
-      baseState({
-        myThemeSlots: [makeSlot(1), makeSlot(2)],
-        activeMyThemeSlotId: "my-theme-1",
-      })
-    );
-
-    await page.locator(`#${PREFIX}-my-theme-2`).waitFor({ timeout: 8_000 });
-
-    // Move slot-2 up.
-    const slot2 = page.locator(`#${PREFIX}-my-theme-2`);
-    await slot2.hover();
-    await page.getByRole("button", { name: "Move My Theme 2 up" }).click({ force: true });
-
-    // Wait for auto-save to flush.
-    await page.waitForTimeout(300);
-
-    // Read localStorage and verify order.
-    const raw = await page.evaluate((key: string) => localStorage.getItem(key), LS_KEY);
-    expect(raw).not.toBeNull();
-
-    const state = JSON.parse(raw!) as {
-      myThemeSlots?: Array<{ id: string }>;
-    };
-
-    const slots = state.myThemeSlots ?? [];
-    expect(slots).toHaveLength(2);
-    expect(slots[0].id, "slot-2 must be first after move-up").toBe("my-theme-2");
-    expect(slots[1].id, "slot-1 must be second after move-up").toBe("my-theme-1");
-  });
+test("reorder controls respect the first and last theme boundaries", async ({ page }) => {
+  await seed(page, 2);
+  await tile(page, "My Theme 1").hover();
+  await expect(
+    page.getByRole("button", { name: "Move My Theme 1 up", exact: true })
+  ).toBeDisabled();
+  await tile(page, "My Theme 2").hover();
+  await expect(
+    page.getByRole("button", { name: "Move My Theme 2 down", exact: true })
+  ).toBeDisabled();
 });

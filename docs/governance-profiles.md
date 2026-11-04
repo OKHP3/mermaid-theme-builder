@@ -3,6 +3,11 @@
 **Last updated:** 2026-06-20
 **Applies to:** Mermaid Theme Builder v0.5.0+
 
+**Implementation note:** The Increment 2 review candidate implements complete
+local theme persistence and portability. See [complete themes](complete-themes.md)
+for the schema, supported fields, inert semantic metadata, and recovery limits.
+The broader semantic-governance concepts below are not all executable features.
+
 ---
 
 ## What Is a Governance Profile?

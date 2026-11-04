@@ -8,6 +8,20 @@ import {
   type ReactNode,
 } from "react";
 import { useThemeMode, type ThemeMode } from "@/hooks/useThemeMode";
+import { useThemeLibrary, sameTheme } from "@/hooks/useThemeLibrary";
+import {
+  paletteToCompleteTheme,
+  completeThemeToPalette,
+  uniqueThemeId,
+  libraryToPortableJson,
+  parseLibraryImport,
+  parseThemeImport,
+  WORKSPACE_RECOVERY_TYPE,
+  THEME_LIBRARY_KEY,
+  LEGACY_THEME_KEY,
+  type ThemeLibrary,
+} from "@/lib/theme-library";
+import { ThemeLibraryStatus, ThemeDialog, themeActionClass } from "@/components/ThemeLibraryStatus";
 import {
   BUILTIN_PALETTES,
   BRAND_PALETTES,
@@ -20,13 +34,7 @@ import {
   getEffectiveThemeName,
 } from "@/lib/palettes";
 import { clearAllDismissals } from "@/lib/family-syntax-hints";
-import {
-  APPLY_TAB_DEFAULT,
-  BRAND_EXAMPLES,
-  GENERIC_EXAMPLE,
-  SHOWCASE_EXAMPLE,
-} from "@/data/examples";
-import { EXAMPLE_GROUPS } from "@/data/example-library";
+import { APPLY_TAB_DEFAULT } from "@/data/examples";
 import { AppIcon } from "@/components/AppIcon";
 import { ApplyTab } from "@/pages/tabs/ApplyTab";
 import { ComposeTab } from "@/pages/tabs/ComposeTab";
@@ -34,15 +42,11 @@ import { ExamplesTab } from "@/pages/tabs/ExamplesTab";
 import { ReferenceTab } from "@/pages/tabs/ReferenceTab";
 import { ExtractTab } from "@/pages/tabs/ExtractTab";
 import {
-  loadPersistedState,
-  savePersistedState,
-  clearPersistedState,
   hasCompletedFirstVisit,
   markFirstVisitComplete,
   readShareToken,
   hasShareToken,
   clearShareToken,
-  resolvePersistedOutputFormat,
   type ShareablePayload,
 } from "@/lib/persistence";
 import {
@@ -53,24 +57,13 @@ import {
   generateThemedCode,
 } from "@/lib/theme-engine";
 import { getRendererById, getRendererDefaultOutputFormat } from "@/data/renderer-parity";
-import {
-  type MyThemeSlot,
-  type MyThemeSlotId,
-  createDefaultMyThemeSlot,
-  nextSlotNumber,
-  isMyThemeSlotId,
-  slotDisplayName,
-  duplicateSlot,
-  renameSlot,
-  moveSlotUp,
-  moveSlotDown,
-} from "@/lib/my-theme-slots";
-import { downloadTextFile, makeFilename, paletteToPortableJson } from "@/lib/exporters";
+import { type MyThemeSlot, type MyThemeSlotId, slotDisplayName } from "@/lib/my-theme-slots";
+import { downloadTextFile, makeFilename } from "@/lib/exporters";
 import {
   migrateSlotToProfile,
+  createGovernanceProfile,
   profileToPortableJson,
   profileToSlot,
-  parseGovernanceProfile,
   type GovernanceProfile,
 } from "@/lib/governance-profile";
 import { ProfileDetailsPanel } from "@/components/ProfileDetailsPanel";
@@ -84,12 +77,7 @@ import {
 import { RouteSelector } from "@/components/RouteSelector";
 import { detectDiagram } from "@/lib/detector";
 import { type TypographySettings, DEFAULT_TYPOGRAPHY } from "@/lib/typography";
-import {
-  paletteFromExtracted,
-  makeExtractedPaletteId,
-  extractTheme,
-  hasExtractableTheme,
-} from "@/lib/extractor";
+import { paletteFromExtracted, extractTheme, hasExtractableTheme } from "@/lib/extractor";
 
 export type AppTab = "apply" | "compose" | "examples" | "reference" | "extract";
 type OutputFormat = "init-directive" | "frontmatter";
@@ -359,9 +347,7 @@ export function AppShell() {
   const settingsMenuRef = useRef<HTMLDivElement>(null);
   const [openParityMatrix, setOpenParityMatrix] = useState(false);
   const [openDistributionRenderer, setOpenDistributionRenderer] = useState<string | null>(null);
-  const [myThemeSlots, setMyThemeSlots] = useState<MyThemeSlot[]>(() => [
-    createDefaultMyThemeSlot(1, BRAND_PALETTES[0].colors),
-  ]);
+  const [myThemeSlots, setMyThemeSlots] = useState<MyThemeSlot[]>([]);
   const myThemeSlotsRef = useRef(myThemeSlots);
   const updateMyThemeSlots = useCallback(
     (update: MyThemeSlot[] | ((previous: MyThemeSlot[]) => MyThemeSlot[])) => {
@@ -371,7 +357,7 @@ export function AppShell() {
     },
     []
   );
-  const [activeMyThemeSlotId, setActiveMyThemeSlotId] = useState<string | null>("my-theme-1");
+  const [activeMyThemeSlotId, setActiveMyThemeSlotId] = useState<string | null>(null);
   const [outputFormat, setOutputFormat] = useState<OutputFormat>("init-directive");
   const [outputFormatOverridden, setOutputFormatOverridden] = useState(false);
   const [rendererTargetHintDismissed, setRendererTargetHintDismissed] = useState(false);
@@ -381,6 +367,60 @@ export function AppShell() {
   >({});
   const [profileDetailSlotId, setProfileDetailSlotId] = useState<string | null>(null);
   const [profileShareError, setProfileShareError] = useState<string | null>(null);
+  const [themeImportError, setThemeImportError] = useState<string | null>(null);
+  const themeLibrary = useThemeLibrary();
+  const { update: updateLibrary, stateRef: libraryRef, initial: initialLibrary } = themeLibrary;
+  const hydrationStarted = useRef(false);
+  const [pendingThemeSwitch, setPendingThemeSwitch] = useState<(() => void) | null>(null);
+  const [pendingClearSettings, setPendingClearSettings] = useState(false);
+  const [importingTheme, setImportingTheme] = useState(false);
+  const [pendingThemeImport, setPendingThemeImport] = useState<{
+    themes: GovernanceProfile[];
+    warnings: string[];
+    replaceId?: string;
+  } | null>(null);
+
+  const applyCompleteTheme = useCallback(
+    (profile: GovernanceProfile, personal: boolean) => {
+      const theme = structuredClone(profile);
+      setActiveMyThemeSlotId(personal ? theme.id : null);
+      if (personal)
+        updateMyThemeSlots((slots) =>
+          slots.some((slot) => slot.id === theme.id)
+            ? slots.map((slot) => (slot.id === theme.id ? profileToSlot(theme) : slot))
+            : [...slots, profileToSlot(theme)]
+        );
+      else {
+        setSelectedPaletteId(theme.id);
+        setCustomColors((previous) => ({ ...previous, [theme.id]: theme.colors }));
+      }
+      setCustomThemeName(personal ? "" : theme.name);
+      setLook(theme.look);
+      setFontSize(theme.fontSize);
+      setTypography(theme.typography);
+      setRendererTarget(theme.rendererTarget);
+      setOutputFormat(
+        theme.outputFormatOverridden
+          ? theme.outputFormat
+          : getRendererDefaultOutputFormat(theme.rendererTarget)
+      );
+      setOutputFormatOverridden(theme.outputFormatOverridden === true);
+      setStrokeWidth(theme.strokeWidth);
+      setIncludeMetaComments(theme.includeMetaComments !== false);
+      setIncludeBadge(theme.includeBadge === true);
+      const raw = theme.advancedMermaidConfig;
+      setAdvancedMermaidConfig({
+        ...(typeof raw?.htmlLabels === "boolean" ? { htmlLabels: raw.htmlLabels } : {}),
+        ...(typeof raw?.deterministicIds === "boolean"
+          ? { deterministicIds: raw.deterministicIds }
+          : {}),
+        ...(typeof raw?.deterministicIDSeed === "string"
+          ? { deterministicIDSeed: raw.deterministicIDSeed }
+          : {}),
+      });
+    },
+    [updateMyThemeSlots]
+  );
 
   // Keep the format aligned with the selected renderer until the user makes an
   // explicit format choice. This also handles renderer changes restored from
@@ -471,346 +511,111 @@ export function AppShell() {
     return () => window.removeEventListener("hashchange", onHashChange);
   }, []);
 
-  // Hydrate from URL share token (highest priority) or localStorage on mount.
+  // Read the additive library once. Invalid data stays untouched and disables writes.
   useEffect(() => {
-    const TABS: AppTab[] = ["apply", "compose", "examples", "reference", "extract"];
-    // Use the hash captured at render time so the hash-sync effect (which runs
-    // before this effect and writes activeTab back to window.location.hash) does
-    // not falsely make every fresh load look like a URL-hash navigation.
-    const hasUrlTab = TABS.includes(initialHashRef.current as AppTab);
-
-    let didApplyShare = false;
-    // Profile shares are the richer contract and therefore win whenever the
-    // profile parameter is present. Read both before applying either payload,
-    // then consume both parameters so a manually combined URL cannot apply
-    // the losing theme later or re-import it on refresh.
+    if (hydrationStarted.current) return;
+    hydrationStarted.current = true;
+    workingDrafts.current.clear();
+    const tabs: AppTab[] = ["apply", "compose", "examples", "reference", "extract"];
+    const hasUrlTab = tabs.includes(initialHashRef.current as AppTab);
     const profileToken = readProfileShareToken();
-    const hasProfileToken = profileToken !== null;
-    const hasThemeToken = hasShareToken();
-    const share = hasProfileToken ? null : readShareToken();
-    if (hasThemeToken) clearShareToken();
-    if (hasProfileToken) clearProfileShareToken();
-
-    if (share) {
-      const palette = buildPaletteFromShare(share);
-      const taken = new Set<string>(BUILTIN_PALETTES.map((p) => p.id));
-      if (taken.has(palette.id)) palette.id = uniquePaletteId("shared-", taken);
-      setUserPalettes((prev) => [...prev, palette]);
-      setSelectedPaletteId(palette.id);
-      if (share.customThemeName) setCustomThemeName(share.customThemeName);
-      // v2 share tokens carry look + rendererTarget — apply when present.
-      // Coerce look to a known value; unknown strings silently fall back to "classic".
-      const validLooks = ["classic", "neo", "handDrawn"] as const;
-      if (share.look && (validLooks as readonly string[]).includes(share.look)) {
-        setLook(share.look as (typeof validLooks)[number]);
-      }
-      if (typeof share.rendererTarget === "string") {
-        setRendererTarget(share.rendererTarget);
-      }
-      setToast(`Loaded shared theme: ${palette.name}`);
-      didApplyShare = true;
-
-      // Validate raw decoded keys BEFORE buildPaletteFromShare canonicalizes
-      // them onto BRAND_PALETTES[0]. After canonicalization every required key
-      // is present regardless of what the sharer sent, so the check must run
-      // on the original themeVariables payload.
-      const sharedKeys = new Set(Object.keys(share.themeVariables));
-      const missingKeys = (REQUIRED_COLOR_KEYS as readonly string[]).filter(
-        (k) => !sharedKeys.has(k)
+    const hasProfile = profileToken !== null;
+    const hasLegacyShare = hasShareToken();
+    const legacyShare = hasProfile ? null : readShareToken();
+    if (hasProfile) clearProfileShareToken();
+    if (hasLegacyShare) clearShareToken();
+    let records: GovernanceProfile[] = [];
+    if (initialLibrary.ok) {
+      const state = initialLibrary.state;
+      records = state.themes.map(
+        (theme) => state.drafts.find((draft) => draft.id === theme.id) ?? theme
       );
-      const unknownKeys = Object.keys(share.themeVariables).filter((k) => !KNOWN_COLOR_KEYS.has(k));
-      if (missingKeys.length > 0 || unknownKeys.length > 0) {
-        setImportDiagnostics({ missingKeys, unknownKeys, invalidValues: [], warnValues: [] });
+      for (const draft of state.drafts) {
+        if (
+          !records.some((theme) => theme.id === draft.id) &&
+          !BUILTIN_PALETTES.some((palette) => palette.id === draft.id)
+        )
+          records.push(draft);
       }
-    }
-
-    const persisted = loadPersistedState();
-    if (persisted) {
-      if (Array.isArray(persisted.userPalettes))
-        setUserPalettes((prev) => {
-          // Dedupe by id; share-token palettes win over persisted duplicates.
-          const seen = new Set(prev.map((p) => p.id));
-          const merged = [...prev];
-          for (const p of persisted.userPalettes!) if (!seen.has(p.id)) merged.push(p);
-          return merged;
-        });
-      if (!didApplyShare && typeof persisted.selectedPaletteId === "string") {
-        setSelectedPaletteId(persisted.selectedPaletteId);
+      if (state.themeOrder) {
+        const order = new Map(state.themeOrder.map((id, index) => [id, index]));
+        records.sort(
+          (a, b) => (order.get(a.id) ?? records.length) - (order.get(b.id) ?? records.length)
+        );
       }
-      if (persisted.customColors && typeof persisted.customColors === "object") {
-        setCustomColors(persisted.customColors as Record<string, ThemeColor[]>);
-      }
-      if (typeof persisted.includeMetaComments === "boolean")
-        setIncludeMetaComments(persisted.includeMetaComments);
-      if (typeof persisted.includeBadge === "boolean") setIncludeBadge(persisted.includeBadge);
-      if (typeof persisted.customThemeName === "string" && !didApplyShare)
-        setCustomThemeName(persisted.customThemeName);
-      if (typeof persisted.inputCode === "string" && persisted.inputCode.trim()) {
-        const knownDefaults = new Set<string>([
-          APPLY_TAB_DEFAULT,
-          GENERIC_EXAMPLE,
-          SHOWCASE_EXAMPLE,
-          ...Object.values(BRAND_EXAMPLES).flatMap(({ flowchart, sequence }) => [
-            flowchart,
-            sequence,
-          ]),
-          ...EXAMPLE_GROUPS.flatMap((g) => g.entries.map((e) => e.content)),
-        ]);
-        if (!knownDefaults.has(persisted.inputCode)) {
-          setInputCode(persisted.inputCode);
-        }
-      }
-      if (Array.isArray(persisted.recentPaletteIds)) {
+      updateMyThemeSlots(records.map(profileToSlot));
+      const session = state.editorSession;
+      const preferences = session.preferences;
+      const legacy =
+        state.migration.legacySource === null ? {} : JSON.parse(state.migration.legacySource);
+      if (state.revision > 0 || typeof legacy.inputCode === "string")
+        setInputCode(session.inputCode);
+      if (Array.isArray(preferences.recentPaletteIds))
         setRecentPaletteIds(
-          persisted.recentPaletteIds
-            .filter((s): s is string => typeof s === "string")
+          preferences.recentPaletteIds
+            .filter((id): id is string => typeof id === "string")
             .slice(0, RECENT_PALETTES_MAX)
         );
-      }
-      if (!didApplyShare && typeof persisted.rendererTarget === "string") {
-        setRendererTarget(persisted.rendererTarget);
-        if (persisted.rendererTarget) setRendererTargetHintDismissed(true);
-      }
-      if (typeof persisted.fontSize === "string") setFontSize(persisted.fontSize);
-      if (persisted.typography && typeof persisted.typography === "object") {
-        const t = persisted.typography as TypographySettings;
-        if (
-          t.diagramTitle &&
-          t.subgraphTitle &&
-          t.nestedSubgraphTitle &&
-          t.nodeLabel &&
-          t.edgeLabel
-        ) {
-          setTypography(t);
-        }
-      }
-      const VALID_PREVIEW_MODES = ["original", "themed", "diff", "code"] as const;
-      if (
-        typeof persisted.previewMode === "string" &&
-        (VALID_PREVIEW_MODES as readonly string[]).includes(persisted.previewMode)
-      ) {
-        setPreviewMode(persisted.previewMode as "original" | "themed" | "diff" | "code");
-      }
-      if (persisted.lastExampleType && typeof persisted.lastExampleType === "object") {
-        const clean: Record<string, "flowchart" | "sequence"> = {};
-        for (const [k, v] of Object.entries(persisted.lastExampleType)) {
-          if (typeof k === "string" && (v === "flowchart" || v === "sequence")) clean[k] = v;
-        }
-        setLastExampleType(clean);
-      }
-      if (typeof persisted.lastSelectedExampleId === "string" && persisted.lastSelectedExampleId) {
-        setLastSelectedExampleId(persisted.lastSelectedExampleId);
-      }
-      if (Array.isArray(persisted.myThemeSlots)) {
-        const validSlots = (persisted.myThemeSlots as unknown[]).filter(
-          (s): s is MyThemeSlot =>
-            typeof s === "object" &&
-            s !== null &&
-            "id" in s &&
-            isMyThemeSlotId((s as MyThemeSlot).id) &&
-            Array.isArray((s as MyThemeSlot).colors)
-        );
-        // Apply even when empty — an empty array means the user intentionally
-        // deleted all slots; only the absence of the field means "use default".
-        updateMyThemeSlots(validSlots);
-        // Validate active slot ID against the hydrated slots so a stale or
-        // dangling ID (e.g. slot was deleted in another tab) doesn't persist.
-        const validSlotIds = new Set(validSlots.map((s) => s.id));
-        if (persisted.activeMyThemeSlotId === null) {
-          setActiveMyThemeSlotId(null);
-        } else if (
-          typeof persisted.activeMyThemeSlotId === "string" &&
-          isMyThemeSlotId(persisted.activeMyThemeSlotId) &&
-          validSlotIds.has(persisted.activeMyThemeSlotId)
-        ) {
-          setActiveMyThemeSlotId(persisted.activeMyThemeSlotId);
-        } else {
-          // ID references a slot that no longer exists — clear it.
-          setActiveMyThemeSlotId(null);
-        }
-      }
-      const savedRendererTarget =
-        !didApplyShare && typeof persisted.rendererTarget === "string"
-          ? persisted.rendererTarget
-          : rendererTarget;
-      const savedOutputFormat = resolvePersistedOutputFormat(
-        persisted.outputFormat,
-        persisted.outputFormatOverridden,
-        getRendererDefaultOutputFormat(savedRendererTarget)
-      );
-      setOutputFormat(savedOutputFormat.outputFormat);
-      setOutputFormatOverridden(savedOutputFormat.outputFormatOverridden);
-      if (persisted.rendererTargetHintDismissed === true) {
-        setRendererTargetHintDismissed(true);
-      }
-      if (
-        typeof persisted.strokeWidth === "number" &&
-        persisted.strokeWidth >= 1 &&
-        persisted.strokeWidth <= 8
-      ) {
-        setStrokeWidth(persisted.strokeWidth);
-      }
-      if (persisted.advancedMermaidConfig && typeof persisted.advancedMermaidConfig === "object") {
-        const amc = persisted.advancedMermaidConfig;
-        const clean: import("@/lib/theme-engine").AdvancedMermaidConfig = {};
-        if (typeof amc.htmlLabels === "boolean") clean.htmlLabels = amc.htmlLabels;
-        if (typeof amc.deterministicIds === "boolean")
-          clean.deterministicIds = amc.deterministicIds;
-        if (typeof amc.deterministicIDSeed === "string")
-          clean.deterministicIDSeed = amc.deterministicIDSeed;
-        setAdvancedMermaidConfig(clean);
-      }
-      // Restore the last-visited tab for returning users — only when no URL
-      // hash tab is already directing the destination.
-      if (
-        !hasUrlTab &&
-        typeof persisted.activeTab === "string" &&
-        TABS.includes(persisted.activeTab as AppTab)
-      ) {
-        setActiveTab(persisted.activeTab as AppTab);
-      }
-    }
-    // ── Profile share token (applied after persisted state) ────────────────
-    // Uses ?profile=<base64url> — distinct from the legacy ?theme= palette param.
-    if (profileToken) {
-      const profileResult = decodeProfileToken(profileToken);
-      if (!profileResult.ok) {
-        setProfileShareError(profileResult.error);
-      } else {
-        const { profile, warnings } = profileResult;
-        // Build a slot from the profile; assign to the first available slot number,
-        // or replace slot 1 when all three are taken.
-        const existingSlots = Array.isArray(persisted?.myThemeSlots)
-          ? (persisted!.myThemeSlots as unknown[]).filter(
-              (s): s is MyThemeSlot =>
-                typeof s === "object" &&
-                s !== null &&
-                isMyThemeSlotId((s as MyThemeSlot).id) &&
-                Array.isArray((s as MyThemeSlot).colors)
+      if (["original", "themed", "diff", "code"].includes(String(preferences.previewMode)))
+        setPreviewMode(preferences.previewMode as typeof previewMode);
+      if (typeof preferences.lastSelectedExampleId === "string")
+        setLastSelectedExampleId(preferences.lastSelectedExampleId);
+      if (preferences.lastExampleType && typeof preferences.lastExampleType === "object") {
+        setLastExampleType(
+          Object.fromEntries(
+            Object.entries(preferences.lastExampleType).filter(
+              ([, value]) => value === "flowchart" || value === "sequence"
             )
-          : [createDefaultMyThemeSlot(1, BRAND_PALETTES[0].colors)];
-        const usedNums = new Set(
-          existingSlots.map((s) => Number((s as MyThemeSlot).id.replace("my-theme-", "")))
+          ) as Record<string, "flowchart" | "sequence">
         );
-        const slotNum = ([1, 2, 3] as const).find((n) => !usedNums.has(n)) ?? 1;
-        const targetId = `my-theme-${slotNum}` as MyThemeSlotId;
-        const profileSlot = profileToSlot(profile);
-        const newSlot: MyThemeSlot = { ...profileSlot, id: targetId };
-        const updatedSlots = [
-          ...existingSlots.filter((s) => (s as MyThemeSlot).id !== targetId),
-          newSlot,
-        ];
-        updateMyThemeSlots(updatedSlots);
-        setActiveMyThemeSlotId(targetId);
-        setRendererTarget(profile.rendererTarget);
-        if (profile.outputFormat) {
-          setOutputFormat(profile.outputFormat);
-          setOutputFormatOverridden(
-            profile.outputFormat !== getRendererDefaultOutputFormat(profile.rendererTarget)
-          );
-        }
-        // Apply app-level render settings unconditionally so a recipient's
-        // previously-persisted values cannot contaminate the imported profile.
-        // When a field is absent in the profile, we reset to the default
-        // (undefined / empty object) rather than keeping whatever the
-        // recipient had before.
-        setStrokeWidth(profile.strokeWidth); // undefined → reset to default
-        {
-          // Mirror applyAdvancedConfigFromProfile: only accept known typed
-          // fields; an absent advancedMermaidConfig explicitly resets to {}.
-          const amc = profile.advancedMermaidConfig;
-          const cleanAmc: import("@/lib/theme-engine").AdvancedMermaidConfig = {};
-          if (amc && typeof amc === "object") {
-            if (typeof amc.htmlLabels === "boolean") cleanAmc.htmlLabels = amc.htmlLabels;
-            if (typeof amc.deterministicIds === "boolean")
-              cleanAmc.deterministicIds = amc.deterministicIds;
-            if (typeof amc.deterministicIDSeed === "string")
-              cleanAmc.deterministicIDSeed = amc.deterministicIDSeed;
-          }
-          setAdvancedMermaidConfig(cleanAmc);
-        }
-        const warnNote = warnings.length > 0 ? ` (${warnings.length} advisory)` : "";
-        setToast(`Loaded shared profile: "${profile.name}"${warnNote}`);
       }
+      if (preferences.rendererTargetHintDismissed === true) setRendererTargetHintDismissed(true);
+      if (!hasUrlTab && tabs.includes(preferences.activeTab as AppTab))
+        setActiveTab(preferences.activeTab as AppTab);
+      const id = session.activeThemeId ?? session.selectedPaletteId;
+      const builtin = BUILTIN_PALETTES.find((palette) => palette.id === id) ?? BRAND_PALETTES[0];
+      const selected =
+        state.drafts.find((draft) => draft.id === id) ??
+        records.find((theme) => theme.id === id) ??
+        paletteToCompleteTheme(builtin);
+      applyCompleteTheme(
+        selected,
+        records.some((theme) => theme.id === selected.id)
+      );
     }
-
-    // ── New-user / returning-user detection ──────────────────────────────
-    // Show the route selector when the dedicated `mtb.firstVisit` key is
-    // absent (written immediately by handleRouteSelect/Skip — see below).
-    // This covers genuine new users, legacy users whose state pre-dates the
-    // selector, and users who closed before completing it on a prior visit.
-    // The selector is bypassed when an inbound URL hash, theme share token,
-    // or profile share token already implies a destination.
-    // `profileToken` was captured before URL cleanup, so `hadProfileToken`
-    // correctly reflects the arrival state.
-    const hadProfileToken = !!profileToken;
-    if (!hasCompletedFirstVisit() && !hasUrlTab && !didApplyShare && !hadProfileToken) {
+    if (profileToken) {
+      const imported = decodeProfileToken(profileToken);
+      if (!imported.ok) setProfileShareError(imported.error);
+      else {
+        setPendingThemeImport({ themes: [imported.profile], warnings: imported.warnings });
+      }
+    } else if (legacyShare) {
+      const palette = buildPaletteFromShare(legacyShare);
+      const profile = paletteToCompleteTheme(palette);
+      profile.id = uniqueThemeId(
+        palette.id,
+        new Set([...BUILTIN_PALETTES.map((item) => item.id), ...records.map((theme) => theme.id)])
+      );
+      if (["classic", "neo", "handDrawn"].includes(String(legacyShare.look)))
+        profile.look = legacyShare.look as MermaidLook;
+      if (typeof legacyShare.rendererTarget === "string")
+        profile.rendererTarget = legacyShare.rendererTarget;
+      profile.outputFormat = getRendererDefaultOutputFormat(profile.rendererTarget);
+      applyCompleteTheme(profile, true);
+      setToast(`Loaded shared theme as an unsaved draft: "${profile.name}".`);
+      const keys = Object.keys(legacyShare.themeVariables);
+      const missingKeys = (REQUIRED_COLOR_KEYS as readonly string[]).filter(
+        (key) => !keys.includes(key)
+      );
+      const unknownKeys = keys.filter((key) => !KNOWN_COLOR_KEYS.has(key));
+      if (missingKeys.length || unknownKeys.length)
+        setImportDiagnostics({ missingKeys, unknownKeys, invalidValues: [], warnValues: [] });
+    } else if (hasLegacyShare)
+      setProfileShareError("The shared theme could not be read. Nothing was imported.");
+    if (!hasCompletedFirstVisit() && !hasUrlTab && !hasLegacyShare && !hasProfile)
       setFirstVisitComplete(false);
-    }
-
     setHydrated(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Auto-save to localStorage after hydration.
-  // Guard on `firstVisitComplete` so a new user who closes before picking a
-  // route doesn't get silently marked as a returning user on next visit.
-  useEffect(() => {
-    if (!hydrated || !firstVisitComplete) return;
-    savePersistedState({
-      schemaVersion: 1,
-      selectedPaletteId,
-      customColors,
-      includeMetaComments,
-      includeBadge,
-      customThemeName,
-      inputCode,
-      userPalettes,
-      recentPaletteIds,
-      look,
-      fontSize,
-      typography,
-      rendererTarget,
-      previewMode,
-      lastExampleType,
-      lastSelectedExampleId,
-      myThemeSlots,
-      activeMyThemeSlotId,
-      outputFormat,
-      outputFormatOverridden,
-      rendererTargetHintDismissed,
-      strokeWidth,
-      advancedMermaidConfig,
-      firstVisitComplete,
-      activeTab,
-    });
-  }, [
-    hydrated,
-    firstVisitComplete,
-    activeTab,
-    selectedPaletteId,
-    customColors,
-    includeMetaComments,
-    includeBadge,
-    customThemeName,
-    inputCode,
-    userPalettes,
-    recentPaletteIds,
-    look,
-    fontSize,
-    typography,
-    rendererTarget,
-    outputFormatOverridden,
-    rendererTargetHintDismissed,
-    previewMode,
-    lastExampleType,
-    lastSelectedExampleId,
-    myThemeSlots,
-    activeMyThemeSlotId,
-    outputFormat,
-    strokeWidth,
-    advancedMermaidConfig,
-  ]);
+  }, [initialLibrary, applyCompleteTheme, updateMyThemeSlots]);
 
   // Auto-clear toast after 2.5s
   useEffect(() => {
@@ -832,23 +637,22 @@ export function AppShell() {
 
   const selectedPalette = useMemo((): Palette => {
     if (activeMyThemeSlot) {
-      const base = BRAND_PALETTES[0];
-      return {
-        ...base,
-        id: activeMyThemeSlot.id,
-        name: activeMyThemeSlot.name,
-        colors: activeMyThemeSlot.colors,
-      };
+      return completeThemeToPalette(migrateSlotToProfile(activeMyThemeSlot));
     }
     const base = allPalettes.find((p) => p.id === selectedPaletteId) ?? BRAND_PALETTES[0];
     const overrides = customColors[selectedPaletteId];
     if (!overrides) return base;
     return {
       ...base,
-      colors: base.colors.map((c) => {
-        const override = overrides.find((o) => o.key === c.key);
-        return override ?? c;
-      }),
+      colors: [
+        ...base.colors.map((c) => {
+          const override = overrides.find((o) => o.key === c.key);
+          return override ?? c;
+        }),
+        ...overrides.filter(
+          (color) => !base.colors.some((baseColor) => baseColor.key === color.key)
+        ),
+      ],
     };
   }, [allPalettes, selectedPaletteId, customColors, activeMyThemeSlot]);
 
@@ -881,15 +685,184 @@ export function AppShell() {
     [selectedPalette, effectiveCustomThemeName, hasCustomizations]
   );
 
-  const handleSelectPalette = useCallback((id: string) => {
-    setActiveMyThemeSlotId(null);
-    setSelectedPaletteId(id);
-    setCustomThemeName("");
-    setRecentPaletteIds((prev) => {
-      const next = [id, ...prev.filter((p) => p !== id)].slice(0, RECENT_PALETTES_MAX);
-      return next;
+  const workingDrafts = useRef(new Map<string, GovernanceProfile>());
+  const currentProfile = useMemo(() => {
+    const base = activeMyThemeSlot
+      ? migrateSlotToProfile(activeMyThemeSlot)
+      : (workingDrafts.current.get(selectedPalette.id) ??
+        themeLibrary.state?.drafts.find((draft) => draft.id === selectedPalette.id) ??
+        paletteToCompleteTheme(selectedPalette));
+    const unsupported = Object.fromEntries(
+      Object.entries(base.advancedMermaidConfig ?? {}).filter(
+        ([key]) => !["htmlLabels", "deterministicIds", "deterministicIDSeed"].includes(key)
+      )
+    );
+    return createGovernanceProfile({
+      ...base,
+      name: effectiveCustomThemeName || selectedPalette.name,
+      colors: selectedPalette.colors,
+      look: effectiveLook,
+      fontSize: effectiveFontSize,
+      typography: effectiveTypography,
+      rendererTarget,
+      outputFormat,
+      outputFormatOverridden,
+      strokeWidth,
+      includeMetaComments,
+      includeBadge,
+      advancedMermaidConfig: { ...unsupported, ...advancedMermaidConfig },
     });
-  }, []);
+  }, [
+    activeMyThemeSlot,
+    selectedPalette,
+    effectiveCustomThemeName,
+    effectiveLook,
+    effectiveFontSize,
+    effectiveTypography,
+    rendererTarget,
+    outputFormat,
+    outputFormatOverridden,
+    strokeWidth,
+    includeMetaComments,
+    includeBadge,
+    advancedMermaidConfig,
+  ]);
+  workingDrafts.current.set(currentProfile.id, currentProfile);
+  const session = useMemo<ThemeLibrary["editorSession"]>(
+    () => ({
+      inputCode,
+      activeThemeId: activeMyThemeSlotId,
+      selectedPaletteId,
+      preferences: {
+        ...(initialLibrary.ok ? initialLibrary.state.editorSession.preferences : {}),
+        recentPaletteIds,
+        previewMode,
+        lastExampleType,
+        lastSelectedExampleId,
+        rendererTargetHintDismissed,
+        firstVisitComplete,
+        activeTab,
+      },
+    }),
+    [
+      inputCode,
+      activeMyThemeSlotId,
+      selectedPaletteId,
+      recentPaletteIds,
+      previewMode,
+      lastExampleType,
+      lastSelectedExampleId,
+      rendererTargetHintDismissed,
+      firstVisitComplete,
+      activeTab,
+      initialLibrary,
+    ]
+  );
+  const baseline =
+    themeLibrary.state?.themes.find((theme) => theme.id === currentProfile.id) ??
+    (BUILTIN_PALETTES.find((palette) => palette.id === currentProfile.id)
+      ? paletteToCompleteTheme(
+          BUILTIN_PALETTES.find((palette) => palette.id === currentProfile.id)!
+        )
+      : undefined);
+  const dirtyTheme = !baseline || !sameTheme(currentProfile, baseline);
+  const currentProfileRef = useRef(currentProfile);
+  currentProfileRef.current = currentProfile;
+  const sessionRef = useRef(session);
+  sessionRef.current = session;
+
+  // Autosave only the working drafts and editor session, never named themes.
+  useEffect(() => {
+    if (!hydrated || !firstVisitComplete) return;
+    const timer = setTimeout(() => {
+      const working = [...workingDrafts.current.values()];
+      for (const slot of myThemeSlots)
+        if (!working.some((theme) => theme.id === slot.id))
+          working.push(migrateSlotToProfile(slot));
+      if (!working.some((theme) => theme.id === currentProfile.id)) working.push(currentProfile);
+      void updateLibrary((state) => {
+        const drafts = new Map(state.drafts.map((draft) => [draft.id, draft]));
+        for (const profile of working) {
+          const saved = state.themes.find((theme) => theme.id === profile.id);
+          const builtin = BUILTIN_PALETTES.find((palette) => palette.id === profile.id);
+          const original = saved ?? (builtin ? paletteToCompleteTheme(builtin) : undefined);
+          if (original && sameTheme(original, profile)) drafts.delete(profile.id);
+          else drafts.set(profile.id, profile);
+        }
+        return { ...state, drafts: [...drafts.values()], editorSession: session };
+      });
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [hydrated, firstVisitComplete, currentProfile, myThemeSlots, session, updateLibrary]);
+
+  const saveCompleteTheme = useCallback(
+    async (name?: string, asCopy = false) => {
+      const current = currentProfileRef.current;
+      const isBuiltin = BUILTIN_PALETTES.some((palette) => palette.id === current.id);
+      const id = asCopy || isBuiltin ? `gp-${crypto.randomUUID()}` : current.id;
+      const saved = createGovernanceProfile({
+        ...current,
+        id,
+        name: name?.trim() || current.name,
+        updatedAt: new Date().toISOString(),
+        ...(id !== current.id
+          ? {
+              createdAt: new Date().toISOString(),
+              provenance: { ...current.provenance, originalId: current.id },
+            }
+          : {}),
+      });
+      const result = await updateLibrary((state) => ({
+        ...state,
+        themes: state.themes.some((theme) => theme.id === id)
+          ? state.themes.map((theme) => (theme.id === id ? saved : theme))
+          : [...state.themes, saved],
+        drafts: state.drafts.filter(
+          (draft) => draft.id !== id && !(isBuiltin && draft.id === current.id)
+        ),
+        editorSession: { ...sessionRef.current, activeThemeId: id },
+      }));
+      if (!result) return false;
+      workingDrafts.current.set(id, saved);
+      applyCompleteTheme(saved, true);
+      setToast(`Saved on this browser: ${saved.name}`);
+      return true;
+    },
+    [updateLibrary, applyCompleteTheme]
+  );
+
+  const requestThemeSwitch = useCallback(
+    (action: () => void) => {
+      if (dirtyTheme) setPendingThemeSwitch(() => action);
+      else action();
+    },
+    [dirtyTheme]
+  );
+
+  const selectThemeNow = useCallback(
+    (id: string, personal: boolean) => {
+      const slot = myThemeSlotsRef.current.find((item) => item.id === id);
+      const palette = allPalettes.find((item) => item.id === id);
+      const theme =
+        workingDrafts.current.get(id) ??
+        libraryRef.current?.drafts.find((item) => item.id === id) ??
+        libraryRef.current?.themes.find((item) => item.id === id) ??
+        (slot ? migrateSlotToProfile(slot) : palette ? paletteToCompleteTheme(palette) : undefined);
+      if (!theme) return;
+      applyCompleteTheme(theme, personal);
+      setRecentPaletteIds((previous) =>
+        [id, ...previous.filter((item) => item !== id)].slice(0, RECENT_PALETTES_MAX)
+      );
+    },
+    [allPalettes, applyCompleteTheme, libraryRef]
+  );
+
+  const handleSelectPalette = useCallback(
+    (id: string) => {
+      if (currentProfileRef.current.id !== id) requestThemeSwitch(() => selectThemeNow(id, false));
+    },
+    [requestThemeSwitch, selectThemeNow]
+  );
 
   const handleColorChange = useCallback(
     (key: string, value: string) => {
@@ -986,59 +959,82 @@ export function AppShell() {
     [activeMyThemeSlotId]
   );
 
-  const handleSelectMyThemeSlot = useCallback((id: string) => {
-    setActiveMyThemeSlotId(id);
-  }, []);
+  const handleSelectMyThemeSlot = useCallback(
+    (id: string) => {
+      if (currentProfileRef.current.id !== id) requestThemeSwitch(() => selectThemeNow(id, true));
+    },
+    [requestThemeSwitch, selectThemeNow]
+  );
 
   const handleAddMyThemeSlot = useCallback(() => {
-    updateMyThemeSlots((prev) => {
-      if (prev.length >= 3) return prev;
-      const num = nextSlotNumber(prev);
-      if (num === null) return prev;
-      const newSlot = createDefaultMyThemeSlot(num, selectedPalette.colors);
-      setActiveMyThemeSlotId(newSlot.id);
-      return [...prev, newSlot];
+    requestThemeSwitch(() => {
+      const profile = createGovernanceProfile({
+        ...currentProfileRef.current,
+        id: `gp-${crypto.randomUUID()}`,
+        name: `My theme ${myThemeSlotsRef.current.length + 1}`,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      });
+      workingDrafts.current.set(profile.id, profile);
+      applyCompleteTheme(profile, true);
     });
-  }, [selectedPalette.colors]);
+  }, [requestThemeSwitch, applyCompleteTheme]);
 
   const handleDeleteMyThemeSlot = useCallback(
-    (id: string) => {
-      updateMyThemeSlots((prev) => {
-        const idx = prev.findIndex((s) => s.id === id);
-        const next = prev.filter((s) => s.id !== id);
-        if (activeMyThemeSlotId === id) {
-          // Prefer the slot immediately before the deleted one; fall back to
-          // the slot that now occupies the same index (i.e. the one to the right).
-          const nearest = next[idx - 1] ?? next[idx] ?? null;
-          setActiveMyThemeSlotId(nearest ? nearest.id : null);
-        }
-        return next;
-      });
+    async (id: string) => {
+      const result = await updateLibrary((state) => ({
+        ...state,
+        themes: state.themes.filter((theme) => theme.id !== id),
+        drafts: state.drafts.filter((theme) => theme.id !== id),
+        editorSession: {
+          ...sessionRef.current,
+          activeThemeId:
+            sessionRef.current.activeThemeId === id ? null : sessionRef.current.activeThemeId,
+        },
+      }));
+      if (!result) return;
+      workingDrafts.current.delete(id);
+      updateMyThemeSlots((slots) => slots.filter((slot) => slot.id !== id));
+      if (currentProfileRef.current.id === id)
+        applyCompleteTheme(paletteToCompleteTheme(BRAND_PALETTES[0]), false);
+      setToast("Theme removed. Diagram text is unchanged.");
     },
-    [activeMyThemeSlotId]
+    [updateLibrary, updateMyThemeSlots, applyCompleteTheme]
+  );
+
+  const profileForId = useCallback(
+    (id: string) => {
+      if (id === currentProfileRef.current.id) return currentProfileRef.current;
+      return (
+        workingDrafts.current.get(id) ??
+        libraryRef.current?.drafts.find((theme) => theme.id === id) ??
+        libraryRef.current?.themes.find((theme) => theme.id === id)
+      );
+    },
+    [libraryRef]
   );
 
   const handleExportMyThemeSlot = useCallback(
     (id: string) => {
-      const slot = myThemeSlots.find((s) => s.id === id);
-      if (!slot) return;
-      // Export as a full GovernanceProfile JSON — includes look, typography,
-      // rendererTarget, outputFormat, and schemaVersion so it can be imported
-      // back with full fidelity.
-      const profile = migrateSlotToProfile(slot, {
-        rendererTarget,
-        outputFormat,
-        strokeWidth,
-        advancedMermaidConfig:
-          Object.keys(advancedMermaidConfig).length > 0
-            ? (advancedMermaidConfig as Record<string, unknown>)
-            : undefined,
-      });
-      const json = profileToPortableJson(profile);
-      const filename = makeFilename(slot.name, "profile", "json");
-      downloadTextFile(filename, json, "application/json");
+      const profile = profileForId(id);
+      if (!profile) return;
+      downloadTextFile(
+        makeFilename(profile.name, "theme", "json"),
+        profileToPortableJson(profile),
+        "application/json"
+      );
     },
-    [myThemeSlots, rendererTarget, outputFormat, strokeWidth, advancedMermaidConfig]
+    [profileForId]
+  );
+
+  const handleImportGovernanceProfile = useCallback(
+    (profile: GovernanceProfile, warnings: string[]) => {
+      setPendingThemeImport((previous) => ({
+        themes: [...(previous?.themes ?? []), profile],
+        warnings: [...(previous?.warnings ?? []), ...warnings],
+      }));
+    },
+    []
   );
 
   const handleImportMyThemeSlot = useCallback(
@@ -1049,133 +1045,17 @@ export function AppShell() {
         warnValues: Array<{ key: string; value: string }>;
       }
     ) => {
-      if (activeMyThemeSlotId) {
-        const activeSlotName =
-          myThemeSlots.find((s) => s.id === activeMyThemeSlotId)?.name ?? "My Theme";
-        updateMyThemeSlots((prev) =>
-          prev.map((s) =>
-            s.id === activeMyThemeSlotId
-              ? { ...s, colors: palette.colors, updatedAt: new Date().toISOString() }
-              : s
-          )
-        );
-        if (warnings.invalidValues.length > 0 || warnings.warnValues.length > 0) {
-          const problemKeys = [
-            ...warnings.invalidValues.map((e) => e.key),
-            ...warnings.warnValues.map((e) => e.key),
-          ];
-          const keyList = problemKeys.join(", ");
-          setImportDiagnostics({
-            missingKeys: [],
-            unknownKeys: [],
-            invalidValues: warnings.invalidValues,
-            warnValues: warnings.warnValues,
-          });
-          setToast(
-            `Imported "${palette.name}" into "${activeSlotName}". CSS values may not render in Mermaid: ${keyList}.`
-          );
-        } else {
-          setToast(`Imported "${palette.name}" into "${activeSlotName}".`);
-        }
-      } else {
-        updateMyThemeSlots((prev) => {
-          if (prev.length >= 3) return prev;
-          const num = nextSlotNumber(prev);
-          if (num === null) return prev;
-          const newSlot = createDefaultMyThemeSlot(num, palette.colors);
-          newSlot.name = palette.name;
-          setActiveMyThemeSlotId(newSlot.id);
-          return [...prev, newSlot];
-        });
-        setToast(`Imported "${palette.name}" into a new My Theme slot.`);
-      }
+      setPendingThemeImport((previous) => ({
+        themes: [...(previous?.themes ?? []), paletteToCompleteTheme(palette)],
+        warnings: [
+          ...(previous?.warnings ?? []),
+          "This legacy palette did not store complete theme settings. Review the default destination, typography, and output preferences.",
+          ...warnings.invalidValues.map((item) => `Invalid color value: ${item.key}`),
+          ...warnings.warnValues.map((item) => `Review color value: ${item.key}`),
+        ],
+      }));
     },
-    [activeMyThemeSlotId, myThemeSlots]
-  );
-
-  /**
-   * Read the advancedMermaidConfig from an imported GovernanceProfile and
-   * apply it to local state. Only trusted field types are accepted.
-   */
-  const applyAdvancedConfigFromProfile = useCallback((raw: Record<string, unknown> | undefined) => {
-    if (!raw || typeof raw !== "object") {
-      setAdvancedMermaidConfig({});
-      return;
-    }
-    const clean: import("@/lib/theme-engine").AdvancedMermaidConfig = {};
-    if (typeof raw.htmlLabels === "boolean") clean.htmlLabels = raw.htmlLabels;
-    if (typeof raw.deterministicIds === "boolean") clean.deterministicIds = raw.deterministicIds;
-    if (typeof raw.deterministicIDSeed === "string")
-      clean.deterministicIDSeed = raw.deterministicIDSeed;
-    setAdvancedMermaidConfig(clean);
-  }, []);
-
-  /**
-   * Import a full GovernanceProfile JSON into the active (or a new) slot,
-   * and restore the renderer target + output format from the profile.
-   */
-  const handleImportGovernanceProfile = useCallback(
-    (profile: GovernanceProfile, importWarnings: string[]) => {
-      const slot = profileToSlot(profile);
-
-      if (activeMyThemeSlotId) {
-        const activeSlotName =
-          myThemeSlots.find((s) => s.id === activeMyThemeSlotId)?.name ?? "My Theme";
-        updateMyThemeSlots((prev) =>
-          prev.map((s) =>
-            s.id === activeMyThemeSlotId
-              ? {
-                  ...s,
-                  name: slot.name,
-                  colors: slot.colors,
-                  look: slot.look,
-                  fontSize: slot.fontSize,
-                  typography: slot.typography,
-                  createdAt: s.createdAt ?? profile.createdAt,
-                  updatedAt: new Date().toISOString(),
-                }
-              : s
-          )
-        );
-        // Restore app-level renderer / format from the profile.
-        // Always apply — an empty rendererTarget intentionally clears any
-        // previously-set renderer; truthy-gating would silently skip that.
-        setRendererTarget(profile.rendererTarget);
-        if (profile.outputFormat) {
-          setOutputFormat(profile.outputFormat);
-          setOutputFormatOverridden(
-            profile.outputFormat !== getRendererDefaultOutputFormat(profile.rendererTarget)
-          );
-        }
-        applyAdvancedConfigFromProfile(profile.advancedMermaidConfig);
-
-        const warnNote = importWarnings.length > 0 ? ` (${importWarnings.length} advisory)` : "";
-        setToast(`Imported profile "${profile.name}" into "${activeSlotName}"${warnNote}.`);
-      } else {
-        updateMyThemeSlots((prev) => {
-          if (prev.length >= 3) {
-            setToast("All 3 My Theme slots are in use — delete one before importing.");
-            return prev;
-          }
-          const num = nextSlotNumber(prev);
-          if (num === null) return prev;
-          const newSlot = { ...slot, id: `my-theme-${num}` as MyThemeSlotId };
-          setActiveMyThemeSlotId(newSlot.id);
-          setRendererTarget(profile.rendererTarget);
-          if (profile.outputFormat) {
-            setOutputFormat(profile.outputFormat);
-            setOutputFormatOverridden(
-              profile.outputFormat !== getRendererDefaultOutputFormat(profile.rendererTarget)
-            );
-          }
-          applyAdvancedConfigFromProfile(profile.advancedMermaidConfig);
-          const warnNote = importWarnings.length > 0 ? ` (${importWarnings.length} advisory)` : "";
-          setToast(`Imported profile "${profile.name}" into a new My Theme slot${warnNote}.`);
-          return [...prev, newSlot];
-        });
-      }
-    },
-    [activeMyThemeSlotId, myThemeSlots] // eslint-disable-line react-hooks/exhaustive-deps
+    []
   );
 
   const handleShowProfileDetails = useCallback((id: string) => {
@@ -1183,28 +1063,28 @@ export function AppShell() {
   }, []);
 
   const handleCopyProfileShareLink = useCallback(
-    async (slotId: string) => {
-      const slot = myThemeSlots.find((s) => s.id === slotId);
-      if (!slot) return;
-      const profile = migrateSlotToProfile(slot, {
-        rendererTarget,
-        outputFormat,
-        strokeWidth,
-        advancedMermaidConfig: advancedMermaidConfig as Record<string, unknown>,
-      });
-      const url = buildProfileShareUrl(profile);
-      await writeToClipboard(url);
-      setToast("Profile share link copied to clipboard!");
+    async (id: string) => {
+      const profile = profileForId(id);
+      if (!profile) return;
+      try {
+        await writeToClipboard(buildProfileShareUrl(profile));
+        setToast(
+          "Theme link copied. The complete theme is embedded in the URL and visible to recipients."
+        );
+      } catch (error) {
+        setToast(
+          error instanceof Error
+            ? error.message
+            : "Could not copy the theme link. Download the theme JSON instead."
+        );
+      }
     },
-    [myThemeSlots, rendererTarget, outputFormat, strokeWidth, advancedMermaidConfig]
+    [profileForId]
   );
 
-  /** Copy the active slot's share link (no-arg wrapper used by ReferenceTab). */
   const handleReferenceShareLink = useCallback(async () => {
-    if (activeMyThemeSlotId) {
-      await handleCopyProfileShareLink(activeMyThemeSlotId);
-    }
-  }, [activeMyThemeSlotId, handleCopyProfileShareLink]);
+    await handleCopyProfileShareLink(currentProfileRef.current.id);
+  }, [handleCopyProfileShareLink]);
 
   /**
    * Generate themed export code formatted for a specific renderer and copy it
@@ -1255,115 +1135,91 @@ export function AppShell() {
     ]
   );
 
-  const handleRenameMyThemeSlot = useCallback((id: string, newName: string) => {
-    updateMyThemeSlots((prev) => {
-      const renamed = renameSlot(prev, id, newName);
-      if (renamed === prev) return prev;
-      return renamed.map((s) => (s.id === id ? { ...s, updatedAt: new Date().toISOString() } : s));
-    });
-  }, []);
+  const handleRenameMyThemeSlot = useCallback(
+    async (id: string, name: string) => {
+      const profile = profileForId(id);
+      if (!profile || !name.trim()) return;
+      const renamed = { ...profile, name: name.trim(), updatedAt: new Date().toISOString() };
+      const result = await updateLibrary((state) => ({
+        ...state,
+        themes: state.themes.map((theme) =>
+          theme.id === id ? { ...theme, name: renamed.name, updatedAt: renamed.updatedAt } : theme
+        ),
+        drafts: [...state.drafts.filter((theme) => theme.id !== id), renamed],
+      }));
+      if (!result) return;
+      workingDrafts.current.set(id, renamed);
+      updateMyThemeSlots((slots) =>
+        slots.map((slot) => (slot.id === id ? profileToSlot(renamed) : slot))
+      );
+    },
+    [profileForId, updateLibrary, updateMyThemeSlots]
+  );
 
   const handleImportIntoProfileDetailSlot = useCallback(
-    (profile: GovernanceProfile, importWarnings: string[]) => {
-      if (!profileDetailSlotId) return;
-      const slot = profileToSlot(profile);
-      const targetSlotName =
-        myThemeSlots.find((s) => s.id === profileDetailSlotId)?.name ?? "My Theme";
-      updateMyThemeSlots((prev) =>
-        prev.map((s) =>
-          s.id === profileDetailSlotId
-            ? {
-                ...s,
-                name: slot.name,
-                colors: slot.colors,
-                look: slot.look,
-                fontSize: slot.fontSize,
-                typography: slot.typography,
-                createdAt: s.createdAt ?? profile.createdAt,
-                updatedAt: new Date().toISOString(),
-              }
-            : s
-        )
-      );
-      // Apply app-level settings from the imported profile
-      setRendererTarget(profile.rendererTarget);
-      if (profile.outputFormat) {
-        setOutputFormat(profile.outputFormat);
-        setOutputFormatOverridden(
-          profile.outputFormat !== getRendererDefaultOutputFormat(profile.rendererTarget)
-        );
-      }
-      applyAdvancedConfigFromProfile(profile.advancedMermaidConfig);
-      const warnNote = importWarnings.length > 0 ? ` (${importWarnings.length} advisory)` : "";
-      setToast(`Imported profile "${profile.name}" into "${targetSlotName}"${warnNote}.`);
+    (profile: GovernanceProfile, warnings: string[]) => {
+      if (profileDetailSlotId)
+        setPendingThemeImport({ themes: [profile], warnings, replaceId: profileDetailSlotId });
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [profileDetailSlotId, myThemeSlots, applyAdvancedConfigFromProfile]
+    [profileDetailSlotId]
   );
 
-  const handleImportAsNewSlot = useCallback(
-    (
-      palette: Palette,
-      warnings: {
-        invalidValues: Array<{ key: string; value: string }>;
-        warnValues: Array<{ key: string; value: string }>;
-      }
-    ) => {
-      const currentSlots = myThemeSlotsRef.current;
-      if (currentSlots.length >= 3) {
-        setToast("All 3 My Theme slots are in use — delete one before importing.");
-        return;
-      }
-      const num = nextSlotNumber(currentSlots);
-      if (num === null) return;
-
-      const newSlot = createDefaultMyThemeSlot(num, palette.colors);
-      newSlot.name = palette.name;
-      updateMyThemeSlots([...currentSlots, newSlot]);
-      setActiveMyThemeSlotId(newSlot.id);
-
-      if (warnings.invalidValues.length > 0 || warnings.warnValues.length > 0) {
-        const problemKeys = [
-          ...warnings.invalidValues.map((e) => e.key),
-          ...warnings.warnValues.map((e) => e.key),
-        ];
-        setImportDiagnostics({
-          missingKeys: [],
-          unknownKeys: [],
-          invalidValues: warnings.invalidValues,
-          warnValues: warnings.warnValues,
-        });
-        setToast(
-          `Imported "${palette.name}" into a new My Theme slot. CSS values may not render in Mermaid: ${problemKeys.join(", ")}.`
-        );
-      } else {
-        setToast(`Imported "${palette.name}" into a new My Theme slot.`);
-      }
-    },
-    [updateMyThemeSlots]
-  );
+  const handleImportAsNewSlot = handleImportMyThemeSlot;
 
   const handleDuplicateMyThemeSlot = useCallback(
     (id: string): MyThemeSlotId | null => {
-      const result = duplicateSlot(myThemeSlots, id);
-      if (!result) {
-        setToast("All 3 My Theme slots are in use — delete one before duplicating.");
-        return null;
-      }
-      updateMyThemeSlots(result.slots);
-      setActiveMyThemeSlotId(result.newSlotId);
-      return result.newSlotId;
+      const profile = profileForId(id);
+      if (!profile) return null;
+      const copy = createGovernanceProfile({
+        ...profile,
+        id: `gp-${crypto.randomUUID()}`,
+        name: `${profile.name} (copy)`,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      });
+      requestThemeSwitch(() => {
+        workingDrafts.current.set(copy.id, copy);
+        applyCompleteTheme(copy, true);
+        setToast("Independent theme copy created as a draft. Save it when ready.");
+      });
+      return copy.id;
     },
-    [myThemeSlots]
+    [profileForId, requestThemeSwitch, applyCompleteTheme]
   );
 
-  const handleMoveMyThemeSlotUp = useCallback((id: string) => {
-    updateMyThemeSlots((prev) => moveSlotUp(prev, id));
-  }, []);
-
-  const handleMoveMyThemeSlotDown = useCallback((id: string) => {
-    updateMyThemeSlots((prev) => moveSlotDown(prev, id));
-  }, []);
+  const moveTheme = useCallback(
+    async (id: string, direction: -1 | 1) => {
+      const slots = myThemeSlotsRef.current;
+      const index = slots.findIndex((slot) => slot.id === id);
+      if (index < 0 || index + direction < 0 || index + direction >= slots.length) return;
+      const reordered = [...slots];
+      [reordered[index], reordered[index + direction]] = [
+        reordered[index + direction],
+        reordered[index],
+      ];
+      const order = new Map(reordered.map((slot, position) => [slot.id, position]));
+      const result = await updateLibrary((state) => ({
+        ...state,
+        themes: [...state.themes].sort((a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0)),
+        drafts: [...state.drafts].sort((a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0)),
+        themeOrder: reordered.map((slot) => slot.id),
+      }));
+      if (result) updateMyThemeSlots(reordered);
+    },
+    [updateLibrary, updateMyThemeSlots]
+  );
+  const handleMoveMyThemeSlotUp = useCallback(
+    (id: string) => {
+      void moveTheme(id, -1);
+    },
+    [moveTheme]
+  );
+  const handleMoveMyThemeSlotDown = useCallback(
+    (id: string) => {
+      void moveTheme(id, 1);
+    },
+    [moveTheme]
+  );
 
   const handleResetPalette = useCallback(() => {
     if (activeMyThemeSlotId) {
@@ -1387,6 +1243,32 @@ export function AppShell() {
     });
     setCustomThemeName("");
   }, [activeMyThemeSlotId, selectedPaletteId, slotBaseColors]);
+
+  const resetAllPaletteCustomizations = useCallback(async () => {
+    const reset = (theme: GovernanceProfile) => {
+      const palette = BUILTIN_PALETTES.find((item) => item.id === theme.id);
+      const saved = libraryRef.current?.themes.find((item) => item.id === theme.id);
+      const colors = saved?.colors ?? palette?.colors ?? BRAND_PALETTES[0].colors;
+      return { ...theme, colors: structuredClone(colors) };
+    };
+    const drafts = [...workingDrafts.current.values()].map(reset);
+    const result = await updateLibrary((state) => ({
+      ...state,
+      drafts: [
+        ...state.drafts.filter((draft) => !drafts.some((item) => item.id === draft.id)),
+        ...drafts,
+      ],
+    }));
+    if (!result) return;
+    for (const draft of drafts) workingDrafts.current.set(draft.id, draft);
+    updateMyThemeSlots((slots) =>
+      slots.map((slot) => profileToSlot(reset(migrateSlotToProfile(slot))))
+    );
+    setCustomColors({});
+    const active = drafts.find((draft) => draft.id === currentProfileRef.current.id);
+    if (active) applyCompleteTheme(active, !!activeMyThemeSlotId);
+    setToast("All palette customizations reset.");
+  }, [libraryRef, updateLibrary, updateMyThemeSlots, applyCompleteTheme, activeMyThemeSlotId]);
 
   /** Reset a single swatch back to its base palette value. If clearing this
    *  override leaves the palette with no remaining customizations, the
@@ -1423,7 +1305,6 @@ export function AppShell() {
     setActiveTab("apply");
   }, []);
 
-  /** Theme B: extract theme from current input code into a new user palette. */
   const handleExtractFromCode = useCallback(
     (extractedName?: string): Palette | null => {
       if (!hasExtractableTheme(inputCode)) {
@@ -1432,99 +1313,163 @@ export function AppShell() {
       }
       const extracted = extractTheme(inputCode);
       const palette = paletteFromExtracted(extracted, extractedName ?? "Extracted theme");
-      setUserPalettes((prev) => [...prev, palette]);
-      setSelectedPaletteId(palette.id);
-      setCustomThemeName("");
-      setToast(`Extracted ${Object.keys(extracted.themeVariables).length} theme variables.`);
+      requestThemeSwitch(() => applyCompleteTheme(paletteToCompleteTheme(palette), true));
       return palette;
     },
-    [inputCode]
+    [inputCode, requestThemeSwitch, applyCompleteTheme]
   );
 
-  /** Extract tab: accept a pre-built Palette from the Extract tab and activate it.
-   *  When codeWithClassDefs is provided (classDef overrides were edited), populate
-   *  the Apply tab's input code so the overrides are immediately visible.
-   */
   const handleUseExtractedTheme = useCallback(
     (palette: Palette, codeWithClassDefs?: string) => {
-      const taken = new Set<string>([
-        ...BUILTIN_PALETTES.map((p) => p.id),
-        ...userPalettes.map((p) => p.id),
-      ]);
-      const safeId = taken.has(palette.id) ? uniquePaletteId("extracted-", taken) : palette.id;
-      const safe: Palette = { ...palette, id: safeId };
-      setUserPalettes((prev) => [...prev, safe]);
-      setSelectedPaletteId(safeId);
-      setCustomThemeName("");
-      if (codeWithClassDefs?.trim()) {
-        setInputCode(codeWithClassDefs);
-      }
-    },
-    [userPalettes]
-  );
-
-  /** Theme C: save the current effective palette (with edits) as a named user palette. */
-  const handleSavePalette = useCallback(
-    (name: string) => {
-      const trimmed = name.trim();
-      if (!trimmed) return;
-      const taken = new Set<string>([
-        ...BUILTIN_PALETTES.map((p) => p.id),
-        ...userPalettes.map((p) => p.id),
-      ]);
-      const id = uniquePaletteId("saved-", taken);
-      const palette: Palette = {
-        ...selectedPalette,
-        id,
-        name: trimmed,
-        description: `User-saved palette · derived from ${selectedPalette.name}`,
-        version: "0.0.0",
-        attribution: {
-          ...selectedPalette.attribution,
-          themeName: trimmed,
-          label: `Themed with Mermaid Theme Builder · ${trimmed}`,
-        },
-      };
-      setUserPalettes((prev) => [...prev, palette]);
-      setSelectedPaletteId(id);
-      setCustomThemeName("");
-      setToast(`Saved palette: ${trimmed}`);
-    },
-    [selectedPalette, userPalettes]
-  );
-
-  const handleImportPalette = useCallback(
-    (palette: Palette, options?: { suppressToast?: boolean }) => {
-      setUserPalettes((prev) => {
-        const taken = new Set<string>([
-          ...BUILTIN_PALETTES.map((p) => p.id),
-          ...prev.map((p) => p.id),
-        ]);
-        const safeId =
-          taken.has(palette.id) || !palette.id ? uniquePaletteId("imported-", taken) : palette.id;
-        const safe: Palette = { ...palette, id: safeId };
-        // Defer selection until next tick so userPalettes update applies first.
-        queueMicrotask(() => {
-          setSelectedPaletteId(safeId);
-          setCustomThemeName("");
-          if (!options?.suppressToast) setToast(`Imported palette: ${safe.name}`);
-        });
-        return [...prev, safe];
+      requestThemeSwitch(() => {
+        const theme = paletteToCompleteTheme(palette);
+        theme.id = uniqueThemeId(theme.id, new Set(myThemeSlotsRef.current.map((slot) => slot.id)));
+        applyCompleteTheme(theme, true);
+        if (codeWithClassDefs?.trim()) setInputCode(codeWithClassDefs);
+        setToast("Extracted theme opened as a draft. Save it when ready.");
       });
     },
-    []
+    [requestThemeSwitch, applyCompleteTheme]
   );
 
-  const handleDeleteUserPalette = useCallback((id: string) => {
-    setUserPalettes((prev) => prev.filter((p) => p.id !== id));
-    setCustomColors((prev) => {
-      const next = { ...prev };
-      delete next[id];
-      return next;
-    });
-    setSelectedPaletteId((current) => (current === id ? BRAND_PALETTES[0].id : current));
-    setToast("Palette removed.");
+  const handleSavePalette = useCallback(
+    (name: string) => saveCompleteTheme(name, true),
+    [saveCompleteTheme]
+  );
+
+  const handleThemeSwitchDecision = useCallback(
+    async (choice: "save" | "keep" | "discard" | "cancel") => {
+      const next = pendingThemeSwitch;
+      if (!next || choice === "cancel") {
+        setPendingThemeSwitch(null);
+        return;
+      }
+      const current = currentProfileRef.current;
+      if (choice === "save") {
+        if (!(await saveCompleteTheme())) return;
+      } else {
+        const result = await updateLibrary((state) => ({
+          ...state,
+          drafts: [
+            ...state.drafts.filter((draft) => draft.id !== current.id),
+            ...(choice === "keep" ? [current] : []),
+          ],
+          editorSession: sessionRef.current,
+        }));
+        if (!result) return;
+        if (choice === "discard") {
+          workingDrafts.current.delete(current.id);
+          const saved = result.themes.find((theme) => theme.id === current.id);
+          updateMyThemeSlots((slots) =>
+            saved
+              ? slots.map((slot) => (slot.id === current.id ? profileToSlot(saved) : slot))
+              : slots.filter((slot) => slot.id !== current.id)
+          );
+        }
+      }
+      setPendingThemeSwitch(null);
+      next();
+    },
+    [pendingThemeSwitch, saveCompleteTheme, updateLibrary, updateMyThemeSlots]
+  );
+
+  const commitThemeImport = useCallback(
+    async (replace: boolean) => {
+      if (!pendingThemeImport) return;
+      const incoming = pendingThemeImport;
+      let copies: GovernanceProfile[] = [];
+      setImportingTheme(true);
+      const result = await updateLibrary((state) => {
+        const used = new Set([
+          ...BUILTIN_PALETTES.map((palette) => palette.id),
+          ...state.themes.map((theme) => theme.id),
+          ...state.drafts.map((draft) => draft.id),
+        ]);
+        copies = incoming.themes.map((theme) =>
+          createGovernanceProfile({
+            ...theme,
+            id: replace && incoming.replaceId ? incoming.replaceId : uniqueThemeId(theme.id, used),
+            provenance: { ...theme.provenance, originalId: theme.id },
+          })
+        );
+        const ids = new Set(copies.map((theme) => theme.id));
+        return {
+          ...state,
+          themes: [...state.themes.filter((theme) => !ids.has(theme.id)), ...copies],
+          drafts: state.drafts.filter((draft) => !ids.has(draft.id)),
+          editorSession: sessionRef.current,
+        };
+      });
+      setImportingTheme(false);
+      if (!result) return;
+      for (const profile of copies) workingDrafts.current.set(profile.id, profile);
+      updateMyThemeSlots((slots) => [
+        ...slots.filter((slot) => !copies.some((theme) => theme.id === slot.id)),
+        ...copies.map(profileToSlot),
+      ]);
+      setPendingThemeImport(null);
+      setToast(
+        `Imported ${copies.length} complete theme${copies.length === 1 ? "" : "s"}. Select one to apply it. Diagram text is unchanged.`
+      );
+    },
+    [pendingThemeImport, updateLibrary, updateMyThemeSlots]
+  );
+
+  const downloadWorkspaceRecovery = useCallback(() => {
+    const raw: Record<string, string | null> = {};
+    try {
+      raw[LEGACY_THEME_KEY] = localStorage.getItem(LEGACY_THEME_KEY);
+      raw[THEME_LIBRARY_KEY] = localStorage.getItem(THEME_LIBRARY_KEY);
+      for (let index = 0; index < localStorage.length; index++) {
+        const key = localStorage.key(index);
+        if (key?.startsWith("mtb.recovery.")) raw[key] = localStorage.getItem(key);
+      }
+    } catch {
+      /* The in-memory workspace remains exportable without storage access. */
+    }
+    const workspace = themeLibrary.recover([...workingDrafts.current.values()], sessionRef.current);
+    downloadTextFile(
+      "mermaid-theme-workspace-recovery.json",
+      JSON.stringify(
+        {
+          type: WORKSPACE_RECOVERY_TYPE,
+          schemaVersion: 1,
+          includesDiagramText: true,
+          workspace,
+          originalStorage: raw,
+        },
+        null,
+        2
+      ),
+      "application/json"
+    );
+  }, [themeLibrary.recover]);
+
+  const handleImportThemeFile = useCallback((json: string) => {
+    const result = parseThemeImport(json);
+    if (result.ok) {
+      setThemeImportError(null);
+      setImportDiagnostics(result.diagnostics ?? null);
+      setPendingThemeImport((previous) => ({
+        themes: [...(previous?.themes ?? []), ...result.themes],
+        warnings: [...(previous?.warnings ?? []), ...result.warnings],
+      }));
+    } else setThemeImportError(result.error);
   }, []);
+
+  const handleImportPalette = useCallback((palette: Palette) => {
+    setPendingThemeImport({
+      themes: [paletteToCompleteTheme(palette)],
+      warnings: ["Legacy palette settings use documented defaults."],
+    });
+  }, []);
+
+  const handleDeleteUserPalette = useCallback(
+    (id: string) => {
+      void handleDeleteMyThemeSlot(id);
+    },
+    [handleDeleteMyThemeSlot]
+  );
 
   const showToast = useCallback((msg: ReactNode) => setToast(msg), []);
 
@@ -1718,9 +1663,7 @@ export function AppShell() {
                         role="menuitem"
                         autoFocus
                         onClick={() => {
-                          setCustomColors({});
-                          setCustomThemeName("");
-                          setToast("All palette customizations reset.");
+                          void resetAllPaletteCustomizations();
                           setConfirmResetPalettes(false);
                           setShowSettingsMenu(false);
                         }}
@@ -1788,34 +1731,7 @@ export function AppShell() {
                   type="button"
                   role="menuitem"
                   onClick={() => {
-                    // Erase both localStorage keys atomically.
-                    clearPersistedState();
-                    // Reset every persisted React state field to its factory default.
-                    setSelectedPaletteId(BRAND_PALETTES[0].id);
-                    setCustomColors({});
-                    setIncludeMetaComments(true);
-                    setIncludeBadge(true);
-                    setCustomThemeName("");
-                    setInputCode(APPLY_TAB_DEFAULT);
-                    setUserPalettes([]);
-                    setRecentPaletteIds([]);
-                    setLook("classic");
-                    setFontSize("");
-                    setTypography(DEFAULT_TYPOGRAPHY);
-                    setRendererTarget("");
-                    setRendererTargetHintDismissed(false);
-                    setOutputFormat("init-directive");
-                    setOutputFormatOverridden(false);
-                    setPreviewMode("themed");
-                    setSettingsResetToken((t) => t + 1);
-                    setLastExampleType({});
-                    setLastSelectedExampleId("");
-                    updateMyThemeSlots([createDefaultMyThemeSlot(1, BRAND_PALETTES[0].colors)]);
-                    setActiveMyThemeSlotId("my-theme-1");
-                    // Clear hint dismissals so all syntax tips reappear.
-                    clearAllDismissals();
-                    setHintResetToken((t) => t + 1);
-                    setToast("All settings cleared.");
+                    setPendingClearSettings(true);
                     setShowSettingsMenu(false);
                   }}
                   className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-left text-foreground hover:bg-muted transition-colors border-t border-border/60"
@@ -1892,6 +1808,50 @@ export function AppShell() {
         })}
       </nav>
 
+      {hydrated && firstVisitComplete && (
+        <ThemeLibraryStatus
+          name={currentProfile.name}
+          destination={getRendererById(rendererTarget)?.shortName ?? rendererTarget}
+          dirty={dirtyTheme}
+          saved={!!themeLibrary.state?.themes.some((theme) => theme.id === currentProfile.id)}
+          recovered={
+            initialLibrary.ok &&
+            initialLibrary.state.drafts.some((draft) => draft.id === currentProfile.id)
+          }
+          busy={themeLibrary.busy}
+          error={themeLibrary.error}
+          warnings={[
+            ...(currentProfile.provenance?.missingFields?.length
+              ? ["Recovered theme: review defaults for settings that were not recorded."]
+              : []),
+            ...(currentProfile.semanticClassDefs?.length
+              ? ["Recorded semantic definitions are retained but not applied to rendering."]
+              : []),
+            ...(Object.keys(currentProfile.advancedMermaidConfig ?? {}).some(
+              (key) => !["htmlLabels", "deterministicIds", "deterministicIDSeed"].includes(key)
+            )
+              ? ["Unsupported advanced settings are retained but not applied to rendering."]
+              : []),
+          ]}
+          onSave={() => saveCompleteTheme()}
+          onSaveCopy={(name) => saveCompleteTheme(name, true)}
+          onRecovery={downloadWorkspaceRecovery}
+          onBackup={() => {
+            if (libraryRef.current)
+              downloadTextFile(
+                "my-themes.theme-library.json",
+                libraryToPortableJson(libraryRef.current),
+                "application/json"
+              );
+          }}
+          onRestore={(json) => {
+            const result = parseLibraryImport(json);
+            if (result.ok) setPendingThemeImport(result);
+            else setThemeImportError(result.error);
+          }}
+        />
+      )}
+
       <main
         id="main-content"
         tabIndex={-1}
@@ -1914,6 +1874,7 @@ export function AppShell() {
               hidden={activeTab !== "apply"}
             >
               <ApplyTab
+                completeTheme={currentProfile}
                 selectedPalette={selectedPalette}
                 selectedPaletteId={selectedPaletteId}
                 onSelectPalette={handleSelectPalette}
@@ -1964,6 +1925,7 @@ export function AppShell() {
                 onMoveMyThemeSlotUp={handleMoveMyThemeSlotUp}
                 onMoveMyThemeSlotDown={handleMoveMyThemeSlotDown}
                 onImportAsNewSlot={handleImportAsNewSlot}
+                onImportThemeFile={handleImportThemeFile}
                 onShowProfileDetails={handleShowProfileDetails}
                 advancedMermaidConfig={advancedMermaidConfig}
               />
@@ -1994,6 +1956,16 @@ export function AppShell() {
                   effectiveThemeName={effectiveThemeName}
                   userPalettes={userPalettes}
                   onSavePalette={handleSavePalette}
+                  completeTheme={currentProfile}
+                  savedThemeCount={themeLibrary.state?.themes.length ?? 0}
+                  onExportLibrary={() => {
+                    if (libraryRef.current)
+                      downloadTextFile(
+                        "my-themes.theme-library.json",
+                        libraryToPortableJson(libraryRef.current),
+                        "application/json"
+                      );
+                  }}
                   onImportPalette={handleImportPalette}
                   onDeleteUserPalette={handleDeleteUserPalette}
                   onShowToast={showToast}
@@ -2019,6 +1991,7 @@ export function AppShell() {
                   onDeleteMyThemeSlot={handleDeleteMyThemeSlot}
                   onExportMyThemeSlot={handleExportMyThemeSlot}
                   onImportAsNewSlot={handleImportAsNewSlot}
+                  onImportThemeFile={handleImportThemeFile}
                   onImportMyThemeSlot={handleImportMyThemeSlot}
                   onImportGovernanceProfile={handleImportGovernanceProfile}
                   onDuplicateMyThemeSlot={handleDuplicateMyThemeSlot}
@@ -2055,6 +2028,7 @@ export function AppShell() {
                   onMoveMyThemeSlotUp={handleMoveMyThemeSlotUp}
                   onMoveMyThemeSlotDown={handleMoveMyThemeSlotDown}
                   onImportAsNewSlot={handleImportAsNewSlot}
+                  onImportThemeFile={handleImportThemeFile}
                   onShowToast={showToast}
                   onShowProfileDetails={handleShowProfileDetails}
                 />
@@ -2084,6 +2058,7 @@ export function AppShell() {
                   onMoveMyThemeSlotUp={handleMoveMyThemeSlotUp}
                   onMoveMyThemeSlotDown={handleMoveMyThemeSlotDown}
                   onImportAsNewSlot={handleImportAsNewSlot}
+                  onImportThemeFile={handleImportThemeFile}
                   onShowToast={showToast}
                   onShowProfileDetails={handleShowProfileDetails}
                   rendererTarget={rendererTarget}
@@ -2091,7 +2066,7 @@ export function AppShell() {
                   onDismissRendererTargetHint={() => setRendererTargetHintDismissed(true)}
                   outputFormat={outputFormat}
                   onCopyForRenderer={handleCopyForRenderer}
-                  onCopyShareLink={activeMyThemeSlotId ? handleReferenceShareLink : undefined}
+                  onCopyShareLink={handleReferenceShareLink}
                 />
               )}
               {activeTab === "extract" && (
@@ -2209,13 +2184,165 @@ export function AppShell() {
         </div>
       </footer>
 
+      {pendingClearSettings && (
+        <ThemeDialog title="Clear this workspace?" onClose={() => setPendingClearSettings(false)}>
+          <p className="mb-3 text-sm">
+            This clears the current theme library, drafts, diagram, and workspace preferences. The
+            original pre-upgrade snapshot remains unchanged. Download a recovery copy first if you
+            want to restore newer work.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <button className={themeActionClass} onClick={downloadWorkspaceRecovery}>
+              Download recovery first
+            </button>
+            <button className={themeActionClass} onClick={() => setPendingClearSettings(false)}>
+              Cancel
+            </button>
+            <button
+              className={themeActionClass}
+              disabled={themeLibrary.busy || !!themeLibrary.error}
+              onClick={async () => {
+                const result = await updateLibrary((state) => ({
+                  ...state,
+                  themes: [],
+                  drafts: [],
+                  editorSession: {
+                    inputCode: APPLY_TAB_DEFAULT,
+                    activeThemeId: null,
+                    selectedPaletteId: BRAND_PALETTES[0].id,
+                    preferences: {},
+                  },
+                }));
+                if (!result) return;
+                try {
+                  localStorage.removeItem("mtb.classBrowser.previewMode");
+                  localStorage.removeItem("mtb.exportPreview.open");
+                  localStorage.removeItem("mtb.firstVisit");
+                } catch {
+                  setProfileShareError(
+                    "The workspace was cleared, but some separate browser preferences could not be reset."
+                  );
+                }
+                workingDrafts.current.clear();
+                updateMyThemeSlots([]);
+                setCustomColors({});
+                setUserPalettes([]);
+                setRecentPaletteIds([]);
+                setInputCode(APPLY_TAB_DEFAULT);
+                setPreviewMode("themed");
+                setLastExampleType({});
+                setLastSelectedExampleId("");
+                setRendererTargetHintDismissed(false);
+                setSettingsResetToken((value) => value + 1);
+                clearAllDismissals();
+                setHintResetToken((value) => value + 1);
+                applyCompleteTheme(paletteToCompleteTheme(BRAND_PALETTES[0]), false);
+                setPendingClearSettings(false);
+                setToast("All settings cleared. Original pre-upgrade data was retained.");
+              }}
+            >
+              Confirm clear workspace
+            </button>
+          </div>
+        </ThemeDialog>
+      )}
+
+      {pendingThemeSwitch && (
+        <ThemeDialog title="Keep your theme changes?" onClose={() => setPendingThemeSwitch(null)}>
+          <p className="mb-4 text-sm">
+            Save changes to this theme, keep an unsaved draft for later, or discard the draft. Your
+            diagram will not change.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <button
+              className={themeActionClass}
+              disabled={themeLibrary.busy}
+              onClick={() => void handleThemeSwitchDecision("save")}
+            >
+              Save and switch
+            </button>
+            <button
+              className={themeActionClass}
+              disabled={themeLibrary.busy}
+              onClick={() => void handleThemeSwitchDecision("keep")}
+            >
+              Keep draft and switch
+            </button>
+            <button
+              className={themeActionClass}
+              disabled={themeLibrary.busy}
+              onClick={() => void handleThemeSwitchDecision("discard")}
+            >
+              Discard draft and switch
+            </button>
+            <button className={themeActionClass} onClick={() => setPendingThemeSwitch(null)}>
+              Cancel
+            </button>
+          </div>
+        </ThemeDialog>
+      )}
+
+      {pendingThemeImport && (
+        <ThemeDialog title="Review theme import" onClose={() => setPendingThemeImport(null)}>
+          <p className="mb-2 text-sm">
+            {pendingThemeImport.themes.length} theme
+            {pendingThemeImport.themes.length === 1 ? "" : "s"}. Importing copies preserves your
+            existing themes and diagram text.
+          </p>
+          <ul className="mb-3 max-h-48 list-disc overflow-auto pl-5 text-xs">
+            {pendingThemeImport.themes.map((theme, index) => (
+              <li key={`${theme.id}-${index}`}>
+                {theme.name}: {theme.colors.length} colors, {theme.look},{" "}
+                {theme.rendererTarget || "generic destination"}, {theme.outputFormat}
+              </li>
+            ))}
+          </ul>
+          {pendingThemeImport.warnings.map((warning, index) => (
+            <p className="mb-2 text-xs text-muted-foreground" key={index}>
+              {warning}
+            </p>
+          ))}
+          <div className="flex flex-wrap gap-2">
+            <button
+              className={themeActionClass}
+              disabled={importingTheme || !!themeLibrary.error}
+              onClick={() => void commitThemeImport(false)}
+            >
+              Import as copies
+            </button>
+            {pendingThemeImport.replaceId && (
+              <button
+                className={themeActionClass}
+                disabled={importingTheme || !!themeLibrary.error}
+                onClick={() => void commitThemeImport(true)}
+              >
+                Confirm replace selected theme
+              </button>
+            )}
+            <button className={themeActionClass} onClick={() => setPendingThemeImport(null)}>
+              Cancel
+            </button>
+          </div>
+        </ThemeDialog>
+      )}
+
       <ProfileDetailsPanel
         open={profileDetailSlotId !== null}
         onClose={() => setProfileDetailSlotId(null)}
-        slot={myThemeSlots.find((s) => s.id === profileDetailSlotId) ?? null}
-        rendererTarget={rendererTarget}
-        outputFormat={outputFormat}
-        slotsFull={myThemeSlots.length >= 3}
+        slot={
+          profileDetailSlotId && profileForId(profileDetailSlotId)
+            ? profileToSlot(profileForId(profileDetailSlotId)!)
+            : null
+        }
+        rendererTarget={
+          profileDetailSlotId ? (profileForId(profileDetailSlotId)?.rendererTarget ?? "") : ""
+        }
+        outputFormat={
+          profileDetailSlotId
+            ? (profileForId(profileDetailSlotId)?.outputFormat ?? "init-directive")
+            : "init-directive"
+        }
+        slotsFull={false}
         onRename={handleRenameMyThemeSlot}
         onExport={handleExportMyThemeSlot}
         onImport={handleImportIntoProfileDetailSlot}
@@ -2226,7 +2353,7 @@ export function AppShell() {
       />
 
       {/* Profile share-link error banner — shown when ?profile= token is invalid */}
-      {profileShareError && (
+      {(profileShareError || themeImportError) && (
         <div
           role="alert"
           className="fixed top-0 left-0 right-0 z-50 flex items-start justify-between gap-3 px-4 py-3 bg-destructive/10 border-b border-destructive/30"
@@ -2254,14 +2381,17 @@ export function AppShell() {
             </svg>
             <div className="min-w-0">
               <p className="text-xs font-semibold text-destructive">
-                Could not load shared profile
+                {themeImportError ? "Could not import theme" : "Could not load shared profile"}
               </p>
-              <p className="text-[10px] text-destructive/70 truncate">{profileShareError}</p>
+              <p className="text-xs text-destructive">{themeImportError || profileShareError}</p>
             </div>
           </div>
           <button
             type="button"
-            onClick={() => setProfileShareError(null)}
+            onClick={() => {
+              setProfileShareError(null);
+              setThemeImportError(null);
+            }}
             className="shrink-0 p-1 rounded text-destructive/50 hover:text-destructive transition-colors"
             aria-label="Dismiss error"
           >
@@ -2280,6 +2410,7 @@ export function AppShell() {
       {toast && (
         <div
           role="status"
+          aria-label="Notification"
           aria-live="polite"
           className="fixed bottom-16 md:bottom-4 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 pl-4 pr-2 py-2 rounded-md bg-foreground/90 text-background text-xs font-medium shadow-lg backdrop-blur animate-in fade-in slide-in-from-bottom-2"
         >

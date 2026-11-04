@@ -238,9 +238,12 @@ test("fixed class assignment keeps its classDef styling after page reload", asyn
     .poll(
       () =>
         page.evaluate(() => {
-          const raw = window.localStorage.getItem("mtb.state.v1");
+          const raw = window.localStorage.getItem("mtb.state.v2");
           if (!raw) return "";
-          return (JSON.parse(raw) as { inputCode?: string }).inputCode ?? "";
+          return (
+            (JSON.parse(raw) as { editorSession: { inputCode?: string } }).editorSession
+              .inputCode ?? ""
+          );
         }),
       { timeout: 5000 }
     )

@@ -4,7 +4,7 @@ import type { MermaidLook } from "./theme-engine";
 import { DEFAULT_TYPOGRAPHY, type TypographySettings } from "./typography";
 
 export const MY_THEME_SLOT_IDS = ["my-theme-1", "my-theme-2", "my-theme-3"] as const;
-export type MyThemeSlotId = (typeof MY_THEME_SLOT_IDS)[number];
+export type MyThemeSlotId = string;
 
 export interface MyThemeSlot {
   id: MyThemeSlotId;
@@ -19,7 +19,7 @@ export interface MyThemeSlot {
   updatedAt?: string;
 }
 
-export function defaultSlotName(n: 1 | 2 | 3): string {
+export function defaultSlotName(n: number): string {
   return `My Theme ${n}`;
 }
 
@@ -28,7 +28,7 @@ export function slotDisplayName(id: string): string {
   return n >= 0 ? `My Theme ${n + 1}` : "My Theme";
 }
 
-export function createDefaultMyThemeSlot(n: 1 | 2 | 3, sourceColors?: ThemeColor[]): MyThemeSlot {
+export function createDefaultMyThemeSlot(n: number, sourceColors?: ThemeColor[]): MyThemeSlot {
   const base = sourceColors ?? BRAND_PALETTES[0].colors;
   const now = new Date().toISOString();
   return {
@@ -49,10 +49,9 @@ export function createDefaultMyThemeSlot(n: 1 | 2 | 3, sourceColors?: ThemeColor
   };
 }
 
-export function nextSlotNumber(slots: MyThemeSlot[]): (1 | 2 | 3) | null {
-  if (slots.length >= 3) return null;
+export function nextSlotNumber(slots: MyThemeSlot[]): number | null {
   const usedIds = new Set(slots.map((s) => s.id));
-  for (const n of [1, 2, 3] as const) {
+  for (let n = 1; n <= slots.length + 1; n++) {
     if (!usedIds.has(`my-theme-${n}` as MyThemeSlotId)) return n;
   }
   return null;
@@ -67,7 +66,7 @@ export function isMyThemeSlotId(id: unknown): id is MyThemeSlotId {
 /**
  * Duplicate a slot: deep-copy source into the next available slot id, appending
  * " (copy)" to the name.  Returns the new slots array and the new slot's id, or
- * null when all 3 slots are already in use or the source id is not found.
+ * null when the source id is not found.
  */
 export function duplicateSlot(
   slots: MyThemeSlot[],
@@ -80,6 +79,7 @@ export function duplicateSlot(
   const newId = `my-theme-${num}` as MyThemeSlotId;
   const now = new Date().toISOString();
   const copy: MyThemeSlot = {
+    ...JSON.parse(JSON.stringify(source)),
     id: newId,
     name: `${source.name} (copy)`,
     colors: source.colors.map((c) => ({ ...c })),
