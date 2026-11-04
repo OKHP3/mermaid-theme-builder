@@ -1829,6 +1829,7 @@ export function ComposeTab({
           )}
           <div className="studio-canvas flex-1 overflow-auto p-4">
             <MermaidPreview
+              key={galleryOpen ? "gallery" : "single"}
               code={sampleThemedCode}
               className="w-full h-full"
               typography={typography}

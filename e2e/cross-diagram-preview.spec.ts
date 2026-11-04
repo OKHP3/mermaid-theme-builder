@@ -64,6 +64,9 @@ test("gallery renders each family on demand and leaves source, theme, and origin
     await button.click();
     await expect(button).toHaveAttribute("aria-pressed", "true");
     await expect(await preview(page)).toContainText(expectedText);
+    if (family === "Flowchart") {
+      expect((await (await preview(page)).boundingBox())!.height).toBeGreaterThan(180);
+    }
     await expect(page.locator(".studio-canvas svg[aria-roledescription]")).toHaveCount(1);
     await expect(page.locator(".studio-preview")).not.toContainText("Render Error");
     expect(
