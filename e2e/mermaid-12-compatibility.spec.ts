@@ -127,10 +127,6 @@ test("Mermaid 12.3 hides step animation when reduced motion is requested", async
 test("Mermaid 12.3 renders nested ELK edges in Original and preserves themed output", async ({
   page,
 }) => {
-  const elkResponses: string[] = [];
-  page.on("response", (response) => {
-    if (/elk/i.test(response.url()) && response.ok()) elkResponses.push(response.url());
-  });
   await page.goto("./#apply");
   await page.getByLabel("Mermaid diagram code input").fill(`%%{init: {"layout":"elk"}}%%
 flowchart TB
@@ -145,11 +141,19 @@ flowchart TB
   await page.getByRole("tab", { name: "original", exact: true }).click();
   const svg = page.locator('section[aria-label="Diagram preview"] svg[aria-roledescription]');
   await expect(svg).toContainText("ReviewTarget", { timeout: 30000 });
-  await expect.poll(() => elkResponses.length).toBeGreaterThan(0);
   await expect(svg.locator("path.flowchart-link")).toHaveCount(2);
+  const positions = () =>
+    svg
+      .locator("g.node")
+      .evaluateAll((nodes) => nodes.map((node) => node.getAttribute("transform")));
+  const originalPositions = await positions();
+  expect(originalPositions.length).toBe(2);
   await page.getByRole("tab", { name: "themed", exact: true }).click();
   await expect(svg).toContainText("ReviewTarget", { timeout: 30000 });
   await expect(svg.locator("path.flowchart-link")).toHaveCount(2);
+  // The explicit ELK source layout differs from the preserved themed Dagre default.
+  // Compare rendered geometry, not vendor chunk names or generated element IDs.
+  await expect.poll(positions).not.toEqual(originalPositions);
   await expect(page.getByLabel("Mermaid diagram code input")).toHaveValue(/ReviewSource/);
 });
 
