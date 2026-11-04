@@ -46,6 +46,16 @@ Flat pnpm workspace. The Mermaid Theme Builder is the root application package, 
 
 ## Artifact
 
+### Increment 5: keyboard safety
+
+Version 0.11.1 contains a localized theme-selector keyboard repair. Navigation
+keys belong to theme radios, not adjacent management buttons. Confirmed deletion
+restores lost focus to a surviving theme without overriding focus the user moved
+elsewhere. No storage, export, dependency, or Forge styling changes are included.
+See `docs/theme-keyboard-safety.md`. Release tags and Pages runs establish hosted
+status, not this package version alone. Keep existing held Agent jobs untouched
+and use Replit Free mode only.
+
 ### Mermaid Theme Builder
 
 - **Package name**: `@workspace/mermaid-theme-builder`

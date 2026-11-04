@@ -68,6 +68,7 @@ export function PaletteSelectorBar({
   const [pendingRenameId, setPendingRenameId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const renameInputRef = useRef<HTMLInputElement | null>(null);
+  const deletedThemeFocusRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!pendingDeleteId) return;
@@ -138,12 +139,31 @@ export function PaletteSelectorBar({
     ? currentNavId
     : navItems[0]?.id;
 
+  useEffect(() => {
+    const deletedId = deletedThemeFocusRef.current;
+    if (!deletedId || myThemeSlots.some((slot) => slot.id === deletedId)) return;
+    // Deletion may finish after the dialog closes. Recover only lost focus,
+    // without interrupting a user who has already moved to another control.
+    const frame = requestAnimationFrame(() => {
+      if (deletedThemeFocusRef.current !== deletedId) return;
+      deletedThemeFocusRef.current = null;
+      if (document.activeElement === document.body && tabStopId) {
+        document.getElementById(`${tileIdPrefix}-${tabStopId}`)?.focus();
+      }
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [myThemeSlots, tabStopId, tileIdPrefix]);
+
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
-      const focused = (e.target as HTMLElement).closest('[role="radio"]')?.id;
-      const focusedId = focused?.startsWith(`${tileIdPrefix}-`)
-        ? focused.slice(tileIdPrefix.length + 1)
-        : currentNavId;
+      if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+      const radio = (e.target as HTMLElement).closest('[role="radio"]');
+      if (
+        !radio?.id.startsWith(`${tileIdPrefix}-`) ||
+        radio.closest('[role="radiogroup"]') !== e.currentTarget
+      )
+        return;
+      const focusedId = radio.id.slice(tileIdPrefix.length + 1);
       const idx = navItems.findIndex((item) => item.id === focusedId);
       if (idx < 0) return;
       let nextIdx: number | null = null;
@@ -173,7 +193,7 @@ export function PaletteSelectorBar({
         }
       }
     },
-    [currentNavId, navItems, navLen, onSelectMyThemeSlot, onSelectPalette, tileIdPrefix]
+    [navItems, navLen, onSelectMyThemeSlot, onSelectPalette, tileIdPrefix]
   );
 
   const pendingSlot = pendingDeleteId ? myThemeSlots.find((s) => s.id === pendingDeleteId) : null;
@@ -553,6 +573,7 @@ export function PaletteSelectorBar({
               <button
                 type="button"
                 onClick={() => {
+                  deletedThemeFocusRef.current = pendingSlot.id;
                   onDeleteMyThemeSlot(pendingSlot.id);
                   setPendingDeleteId(null);
                 }}

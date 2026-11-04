@@ -2,6 +2,18 @@
 
 ---
 
+## [0.11.1] - 2026-11-04
+
+### Fixed
+- Keep arrow, Home, and End keys on theme-management buttons from changing the selected theme. Preserve modified keyboard shortcuts and normal theme-radio navigation.
+- Restore lost keyboard focus after confirmed theme deletion without interrupting a user who has moved to another control.
+- Add regression checks for keyboard selection, delayed deletion, canceled deletion, focus ownership, and preserved theme and diagram data.
+
+Increment 5 is a bounded keyboard-safety repair. Theme storage, export contracts,
+the Forge design, and all dependency pins are unchanged.
+
+---
+
 ## [0.11.0] - 2026-11-04
 
 ### Changed
