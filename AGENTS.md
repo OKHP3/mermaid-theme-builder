@@ -644,14 +644,14 @@ unversioned development modules. Offline use covers features warmed online, not
 every diagram family automatically. See `docs/offline-reliability.md`.
 
 Increment 3 (v0.10.0) adds on-demand cross-diagram comparison and repeat-use
-actions without changing storage or dependency pins. Its implementation and
-deployment are owner-authorized; required checks and live verification remain
-mandatory. See `docs/cross-diagram-preview.md`.
+actions without changing storage or dependency pins. PR #139 merged as ded312b
+after required checks. Pages run 41790125567 and live v0.10.0-ded312b were verified
+on 2026-11-04. See `docs/cross-diagram-preview.md`.
 
-Increment 2 (v0.9.0) was owner-approved for gated merge and release on 2026-11-04. Its
+Increment 2 (v0.9.0) was released on 2026-11-04 from PR #137, merge 3e4ef7b. Its
 additive `mtb.state.v2` library preserves `mtb.state.v1`, separates drafts from
-named saves. See `docs/complete-themes.md`. Verify the release tag and Pages run
-before claiming deployment. Mermaid and other dependency pins are unchanged.
+named saves. Pages run 41787273594 and live v0.9.0-3e4ef7b were verified.
+See `docs/complete-themes.md`. Mermaid and other dependency pins are unchanged.
 
 - Mermaid is used as an npm dependency (currently `12.2.0` -- pinned exactly).
 - Do not fork Mermaid. Do not copy Mermaid source into this repo.
