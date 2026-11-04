@@ -8,6 +8,8 @@
 - Scope offline caches to this application, preserving sibling applications and ambiguous legacy caches.
 - Fetch current page content online, cache only validated production pages and hashed assets, and avoid freezing development modules.
 - Verify a warmed offline reload and return online without changing saved themes or diagram source.
+- Restore the editor when mobile Theme focus is selected during comparison, and remove an inactive gallery control reference.
+- Use shared spacing tokens for the gallery without changing its default dimensions.
 
 ---
 

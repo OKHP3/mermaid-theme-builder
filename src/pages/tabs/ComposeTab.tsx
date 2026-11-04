@@ -723,7 +723,10 @@ export function ComposeTab({
             type="button"
             aria-pressed={workspaceFocus === view}
             aria-label={view === "theme" ? "Edit theme settings" : "Preview sample diagram"}
-            onClick={() => setWorkspaceFocus(view)}
+            onClick={() => {
+              setWorkspaceFocus(view);
+              if (view === "theme") setGalleryOpen(false);
+            }}
           >
             {view === "theme" ? "Theme" : "Preview"}
           </button>
@@ -1776,7 +1779,7 @@ export function ComposeTab({
               type="button"
               className="workspace-button"
               aria-expanded={galleryOpen}
-              aria-controls="compose-cross-diagram-gallery"
+              aria-controls={galleryOpen ? "compose-cross-diagram-gallery" : undefined}
               onClick={() => setGalleryOpen((open) => !open)}
             >
               {galleryOpen ? "Close comparison" : "Compare samples"}
