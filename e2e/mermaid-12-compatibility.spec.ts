@@ -152,3 +152,20 @@ flowchart TB
   await expect(svg.locator("path.flowchart-link")).toHaveCount(2);
   await expect(page.getByLabel("Mermaid diagram code input")).toHaveValue(/ReviewSource/);
 });
+
+test("Mermaid 12.3 preserves rejected edge IDs and recovers after an explicit correction", async ({
+  page,
+}) => {
+  await page.goto("./#apply");
+  const input = page.getByLabel("Mermaid diagram code input");
+  const source = "flowchart LR\n  A e[1]@--> B";
+  await input.fill(source);
+  const preview = page.getByRole("region", { name: "Diagram preview", exact: true });
+  await expect(preview.getByText("Render Error", { exact: true })).toBeVisible({ timeout: 30000 });
+  await expect(input).toHaveValue(source);
+  await input.fill("flowchart LR\n  A[ReviewCorrected] e1@--> B");
+  await expect(preview.locator("svg[aria-roledescription]")).toContainText("ReviewCorrected", {
+    timeout: 30000,
+  });
+  await expect(preview.getByText("Render Error", { exact: true })).toHaveCount(0);
+});

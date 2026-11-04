@@ -36,7 +36,8 @@ require compatibility review plus the four protected checks.
 | Input compatibility | Vendor edge IDs now reject bracket, brace, parenthesis, and pipe characters. Preserve user source; do not silently rename identifiers. Invalid source continues to use the existing visible render-error path. |
 
 The new animation tests check actual SVG motion elements and computed
-reduced-motion visibility. The expanded migration suite also retains flowchart,
+reduced-motion visibility. A rejected-edge test confirms source preservation,
+visible errors, and recovery after an explicit correction. The expanded migration suite also retains flowchart,
 class, state, ER, requirement, use case, ZenUML, mindmap, and circle-label checks.
 CI runs this suite against production and development builds. Existing full
 browser coverage checks saved themes, imports, exports, cross-diagram previews,
