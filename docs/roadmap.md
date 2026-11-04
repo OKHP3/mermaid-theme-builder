@@ -12,10 +12,15 @@
   [v0.10.0](https://github.com/OKHP3/mermaid-theme-builder/releases/tag/v0.10.0).
   Pages run 41790125567 and live revision ded312b were verified.
   See [preview behavior](cross-diagram-preview.md).
-- Increment 4: bounded offline-cache repair, packaged for gated release as
-  v0.10.1. See [offline boundaries](offline-reliability.md).
-- Mermaid 12.3 compatibility upgrade: packaged as v0.11.0 for gated release.
+- Increment 4: bounded offline-cache repair, released as
+  [v0.10.1](https://github.com/OKHP3/mermaid-theme-builder/releases/tag/v0.10.1).
+  See [offline boundaries](offline-reliability.md).
+- Mermaid 12.3 compatibility upgrade: released as
+  [v0.11.0](https://github.com/OKHP3/mermaid-theme-builder/releases/tag/v0.11.0).
+  Pages run 41857506348 and live revision e82740f were verified.
   See [compatibility review](mermaid-12-3-review.md). Theme schemas are unchanged.
+- Increment 5: theme-management keyboard safety, packaged for gated release as
+  v0.11.1. See [keyboard behavior and boundaries](theme-keyboard-safety.md).
 - Follow-on improvements are authorized when viable, with separate scope and validation.
   This does not satisfy or waive the v1.0 gates below.
 
@@ -23,8 +28,8 @@ The dated sections below retain the earlier roadmap history. Release tags and
 Pages runs, not this document alone, establish deployment.
 
 The original revitalization has three formal increments. Follow-on numbers are
-not a promise of six releases. Current open work includes manual accessibility
-and keyboard acceptance, owner-only analytics evidence if that feature is kept,
+not a promise of six releases. Current open work includes broader manual
+accessibility acceptance, owner-only analytics evidence if that feature is kept,
 dependency review in issue #83, and the embedded-distribution review in issue #98.
 Existing Replit tasks remain a separate administrative record, not automatically
 Done because a related GitHub change shipped. No v1.0 readiness claim is made.
