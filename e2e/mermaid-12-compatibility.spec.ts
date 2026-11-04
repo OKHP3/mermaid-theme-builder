@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 
 // These checks require actual rendering, not detection or a tolerated error.
 const cases = [
@@ -39,6 +39,28 @@ const cases = [
     marker: "ReviewCircleLabel",
     code: "flowchart LR\n  A((ReviewCircleLabel)) --> B(((Done)))",
   },
+  {
+    name: "adjacent edge IDs",
+    marker: "ReviewEdgeId",
+    code: "flowchart LR\n  A[ReviewEdgeId]e1@--> B@{ shape: circle, label: Done }e2@--> C[Result]",
+  },
+  {
+    name: "BPMN shapes within a flowchart",
+    marker: "ReviewEvent",
+    code: `flowchart LR
+  A@{ shape: bpmn-start, label: ReviewEvent }
+  B@{ shape: bpmn-activity, label: ReviewTask }
+  C@{ shape: bpmn-gateway, label: ReviewChoice }
+  D@{ shape: bpmn-end, label: ReviewEnd }
+  E@{ shape: bpmn-intermediate, label: ReviewIntermediate }
+  F@{ shape: bpmn-boundary, label: ReviewBoundary }
+  G@{ shape: bpmn-data, label: ReviewData }
+  H@{ shape: bpmn-data-store, label: ReviewStore }
+  I@{ shape: bpmn-annotation, label: ReviewNote }
+  A --> B --> C --> D
+  E --> F
+  G --> H --> I`,
+  },
 ];
 
 for (const item of cases) {
@@ -67,3 +89,95 @@ for (const item of cases) {
     expect(pageErrors).toEqual([]);
   });
 }
+
+async function renderSteps(page: Page) {
+  await page.goto("./#apply");
+  await page.getByLabel("Mermaid diagram code input").fill(`flowchart LR
+  A[ReviewSteps]e1@--> B[ReviewResult]
+  B e2@--> C[ReviewFinish]
+  e1@{ step: 1 }
+  e2@{ step: 2 }`);
+  const svg = page.locator('section[aria-label="Diagram preview"] svg[aria-roledescription]');
+  await expect(svg).toContainText("ReviewSteps", { timeout: 30000 });
+  return svg;
+}
+
+test("Mermaid 12.3 preserves ordered step animation through strict preview rendering", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  const svg = await renderSteps(page);
+  await expect(svg.locator("circle.edge-step-dot animateMotion")).toHaveCount(2);
+  expect(
+    await svg
+      .locator("circle.edge-step-dot")
+      .evaluateAll((dots) => dots.map((dot) => dot.getAttribute("data-step")))
+  ).toEqual(["1", "2"]);
+});
+
+test("Mermaid 12.3 hides step animation when reduced motion is requested", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  const svg = await renderSteps(page);
+  const dots = svg.locator("circle.edge-step-dot");
+  await expect(dots).toHaveCount(2);
+  for (const dot of await dots.all()) await expect(dot).toHaveCSS("display", "none");
+  await expect(svg).toBeVisible();
+});
+
+test("Mermaid 12.3 renders nested ELK edges in Original and preserves themed output", async ({
+  page,
+}) => {
+  await page.goto("./#apply");
+  await page.getByLabel("Mermaid diagram code input").fill(`%%{init: {"layout":"elk"}}%%
+flowchart TB
+  subgraph outer[ReviewOuter]
+    subgraph inner[ReviewInner]
+      da[ReviewSource]
+    end
+    a[ReviewTarget]
+  end
+  outer --> a
+  da --> a`);
+  const svg = page.locator('section[aria-label="Diagram preview"] svg[aria-roledescription]');
+  await expect(svg).toContainText("ReviewTarget", { timeout: 30000 });
+  const themedId = await svg.getAttribute("id");
+  expect(themedId).toBeTruthy();
+  await page.getByRole("tab", { name: "original", exact: true }).click();
+  await expect(svg).not.toHaveAttribute("id", themedId!);
+  await expect(svg).toContainText("ReviewTarget");
+  await expect(svg.locator("path.flowchart-link")).toHaveCount(2);
+  const positions = () =>
+    svg
+      .locator("g.node")
+      .evaluateAll((nodes) => nodes.map((node) => node.getAttribute("transform")));
+  const originalPositions = await positions();
+  expect(originalPositions.length).toBe(2);
+  const originalId = await svg.getAttribute("id");
+  expect(originalId).toBeTruthy();
+  await page.getByRole("tab", { name: "themed", exact: true }).click();
+  await expect(svg).not.toHaveAttribute("id", originalId!);
+  await expect(svg).toContainText("ReviewTarget", { timeout: 30000 });
+  await expect(svg.locator("path.flowchart-link")).toHaveCount(2);
+  // The explicit ELK source layout differs from the preserved themed Dagre default.
+  // SVG identity above waits for replacement; geometry proves the layout difference.
+  // No assertion depends on vendor chunk names or specific generated ID values.
+  await expect.poll(positions).not.toEqual(originalPositions);
+  await expect(page.getByLabel("Mermaid diagram code input")).toHaveValue(/ReviewSource/);
+});
+
+test("Mermaid 12.3 preserves rejected edge IDs and recovers after an explicit correction", async ({
+  page,
+}) => {
+  await page.goto("./#apply");
+  const input = page.getByLabel("Mermaid diagram code input");
+  const source = "flowchart LR\n  A e[1]@--> B";
+  await input.fill(source);
+  const preview = page.getByRole("region", { name: "Diagram preview", exact: true });
+  await expect(preview.getByText("Render Error", { exact: true })).toBeVisible({ timeout: 30000 });
+  await expect(input).toHaveValue(source);
+  await input.fill("flowchart LR\n  A[ReviewCorrected] e1@--> B");
+  await expect(preview.locator("svg[aria-roledescription]")).toContainText("ReviewCorrected", {
+    timeout: 30000,
+  });
+  await expect(preview.getByText("Render Error", { exact: true })).toHaveCount(0);
+});

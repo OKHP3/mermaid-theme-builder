@@ -1,4 +1,4 @@
-export const MERMAID_VERSION_VERIFIED = "12.2.0";
+export const MERMAID_VERSION_VERIFIED = "12.3.0";
 
 export type DiagramFamily =
   | "flowchart"
@@ -900,7 +900,7 @@ export const CAPABILITY_GAPS: GapEntry[] = [
     bestUsedFor:
       "Formal business process documentation, ISO/IEC compliance workflows, enterprise BPM tooling.",
     warning:
-      "Mermaid flowcharts can approximate BPMN-like visual flows, but they do not implement BPMN 2.0 semantics. Use dedicated BPMN tools (Camunda Modeler, bpmn.io) for formal compliance. This is high-leverage but outside V1 scope.",
+      "Mermaid 12.3 adds BPMN element shapes within flowcharts, not BPMN 2.0 semantics or interchange. Use dedicated BPMN tools (Camunda Modeler, bpmn.io) for formal compliance. Native BPMN remains outside V1 scope.",
     approximatedBy: "flowchart",
     exampleFile: null,
     examplePending: true,

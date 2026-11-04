@@ -75,7 +75,7 @@ rollback limits. Release tags and Pages runs provide deployment evidence.
 
 ---
 
-## Looks (Mermaid v12.2.0)
+## Looks (Mermaid v12.3.0)
 
 The app requires an ES2024-capable browser, including Safari 17.4 or newer.
 Renderer destinations may use different Mermaid versions; validate exported
@@ -187,7 +187,7 @@ pnpm test:e2e
 |-------|-----------|
 | Framework | React 19.3.1 + Vite 8.3.5 |
 | Styling | Tailwind CSS 4.3.3 |
-| Rendering | Mermaid.js 12.2.0 |
+| Rendering | Mermaid.js 12.3.0 |
 | Type checking | TypeScript 7.0.2 (strict) |
 | Testing | Vitest 5.0.5 + Playwright 1.64.1 |
 | Package manager | pnpm 12.16.1 (workspaces) |
