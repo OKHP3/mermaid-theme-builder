@@ -526,11 +526,11 @@ release on 2026-11-03. Architecture context retains the 2026-10-26 baseline.
 - **Vision, inferred:** Serve as the visual governance layer in the OKHP3
   Visual Language Stack while remaining a small, static, privacy-respecting
   utility.
-- **Current status, confirmed:** The root package is version `0.10.1`, and the
+- **Current status, confirmed:** The root package is version `0.11.0`, and the
   application source plus CI and GitHub Pages deployment workflows are present.
   Version `0.7.0` was published from `fd03013` after PR #131 passed its required
   checks and Replit Free acceptance. Pages deployment and the live version were
-  verified. Mermaid is pinned to `12.2.0`, with explicit appearance defaults
+  verified. Mermaid is pinned to `12.3.0`, with explicit appearance defaults
   and limited use case beta detection. The post-release repeat-install policy
   fix merged in PR #133. Version `0.8.0` packages the owner-approved theme-first
   workspace without changing saved data or export contracts. Its package
@@ -653,7 +653,8 @@ additive `mtb.state.v2` library preserves `mtb.state.v1`, separates drafts from
 named saves. Pages run 41787273594 and live v0.9.0-3e4ef7b were verified.
 See `docs/complete-themes.md`. Mermaid and other dependency pins are unchanged.
 
-- Mermaid is used as an npm dependency (currently `12.2.0` -- pinned exactly).
+- Mermaid is used as an npm dependency (currently `12.3.0` -- pinned exactly).
+  See `docs/mermaid-12-3-review.md` for compatibility and release boundaries.
 - Do not fork Mermaid. Do not copy Mermaid source into this repo.
 - Dependency updates must be reviewed and tested before release.
 - After each Mermaid version upgrade, manually update the constants in
@@ -669,7 +670,7 @@ Mermaid dependency is upgraded:
 
 ```typescript
 // src/data/mermaid-capabilities.ts
-export const MERMAID_VERSION_VERIFIED = "12.2.0";
+export const MERMAID_VERSION_VERIFIED = "12.3.0";
 ```
 
 #### 9.5 App-specific conventions

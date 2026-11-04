@@ -2,6 +2,16 @@
 
 ---
 
+## [0.11.0] - 2026-11-04
+
+### Changed
+- Pin Mermaid to stable 12.3.0 after compatibility review, retaining Classic/Dagre defaults and all existing theme data and export contracts.
+- Support vendor flowchart step animation and BPMN element shapes without claiming formal BPMN support or adding a new diagram family.
+- Resolve ELK to 0.12.1 and remove Mermaid's unused uuid dependency. DOMPurify remains at the already-patched 3.4.17 resolution.
+- Add rendering checks for adjacent edge IDs, BPMN shapes, ordered steps, reduced motion, and nested ELK graphs alongside existing preservation tests.
+
+---
+
 ## [0.10.1] - 2026-11-04
 
 ### Fixed
@@ -167,7 +177,8 @@ Phase 2 P0 capability fixes, plus documentation truth sync across all public sur
 
 **Verdict: v0.6.0.** v1.0.0 remains blocked by its other roadmap gates; the WCAG 2.1 AA automated audit gate now passes.
 
-[Unreleased]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.10.1...HEAD
+[Unreleased]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.11.0...HEAD
+[0.11.0]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.10.1...v0.11.0
 [0.10.1]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.10.0...v0.10.1
 [0.10.0]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.8.0...v0.9.0

@@ -14,6 +14,8 @@
   See [preview behavior](cross-diagram-preview.md).
 - Increment 4: bounded offline-cache repair, packaged for gated release as
   v0.10.1. See [offline boundaries](offline-reliability.md).
+- Mermaid 12.3 compatibility upgrade: packaged as v0.11.0 for gated release.
+  See [compatibility review](mermaid-12-3-review.md). Theme schemas are unchanged.
 - Follow-on improvements are authorized when viable, with separate scope and validation.
   This does not satisfy or waive the v1.0 gates below.
 

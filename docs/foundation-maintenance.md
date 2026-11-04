@@ -13,7 +13,7 @@ scope. Historical inventories remain historical; generate a fresh report with
 It lists direct and transitive packages, workspace declarations, Actions,
 runtime selectors, source URLs, lookup failures, and latest stable releases.
 
-The reviewed candidate uses Mermaid **12.2.0**, ZenUML **1.0.1**, React **19.3.1**,
+The reviewed candidate uses Mermaid **12.3.0**, ZenUML **1.0.1**, React **19.3.1**,
 Vite **8.3.5**, TypeScript **7.0.2**, Tailwind **4.3.3**, Vitest **5.0.5**,
 Playwright **1.64.1**, and pnpm **12.16.1**. CI pins Node **26.13.0** LTS and
 Python **3.15.2**. These are source/test targets, not a claim of deployment.
@@ -27,6 +27,11 @@ Beta diagram families inside stable Mermaid remain labeled as such; they are
 not prerelease package installations.
 
 ## Mermaid compatibility review
+
+The [12.3 review](mermaid-12-3-review.md) records the owner-authorized manual
+upgrade before the automated proposal cooldown expired. The one-day installer
+policy and three-day automatic proposal cooldown remain unchanged. No other
+direct dependency, runtime, theme schema, or export format is upgraded with it.
 
 The [12.0 review](mermaid-12-review-2026-10-26.md) remains the basis for the
 ES2024/Safari 17.4+ floor, compatible ZenUML 1, and explicit Classic/Dagre
