@@ -526,7 +526,7 @@ release on 2026-11-03. Architecture context retains the 2026-10-26 baseline.
 - **Vision, inferred:** Serve as the visual governance layer in the OKHP3
   Visual Language Stack while remaining a small, static, privacy-respecting
   utility.
-- **Current status, confirmed:** The root package is version `0.8.0`, and the
+- **Current status, confirmed:** The root package is version `0.9.0`, and the
   application source plus CI and GitHub Pages deployment workflows are present.
   Version `0.7.0` was published from `fd03013` after PR #131 passed its required
   checks and Replit Free acceptance. Pages deployment and the live version were
@@ -638,11 +638,10 @@ Any change that breaks this flow is a defect, regardless of other intent.
 
 #### 9.4 Mermaid dependency governance
 
-Increment 2 is an unreleased review candidate for complete local themes. Its
+Increment 2 (v0.9.0) was owner-approved for gated merge and release on 2026-11-04. Its
 additive `mtb.state.v2` library preserves `mtb.state.v1`, separates drafts from
-named saves, and requires explicit owner preview approval before merge or
-release. See `docs/complete-themes.md`. Package version and Mermaid pins remain
-unchanged in this candidate.
+named saves. See `docs/complete-themes.md`. Verify the release tag and Pages run
+before claiming deployment. Mermaid and other dependency pins are unchanged.
 
 - Mermaid is used as an npm dependency (currently `12.2.0` -- pinned exactly).
 - Do not fork Mermaid. Do not copy Mermaid source into this repo.

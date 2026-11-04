@@ -73,7 +73,7 @@ Flat pnpm workspace. The Mermaid Theme Builder is the root application package, 
 
 **Features:**
 
-- **Increment 2 candidate, not released:** Complete themes and separate drafts use additive `mtb.state.v2` storage. Original `mtb.state.v1` bytes remain unchanged. Explicit saves, search beyond three themes, reviewed import, complete JSON/links, and local backup/recovery are described in `docs/complete-themes.md`. Keep all Replit work in Free mode and wait for owner preview approval before merge or release.
+- **Increment 2 (v0.9.0):** Complete themes and separate drafts use additive `mtb.state.v2` storage. Original `mtb.state.v1` bytes remain unchanged. Explicit saves, search beyond three themes, reviewed import, complete JSON/links, and local backup/recovery are described in `docs/complete-themes.md`. The owner approved gated merge and release on 2026-11-04. Verify the release tag and Pages run independently. Keep all Replit work in Free mode.
 
 - **Theme-first workspace (v0.8.0):** Compose promotes the active theme and existing Save/Export/Use actions. Apply keeps source beside the preview, with focused Theme/Preview/Code views on mobile. Existing routes, storage, imports, and exports are retained; no profile migration is included.
 - Paste Mermaid code → auto-detects diagram family (flowchart, sequence, class, ER, Gantt, pie, etc.)

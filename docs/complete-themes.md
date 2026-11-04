@@ -1,6 +1,7 @@
 # Complete themes and local recovery
 
-Increment 2 review candidate. No release approval is implied by this document.
+Increment 2 (v0.9.0). Owner approval for gated merge and release was received on
+2026-11-04. Verify the release tag and Pages run for deployment status.
 
 Mermaid Theme Builder is a personal OverKill Hill P3 project by Jamie Hill.
 It is not affiliated with Builders FirstSource, BFS, Mermaid, Mermaid Chart,

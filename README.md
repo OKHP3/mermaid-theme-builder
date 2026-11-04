@@ -47,7 +47,7 @@ On mobile, **Theme**, **Preview**, and **Code** focus on one task at a time.
 Compatibility guidance includes input, family, look, and destination advisories.
 A local preview does not validate an external renderer.
 
-The Increment 2 review candidate adds complete saved themes, separate automatic
+Increment 2 (v0.9.0) adds complete saved themes, separate automatic
 drafts, search, and a library without the former three-theme count limit.
 **Save changes** updates a named theme; **Save as copy** creates an independent
 theme. Switching a dirty theme offers Save, Keep draft, Discard, or Cancel.
@@ -59,7 +59,7 @@ preferences. Legacy palette files and links remain readable. **Library backup**
 downloads saved themes without diagram text; **workspace recovery** explicitly
 includes diagram text and drafts. Browser-local storage is not a backup.
 See [complete themes and recovery](docs/complete-themes.md) for compatibility and
-rollback limits. This candidate is not release or deployment evidence.
+rollback limits. Release tags and Pages runs provide deployment evidence.
 
 | Tab | Purpose |
 |-----|---------|

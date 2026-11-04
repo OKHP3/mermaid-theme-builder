@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+---
+
+## [0.9.0] - 2026-11-04
+
 ### Added
 - Complete local themes with isolated appearance, typography, destination, export, and provenance settings.
 - Explicit save and copy actions, recoverable drafts, searchable collections, reviewed imports, complete share links, and saved-library backup and restore.
@@ -9,7 +13,7 @@
 - Remove the three-theme limit while preserving existing diagram, preview, export, and legacy import workflows.
 - Export complete theme JSON from Apply and Compose. Keep the color-only legacy export separately labeled.
 
-These Increment 2 changes are a review candidate, not a released version.
+Increment 2 was approved by the owner for gated merge and release on 2026-11-04.
 
 ---
 
@@ -139,7 +143,8 @@ Phase 2 P0 capability fixes, plus documentation truth sync across all public sur
 
 **Verdict: v0.6.0.** v1.0.0 remains blocked by its other roadmap gates; the WCAG 2.1 AA automated audit gate now passes.
 
-[Unreleased]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.8.0...HEAD
+[Unreleased]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.9.0...HEAD
+[0.9.0]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.6.4...v0.7.0
 [0.6.4]: https://github.com/OKHP3/mermaid-theme-builder/compare/v0.6.3...v0.6.4
